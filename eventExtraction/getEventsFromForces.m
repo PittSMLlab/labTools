@@ -1,4 +1,4 @@
-function [LHS,RHS,LTO,RTO] = getEventsFromForces(FzL,FzR,fsample)
+function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
 
 %% Get stance phases
 [stanceL] = getStanceFromForces(FzL, 35, fsample);
@@ -24,9 +24,8 @@ RHS(1:begin_index)=false;
 LTO(1:begin_index)=false;
 RTO(1:begin_index)=false;
 
-
 %% Check consistency
-[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);
+%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);
 
 
 

@@ -9,8 +9,8 @@ classdef derivedMetaData < labMetaData
     
     methods
         %Constructor
-        function this=derivedMetaData(ID,date,experimenter,type,desc,obs,parentMeta)
-            this@labMetaData(ID,date,experimenter,type,desc,obs);
+        function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta)
+            this@labMetaData(ID,date,experimenter,desc,obs,refLeg);
             if isa(parentMeta,'labMetaData');
                 this.parentMetaData=parentMeta;
             else

@@ -27,9 +27,8 @@ RHS(1:begin_index)=false;
 LTO(1:begin_index)=false;
 RTO(1:begin_index)=false;
 
-
 %% Check consistency
-[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);
+%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);
 
 
 

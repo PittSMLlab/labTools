@@ -3,6 +3,12 @@ function [RHS,RTO,LHS,LTO] = EventsOrderFilter(RightHS,RightTO,LeftHS,LeftTO)
 % ldata = Trial.Angle.LLimb;
 % rdata = Trial.Angle.RLimb;
 
+RightHS(RightHS==0)=[];
+RightTO(RightTO==0)=[];
+LeftHS(LeftHS==0)=[];
+LeftTO(LeftTO==0)=[];
+
+
 
 if RightHS(1)<LeftHS(1)
     

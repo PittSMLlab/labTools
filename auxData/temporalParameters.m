@@ -19,15 +19,16 @@ classdef temporalParameters
     
     methods
         %Constructor:
-        function this=temporalParameters(eventData)
-            fs=eventData.sampFreq;
-            Ts=eventData.sampPeriod;
-            events=eventData.getDataAsVector({'LHS','RHS','LTO','RTO'});
+        function this=temporalParameters(experimentData)
+            fs=experimentData.gaitEvents.sampFreq;
+            Ts=experimentData.gaitEvents.sampPeriod;
+            events=experimentData.gaitEvents.getDataAsVector({'LHS','RHS','LTO','RTO'});
             LHS=events(:,1);
             RHS=events(:,2);
             LTO=events(:,3);
             RTO=events(:,4);
-            Time=eventData.Time;
+            Time=experimentData.gaitEvents.Time;
+            refLeg=experimentData.metaData.refLeg;
             
             aux=LHS+2*RTO+3*RHS+4*LTO; %This should get events in the sequence 1,2,3,4,1... with 0 for non-events
             

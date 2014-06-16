@@ -49,7 +49,7 @@ classdef labTimeSeries  < timeseries
             [boolFlag,labelIdx]=this.isaLabel(auxLabel);
             for i=1:length(boolFlag)
                 if boolFlag(i)==0
-                    warning(['Warning: Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
+                    warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
                 end
             end
             
@@ -161,7 +161,7 @@ classdef labTimeSeries  < timeseries
         
         %Getters for dependent properties
         function fs=get.sampFreq(this)
-             fs=1/this.sampPeriod;
+            fs=1/this.sampPeriod;
         end
         
         function tr=get.timeRange(this)
@@ -173,68 +173,17 @@ classdef labTimeSeries  < timeseries
         end
         
         %Display
-        function h=plot(this,h,labels) %Alternative plot: all the traces go in different axes
-            if nargin<2 || isempty(h)
-                h=figure;
-            else
+        function h=plot(this,h)
+            if nargin>2
                 figure(h)
-            end
-            N=length(this.labels);
-            if nargin<3 || isempty(labels)
-                relData=this.Data;
-                relLabels=this.labels;
             else
-               [relData,~,relLabels]=this.getDataAsVector(labels); 
-               N=size(relData,2);
-            end
-            
-            for i=1:N
-                h1(i)=subplot(ceil(N/2),2,i);
-                hold on
-                plot(this.Time,relData(:,i))
-                ylabel(relLabels{i})
-                hold off
-            end
-            linkaxes(h1,'x')
-                
-        end
-        
-        function h=spectrogram(this,label,h)
-            if nargin<3 || isempty(h)
                 h=figure;
-            else
-                figure(h);
-            end 
-            h1(1)=subplot(6,1,1:5);
+            end
             hold on
-            N=round(.2/this.sampPeriod);
-            maxF=this.sampFreq/2;
-            maxF=450;
-            [s,f,t,p]=spectrogram(this.getDataAsVector(label),N,floor(.9*N),[0:1:maxF],this.sampFreq); %200ms windows, 90% overlap, sampling Fourier space every 1Hz
-            surf(t+this.Time(1),f,10*log10(abs(s)),'EdgeColor','None')
-            caxis([-100 -10])
-            view(2)
-            ylabel('Frequency (Hz)')
+            this.plot@timeseries
+            legend(this.labels)
             hold off
-            h1(2)=subplot(6,1,6);
-            hold on
-            plot(this.Time,this.getDataAsVector(label))
-            hold off
-            xlabel('Time (s)')
-            linkaxes(h1,'x')
         end
-
-%         function h=plot(this,h) 
-%             if nargin>2
-%                 figure(h)
-%             else
-%                 h=figure;
-%             end
-%             hold on
-%             this.plot@timeseries
-%             legend(this.labels)
-%             hold off
-%         end
         
         %Other
         function [F,f]=fourierTransform(this,M)
@@ -244,39 +193,7 @@ classdef labTimeSeries  < timeseries
                 MM=this.Nsamples;
             end
             F=fft(this.Data,MM);
-            f=fftshift(this.sampFreq*[-floor(MM/2):ceil(MM/2-1)]/MM);
-        end
-        
-        function newThis=idealLPFfilter(this,cutoffFreq)
-            %INPUTS:
-            %cutoffFreq: cut-off frequency in Hz.
-            [fSpaceData,fvector]=fourierTransform(this);
-            fSpaceFilteredData=fSpaceData;
-            fSpaceFilteredData(abs(fvector)>cutoffFreq,:)=0;
-            newData=ifft(fSpaceFilteredData);
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-        end
-        
-        function newThis=idealHPFfilter(this,cutoffFreq)
-            %INPUTS:
-            %cutoffFreq: cut-off frequency in Hz.
-            [fSpaceData,fvector]=fourierTransform(this);
-            fSpaceFilteredData=fSpaceData;
-            fSpaceFilteredData(abs(fvector)<cutoffFreq,:)=0;
-            newData=ifft(fSpaceFilteredData);
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-        end
-        
-        function newThis=HPFfilter(this,cutoffFreq)
-            %INPUTS:
-            %cutoffFreq: cut-off frequency in Hz.
-            %attenuation: amplitude loss per decade, in dB/dec. 20 means that at
-            %f=.1*cutoff the amplitude would be half of the original signal.
-            fs=this.sampFreq;
-            BW=cutoffFreq;
-            highPassFilter=design(fdesign.highpass('Nb,Na,Fst,Fp',5,5,(2*BW/fs - max([2*.2*BW/fs,.02])),(2*BW/fs + max([2*.2*BW/fs,.02])))); %10 poles, 5 zeros, Fstop=.85*cutoff, Fpass=1.15*cutoff
-            newData=filtfilthd(highPassFilter,this.Data); 
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+            f=[-floor(MM/2):floor(MM/2-1)];
         end
                 
             

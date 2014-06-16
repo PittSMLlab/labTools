@@ -13,9 +13,9 @@ classdef processedTrialData < processedLabData
     methods
         
         %Constructor:
-        function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG) %All arguments are mandatory
+        function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData) %All arguments are mandatory
             
-            if nargin<11 %metaData does not get replaced.
+            if nargin<12 %metaData does not get replaced.
                markerData=[];
                EMGData=[];
                GRFData=[];
@@ -26,13 +26,18 @@ classdef processedTrialData < processedLabData
                footSwitches=[];
                events=[];
                procEMG=[];
+               angleData = [];
             end
             if ~isa(metaData,'trialMetaData') && ~isa(metaData,'derivedMetaData') && ~isempty(metaData)
                 ME=MException('processedTrialData:Constructor','First argument is not a trialMetaData object.');
                 throw(ME);
             end
-            this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG)
+            this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData)
         end
+        
+%         function calcParams(this)
+%             this.adaptParams=calcParameters(this);
+%         end       
        
     end
     

@@ -5,8 +5,7 @@ classdef stridedExperimentData
     properties
         metaData %experimentMetaData type
         subData %subjectData type
-        LstridedTrials
-        RstridedTrials %cell array of cell array of strideData objects
+        stridedTrials %cell array of cell array of strideData objects
     end
     
     properties(SetAccess=private) 
@@ -15,7 +14,7 @@ classdef stridedExperimentData
     
     methods
         %Constructor
-        function this=stridedExperimentData(meta,sub,Lstrides,Rstrides)
+        function this=stridedExperimentData(meta,sub,strides)
                 if isa(meta,'experimentMetaData')
                     this.metaData=meta;
                 else
@@ -28,11 +27,11 @@ classdef stridedExperimentData
                     ME=MException();
                     throw(ME)
                 end
-                if isa(Lstrides,'cell') && all( cellfun('isempty',Lstrides) | cellisa(Lstrides,'cell'))
-                    aux=cellisa(Lstrides,'cell');
+                if isa(strides,'cell') && all( cellfun('isempty',strides) | cellisa(strides,'cell'))
+                    aux=cellisa(strides,'cell');
                     idx=find(aux==1,1);
-                    if all(cellisa(Lstrides{idx},'strideData')) %Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all
-                        this.LstridedTrials=Lstrides;
+                    if all(cellisa(strides{idx},'strideData')) %Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all
+                        this.stridedTrials=strides;
                     else
                         ME=MException();
                         throw(ME);
@@ -40,20 +39,7 @@ classdef stridedExperimentData
                 else
                     ME=MException();
                     throw(ME);
-                end
-                if isa(Rstrides,'cell') && all( cellfun('isempty',Rstrides) | cellisa(Rstrides,'cell'))
-                    aux=cellisa(Rstrides,'cell');
-                    idx=find(aux==1,1);
-                    if all(cellisa(Rstrides{idx},'strideData')) %Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all
-                        this.RstridedTrials=Rstrides;
-                    else
-                        ME=MException();
-                        throw(ME);
-                    end
-                else
-                    ME=MException();
-                    throw(ME);
-                end
+                end                
         end
         
         %Getters for Dependent properties
@@ -64,47 +50,31 @@ classdef stridedExperimentData
         %Modifiers
         function newThis=timeNormalize(this,N)
            %Lstrides
-           newLstrides=cell(1,length(this.LstridedTrials));
-           for trial=1:length(this.LstridedTrials)
-               thisTrial=this.LstridedTrials{trial};
+           newStrides=cell(1,length(this.stridedTrials));
+           for trial=1:length(this.stridedTrials)
+               thisTrial=this.stridedTrials{trial};
                newTrial=cell(1,length(thisTrial));
                for stride=1:length(thisTrial)
                    thisStride=thisTrial{stride};
                    newTrial{stride}=timeNormalize(thisStride,N);
                end
-               newLstrides{trial}=newTrial;
-           end
-           
-           %Rstrides
-           newRstrides=cell(1,length(this.RstridedTrials));
-           for trial=1:length(this.RstridedTrials)
-               thisTrial=this.RstridedTrials{trial};
-               newTrial=cell(1,length(thisTrial));
-               for stride=1:length(thisTrial)
-                   thisStride=thisTrial{stride};
-                   newTrial{stride}=timeNormalize(thisStride,N);
-               end
-               newRstrides{trial}=newTrial;
+               newStrides{trial}=newTrial;
            end
            
            %Construct newTrial
-           newThis=stridedExperimentData(this.metaData,this.subData,newLstrides,newRstrides);
+           newThis=stridedExperimentData(this.metaData,this.subData,newStrides);
            newThis.isTimeNormalized=true;
         end
         
-        function [Lstrides,Rstrides,origTrialL,origTrialR]=getStridesFromCondition(this,condition)
-           Lstrides={};
-           Rstrides={};
+        function [strides,origTrialL,origTrialR]=getStridesFromCondition(this,condition)
+           strides={};           
            origTrialL=[];
            origTrialR=[];
            for trial=this.metaData.trialsInCondition{condition}
-               trialData=this.LstridedTrials{trial};
+               trialData=this.stridedTrials{trial};
                Nsteps=length(trialData);
-               Lstrides(end+1:end+Nsteps)=trialData;
-               origTrialL(end+1:end+Nsteps)=trial;
-               trialData=this.RstridedTrials{trial};
-               Nsteps=length(trialData);
-               Rstrides(end+1:end+Nsteps)=trialData;
+               strides(end+1:end+Nsteps)=trialData;
+               origTrialL(end+1:end+Nsteps)=trial;                            
                origTrialR(end+1:end+Nsteps)=trial;
            end
         end

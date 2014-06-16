@@ -4,12 +4,13 @@ classdef strideMetaData < derivedMetaData
     
     properties (SetAccess=private)
         %initialEvent
+        %type? --> OG vs TM
     end
     
     methods
         %Constructor
-        function this=strideMetaData(ID,date,experimenter,type,desc,obs,parentMeta)
-            this@derivedMetaData(ID,date,experimenter,type,desc,obs,parentMeta);
+        function this=strideMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta)
+            this@derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta);
         end
         
     end

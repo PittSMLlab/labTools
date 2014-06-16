@@ -20,9 +20,7 @@ function varargout = ReviewEventsGUI(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help ReviewEventsGUI
-
-% Last Modified by GUIDE v2.5 05-Apr-2014 16:36:47
+% Last Modified by GUIDE v2.5 15-Jun-2014 19:27:47
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -53,8 +51,15 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % varargin   command line arguments to ReviewEventsGUI (see VARARGIN)
 
 % Choose default command line output for ReviewEventsGUI
-handles.output = hObject;
+handles.output=hObject;
 handles.changed=false;
+
+files=what;
+subFileList={};
+for i=1:length(files.mat)
+    subFileList{end+1}=files.mat{i}(1:end-4);
+end
+set(handles.subject,'string',subFileList)
 
 % Update handles structure
 guidata(hObject, handles);
@@ -70,14 +75,28 @@ function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+%Set GUI position to middle of screen
+% left, bottom, width, height
+scrsz = get(0,'ScreenSize'); 
+set(gcf,'Units','pixels');
+guiPos = get(gcf,'Position');
+set(gcf, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 end
 
-
 %----------------------------------------------------------------
 %First step: set directory name to load files from. By default it is the
 %current dir: './'
+
+% --- Executes on button press in browseButton.
+function browseButton_Callback(hObject, eventdata, handles)
+direct = uigetdir; %pulls up a broswer window so a folder can be selected
+set(handles.directory,'string',[direct,'\'])
+guidata(hObject,handles)
+directory_Callback(handles.directory,eventdata,handles)
+end
 
 function directory_Callback(hObject, eventdata, handles)
 % hObject    handle to directory (see GCBO)
@@ -86,54 +105,47 @@ function directory_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of directory as text
 %        str2double(get(hObject,'String')) returns contents of directory as a double
-handles.Dir = get(hObject, 'String');
+
+direct = get(hObject, 'String');
 
 %checks if Sub is a file
-if exist(handles.Dir,'dir')
+if exist(direct,'dir')
     set(handles.subject,'Enable','on');
+    files=what(direct);
+    subFileList={};
+    if length(files.mat)==0
+        h_error=errordlg('Directory entered does not contain any .mat files','Directory Error');
+        set(h_error,'color',[0.8 0.8 0.8])
+        waitfor(h_error)
+        set(handles.subject,'Enable','off');
+        % Give the edit text box focus so user can correct the error
+        uicontrol(hObject)
+    else
+        for i=1:length(files.mat)
+            subFileList{end+1}=files.mat{i}(1:end-4);
+        end
+        set(handles.subject,'string',subFileList)
+    end    
 else
-    set(handles.directory,'String', 'Try Again:')
+    h_error=errordlg('Path entered is not a directory.','Directory Error');
+    set(h_error,'color',[0.8 0.8 0.8])
+    waitfor(h_error)
+    set(handles.subject,'Enable','off');
     % Give the edit text box focus so user can correct the error
     uicontrol(hObject)
 end
 guidata(hObject, handles);
 end
 
-
-% --- Executes during object creation, after setting all properties.
-function directory_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to directory (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-    set(hObject,'String','./');
-end
-end
 %-------------------------------------------------------------------
-
 %Second, the subject filename needs to be entered.
-
-% --- Executes during object creation, after setting all properties.
-function subject_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to subject (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-end
 
 function subject_Callback(hObject, eventdata, handles)
 % hObject    handle to subject (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+handles.Dir=get(handles.directory,'string');
 
 %Disable everything
 set(handles.plot_button,'Enable','off');
@@ -151,50 +163,45 @@ set(handles.trialMenu,'Enable','off');
 drawnow
 
 global expData
-handles.filename = [get(hObject, 'String'),'.mat'];
-%checks if Sub is a file
-if exist([handles.Dir handles.filename],'file')
-    eval(['aux=load('''  handles.Dir handles.filename ''');']) %.mat file can only contain 1 variable, of the experimentData type
-    fieldNames=fields(aux);
-    handles.varName=fieldNames{1};
+options=cellstr(get(hObject,'String'));
+handles.filename = [options{get(hObject,'Value')},'.mat'];
+
+eval(['aux=load('''  handles.Dir handles.filename ''');']) %.mat file can only contain 1 variable, of the experimentData type
+fieldNames=fields(aux);
+handles.varName=fieldNames{1};
+
+eval(['expData=aux.' fieldNames{1} ';']);
+if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
+    set(handles.subject_text,'String', 'Filename') 
     
-    eval(['expData=aux.' fieldNames{1} ';']);
-    if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
-        set(handles.subject_text,'String', 'Filename')
-        %Enable and init all menus
-        set(handles.plot_button,'Enable','on');
-        set(handles.next_button,'Enable','on');
-        set(handles.back_button,'Enable','on');
-        set(handles.delete_button,'Enable','on');
-        set(handles.save_button,'Enable','on');
-        set(handles.add_button,'Enable','on');
-        set(handles.BPdataType,'Enable','on');
-        set(handles.BPfield,'Enable','on');
-        set(handles.TPdataType,'Enable','on');
-        set(handles.TPfield,'Enable','on');
-        
-        
-        %Enable and initialize condition menu:
-        set(handles.condMenu, 'Enable','on');
-        set(handles.condMenu, 'String',expData.metaData.conditionsDescription);
-        set(handles.condMenu, 'Value',1);
-        set(handles.trialMenu,'Value',1);
-        guidata(hObject, handles);
-        condMenu_Callback(hObject, [], handles);
-        
-    else
-        set(handles.subject_text,'String', 'Try Again:')
-        % Give the edit text box focus so user can correct the error
-        uicontrol(hObject)
-        guidata(hObject, handles)
-    end
+    %Enable and init all menus
+    set(handles.plot_button,'Enable','on');
+    set(handles.next_button,'Enable','on');
+    %set(handles.back_button,'Enable','on');
+    set(handles.delete_button,'Enable','on');
+    set(handles.save_button,'Enable','on');
+    set(handles.add_button,'Enable','on');
+    set(handles.BPdataType,'Enable','on');
+    set(handles.BPfield,'Enable','on');
+    set(handles.TPdataType,'Enable','on');
+    set(handles.TPfield,'Enable','on');
+    
+    %Enable and initialize condition menu:
+    set(handles.condMenu, 'Enable','on');
+    set(handles.condMenu, 'String',expData.metaData.conditionDescription);
+    set(handles.condMenu, 'Value',1);
+    set(handles.trialMenu,'Value',1);
+    guidata(hObject, handles);
+    condMenu_Callback(hObject, [], handles);
 else
-    set(handles.subject_text,'String', 'Try Again:')
-    set(handles.condMenu,'Enable','off')
+    h_error=errordlg('Subject file must be of the class ''processedTrialData''','Subject Error');
+    set(h_error,'color',[0.8 0.8 0.8])
+    waitfor(h_error)
     % Give the edit text box focus so user can correct the error
     uicontrol(hObject)
     guidata(hObject, handles)
 end
+
 
 end
 %---------------------------------------------------------------------
@@ -224,19 +231,6 @@ end
 %        contents{get(hObject,'Value')} returns selected item from condMenu
 
 
-% --- Executes during object creation, after setting all properties.
-function condMenu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to condMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-end
-
 %---------------------------------------------------------------------
 %Then: select specific trial:
 % --- Executes on selection change in trialMenu.
@@ -249,12 +243,22 @@ function trialMenu_Callback(hObject, eventdata, handles)
 %        contents{get(hObject,'Value')} returns selected item from trialMenu
 global expData
 handles.Trial= expData.metaData.trialsInCondition{handles.Condition}(get(handles.trialMenu,'Value'));
+handles.trialList = cell2mat(expData.metaData.trialsInCondition);
+handles.idx = find(handles.trialList==handles.Trial);
 handles.TSlist={};
-handles.trialEvents=expData.data{handles.Trial}.gaitEvents;
+handles.trialEvents=expData.data{handles.idx}.gaitEvents;
+%determine reference leg
+if expData.data{handles.idx}.metaData.refLeg == 'R'
+    handles.slow = 'R';
+    handles.fast = 'L';
+else
+    handles.slow = 'L';
+    handles.fast = 'R';
+end
 set(handles.write,'Enable','off')
-fieldList=fields(expData.data{handles.Trial});
+fieldList=fields(expData.data{handles.idx});
 for i=1:length(fieldList)
-    eval(['curField=expData.data{handles.Trial}.' fieldList{i} ';']);
+    eval(['curField=expData.data{handles.idx}.' fieldList{i} ';']);
     if isa(curField,'labTimeSeries')
         handles.TSlist{end+1}=fieldList{i};
     end
@@ -268,23 +272,24 @@ end
 if get(handles.TPdataType,'Value')>length(get(handles.TPdataType,'String'))
     set(handles.TPdataType,'Value',1);
 end
-guidata(hObject, handles)
-BPdataType_Callback(handles.BPdataType, eventdata, handles);
-TPdataType_Callback(handles.TPdataType, eventdata, handles);
-guidata(hObject, handles)
+%initialize start/stop times to plot
+set(handles.minText,'string','1')
+maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
+TW=round(get(handles.timeSlider,'Value'));
+if TW>maxTime || get(handles.maxCheck,'value')
+    handles.timeWindow=maxTime;
+    handles.tstop=maxTime;
+    set(handles.timeSlider,'Value',maxTime);
+else
+    handles.timeWindow=TW;
+    handles.tstop=TW;
 end
-
-% --- Executes during object creation, after setting all properties.
-function trialMenu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to trialMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+set(handles.maxText,'string',num2str(maxTime));
+set(handles.timeSlider,'max',maxTime);
+set(handles.timeSlider,'SliderStep',[1/(maxTime-1) 1/(maxTime-1)]) %1 is the lower limit
+handles.tstart=0;
+set(handles.timeWindowText,'String',handles.timeWindow);
+TPdataType_Callback(handles.TPdataType,eventdata,handles);
 end
 
 %--------------------------------------------------------------------
@@ -295,94 +300,93 @@ function TPfield_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns TPfield contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from TPfield
-guidata(hObject, handles)
-plot_button_Callback(handles.plot_button,eventdata,handles)
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function TPfield_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to TPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
+BPdataType_Callback(handles.BPdataType,eventdata,handles);
 end
 
 
 % --- Executes on selection change in TPdataType.
 function TPdataType_Callback(hObject, eventdata, handles)
-% hObject    handle to TPdataType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns TPdataType contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from TPdataType
-global expData
-eval(['curTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.TPdataType,'Value')} ';']);
-set(handles.TPfield,'String',curTS.labels);
-if get(handles.TPfield,'Value')>length(get(handles.TPfield,'String'))
-    set(handles.TPfield,'Value',1);
-end
-clear curTS
+handles.TPfieldlist = makeFieldList(hObject,handles,handles.TPfield);
+
 handles.test=1;
-guidata(hObject, handles)
+% guidata(hObject, handles)
 TPfield_Callback(handles.TPfield, eventdata, handles)
 end
 
 
-% --- Executes during object creation, after setting all properties.
-function TPdataType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to TPdataType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
+function [plotFields] = makeFieldList(hObject,handles,fieldListHandle)
 
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+global expData
+
+eval(['curTS=expData.data{handles.idx}.' handles.TSlist{get(hObject,'Value')} ';']);
+fields={};
+plotFields={};
+set(fieldListHandle,'enable','on')
+
+%The following code removes redundant options in the feild list by
+%combinging 'R' and 'L' data as well as 'Fast' and 'Slow' adaptation
+%parameters.
+%note that two cells need to be created: one with the list of options for
+%the drop-down list(feilds) and another that matches each option with the data to
+%plot (plotFields)
+
+for i=1:length(curTS.labels)
+    if strcmp(curTS.labels{i}(1),handles.fast) %'L' or 'R'
+        if any(strcmp(curTS.labels,[handles.slow,curTS.labels{i}(2:end)])) %check there is a corresponding slow label
+            if length(curTS.labels)==2 %case where there is only two labels (matlab doesn't like dropdown menus with only one option)
+                set(fieldListHandle,'enable','off')
+                set(fieldListHandle,'Value',1)
+                fields = {'',''};
+                plotFields{end+1} = {curTS.labels{i},[handles.slow,curTS.labels{i}(2:end)]};
+            elseif length(curTS.labels{i}) == 1 % just 'R' or 'L' (beltspeedreadData for ex)
+                fields=handles.TSlist{get(hObject,'Value')};
+                plotFields{end+1} = {handles.fast,handles.slow};
+            else
+                fields{end+1}=curTS.labels{i}(2:end);
+                plotFields{end+1} = {curTS.labels{i},[handles.slow,curTS.labels{i}(2:end)]};
+            end
+        else
+            %slow label is missing 
+            fields{end+1}=strrep(curTS.labels{i},handles.fast,'F');
+            plotFields{end+1} = curTS.labels{i};
+        end
+    elseif strcmp(curTS.labels{i}(1),handles.slow)
+        if ~any(strcmp(curTS.labels,[handles.fast,curTS.labels{i}(2:end)]))
+            %fast label is missing 
+            fields{end+1}=strrep(curTS.labels{i},handles.slow,'S');
+            plotFields{end+1}=curTS.labels{i};
+        else
+            %% already have a slow label so do nothing
+        end            
+    elseif strcmpi(curTS.labels{i}(max([end-3 1]):end),'Fast')
+        fields{end+1}=curTS.labels{i}(1:end-4);
+        plotFields{end+1} = {curTS.labels{i},[curTS.labels{i}(1:end-4),'Slow']};
+    elseif strcmpi(curTS.labels{i}(max([end-3 1]):end),'Slow')
+        %assume we also have a fast label and do nothing
+    else
+        fields{end+1}=curTS.labels{i};
+        plotFields{end+1} = curTS.labels{i};
+    end
 end
+
+set(fieldListHandle,'String',fields);
+if get(fieldListHandle,'Value')>length(get(fieldListHandle,'String'))
+    set(fieldListHandle,'Value',1);
+end
+clear curTS
+guidata(hObject, handles)
 end
 
 
 % --- Executes on selection change in BPdataType.
 function BPdataType_Callback(hObject, eventdata, handles)
-% hObject    handle to BPdataType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns BPdataType contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from BPdataType
-global expData
-eval(['curTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.BPdataType,'Value')} ';']);
-set(handles.BPfield,'String',curTS.labels);
-if get(handles.BPfield,'Value')>length(get(handles.BPfield,'String'))
-    set(handles.BPfield,'Value',min([4,length(curTS.labels)]));
-end
-clear curTS
-guidata(hObject, handles)
+handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
+
 BPfield_Callback(handles.BPfield, eventdata, handles)
 end
-
-% --- Executes during object creation, after setting all properties.
-function BPdataType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to BPdataType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-end
-
 
 % --- Executes on selection change in BPfield.
 function BPfield_Callback(hObject, eventdata, handles)
@@ -390,87 +394,156 @@ function BPfield_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns BPfield contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from BPfield
+handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
 guidata(hObject, handles)
-plot_button_Callback(handles.plot_button,eventdata,handles)
-end
-
-
-% --- Executes during object creation, after setting all properties.
-function BPfield_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to BPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 end
 
 
 %BUTTONS:-----------------------------------------------------------
+
+% --- Executes on slider movement.
+function timeSlider_Callback(hObject, eventdata, handles)
+% hObject    handle to timeSlider (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+handles.timeWindow=round(get(hObject,'Value'));
+% % to make zooming in start in middle of previous time window:
+% timeToAdd=handles.timeWindow-(handles.tstop-handles.tstart);
+% time1=max([handles.tstart-floor(timeToAdd/2) 0]);
+% handles.tstop=handles.tstop+ceil(timeToAdd-(handles.tstart-time1));
+% handles.tstart=time1;
+
+% to make zooming in start at the beginning of the trial:
+handles.tstop=handles.timeWindow;
+handles.tstart=0;
+set(handles.timeWindowText,'string',handles.timeWindow);
+guidata(hObject, handles)
+plot_button_Callback(handles.plot_button,eventdata,handles)
+end
+
+% --- Executes on button press in maxCheck.
+function maxCheck_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of maxCheck
+global expData
+maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
+if get(handles.maxCheck,'value')
+    handles.timeWindow=maxTime;
+    handles.tstop=maxTime;
+    set(handles.timeSlider,'Value',maxTime);
+    set(handles.timeWindowText,'String',handles.timeWindow);
+end
+plot_button_Callback(handles.plot_button,eventdata,handles)
+end
 
 % --- Executes on button press in plot_button.
 function plot_button_Callback(hObject, eventdata, handles)
 % hObject    handle to plot_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-linkaxes([handles.axes1,handles.axes2],'x')
-%Events to plot:
-global expData
-events=handles.trialEvents;
-for i=1:length(events.labels)
-    data=events.getDataAsVector(events.labels{i});
-    eval([events.labels{i} 'times=events.Time(data==1);']) 
-end
 
 %Top plot:
-%Get data to plot
-TPvalue=get(handles.TPfield,'Value');
-eval(['TPlabel=expData.data{handles.Trial}.' handles.TSlist{get(handles.TPdataType,'Value')} '.labels{TPvalue};']);
-eval(['LdataTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.TPdataType,'Value')} '.getDataAsTS(''L' TPlabel(2:end) ''');' ]);
-eval(['RdataTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.TPdataType,'Value')} '.getDataAsTS(''R' TPlabel(2:end) ''');' ]);
-eval(['time=expData.data{handles.Trial}.' handles.TSlist{get(handles.TPdataType,'Value')} '.Time;' ]);
-
-%Do plot
-%Get subplot
-set(handles.axes1,'nextplot','replace')
-plot(handles.axes1,time,LdataTS.Data,'b');
-set(handles.axes1,'nextplot','add')
-plot(handles.axes1,time,RdataTS.Data,'r');
-%Overlay events
-plot(handles.axes1,LHStimes,LdataTS.getSample(LHStimes),'kx','LineWidth',2)
-plot(handles.axes1,RHStimes,RdataTS.getSample(RHStimes),'ks','LineWidth',2)
-plot(handles.axes1,RTOtimes,RdataTS.getSample(RTOtimes),'ko','LineWidth',2)
-plot(handles.axes1,LTOtimes,LdataTS.getSample(LTOtimes),'k*','LineWidth',2)
+handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
 
 %Bottom plot:
-%Get data to plot
-BPvalue=get(handles.BPfield,'Value');
-eval(['BPlabel=expData.data{handles.Trial}.' handles.TSlist{get(handles.BPdataType,'Value')} '.labels{BPvalue};']);
-eval(['LdataTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.BPdataType,'Value')} '.getDataAsTS(''L' BPlabel(2:end) ''');' ]);
-eval(['RdataTS=expData.data{handles.Trial}.' handles.TSlist{get(handles.BPdataType,'Value')} '.getDataAsTS(''R' BPlabel(2:end) ''');' ]);
-eval(['time=expData.data{handles.Trial}.' handles.TSlist{get(handles.BPdataType,'Value')} '.Time;' ]);
-%Do plot
-set(handles.axes2,'nextplot','replace')
-plot(handles.axes2,time,LdataTS.Data,'b');
-set(handles.axes2,'nextplot','add')
-plot(handles.axes2,time,RdataTS.Data,'r');
-%Overlay events
-plot(handles.axes2,LHStimes,LdataTS.getSample(LHStimes),'kx','LineWidth',2)
-plot(handles.axes2,RHStimes,RdataTS.getSample(RHStimes),'ks','LineWidth',2)
-plot(handles.axes2,RTOtimes,RdataTS.getSample(RTOtimes),'ko','LineWidth',2)
-plot(handles.axes2,LTOtimes,LdataTS.getSample(LTOtimes),'k*','LineWidth',2)
-legend('Left','Right','LHS','RHS','RTO','LTO')
-%Clear vars:
-clear RHS* LHS* LTO* RTO* events time
+handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
+
 drawnow
 guidata(hObject, handles)
 end
 
+function last=plotData(handles,dataField,dataType,fieldList,axesHandle)
+
+linkaxes([handles.axes1,handles.axes2],'x')
+
+global expData
+
+value=get(dataField,'Value');
+
+eval(['TSdata=expData.data{handles.idx}.' handles.TSlist{get(dataType,'Value')},';']);
+
+startSamp=find(TSdata.Time==handles.tstart);
+if TSdata.Time(end)<handles.tstop || get(handles.maxCheck,'value')
+    endSamp=length(TSdata.Time);
+    last=1;    
+else
+    endSamp=find(TSdata.Time==handles.tstop);
+    last=0;
+end
+
+%Events to plot:
+events=handles.trialEvents;
+%event correction factor:
+ECF = events.sampFreq/TSdata.sampFreq;
+for i=1:length(events.labels)
+    data=events.getDataAsVector(events.labels{i});
+    eval([events.labels{i} 'times=handles.tstart+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
+end
+
+time=TSdata.Time(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
+set(axesHandle,'nextplot','replace')
+if length(fieldList{value})==2
+    %get data to plot
+    eval(['FdataTS=TSdata.getDataAsTS(''' fieldList{value}{1} ''');' ]);
+    eval(['SdataTS=TSdata.getDataAsTS(''' fieldList{value}{2} ''');' ]);
+    if strcmp(handles.TSlist{get(dataType,'Value')},'adaptParams')
+        label=fieldList{value}{1}(1:end-4);
+        %plot data
+    plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r.','MarkerSize',20);
+    set(axesHandle,'nextplot','add')
+    plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
+    legendEntries = {'Fast','Slow'};
+        % do not overlay events
+    else
+        label=fieldList{value}{1}(2:end);
+        %plot data
+        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r','MarkerSize',20);
+        set(axesHandle,'nextplot','add')
+        plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b','MarkerSize',20);
+        legendEntries = {'Fast','Slow'};
+        %Overlay events (only those in the time window...otherwise there
+        %will be warnings for the extra legend entries
+        if eval(['~isempty(',handles.fast,'HStimes)'])
+            eval(['plot(axesHandle,',handles.fast,'HStimes,FdataTS.getSample(',handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
+            legendEntries{end+1}='FHS';
+        end
+        if eval(['~isempty(',handles.fast,'TOtimes)'])
+            eval(['plot(axesHandle,',handles.fast,'TOtimes,FdataTS.getSample(',handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
+            legendEntries{end+1}='FTO';
+        end
+        if eval(['~isempty(',handles.slow,'HStimes)'])
+            eval(['plot(axesHandle,',handles.slow,'HStimes,SdataTS.getSample(',handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
+            legendEntries{end+1}='SHS';
+        end
+        if eval(['~isempty(',handles.slow,'TOtimes)'])
+            eval(['plot(axesHandle,',handles.slow,'TOtimes,SdataTS.getSample(',handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
+            legendEntries{end+1}='STO';
+        end        
+    end
+else
+    %get data to plot
+    label=fieldList{value};
+    eval(['dataTS=TSdata.getDataAsTS(''' fieldList{value} ''');' ]);
+    %plot data
+    if strcmp(handles.TSlist{get(dataType,'Value')},'adaptParams')
+        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
+    else
+        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b');
+    end
+    set(axesHandle,'nextplot','add')
+    legendEntries = {'data'};
+end
+
+h_legend = legend(axesHandle,legendEntries);
+set(h_legend,'FontSize',6)
+
+title(axesHandle,[label,' Trial ',num2str(handles.Trial)])
+
+%Clear vars:
+clear RHS* LHS* LTO* RTO* events time
+end
 
 % --- Executes on button press in delete_button.
 function delete_button_Callback(hObject, eventdata, handles)
@@ -478,18 +551,25 @@ function delete_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+global expData
+
 %Select event
 axes(handles.axes1)
-[x,~]=ginput(1);
+[x,~]=ginput;
 
-%Find closest event
+%Find closest event(s)
 allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
-deltaT=handles.trialEvents.Time(allEventsIndexes)-x;
-[~,selectedEventTimeIndex]=min(deltaT.^2);
-selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
+for i=1:length(x);
+    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(i);
+    [~,selectedEventTimeIndex]=min(deltaT.^2);
+    selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
+    
+    %Eliminate it from handles.trialEvents
+    handles.trialEvents.Data(selectedEventIndex,:)=false;
+end
 
-%Eliminate it from handles.trialEvents
-handles.trialEvents.Data(selectedEventIndex,:)=false;
+expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 
 %Re-plot
 guidata(hObject, handles)
@@ -503,8 +583,11 @@ function add_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-%Ask subject to select event type: RHS, LHS, LTO, RTO
-set(handles.eventType,'String',handles.trialEvents.getLabels)
+%Ask subject to select event type: SHS, FHS, STO, FTO
+events=handles.trialEvents.getLabels;
+events=strrep(events,handles.fast,'F');
+events=strrep(events,handles.slow,'S');
+set(handles.eventType,'String',events)
 set(handles.eventType,'Enable','on')
 
 %Now the subject should select an event Type, so the function continues on
@@ -521,6 +604,7 @@ function eventType_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns eventType contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from eventType
+global expData
 
 %Select location
 [x,~]=ginput(1);
@@ -529,28 +613,18 @@ function eventType_Callback(hObject, eventdata, handles)
 [~,closestTimeIdx]=min((handles.trialEvents.Time-x).^2);
 handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true;
 
-%Re-plot
-guidata(hObject, handles)
-plot_button_Callback(handles.plot_button, eventdata, handles)
+expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 
 %Disable this
-set(handles.eventType,'Enable','off');
+set(hObject,'Enable','off');
 guidata(hObject, handles)
+
+%Re-plot
+plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
 
-% --- Executes during object creation, after setting all properties.
-function eventType_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to eventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-end
 
 % --- Executes on button press in save_button.
 function save_button_Callback(hObject, eventdata, handles)
@@ -558,7 +632,8 @@ function save_button_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global expData
-expData.data{handles.Trial}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 handles.changed=true;
 set(handles.write,'Enable','on');
 guidata(hObject, handles)
@@ -571,16 +646,25 @@ function next_button_Callback(hObject, eventdata, handles)
 % hObject    handle to next_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
-    set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
-    guidata(hObject, handles)
-    trialMenu_Callback(handles.trialMenu, eventdata, handles)
-elseif get(handles.condMenu,'Value')<length(get(handles.condMenu,'String'))
-    set(handles.condMenu,'Value',get(handles.condMenu,'Value')+1);
-    set(handles.trialMenu,'Value',1);
-    guidata(hObject, handles)
-    condMenu_Callback(handles.condMenu, eventdata, handles)
+set(handles.back_button,'Enable','on')
+if handles.last
+    if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
+        set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
+        trialMenu_Callback(handles.trialMenu, eventdata, handles)
+    elseif get(handles.condMenu,'Value')<length(get(handles.condMenu,'String'))
+        set(handles.condMenu,'Value',get(handles.condMenu,'Value')+1);
+        set(handles.trialMenu,'Value',1);
+        condMenu_Callback(handles.condMenu, eventdata, handles)
+    else
+        set(hObject,'Enable','off')
+        guidata(hObject, handles)
+    end
+else
+    handles.tstart=handles.tstart+handles.timeWindow;
+    handles.tstop=handles.tstop+handles.timeWindow;
+    plot_button_Callback(handles.plot_button, eventdata, handles)
 end
+
 end
 
 
@@ -589,16 +673,23 @@ function back_button_Callback(hObject, eventdata, handles)
 % hObject    handle to back_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if get(handles.trialMenu,'Value')>1
+set(handles.next_button,'Enable','on')
+if handles.tstart>0
+    handles.tstart=handles.tstart-handles.timeWindow;
+    handles.tstop=handles.tstop-handles.timeWindow;
+    plot_button_Callback(handles.plot_button, eventdata, handles)
+elseif get(handles.trialMenu,'Value')>1
     set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')-1); %Add one to current trial, does this update what the GUI shows?
-    guidata(hObject, handles)
     trialMenu_Callback(handles.trialMenu, eventdata, handles)
 elseif get(handles.condMenu,'Value')>1
     set(handles.condMenu,'Value',get(handles.condMenu,'Value')-1);
     set(handles.trialMenu,'Value',length(get(handles.trialMenu,'String')));
-    guidata(hObject, handles)
     condMenu_Callback(handles.condMenu, eventdata, handles)
+else
+    set(hObject,'Enable','off')
+    guidata(hObject, handles)
 end
+
 end
 
 
@@ -628,7 +719,7 @@ set(handles.write,'String', 'Writing...');
 drawnow
 if handles.changed
     eval([handles.varName '=expData;']); %Assigning same var name
-    eval(['save ' handles.Dir handles.filename ' ' handles.varName]); %Saving with same var name
+    eval(['save([handles.Dir handles.filename],handles.varName);']); %Saving with same var name
     handles.changed=false;
 end
 guidata(hObject, handles);
@@ -665,9 +756,9 @@ set(handles.write,'Enable','off');
 set(handles.write,'String', 'Writing...');
 set(handles.trialMenu,'Enable','off');
 drawnow
-        
 
-        
+
+
 %Write to disk
 eval([handles.varName '=expData;']); %Assigning same var name
 eval(['save ' handles.Dir handles.filename ' ' handles.varName]); %Saving with same var name
@@ -691,4 +782,76 @@ set(handles.write,'String', 'Write to disk');
 set(handles.trialMenu,'Enable','on');
 guidata(hObject, handles);
 
+end
+
+%------------------------ Create Functions -----------------------------%
+% --- Executes during object creation, after setting all properties. ---%
+
+% hObject    handle to eventType (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+
+function directory_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+    set(hObject,'String','./');
+end
+end
+
+function subject_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function condMenu_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function trialMenu_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function TPfield_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function TPdataType_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function BPdataType_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function BPfield_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function eventType_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+function timeSlider_CreateFcn(hObject, eventdata, handles)
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
+end
 end
