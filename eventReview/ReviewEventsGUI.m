@@ -188,11 +188,12 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     
     %Enable and initialize condition menu:
     set(handles.condMenu, 'Enable','on');
-    set(handles.condMenu, 'String',expData.metaData.conditionDescription);
+    condDes = expData.metaData.conditionDescription;
+    set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes)));
     set(handles.condMenu, 'Value',1);
     set(handles.trialMenu,'Value',1);
     guidata(hObject, handles);
-    condMenu_Callback(hObject, [], handles);
+    condMenu_Callback(handles.condMenu, [], handles);
 else
     h_error=errordlg('Subject file must be of the class ''processedTrialData''','Subject Error');
     set(h_error,'color',[0.8 0.8 0.8])
@@ -213,7 +214,10 @@ function condMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global expData
-handles.Condition = get(handles.condMenu,'Value');
+condOptions=get(hObject,'string');
+condStr=condOptions(get(hObject,'Value'));
+handles.Condition=find(strcmp(expData.metaData.conditionDescription,condStr));
+
 set(handles.trialMenu, 'Enable','on');
 s={};
 for i=1:length(expData.metaData.trialsInCondition{handles.Condition})

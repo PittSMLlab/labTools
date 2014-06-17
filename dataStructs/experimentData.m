@@ -103,15 +103,14 @@ classdef experimentData
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        indsInTrial{i}= startind:size(DATA,2);
-                        startind=size(DATA,2)+1;
+                        indsInTrial{i}= startind:size(DATA,1);
+                        startind=size(DATA,1)+1;
                     end
                 end
-            end
-            conditionDescriptions=this.metaData.conditionDescription;
-            trialsInCondition=this.metaData.conditionDescription;
+            end            
             %labels should be the same for all trials with adaptParams
-            adaptData=adaptationData(DATA,labels);
+            parameterData=paramData(DATA,labels,indsInTrial);
+            adaptData=adaptationData(this.metaData,this.subData,parameterData);            
         end
         
         function stridedExp=splitIntoStrides(this)

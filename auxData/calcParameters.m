@@ -29,7 +29,7 @@ paramlabels = {'good',...
     'stanceTimeDiff',...
     'swingTimeDiff',...
     'doubleSupportAsym',...
-    'tDiff',...
+    'Tout',...
     'Tgoal',...
     'TgoalSW',...
     'stepLengthSlow',...
@@ -201,8 +201,8 @@ for step=1:Nstrides
         doubleSupportSlow(t)=timeSTO-timeFHS;
         doubleSupportFast(t)=timeFTO-timeSHS;
         %step times (time between heel strikes)
-        stepTimeSlow(t)=timeFHS-timeSHS;
-        stepTimeFast(t)=timeSHS2-timeFHS;
+        stepTimeSlow(t)=timeSHS2-timeFHS;
+        stepTimeFast(t)=timeFHS-timeSHS;
         %time betwenn toe offs
         toeOffSlow(t)=timeFTO2-timeSTO;
         toeOffFast(t)=timeSTO-timeFTO;
@@ -222,11 +222,11 @@ for step=1:Nstrides
         %%% interlimb
         
         doubleSupportDiff(t)=doubleSupportSlow(t)-doubleSupportFast(t);
-        stepTimeDiff(t)=stepTimeSlow(t)-stepTimeFast(t);
+        stepTimeDiff(t)=stepTimeFast(t)-stepTimeSlow(t);
         stanceTimeDiff(t)=stanceTimeSlow(t)-stanceTimeFast(t);
         swingTimeDiff(t)=swingTimeFast(t)-swingTimeSlow(t); %why is this fast-slow when the rest are slow-fast?
         doubleSupportAsym(t)=(doubleSupportPctFast(t)-doubleSupportPctSlow(t))./(doubleSupportPctFast(t)+doubleSupportPctSlow(t));
-        tDiff(t)=(stepTimeDiff(t))/strideTimeSlow(t);
+        Tout(t)=(stepTimeDiff(t))/strideTimeSlow(t);
         Tgoal(t)=(stanceTimeDiff(t))/strideTimeSlow(t);
         TgoalSW(t)=(swingTimeDiff(t))/strideTimeSlow(t);
         
@@ -260,13 +260,14 @@ for step=1:Nstrides
         %step length 2D? Express w.r.t the hip?
         
         %alpha (positive portion of interlimb angle at HS)
-        alphaSlow(t)=sAngle(indSHS);
+        alphaSlow(t)=sAngle(indSHS2);
+        alphaTemp=sAngle(indSHS);
         alphaFast(t)=fAngle(indFHS);
         %beta (negative portion of interlimb angle at TO)
         betaSlow(t)=sAngle(indSTO);
         betaFast(t)=fAngle(indFTO2);
         %range (alpha+beta)
-        rangeSlow(t)=alphaSlow(t)-betaSlow(t);
+        rangeSlow(t)=alphaTemp-betaSlow(t);
         rangeFast(t)=alphaFast(t)-betaFast(t);
         %interlimb spread at HS
         omegaSlow(t)=abs(sAngle(indSHS2)-fAngle(indSHS2));

@@ -14,124 +14,71 @@ classdef adaptationData
     
     methods
         %Constructor
-        function this=experimentData(meta,sub,data)
+        function this=adaptationData(meta,sub,data)
 
            if nargin>0 && isa(meta,'experimentMetaData')
                this.metaData=meta;
            else
-               ME=MException('experimentData:Constructor','Experiment metaData is not an experimentMetaData type object.');
+               ME=MException('adaptationData:Constructor','metaData is not an experimentMetaData type object.');
                throw(ME);
            end
            
            if nargin>1 && isa(sub,'subjectData')
                this.subData=sub;
            else
-               ME=MException('experimentData:Constructor','Subject data is not a subjectData type object.');
+               ME=MException('adaptationData:Constructor','Subject data is not a subjectData type object.');
                throw(ME);
            end
            
-           if nargin>2 && isa(data,'cell')  % Has to be array of labData type cells. 
-               aux=cellfun('isempty',data);
-               aux2=find(~aux,1);
-               if ~isempty(aux2) && isa(data{aux2},'labData') %This should be changed to test that ALL cells contain labData objects, instead of just the first non-empty one.
-                    this.data=data;
-               else
-                   ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
-                   throw(ME);
-               end
+           if nargin>2 && isa(data,'paramData')                
+                this.data=data;              
            else
-               ME=MException('experimentData:Constructor','Data is not a cell array.');
+               ME=MException('adaptationData:Constructor','Data is not a paramData type object.');
                throw(ME);
            end
-        end
+        end 
         
-        %Getters for Dependent properties
-        function a=get.isProcessed(this)
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1,1); %Not empty
-            a=isa(this.data{idx},'processedLabData');
-        end
-        
-        function a=get.isStepped(this)
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1,1);
-            a=isa(this.data{idx},'strideData');
-        end
-        
-        function a=get.isRaw(this)
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1,1);
-            a=isa(this.data{idx},'rawLabData');
-        end
-        
-        function a=get.fastLeg(this)
-            vR=[];
-            vL=[];
-            for trial=1:length(this.data)
-                if ~this.isStepped
-                    if ~isempty(this.data{trial}.beltSpeedReadData)
-                        vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
-                        vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
-                    end
-                else %Stepped trial
-                    for step=1:length(this.data{trial})
-                        if ~isempty(this.data{trial}{step}.beltSpeedReadData)
-                            vR(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
-                            vL(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
-                        end
-                    end
-                end
-            end
-            if mean(vR)<mean(vL)
-                fastLeg='L';
+        %Other I/O functions:
+        function [data,auxLabel]=getParameterInTrial(this,label,trial)
+            if isa(label,'char')
+                auxLabel={label};
             else
-                fastLeg='R'; %Defaults to this, even if there is no beltSpeedData
-            end
-        end
-        
-        %function to make adaptationData object
-        function adaptData=makeDataObj(this)
-            DATA=[];
-            startind=1;
-            if ~isempty(this.data)
-                for i=1:length(this.data)
-                    if ~isempty(this.data{i}.adaptParams)
-                        labels=this.data{i}.adaptParams.getLabels;
-                        dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
-                        DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        indsInTrial{i}= startind:size(DATA,2);
-                        startind=size(DATA,2)+1;
-                    end
+                auxLabel=label;
+            end            
+            [boolFlag,labelIdx]=this.isaLabel(auxLabel);
+            for i=1:length(boolFlag)
+                if boolFlag(i)==0
+                    warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
                 end
             end
-            conditionDescriptions=this.metaData.conditionDescription;
-            trialsInCondition=this.metaData.conditionDescription;
-            %labels should be the same for all trials with adaptParams
-            adaptData=adaptationData(DATA,labels);
+            inds=
+            data=this.Data(:,labelIdx(boolFlag==1));
+            auxLabel=this.labels(labelIdx(boolFlag==1));
         end
         
-        function stridedExp=splitIntoStrides(this)
-            if ~this.isStepped && this.isProcessed
-                refLeg = this.metaData.refLeg;
-                for trial=1:length(this.data)
-                    trialData=this.data{trial};
-                    if ~isempty(trialData)
-                        %Assuming that the first event of each stride is
-                        %the heel strike of the refLeg! (check c3d2mat -
-                        %refleg should be opposite the dominant/fast leg)
-                        aux=trialData.separateIntoStrides([refLeg,'HS']);
-                        strides{trial}=aux;                        
-                    else
-                        strides{trial}=[];                        
-                    end
+        function labelList=getParameters(this)
+           labelList=this.data.labels; 
+        end
+        
+        function [boolFlag,labelIdx]=isaLabel(this,label)
+            if isa(label,'char')
+                auxLabel{1}=label;
+            elseif isa(label,'cell')
+                auxLabel=label;
+            end            
+            N=length(auxLabel);
+            boolFlag=zeros(N,1);
+            labelIdx=zeros(N,1);
+            for j=1:N
+                for i=1:length(this.data.labels)
+                     if strcmp(auxLabel{j},this.data.labels{i})
+                       boolFlag(j)=true;
+                       labelIdx(j)=i;
+                       break;
+                     end
                 end
-                stridedExp=stridedExperimentData(this.metaData,this.subData,strides); 
-            else
-                disp('Cannot stride experiment because it is raw or already strided.');
             end
         end
-        
-    end
-    
+    end   
 end
 

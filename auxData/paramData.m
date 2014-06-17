@@ -5,9 +5,7 @@ classdef paramData
     %%
     properties %(SetAccess=private)
         labels={''};
-        Data;
-        conditionDescription={};
-        trialsInCondition={};
+        Data;       
         indsInTrial={};        
     end
     properties(Dependent)
@@ -18,15 +16,20 @@ classdef paramData
     methods
         
         %Constructor:
-        function this=adaptationData(data,labels,inds)
+        function this=paramData(data,labels,inds)
             if (length(labels)==size(data,2)) && isa(labels,'cell')
                 this.labels=labels;
                 this.Data=data;
             else
-                ME=MException('adaptationData:ConstructorInconsistentArguments','The size of the labels array is inconsistent with the data being provided.');
+                ME=MException('paramData:ConstructorInconsistentArguments','The size of the labels array is inconsistent with the data being provided.');
                 throw(ME)
             end
-            this.conditionDescri
+            if nargin>2 && isa(inds,'cell')
+                this.indsInTrial=inds;
+            else
+                ME=MException('paramData:Constructor','Check that trial indices are entered correctly.');
+                throw(ME)
+            end
         end
         
         %-------------------
