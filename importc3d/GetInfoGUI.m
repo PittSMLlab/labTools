@@ -22,7 +22,7 @@ function varargout = GetInfoGUI(varargin)
 
 % Edit the above text to modify the response to help GetInfoGUI
 
-% Last Modified by GUIDE v2.5 22-May-2014 15:02:18
+% Last Modified by GUIDE v2.5 17-Jun-2014 14:27:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -79,7 +79,7 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-varargout{1}=handles.out;
+varargout{1}=handles;
 
 delete(handles.figure1)
 
@@ -469,15 +469,29 @@ guidata(hObject,handles)
 
 % --- Executes on button press in ok_button.
 function ok_button_Callback(hObject, eventdata, handles)
-% hObject    handle to ok_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-handles.out=errorProofInfo(handles);
-if handles.out.bad
+
+handles.info=errorProofInfo(handles);
+if handles.info.bad
     return
 else
     guidata(hObject,handles)
     uiresume(handles.figure1);
+end
+
+% --- Executes on button press in loadButton.
+function loadButton_Callback(hObject, eventdata, handles)
+    
+[file,path]=uigetfile('*.mat','Choose subject handles file');
+
+if file==0
+    %do nothing
+else
+    eval(['aux=load('''  path file ''');'])
+    fieldNames=fields(aux);
+    eval(['subHandles=aux.' fieldNames{1} ';']);
+    %TO DO: check that file is correct
+    handles=subHandles;
+    guidata(hObject,handles)
 end
 
 
@@ -873,7 +887,6 @@ set(hObject, 'Enable', 'On');
 set(hObject,'String',[])
 % Create UI control
 uicontrol(handles.DOBday_edit);
-
 
 function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggel the "Enable" state to ON and clear letters
