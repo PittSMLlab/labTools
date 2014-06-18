@@ -79,7 +79,8 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-varargout{1}=handles;
+varargout{1}=handles.info;
+hgsave('Test')
 
 delete(handles.figure1)
 
@@ -239,7 +240,9 @@ guidata(hObject,handles)
 % --- Executes on button press in browse.
 function browse_Callback(hObject, eventdata, handles)
 handles.folder_location = uigetdir; %this is how the output_fcn knows where the folder is
-set(handles.c3dlocation,'string',handles.folder_location)
+if ~handles.folder_location==0
+    set(handles.c3dlocation,'string',handles.folder_location)
+end
 guidata(hObject,handles);
 
 function c3dlocation_Callback(hObject, eventdata, handles)
@@ -305,7 +308,9 @@ end
 % --- Executes on button press in secfile_browse.
 function secfile_browse_Callback(hObject, eventdata, handles)
 handles.secfolder_location = uigetdir; %this is how the output_fcn knows where the folder is
-set(handles.secfileloc,'string',handles.secfolder_location)
+if ~handles.secfolder_location==0
+    set(handles.secfileloc,'string',handles.secfolder_location)
+end
 guidata(hObject,handles);
 
 function secfileloc_Callback(hObject, eventdata, handles) %runs if folder is input manually by subject
@@ -464,7 +469,9 @@ guidata(hObject,handles)
 % --- Executes on button press in save_browse.
 function save_browse_Callback(hObject, eventdata, handles)
 handles.save_folder = uigetdir;
-set(handles.saveloc_edit,'string',handles.save_folder);
+if ~handles.save_folder==0
+    set(handles.saveloc_edit,'string',handles.save_folder);
+end
 guidata(hObject,handles)
 
 % --- Executes on button press in ok_button.
@@ -486,12 +493,13 @@ function loadButton_Callback(hObject, eventdata, handles)
 if file==0
     %do nothing
 else
-    eval(['aux=load('''  path file ''');'])
-    fieldNames=fields(aux);
-    eval(['subHandles=aux.' fieldNames{1} ';']);
-    %TO DO: check that file is correct
-    handles=subHandles;
-    guidata(hObject,handles)
+    eval(['hgload(''',path,file,''')'])
+%     eval(['aux=load('''  path file ''');'])
+%     fieldNames=fields(aux);
+%     eval(['subHandles=aux.' fieldNames{1} ';']);
+%     %TO DO: check that file is correct
+%     handles=subHandles;
+%     guidata(hObject,handles)
 end
 
 
