@@ -173,16 +173,30 @@ classdef labTimeSeries  < timeseries
         end
         
         %Display
-        function h=plot(this,h)
-            if nargin>2
-                figure(h)
-            else
+        function h=plot(this,h,labels) %Alternative plot: all the traces go in different axes
+            if nargin<2 || isempty(h)
                 h=figure;
+            else
+                figure(h)
             end
-            hold on
-            this.plot@timeseries
-            legend(this.labels)
-            hold off
+            N=length(this.labels);
+            if nargin<3 || isempty(labels)
+                relData=this.Data;
+                relLabels=this.labels;
+            else
+               [relData,~,relLabels]=this.getDataAsVector(labels); 
+               N=size(relData,2);
+            end
+            
+            for i=1:N
+                h1(i)=subplot(ceil(N/2),2,i);
+                hold on
+                plot(this.Time,relData(:,i))
+                ylabel(relLabels{i})
+                hold off
+            end
+            linkaxes(h1,'x')
+                
         end
         
         %Other
