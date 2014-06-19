@@ -42,24 +42,31 @@ end
 % End initialization code - DO NOT EDIT
 end
 
-% --- Executes just before ReviewEventsGUI is made visible.
-function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+% --- Executes just before ReviewEventsGUI is made visible.
+function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
+% This function has no output args, see OutputFcn.
 % varargin   command line arguments to ReviewEventsGUI (see VARARGIN)
 
-% Choose default command line output for ReviewEventsGUI
 handles.output=hObject;
 handles.changed=false;
 
+%Initialize with subject options if there are .mat files in current
+%directory
 files=what;
 subFileList={};
-for i=1:length(files.mat)
-    subFileList{end+1}=files.mat{i}(1:end-4);
+if isempty(files.mat)
+    %do nothing
+else
+    for i=1:length(files.mat)
+        subFileList{end+1}=files.mat{i}(1:end-4);
+    end
+    set(handles.subject,'enable','on')
+    set(handles.subject,'string',subFileList)
 end
-set(handles.subject,'string',subFileList)
 
 % Update handles structure
 guidata(hObject, handles);
@@ -70,12 +77,10 @@ end
 
 % --- Outputs from this function are returned to the command line.
 function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-%Set GUI position to middle of screen
+%Set GUI position to middle of screen (not sure what happens if screen is
+%smaller than GUI, also not sure why this code only works within this
+%function...)
 % left, bottom, width, height
 scrsz = get(0,'ScreenSize'); 
 set(gcf,'Units','pixels');
@@ -109,11 +114,10 @@ function directory_Callback(hObject, eventdata, handles)
 direct = get(hObject, 'String');
 
 %checks if Sub is a file
-if exist(direct,'dir')
-    set(handles.subject,'Enable','on');
+if exist(direct,'dir')    
     files=what(direct);
     subFileList={};
-    if length(files.mat)==0
+    if isempty(files.mat)
         h_error=errordlg('Directory entered does not contain any .mat files','Directory Error');
         set(h_error,'color',[0.8 0.8 0.8])
         waitfor(h_error)
@@ -121,6 +125,7 @@ if exist(direct,'dir')
         % Give the edit text box focus so user can correct the error
         uicontrol(hObject)
     else
+        set(handles.subject,'Enable','on');
         for i=1:length(files.mat)
             subFileList{end+1}=files.mat{i}(1:end-4);
         end
