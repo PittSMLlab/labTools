@@ -80,6 +80,8 @@ end
 % Load trials
 rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
 
+rawExpData=experimentData(expMD,subData,rawTrialData);
+
 %% Process data
 
 for trial=1:length(rawTrialData)
@@ -89,5 +91,6 @@ end
 %% Save data
 expData=experimentData(expMD,subData,data);
 
+save([info.save_folder '/' info.ID 'RAW.mat'],'rawExpData')
 save([info.save_folder '/' info.ID '.mat'],'expData')
 clearvars -except metaData subData data

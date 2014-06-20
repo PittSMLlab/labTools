@@ -78,9 +78,9 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-varargout{1}=handles.info;
-hgsave('Test')
+info=handles.info;
+varargout{1}=info;
+save([handles.info.save_folder '\' handles.info.ID 'info'],'info')
 
 delete(handles.figure1)
 
@@ -492,14 +492,64 @@ function loadButton_Callback(hObject, eventdata, handles)
 
 if file==0
     %do nothing
-else
-    eval(['hgload(''',path,file,''')'])
-%     eval(['aux=load('''  path file ''');'])
-%     fieldNames=fields(aux);
-%     eval(['subHandles=aux.' fieldNames{1} ';']);
-%     %TO DO: check that file is correct
-%     handles=subHandles;
-%     guidata(hObject,handles)
+else    
+    eval(['aux=load('''  path file ''');'])
+    fieldNames=fields(aux);
+    eval(['subInfo=aux.' fieldNames{1} ';']);
+    %TO DO: check that file is correct
+    
+    out.bad=0;
+
+% -- Experiment Info
+descriptionContents=cellstr(get(handles.description_edit,'string'));
+set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
+set(handles.name_edit,'string',subInfo.experimenter);
+monthContents = cellstr(get(handles.month_list,'String'));
+set(handles.month_list,'Value',find(strcmp(monthContents,subInfo.month)));
+set(handles.day_edit,'string',subInfo.day);
+set(handles.year_edit,'string',subInfo.year);
+set(handles.note_edit,'string',subInfo.exp_obs);
+% -- Subject Info
+set(handles.subID_edit,'string',subInfo.ID);
+DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
+set(handles.DOBmonth_list,'Value',find(strcmp(DOBmonthContents,subInfo.DOBmonth)));
+set(handles.DOBday_edit,'string',subInfo.DOBday);
+set(handles.DOByear_edit,'string',subInfo.DOByear);
+genderContents = cellstr(get(handles.gender_list,'String'));
+set(handles.gender_list,'Value',find(strcmp(genderContents,subInfo.gender)));
+domlegContents = cellstr(get(handles.domleg_list,'String'));
+set(handles.domleg_list,'Value',find(strcmp(domlegContents,subInfo.domleg)));
+domhandContents = cellstr(get(handles.domhand_list,'String'));
+set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
+set(handles.height_edit,'string',subInfo.height);
+set(handles.weight_edit,'string',subInfo.weight);
+% -- Data Info
+handles.folder_location=subInfo.dir_location;
+set(handles.basefile,'string',subInfo.basename);
+set(handles.numofconds,'string',subInfo.numofconds);
+numofconds_Callback(handles.numofconds,eventdata,handles)
+set(handles.kinematic_check,'Value',subInfo.kinematics);
+set(handles.force_check,'Value',subInfo.forces);
+set(handles.emg_check,'Value',subInfo.EMGs);
+handles.secfolder_location=subInfo.secdir_location;
+% -- Trial Info
+for c = 1:subInfo.numofconds
+    condNum=subInfo.cond(c);
+    eval(['set(handles.condition',num2str(c),',''string'',',num2str(condNum),')']);
+    eval(['set(handles.description',num2str(c),',''string'',subInfo.conditionDescriptions{',num2str(condNum),'})']);
+    trialnums=subInfo.trialnums{condNum};
+    if length(trialnums)>2
+        eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums(1)),':',num2str(trialnums(end)),''')']);
+    else
+        eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums),''')']);
+    end    
+    eval(['set(handles.OGcheck',num2str(c),',''Value'',subInfo.isOverGround(',num2str(condNum),'))']);
+end
+% --  save location
+handles.save_folder=subInfo.save_folder;
+
+    
+guidata(hObject,handles)
 end
 
 
