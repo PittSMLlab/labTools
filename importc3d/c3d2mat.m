@@ -93,4 +93,4 @@ expData=experimentData(expMD,subData,data);
 
 save([info.save_folder '/' info.ID 'RAW.mat'],'rawExpData')
 save([info.save_folder '/' info.ID '.mat'],'expData')
-clearvars -except metaData subData data
+clearvars -except expMD subData data

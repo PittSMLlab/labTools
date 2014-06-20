@@ -10,22 +10,17 @@ ldata = angleData.getDataAsVector({'LLimb'});
 rdata(abs(rdata)>45) = 0;
 ldata(abs(ldata)>45) = 0;
 
-%Get fore-aft ankle and hip positions?
-rankle = trialData.getMarkerData({['RANK' orientation.foreaftAxis]});
-lankle = trialData.getMarkerData({['LANK' orientation.foreaftAxis]});
+% %Get fore-aft ankle positions
+% rankle = trialData.getMarkerData({['RANK' orientation.foreaftAxis]});
+% lankle = trialData.getMarkerData({['LANK' orientation.foreaftAxis]});
 
 %Get fore-aft hip positions
-if trialData.markerData.isaLabel('LGTx') %checks if hip was labeled 'GT'
-    rhip = trialData.getMarkerData({['RGT' orientation.foreaftAxis]});
-    lhip = trialData.getMarkerData({['LGT' orientation.foreaftAxis]});
-elseif trialData.markerData.isaLabel('LHIPx') %checks if hip was labeled 'HIP'
-    rhip = trialData.getMarkerData({['RHIP' orientation.foreaftAxis]});
-    lhip = trialData.getMarkerData({['LHIP' orientation.foreaftAxis]});
-end
+rhip = trialData.getMarkerData({['RHIP' orientation.foreaftAxis]});
+lhip = trialData.getMarkerData({['LHIP' orientation.foreaftAxis]});
 
 avghip = (rhip+lhip)./2;
 
-%Get ankle and average hip velocities
+%Get hip velocity
 HipVel = diff(avghip);
 
 %Clean up velocities to remove artifacts of marker drop-outs
@@ -118,6 +113,12 @@ RightTO(rdata(RightTO)==0)=[];
 RightHS(rdata(RightHS)==0)=[];
 LeftTO(rdata(LeftTO)==0)=[];
 LeftHS(rdata(LeftHS)==0)=[];
+
+% Remove any events that don't make sense
+RightTO(rdata(RightTO)>5 | abs(rdata(RightTO))>40)=[];
+RightHS(rdata(RightHS)<5 | abs(rdata(RightHS))>40)=[];
+LeftTO(ldata(LeftTO)>5 | abs(ldata(LeftTO))>40)=[];
+LeftHS(ldata(LeftHS)<5 | abs(ldata(LeftHS))>40)=[];
 
 nsamples = trialData.markerData.Length;
 

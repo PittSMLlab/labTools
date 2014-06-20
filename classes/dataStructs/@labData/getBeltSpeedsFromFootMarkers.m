@@ -8,13 +8,10 @@ RTO=events.getDataAsVector('RTO');
 if trialData.markerData.isaLabel('LHEEx') && trialData.markerData.isaLabel('RHEEx')
     LHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector(['LHEE' trialData.markerData.orientation.foreaftAxis]))];
     RHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector(['RHEE' trialData.markerData.orientation.foreaftAxis]))];
-elseif trialData.markerData.isaLabel('LHEELx') && trialData.markerData.isaLabel('RHEELx')
-    LHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector(['LHEEL' trialData.markerData.orientation.foreaftAxis]))];
-    RHEEspeed=[0;trialData.markerData.sampFreq * diff(trialData.markerData.getDataAsVector(['RHEEL' trialData.markerData.orientation.foreaftAxis]))];
 else
     slashes=find(trialData.metaData.rawDataFilename=='\' | trialData.metaData.rawDataFilename=='/');
     file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
-    warning(['There is no marker labeled ''LHEEL'' or ''LHEE'', belt speed read Data not calculated for ',file]);
+    warning(['There are missing heel markers. Belt speed read Data not calculated for ',file]);
     beltSpeedReadData=[];
     return
 end

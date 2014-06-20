@@ -1,5 +1,6 @@
 function trials=loadTrials(trialMD,fileList,secFileList,info)
 
+%orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
 orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs!
 
 for i=1:length(fileList)
@@ -189,9 +190,10 @@ for i=1:length(fileList)
         for j=1:length(fieldList);
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
                 eval(['relData=[relData,markers.' fieldList{j} '];']);
-                markerList{end+1}=[fieldList{j} 'x'];
-                markerList{end+1}=[fieldList{j} 'y'];
-                markerList{end+1}=[fieldList{j} 'z'];
+                markerLabel=findLabel(fieldList{j});
+                markerList{end+1}=[markerLabel 'x'];
+                markerList{end+1}=[markerLabel 'y'];
+                markerList{end+1}=[markerLabel 'z'];
             end
         end         
         markerData=orientedLabTimeSeries(relData,0,1/markerInfo.frequency,markerList,orientation);

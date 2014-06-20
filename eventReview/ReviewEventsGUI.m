@@ -91,7 +91,7 @@ set(gcf, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) gu
 varargout{1} = handles.output;
 end
 
-%----------------------------------------------------------------
+%% ----------------------------------------------------------------
 %First step: set directory name to load files from. By default it is the
 %current dir: './'
 
@@ -142,7 +142,7 @@ end
 guidata(hObject, handles);
 end
 
-%-------------------------------------------------------------------
+%% -------------------------------------------------------------------
 %Second, the subject filename needs to be entered.
 
 function subject_Callback(hObject, eventdata, handles)
@@ -210,7 +210,7 @@ end
 
 
 end
-%---------------------------------------------------------------------
+%% ---------------------------------------------------------------------
 %Then: select condition:
 
 % --- Executes on selection change in condMenu.
@@ -240,7 +240,7 @@ end
 %        contents{get(hObject,'Value')} returns selected item from condMenu
 
 
-%---------------------------------------------------------------------
+%% ---------------------------------------------------------------------
 %Then: select specific trial:
 % --- Executes on selection change in trialMenu.
 function trialMenu_Callback(hObject, eventdata, handles)
@@ -301,18 +301,7 @@ set(handles.timeWindowText,'String',handles.timeWindow);
 TPdataType_Callback(handles.TPdataType,eventdata,handles);
 end
 
-%--------------------------------------------------------------------
-
-% --- Executes on selection change in TPfield.
-function TPfield_Callback(hObject, eventdata, handles)
-% hObject    handle to TPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
-BPdataType_Callback(handles.BPdataType,eventdata,handles);
-end
-
+%% -------------------------Data Selection -------------------------------
 
 % --- Executes on selection change in TPdataType.
 function TPdataType_Callback(hObject, eventdata, handles)
@@ -324,6 +313,33 @@ handles.test=1;
 TPfield_Callback(handles.TPfield, eventdata, handles)
 end
 
+% --- Executes on selection change in TPfield.
+function TPfield_Callback(hObject, eventdata, handles)
+% hObject    handle to TPfield (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
+BPdataType_Callback(handles.BPdataType,eventdata,handles);
+end
+
+% --- Executes on selection change in BPdataType.
+function BPdataType_Callback(hObject, eventdata, handles)
+
+handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
+
+BPfield_Callback(handles.BPfield, eventdata, handles)
+end
+
+% --- Executes on selection change in BPfield.
+function BPfield_Callback(hObject, eventdata, handles)
+% hObject    handle to BPfield (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
+guidata(hObject, handles)
+end
 
 function [plotFields] = makeFieldList(hObject,handles,fieldListHandle)
 
@@ -367,7 +383,7 @@ for i=1:length(curTS.labels)
             fields{end+1}=strrep(curTS.labels{i},handles.slow,'S');
             plotFields{end+1}=curTS.labels{i};
         else
-            %% already have a slow label so do nothing
+            % already have a slow label so do nothing
         end            
     elseif strcmpi(curTS.labels{i}(max([end-3 1]):end),'Fast')
         fields{end+1}=curTS.labels{i}(1:end-4);
@@ -389,37 +405,16 @@ guidata(hObject, handles)
 end
 
 
-% --- Executes on selection change in BPdataType.
-function BPdataType_Callback(hObject, eventdata, handles)
 
-handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
-
-BPfield_Callback(handles.BPfield, eventdata, handles)
-end
-
-% --- Executes on selection change in BPfield.
-function BPfield_Callback(hObject, eventdata, handles)
-% hObject    handle to BPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
-guidata(hObject, handles)
-end
-
-
-%BUTTONS:-----------------------------------------------------------
+%% -----------------------------BUTTONS:----------------------------------
 
 % --- Executes on slider movement.
 function timeSlider_Callback(hObject, eventdata, handles)
-% hObject    handle to timeSlider (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 handles.timeWindow=round(get(hObject,'Value'));
-% % to make zooming in start in middle of previous time window:
+
+% % % %to make zooming in start in middle of previous time window: % % % %
 % timeToAdd=handles.timeWindow-(handles.tstop-handles.tstart);
 % time1=max([handles.tstart-floor(timeToAdd/2) 0]);
 % handles.tstop=handles.tstop+ceil(timeToAdd-(handles.tstart-time1));
@@ -449,9 +444,6 @@ end
 
 % --- Executes on button press in plot_button.
 function plot_button_Callback(hObject, eventdata, handles)
-% hObject    handle to plot_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 %Top plot:
 handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
@@ -554,6 +546,57 @@ title(axesHandle,[label,' Trial ',num2str(handles.Trial)])
 clear RHS* LHS* LTO* RTO* events time
 end
 
+% --- Executes on button press in next_button.
+function next_button_Callback(hObject, eventdata, handles)
+% hObject    handle to next_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.back_button,'Enable','on')
+if handles.last
+    if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
+        set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
+        trialMenu_Callback(handles.trialMenu, eventdata, handles)
+    elseif get(handles.condMenu,'Value')<length(get(handles.condMenu,'String'))
+        set(handles.condMenu,'Value',get(handles.condMenu,'Value')+1);
+        set(handles.trialMenu,'Value',1);
+        condMenu_Callback(handles.condMenu, eventdata, handles)
+    else
+        set(hObject,'Enable','off')
+        guidata(hObject, handles)
+    end
+else
+    handles.tstart=handles.tstart+handles.timeWindow;
+    handles.tstop=handles.tstop+handles.timeWindow;
+    plot_button_Callback(handles.plot_button, eventdata, handles)
+end
+
+end
+
+
+% --- Executes on button press in back_button.
+function back_button_Callback(hObject, eventdata, handles)
+% hObject    handle to back_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+set(handles.next_button,'Enable','on')
+if handles.tstart>0
+    handles.tstart=handles.tstart-handles.timeWindow;
+    handles.tstop=handles.tstop-handles.timeWindow;
+    plot_button_Callback(handles.plot_button, eventdata, handles)
+elseif get(handles.trialMenu,'Value')>1
+    set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')-1); %Add one to current trial, does this update what the GUI shows?
+    trialMenu_Callback(handles.trialMenu, eventdata, handles)
+elseif get(handles.condMenu,'Value')>1
+    set(handles.condMenu,'Value',get(handles.condMenu,'Value')-1);
+    set(handles.trialMenu,'Value',length(get(handles.trialMenu,'String')));
+    condMenu_Callback(handles.condMenu, eventdata, handles)
+else
+    set(hObject,'Enable','off')
+    guidata(hObject, handles)
+end
+
+end
+
 % --- Executes on button press in delete_button.
 function delete_button_Callback(hObject, eventdata, handles)
 % hObject    handle to delete_button (see GCBO)
@@ -648,98 +691,6 @@ set(handles.write,'Enable','on');
 guidata(hObject, handles)
 end
 
-
-
-% --- Executes on button press in next_button.
-function next_button_Callback(hObject, eventdata, handles)
-% hObject    handle to next_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.back_button,'Enable','on')
-if handles.last
-    if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
-        set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
-        trialMenu_Callback(handles.trialMenu, eventdata, handles)
-    elseif get(handles.condMenu,'Value')<length(get(handles.condMenu,'String'))
-        set(handles.condMenu,'Value',get(handles.condMenu,'Value')+1);
-        set(handles.trialMenu,'Value',1);
-        condMenu_Callback(handles.condMenu, eventdata, handles)
-    else
-        set(hObject,'Enable','off')
-        guidata(hObject, handles)
-    end
-else
-    handles.tstart=handles.tstart+handles.timeWindow;
-    handles.tstop=handles.tstop+handles.timeWindow;
-    plot_button_Callback(handles.plot_button, eventdata, handles)
-end
-
-end
-
-
-% --- Executes on button press in back_button.
-function back_button_Callback(hObject, eventdata, handles)
-% hObject    handle to back_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-set(handles.next_button,'Enable','on')
-if handles.tstart>0
-    handles.tstart=handles.tstart-handles.timeWindow;
-    handles.tstop=handles.tstop-handles.timeWindow;
-    plot_button_Callback(handles.plot_button, eventdata, handles)
-elseif get(handles.trialMenu,'Value')>1
-    set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')-1); %Add one to current trial, does this update what the GUI shows?
-    trialMenu_Callback(handles.trialMenu, eventdata, handles)
-elseif get(handles.condMenu,'Value')>1
-    set(handles.condMenu,'Value',get(handles.condMenu,'Value')-1);
-    set(handles.trialMenu,'Value',length(get(handles.trialMenu,'String')));
-    condMenu_Callback(handles.condMenu, eventdata, handles)
-else
-    set(hObject,'Enable','off')
-    guidata(hObject, handles)
-end
-
-end
-
-
-%------------------CLOSING---------------------------------
-% --- Executes when user attempts to close GUI_window.
-function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to GUI_window (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-global expData
-%Disable everything
-set(handles.plot_button,'Enable','off');
-set(handles.next_button,'Enable','off');
-set(handles.back_button,'Enable','off');
-set(handles.delete_button,'Enable','off');
-set(handles.save_button,'Enable','off');
-set(handles.add_button,'Enable','off');
-set(handles.BPdataType,'Enable','off');
-set(handles.BPfield,'Enable','off');
-set(handles.TPdataType,'Enable','off');
-set(handles.TPfield,'Enable','off');
-set(handles.condMenu, 'Enable','off');
-set(handles.directory,'Enable','off');
-set(handles.subject,'Enable','off');
-set(handles.write,'Enable','off');
-set(handles.write,'String', 'Writing...');
-drawnow
-if handles.changed
-    eval([handles.varName '=expData;']); %Assigning same var name
-    eval(['save([handles.Dir handles.filename],handles.varName);']); %Saving with same var name
-    handles.changed=false;
-end
-guidata(hObject, handles);
-% Hint: delete(hObject) closes the figure
-delete(handles.output);
-end
-
-
-
-
-
 % --- Executes on button press in write.
 function write_Callback(hObject, eventdata, handles)
 global expData
@@ -766,12 +717,14 @@ set(handles.write,'String', 'Writing...');
 set(handles.trialMenu,'Enable','off');
 drawnow
 
-
-
 %Write to disk
 eval([handles.varName '=expData;']); %Assigning same var name
-eval(['save ' handles.Dir handles.filename ' ' handles.varName]); %Saving with same var name
+eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %Saving with same var name
+handles.changed=false;
 
+%re-create adaptation parameters object
+adaptData=expData.makeDataObj;
+eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
 
 %Enable everything
 set(handles.plot_button,'Enable','on');
@@ -791,6 +744,46 @@ set(handles.write,'String', 'Write to disk');
 set(handles.trialMenu,'Enable','on');
 guidata(hObject, handles);
 
+end
+
+
+%% ---------------------------CLOSING---------------------------------
+
+% --- Executes when user attempts to close GUI_window.
+function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to GUI_window (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global expData
+%Disable everything
+set(handles.plot_button,'Enable','off');
+set(handles.next_button,'Enable','off');
+set(handles.back_button,'Enable','off');
+set(handles.delete_button,'Enable','off');
+set(handles.save_button,'Enable','off');
+set(handles.add_button,'Enable','off');
+set(handles.BPdataType,'Enable','off');
+set(handles.BPfield,'Enable','off');
+set(handles.TPdataType,'Enable','off');
+set(handles.TPfield,'Enable','off');
+set(handles.condMenu, 'Enable','off');
+set(handles.directory,'Enable','off');
+set(handles.subject,'Enable','off');
+set(handles.write,'Enable','off');
+set(handles.write,'String', 'Writing...');
+drawnow
+if handles.changed
+    %write to disk
+    eval([handles.varName '=expData;']); %Assigning same var name
+    eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %Saving with same var name
+    %re-create adaptation parameters object
+    adaptData=expData.makeDataObj;
+    eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
+    handles.changed=false;
+end
+guidata(hObject, handles);
+% Hint: delete(hObject) closes the figure
+delete(handles.output);
 end
 
 %------------------------ Create Functions -----------------------------%

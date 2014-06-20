@@ -51,7 +51,7 @@ classdef paramData
             auxLabel=this.labels(labelIdx(boolFlag==1));
         end
         
-        function labelList=getLabels(this)
+        function labelList=getParameters(this)
            labelList=this.labels; 
         end
         
@@ -73,12 +73,8 @@ classdef paramData
                      end
                 end
             end
-        end     
-        
-        %Display
-        function h=plot(this,h)
-            %nothing for time being
-        end      
+        end  
+            
         
     end    
         
