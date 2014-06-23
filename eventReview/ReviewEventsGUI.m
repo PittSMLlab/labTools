@@ -193,8 +193,8 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     
     %Enable and initialize condition menu:
     set(handles.condMenu, 'Enable','on');
-    condDes = expData.metaData.conditionDescription;
-    set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes)));
+    condDes = expData.metaData.conditionName;
+    set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes))); %this is for the case when a condition number was skipped
     set(handles.condMenu, 'Value',1);
     set(handles.trialMenu,'Value',1);
     guidata(hObject, handles);
@@ -221,7 +221,7 @@ function condMenu_Callback(hObject, eventdata, handles)
 global expData
 condOptions=get(hObject,'string');
 condStr=condOptions(get(hObject,'Value'));
-handles.Condition=find(strcmp(expData.metaData.conditionDescription,condStr));
+handles.Condition=find(strcmp(expData.metaData.conditionName,condStr));
 
 set(handles.trialMenu, 'Enable','on');
 s={};

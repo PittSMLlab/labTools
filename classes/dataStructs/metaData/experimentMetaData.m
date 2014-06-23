@@ -15,6 +15,7 @@ classdef experimentMetaData
         date=labDate.default; %labDate object
         experimenter='';        
         observations='';
+        conditionName={};
         conditionDescription={};
         trialsInCondition={};
         Ntrials=[];        
@@ -23,7 +24,7 @@ classdef experimentMetaData
     
     methods
         %Constructor
-        function this=experimentMetaData(ID,date,experimenter,obs,conds,trialLst,Ntrials)
+        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
             if isa(ID,'char') %&& nargin>0
                 this.ID=ID; %Mandatory field, needs to be string
             elseif isempty(ID) %|| nargin==0
@@ -43,12 +44,15 @@ classdef experimentMetaData
                 this.observations=obs;
             end      
             if nargin>4 || ~isempty(conds)
-                this.conditionDescription=conds;
+                this.conditionName=conds;
             end
-            if nargin>5 || ~isempty(trialLst)
+            if nargin>5 || ~isempty(desc)
+                this.conditionDescription=desc;
+            end            
+            if nargin>6 || ~isempty(trialLst)
                 this.trialsInCondition=trialLst; %Must be cell of doubles
             end
-            if nargin>6 && isa(Ntrials,'double')
+            if nargin>7 && isa(Ntrials,'double')
                 this.Ntrials=Ntrials; 
             end            
         end

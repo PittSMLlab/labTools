@@ -10,6 +10,7 @@ classdef trialMetaData
     %   type - indicates whether the trial was overground or on the treadmill
     
     properties
+        name='';
         description=''; %describes condition
         observations='';        
         refLeg='';
@@ -21,14 +22,17 @@ classdef trialMetaData
     
     methods
         %Constructor
-        function this=trialMetaData(desc,obs,refLeg,cond,filename,type)                  
-            if isa(desc,'char')
+        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)                  
+            if isa(name,'char')
+                this.name=name;
+            end
+            if nargin>1 && isa(desc,'char')
                 this.description=desc;
             end
-            if nargin>1 && isa(obs,'char')
+            if nargin>2 && isa(obs,'char')
                 this.observations=obs;
             end
-            if nargin>2 && (isa(refLeg,'char')) %Must be either 'L' or 'R'
+            if nargin>3 && (isa(refLeg,'char')) %Must be either 'L' or 'R'
                 if strcmpi(refLeg,'R') || strcmpi(refLeg,'L')
                     this.refLeg=refLeg; 
                 else
@@ -36,13 +40,13 @@ classdef trialMetaData
                     throw(ME);
                 end                
             end                      
-            if nargin>3 && isa(cond,'double');
+            if nargin>4 && isa(cond,'double');
                 this.condition=cond;
             end
-            if nargin>4 && (isa(filename,'char') || (isa(filename,'cell')&& isa(filename{1},'char')) )
+            if nargin>5 && (isa(filename,'char') || (isa(filename,'cell')&& isa(filename{1},'char')) )
                 this.rawDataFilename=filename;
             end
-            if nargin>5 && (isa(type,'char'))
+            if nargin>6 && (isa(type,'char'))
                 if strcmpi(type,'TM') || strcmpi(type,'OG')
                     this.type=type;
                 else

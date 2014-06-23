@@ -6,19 +6,31 @@ switch expDescrip
         for cond = 1:10
             eval(['set(handles.condition',num2str(cond),',''string'',''',num2str(cond),''')'])
         end
-        set(handles.numofconds,'string','10')        
+        set(handles.numofconds,'string','10')    
+        
+        %condition names
+        set(handles.condName1,'string','over ground baseline')
+        set(handles.condName2,'string','slow basleine')
+        set(handles.condName3,'string','short split')
+        set(handles.condName4,'string','fast baseline')
+        set(handles.condName5,'string','medium baseline')
+        set(handles.condName6,'string','adaptation')
+        set(handles.condName7,'string','catch')
+        set(handles.condName8,'string','re-adaptation')
+        set(handles.condName9,'string','over ground post-adaptation')
+        set(handles.condName10,'string','treadmill post-adaptation')
         
         %condition descriptions
-        set(handles.description1,'string','over ground baseline')
-        set(handles.description2,'string','slow basleine 150 strides')
-        set(handles.description3,'string','short split 10 strides')
-        set(handles.description4,'string','fast baseline 150 strides')
-        set(handles.description5,'string','medium baseline 150 strides')
-        set(handles.description6,'string','adaptation 4x150 strides')
-        set(handles.description7,'string','catch 10 strides')
-        set(handles.description8,'string','re-adaptation 2x150 strides')
-        set(handles.description9,'string','over ground post-adaptation')
-        set(handles.description10,'string','treadmill post-adaptation')
+        set(handles.description1,'string','8m walkway for 6 min')
+        set(handles.description2,'string','150 strides at 0.5 m/s')
+        set(handles.description3,'string','10 strides 2:1, 1 m/s and 0.5 m/s')
+        set(handles.description4,'string','150 strides at 1 m/s')
+        set(handles.description5,'string','150 strides at 0.75 m/s')
+        set(handles.description6,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
+        set(handles.description7,'string','10 strides at 0.75 m/s')
+        set(handles.description8,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
+        set(handles.description9,'string','8 m walkway for 6 min')
+        set(handles.description10,'string','150 strides at 0.75 m/s')
         
         %trial numbers for each condition
         set(handles.trialnum1,'string','1:6')
@@ -45,17 +57,28 @@ switch expDescrip
             i=i+1;
         end
         set(handles.numofconds,'string','9')
-                
+         
+        %condition names
+        set(handles.condName1,'string','over ground baseline')
+        set(handles.condName2,'string','slow basleine')        
+        set(handles.condName3,'string','fast baseline')
+        set(handles.condName4,'string','medium baseline')
+        set(handles.condName5,'string','adaptation')
+        set(handles.condName6,'string','catch')
+        set(handles.condName7,'string','re-adaptation')
+        set(handles.condName8,'string','over ground post-adaptation')
+        set(handles.condName9,'string','treadmill post-adaptation')
+        
         %condition descriptions
-        set(handles.description1,'string','over ground baseline')
-        set(handles.description2,'string','slow basleine 150 strides')
-        set(handles.description3,'string','fast baseline 150 strides')
-        set(handles.description4,'string','medium baseline 150 strides')
-        set(handles.description5,'string','adaptation 4x150 strides')
-        set(handles.description6,'string','catch 10 strides')
-        set(handles.description7,'string','re-adaptation 2x150 strides')
-        set(handles.description8,'string','over ground post-adaptation')
-        set(handles.description9,'string','treadmill post-adaptation')
+        set(handles.description1,'string','8m walkway for 6 min')
+        set(handles.description2,'string','150 strides at 0.5 m/s')
+        set(handles.description3,'string','150 strides at 1 m/s')
+        set(handles.description4,'string','150 strides at 0.75 m/s')
+        set(handles.description5,'string','600 strides,gradual split from 1:1 at 0.75 m/s to 2:1 at 1.0m/s and 0.5 m/s')
+        set(handles.description6,'string','10 strides at 0.75 m/s')
+        set(handles.description7,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
+        set(handles.description8,'string','8 m walkway for 6 min')
+        set(handles.description9,'string','150 strides at 0.75 m/s')        
         
         %trial numbers for each condition
         set(handles.trialnum1,'string','1:6')

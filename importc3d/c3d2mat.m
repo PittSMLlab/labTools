@@ -9,8 +9,8 @@ info = GetInfoGUI;
 expDate = labDate(info.day,info.month,info.year);
 
 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-    info.exp_obs,info.conditionDescriptions,info.trialnums,info.numoftrials);
-%Constructor(ID,date,experimenter,obs,conds,trialLst,Ntrials)
+    info.exp_obs,info.conditionNames,info.conditionDescriptions,info.trialnums,info.numoftrials);
+%Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
 
 %% Subject info
 

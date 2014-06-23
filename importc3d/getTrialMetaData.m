@@ -36,8 +36,8 @@ for cond = info.cond
             type = 'TM';
         end
         
-        % (desc,obs,refLeg,cond,filename,type)
-        trialMD{end+1}=trialMetaData(info.conditionDescriptions{cond},info.trialObs{i},...
+        % (name,desc,obs,refLeg,cond,filename,type)
+        trialMD{end+1}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},info.trialObs{i},...
             info.refLeg,cond,filename,type);
         i = i+1;
     end    

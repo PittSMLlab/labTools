@@ -111,7 +111,8 @@ end
 for c = 1:str2double(get(handles.numofconds,'string'))
     condNum = eval(['str2double(get(handles.condition',num2str(c),',''string''))']);
     out.cond(c) = condNum;
-    out.conditionDescriptions{condNum} = eval(['get(handles.description',num2str(c),',''string'')']);
+    out.conditionNames{condNum}=eval(['get(handles.condName',num2str(c),',''string'')']);
+    out.conditionDescriptions{condNum}=eval(['get(handles.description',num2str(c),',''string'')']);
     trialnums = eval(['get(handles.trialnum',num2str(c),',''string'')']);
     out.trialnums{condNum} = eval(['[',trialnums,']']);
     %need double eval. First is to retrieve string from edit box, second is
