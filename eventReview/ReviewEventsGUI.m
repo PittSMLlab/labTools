@@ -53,6 +53,7 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 
 handles.output=hObject;
 handles.changed=false;
+handles.backButtonFlag=false;
 
 %Initialize with subject options if there are .mat files in current
 %directory
@@ -215,9 +216,14 @@ end
 
 % --- Executes on selection change in condMenu.
 function condMenu_Callback(hObject, eventdata, handles)
-% hObject    handle to condMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
+% check back button ability
+if get(hObject,'value')>1
+    set(handles.back_button,'enable','on')
+else
+    set(handles.back_button,'enable','off')
+end
+
 global expData
 condOptions=get(hObject,'string');
 condStr=condOptions(get(hObject,'Value'));
@@ -229,29 +235,33 @@ for i=1:length(expData.metaData.trialsInCondition{handles.Condition})
     s{i}=num2str(expData.metaData.trialsInCondition{handles.Condition}(i));
 end
 set(handles.trialMenu, 'String',s);
-if get(handles.trialMenu,'Value')>length(get(handles.trialMenu,'String'))
+if handles.backButtonFlag
+    set(handles.trialMenu, 'Value',length(s));
+else
     set(handles.trialMenu, 'Value',1);
 end
+handles.backButtonFlag=false;
 guidata(hObject, handles)
 trialMenu_Callback(handles.trialMenu, eventdata, handles);
 end
 
-% Hints: contents = cellstr(get(hObject,'String')) returns condMenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from condMenu
+
 
 
 %% ---------------------------------------------------------------------
 %Then: select specific trial:
-% --- Executes on selection change in trialMenu.
-function trialMenu_Callback(hObject, eventdata, handles)
-% hObject    handle to trialMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns trialMenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from trialMenu
+function trialMenu_Callback(hObject, eventdata, handles)
+
+% check back button ability
+if get(handles.condMenu,'value')==1 && get(hObject,'value')==1
+    set(handles.back_button,'enable','off')
+else
+    set(handles.back_button,'enable','on')
+end
+
 global expData
-handles.Trial= expData.metaData.trialsInCondition{handles.Condition}(get(handles.trialMenu,'Value'));
+handles.Trial= expData.metaData.trialsInCondition{handles.Condition}(get(hObject,'Value'));
 handles.trialList = cell2mat(expData.metaData.trialsInCondition);
 handles.idx = find(handles.trialList==handles.Trial);
 handles.TSlist={};
@@ -303,7 +313,6 @@ end
 
 %% -------------------------Data Selection -------------------------------
 
-% --- Executes on selection change in TPdataType.
 function TPdataType_Callback(hObject, eventdata, handles)
 
 handles.TPfieldlist = makeFieldList(hObject,handles,handles.TPfield);
@@ -313,17 +322,12 @@ handles.test=1;
 TPfield_Callback(handles.TPfield, eventdata, handles)
 end
 
-% --- Executes on selection change in TPfield.
 function TPfield_Callback(hObject, eventdata, handles)
-% hObject    handle to TPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfieldlist,handles.axes1);
 BPdataType_Callback(handles.BPdataType,eventdata,handles);
 end
 
-% --- Executes on selection change in BPdataType.
+
 function BPdataType_Callback(hObject, eventdata, handles)
 
 handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
@@ -331,12 +335,7 @@ handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
 BPfield_Callback(handles.BPfield, eventdata, handles)
 end
 
-% --- Executes on selection change in BPfield.
 function BPfield_Callback(hObject, eventdata, handles)
-% hObject    handle to BPfield (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfieldlist,handles.axes2);
 guidata(hObject, handles)
 end
@@ -465,11 +464,12 @@ value=get(dataField,'Value');
 
 eval(['TSdata=expData.data{handles.idx}.' handles.TSlist{get(dataType,'Value')},';']);
 
-startSamp=find(TSdata.Time==handles.tstart);
 if TSdata.Time(end)<handles.tstop || get(handles.maxCheck,'value')
     endSamp=length(TSdata.Time);
+    startSamp=max([1 endSamp-find(TSdata.Time<=handles.timeWindow,1,'last')]);
     last=1;    
 else
+    startSamp=find(TSdata.Time==handles.tstart);
     endSamp=find(TSdata.Time==handles.tstop);
     last=0;
 end
@@ -480,7 +480,7 @@ events=handles.trialEvents;
 ECF = events.sampFreq/TSdata.sampFreq;
 for i=1:length(events.labels)
     data=events.getDataAsVector(events.labels{i});
-    eval([events.labels{i} 'times=handles.tstart+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
+    eval([events.labels{i} 'times=TSdata.Time(startSamp)+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
 end
 
 time=TSdata.Time(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
@@ -548,9 +548,7 @@ end
 
 % --- Executes on button press in next_button.
 function next_button_Callback(hObject, eventdata, handles)
-% hObject    handle to next_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
 set(handles.back_button,'Enable','on')
 if handles.last
     if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
@@ -575,9 +573,7 @@ end
 
 % --- Executes on button press in back_button.
 function back_button_Callback(hObject, eventdata, handles)
-% hObject    handle to back_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
 set(handles.next_button,'Enable','on')
 if handles.tstart>0
     handles.tstart=handles.tstart-handles.timeWindow;
@@ -588,7 +584,7 @@ elseif get(handles.trialMenu,'Value')>1
     trialMenu_Callback(handles.trialMenu, eventdata, handles)
 elseif get(handles.condMenu,'Value')>1
     set(handles.condMenu,'Value',get(handles.condMenu,'Value')-1);
-    set(handles.trialMenu,'Value',length(get(handles.trialMenu,'String')));
+    handles.backButtonFlag=true;
     condMenu_Callback(handles.condMenu, eventdata, handles)
 else
     set(hObject,'Enable','off')
@@ -599,9 +595,6 @@ end
 
 % --- Executes on button press in delete_button.
 function delete_button_Callback(hObject, eventdata, handles)
-% hObject    handle to delete_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 global expData
 
@@ -631,13 +624,10 @@ end
 
 % --- Executes on button press in add_button.
 function add_button_Callback(hObject, eventdata, handles)
-% hObject    handle to add_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 %Ask subject to select event type: SHS, FHS, STO, FTO
 events=handles.trialEvents.getLabels;
-events=strrep(events,handles.fast,'F');
+events=strrep(events,handles.fast,'F'); %replace 'R' or 'L' with 'F' or 'S'
 events=strrep(events,handles.slow,'S');
 set(handles.eventType,'String',events)
 set(handles.eventType,'Enable','on')
@@ -650,9 +640,6 @@ end
 
 % --- Executes on selection change in eventType.
 function eventType_Callback(hObject, eventdata, handles)
-% hObject    handle to eventType (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns eventType contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from eventType
@@ -680,9 +667,7 @@ end
 
 % --- Executes on button press in save_button.
 function save_button_Callback(hObject, eventdata, handles)
-% hObject    handle to save_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
 global expData
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
 expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
@@ -694,9 +679,6 @@ end
 % --- Executes on button press in write.
 function write_Callback(hObject, eventdata, handles)
 global expData
-% hObject    handle to write (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 %Disable everything
 set(handles.plot_button,'Enable','off');
@@ -751,9 +733,7 @@ end
 
 % --- Executes when user attempts to close GUI_window.
 function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
-% hObject    handle to GUI_window (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
 global expData
 %Disable everything
 set(handles.plot_button,'Enable','off');

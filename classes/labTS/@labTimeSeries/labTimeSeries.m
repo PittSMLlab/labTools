@@ -78,7 +78,7 @@ classdef labTimeSeries  < timeseries
             labelIdx=zeros(N,1);
             for j=1:N
                 for i=1:length(this.labels)
-                     if strcmp(auxLabel{j},this.labels{i})
+                     if strcmpi(auxLabel{j},this.labels{i})
                        boolFlag(j)=true;
                        labelIdx(j)=i;
                        break;
