@@ -149,8 +149,8 @@ lastSHStime=eventsTime(find(SHS,1,'last'));
 
 
 if ~isempty(lastFTOtime)
-    Nstrides=sum(FTO(eventsTime<lastFTOtime))-1;
-    inds=find(SHS(eventsTime<lastSHStime));
+    Nstrides=sum(SHS(eventsTime<lastFTOtime))-1;
+    inds=find(SHS(eventsTime<lastFTOtime));
     while length(inds)<(Nstrides+1) %to avoid index out of bounds errors later on...
         Nstrides=Nstrides-1;
     end
@@ -347,8 +347,14 @@ end
 
 out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
 
-if any(bad)
-    slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
-    file=in.metaData.rawDataFilename((slashes(end)+1):end);
-    disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
+try
+    if any(bad)
+        slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
+        file=in.metaData.rawDataFilename((slashes(end)+1):end);
+        disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
+    end
+catch
+        slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
+        file=in.metaData.rawDataFilename((slashes(end)+1):end);
+        disp(['Warning: No strides detected in ',file])
 end

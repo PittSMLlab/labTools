@@ -463,7 +463,7 @@ end
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
 
-set(hObject,'String',{'','Young Abrupt','Young Gradual','Old Abrupt','Old Gradual'})
+set(hObject,'String',{'','Young Abrupt','Young Gradual','Old Abrupt','Old Gradual','Young Abrupt Self Selected','Old Abrupt Self Selected'})
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');

@@ -83,7 +83,7 @@ rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
 rawExpData=experimentData(expMD,subData,rawTrialData);
 
 %% Process data
-
+data={};
 for trial=1:length(rawTrialData)
     trialData=rawTrialData{trial};
     data{trial}=trialData.process;    

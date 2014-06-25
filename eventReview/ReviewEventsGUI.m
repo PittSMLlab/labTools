@@ -166,6 +166,8 @@ set(handles.TPdataType,'Enable','off');
 set(handles.TPfield,'Enable','off');
 set(handles.condMenu, 'Enable','off');
 set(handles.trialMenu,'Enable','off');
+set(handles.timeSlider,'Enable','off');
+set(handles.maxCheck,'Enable','off');
 drawnow
 
 global expData
@@ -191,6 +193,8 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     set(handles.BPfield,'Enable','on');
     set(handles.TPdataType,'Enable','on');
     set(handles.TPfield,'Enable','on');
+    set(handles.timeSlider,'Enable','on');
+    set(handles.maxCheck,'Enable','on');
     
     %Enable and initialize condition menu:
     set(handles.condMenu, 'Enable','on');
@@ -229,20 +233,56 @@ condOptions=get(hObject,'string');
 condStr=condOptions(get(hObject,'Value'));
 handles.Condition=find(strcmp(expData.metaData.conditionName,condStr));
 
-set(handles.trialMenu, 'Enable','on');
 s={};
 for i=1:length(expData.metaData.trialsInCondition{handles.Condition})
     s{i}=num2str(expData.metaData.trialsInCondition{handles.Condition}(i));
 end
-set(handles.trialMenu, 'String',s);
-if handles.backButtonFlag
-    set(handles.trialMenu, 'Value',length(s));
+if isempty(s)
+    cla(handles.axes1)
+    cla(handles.axes2)
+    %Disable everything
+    set(handles.plot_button,'Enable','off');
+    set(handles.next_button,'Enable','off');
+    set(handles.back_button,'Enable','off');
+    set(handles.delete_button,'Enable','off');
+    set(handles.save_button,'Enable','off');
+    set(handles.add_button,'Enable','off');
+    set(handles.BPdataType,'Enable','off');
+    set(handles.BPfield,'Enable','off');
+    set(handles.TPdataType,'Enable','off');
+    set(handles.TPfield,'Enable','off');
+    set(handles.trialMenu,'Enable','off');
+    set(handles.timeSlider,'Enable','off');
+    set(handles.maxCheck,'Enable','off');
+    
 else
-    set(handles.trialMenu, 'Value',1);
+    
+    %enable everything
+    set(handles.plot_button,'Enable','on');
+    set(handles.next_button,'Enable','on');    
+    set(handles.delete_button,'Enable','on');
+    set(handles.save_button,'Enable','on');
+    set(handles.add_button,'Enable','on');
+    set(handles.BPdataType,'Enable','on');
+    set(handles.BPfield,'Enable','on');
+    set(handles.TPdataType,'Enable','on');
+    set(handles.TPfield,'Enable','on');
+    set(handles.trialMenu,'Enable','on');
+    set(handles.timeSlider,'Enable','on');
+    set(handles.maxCheck,'Enable','on');
+    
+    set(handles.trialMenu, 'Enable','on');
+    set(handles.trialMenu, 'String',s);
+    if handles.backButtonFlag
+        set(handles.trialMenu, 'Value',length(s));
+    else
+        set(handles.trialMenu, 'Value',1);
+    end
+    handles.backButtonFlag=false;
+    guidata(hObject, handles)
+    trialMenu_Callback(handles.trialMenu, eventdata, handles);
 end
-handles.backButtonFlag=false;
-guidata(hObject, handles)
-trialMenu_Callback(handles.trialMenu, eventdata, handles);
+
 end
 
 
@@ -696,6 +736,8 @@ set(handles.condMenu, 'Enable','off');
 set(handles.directory,'Enable','off');
 set(handles.subject,'Enable','off');
 set(handles.write,'Enable','off');
+set(handles.timeSlider,'Enable','off');
+set(handles.maxCheck,'Enable','off');
 set(handles.write,'String', 'Writing...');
 set(handles.trialMenu,'Enable','off');
 drawnow
@@ -723,6 +765,8 @@ set(handles.TPfield,'Enable','on');
 set(handles.condMenu, 'Enable','on');
 set(handles.directory,'Enable','on');
 set(handles.subject,'Enable','on');
+set(handles.timeSlider,'Enable','on');
+set(handles.maxCheck,'Enable','on');
 set(handles.write,'String', 'Write to disk');
 set(handles.trialMenu,'Enable','on');
 guidata(hObject, handles);
@@ -751,7 +795,10 @@ set(handles.condMenu, 'Enable','off');
 set(handles.directory,'Enable','off');
 set(handles.subject,'Enable','off');
 set(handles.write,'Enable','off');
+set(handles.timeSlider,'Enable','off');
+set(handles.maxCheck,'Enable','off');
 set(handles.write,'String', 'Writing...');
+
 drawnow
 if handles.changed
     %write to disk

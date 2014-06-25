@@ -7,8 +7,8 @@ rdata = angleData.getDataAsVector({'RLimb'});
 ldata = angleData.getDataAsVector({'LLimb'});
 
 %get rid of angles that are artifacts of marker drop outs
-rdata(abs(rdata)>45) = 0;
-ldata(abs(ldata)>45) = 0;
+% rdata(abs(rdata)>45) = 0;
+% ldata(abs(ldata)>45) = 0;
 
 % %Get fore-aft ankle positions
 % rankle = trialData.getMarkerData({['RANK' orientation.foreaftAxis]});
