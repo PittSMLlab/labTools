@@ -454,15 +454,16 @@ drawnow
 guidata(hObject, handles)
 end
 
-function last=plotData(handles,dataField,dataType,fieldList,axesHandle)
+function last=plotData(handles,fieldHandle,dataTypeHandle,fieldList,axesHandle)
 
 linkaxes([handles.axes1,handles.axes2],'x')
 
 global expData
 
-value=get(dataField,'Value');
+value=get(fieldHandle,'Value');
+dataType=handles.TSlist{get(dataTypeHandle,'Value')};
 
-eval(['TSdata=expData.data{handles.idx}.' handles.TSlist{get(dataType,'Value')},';']);
+eval(['TSdata=expData.data{handles.idx}.' dataType ';']);
 
 if TSdata.Time(end)<handles.tstop || get(handles.maxCheck,'value')
     endSamp=length(TSdata.Time);
@@ -489,7 +490,7 @@ if length(fieldList{value})==2
     %get data to plot
     eval(['FdataTS=TSdata.getDataAsTS(''' fieldList{value}{1} ''');' ]);
     eval(['SdataTS=TSdata.getDataAsTS(''' fieldList{value}{2} ''');' ]);
-    if strcmp(handles.TSlist{get(dataType,'Value')},'adaptParams')
+    if strcmp(dataType,'adaptParams')
         label=fieldList{value}{1}(1:end-4);
         %plot data
     plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r.','MarkerSize',20);
@@ -528,7 +529,7 @@ else
     label=fieldList{value};
     eval(['dataTS=TSdata.getDataAsTS(''' fieldList{value} ''');' ]);
     %plot data
-    if strcmp(handles.TSlist{get(dataType,'Value')},'adaptParams')
+    if strcmp(dataType,'adaptParams')
         plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
     else
         plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b');
@@ -540,7 +541,7 @@ end
 h_legend = legend(axesHandle,legendEntries);
 set(h_legend,'FontSize',6)
 
-title(axesHandle,[label,' Trial ',num2str(handles.Trial)])
+title(axesHandle,[label,' ',dataType,' Trial ',num2str(handles.Trial)])
 
 %Clear vars:
 clear RHS* LHS* LTO* RTO* events time

@@ -127,14 +127,14 @@ classdef adaptationData
             poster_colors;
             % Set colors order
             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+            set(gcf,'DefaultAxesColorOrder',ColorOrder);
             
             %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
             
             conds=unique(this.metaData.getCondLstPerTrial);
             nConds=length(conds);
-            nPoints=size(this.data.Data,1);
-            
+            nPoints=size(this.data.Data,1);            
             rowind=1;
             colind=0;            
             for l=label
@@ -155,9 +155,7 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
-                %(1/cols)-0.05 (1/rows)-0.1]);
-                set(gca,'ColorOrder',ColorOrder);
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);                
                 plot(dataPoints,'.','MarkerSize',15)  
                 axis tight
                 title(l)                
@@ -180,6 +178,7 @@ classdef adaptationData
             poster_colors;
             % Set colors order
             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+            set(gcf,'DefaultAxesColorOrder',ColorOrder);
             
             %find subplot size, using width to height ratio of 1:4
             [rows,cols]=subplotSize(length(label),1,4);
@@ -203,9 +202,7 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
-                %(1/cols)-0.05 (1/rows)-0.1]);
-                set(gca,'ColorOrder',ColorOrder);
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);               
                 plot(dataPoints,'.','MarkerSize',15)  
                 axis tight
                 title(l)                
