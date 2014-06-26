@@ -12,7 +12,14 @@ if strcmpi(trialData.metaData.type,'OG') %Overground Trial, use limb angles to c
     t0=trialData.markerData.Time(1);
     Ts=trialData.markerData.sampPeriod;
 elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
-    if isempty(trialData.GRFData.Data) %No force data
+    if isempty(trialData.GRFData) %No force data
+        noForce=true;
+    elseif isempty(trialData.GRFData.data)
+        noForce=true;
+    else
+        noForce=false;
+    end
+    if noForce
         disp(['No ground reaction forces data in trial. Using marker data to compute events.'])
         
         LtoePos=trialData.getMarkerData({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis],['LTOE' orientation.sideAxis]});
