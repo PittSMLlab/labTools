@@ -14,7 +14,7 @@ if strcmpi(trialData.metaData.type,'OG') %Overground Trial, use limb angles to c
 elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
     if isempty(trialData.GRFData) %No force data
         noForce=true;
-    elseif isempty(trialData.GRFData.data)
+    elseif isempty(trialData.GRFData.Data)
         noForce=true;
     else
         noForce=false;
