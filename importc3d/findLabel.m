@@ -5,21 +5,21 @@ function markerLabel=findLabel(viconLabel)
 %DO NOT edit the markerLabels, only edit the text in the cases
 
 switch viconLabel
-    case {'LGT','LHIP'}
+    case {'LGT','LHIP','OG80_LGT'}
         markerLabel='LHIP';
-    case {'RGT','RHIP'}
+    case {'RGT','RHIP','OG80_RGT'}
         markerLabel='RHIP';
-    case {'LANK','LANKLE'}
+    case {'LANK','LANKLE','OG80_LANK'}
         markerLabel='LANK';
-    case {'RANK','RANKLE'}
+    case {'RANK','RANKLE','OG80_RANK'}
         markerLabel='RANK';
-    case {'RHEE','RHEEL'}
+    case {'RHEE','RHEEL','OG80_RHEEL'}
         markerLabel='RHEE';
-    case {'LHEE','LHEEL'}
+    case {'LHEE','LHEEL','OG80_LHEEL'}
         markerLabel='LHEE';
-    case {'LTOE'}
+    case {'LTOE','OG80_LTOE'}
         markerLabel='LTOE';
-    case {'RTOE'}
+    case {'RTOE','OG80_RTOE'}
         markerLabel='RTOE';
     otherwise
         markerLabel=viconLabel;

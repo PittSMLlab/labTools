@@ -1,6 +1,8 @@
 function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation)
 
-pad = 25;
+pad = 25; %this is the minimum number of samples two events can be apart
+nsamples = trialData.markerData.Length;
+[LHSevent,RHSevent,LTOevent,RTOevent]=deal(zeros(nsamples,1));
 
 %Get angle traces
 rdata = angleData.getDataAsVector({'RLimb'});
@@ -48,8 +50,8 @@ if ~isempty(walkingSamples)
         walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
     StartStop = sort(StartStop);
 else
-    ME=MException('getOverGroundEvents','Subject was not walking during one of the overground trials');
-    throw(ME)
+    warning('Subject was not walking during one of the overground trials');
+    return
 end
 
 RightTO = [];
@@ -119,11 +121,6 @@ RightTO(rdata(RightTO)>5 | abs(rdata(RightTO))>40)=[];
 RightHS(rdata(RightHS)<5 | abs(rdata(RightHS))>40)=[];
 LeftTO(ldata(LeftTO)>5 | abs(ldata(LeftTO))>40)=[];
 LeftHS(ldata(LeftHS)<5 | abs(ldata(LeftHS))>40)=[];
-
-nsamples = trialData.markerData.Length;
-
-[LHSevent,RHSevent,LTOevent,RTOevent]=deal(zeros(nsamples,1));
-
 
 LHSevent(LeftHS)=true;
 RTOevent(RightTO)=true;

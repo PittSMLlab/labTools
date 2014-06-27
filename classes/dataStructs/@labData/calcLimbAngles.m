@@ -21,8 +21,9 @@ if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIP
     RhipPos2D=trialData.getMarkerData({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
 else
-    ME=MException('labData:Proccess',['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
-    throw(ME);
+    warning(['There are missing hip markers in',file,'. Unable to claculate limb angles']);
+    angleData=[];
+    return
 end
 
 % get ankle position in fore-aft and up-down axes
@@ -32,8 +33,9 @@ if trialData.markerData.isaLabel('RANKx') && trialData.markerData.isaLabel('LANK
     RanklePos2D=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
     RanklePos2D=[orientation.foreaftSign* RanklePos2D(:,1),orientation.updownSign*RanklePos2D(:,2)];
 else    
-    ME=MException('labData:Proccess','There are missing ankle markers in',file,'. Unable to claculate limb angles');
-    throw(ME);
+    warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
+    angleData=[];
+    return
 end
 
 % calculate limb angles

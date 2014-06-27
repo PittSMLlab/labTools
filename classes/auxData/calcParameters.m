@@ -91,6 +91,9 @@ FTO=events(:,4);
 eventsTime=in.gaitEvents.Time;
 aux=SHS+2*FTO+3*FHS+4*STO; %This should get events in the sequence 1,2,3,4,1... with 0 for non-events
 
+%find median stride time
+medStride=median(diff(eventsTime(find(SHS))));
+
 paramTSlength=floor(length(eventsTime)*f_params/f_events);
 
 %itialize all parameters so that they are all the same length as the events
@@ -109,49 +112,45 @@ if isempty(in.markerData.orientation)
 else
     orientation=in.markerData.orientation;
 end
-%get hip position
-if in.markerData.isaLabel('LGTx') %checks if hip was labeled 'GT'
-    sHip=in.getMarkerData({[s 'GT' orientation.foreaftAxis],[s 'GT' orientation.updownAxis],[s 'GT' orientation.sideAxis]});
-    sHip=[orientation.foreaftSign*sHip(:,1),orientation.updownSign*sHip(:,2),orientation.sideSign*sHip(:,3)];
-    fHip=in.getMarkerData({[f 'GT' orientation.foreaftAxis],[f 'GT' orientation.updownAxis],[f 'GT' orientation.sideAxis]});
-    fHip=[orientation.foreaftSign*fHip(:,1),orientation.updownSign*fHip(:,2),orientation.sideSign*fHip(:,3)];
-elseif in.markerData.isaLabel('LHIPx') %checks if hip was labeled 'HIP'
+%Check that hip and ankle markers are present
+if ~isempty(in.angleData)
+    %get hip position    
     sHip=in.getMarkerData({[s 'HIP' orientation.foreaftAxis],[s 'HIP' orientation.updownAxis],[s 'HIP' orientation.sideAxis]});
     sHip=[orientation.foreaftSign*sHip(:,1),orientation.updownSign*sHip(:,2),orientation.sideSign*sHip(:,3)];
     fHip=in.getMarkerData({[f 'HIP' orientation.foreaftAxis],[f 'HIP' orientation.updownAxis],[f 'HIP' orientation.sideAxis]});
     fHip=[orientation.foreaftSign*fHip(:,1),orientation.updownSign*fHip(:,2),orientation.sideSign*fHip(:,3)];
+    %get ankle position
+    sAnk=in.getMarkerData({[s 'ANK' orientation.foreaftAxis],[s 'ANK' orientation.updownAxis],[s 'ANK' orientation.sideAxis]});
+    sAnk=[orientation.foreaftSign*sAnk(:,1),orientation.updownSign*sAnk(:,2),orientation.sideSign*sAnk(:,3)];
+    fAnk=in.getMarkerData({[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis],[f 'ANK' orientation.sideAxis]});
+    fAnk=[orientation.foreaftSign*fAnk(:,1),orientation.updownSign*fAnk(:,2),orientation.sideSign*fAnk(:,3)];
+    %Compute mean hip position (in fore-aft axis)
+    meanHipPos=nanmean([sHip(:,1) fHip(:,1)],2);
+    %Compute ankle position relative to average hip position
+    sAnkPos=sAnk(:,1)-meanHipPos;
+    fAnkPos=fAnk(:,1)-meanHipPos;
+    %get angle data
+    angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
+    sAngle=angles(:,1);
+    fAngle=angles(:,2);
+    
+    calcSpatial=true;
 else
-    %this should never be the case, but may want to stop the
-    %code here if it is and give a warning
-    ME=MException('MakeParameters:LabelError','There are no markers labeled ''GT'' or ''HIP''. Unable to claculate limb angles');
-    throw(ME);
+    calcSpatial=false;    
 end
-%get ankle position
-sAnk=in.getMarkerData({[s 'ANK' orientation.foreaftAxis],[s 'ANK' orientation.updownAxis],[s 'ANK' orientation.sideAxis]});
-sAnk=[orientation.foreaftSign*sAnk(:,1),orientation.updownSign*sAnk(:,2),orientation.sideSign*sAnk(:,3)];
-fAnk=in.getMarkerData({[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis],[f 'ANK' orientation.sideAxis]});
-fAnk=[orientation.foreaftSign*fAnk(:,1),orientation.updownSign*fAnk(:,2),orientation.sideSign*fAnk(:,3)];
-%Compute mean hip position (in fore-aft axis)
-meanHipPos=nanmean([sHip(:,1) fHip(:,1)],2);
-%Compute ankle position relative to average hip position
-sAnkPos=sAnk(:,1)-meanHipPos;
-fAnkPos=fAnk(:,1)-meanHipPos;
-
-%get angle data
-angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
-sAngle=angles(:,1);
-fAngle=angles(:,2);
 
 %% Find number of strides
 
 lastFTOtime=eventsTime(find(FTO,1,'last'));
+lastFHS=(find(FHS,1,'last'));
+lastSTO=(find(STO,1,'last'));
 lastSHStime=eventsTime(find(SHS,1,'last'));
 
 
 if ~isempty(lastFTOtime)
     Nstrides=sum(SHS(eventsTime<lastFTOtime))-1;
     inds=find(SHS(eventsTime<lastFTOtime));
-    while length(inds)<(Nstrides+1) %to avoid index out of bounds errors later on...
+    while inds(Nstrides)>lastFHS || inds(Nstrides)>lastSTO  %to avoid index errors later on
         Nstrides=Nstrides-1;
     end
 else
@@ -182,7 +181,7 @@ for step=1:Nstrides
     %Check consistency:
     aa=aux(inds(step):indFTO2); %Get events in this interval
     bb=diff(aa(aa~=0)); %Keep only event samples
-    bad(t)= any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>2; %Make sure the order of events is good
+    bad(t)= any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order of events is good
     good(t)=~bad(t);
     
     if good(t)
@@ -232,111 +231,113 @@ for step=1:Nstrides
         
         %% Spatial Parameters
         
-        %revise event indices so that they work with kinematic data if
-        %frequencies differ
-        CF=f_kin/f_events;
-        indSHS=round(indSHS*CF);
-        indFTO=round(indFTO*CF);
-        indFHS=round(indFHS*CF);
-        indSTO=round(indSTO*CF);
-        indSHS2=round(indSHS2*CF);
-        indFTO2=round(indFTO2*CF);
-        
-        % Set all steps to have the same slope (a negative slope during stance phase is assumed)
-        if (sAnkPos(indSHS)<0)
-            sAnkPos=-sAnkPos;
-            fAnkPos=-fAnkPos;
+        if calcSpatial        
+            %revise event indices so that they work with kinematic data if
+            %frequencies differ
+            CF=f_kin/f_events;
+            indSHS=round(indSHS*CF);
+            indFTO=round(indFTO*CF);
+            indFHS=round(indFHS*CF);
+            indSTO=round(indSTO*CF);
+            indSHS2=round(indSHS2*CF);
+            indFTO2=round(indFTO2*CF);
+
+            % Set all steps to have the same slope (a negative slope during stance phase is assumed)
+            if (sAnkPos(indSHS)<0)
+                sAnkPos=-sAnkPos;
+                fAnkPos=-fAnkPos;
+            end
+            if sAngle(indSHS)<0
+                sAngle=-sAngle;
+                fAngle=-fAngle;
+            end
+
+            %%% Intralimb
+
+            %step lengths (1D)
+            stepLengthSlow(t)=sAnkPos(indSHS2)-fAnkPos(indSHS2);
+            stepLengthFast(t)=fAnkPos(indFHS)-sAnkPos(indFHS);
+            %step length 2D? Express w.r.t the hip?
+
+            %alpha (positive portion of interlimb angle at HS)
+            alphaSlow(t)=sAngle(indSHS2);
+            alphaTemp=sAngle(indSHS);
+            alphaFast(t)=fAngle(indFHS);
+            %beta (negative portion of interlimb angle at TO)
+            betaSlow(t)=sAngle(indSTO);
+            betaFast(t)=fAngle(indFTO2);
+            %range (alpha+beta)
+            rangeSlow(t)=alphaTemp-betaSlow(t);
+            rangeFast(t)=alphaFast(t)-betaFast(t);
+            %interlimb spread at HS
+            omegaSlow(t)=abs(sAngle(indSHS2)-fAngle(indSHS2));
+            omegaFast(t)=abs(fAnkPos(indFHS)-sAnkPos(indFHS));
+            %alpha ratios
+            alphaRatioSlow(t)=alphaSlow(t)/(alphaSlow(t)+alphaFast(t));
+            alphaRatioFast(t)=alphaFast(t)/(alphaSlow(t)+alphaFast(t));
+            %delta alphas
+            alphaDeltaSlow(t)=sAngle(indSHS2)-fAngle(indFHS);
+            alphaDeltaFast(t)=fAngle(indFHS)-sAngle(indSHS);
+
+            %%% Interlimb
+
+            stepLengthDiff(t)=stepLengthFast(t)-stepLengthSlow(t);
+            stepLengthAsym(t)=stepLengthDiff(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            angularSpreadDiff(t)=omegaFast(t)-omegaSlow(t);
+            angularSpreadAsym(t)=angularSpreadDiff(t)/(omegaFast(t)+omegaSlow(t));
+            Sout(t)=(alphaFast(t)-alphaSlow(t))/(alphaFast(t)+alphaSlow(t));
+            Serror(t)=alphaRatioSlow(t)-alphaRatioFast(t);
+            SerrorOld(t)=alphaRatioFast(t)/alphaRatioSlow(t);
+            Sgoal(t)=(rangeFast(t)-rangeSlow(t))/rangeFast(t);
+            centerSlow=(alphaSlow(t)+betaSlow(t))/2;
+            centerFast=(alphaFast(t)+betaFast(t))/2;
+            angleOfOscillationAsym(t)=centerFast-centerSlow;
+            %stepLengthAsym2D...
+
+            %phase shift (using angles)
+            slowlimb=sAngle(indSHS:indSHS2);
+            fastlimb=fAngle(indSHS:indSHS2);
+            slowlimb=slowlimb-mean(slowlimb);
+            fastlimb=fastlimb-mean(fastlimb);
+            % Circular correlation
+            phaseShift(t)=circCorr(slowlimb,fastlimb);
+
+            %phase shift (using marker locations)
+            slowlimb=sAnkPos(indSHS:indSHS2);
+            fastlimb=fAnkPos(indSHS:indSHS2);
+            slowlimb=slowlimb-mean(slowlimb);
+            fastlimb=fastlimb-mean(fastlimb);
+            % Circular correlation
+            phaseShiftPos(t)=circCorr(slowlimb,fastlimb);
+
+            %% Contribution Calculations
+
+            % Compute spatial contribution
+            sAnkPosHS=abs(sAnkPos(indSHS));
+            fAnklePosHS=abs(fAnkPos(indFHS));
+            sAnkPosHS2=abs(sAnkPos(indSHS2));
+            spatialFast=fAnklePosHS - sAnkPosHS;
+            spatialSlow=sAnkPosHS2 - fAnklePosHS;
+
+            % Compute temporal contributions (convert time to be consistent with
+            % kinematic sampling frequency)
+            ts=round((timeFHS-timeSHS)*f_kin)/f_kin;
+            tf=round((timeSHS2-timeFHS)*f_kin)/f_kin;
+            difft=ts-tf;
+
+            dispSlow=abs(sAnkPos(indFHS)-sAnkPos(indSHS));
+            dispFast=abs(fAnkPos(indSHS2)-fAnkPos(indFHS));
+
+            velocitySlow=dispSlow/ts; % Velocity of foot relative to hip
+            velocityFast=dispFast/tf;
+            avgVel=mean([velocitySlow velocityFast]);
+            avgStepTime=mean([ts tf]);
+
+            spatialContribution(t)=(spatialFast-spatialSlow);
+            stepTimeContribution(t)=avgVel*difft;
+            velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);
+            netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);
         end
-        if sAngle(indSHS)<0
-            sAngle=-sAngle;
-            fAngle=-fAngle;
-        end
-        
-        %%% Intralimb
-        
-        %step lengths (1D)
-        stepLengthSlow(t)=sAnkPos(indSHS2)-fAnkPos(indSHS2);
-        stepLengthFast(t)=fAnkPos(indFHS)-sAnkPos(indFHS);
-        %step length 2D? Express w.r.t the hip?
-        
-        %alpha (positive portion of interlimb angle at HS)
-        alphaSlow(t)=sAngle(indSHS2);
-        alphaTemp=sAngle(indSHS);
-        alphaFast(t)=fAngle(indFHS);
-        %beta (negative portion of interlimb angle at TO)
-        betaSlow(t)=sAngle(indSTO);
-        betaFast(t)=fAngle(indFTO2);
-        %range (alpha+beta)
-        rangeSlow(t)=alphaTemp-betaSlow(t);
-        rangeFast(t)=alphaFast(t)-betaFast(t);
-        %interlimb spread at HS
-        omegaSlow(t)=abs(sAngle(indSHS2)-fAngle(indSHS2));
-        omegaFast(t)=abs(fAnkPos(indFHS)-sAnkPos(indFHS));
-        %alpha ratios
-        alphaRatioSlow(t)=alphaSlow(t)/(alphaSlow(t)+alphaFast(t));
-        alphaRatioFast(t)=alphaFast(t)/(alphaSlow(t)+alphaFast(t));
-        %delta alphas
-        alphaDeltaSlow(t)=sAngle(indSHS2)-fAngle(indFHS);
-        alphaDeltaFast(t)=fAngle(indFHS)-sAngle(indSHS);
-        
-        %%% Interlimb
-        
-        stepLengthDiff(t)=stepLengthFast(t)-stepLengthSlow(t);
-        stepLengthAsym(t)=stepLengthDiff(t)/(stepLengthFast(t)+stepLengthSlow(t));
-        angularSpreadDiff(t)=omegaFast(t)-omegaSlow(t);
-        angularSpreadAsym(t)=angularSpreadDiff(t)/(omegaFast(t)+omegaSlow(t));
-        Sout(t)=(alphaFast(t)-alphaSlow(t))/(alphaFast(t)+alphaSlow(t));
-        Serror(t)=alphaRatioSlow(t)-alphaRatioFast(t);
-        SerrorOld(t)=alphaRatioFast(t)/alphaRatioSlow(t);
-        Sgoal(t)=(rangeFast(t)-rangeSlow(t))/rangeFast(t);
-        centerSlow=(alphaSlow(t)+betaSlow(t))/2;
-        centerFast=(alphaFast(t)+betaFast(t))/2;
-        angleOfOscillationAsym(t)=centerFast-centerSlow;
-        %stepLengthAsym2D...
-        
-        %phase shift (using angles)
-        slowlimb=sAngle(indSHS:indSHS2);
-        fastlimb=fAngle(indSHS:indSHS2);
-        slowlimb=slowlimb-mean(slowlimb);
-        fastlimb=fastlimb-mean(fastlimb);
-        % Circular correlation
-        phaseShift(t)=circCorr(slowlimb,fastlimb);
-        
-        %phase shift (using marker locations)
-        slowlimb=sAnkPos(indSHS:indSHS2);
-        fastlimb=fAnkPos(indSHS:indSHS2);
-        slowlimb=slowlimb-mean(slowlimb);
-        fastlimb=fastlimb-mean(fastlimb);
-        % Circular correlation
-        phaseShiftPos(t)=circCorr(slowlimb,fastlimb);
-        
-        %% Contribution Calculations
-        
-        % Compute spatial contribution
-        sAnkPosHS=abs(sAnkPos(indSHS));
-        fAnklePosHS=abs(fAnkPos(indFHS));
-        sAnkPosHS2=abs(sAnkPos(indSHS2));
-        spatialFast=fAnklePosHS - sAnkPosHS;
-        spatialSlow=sAnkPosHS2 - fAnklePosHS;
-        
-        % Compute temporal contributions (convert time to be consistent with
-        % kinematic sampling frequency)
-        ts=round((timeFHS-timeSHS)*f_kin)/f_kin;
-        tf=round((timeSHS2-timeFHS)*f_kin)/f_kin;
-        difft=ts-tf;
-        
-        dispSlow=abs(sAnkPos(indFHS)-sAnkPos(indSHS));
-        dispFast=abs(fAnkPos(indSHS2)-fAnkPos(indFHS));
-        
-        velocitySlow=dispSlow/ts; % Velocity of foot relative to hip
-        velocityFast=dispFast/tf;
-        avgVel=mean([velocitySlow velocityFast]);
-        avgStepTime=mean([ts tf]);
-        
-        spatialContribution(t)=(spatialFast-spatialSlow);
-        stepTimeContribution(t)=avgVel*difft;
-        velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);
-        netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);
     end
     
 end

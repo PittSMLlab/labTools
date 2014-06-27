@@ -438,7 +438,7 @@ for c = 1:subInfo.numofconds
     eval(['set(handles.condName',num2str(c),',''string'',subInfo.conditionNames{',num2str(condNum),'})']);
     eval(['set(handles.description',num2str(c),',''string'',subInfo.conditionDescriptions{',num2str(condNum),'})']);
     trialnums=subInfo.trialnums{condNum};
-    if length(trialnums)>2
+    if length(trialnums)>2 && ~any(diff(trialnums)>1)
         eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums(1)),':',num2str(trialnums(end)),''')']);
     else
         eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums),''')']);
@@ -463,7 +463,7 @@ end
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
 
-set(hObject,'String',{'','Young Abrupt','Young Gradual','Old Abrupt','Old Gradual','Young Abrupt Self Selected','Old Abrupt Self Selected'})
+set(hObject,'String',{'','Young Abrupt','Young Gradual','Old Abrupt','Old Abrupt No Catch','Old Gradual','Old Abrupt Second Visit','Young Abrupt Self Selected','Old Abrupt Self Selected'})
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');

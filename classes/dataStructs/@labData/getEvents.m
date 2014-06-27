@@ -1,5 +1,8 @@
 function events = getEvents(trialData,angleData)
 
+slashes=find(trialData.metaData.rawDataFilename=='\' | trialData.metaData.rawDataFilename=='/');
+file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
+
 if isempty(trialData.markerData.orientation)
     warning('Assuming default orientation of axes for marker data.');
     orientation=orientationInfo([0,0,0],'x','y','z',1,1,1);
@@ -20,7 +23,7 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
         noForce=false;
     end
     if noForce
-        disp(['No ground reaction forces data in trial. Using marker data to compute events.'])
+        disp(['No ground reaction forces data in ' file '. Using marker data to compute events.'])
         
         LtoePos=trialData.getMarkerData({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis],['LTOE' orientation.sideAxis]});
         LtoePos=[orientation.foreaftSign* LtoePos(:,1),orientation.updownSign*LtoePos(:,2),orientation.sideSign*LtoePos(:,3)];
@@ -38,7 +41,7 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
             RheelPos=trialData.getMarkerData({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis],['RHEE' orientation.sideAxis]});
             RheelPos=[orientation.foreaftSign* RheelPos(:,1),orientation.sideSign*RheelPos(:,2),orientation.updownSign*RheelPos(:,3)];
         else
-            disp('No heel markers. Using ankle markers instead to compute events.')
+            disp(['No heel markers in ' file '. Using ankle markers instead to compute events.'])
             LheelPos=LanklePos;
             RheelPos=RanklePos;
         end
@@ -52,9 +55,15 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
         FzL=upSign*trialData.getForce('L',upAxis);
         FzR=upSign*trialData.getForce('R',upAxis);
         
-        %correct non-zeroed events (max force in positive direction should be zero):
-        FzL=FzL-max(FzL);
-        FzR=FzR-max(FzR);
+        %correct non-zeroed events (most common force reading should be zero):
+        if mode(FzL)~=0
+            disp(['Warning: Left z-axis forces in ' file ' have non-zero mode. Subtracting mode from force data before event detection']) 
+            FzL=FzL-mode(FzL);
+        end
+        if mode(FzR)~=0
+            disp(['Warning: Right z-axis forces in ' file ' have non-zero mode. Subtracting mode from force data before event detection']) 
+            FzR=FzR-mode(FzR);
+        end
         
         [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromForces(FzL,FzR,trialData.GRFData.sampFreq);
         t0=trialData.GRFData.Time(1);
