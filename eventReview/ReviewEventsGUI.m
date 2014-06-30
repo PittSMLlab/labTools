@@ -119,9 +119,7 @@ if exist(direct,'dir')
     files=what(direct);
     subFileList={};
     if isempty(files.mat)
-        h_error=errordlg('Directory entered does not contain any .mat files','Directory Error');
-        set(h_error,'color',[0.8 0.8 0.8])
-        waitfor(h_error)
+        errordlg('Directory entered does not contain any .mat files','Directory Error');
         set(handles.subject,'Enable','off');
         % Give the edit text box focus so user can correct the error
         uicontrol(hObject)
@@ -133,9 +131,7 @@ if exist(direct,'dir')
         set(handles.subject,'string',subFileList)
     end    
 else
-    h_error=errordlg('Path entered is not a directory.','Directory Error');
-    set(h_error,'color',[0.8 0.8 0.8])
-    waitfor(h_error)
+    errordlg('Path entered is not a directory.','Directory Error');    
     set(handles.subject,'Enable','off');
     % Give the edit text box focus so user can correct the error
     uicontrol(hObject)
@@ -314,6 +310,9 @@ else
     handles.slow = 'L';
     handles.fast = 'R';
 end
+% get condition description and any observations
+set(handles.condDescripText,'string',expData.data{handles.idx}.metaData.description)
+set(handles.observationText,'string',['Observations: ' expData.data{handles.idx}.metaData.observations])
 set(handles.write,'Enable','off')
 fieldList=fields(expData.data{handles.idx});
 for i=1:length(fieldList)
