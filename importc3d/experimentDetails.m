@@ -10,7 +10,7 @@ switch expDescrip
         
         %condition names
         set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow basleine')
+        set(handles.condName2,'string','slow baseline')
         set(handles.condName3,'string','short split')
         set(handles.condName4,'string','fast baseline')
         set(handles.condName5,'string','medium baseline')
@@ -60,7 +60,7 @@ switch expDescrip
          
         %condition names
         set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow basleine')        
+        set(handles.condName2,'string','slow baseline')        
         set(handles.condName3,'string','fast baseline')
         set(handles.condName4,'string','medium baseline')
         set(handles.condName5,'string','adaptation')
@@ -105,7 +105,7 @@ switch expDescrip
         
         %condition names
         set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow basleine')
+        set(handles.condName2,'string','slow baseline')
         set(handles.condName3,'string','short split')
         set(handles.condName4,'string','fast baseline')
         set(handles.condName5,'string','medium baseline')

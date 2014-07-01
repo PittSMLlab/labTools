@@ -105,11 +105,12 @@ classdef experimentData
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
+                        types{i}=this.data{i}.metaData.type;
                     end
                 end
             end            
             %labels should be the same for all trials with adaptParams
-            parameterData=paramData(DATA,labels,indsInTrial);
+                        parameterData=paramData(DATA,labels,indsInTrial,trialTypes);
             adaptData=adaptationData(this.metaData,this.subData,parameterData);            
         end
         

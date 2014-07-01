@@ -6,7 +6,8 @@ classdef paramData
     properties %(SetAccess=private)
         labels={''};
         Data;       
-        indsInTrial={};        
+        indsInTrial={};
+        trialTypes={};
     end
     properties(Dependent)
         %could include things here like 'learning' or 'transfer'...
@@ -16,7 +17,7 @@ classdef paramData
     methods
         
         %Constructor:
-        function this=paramData(data,labels,inds)
+        function this=paramData(data,labels,inds,types)
             if (length(labels)==size(data,2)) && isa(labels,'cell')
                 this.labels=labels;
                 this.Data=data;
@@ -29,6 +30,9 @@ classdef paramData
             else
                 ME=MException('paramData:Constructor','Check that trial indices are entered correctly.');
                 throw(ME)
+            end
+            if nargin>3 && isa(types,'cell')
+                this.trialTypes=types;            
             end
         end
         
@@ -73,8 +77,7 @@ classdef paramData
                      end
                 end
             end
-        end  
-            
+        end          
         
     end    
         
