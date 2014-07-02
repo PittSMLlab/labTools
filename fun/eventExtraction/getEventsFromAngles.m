@@ -2,7 +2,7 @@ function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,a
 
 pad = 25; %this is the minimum number of samples two events can be apart
 nsamples = trialData.markerData.Length;
-[LHSevent,RHSevent,LTOevent,RTOevent]=deal(zeros(nsamples,1));
+[LHSevent,RHSevent,LTOevent,RTOevent]=deal(false(nsamples,1));
 
 %Get angle traces
 rdata = angleData.getDataAsVector({'RLimb'});
