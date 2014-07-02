@@ -34,14 +34,6 @@ walking = abs(HipVel)>0.5*midHipVel;
 % Eliminate walking or turn around phases shorter than 0.5 seconds
 [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.5);
 
-posWalking = find(walking == 1 & HipVel > 0); % in our lab, walking towards door
-negWalking = find(walking == 1 & HipVel < 0); % walking towards window
-
-% Reverse angles for walking towards lab door (this is to make angle 
-% maximums HS and minimums TO, as they are when on treadmill)
-rdata(posWalking) = -rdata(posWalking);
-ldata(posWalking) = -ldata(posWalking);
-
 % split walking into individual bouts
 walkingSamples = find(walking);
 
@@ -66,9 +58,15 @@ for i = 1:2:(length(StartStop))
     start = StartStop(i);
     stop = StartStop(i+1);
     
-    startHS = start;
-    startTO  = start;
+    if median(HipVel(start:stop))>0 % in our lab, walking towards door
+        % Reverse angles for walking towards lab door (this is to make angle 
+        % maximums HS and minimums TO, as they are when on treadmill)
+        rdata(start:stop) = -rdata(start:stop);
+        ldata(start:stop) = -ldata(start:stop);
+    end
     
+    startHS = start;
+    startTO  = start;    
     
     %Find all maximum (HS)
     while (startHS<stop)
@@ -88,10 +86,9 @@ for i = 1:2:(length(StartStop))
     RightHS(RightHS == start | RightHS == stop) = [];    
     
     %% find HS/TO for left leg
-    startHS = StartStop(i);
-    startTO  = startHS;
-    stop = StartStop(i+1);
-    
+    startHS = start;
+    startTO  = start;
+        
     %find all maximum (HS)
     while (startHS<stop)
         LHS = FindKinHS(startHS,stop,ldata,pad);

@@ -9,7 +9,7 @@ trialMD={};
 
 i = 1;
 
-for cond = info.cond 
+for cond = sort(info.cond) 
     for t = info.trialnums{cond}
         %there may be an easier way to do this, basically this assumes that
         %the .c3d files are named basename01, basename02,..., basename10,

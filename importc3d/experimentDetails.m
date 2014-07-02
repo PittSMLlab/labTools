@@ -139,6 +139,48 @@ switch expDescrip
         %check appropriate OG conditions
         set(handles.OGcheck1,'value',1)
         set(handles.OGcheck8,'value',1)
+    case {'Old Gradual No Catch','Young Gradual No Catch'}
+        %condition numbers
+        i=1;
+        for cond = [1 2 4:6 8:10]
+            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            i=i+1;
+        end
+        set(handles.numofconds,'string','8')    
+        
+        %condition names
+        set(handles.condName1,'string','over ground baseline')
+        set(handles.condName2,'string','slow baseline')
+        set(handles.condName3,'string','fast baseline')
+        set(handles.condName4,'string','medium baseline')
+        set(handles.condName5,'string','adaptation')        
+        set(handles.condName6,'string','re-adaptation')
+        set(handles.condName7,'string','over ground post-adaptation')
+        set(handles.condName8,'string','treadmill post-adaptation')
+        
+        %condition descriptions
+        set(handles.description1,'string','8m walkway for 6 min')
+        set(handles.description2,'string','150 strides at 0.5 m/s')
+        set(handles.description3,'string','150 strides at 1 m/s')
+        set(handles.description4,'string','150 strides at 0.75 m/s')
+        set(handles.description5,'string','600 strides,gradual split from 1:1 at 0.75 m/s to 2:1 at 1.0m/s and 0.5 m/s')
+        set(handles.description6,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
+        set(handles.description7,'string','8 m walkway for 6 min')
+        set(handles.description8,'string','150 strides at 0.75 m/s')
+        
+        %trial numbers for each condition
+        set(handles.trialnum1,'string','1:6')
+        set(handles.trialnum2,'string','7')
+        set(handles.trialnum3,'string','24')
+        set(handles.trialnum4,'string','8')
+        set(handles.trialnum5,'string','9:12')        
+        set(handles.trialnum6,'string','13 14')
+        set(handles.trialnum7,'string','15:20')
+        set(handles.trialnum8,'string','21:23')        
+        
+        %check appropriate OG conditions
+        set(handles.OGcheck1,'value',1)
+        set(handles.OGcheck7,'value',1)
     case {'Old Abrupt Self Selected','Young Abrupt Self Selected'}
         %condition numbers
         i=1;
