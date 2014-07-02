@@ -15,18 +15,18 @@ for cond = sort(info.cond)
         %the .c3d files are named basename01, basename02,..., basename10,
         %basename11,...
         if t<10
-            filename = [dirStr '\' basename  '0' num2str(t)];
+            filename = [dirStr filesep basename  '0' num2str(t)];
         else
-            filename = [dirStr '\' basename num2str(t)];
+            filename = [dirStr filesep basename num2str(t)];
         end
         
         fileList{end+1}=filename;
         
         if info.EMGs
             if t<10
-                secFileList{end+1} = [info.sec_dir_location '\' basename '0' num2str(t)];
+                secFileList{end+1} = [info.sec_dir_location filesep basename '0' num2str(t)];
             else
-                secFileList{end+1} = [info.sec_dir_location '\' basename num2str(t)];
+                secFileList{end+1} = [info.sec_dir_location filesep basename num2str(t)];
             end
         end
         

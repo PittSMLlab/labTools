@@ -99,7 +99,7 @@ end
 % --- Executes on button press in browseButton.
 function browseButton_Callback(hObject, eventdata, handles)
 direct = uigetdir; %pulls up a broswer window so a folder can be selected
-set(handles.directory,'string',[direct,'\'])
+set(handles.directory,'string',[direct,filesep])
 guidata(hObject,handles)
 directory_Callback(handles.directory,eventdata,handles)
 end
