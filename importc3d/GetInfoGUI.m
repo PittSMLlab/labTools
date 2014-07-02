@@ -80,7 +80,7 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 info=handles.info;
 varargout{1}=info;
-save([info.save_folder '\' info.ID 'info'],'info')
+save([info.save_folder filesep info.ID 'info'],'info')
 
 delete(handles.figure1)
 
@@ -463,7 +463,7 @@ end
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
 
-set(hObject,'String',{'','Old Abrupt','Old Abrupt Second Visit','Old Abrupt No Catch','Old Abrupt Self Selected','Old Gradual','Old Gradual No Catch','Young Abrupt','Young Gradual','Young Abrupt Self Selected'})
+set(hObject,'String',{'','Old Abrupt','Old Abrupt Second Visit','Old Abrupt No Catch','Old Abrupt Self Selected','Old Gradual','Old Gradual No Catch','Young Abrupt','Young Gradual','Young Abrupt Self Selected', '0002: Distraction'})
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');

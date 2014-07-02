@@ -125,9 +125,9 @@ out.numoftrials = length(trials);
 
 for t=trials
     if t<10
-        filename = [out.dir_location '\' out.basename  '0' num2str(t) '.c3d'];        
+        filename = [out.dir_location filesep out.basename  '0' num2str(t) '.c3d'];        
     else
-        filename = [out.dir_location '\' out.basename num2str(t) '.c3d'];        
+        filename = [out.dir_location filesep out.basename num2str(t) '.c3d'];        
     end
     if ~exist(filename,'file')
         h_error=errordlg(['The file ',filename,' does not exist.'],'File Name Error');        
@@ -138,9 +138,9 @@ for t=trials
     end
     if out.EMGs
         if t<10            
-            filename2 = [out.secdir_location '\' out.basename  '0' num2str(t) '.c3d'];
+            filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
         else            
-            filename2 = [out.secdir_location '\' out.basename num2str(t) '.c3d'];
+            filename2 = [out.secdir_location filesep out.basename num2str(t) '.c3d'];
         end
         if ~exist(filename2,'file')
             h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');            
