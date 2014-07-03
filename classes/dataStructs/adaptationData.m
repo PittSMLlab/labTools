@@ -41,37 +41,42 @@ classdef adaptationData
         function newThis=removeBias(this)
             %find baseline conditions
             %NOTE: this assumes that the condition names will contain the
-            %string "base" and that the over ground trials contain the
-            %string "over","ground", or "OG"
+            %string "base" if they are a baseline trial
             conds=this.metaData.conditionName;
             trialsInCond=this.metaData.trialsInCondition;
             ogTrials=[];
             ogBaseTrials=[];
-            trials=[];
-            baseTrials=[];
+            tmTrials=[];
+            tmBaseTrials=[];
             for c=1:length(conds)
-                if ~isempty(strfind(lower(conds{c}),'over')) || ~isempty(strfind(lower(conds{c}),'ground')) || ~isempty(strfind(lower(conds{c}),'og'))
-                    rawTrials=trialsInCond{c};                    
-                    ogTrials=[ogTrials find(ismember(cell2mat(trialsInCond),rawTrials))];
+                rawTrials=trialsInCond{c};
+                trials=find(ismember(cell2mat(trialsInCond),rawTrials));
+                if strcmpi(this.data.trialTypes,'OG')                              
+                    ogTrials=[ogTrials trials];
                     if ~isempty(strfind(lower(conds{c}),'base'))
-                        rawTrials=trialsInCond{c};     
-                        ogBaseTrials=[ogBaseTrials find(ismember(cell2mat(trialsInCond),rawTrials))];
+                        ogBaseTrials=[ogBaseTrials trials];
                     end
-                else
-                    rawTrials=trialsInCond{c};                    
-                    trials=[trials find(ismember(cell2mat(trialsInCond),rawTrials))];
-                    if ~isempty(strfind(lower(conds{c}),'base'))
-                        rawTrials=trialsInCond{c};                    
-                        baseTrials=[baseTrials find(ismember(cell2mat(trialsInCond),rawTrials))];
+                else                             
+                    tmTrials=[tmTrials trials];
+                    if ~isempty(strfind(lower(conds{c}),'base'))                                         
+                        tmBaseTrials=[tmBaseTrials trials];
                     end
                 end
             end
-            ogBase=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(ogBaseTrials)),:)); %should it be nanmena?
-            base=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(baseTrials)),:));
-            ogInds=cell2mat(this.data.indsInTrial(ogTrials));
-            inds=cell2mat(this.data.indsInTrial(trials));
-            newData(ogInds,:)=this.data.Data(ogInds,:)-repmat(ogBase,length(ogInds),1);
-            newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
+            if ~isempty(tmBaseTrials)
+                base=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(tmBaseTrials)),:));
+                inds=cell2mat(this.data.indsInTrial(tmTrials));
+                newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
+            else
+                warning('No treadmill baseline trials detected. Bias not removed')
+            end
+            if ~isempty(ogBaseTrials)
+                ogBase=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(ogBaseTrials)),:)); %should it be nanmean?
+                ogInds=cell2mat(this.data.indsInTrial(ogTrials));
+                newData(ogInds,:)=this.data.Data(ogInds,:)-repmat(ogBase,length(ogInds),1);
+            else
+                warning('No overground baseline trials detected. Bias not removed')
+            end                    
             %this code can probably be cleaned up by taking advantage of
             %other functions in this class such as getParamInCond...
             newParamData=paramData(newData,this.data.labels,this.data.indsInTrial);
