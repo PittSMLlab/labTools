@@ -284,13 +284,17 @@ classdef adaptationData
             colind=0;            
             for l=label
                 earlyPoints=[];
+                veryEarlyPoints=[];
                 latePoints=[];
                 earlySte=[];
+                veryEarlySte=[];
                 lateSte=[];
                 for i=1:nConds
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
                     trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
                     aux=this.getParamInTrial(l,trials(1));
+                    veryEarlyPoints(end+1)=mean(aux(1:3));
+                    veryEarlySte(end+1)=std(aux(1:3))/sqrt(3);
                     earlyPoints(end+1)=mean(aux(1:5));
                     earlySte(end+1)=std(aux(1:5))/sqrt(5);
                     aux=this.getParamInTrial(l,trials(end));
@@ -307,10 +311,12 @@ classdef adaptationData
                 end
                 subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
                 hold on
-                bar(1:3:3*nConds,earlyPoints,.3,'FaceColor',[.6,.6,.6])
                 
+                bar(1:3:3*nConds,earlyPoints,.3,'FaceColor',[.6,.6,.6])
+                %bar(1:3:3*nConds,veryEarlyPoints,.2,'FaceColor',[.8,.8,.8])
                 bar(2:3:3*nConds,latePoints,.3,'FaceColor',[0,.3,.6])
                 errorbar(1:3:3*nConds,earlyPoints, earlySte,'.','LineWidth',2)
+                %errorbar(1:3:3*nConds,veryEarlyPoints, veryEarlySte,'.','LineWidth',2,'Color',[.8,.5,0])
                 errorbar(2:3:3*nConds,latePoints, lateSte,'.','LineWidth',2)
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
