@@ -134,6 +134,31 @@ classdef experimentData
                 disp('Cannot stride experiment because it is raw or already strided.');
             end
         end
+
+        function h=parameterEvolutionPlot(this,field,h)
+            %Check that the field actually exists in the all of
+            %data{i}.adaptatParams
+            colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
+            
+            %Do the plot
+            if nargin>2 && ~isempty(h)
+                figure(h)
+            else
+                h=figure;
+            end
+            hold on
+            counter=0;
+            for condition=1:length(this.metaData.trialsInCondition)
+               for trial=this.metaData.trialsInCondition{condition}
+                   plotData=this.data{trial}.adaptParams.getDataAsVector(field);
+                   plotData=plotData(~isnan(plotData));
+                   newCounter=counter+length(plotData);
+                   plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{condition})
+                   counter=newCounter;
+               end
+            end
+            hold off
+        end
         
     end
     
