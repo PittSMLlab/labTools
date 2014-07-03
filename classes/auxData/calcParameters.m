@@ -144,10 +144,10 @@ end
 lastFTOtime=eventsTime(find(FTO,1,'last'));
 lastFHS=(find(FHS,1,'last'));
 lastSTO=(find(STO,1,'last'));
-lastSHStime=eventsTime(find(SHS,1,'last'));
+lastSHStime=eventsTime(find(SHS,1,'last'));svn up
 
 
-if ~isempty(lastFTOtime) && ~isempty(lastFHStime) && ~isempty(lastSTOtime) && ~isempty(SHS) 
+if ~isempty(lastFTOtime) && ~isempty(lastFHS) && ~isempty(lastSTO) && ~isempty(SHS) 
     Nstrides=sum(SHS(eventsTime<lastFTOtime))-1;
     inds=find(SHS(eventsTime<lastFTOtime));
     while inds(Nstrides)>lastFHS || inds(Nstrides)>lastSTO  %to avoid index errors later on
