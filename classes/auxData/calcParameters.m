@@ -144,7 +144,7 @@ end
 lastFTOtime=eventsTime(find(FTO,1,'last'));
 lastFHS=(find(FHS,1,'last'));
 lastSTO=(find(STO,1,'last'));
-lastSHStime=eventsTime(find(SHS,1,'last'));svn up
+lastSHStime=eventsTime(find(SHS,1,'last'));
 
 
 if ~isempty(lastFTOtime) && ~isempty(lastFHS) && ~isempty(lastSTO) && ~isempty(SHS) 
