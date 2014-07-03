@@ -178,7 +178,7 @@ for step=1:Nstrides
     %Check consistency:
     aa=aux(inds(step):indFTO2); %Get events in this interval
     bb=diff(aa(aa~=0)); %Keep only event samples
-    bad(t)= any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order of events is good
+    bad(t)= isempty(bb) || any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order of events is good
     good(t)=~bad(t);
     
     if good(t)
