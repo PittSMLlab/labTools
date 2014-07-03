@@ -278,6 +278,7 @@ classdef adaptationData
             [rows,cols]=subplotSize(length(label),1,4);
             
             conds=unique(this.metaData.getCondLstPerTrial);
+            conds=conds(~isnan(conds));
             nConds=length(conds);
             nPoints=size(this.data.Data,1);            
             rowind=1;
@@ -298,8 +299,9 @@ classdef adaptationData
                     earlyPoints(end+1)=mean(aux(1:5));
                     earlySte(end+1)=std(aux(1:5))/sqrt(5);
                     aux=this.getParamInTrial(l,trials(end));
-                    latePoints(end+1)=mean(aux(end-20+1:end));
-                    lateSte(end+1)=std(aux(end-20+1:end))/sqrt(20);
+                    N2=min([20,length(aux)]);
+                    latePoints(end+1)=mean(aux(end-N2+1:end));
+                    lateSte(end+1)=std(aux(end-N2+1:end))/sqrt(N2);
                 end
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;

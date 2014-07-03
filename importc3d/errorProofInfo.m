@@ -121,7 +121,7 @@ for c = 1:str2double(get(handles.numofconds,'string'))
 end
 
 trials=cell2mat(out.trialnums);
-out.numoftrials = length(trials);
+out.numoftrials = max(trials);
 
 for t=trials
     if t<10

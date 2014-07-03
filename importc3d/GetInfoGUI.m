@@ -183,6 +183,7 @@ function basefile_Callback(hObject, eventdata, handles)
 function numoftrials_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of numoftrials as text
 %        str2double(get(hObject,'String')) returns contents of numoftrials as a double
+numoftrials = str2double(get(hObject,'String'));
 
 function numofconds_Callback(hObject, eventdata, handles)
 numofconds = str2double(get(hObject,'String'));
