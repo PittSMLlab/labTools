@@ -141,15 +141,15 @@ end
 
 %% Find number of strides
 
-lastFTOtime=eventsTime(find(FTO,1,'last'));
+lastFTOtime=eventsTime(find(FTO,2,'last'));
 lastFHS=(find(FHS,1,'last'));
 lastSTO=(find(STO,1,'last'));
-lastSHStime=eventsTime(find(SHS,1,'last'));
+lastSHStime=eventsTime(find(SHS,2,'last'));
 
 
-if ~isempty(lastFTOtime) && ~isempty(lastFHS) && ~isempty(lastSTO) && ~isempty(SHS) 
-    Nstrides=min([sum(SHS(eventsTime<lastSHStime)) sum(FTO(eventsTime<lastFTOtime)) sum(FHS(eventsTime<lastFTOtime)) sum(STO(eventsTime<lastFTOtime))]);
-    inds=find(SHS(eventsTime<lastFTOtime));
+if length(lastFTOtime)>1 && ~isempty(lastFHS) && ~isempty(lastSTO) && length(lastSHStime)>1
+    Nstrides=sum(SHS(eventsTime<lastFTOtime(1)));
+    inds=find(SHS(eventsTime<lastFTOtime(2)));
     while inds(Nstrides)>lastFHS || inds(Nstrides)>lastSTO  %to avoid index errors later on
         Nstrides=Nstrides-1;
     end
