@@ -94,7 +94,7 @@ classdef experimentData
         end
         
         %function to make adaptationData object
-        function adaptData=makeDataObj(this)
+        function adaptData=makeDataObj(this,filename)
             DATA=[];
             startind=1;
             if ~isempty(this.data)
@@ -111,7 +111,10 @@ classdef experimentData
             end            
             %labels should be the same for all trials with adaptParams
             parameterData=paramData(DATA,labels,indsInTrial,trialTypes);
-            adaptData=adaptationData(this.metaData,this.subData,parameterData);            
+            adaptData=adaptationData(this.metaData,this.subData,parameterData);  
+            if nargin>1 && ~isempty(filename)
+                save([filename '.mat'],'adaptData');
+            end
         end
         
         function stridedExp=splitIntoStrides(this)

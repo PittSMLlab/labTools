@@ -156,8 +156,7 @@ classdef adaptationData
             
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
-        end
-               
+        end           
         
         function plotParamTimeCourse(this,label)   
             
@@ -259,6 +258,69 @@ classdef adaptationData
                 legendEntry{end+1}=num2str(trialNums(i));
             end
             legend(legendEntry); %this is for the case when a condition number was skipped
+        end
+        
+        function plotParamByConditions(this,label)
+            figureFullScreen
+            
+            figsz=[0 0 1 1];
+            %in pixels:
+            vertpad = 30/scrsz(4); %padding on the top and bottom of figure
+            horpad = 20/scrsz(3);  %padding on the left and right of figure
+            
+            % Set colors
+            poster_colors;
+            % Set colors order
+            ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+            set(gcf,'DefaultAxesColorOrder',ColorOrder);
+            
+                        %find subplot size with width to hieght ratio of 4:1
+            [rows,cols]=subplotSize(length(label),1,4);
+            
+            conds=unique(this.metaData.getCondLstPerTrial);
+            nConds=length(conds);
+            nPoints=size(this.data.Data,1);            
+            rowind=1;
+            colind=0;            
+            for l=label
+                earlyPoints=[];
+                latePoints=[];
+                earlySte=[];
+                lateSte=[];
+                for i=1:nConds
+                    rawTrials=this.metaData.trialsInCondition{conds(i)};
+                    trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                    aux=this.getParamInTrial(l,trials(1));
+                    earlyPoints(end+1)=mean(aux(1:5));
+                    earlySte(end+1)=std(aux(1:5))/sqrt(5);
+                    aux=this.getParamInTrial(l,trials(end));
+                    latePoints(end+1)=mean(aux(end-20+1:end));
+                    lateSte(end+1)=std(aux(end-20+1:end))/sqrt(20);
+                end
+                %find graph location
+                bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
+                left=colind*(figsz(3))/cols+horpad;
+                rowind=rowind+1;
+                if rowind>rows
+                    colind=colind+1;
+                    rowind=1;
+                end
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
+                hold on
+                bar(1:3:3*nConds,earlyPoints,.3,'FaceColor',[.6,.6,.6])
+                
+                bar(2:3:3*nConds,latePoints,.3,'FaceColor',[0,.3,.6])
+                errorbar(1:3:3*nConds,earlyPoints, earlySte,'.','LineWidth',2)
+                errorbar(2:3:3*nConds,latePoints, lateSte,'.','LineWidth',2)
+                xTickPos=[1:3:3*nConds] +.5;
+                set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
+                axis tight
+                title(l)     
+                hold off
+            end
+     
+            condDes = this.metaData.conditionName;
+            legend('Early (first 5 strides)','Late (last 20 strides)'); %this is for the case when a condition number was skipped
         end
     end
 end
