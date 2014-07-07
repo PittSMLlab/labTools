@@ -60,7 +60,8 @@ paramlabels = {'good',... %Flag indicating whether the stride has events in the 
     'spatialContribution',... %Relative position of ankle markers at ipsi-lateral HS (i.e. slow ankle at SHS minus fast ankle at FHS)
     'stepTimeContribution',... %Average belt speed times step time difference
     'velocityContribution',... %Average step time times belt speed difference
-    'netContribution'}; %Sum of the previous three, should be equal to stepLengthAsym
+    'netContribution',... %Sum of the previous three, should be equal to stepLengthAsym
+    'equivalentSpeed'}; %Relative speed of hip to feet, 
 
 %make the time series have a time vectpr as small as possible so that
 % a) it does not take up an unreasonable amount of space
@@ -207,7 +208,7 @@ for step=1:Nstrides
         strideTimeFast(t)=timeFTO2-timeFTO;
         %cadence (stride cycles per s)
         cadenceSlow(t)=1/strideTimeSlow(t);
-        cadenceFast(t)=1/strideTimeSlow(t); %Is this correct?? Shouldn't it be strideTimeFast ??
+        cadenceFast(t)=1/strideTimeFast(t); %Is this correct?? Shouldn't it be strideTimeFast ??
         %step cadence (steps per s)
         stepCadenceSlow(t)=1/stepTimeSlow(t);
         stepCadenceFast(t)=1/stepTimeFast(t);
@@ -325,10 +326,11 @@ for step=1:Nstrides
             dispSlow=abs(sAnkPos(indFHS)-sAnkPos(indSHS));
             dispFast=abs(fAnkPos(indSHS2)-fAnkPos(indFHS));
 
-            velocitySlow=dispSlow/ts; % Velocity of foot relative to hip
+            velocitySlow=dispSlow/ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
             velocityFast=dispFast/tf;
             avgVel=mean([velocitySlow velocityFast]);
             avgStepTime=mean([ts tf]);
+            equivalentSpeed(t)=(dispSlow+dispFast)/(ts+tf);
 
             spatialContribution(t)=(spatialFast-spatialSlow);
             stepTimeContribution(t)=avgVel*difft;
