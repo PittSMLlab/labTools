@@ -284,7 +284,7 @@ switch expDescrip
         
         %check appropriate OG conditions
         set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck7,'value',1)
+        set(handles.OGcheck6,'value',1)
         
     case {'0002: Distraction'}
         %condition numbers

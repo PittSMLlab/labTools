@@ -177,6 +177,7 @@ classdef adaptationData
             [rows,cols]=subplotSize(length(label),1,4);
             
             conds=unique(this.metaData.getCondLstPerTrial);
+            conds(isnan(conds))=[];
             nConds=length(conds);
             nPoints=size(this.data.Data,1);            
             rowind=1;
@@ -185,10 +186,12 @@ classdef adaptationData
                 dataPoints=NaN(nPoints,nConds);
                 for i=1:nConds
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
-                    trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
-                    for t=trials
-                        inds=this.data.indsInTrial{t};
-                        dataPoints(inds,i)=this.getParamInTrial(l,t);
+                    if ~isempty(rawTrials)
+                        trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                        for t=trials
+                            inds=this.data.indsInTrial{t};
+                            dataPoints(inds,i)=this.getParamInTrial(l,t);
+                        end
                     end
                 end
                 %find graph location

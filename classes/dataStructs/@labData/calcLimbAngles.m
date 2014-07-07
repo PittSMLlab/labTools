@@ -21,7 +21,7 @@ if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIP
     RhipPos2D=trialData.getMarkerData({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
 else
-    warning(['There are missing hip markers in ',file,'. Unable to calculate limb angles']);
+    warning(['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
     angleData=[];
     return
 end
