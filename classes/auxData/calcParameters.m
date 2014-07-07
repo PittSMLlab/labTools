@@ -207,7 +207,7 @@ for step=1:Nstrides
         strideTimeFast(t)=timeFTO2-timeFTO;
         %cadence (stride cycles per s)
         cadenceSlow(t)=1/strideTimeSlow(t);
-        cadenceFast(t)=1/strideTimeSlow(t);
+        cadenceFast(t)=1/strideTimeSlow(t); %Is this correct?? Shouldn't it be strideTimeFast ??
         %step cadence (steps per s)
         stepCadenceSlow(t)=1/stepTimeSlow(t);
         stepCadenceFast(t)=1/stepTimeFast(t);

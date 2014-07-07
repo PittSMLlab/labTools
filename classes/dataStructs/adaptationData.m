@@ -165,7 +165,7 @@ classdef adaptationData
             figsz=[0 0 1 1];
             %in pixels:
             vertpad = 30/scrsz(4); %padding on the top and bottom of figure
-            horpad = 20/scrsz(3);  %padding on the left and right of figure
+            horpad = 60/scrsz(3);  %padding on the left and right of figure
             
             % Set colors
             poster_colors;
@@ -209,7 +209,7 @@ classdef adaptationData
             end
      
             condDes = this.metaData.conditionName;
-            legend(condDes(~cellfun('isempty',condDes))); %this is for the case when a condition number was skipped
+            legend(condDes(conds)); %this is for the case when a condition number was skipped
         end
         
         function plotParamTrialTimeCourse(this,label)   
@@ -219,7 +219,7 @@ classdef adaptationData
             figsz=[0 0 1 1];
             %in pixels:
             vertpad = 30/scrsz(4); %padding on the top and bottom of figure
-            horpad = 20/scrsz(3);  %padding on the left and right of figure
+            horpad = 60/scrsz(3);  %padding on the left and right of figure
             
             % Set colors
             poster_colors;
@@ -269,7 +269,7 @@ classdef adaptationData
             figsz=[0 0 1 1];
             %in pixels:
             vertpad = 30/scrsz(4); %padding on the top and bottom of figure
-            horpad = 20/scrsz(3);  %padding on the left and right of figure
+            horpad = 60/scrsz(3);  %padding on the left and right of figure
             
             % Set colors
             poster_colors;
@@ -290,21 +290,19 @@ classdef adaptationData
                 earlyPoints=[];
                 veryEarlyPoints=[];
                 latePoints=[];
-                earlySte=[];
-                veryEarlySte=[];
-                lateSte=[];
                 for i=1:nConds
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
                     trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
                     aux=this.getParamInTrial(l,trials(1));
-                    veryEarlyPoints(i)=mean(aux(1:3));
-                    veryEarlySte(i)=std(aux(1:3))/sqrt(3);
-                    earlyPoints(i)=mean(aux(1:5));
-                    earlySte(i)=std(aux(1:5))/sqrt(5);
+                    veryEarlyPoints(i,:)=aux(1:3);
+                    earlyPoints(i,:)=aux(1:5);
                     aux=this.getParamInTrial(l,trials(end));
-                    N2=min([20,length(aux)]);
-                    latePoints(i)=mean(aux(end-N2+1:end));
-                    lateSte(i)=std(aux(end-N2+1:end))/sqrt(N2);
+                    try
+                        N2=min([20,length(aux)-5]);
+                        latePoints(i,:)=aux(end-N2-4:end-5);
+                    catch
+                        latePoints(i,:)=NaN;
+                    end
                 end
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
@@ -317,12 +315,10 @@ classdef adaptationData
                 subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
                 hold on
                 
-                bar(1:3:3*nConds,earlyPoints,.3,'FaceColor',[.6,.6,.6])
-                %bar(1:3:3*nConds,veryEarlyPoints,.2,'FaceColor',[.8,.8,.8])
-                bar(2:3:3*nConds,latePoints,.3,'FaceColor',[0,.3,.6])
-                errorbar(1:3:3*nConds,earlyPoints, earlySte,'.','LineWidth',2)
-                %errorbar(1:3:3*nConds,veryEarlyPoints, veryEarlySte,'.','LineWidth',2,'Color',[.8,.5,0])
-                errorbar(2:3:3*nConds,latePoints, lateSte,'.','LineWidth',2)
+                bar(1:3:3*nConds,nanmean(earlyPoints,2),.3,'FaceColor',[.6,.6,.6])
+                bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
+                errorbar(1:3:3*nConds,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
@@ -331,7 +327,7 @@ classdef adaptationData
             end
      
             condDes = this.metaData.conditionName;
-            legend('Early (first 5 strides)','Late (last 20 strides)'); %this is for the case when a condition number was skipped
+            legend('Early (first 5 strides)','Late (last 20 (-5) strides)'); %this is for the case when a condition number was skipped
         end
     end
     
@@ -342,7 +338,7 @@ classdef adaptationData
             figsz=[0 0 1 1];
             %in pixels:
             vertpad = 30/scrsz(4); %padding on the top and bottom of figure
-            horpad = 20/scrsz(3);  %padding on the left and right of figure
+            horpad = 60/scrsz(3);  %padding on the left and right of figure
             
             % Set colors
             poster_colors;
@@ -377,12 +373,18 @@ classdef adaptationData
                 for i=1:nConds
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
                     trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
-                    aux=this.getParamInTrial(l,trials(1));
-                    veryEarlyPoints(i,subject)=mean(aux(1:3));
-                    earlyPoints(i,subject)=mean(aux(1:5));
-                    aux=this.getParamInTrial(l,trials(end));
-                    N2=min([20,length(aux)]);
-                    latePoints(i,subject)=mean(aux(end-N2+1:end));
+                    if ~isempty(trials)
+                        aux=this.getParamInTrial(l,trials(1));
+                        veryEarlyPoints(i,subject)=mean(aux(1:3));
+                        earlyPoints(i,subject)=mean(aux(1:5));
+                        aux=this.getParamInTrial(l,trials(end));
+                        N2=min([20,length(aux)-5]);
+                        latePoints(i,subject)=mean(aux(end-N2-4:end-5));
+                    else
+                        veryEarlyPoints(i,subject)=NaN;
+                        earlyPoints(i,subject)=NaN;
+                        latePoints(i,subject)=NaN;
+                    end
                 end
                 end
                 %find graph location
@@ -396,12 +398,12 @@ classdef adaptationData
                 subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
                 hold on
 
-                bar(1:3:3*nConds,mean(earlyPoints,2),.3,'FaceColor',[.6,.6,.6]) 
-                bar(2:3:3*nConds,mean(latePoints,2),.3,'FaceColor',[0,.3,.6])
+                bar(1:3:3*nConds,nanmean(earlyPoints,2),.3,'FaceColor',[.6,.6,.6]) 
+                bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
                 plot(1:3:3*nConds,earlyPoints,'x','LineWidth',2)
                 plot(2:3:3*nConds,latePoints,'x','LineWidth',2)
-                errorbar(1:3:3*nConds,mean(earlyPoints,2), std(earlyPoints,[],2)/sqrt(length(earlyPoints)),'.','LineWidth',2)
-                errorbar(2:3:3*nConds,mean(latePoints,2), std(latePoints,[],2)/sqrt(length(latePoints)),'.','LineWidth',2)
+                errorbar(1:3:3*nConds,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
@@ -410,7 +412,7 @@ classdef adaptationData
             end
      
             condDes = this.metaData.conditionName;
-            legend({'Early (first 5 strides)','Late (last 20 strides)', adaptDataList{:} }); 
+            legend([{'Early (first 5 strides)','Late (last 20 (-5) strides)'}, adaptDataList ]); 
         end
     end
 
