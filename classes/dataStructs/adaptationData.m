@@ -315,10 +315,15 @@ classdef adaptationData
                 subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
                 hold on
                 
-                bar(1:3:3*nConds,nanmean(earlyPoints,2),.3,'FaceColor',[.6,.6,.6])
+                bar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.8,.8,.8])
+                bar([1:3:3*nConds]+.25,nanmean(earlyPoints,2),.15,'FaceColor',[.6,.6,.6])
                 bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
-                errorbar(1:3:3*nConds,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                errorbar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
+                errorbar([1:3:3*nConds]+.25,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
                 errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                %plot([1:3:3*nConds]-.25,veryEarlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])
+                %plot([1:3:3*nConds]+.25,earlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])
+                %plot(2:3:3*nConds,latePoints,'x','LineWidth',2,'Color',[0,.6,.2])
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
@@ -327,7 +332,7 @@ classdef adaptationData
             end
      
             condDes = this.metaData.conditionName;
-            legend('Early (first 5 strides)','Late (last 20 (-5) strides)'); %this is for the case when a condition number was skipped
+            legend('Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'); %this is for the case when a condition number was skipped
         end
     end
     
@@ -398,12 +403,14 @@ classdef adaptationData
                 subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
                 hold on
 
-                %bar(1:3:3*nConds-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.6,.6,.6]) 
-                bar(1:3:3*nConds+.25,nanmean(earlyPoints,2),.15,'FaceColor',[.6,.6,.6]) 
+                bar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.8,.8,.8]) 
+                bar([1:3:3*nConds]+.25,nanmean(earlyPoints,2),.15,'FaceColor',[.6,.6,.6]) 
                 bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
-                plot(1:3:3*nConds,earlyPoints,'x','LineWidth',2)
+                plot([1:3:3*nConds]-.25,veryEarlyPoints,'x','LineWidth',2)
+                plot([1:3:3*nConds]+.25,earlyPoints,'x','LineWidth',2)
                 plot(2:3:3*nConds,latePoints,'x','LineWidth',2)
-                errorbar(1:3:3*nConds,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                errorbar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
+                errorbar([1:3:3*nConds]+.25,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
                 errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
@@ -413,7 +420,7 @@ classdef adaptationData
             end
      
             condDes = this.metaData.conditionName;
-            legend([{'Early (first 5 strides)','Late (last 20 (-5) strides)'}, adaptDataList ]); 
+            legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, adaptDataList ]); 
         end
     end
 
