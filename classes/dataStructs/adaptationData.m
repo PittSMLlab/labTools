@@ -293,12 +293,19 @@ classdef adaptationData
                 for i=1:nConds
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
                     trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
-                    aux=this.getParamInTrial(l,trials(1));
-                    veryEarlyPoints(i,:)=aux(1:3);
-                    earlyPoints(i,:)=aux(1:5);
-                    aux=this.getParamInTrial(l,trials(end));
+                    aux=this.getParamInCond(l,conds(i));
+                    try %Try to get the first strides, if there are enough
+                        veryEarlyPoints(i,:)=aux(1:3);
+                        earlyPoints(i,:)=aux(1:5);
+                    catch %In case there aren't enough strides, assign NaNs to all
+                        veryEarlyPoints(i,:)=NaN;
+                        earlyPoints(i,:)=NaN;
+                    end
+                    
+                    %Last 20 steps, excepting the very last 5
+                    idx=length(trials);
                     try
-                        N2=min([20,length(aux)-5]);
+                        N2=20;
                         latePoints(i,:)=aux(end-N2-4:end-5);
                     catch
                         latePoints(i,:)=NaN;
@@ -379,12 +386,22 @@ classdef adaptationData
                     rawTrials=this.metaData.trialsInCondition{conds(i)};
                     trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
                     if ~isempty(trials)
-                        aux=this.getParamInTrial(l,trials(1));
-                        veryEarlyPoints(i,subject)=mean(aux(1:3));
-                        earlyPoints(i,subject)=mean(aux(1:5));
-                        aux=this.getParamInTrial(l,trials(end));
-                        N2=min([20,length(aux)-5]);
-                        latePoints(i,subject)=mean(aux(end-N2-4:end-5));
+                        aux=this.getParamInCond(l,conds(i));
+                        try %Try to get the first strides, if there are enough
+                            veryEarlyPoints(i,subject)=mean(aux(1:3));
+                            earlyPoints(i,subject)=mean(aux(1:5));
+                        catch %In case there aren't enough strides, assign NaNs to all
+                            veryEarlyPoints(i,subject)=NaN;
+                            earlyPoints(i,subject)=NaN;
+                        end
+
+                        %Last 20 steps, excepting the very last 5
+                        try
+                            N2=20;
+                            latePoints(i,subject)=mean(aux(end-N2-4:end-5));
+                        catch
+                            latePoints(i,subject)=NaN;
+                        end
                     else
                         veryEarlyPoints(i,subject)=NaN;
                         earlyPoints(i,subject)=NaN;

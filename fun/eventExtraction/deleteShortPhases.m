@@ -12,8 +12,10 @@ N=ceil(minDuration*fsample);
 
 %stance=~eroSwing;
 
-for i=1:N
-    stance=conv(double(stance),ones(2*i+1,1),'same')>i;
+if ~isempty(stance)
+    for i=1:N
+        stance=conv(double(stance),ones(2*i+1,1),'same')>i;
+    end
 end
 
 end
