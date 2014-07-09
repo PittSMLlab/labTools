@@ -15,12 +15,9 @@ if strcmpi(trialData.metaData.type,'OG') %Overground Trial, use limb angles to c
     t0=trialData.markerData.Time(1);
     Ts=trialData.markerData.sampPeriod;
 elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
-    if isempty(trialData.GRFData) %No force data
+    noForce=false;
+    if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data
         noForce=true;
-    elseif isempty(trialData.GRFData.Data)
-        noForce=true;
-    else
-        noForce=false;
     end
     if noForce
         disp(['No ground reaction forces data in ' file '. Using marker data to compute events.'])
@@ -69,6 +66,8 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
         t0=trialData.GRFData.Time(1);
         Ts=trialData.GRFData.sampPeriod;
     end
+else
+    warning('Trial type should be ''OG'' or ''TM''. No events will be computed.');
 end
 
 events=labTimeSeries([LHSevent,RHSevent,LTOevent,RTOevent],t0,Ts,{'LHS','RHS','LTO','RTO'});

@@ -345,6 +345,22 @@ classdef adaptationData
     
     methods(Static)
         function plotGroupedSubjects(adaptDataList,label,removeBiasFlag)
+            
+            %First: see if adaptDataList is a single subject (char), a cell
+            %array of subject names (one group of subjects), or a cell array of cell arrays of
+            %subjects names (several groups of subjects), and put all the
+            %cases into the same format
+            if isa(adaptDataList,'cell')
+                if isa(adaptDataList{1},'cell')
+                    auxList=adaptDataList;
+                else
+                    auxList{1}=adaptDataList;
+                end
+            elseif isa(adaptDataList,'char')
+                auxList={adaptDataList};
+            end
+            Ngroups=length(auxList);
+            
             figureFullScreen
             
             figsz=[0 0 1 1];
@@ -361,22 +377,31 @@ classdef adaptationData
                         %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
             
-            load(adaptDataList{1});
+            load(auxList{1}{1});
             this=adaptData;
             conds=unique(this.metaData.getCondLstPerTrial);
             conds=conds(~isnan(conds));
             nConds=length(conds);          
             rowind=1;
-            colind=0;            
+            colind=0;    
             for l=label
+                %find graph location
+                bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
+                left=colind*(figsz(3))/cols+horpad;
+                rowind=rowind+1;
+                if rowind>rows
+                    colind=colind+1;
+                    rowind=1;
+                end
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
+                hold on
+                
+                for group=1:Ngroups
                 earlyPoints=[];
                 veryEarlyPoints=[];
                 latePoints=[];
-                earlySte=[];
-                veryEarlySte=[];
-                lateSte=[];
-                for subject=1:length(adaptDataList) %Getting data for each subject in the list
-                    load(adaptDataList{subject});
+                for subject=1:length(auxList{group}) %Getting data for each subject in the list
+                    load(auxList{group}{subject});
                     if nargin<3 || isempty(removeBiasFlag) || removeBiasFlag==1
                         this=adaptData.removeBias; %Default behaviour
                     else
@@ -409,35 +434,48 @@ classdef adaptationData
                     end
                 end
                 end
-                %find graph location
-                bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
-                left=colind*(figsz(3))/cols+horpad;
-                rowind=rowind+1;
-                if rowind>rows
-                    colind=colind+1;
-                    rowind=1;
+                
+                
+                if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
+                    bar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor',[.85,.85,.85].^group) 
+                    bar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,'FaceColor',[.7,.7,.7].^group) 
+                else
+                    h(2*(group-1)+1)=bar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,'FaceColor',[.6,.6,.6].^group);
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
-                hold on
-
-                bar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.8,.8,.8]) 
-                bar([1:3:3*nConds]+.25,nanmean(earlyPoints,2),.15,'FaceColor',[.6,.6,.6]) 
-                bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
-                plot([1:3:3*nConds]-.25,veryEarlyPoints,'x','LineWidth',2)
-                plot([1:3:3*nConds]+.25,earlyPoints,'x','LineWidth',2)
-                plot(2:3:3*nConds,latePoints,'x','LineWidth',2)
-                errorbar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
-                errorbar([1:3:3*nConds]+.25,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
-                errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                
+                h(2*group)=bar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
+                if Ngroups==1 %Only plotting individual subject performance if there is only one group
+                plot([1:3:3*nConds]-.25+(group-1)/Ngroups,veryEarlyPoints,'x','LineWidth',2)
+                plot([1:3:3*nConds]+.25+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
+                plot([2:3:3*nConds]+(group-1)/Ngroups,latePoints,'x','LineWidth',2)
+                end
+                if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
+                errorbar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
+                errorbar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                else
+                    errorbar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                end
+                
+                errorbar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                end
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
-                title([l{1}])     
+                title([l{1}])  
                 hold off
             end
+            
      
             condDes = this.metaData.conditionName;
-            legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, adaptDataList ]); 
+            if Ngroups==1
+                legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, auxList{1} ]); 
+            else
+                legStr={};
+                for group=1:Ngroups
+                    legStr=[legStr, {['Early (first 5), Group ' num2str(group)],['Late (last 20 (-5)), Group ' num2str(group)]}];
+                end
+                legend(h,legStr)
+            end
         end
     end
 
