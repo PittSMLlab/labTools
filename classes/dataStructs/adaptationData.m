@@ -176,8 +176,7 @@ classdef adaptationData
             %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
             
-            conds=unique(this.metaData.getCondLstPerTrial);
-            conds(isnan(conds))=[];
+            conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
             nPoints=size(this.data.Data,1);            
             rowind=1;
@@ -280,8 +279,7 @@ classdef adaptationData
                         %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
 
-            conds=unique(this.metaData.getCondLstPerTrial);
-            conds=conds(~isnan(conds));
+            conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
             nPoints=size(this.data.Data,1);            
             rowind=1;
