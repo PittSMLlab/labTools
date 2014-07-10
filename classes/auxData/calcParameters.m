@@ -354,7 +354,6 @@ try
         disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
     end
 catch
-        slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
-        file=in.metaData.rawDataFilename((slashes(end)+1):end);
+    [file] = getSimpleFileName(in.metaData.rawDataFilename);
         disp(['Warning: No strides detected in ',file])
 end

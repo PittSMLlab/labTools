@@ -11,8 +11,8 @@ else
     orientation=trialData.markerData.orientation;
 end
 
-slashes=find(trialData.metaData.rawDataFilename=='\' | trialData.metaData.rawDataFilename=='/');
-file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
+[file] = getSimpleFileName(trialData.metaData.rawDataFilename);
+
 
 % get hip position in fore-aft and up-down axes
 if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIPx')

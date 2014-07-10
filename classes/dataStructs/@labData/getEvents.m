@@ -1,7 +1,6 @@
 function events = getEvents(trialData,angleData)
 
-slashes=find(trialData.metaData.rawDataFilename=='\' | trialData.metaData.rawDataFilename=='/');
-file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
+file=getSimpleFileName(trialData.metaData.rawDataFilename);
 
 if isempty(trialData.markerData.orientation)
     warning('Assuming default orientation of axes for marker data.');
