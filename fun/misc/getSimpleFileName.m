@@ -4,7 +4,7 @@ if isa(filename,'cell') %Case where there are several filenames, using the first
 end
 slashes=find(filename=='\' | filename=='/');
 if ~isempty(slashes)
-    file=trialData.metaData.rawDataFilename((slashes(end)+1):end);
+    file=filename((slashes(end)+1):end);
 else
     file=filename;
 end

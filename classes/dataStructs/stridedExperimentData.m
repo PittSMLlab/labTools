@@ -43,9 +43,9 @@ classdef stridedExperimentData
         end
         
         %Getters for Dependent properties
-        function a=get.isTimeNormalized(this)
-            a='Who knows?'; %ToDo!
-        end
+        %function a=get.isTimeNormalized(this)
+        %    a='Who knows?'; %ToDo!
+        %end
         
         %Modifiers
         function newThis=timeNormalize(this,N)
@@ -76,9 +76,9 @@ classdef stridedExperimentData
         end
         
         %Assess results
-        plotAllStrides(this,fields)
+        plotAllStrides(this,fields,conditions)
             
-        newThis=alignEvents(this)
+        newThis=alignEvents(this,spacing)
         
         newThis=discardBadStrides(this)
             
