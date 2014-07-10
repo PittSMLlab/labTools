@@ -25,12 +25,14 @@ classdef labData
             %if nargin<1 || isempty(metaData)
             %    this.metaData=labMetaData(); %I think this should be mandatory and fail instead of putting an empty metaData.
             %end
-            if isa(metaData,'trialMetaData')
+            %if isa(metaData,'trialMetaData') %Had to comment this on
+            %10/7/2014, because trialMetaData and experimentMetaData are no
+            %longer labMetaData objects. -Pablo
                 this.metaData=metaData;
-            else
-                ME=MException('labData:Constructor','First argument (metaData) should be a labMetaData object.');
-                throw(ME)
-            end
+            %else
+            %    ME=MException('labData:Constructor','First argument (metaData) should be a labMetaData object.');
+            %    throw(ME)
+            %end
             if nargin<2 || isempty(markerData)
                 this.markerData=[];
             elseif isa(markerData,'orientedLabTimeSeries')
@@ -189,10 +191,10 @@ classdef labData
            cname=class(this);
            if nargin<4
                %(ID,date,experimenter,desc,obs,refLeg,parentMeta)
-               metaData=derivedMetaData(labDate.genIDFromClock,labDate.getCurrent,'labData.split',['Splice of ' this.metaData.description],'Auto-generated',this.metaData.refleg,this.metaData); %HH removed 'Partial INterval' after labdata.split since 'type' propery was eliminated.
+               metaData=derivedMetaData(labDate.genIDFromClock,labDate.getCurrent,'labData.split',['Splice of ' this.metaData.description],'Auto-generated',this.metaData.refLeg,this.metaData); %HH removed 'Partial INterval' after labdata.split since 'type' propery was eliminated.
                 eval(['newThis=' cname '(metaData);']); %Call empty constructor of same class
            else
-               metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,'labData.split',['Splice of ' this.metaData.description],'Auto-generated',this.metaData.refleg,this.metaData); %Should I call a different metaData constructor
+               metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,'labData.split',['Splice of ' this.metaData.description],'Auto-generated',this.metaData.refLeg,this.metaData); %Should I call a different metaData constructor
                 eval(['newThis=' newClass '(metaData);']); %Call empty constructor of same class
            end
            auxLst=properties(cname);

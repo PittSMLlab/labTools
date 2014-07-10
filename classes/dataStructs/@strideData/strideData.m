@@ -314,7 +314,9 @@ classdef strideData < processedLabData
             if nargin<10
                 plotEv=0;
             end
-            subplot(plotHandle)
+            if nargin>5 && ~isempty(plotHandle)
+                subplot(plotHandle)
+            end
             eval(['testField=strides{1}.' field ';'])
             data=strideData.cell2mat(strides,field,N);
             if numel(ampNorm)>1

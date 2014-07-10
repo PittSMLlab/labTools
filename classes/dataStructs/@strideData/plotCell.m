@@ -50,7 +50,7 @@ Nplots=length(relIdx);
 for stride=1:length(strides)
    eval(['relData{stride}=strides{stride}.' field '.getDataAsTS(relLabels);']);
    if plotEvents
-   events{stride}=strides{stride}.gaitEvents.getDataAsTS(relLabels);
+        events{stride}=strides{stride}.gaitEvents.getDataAsTS({'RHS','LHS','RTO','LTO'});
    end
    strideLength(stride)=size(relData{stride}.Data,1);
 end

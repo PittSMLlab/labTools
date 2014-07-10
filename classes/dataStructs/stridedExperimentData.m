@@ -44,7 +44,7 @@ classdef stridedExperimentData
         
         %Getters for Dependent properties
         function a=get.isTimeNormalized(this)
-            a=0; %ToDo!
+            a='Who knows?'; %ToDo!
         end
         
         %Modifiers
@@ -66,21 +66,25 @@ classdef stridedExperimentData
            newThis.isTimeNormalized=true;
         end
         
-        function [strides,origTrialL,origTrialR]=getStridesFromCondition(this,condition)
+        function [strides]=getStridesFromCondition(this,condition)
            strides={};           
-           origTrialL=[];
-           origTrialR=[];
            for trial=this.metaData.trialsInCondition{condition}
                trialData=this.stridedTrials{trial};
                Nsteps=length(trialData);
-               strides(end+1:end+Nsteps)=trialData;
-               origTrialL(end+1:end+Nsteps)=trial;                            
-               origTrialR(end+1:end+Nsteps)=trial;
+               strides(end+1:end+Nsteps)=trialData;                           
            end
         end
         
         %Assess results
+        plotAllStrides(this,fields)
+            
+        newThis=alignEvents(this)
         
+        newThis=discardBadStrides(this)
+            
+        plotAvgStride(this,fields)
+        
+        structure=getDataAsMatrices(this,fields)
         
     end
     

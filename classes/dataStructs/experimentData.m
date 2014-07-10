@@ -99,7 +99,7 @@ classdef experimentData
             startind=1;
             if ~isempty(this.data)
                 for i=1:length(this.data)
-                    if ~isempty(this.data{i}.adaptParams)
+                    if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
@@ -117,16 +117,19 @@ classdef experimentData
             end
         end
         
-        function stridedExp=splitIntoStrides(this)
+        function stridedExp=splitIntoStrides(this,refEvent)
+            
             if ~this.isStepped && this.isProcessed
-                refLeg = this.metaData.refLeg;
                 for trial=1:length(this.data)
                     trialData=this.data{trial};
                     if ~isempty(trialData)
-                        %Assuming that the first event of each stride is
-                        %the heel strike of the refLeg! (check c3d2mat -
-                        %refleg should be opposite the dominant/fast leg)
-                        aux=trialData.separateIntoStrides([refLeg,'HS']);
+                        if nargin<2 || isempty(refEvent)
+                            refEvent=[trialData.metaData.refLeg,'HS'];
+                            %Assuming that the first event of each stride should be
+                            %the heel strike of the refLeg! (check c3d2mat -
+                            %refleg should be opposite the dominant/fast leg)
+                        end
+                        aux=trialData.separateIntoStrides(refEvent);
                         strides{trial}=aux;                        
                     else
                         strides{trial}=[];                        

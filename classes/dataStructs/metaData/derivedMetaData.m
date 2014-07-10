@@ -11,12 +11,14 @@ classdef derivedMetaData < labMetaData
         %Constructor
         function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta)
             this@labMetaData(ID,date,experimenter,desc,obs,refLeg);
-            if isa(parentMeta,'labMetaData');
+            %if isa(parentMeta,'labMetaData'); %Had to comment this on
+            %10/7/2014, because trialMetaData and experimentMetaData are no
+            %longer labMetaData objects. -Pablo
                 this.parentMetaData=parentMeta;
-            else
-                ME=MException('derivedMetaData:Constructor','parentMetaData is not a labMetaData object.');
-                throw(ME);
-            end
+            %else
+            %    ME=MException('derivedMetaData:Constructor','parentMetaData is not a labMetaData object.');
+            %    throw(ME);
+            %end
         end
         
     end
