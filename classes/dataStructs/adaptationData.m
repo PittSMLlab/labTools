@@ -50,6 +50,10 @@ classdef adaptationData
             if nargin<2 || isempty(conditions)
                 %if no conditions were entered, this just searches all
                 %condition names for the string 'base'
+                ogTrials=[];
+                tmTrials=[];
+                ogBaseTrials=[];
+                tmBaseTrials=[];
                 for c=1:length(conds)
                     rawTrials=trialsInCond{c};
                     trials=find(ismember(cell2mat(trialsInCond),rawTrials));
