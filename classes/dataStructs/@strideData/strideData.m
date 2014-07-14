@@ -171,14 +171,15 @@ classdef strideData < processedLabData
     
     methods(Static)
         
-        function strideMat=cell2mat(strides,field,N) %Cell array of strideData to matrix
+        function [strideMat]=cell2mat(strides,field,N) %Cell array of strideData to matrix
             strideMat=[];
            if isa(strides,'cell') && all(cellisa(strides,'strideData'))
                auxLst=properties('strideData');
                if any(strcmp(auxLst,field))
                    eval(['testField=strides{1}.' field ';'])
                    if isa(testField,'labTimeSeries')
-                       for i=1:length(strides)
+                       M=length(strides);
+                       for i=1:M
                            eval(['testField=strides{i}.' field ';'])
                            strideMat(:,:,i)=testField.resampleN(N).getDataAsVector(testField.getLabels);
                        end
