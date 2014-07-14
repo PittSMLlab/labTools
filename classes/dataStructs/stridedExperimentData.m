@@ -77,6 +77,8 @@ classdef stridedExperimentData
         
         %Assess results
         function [figHandle,plotHandles]=plotAllStrides(this,field,conditions,plotHandles,figHandle)
+            %To Do: need to add gait Events markers.
+            
             % Set colors
             poster_colors;
             % Set colors order
@@ -162,7 +164,7 @@ classdef stridedExperimentData
         end
             
         function newThis=alignEvents(this,spacing)
-        newThis=[];
+            newThis=[];
         end
         
         function newThis=discardBadStrides(this) %No need, the discarding happens when this structure is created from a processed experiment.
