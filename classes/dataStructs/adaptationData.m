@@ -38,49 +38,84 @@ classdef adaptationData
             end
         end
         
-        function newThis=removeBias(this)
-            %find baseline conditions
+        function newThis=removeBias(this,conditions)
             %NOTE: this assumes that the condition names will contain the
             %string "base" if they are a baseline trial
             
-            %this code can probably be cleaned up by taking advantage of
-            %other functions in this class such as getParamInCond...
-            conds=this.metaData.conditionName;
             trialsInCond=this.metaData.trialsInCondition;
-            ogTrials=[];
-            ogBaseTrials=[];
-            tmTrials=[];
-            tmBaseTrials=[];
-            for c=1:length(conds)
-                rawTrials=trialsInCond{c};
-                trials=find(ismember(cell2mat(trialsInCond),rawTrials));
-                if all(strcmpi(this.data.trialTypes(trials),'OG'))                              
-                    ogTrials=[ogTrials trials];
-                    if ~isempty(strfind(lower(conds{c}),'base'))
-                        ogBaseTrials=[ogBaseTrials trials];
+            conds=this.metaData.conditionName;
+            trialTypes=this.data.trialTypes;
+            labels=this.data.labels;
+            
+            if nargin<2 || isempty(conditions)
+                %if no conditions were entered, this just searches all
+                %condition names for the string 'base'
+                for c=1:length(conds)
+                    rawTrials=trialsInCond{c};
+                    trials=find(ismember(cell2mat(trialsInCond),rawTrials));
+                    if all(strcmpi(trialTypes(trials),'OG'))
+                        ogTrials=[ogTrials trials];
+                        if ~isempty(strfind(lower(conds{c}),'base'))
+                            ogBaseTrials=[ogBaseTrials trials];
+                        end
+                    elseif all(strcmpi(trialTypes(trials),'TM'))
+                        tmTrials=[tmTrials trials];
+                        if ~isempty(strfind(lower(conds{c}),'base'))
+                            tmBaseTrials=[tmBaseTrials trials];
+                        end
                     end
-                elseif all(strcmpi(this.data.trialTypes(trials),'TM'))                     
-                    tmTrials=[tmTrials trials];
-                    if ~isempty(strfind(lower(conds{c}),'base'))                                         
-                        tmBaseTrials=[tmBaseTrials trials];
+                end
+            else
+                %convert any condition input into correct format
+                if isa(conditions,'char')
+                    conditions={conditions};
+                elseif isa(conditions,'double')
+                    conditions=conds(conditions);
+                end
+                
+                % validate condition(s)
+                [boolFlag,labelIdx]=this.isaCondition(conditions);
+                for i=1:length(boolFlag)
+                    if boolFlag(i)==0
+                        warning([conditions{i} ' is not a condition in this data set.'])
+                    end
+                end
+                
+                ogTrials=find(strcmpi(trialTypes,'OG'));
+                tmTrials=find(strcmpi(trialTypes,'TM'));
+                ogBaseTrials=[];
+                tmBaseTrials=[];
+                
+                for c=conditions(boolFlag==1)
+                    if ~isempty(strfind(lower(cell2mat(c)),'base'))
+                        rawTrials=trialsInCond{strcmpi(conds,c)};
+                        trials=find(ismember(cell2mat(trialsInCond),rawTrials));
+                        if all(strcmpi(trialTypes(trials),'OG'))
+                            ogBaseTrials=[ogBaseTrials trials];
+                        elseif all(strcmpi(trialTypes(trials),'TM'))
+                            tmBaseTrials=[tmBaseTrials trials];
+                        end
+                    else
+                        warning([cell2mat(c) 'not detected as a baseline trial and not used to remove baseline.'])
                     end
                 end
             end
+            
             if ~isempty(tmBaseTrials)
-                base=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(tmBaseTrials)),:));
+                base=nanmedian(this.getParamInTrial(labels,tmBaseTrials));
                 inds=cell2mat(this.data.indsInTrial(tmTrials));
                 newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
-            else
+            elseif any(strcmpi(trialTypes,'TM'))
                 warning('No treadmill baseline trials detected. Bias not removed')
             end
             if ~isempty(ogBaseTrials)
-                ogBase=nanmedian(this.data.Data(cell2mat(this.data.indsInTrial(ogBaseTrials)),:)); %should it be nanmean?
+                ogBase=nanmedian(this.getParamInTrial(labels,ogBaseTrials)); %should it be nanmean?
                 ogInds=cell2mat(this.data.indsInTrial(ogTrials));
                 newData(ogInds,:)=this.data.Data(ogInds,:)-repmat(ogBase,length(ogInds),1);
-            else
+            elseif any(strcmpi(trialTypes,'OG'))
                 warning('No overground baseline trials detected. Bias not removed')
-            end                    
-            newParamData=paramData(newData,this.data.labels,this.data.indsInTrial);
+            end
+            newParamData=paramData(newData,labels,this.data.indsInTrial);
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
         
@@ -157,9 +192,9 @@ classdef adaptationData
             
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
-        end           
+        end
         
-        function plotParamTimeCourse(this,label)   
+        function plotParamTimeCourse(this,label)
             
             figureFullScreen
             
@@ -179,9 +214,9 @@ classdef adaptationData
             
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
-            nPoints=size(this.data.Data,1);            
+            nPoints=size(this.data.Data,1);
             rowind=1;
-            colind=0;            
+            colind=0;
             for l=label
                 dataPoints=NaN(nPoints,nConds);
                 for i=1:nConds
@@ -202,17 +237,17 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);                
-                plot(dataPoints,'.','MarkerSize',15)  
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
+                plot(dataPoints,'.','MarkerSize',15)
                 axis tight
-                title([l{1},' (',this.subData.ID ')'])                
+                title([l{1},' (',this.subData.ID ')'])
             end
-     
+            
             condDes = this.metaData.conditionName;
             legend(condDes(conds)); %this is for the case when a condition number was skipped
         end
         
-        function plotParamTrialTimeCourse(this,label)   
+        function plotParamTrialTimeCourse(this,label)
             
             figureFullScreen
             
@@ -234,12 +269,12 @@ classdef adaptationData
             nPoints=size(this.data.Data,1);
             
             rowind=1;
-            colind=0;            
+            colind=0;
             for l=label
                 dataPoints=NaN(nPoints,nTrials);
-                for i=1:nTrials                    
+                for i=1:nTrials
                     inds=this.data.indsInTrial{i};
-                    dataPoints(inds,i)=this.getParamInTrial(l,i);                    
+                    dataPoints(inds,i)=this.getParamInTrial(l,i);
                 end
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
@@ -249,12 +284,12 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);               
-                plot(dataPoints,'.','MarkerSize',15)  
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
+                plot(dataPoints,'.','MarkerSize',15)
                 axis tight
-                title([l{1},' (',this.subData.ID ')'])                 
+                title([l{1},' (',this.subData.ID ')'])
             end
-        
+            
             trialNums = cell2mat(this.metaData.trialsInCondition);
             legendEntry={};
             for i=1:length(trialNums)
@@ -277,14 +312,14 @@ classdef adaptationData
             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
             set(gcf,'DefaultAxesColorOrder',ColorOrder);
             
-                        %find subplot size with width to hieght ratio of 4:1
+            %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
-
+            
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
-            nPoints=size(this.data.Data,1);            
+            nPoints=size(this.data.Data,1);
             rowind=1;
-            colind=0;            
+            colind=0;
             for l=label
                 earlyPoints=[];
                 veryEarlyPoints=[];
@@ -318,7 +353,7 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
                 hold on
                 
                 bar([1:3:3*nConds]-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.8,.8,.8])
@@ -333,14 +368,38 @@ classdef adaptationData
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
-                title([l{1},' (',this.subData.ID ')'])     
+                title([l{1},' (',this.subData.ID ')'])
                 hold off
             end
-     
+            
             condDes = this.metaData.conditionName;
             legend('Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'); %this is for the case when a condition number was skipped
         end
+        
+        function [boolFlag,labelIdx]=isaCondition(this,cond)
+            if isa(cond,'char')
+                auxCond{1}=cond;
+            elseif isa(cond,'cell')
+                auxCond=cond;
+            elseif isa(cond,'double')
+                auxCond=this.metaData.conditionName(cond);
+            end
+            N=length(auxCond);
+            boolFlag=false(N,1);
+            labelIdx=zeros(N,1);
+            for j=1:N
+                for i=1:length(this.metaData.conditionName)
+                    if strcmpi(auxCond{j},this.metaData.conditionName{i})
+                        boolFlag(j)=true;
+                        labelIdx(j)=i;
+                        break;
+                    end
+                end
+            end
+        end
     end
+    
+    
     
     methods(Static)
         function plotGroupedSubjects(adaptDataList,label,removeBiasFlag)
@@ -373,15 +432,15 @@ classdef adaptationData
             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
             set(gcf,'DefaultAxesColorOrder',ColorOrder);
             
-                        %find subplot size with width to hieght ratio of 4:1
+            %find subplot size with width to hieght ratio of 4:1
             [rows,cols]=subplotSize(length(label),1,4);
             
             load(auxList{1}{1});
             this=adaptData;
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
-            nConds=length(conds);          
+            nConds=length(conds);
             rowind=1;
-            colind=0;    
+            colind=0;
             for l=label
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
@@ -391,82 +450,82 @@ classdef adaptationData
                     colind=colind+1;
                     rowind=1;
                 end
-                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);          
+                subplot('Position',[left bottom (figsz(3)/cols)-2*horpad (figsz(4)/rows)-2*vertpad]);
                 hold on
                 
                 for group=1:Ngroups
-                earlyPoints=[];
-                veryEarlyPoints=[];
-                latePoints=[];
-                for subject=1:length(auxList{group}) %Getting data for each subject in the list
-                    load(auxList{group}{subject});
-                    if nargin<3 || isempty(removeBiasFlag) || removeBiasFlag==1
-                        this=adaptData.removeBias; %Default behaviour
-                    else
-                        this=adaptData;
-                    end
-                for i=1:nConds
-                    rawTrials=this.metaData.trialsInCondition{conds(i)};
-                    trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
-                    if ~isempty(trials)
-                        aux=this.getParamInCond(l,conds(i));
-                        try %Try to get the first strides, if there are enough
-                            veryEarlyPoints(i,subject)=mean(aux(1:3));
-                            earlyPoints(i,subject)=mean(aux(1:5));
-                        catch %In case there aren't enough strides, assign NaNs to all
-                            veryEarlyPoints(i,subject)=NaN;
-                            earlyPoints(i,subject)=NaN;
+                    earlyPoints=[];
+                    veryEarlyPoints=[];
+                    latePoints=[];
+                    for subject=1:length(auxList{group}) %Getting data for each subject in the list
+                        load(auxList{group}{subject});
+                        if nargin<3 || isempty(removeBiasFlag) || removeBiasFlag==1
+                            this=adaptData.removeBias; %Default behaviour
+                        else
+                            this=adaptData;
                         end
-
-                        %Last 20 steps, excepting the very last 5
-                        try
-                            N2=20;
-                            latePoints(i,subject)=mean(aux(end-N2-4:end-5));
-                        catch
-                            latePoints(i,subject)=NaN;
+                        for i=1:nConds
+                            rawTrials=this.metaData.trialsInCondition{conds(i)};
+                            trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                            if ~isempty(trials)
+                                aux=this.getParamInCond(l,conds(i));
+                                try %Try to get the first strides, if there are enough
+                                    veryEarlyPoints(i,subject)=mean(aux(1:3));
+                                    earlyPoints(i,subject)=mean(aux(1:5));
+                                catch %In case there aren't enough strides, assign NaNs to all
+                                    veryEarlyPoints(i,subject)=NaN;
+                                    earlyPoints(i,subject)=NaN;
+                                end
+                                
+                                %Last 20 steps, excepting the very last 5
+                                try
+                                    N2=20;
+                                    latePoints(i,subject)=mean(aux(end-N2-4:end-5));
+                                catch
+                                    latePoints(i,subject)=NaN;
+                                end
+                            else
+                                veryEarlyPoints(i,subject)=NaN;
+                                earlyPoints(i,subject)=NaN;
+                                latePoints(i,subject)=NaN;
+                            end
                         end
-                    else
-                        veryEarlyPoints(i,subject)=NaN;
-                        earlyPoints(i,subject)=NaN;
-                        latePoints(i,subject)=NaN;
                     end
-                end
-                end
-                
-                
-                if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
-                    bar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor',[.85,.85,.85].^group) 
-                    bar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,'FaceColor',[.7,.7,.7].^group) 
-                else
-                    h(2*(group-1)+1)=bar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,'FaceColor',[.6,.6,.6].^group);
-                end
-                
-                h(2*group)=bar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
-                if Ngroups==1 %Only plotting individual subject performance if there is only one group
-                plot([1:3:3*nConds]-.25+(group-1)/Ngroups,veryEarlyPoints,'x','LineWidth',2)
-                plot([1:3:3*nConds]+.25+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
-                plot([2:3:3*nConds]+(group-1)/Ngroups,latePoints,'x','LineWidth',2)
-                end
-                if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
-                errorbar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
-                errorbar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
-                else
-                    errorbar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
-                end
-                
-                errorbar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                    
+                    
+                    if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
+                        bar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor',[.85,.85,.85].^group)
+                        bar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,'FaceColor',[.7,.7,.7].^group)
+                    else
+                        h(2*(group-1)+1)=bar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,'FaceColor',[.6,.6,.6].^group);
+                    end
+                    
+                    h(2*group)=bar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
+                    if Ngroups==1 %Only plotting individual subject performance if there is only one group
+                        plot([1:3:3*nConds]-.25+(group-1)/Ngroups,veryEarlyPoints,'x','LineWidth',2)
+                        plot([1:3:3*nConds]+.25+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
+                        plot([2:3:3*nConds]+(group-1)/Ngroups,latePoints,'x','LineWidth',2)
+                    end
+                    if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
+                        errorbar([1:3:3*nConds]-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
+                        errorbar([1:3:3*nConds]+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                    else
+                        errorbar([1:3:3*nConds]+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                    end
+                    
+                    errorbar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
                 end
                 xTickPos=[1:3:3*nConds] +.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
                 axis tight
-                title([l{1}])  
+                title([l{1}])
                 hold off
             end
             
-     
+            
             condDes = this.metaData.conditionName;
             if Ngroups==1
-                legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, auxList{1} ]); 
+                legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, auxList{1} ]);
             else
                 legStr={};
                 for group=1:Ngroups
@@ -476,5 +535,5 @@ classdef adaptationData
             end
         end
     end
-
+    
 end
