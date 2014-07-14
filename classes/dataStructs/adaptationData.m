@@ -42,6 +42,9 @@ classdef adaptationData
             %find baseline conditions
             %NOTE: this assumes that the condition names will contain the
             %string "base" if they are a baseline trial
+            
+            %this code can probably be cleaned up by taking advantage of
+            %other functions in this class such as getParamInCond...
             conds=this.metaData.conditionName;
             trialsInCond=this.metaData.trialsInCondition;
             ogTrials=[];
@@ -77,8 +80,6 @@ classdef adaptationData
             else
                 warning('No overground baseline trials detected. Bias not removed')
             end                    
-            %this code can probably be cleaned up by taking advantage of
-            %other functions in this class such as getParamInCond...
             newParamData=paramData(newData,this.data.labels,this.data.indsInTrial);
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
@@ -377,8 +378,7 @@ classdef adaptationData
             
             load(auxList{1}{1});
             this=adaptData;
-            conds=unique(this.metaData.getCondLstPerTrial);
-            conds=conds(~isnan(conds));
+            conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);          
             rowind=1;
             colind=0;    
