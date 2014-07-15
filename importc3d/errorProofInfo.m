@@ -185,5 +185,6 @@ else
 end
 
 % -- Trial Observations
-
-out.trialObs=handles.trialObs;
+if isfield(handles,'trialObs')
+    out.trialObs=handles.trialObs;
+end

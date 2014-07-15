@@ -20,13 +20,13 @@ for cond = sort(info.cond)
             filename = [dirStr filesep basename num2str(t)];
         end
         
-        fileList{end+1}=filename;
-        
+        fileList{t}=filename;
+               
         if info.EMGs
             if t<10
-                secFileList{end+1} = [info.sec_dir_location filesep basename '0' num2str(t)];
+                secFileList{t} = [info.sec_dir_location filesep basename '0' num2str(t)];
             else
-                secFileList{end+1} = [info.sec_dir_location filesep basename num2str(t)];
+                secFileList{t} = [info.sec_dir_location filesep basename num2str(t)];
             end
         end
         
@@ -37,7 +37,7 @@ for cond = sort(info.cond)
         end
         
         % (name,desc,obs,refLeg,cond,filename,type)
-        trialMD{end+1}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},info.trialObs{i},...
+        trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},info.trialObs{t},...
             info.refLeg,cond,filename,type);
         i = i+1;
     end    

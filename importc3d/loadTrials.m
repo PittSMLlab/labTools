@@ -3,12 +3,12 @@ function trials=loadTrials(trialMD,fileList,secFileList,info)
 %orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
 orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs!
 
-for i=1:length(fileList)
+for t=cell2mat(info.trialnums)
     %Import data from c3d, uses external toolbox BTK
-    H=btkReadAcquisition([fileList{i} '.c3d']);
+    H=btkReadAcquisition([fileList{t} '.c3d']);
     [analogs,analogsInfo]=btkGetAnalogs(H);
     if info.EMGs
-        H2=btkReadAcquisition([secFileList{i} '.c3d']);
+        H2=btkReadAcquisition([secFileList{t} '.c3d']);
         [analogs2,analogsInfo2]=btkGetAnalogs(H2);
     end    
     
@@ -205,6 +205,6 @@ for i=1:length(fileList)
     %% Construct trialData
     
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{i}=rawTrialData(trialMD{i},markerData,EMGData,GRFData,[],[],accData,[],[]);
+    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);
     
 end

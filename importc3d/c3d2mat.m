@@ -8,6 +8,8 @@
 info = GetInfoGUI;
 expDate = labDate(info.day,info.month,info.year);
 
+%% Experiment info
+
 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
     info.exp_obs,info.conditionNames,info.conditionDescriptions,info.trialnums,info.numoftrials);
 %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
@@ -45,35 +47,6 @@ subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
 
 %% Trial Data
 
-%asks user if there are observations for individual trials
-answer=input('Are there any observations for individual trials?(y/n) ','s');
-
-%The following makes sure the correct response is entered
-while lower(answer) ~= 'y' & lower(answer) ~= 'n' | length(answer)>1
-    disp('Error: you must enter either "y" or "n"')
-    answer=input('Are there any observations for individual trials?(y/n) ','s');
-end
-
-%The following creates a menu to choose any trial
-expTrials = cell2mat(info.trialnums);
-numTrials = length(expTrials);
-info.trialObs{1,numTrials} = '';
-if lower(answer) == 'y'    
-    trialstr = [];
-    %create trial string
-    for t = expTrials
-        trialstr = [trialstr,',''Trial ',num2str(t),''''];
-    end
-    %generate menu
-    eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-    while choice ~= numTrials+1
-        % get observation for trial selected
-        obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
-        info.trialObs{choice} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
-        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-    end   
-end
-
 % Generate meta data for each trial
 [trialMD,fileList,secFileList]=getTrialMetaData(info);
 
@@ -84,7 +57,7 @@ rawExpData=experimentData(expMD,subData,rawTrialData);
 
 %% Process data
 data={};
-for trial=1:length(rawTrialData)
+for trial=cell2mat(info.trialnums)
     trialData=rawTrialData{trial};
     data{trial}=trialData.process;    
 end

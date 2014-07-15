@@ -93,7 +93,7 @@ end
 expTrials = cell2mat(info.trialnums);
 numTrials = length(expTrials);
 if ~isfield(info,'trialObs') %if a subject wasn't loaded
-    info.trialObs{1,numTrials} = '';
+    info.trialObs{1,info.numoftrials} = '';
 else
     %do nothing
 end
@@ -108,7 +108,7 @@ if lower(answer) == 'y'
     while choice ~= numTrials+1
         % get observation for trial selected
         obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
-        info.trialObs{choice} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+        info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
         eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
     end   
 end
@@ -486,7 +486,9 @@ else
     handles.save_folder=subInfo.save_folder;
     set(handles.saveloc_edit,'string',handles.save_folder);
     % -- Trial observations
-    handles.trialObs=subInfo.trialObs;
+    if isfield(subInfo,'trialObs')
+        handles.trialObs=subInfo.trialObs;
+    end
     guidata(hObject,handles)
 end
 
