@@ -55,8 +55,7 @@ classdef adaptationData
                 ogBaseTrials=[];
                 tmBaseTrials=[];
                 for c=1:length(conds)
-                    rawTrials=trialsInCond{c};
-                    trials=find(ismember(cell2mat(trialsInCond),rawTrials));
+                    trials=trialsInCond{c};                    
                     if all(strcmpi(trialTypes(trials),'OG'))
                         ogTrials=[ogTrials trials];
                         if ~isempty(strfind(lower(conds{c}),'base'))
@@ -92,8 +91,7 @@ classdef adaptationData
                 
                 for c=conditions(boolFlag==1)
                     if ~isempty(strfind(lower(cell2mat(c)),'base'))
-                        rawTrials=trialsInCond{strcmpi(conds,c)};
-                        trials=find(ismember(cell2mat(trialsInCond),rawTrials));
+                        trials=trialsInCond{strcmpi(conds,c)};                        
                         if all(strcmpi(trialTypes(trials),'OG'))
                             ogBaseTrials=[ogBaseTrials trials];
                         elseif all(strcmpi(trialTypes(trials),'TM'))
@@ -141,7 +139,7 @@ classdef adaptationData
             trialNum = [];
             for t=trial
                 if isempty(this.data.indsInTrial(t))
-                    warning(['Condition number ' num2str(t) ' is not condition in this experiment.'])
+                    warning(['Trial number ' num2str(t) ' is not trial in this experiment.'])
                 else
                     trialNum(end+1)=t;
                 end
@@ -176,7 +174,7 @@ classdef adaptationData
                     if any(boolFlags)
                         condNum(end+1)=find(boolFlags);
                     else
-                        warning(['Label ' condition{i} ' is not a condition name in this experiment.'])
+                        warning([condition{i} ' is not a condition name in this experiment.'])
                     end
                 end
             else %a numerical vector
@@ -190,9 +188,8 @@ classdef adaptationData
             end
             
             %get data
-            trials=cell2mat(this.metaData.trialsInCondition(condNum));
-            auxTrials=find(ismember(cell2mat(this.metaData.trialsInCondition),trials));
-            inds=cell2mat(this.data.indsInTrial(auxTrials));
+            trials=cell2mat(this.metaData.trialsInCondition(condNum));            
+            inds=cell2mat(this.data.indsInTrial(trials));
             
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
@@ -224,9 +221,8 @@ classdef adaptationData
             for l=label
                 dataPoints=NaN(nPoints,nConds);
                 for i=1:nConds
-                    rawTrials=this.metaData.trialsInCondition{conds(i)};
-                    if ~isempty(rawTrials)
-                        trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                    trials=this.metaData.trialsInCondition{conds(i)};
+                    if ~isempty(trials)                        
                         for t=trials
                             inds=this.data.indsInTrial{t};
                             dataPoints(inds,i)=this.getParamInTrial(l,t);
@@ -277,8 +273,10 @@ classdef adaptationData
             for l=label
                 dataPoints=NaN(nPoints,nTrials);
                 for i=1:nTrials
-                    inds=this.data.indsInTrial{i};
-                    dataPoints(inds,i)=this.getParamInTrial(l,i);
+                    if ~isempty(this.data.indsInTrial{i})
+                        inds=this.data.indsInTrial{i};
+                        dataPoints(inds,i)=this.getParamInTrial(l,i);
+                    end
                 end
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
@@ -329,8 +327,7 @@ classdef adaptationData
                 veryEarlyPoints=[];
                 latePoints=[];
                 for i=1:nConds
-                    rawTrials=this.metaData.trialsInCondition{conds(i)};
-                    trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                    trials=this.metaData.trialsInCondition{conds(i)};                    
                     aux=this.getParamInCond(l,conds(i));
                     try %Try to get the first strides, if there are enough
                         veryEarlyPoints(i,:)=aux(1:3);
@@ -468,9 +465,8 @@ classdef adaptationData
                         else
                             this=adaptData;
                         end
-                        for i=1:nConds
-                            rawTrials=this.metaData.trialsInCondition{conds(i)};
-                            trials=find(ismember(cell2mat(this.metaData.trialsInCondition),rawTrials));
+                        for i=1:nConds                            
+                            trials=this.metaData.trialsInCondition{conds(i)};
                             if ~isempty(trials)
                                 aux=this.getParamInCond(l,conds(i));
                                 try %Try to get the first strides, if there are enough

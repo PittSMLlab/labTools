@@ -297,9 +297,7 @@ else
 end
 
 global expData
-handles.Trial= expData.metaData.trialsInCondition{handles.Condition}(get(hObject,'Value'));
-handles.trialList = cell2mat(expData.metaData.trialsInCondition);
-handles.idx = find(handles.trialList==handles.Trial);
+handles.idx=expData.metaData.trialsInCondition{handles.Condition}(get(hObject,'Value'));
 handles.TSlist={};
 handles.trialEvents=expData.data{handles.idx}.gaitEvents;
 %determine reference leg
@@ -580,7 +578,7 @@ end
 h_legend = legend(axesHandle,legendEntries);
 set(h_legend,'FontSize',6)
 
-title(axesHandle,[label,' ',dataType,' Trial ',num2str(handles.Trial)])
+title(axesHandle,[label,' ',dataType,' Trial ',num2str(handles.idx)])
 
 %Clear vars:
 clear RHS* LHS* LTO* RTO* events time
