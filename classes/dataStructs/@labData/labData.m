@@ -149,7 +149,7 @@ classdef labData
         end
         
         function beltSp=getBeltSpeed(this,side)
-            beltSp=this.getPartialData(this,'beltSpeedReadData',side);
+            beltSp=this.getPartialData('beltSpeedReadData',side);
         end
         
         
