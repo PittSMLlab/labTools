@@ -79,6 +79,40 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 info=handles.info;
+
+%asks user if there are observations for individual trials
+answer=input('Are there any observations for individual trials?(y/n) ','s');
+
+%The following makes sure the correct response is entered
+while lower(answer) ~= 'y' & lower(answer) ~= 'n' | length(answer)>1
+    disp('Error: you must enter either "y" or "n"')
+    answer=input('Are there any observations for individual trials?(y/n) ','s');
+end
+
+%The following creates a menu to choose any trial
+expTrials = cell2mat(info.trialnums);
+numTrials = length(expTrials);
+if ~isfield(info,'trialObs') %if a subject wasn't loaded
+    info.trialObs{1,numTrials} = '';
+else
+    %do nothing
+end
+if lower(answer) == 'y'    
+    trialstr = [];
+    %create trial string
+    for t = expTrials
+        trialstr = [trialstr,',''Trial ',num2str(t),''''];
+    end
+    %generate menu
+    eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+    while choice ~= numTrials+1
+        % get observation for trial selected
+        obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
+        info.trialObs{choice} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+    end   
+end
+
 varargout{1}=info;
 save([info.save_folder filesep info.ID 'info'],'info')
 
@@ -387,70 +421,73 @@ end
 
 % --- Executes on button press in loadButton.
 function loadButton_Callback(hObject, eventdata, handles)
-    
+
 [file,path]=uigetfile('*.mat','Choose subject handles file');
 
 if file==0
     %do nothing
-else    
+else
     eval(['aux=load('''  path file ''');'])
     fieldNames=fields(aux);
     eval(['subInfo=aux.' fieldNames{1} ';']);
     %TO DO: check that file is correct
     
     out.bad=0;
-
-% -- Experiment Info
-descriptionContents=cellstr(get(handles.description_edit,'string'));
-set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
-set(handles.name_edit,'string',subInfo.experimenter);
-monthContents = cellstr(get(handles.month_list,'String'));
-set(handles.month_list,'Value',find(strcmp(monthContents,subInfo.month)));
-set(handles.day_edit,'string',subInfo.day);
-set(handles.year_edit,'string',subInfo.year);
-set(handles.note_edit,'string',subInfo.exp_obs);
-% -- Subject Info
-set(handles.subID_edit,'string',subInfo.ID);
-DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
-set(handles.DOBmonth_list,'Value',find(strcmp(DOBmonthContents,subInfo.DOBmonth)));
-set(handles.DOBday_edit,'string',subInfo.DOBday);
-set(handles.DOByear_edit,'string',subInfo.DOByear);
-genderContents = cellstr(get(handles.gender_list,'String'));
-set(handles.gender_list,'Value',find(strcmp(genderContents,subInfo.gender)));
-domlegContents = cellstr(get(handles.domleg_list,'String'));
-set(handles.domleg_list,'Value',find(strcmp(domlegContents,subInfo.domleg)));
-domhandContents = cellstr(get(handles.domhand_list,'String'));
-set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
-set(handles.height_edit,'string',subInfo.height);
-set(handles.weight_edit,'string',subInfo.weight);
-% -- Data Info
-handles.folder_location=subInfo.dir_location;
-set(handles.basefile,'string',subInfo.basename);
-set(handles.numofconds,'string',subInfo.numofconds);
-numofconds_Callback(handles.numofconds,eventdata,handles)
-set(handles.kinematic_check,'Value',subInfo.kinematics);
-set(handles.force_check,'Value',subInfo.forces);
-set(handles.emg_check,'Value',subInfo.EMGs);
-handles.secfolder_location=subInfo.secdir_location;
-% -- Trial Info
-for c = 1:subInfo.numofconds
-    condNum=subInfo.cond(c);
-    eval(['set(handles.condition',num2str(c),',''string'',',num2str(condNum),')']);
-    eval(['set(handles.condName',num2str(c),',''string'',subInfo.conditionNames{',num2str(condNum),'})']);
-    eval(['set(handles.description',num2str(c),',''string'',subInfo.conditionDescriptions{',num2str(condNum),'})']);
-    trialnums=subInfo.trialnums{condNum};
-    if length(trialnums)>2 && ~any(diff(trialnums)>1)
-        eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums(1)),':',num2str(trialnums(end)),''')']);
-    else
-        eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums),''')']);
-    end    
-    eval(['set(handles.OGcheck',num2str(c),',''Value'',subInfo.isOverGround(',num2str(condNum),'))']);
-end
-% --  save location
-handles.save_folder=subInfo.save_folder;
-
     
-guidata(hObject,handles)
+    % -- Experiment Info
+    descriptionContents=cellstr(get(handles.description_edit,'string'));
+    set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
+    set(handles.name_edit,'string',subInfo.experimenter);
+    monthContents = cellstr(get(handles.month_list,'String'));
+    set(handles.month_list,'Value',find(strcmp(monthContents,subInfo.month)));
+    set(handles.day_edit,'string',subInfo.day);
+    set(handles.year_edit,'string',subInfo.year);
+    set(handles.note_edit,'string',subInfo.exp_obs);
+    % -- Subject Info
+    set(handles.subID_edit,'string',subInfo.ID);
+    DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
+    set(handles.DOBmonth_list,'Value',find(strcmp(DOBmonthContents,subInfo.DOBmonth)));
+    set(handles.DOBday_edit,'string',subInfo.DOBday);
+    set(handles.DOByear_edit,'string',subInfo.DOByear);
+    genderContents = cellstr(get(handles.gender_list,'String'));
+    set(handles.gender_list,'Value',find(strcmp(genderContents,subInfo.gender)));
+    domlegContents = cellstr(get(handles.domleg_list,'String'));
+    set(handles.domleg_list,'Value',find(strcmp(domlegContents,subInfo.domleg)));
+    domhandContents = cellstr(get(handles.domhand_list,'String'));
+    set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
+    set(handles.height_edit,'string',subInfo.height);
+    set(handles.weight_edit,'string',subInfo.weight);
+    % -- Data Info
+    handles.folder_location=subInfo.dir_location;
+    set(handles.c3dlocation,'string',handles.folder_location);
+    set(handles.basefile,'string',subInfo.basename);
+    set(handles.numofconds,'string',subInfo.numofconds);
+    numofconds_Callback(handles.numofconds,eventdata,handles)
+    set(handles.kinematic_check,'Value',subInfo.kinematics);
+    set(handles.force_check,'Value',subInfo.forces);
+    set(handles.emg_check,'Value',subInfo.EMGs);
+    handles.secfolder_location=subInfo.secdir_location;
+    set(handles.secfileloc,'string',handles.secfolder_location)
+    % -- Trial Info
+    for c = 1:subInfo.numofconds
+        condNum=subInfo.cond(c);
+        eval(['set(handles.condition',num2str(c),',''string'',',num2str(condNum),')']);
+        eval(['set(handles.condName',num2str(c),',''string'',subInfo.conditionNames{',num2str(condNum),'})']);
+        eval(['set(handles.description',num2str(c),',''string'',subInfo.conditionDescriptions{',num2str(condNum),'})']);
+        trialnums=subInfo.trialnums{condNum};
+        if length(trialnums)>2 && ~any(diff(trialnums)>1)
+            eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums(1)),':',num2str(trialnums(end)),''')']);
+        else
+            eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums),''')']);
+        end
+        eval(['set(handles.OGcheck',num2str(c),',''Value'',subInfo.isOverGround(',num2str(condNum),'))']);
+    end
+    % --  save location
+    handles.save_folder=subInfo.save_folder;
+    set(handles.saveloc_edit,'string',handles.save_folder);
+    % -- Trial observations
+    handles.trialObs=subInfo.trialObs;
+    guidata(hObject,handles)
 end
 
 

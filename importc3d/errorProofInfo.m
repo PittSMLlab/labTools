@@ -92,7 +92,15 @@ end
 
 % -- Data Info
 if isfield(handles,'folder_location')
-    out.dir_location = handles.folder_location;
+    if exist(handles.folder_location,'dir')
+        out.dir_location = handles.folder_location;
+    else
+        h_error=errordlg('Please enter a folder that exists','Directory Error');    
+        waitfor(h_error)    
+        uicontrol(handles.c3dlocation)
+        out.bad=1;
+        return
+    end
 else
     out.dir_location = pwd;
 end
@@ -101,8 +109,16 @@ out.numofconds = str2double(get(handles.numofconds,'string'));
 out.kinematics = get(handles.kinematic_check,'Value');
 out.forces = get(handles.force_check,'Value');
 out.EMGs = get(handles.emg_check,'Value');
-if isfield(handles,'secfolder_location')
-    out.secdir_location = handles.secfolder_location;
+if isfield(handles,'secfolder_location')    
+    if exist(handles.secfolder_location)
+        out.secdir_location = handles.secfolder_location;
+    else
+        h_error=errordlg('Please enter a folder that exists','Directory Error');    
+        waitfor(h_error)    
+        uicontrol(handles.secfileloc)
+        out.bad=1;
+        return
+    end
 else
     out.secdir_location = pwd;
 end
@@ -155,7 +171,19 @@ end
 
 % --  save location
 if isfield(handles,'save_folder')
-    out.save_folder = handles.save_folder;
+    if exist(handles.save_folder,'dir')
+        out.save_folder = handles.save_folder;
+    else
+        h_error=errordlg('Please enter a save folder that exists','Directory Error');            
+        waitfor(h_error)    
+        uicontrol(handles.saveloc_edit)
+        out.bad=1;        
+    end
+        
 else
     out.save_folder = pwd;
 end
+
+% -- Trial Observations
+
+out.trialObs=handles.trialObs;
