@@ -46,7 +46,7 @@ classdef adaptationData
             conds=this.metaData.conditionName;
             trialTypes=this.data.trialTypes;
             labels=this.data.labels;
-            trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.indsInTrial))'];   %In the future we will get rid of this. This means that we will have a dummy varaible were: trialKey(i) = i
+            trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.trialTypes))'];   %In the future we will get rid of this. This means that we will have a dummy varaible were: trialKey(i) = i
             
             if nargin<2 || isempty(conditions)
                 %if no conditions were entered, this just searches all
@@ -189,7 +189,7 @@ classdef adaptationData
             end
             
             %get data
-            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.trialTypes))'];
             trials=trialKey(ismember(trialKey(:,1),cell2mat(this.metaData.trialsInCondition(condNum))),2);                    
             inds=cell2mat(this.data.indsInTrial(trials));
             
@@ -218,7 +218,7 @@ classdef adaptationData
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
             nPoints=size(this.data.Data,1);
-            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.trialTypes))'];
             rowind=1;
             colind=0;
             for l=label
@@ -321,7 +321,7 @@ classdef adaptationData
             
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
-            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.trialTypes))'];
             nPoints=size(this.data.Data,1);
             rowind=1;
             colind=0;
@@ -468,7 +468,7 @@ classdef adaptationData
                         else
                             this=adaptData;
                         end
-                        trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
+                            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.trialTypes))'];
                         for i=1:nConds                            
                             trials=trialKey(ismember(trialKey(:,1),this.metaData.trialsInCondition{conds(i)}),2);
                             if ~isempty(trials)
