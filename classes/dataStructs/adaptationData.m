@@ -46,7 +46,7 @@ classdef adaptationData
             conds=this.metaData.conditionName;
             trialTypes=this.data.trialTypes;
             labels=this.data.labels;
-            trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.indsInTrial))'];   
+            trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.indsInTrial))'];   %In the future we will get rid of this. This means that we will have a dummy varaible were: trialKey(i) = i
             
             if nargin<2 || isempty(conditions)
                 %if no conditions were entered, this just searches all

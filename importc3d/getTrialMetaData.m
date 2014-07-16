@@ -37,6 +37,9 @@ for cond = sort(info.cond)
         end
         
         % (name,desc,obs,refLeg,cond,filename,type)
+        if ~isfield(info,'trialObs')
+            info.trialObs=cell(info.numoftrials,1);
+        end
         trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},info.trialObs{t},...
             info.refLeg,cond,filename,type);
         i = i+1;
