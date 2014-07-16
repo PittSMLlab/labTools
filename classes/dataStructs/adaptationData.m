@@ -118,7 +118,7 @@ classdef adaptationData
             elseif any(strcmpi(trialTypes,'OG'))
                 warning('No overground baseline trials detected. Bias not removed')
             end
-            newParamData=paramData(newData,labels,this.data.indsInTrial);
+            newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
         
