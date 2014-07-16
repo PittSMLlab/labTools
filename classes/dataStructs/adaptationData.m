@@ -40,12 +40,13 @@ classdef adaptationData
         
         function newThis=removeBias(this,conditions)
             %NOTE: this assumes that the condition names will contain the
-            %string "base" if they are a baseline trial
-            
+            %string "base" if they are a baseline trial            
+                     
             trialsInCond=this.metaData.trialsInCondition;
             conds=this.metaData.conditionName;
             trialTypes=this.data.trialTypes;
             labels=this.data.labels;
+            trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.indsInTrial))'];   
             
             if nargin<2 || isempty(conditions)
                 %if no conditions were entered, this just searches all
@@ -55,7 +56,7 @@ classdef adaptationData
                 ogBaseTrials=[];
                 tmBaseTrials=[];
                 for c=1:length(conds)
-                    trials=trialsInCond{c};                    
+                    trials=trialKey(ismember(trialKey(:,1),trialsInCond{c}),2)';                                  
                     if all(strcmpi(trialTypes(trials),'OG'))
                         ogTrials=[ogTrials trials];
                         if ~isempty(strfind(lower(conds{c}),'base'))
@@ -90,8 +91,8 @@ classdef adaptationData
                 tmBaseTrials=[];
                 
                 for c=conditions(boolFlag==1)
-                    if ~isempty(strfind(lower(cell2mat(c)),'base'))
-                        trials=trialsInCond{strcmpi(conds,c)};                        
+                    if ~isempty(strfind(lower(cell2mat(c)),'base'))                        
+                        trials=trialKey(ismember(trialKey(:,1),trialsInCond{strcmpi(conds,c)}),2);
                         if all(strcmpi(trialTypes(trials),'OG'))
                             ogBaseTrials=[ogBaseTrials trials];
                         elseif all(strcmpi(trialTypes(trials),'TM'))
@@ -139,7 +140,7 @@ classdef adaptationData
             trialNum = [];
             for t=trial
                 if isempty(this.data.indsInTrial(t))
-                    warning(['Trial number ' num2str(t) ' is not trial in this experiment.'])
+                    warning(['Trial number ' num2str(t) ' is not a trial in this experiment.'])
                 else
                     trialNum(end+1)=t;
                 end
@@ -188,7 +189,8 @@ classdef adaptationData
             end
             
             %get data
-            trials=cell2mat(this.metaData.trialsInCondition(condNum));            
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
+            trials=trialKey(ismember(trialKey(:,1),cell2mat(this.metaData.trialsInCondition(condNum))),2);                    
             inds=cell2mat(this.data.indsInTrial(trials));
             
             data=this.data.Data(inds,labelIdx(boolFlag==1));
@@ -216,14 +218,15 @@ classdef adaptationData
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
             nPoints=size(this.data.Data,1);
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
             rowind=1;
             colind=0;
             for l=label
                 dataPoints=NaN(nPoints,nConds);
                 for i=1:nConds
-                    trials=this.metaData.trialsInCondition{conds(i)};
+                    trials=trialKey(ismember(trialKey(:,1),this.metaData.trialsInCondition{conds(i)}),2);     
                     if ~isempty(trials)                        
-                        for t=trials
+                        for t=trials'
                             inds=this.data.indsInTrial{t};
                             dataPoints(inds,i)=this.getParamInTrial(l,t);
                         end
@@ -265,18 +268,17 @@ classdef adaptationData
             %find subplot size, using width to height ratio of 1:4
             [rows,cols]=subplotSize(length(label),1,4);
             
-            nTrials=this.metaData.Ntrials;
+            nTrials=length(cell2mat(this.metaData.trialsInCondition));
+            trials=find(~cellfun(@isempty,this.data.indsInTrial));
             nPoints=size(this.data.Data,1);
             
             rowind=1;
             colind=0;
             for l=label
                 dataPoints=NaN(nPoints,nTrials);
-                for i=1:nTrials
-                    if ~isempty(this.data.indsInTrial{i})
-                        inds=this.data.indsInTrial{i};
-                        dataPoints(inds,i)=this.getParamInTrial(l,i);
-                    end
+                for i=1:nTrials                                       
+                    inds=this.data.indsInTrial{trials(i)};
+                    dataPoints(inds,i)=this.getParamInTrial(l,trials(i));                    
                 end
                 %find graph location
                 bottom=figsz(4)-(rowind*figsz(4)/rows)+vertpad;
@@ -319,6 +321,7 @@ classdef adaptationData
             
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
+            trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
             nPoints=size(this.data.Data,1);
             rowind=1;
             colind=0;
@@ -327,7 +330,7 @@ classdef adaptationData
                 veryEarlyPoints=[];
                 latePoints=[];
                 for i=1:nConds
-                    trials=this.metaData.trialsInCondition{conds(i)};                    
+                    trials=trialKey(ismember(trialKey(:,1),this.metaData.trialsInCondition{conds(i)}),2);                    
                     aux=this.getParamInCond(l,conds(i));
                     try %Try to get the first strides, if there are enough
                         veryEarlyPoints(i,:)=aux(1:3);
@@ -465,8 +468,9 @@ classdef adaptationData
                         else
                             this=adaptData;
                         end
+                        trialKey=[cell2mat(this.metaData.trialsInCondition)' find(~cellfun(@isempty,this.data.indsInTrial))'];
                         for i=1:nConds                            
-                            trials=this.metaData.trialsInCondition{conds(i)};
+                            trials=trialKey(ismember(trialKey(:,1),this.metaData.trialsInCondition{conds(i)}),2);
                             if ~isempty(trials)
                                 aux=this.getParamInCond(l,conds(i));
                                 try %Try to get the first strides, if there are enough
