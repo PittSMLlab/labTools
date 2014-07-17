@@ -44,9 +44,17 @@ switch expDescrip
         set(handles.trialnum9,'string','18:23')
         set(handles.trialnum10,'string','24:26')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck9,'value',1)
+        %set trial types
+        set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','TM')
+        set(handles.type7,'string','TM')
+        set(handles.type8,'string','TM')
+        set(handles.type9,'string','OG')
+        set(handles.type10,'string','TM')
         
     case {'Old Gradual','Young Gradual'}
         
@@ -91,9 +99,17 @@ switch expDescrip
         set(handles.trialnum8,'string','17:22')
         set(handles.trialnum9,'string','23:25')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck8,'value',1)
+        %set trial types
+        set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','TM')
+        set(handles.type7,'string','TM')
+        set(handles.type8,'string','OG')        
+        set(handles.type9,'string','TM')
+        
     case {'Old Abrupt No Catch','Young Abrupt No Catch'}
         %condition numbers
         i=1;
@@ -136,9 +152,17 @@ switch expDescrip
         set(handles.trialnum8,'string','16:21')
         set(handles.trialnum9,'string','22:24')        
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck8,'value',1)
+        %set trial types
+        set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','TM')
+        set(handles.type7,'string','TM')
+        set(handles.type8,'string','OG')
+        set(handles.type9,'string','TM')        
+        
     case {'Old Gradual No Catch','Young Gradual No Catch'}
         %condition numbers
         i=1;
@@ -178,9 +202,17 @@ switch expDescrip
         set(handles.trialnum7,'string','15:20')
         set(handles.trialnum8,'string','21:23')        
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck7,'value',1)
+        %set trial types
+        set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','TM')
+        set(handles.type7,'string','OG')
+        set(handles.type8,'string','TM')
+        
+        
     case {'Old Abrupt Self Selected','Young Abrupt Self Selected'}
         %condition numbers
         i=1;
@@ -231,9 +263,19 @@ switch expDescrip
         set(handles.trialnum10,'string','31')
         set(handles.trialnum11,'string','13')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck7,'value',1)
+        %set trial types
+        set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','TM')
+        set(handles.type7,'string','OG')
+        set(handles.type8,'string','TM')
+        set(handles.type9,'string','TM')
+        set(handles.type10,'string','TM')
+        set(handles.type11,'string','TM')
+        
     case {'Old Gradual Self Selected','Young Gradual Self Selected'}
         %condition numbers
         i=1;
@@ -282,9 +324,18 @@ switch expDescrip
         set(handles.trialnum10,'string','11')
         set(handles.trialnum11,'string','25')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck6,'value',1)
+        %set trial types
+         set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','OG')
+        set(handles.type7,'string','TM')
+        set(handles.type8,'string','TM')
+        set(handles.type9,'string','TM')
+        set(handles.type10,'string','TM')
+        set(handles.type11,'string','TM')
         
     case {'0002: Distraction'}
         %condition numbers
@@ -325,9 +376,14 @@ switch expDescrip
         set(handles.trialnum6,'string','7:8')
         set(handles.trialnum7,'string','9')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck6,'value',1)
+        %set trial types
+         set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','OG')
+        set(handles.type7,'string','TM')        
         
     case {'0002: Old'}
         %condition numbers
@@ -368,9 +424,14 @@ switch expDescrip
         set(handles.trialnum6,'string','21:30')
         set(handles.trialnum7,'string','31:34')
         
-        %check appropriate OG conditions
-        set(handles.OGcheck1,'value',1)
-        set(handles.OGcheck6,'value',1)
+        %set trial types
+         set(handles.type1,'string','OG')        
+        set(handles.type2,'string','TM')
+        set(handles.type3,'string','TM')
+        set(handles.type4,'string','TM')
+        set(handles.type5,'string','TM')
+        set(handles.type6,'string','OG')
+        set(handles.type7,'string','TM')        
         
 end
 

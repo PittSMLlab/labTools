@@ -133,7 +133,7 @@ for c = 1:str2double(get(handles.numofconds,'string'))
     out.trialnums{condNum} = eval(['[',trialnums,']']);
     %need double eval. First is to retrieve string from edit box, second is
     %to accomodate for entry of numbers like '1:6' or '7 8 9'
-    out.isOverGround(condNum) = eval(['get(handles.OGcheck',num2str(c),',''Value'')']);
+    out.type{condNum} = eval(['get(handles.type',num2str(c),',''string'')']);
 end
 
 trials=cell2mat(out.trialnums);
