@@ -61,7 +61,12 @@ paramlabels = {'good',... %Flag indicating whether the stride has events in the 
     'stepTimeContribution',... %Average belt speed times step time difference
     'velocityContribution',... %Average step time times belt speed difference
     'netContribution',... %Sum of the previous three, should be equal to stepLengthAsym
-    'equivalentSpeed'}; %Relative speed of hip to feet, 
+    'equivalentSpeed',... %Relative speed of hip to feet, 
+    'singleStanceSpeedSlow',... %Relative speed of hip to slow ankle during contralateral swing
+    'singleStanceSpeedFast',... %Relative speed of hip to fast ankle during contralateral swing
+    'singleStanceSpeedSlowAbs',... %Absolute speed of slow ankle during contralateral swing
+    'singleStanceSpeedFastAbs',... %Absolute speed of fast ankle during contralateral swing
+    }; 
 
 %make the time series have a time vectpr as small as possible so that
 % a) it does not take up an unreasonable amount of space
@@ -125,7 +130,7 @@ if ~isempty(in.angleData)
     sAnk=[orientation.foreaftSign*sAnk(:,1),orientation.updownSign*sAnk(:,2),orientation.sideSign*sAnk(:,3)];
     fAnk=in.getMarkerData({[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis],[f 'ANK' orientation.sideAxis]});
     fAnk=[orientation.foreaftSign*fAnk(:,1),orientation.updownSign*fAnk(:,2),orientation.sideSign*fAnk(:,3)];
-    %Compute mean hip position (in fore-aft axis)
+    %Compute mean (across the two markers) hip position (in fore-aft axis)
     meanHipPos=nanmean([sHip(:,1) fHip(:,1)],2);
     %Compute ankle position relative to average hip position
     sAnkPos=sAnk(:,1)-meanHipPos;
@@ -330,12 +335,19 @@ for step=1:Nstrides
             velocityFast=dispFast/tf;
             avgVel=mean([velocitySlow velocityFast]);
             avgStepTime=mean([ts tf]);
-            equivalentSpeed(t)=(dispSlow+dispFast)/(ts+tf);
+            equivalentSpeed(t)=(dispSlow+dispFast)/(ts+tf); %= (ts/tf+ts)*dispSlow/ts + (tf/tf+ts)*dispFast/tf = (ts/tf+ts)*vs + (tf/tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average
 
             spatialContribution(t)=(spatialFast-spatialSlow);
             stepTimeContribution(t)=avgVel*difft;
             velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);
             netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);
+            
+            singleStanceSpeedSlow(t)=abs(sAnkPos(indFTO)-sAnkPos(indFHS))/(round((timeFTO-timeFHS)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
+            singleStanceSpeedFast(t)=abs(fAnkPos(indSTO)-fAnkPos(indSHS2))/(round((timeSTO-timeSHS2)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
+            
+            singleStanceSpeedSlowAbs(t)=abs(sAnk(indFTO,1)-sAnk(indFHS,1))/(round((timeFTO-timeFHS)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            singleStanceSpeedFastAbs(t)=abs(fAnk(indSTO,1)-fAnk(indSHS2,1))/(round((timeSTO-timeSHS2)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            
         end
     end
     
