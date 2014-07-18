@@ -66,6 +66,10 @@ paramlabels = {'good',... %Flag indicating whether the stride has events in the 
     'singleStanceSpeedFast',... %Relative speed of hip to fast ankle during contralateral swing
     'singleStanceSpeedSlowAbs',... %Absolute speed of slow ankle during contralateral swing
     'singleStanceSpeedFastAbs',... %Absolute speed of fast ankle during contralateral swing
+    'stepSpeedSlow',...%Ankle relative to hip, from iHS to cHS
+    'stepSpeedFast',... %Ankle relative to hip, from iHS to cHS
+    'stanceSpeedSlow',... %Ankle relative to hip, during ipsilateral stance
+    'stanceSpeedFast',... %Ankle relative to hip, during ipsilateral stance
     }; 
 
 %make the time series have a time vectpr as small as possible so that
@@ -244,6 +248,14 @@ for step=1:Nstrides
             indSTO=round(indSTO*CF);
             indSHS2=round(indSHS2*CF);
             indFTO2=round(indFTO2*CF);
+            
+            %Compute times with new indices:
+            timeSHS=eventsTime(indSHS);
+            timeFTO=eventsTime(indFTO);
+            timeFHS=eventsTime(indFHS);
+            timeSTO=eventsTime(indSTO);
+            timeSHS2=eventsTime(indSHS2);
+            timeFTO2=eventsTime(indFTO2);
 
             % Set all steps to have the same slope (a negative slope during stance phase is assumed)
             if (sAnkPos(indSHS)<0)
@@ -324,8 +336,8 @@ for step=1:Nstrides
 
             % Compute temporal contributions (convert time to be consistent with
             % kinematic sampling frequency)
-            ts=round((timeFHS-timeSHS)*f_kin)/f_kin;
-            tf=round((timeSHS2-timeFHS)*f_kin)/f_kin;
+            ts=round((timeFHS-timeSHS)*f_kin)/f_kin; %This rounding should no longer be required, as we corrected indices for kinematic sampling frequency and computed the corresponding times
+            tf=round((timeSHS2-timeFHS)*f_kin)/f_kin; %This rounding should no longer be required, as we corrected indices for kinematic sampling frequency and computed the corresponding times
             difft=ts-tf;
 
             dispSlow=abs(sAnkPos(indFHS)-sAnkPos(indSHS));
@@ -342,11 +354,17 @@ for step=1:Nstrides
             velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);
             netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);
             
-            singleStanceSpeedSlow(t)=abs(sAnkPos(indFTO)-sAnkPos(indFHS))/(round((timeFTO-timeFHS)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
-            singleStanceSpeedFast(t)=abs(fAnkPos(indSTO)-fAnkPos(indSHS2))/(round((timeSTO-timeSHS2)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
+            singleStanceSpeedSlow(t)=abs(sAnkPos(indFTO)-sAnkPos(indFHS))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
+            singleStanceSpeedFast(t)=abs(fAnkPos(indSTO)-fAnkPos(indSHS2))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
             
-            singleStanceSpeedSlowAbs(t)=abs(sAnk(indFTO,1)-sAnk(indFHS,1))/(round((timeFTO-timeFHS)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
-            singleStanceSpeedFastAbs(t)=abs(fAnk(indSTO,1)-fAnk(indSHS2,1))/(round((timeSTO-timeSHS2)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            singleStanceSpeedSlowAbs(t)=abs(sAnk(indFTO,1)-sAnk(indFHS,1))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            singleStanceSpeedFastAbs(t)=abs(fAnk(indSTO,1)-fAnk(indSHS2,1))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            
+            stanceSpeedSlow(t)=abs(sAnkPos(indSTO)-sAnkPos(indSHS))/(round((timeSTO-timeSHS)*f_kin)/f_kin); %Ankle relative to hip, during ipsilateral stance
+            stanceSpeedFast(t)=abs(fAnkPos(indFTO)-fAnkPos(indFHS))/(round((timeFTO2-timeFHS)*f_kin)/f_kin); %Ankle relative to hip, during ipsilateral stance
+            
+            stepSpeedSlow(t)=dispSlow/ts; %Ankle relative to hip, from iHS to cHS
+            stepSpeedFast(t)=dispFast/tf; %Ankle relative to hip, from iHS to cHS
             
         end
     end
