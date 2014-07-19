@@ -200,7 +200,7 @@ classdef labData
            auxLst=properties(cname);
            for i=1:length(auxLst)
                eval(['oldVal=this.' auxLst{i} ';']) %Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need
-               if isa(oldVal,'labTimeSeries')
+               if isa(oldVal,'labTimeSeries') && ~strcmpi(auxLst{i},'adaptParams')
                    newVal=oldVal.split(t0,t1); %Calling labTS.split (or one of the subclass' implementation)
                elseif ~isa(oldVal,'labMetaData')
                    newVal=oldVal; %Not a labTS object, not splitting

@@ -163,15 +163,39 @@ classdef stridedExperimentData
                end
         end
             
-        function newThis=alignEvents(this,spacing)
-            newThis=[];
-        end
+        function alignedData=alignEvents(this,spacing,trial,fieldName,labelList)
+               alignedData=[]; 
+        end %This function will be deprecated, use getAlignedData instead.
         
         function newThis=discardBadStrides(this) %No need, the discarding happens when this structure is created from a processed experiment.
             newThis=[];
         end
-            
         
+        function alignedData=getAlignedData(this,spacing,trial,fieldName,labelList)
+            data=this;
+                M=spacing;
+                aux=[0 cumsum(M)];
+                strides=data.stridedTrials{trial};
+                alignedData=zeros(sum(M),length(labelList),length(strides));
+                    Nphases=4;
+                    for phase=1:Nphases
+                        samples=zeros(length(strides),length(labelList));
+                        for stride=1:length(strides)
+                            switch phase
+                                case 1
+                                    thisPhase=strides{stride}.getDoubleSupportLR;
+                                case 2
+                                    thisPhase=strides{stride}.getSingleStanceL;
+                                case 3
+                                    thisPhase=strides{stride}.getDoubleSupportRL;
+                                case 4
+                                    thisPhase=strides{stride}.getSingleStanceR;
+                            end
+                            alignedData(aux(phase)+1:aux(phase)+M(phase),:,stride)=thisPhase.(fieldName).resampleN(M(phase)).getDataAsVector(labelList);
+                        end  
+                    end
+        end
+            
         
         function structure=getDataAsMatrices(this,fields,conditions,N)
             for cond=conditions

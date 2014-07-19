@@ -129,19 +129,15 @@ classdef labTimeSeries  < timeseries
         function newThis=split(this,t0,t1)
            %Check t0>= Time(1)
            %Check t1<= Time(end)
-           initT=this.Time(1);
-           finalT=this.Time(end)+this.sampPeriod;
-           try
-           if ~(t0>= initT && t1<finalT)
+           initT=this.Time(1)-2e-15;
+           finalT=this.Time(end)+this.sampPeriod+2e-15;
+           if ~(t0>= initT && t1<=finalT)
                if (t1<initT) || (t0>=finalT)
                    ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
                    throw(ME)
                else
                    warning('LabTS:split','Requested interval is not completely contained in TimeSeries.')
                end
-           end
-           catch
-               pause
            end
             i1=find(this.Time>=t0,1);
             i2=find(this.Time<t1,1,'last');

@@ -108,7 +108,7 @@ classdef strideData < processedLabData
         end
         
         function t=get.originalTrial(this)
-            t=this.metaData.parentMetaData.ID;
+            t=this.metaData.parentMetaData.name;
         end
         
         function N=getMasterSampleLength(this) %0 if not time normalized, length of ALL time series otherwise.
