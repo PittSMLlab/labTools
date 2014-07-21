@@ -39,34 +39,43 @@ classdef adaptationData
         end
         
         function newThis=removeBias(this,conditions)
-            %NOTE: this assumes that the condition names will contain the
-            %string "base" if they are a baseline trial            
+            % removeBias('condition') or removeBias({'Condition1','Condition2',...}) 
+            % removes the median value of every parameter from each trial of the
+            % same type as the condition entered. If no condition is
+            % specified, then the condition name that contains both the
+            % type string and the string 'base' is used as the baseline
+            % condition.
                      
             trialsInCond=this.metaData.trialsInCondition;
             conds=this.metaData.conditionName;
             trialTypes=this.data.trialTypes;
+            types=unique(trialTypes);
             labels=this.data.labels;
             trialKey=[cell2mat(trialsInCond)' find(~cellfun(@isempty,this.data.trialTypes))'];   %In the future we will get rid of this. This means that we will have a dummy varaible were: trialKey(i) = i
             
             if nargin<2 || isempty(conditions)
                 %if no conditions were entered, this just searches all
-                %condition names for the string 'base'
-                ogTrials=[];
-                tmTrials=[];
-                ogBaseTrials=[];
-                tmBaseTrials=[];
-                for c=1:length(conds)
-                    trials=trialKey(ismember(trialKey(:,1),trialsInCond{c}),2)';                                  
-                    if all(strcmpi(trialTypes(trials),'OG'))
-                        ogTrials=[ogTrials trials];
-                        if ~isempty(strfind(lower(conds{c}),'base'))
-                            ogBaseTrials=[ogBaseTrials trials];
+                %condition names for the string 'base'                
+                for t=1:length(types)
+                    allTrials=[];
+                    baseTrials=[];
+                    for c=1:length(conds)
+                        trials=trialKey(ismember(trialKey(:,1),trialsInCond{c}),2)';
+                        if all(strcmpi(trialTypes(trials),types{t}))
+                            allTrials=[allTrials trials];
+                            if ~isempty(strfind(lower(conds{c}),'base')) && ~isempty(strfind(lower(conds{c}),lower(types{t})))
+                                baseTrials=[baseTrials trials];
+                            end
                         end
-                    elseif all(strcmpi(trialTypes(trials),'TM'))
-                        tmTrials=[tmTrials trials];
-                        if ~isempty(strfind(lower(conds{c}),'base'))
-                            tmBaseTrials=[tmBaseTrials trials];
-                        end
+                    end
+                    if ~isempty(baseTrials)
+                        base=nanmedian(this.getParamInTrial(labels,baseTrials));
+                        inds=cell2mat(this.data.indsInTrial(allTrials));
+                        newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
+                    else
+                        warning(['No ' types{t} ' baseline trials detected. Bias not removed from ' types{t} ' trials.'])
+                        inds=cell2mat(this.data.indsInTrial(allTrials));
+                        newData(inds,:)=this.data.Data(inds,:);
                     end
                 end
             else
@@ -83,41 +92,34 @@ classdef adaptationData
                     if boolFlag(i)==0
                         warning([conditions{i} ' is not a condition in this data set.'])
                     end
-                end
+                end             
                 
-                ogTrials=find(strcmpi(trialTypes,'OG'));
-                tmTrials=find(strcmpi(trialTypes,'TM'));
-                ogBaseTrials=[];
-                tmBaseTrials=[];
-                
-                for c=conditions(boolFlag==1)
-                    if ~isempty(strfind(lower(cell2mat(c)),'base'))                        
-                        trials=trialKey(ismember(trialKey(:,1),trialsInCond{strcmpi(conds,c)}),2);
-                        if all(strcmpi(trialTypes(trials),'OG'))
-                            ogBaseTrials=[ogBaseTrials trials];
-                        elseif all(strcmpi(trialTypes(trials),'TM'))
-                            tmBaseTrials=[tmBaseTrials trials];
+                for t=1:length(types)
+                    allTrials=[];
+                    baseTrials=[];
+                    cInput=conditions(boolFlag==1);
+                    for c=1:length(conds)
+                        trials=trialKey(ismember(trialKey(:,1),trialsInCond{c}),2)';
+                        if all(strcmpi(trialTypes(trials),types{t}))
+                            allTrials=[allTrials trials];
+                            if any(ismember(cInput,conds{c}))
+                                baseTrials=[baseTrials trials];
+                            end
                         end
+                    end
+                    if ~isempty(baseTrials)
+                        base=nanmedian(this.getParamInTrial(labels,baseTrials));
+                        inds=cell2mat(this.data.indsInTrial(allTrials));
+                        newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
                     else
-                        warning([cell2mat(c) 'not detected as a baseline trial and not used to remove baseline.'])
+                        warning(['No ' types{t} ' baseline trials detected. Bias not removed from ' types{t} ' trials.'])
+                        inds=cell2mat(this.data.indsInTrial(allTrials));
+                        newData(inds,:)=this.data.Data(inds,:);
                     end
                 end
+                
             end
-            
-            if ~isempty(tmBaseTrials)
-                base=nanmedian(this.getParamInTrial(labels,tmBaseTrials));
-                inds=cell2mat(this.data.indsInTrial(tmTrials));
-                newData(inds,:)=this.data.Data(inds,:)-repmat(base,length(inds),1);
-            elseif any(strcmpi(trialTypes,'TM'))
-                warning('No treadmill baseline trials detected. Bias not removed')
-            end
-            if ~isempty(ogBaseTrials)
-                ogBase=nanmedian(this.getParamInTrial(labels,ogBaseTrials)); %should it be nanmean?
-                ogInds=cell2mat(this.data.indsInTrial(ogTrials));
-                newData(ogInds,:)=this.data.Data(ogInds,:)-repmat(ogBase,length(ogInds),1);
-            elseif any(strcmpi(trialTypes,'OG'))
-                warning('No overground baseline trials detected. Bias not removed')
-            end
+                        
             newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
@@ -199,9 +201,9 @@ classdef adaptationData
         
         function plotParamTimeCourse(this,label)
             
-            figureFullScreen
-            
+            figureFullScreen            
             figsz=[0 0 1 1];
+            
             %in pixels:
             vertpad = 30/scrsz(4); %padding on the top and bottom of figure
             horpad = 60/scrsz(3);  %padding on the left and right of figure

@@ -4,7 +4,7 @@ switch expDescrip
     case {'Old Abrupt','Young Abrupt','Old Abrupt Second Visit','Young Abrupt Second Visit'}
         %condition numbers
         for cond = 1:10
-            eval(['set(handles.condition',num2str(cond),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(cond)]),'string',num2str(cond))
         end
         set(handles.numofconds,'string','10')    
         
@@ -45,23 +45,19 @@ switch expDescrip
         set(handles.trialnum10,'string','24:26')
         
         %set trial types
-        set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','TM')
-        set(handles.type7,'string','TM')
-        set(handles.type8,'string','TM')
-        set(handles.type9,'string','OG')
-        set(handles.type10,'string','TM')
+        for t=[1 9]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:8 10]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end        
         
     case {'Old Gradual','Young Gradual'}
         
         %condition numbers
         i=1;
         for cond = [1 2 4:10]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end
         set(handles.numofconds,'string','9')
@@ -97,24 +93,21 @@ switch expDescrip
         set(handles.trialnum6,'string','14')
         set(handles.trialnum7,'string','15 16')
         set(handles.trialnum8,'string','17:22')
-        set(handles.trialnum9,'string','23:25')
-        
+        set(handles.trialnum9,'string','23:25')        
+       
         %set trial types
-        set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','TM')
-        set(handles.type7,'string','TM')
-        set(handles.type8,'string','OG')        
-        set(handles.type9,'string','TM')
+        for t=[1 8]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:7 9]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
     case {'Old Abrupt No Catch','Young Abrupt No Catch'}
         %condition numbers
         i=1;
         for cond = [1:6 8:10]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end
         set(handles.numofconds,'string','9')    
@@ -150,24 +143,21 @@ switch expDescrip
         set(handles.trialnum6,'string','10:13')        
         set(handles.trialnum7,'string','14 15')
         set(handles.trialnum8,'string','16:21')
-        set(handles.trialnum9,'string','22:24')        
+        set(handles.trialnum9,'string','22:24')       
         
         %set trial types
-        set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','TM')
-        set(handles.type7,'string','TM')
-        set(handles.type8,'string','OG')
-        set(handles.type9,'string','TM')        
+        for t=[1 8]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:7 9]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
     case {'Old Gradual No Catch','Young Gradual No Catch'}
         %condition numbers
         i=1;
         for cond = [1 2 4:6 8:10]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end
         set(handles.numofconds,'string','8')    
@@ -203,21 +193,19 @@ switch expDescrip
         set(handles.trialnum8,'string','21:23')        
         
         %set trial types
-        set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','TM')
-        set(handles.type7,'string','OG')
-        set(handles.type8,'string','TM')
+        for t=[1 7]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:6 8]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
         
     case {'Old Abrupt Self Selected','Young Abrupt Self Selected'}
         %condition numbers
         i=1;
         for cond = [1 3 5 6:11 4 2]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end        
         set(handles.numofconds,'string','11')    
@@ -261,26 +249,21 @@ switch expDescrip
         set(handles.trialnum8,'string','28 29 30')
         set(handles.trialnum9,'string','7:12')
         set(handles.trialnum10,'string','31')
-        set(handles.trialnum11,'string','13')
+        set(handles.trialnum11,'string','13')        
         
         %set trial types
-        set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','TM')
-        set(handles.type7,'string','OG')
-        set(handles.type8,'string','TM')
-        set(handles.type9,'string','TM')
-        set(handles.type10,'string','TM')
-        set(handles.type11,'string','TM')
+        for t=[1 7]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:6 8:11]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
     case {'Old Gradual Self Selected','Young Gradual Self Selected'}
         %condition numbers
         i=1;
         for cond = [1 5 6:11 2 3 4]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end
         set(handles.numofconds,'string','11')
@@ -322,26 +305,21 @@ switch expDescrip
         set(handles.trialnum8,'string','4:7')
         set(handles.trialnum9,'string','12')
         set(handles.trialnum10,'string','11')
-        set(handles.trialnum11,'string','25')
-        
+        set(handles.trialnum11,'string','25')        
+       
         %set trial types
-         set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','OG')
-        set(handles.type7,'string','TM')
-        set(handles.type8,'string','TM')
-        set(handles.type9,'string','TM')
-        set(handles.type10,'string','TM')
-        set(handles.type11,'string','TM')
+        for t=[1 6]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:5 7:11]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
     case {'0002: Distraction'}
         %condition numbers
         i=1;
         for cond = [1:7]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end        
         set(handles.numofconds,'string','7')    
@@ -375,21 +353,20 @@ switch expDescrip
         set(handles.trialnum5,'string','6')
         set(handles.trialnum6,'string','7:8')
         set(handles.trialnum7,'string','9')
-        
+                 
         %set trial types
-         set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','OG')
-        set(handles.type7,'string','TM')        
+        for t=[1 6]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:5 7]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end 
         
     case {'0002: Old'}
         %condition numbers
         i=1;
         for cond = [1:7]
-            eval(['set(handles.condition',num2str(i),',''string'',''',num2str(cond),''')'])
+            set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end        
         set(handles.numofconds,'string','7')    
@@ -425,13 +402,12 @@ switch expDescrip
         set(handles.trialnum7,'string','31:34')
         
         %set trial types
-         set(handles.type1,'string','OG')        
-        set(handles.type2,'string','TM')
-        set(handles.type3,'string','TM')
-        set(handles.type4,'string','TM')
-        set(handles.type5,'string','TM')
-        set(handles.type6,'string','OG')
-        set(handles.type7,'string','TM')        
+        for t=[1 6]
+            set(handles.(['type' num2str(t)]),'string','OG')
+        end
+        for t=[2:5 7]
+            set(handles.(['type' num2str(t)]),'string','TM')
+        end     
         
 end
 
