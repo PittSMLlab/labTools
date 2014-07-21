@@ -487,7 +487,7 @@ else
                 eval(['set(handles.type',num2str(c),',''string'',''TM'')']);
             end
         else            
-            eval(['set(handles.type',num2str(c),',''string'',subInfo.type(',num2str(condNum),'))']);        
+            eval(['set(handles.type',num2str(c),',''string'',subInfo.type{',num2str(condNum),'})']);        
         end
     end
     % --  save location

@@ -68,7 +68,7 @@ classdef experimentData
             a=isa(this.data{idx},'rawLabData');
         end
         
-        function a=get.fastLeg(this)
+        function fastLeg=get.fastLeg(this)
             vR=[];
             vL=[];
             for trial=1:length(this.data)

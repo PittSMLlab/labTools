@@ -23,7 +23,7 @@ for i=1:length(idxLHS)
     idxNextLTO=find(LTO & events.Time>events.Time(idxLHS(i)),1);
     idxNextRTO=find(RTO & events.Time>events.Time(idxLHS(i)),1);
     idxNextRHS=find(RHS & events.Time>events.Time(idxLHS(i)),1);
-    if ~isempty(idxNextLTO)
+    if ~isempty(idxNextLTO) && ~isempty(idxNextRTO) && ~isempty(idxNextRHS)
         beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=median(speed.split(events.Time(idxNextRTO),events.Time(idxNextRHS)).getDataAsVector('L')); %Only considering median absolute speed on single stance phase
     end
 end
@@ -32,7 +32,7 @@ for i=1:length(idxRHS)
     idxNextRTO=find(RTO & events.Time>events.Time(idxRHS(i)),1);
     idxNextLTO=find(LTO & events.Time>events.Time(idxRHS(i)),1);
     idxNextLHS=find(LHS & events.Time>events.Time(idxRHS(i)),1);
-    if ~isempty(idxNextRTO)
+    if ~isempty(idxNextRTO) && ~isempty(idxNextLTO) && ~isempty(idxNextLHS)
         beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=median(speed.split(events.Time(idxNextLTO),events.Time(idxNextLHS)).getDataAsVector('R')); %Only considering median absolute speed on single stance phase
     end
 end
