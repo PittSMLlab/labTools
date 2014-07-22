@@ -1,4 +1,4 @@
-function decomposition = getVarianceDecomposition(alignedData)
+function [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData)
 
 avgStride=mean(alignedData,3);
 meanValue=mean(avgStride,1);
