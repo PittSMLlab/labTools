@@ -8,4 +8,4 @@
 info = GetInfoGUI;
 
 %Do the actual loading
-loadSubject(info)
+loadSubject(info);

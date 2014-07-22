@@ -92,10 +92,9 @@ end
 %The following creates a menu to choose any trial
 expTrials = cell2mat(info.trialnums);
 numTrials = length(expTrials);
-if ~isfield(info,'trialObs') %if a subject wasn't loaded
+if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
+    %if a subject wasn't loaded
     info.trialObs{1,info.numoftrials} = '';
-else
-    %do nothing
 end
 if lower(answer) == 'y'    
     trialstr = [];

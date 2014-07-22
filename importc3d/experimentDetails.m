@@ -9,16 +9,16 @@ switch expDescrip
         set(handles.numofconds,'string','10')    
         
         %condition names
-        set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow baseline')
+        set(handles.condName1,'string','OG base')
+        set(handles.condName2,'string','slow base')
         set(handles.condName3,'string','short split')
-        set(handles.condName4,'string','fast baseline')
-        set(handles.condName5,'string','medium baseline')
+        set(handles.condName4,'string','fast base')
+        set(handles.condName5,'string','TM base')
         set(handles.condName6,'string','adaptation')
         set(handles.condName7,'string','catch')
         set(handles.condName8,'string','re-adaptation')
-        set(handles.condName9,'string','over ground post-adaptation')
-        set(handles.condName10,'string','treadmill post-adaptation')
+        set(handles.condName9,'string','OG post')
+        set(handles.condName10,'string','TM post')
         
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')
@@ -60,18 +60,18 @@ switch expDescrip
             set(handles.(['condition' num2str(i)]),'string',num2str(cond))
             i=i+1;
         end
-        set(handles.numofconds,'string','9')
-         
+        set(handles.numofconds,'string','9')        
+        
         %condition names
-        set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow baseline')        
-        set(handles.condName3,'string','fast baseline')
-        set(handles.condName4,'string','medium baseline')
+        set(handles.condName1,'string','OG base')
+        set(handles.condName2,'string','slow base')        
+        set(handles.condName3,'string','fast base')
+        set(handles.condName4,'string','TM base')
         set(handles.condName5,'string','adaptation')
         set(handles.condName6,'string','catch')
         set(handles.condName7,'string','re-adaptation')
-        set(handles.condName8,'string','over ground post-adaptation')
-        set(handles.condName9,'string','treadmill post-adaptation')
+        set(handles.condName8,'string','OG post')
+        set(handles.condName9,'string','TM post')
         
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')
@@ -113,15 +113,15 @@ switch expDescrip
         set(handles.numofconds,'string','9')    
         
         %condition names
-        set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow baseline')
+        set(handles.condName1,'string','OG base')
+        set(handles.condName2,'string','slow base')
         set(handles.condName3,'string','short split')
-        set(handles.condName4,'string','fast baseline')
-        set(handles.condName5,'string','medium baseline')
+        set(handles.condName4,'string','fast base')
+        set(handles.condName5,'string','TM base')
         set(handles.condName6,'string','adaptation')        
         set(handles.condName7,'string','re-adaptation')
-        set(handles.condName8,'string','over ground post-adaptation')
-        set(handles.condName9,'string','treadmill post-adaptation')
+        set(handles.condName8,'string','OG post')
+        set(handles.condName9,'string','TM post')
         
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')
@@ -163,14 +163,14 @@ switch expDescrip
         set(handles.numofconds,'string','8')    
         
         %condition names
-        set(handles.condName1,'string','over ground baseline')
-        set(handles.condName2,'string','slow baseline')
-        set(handles.condName3,'string','fast baseline')
-        set(handles.condName4,'string','medium baseline')
+        set(handles.condName1,'string','OG base')
+        set(handles.condName2,'string','slow base')
+        set(handles.condName3,'string','fast base')
+        set(handles.condName4,'string','TM base')
         set(handles.condName5,'string','adaptation')        
         set(handles.condName6,'string','re-adaptation')
-        set(handles.condName7,'string','over ground post-adaptation')
-        set(handles.condName8,'string','treadmill post-adaptation')
+        set(handles.condName7,'string','OG post')
+        set(handles.condName8,'string','TM post')
         
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')
@@ -211,17 +211,17 @@ switch expDescrip
         set(handles.numofconds,'string','11')    
         
         %condition names
-        set(handles.condName1,'string','over ground baseline')        
+        set(handles.condName1,'string','OG base')        
         set(handles.condName2,'string','short split')        
-        set(handles.condName3,'string','medium baseline')
+        set(handles.condName3,'string','TM base')
         set(handles.condName4,'string','adaptation')
         set(handles.condName5,'string','catch')
         set(handles.condName6,'string','re-adaptation')
-        set(handles.condName7,'string','over ground post-adaptation')
-        set(handles.condName8,'string','treadmill post-adaptation')
+        set(handles.condName7,'string','OG post')
+        set(handles.condName8,'string','TM post')
         set(handles.condName9,'string','self selected')
-        set(handles.condName10,'string','fast baseline')
-        set(handles.condName11,'string','slow basleine')
+        set(handles.condName10,'string','fast base')
+        set(handles.condName11,'string','slow base')
         
         
         %condition descriptions
@@ -269,17 +269,17 @@ switch expDescrip
         set(handles.numofconds,'string','11')
         
         %condition names
-        set(handles.condName1,'string','over ground baseline')                
-        set(handles.condName2,'string','medium baseline')
+        set(handles.condName1,'string','OG base')                
+        set(handles.condName2,'string','TM base')
         set(handles.condName3,'string','adaptation')
         set(handles.condName4,'string','catch')
         set(handles.condName5,'string','re-adaptation')
-        set(handles.condName6,'string','over ground post-adaptation')
-        set(handles.condName7,'string','treadmill post-adaptation')
+        set(handles.condName6,'string','OG post')
+        set(handles.condName7,'string','TM post')
         set(handles.condName8,'string','self selected')        
-        set(handles.condName9,'string','slow basleine')
+        set(handles.condName9,'string','slow base')
         set(handles.condName10,'string','short split')
-        set(handles.condName11,'string','fast baseline')
+        set(handles.condName11,'string','fast base')
         
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')        
