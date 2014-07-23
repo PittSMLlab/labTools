@@ -57,7 +57,7 @@ classdef SynergyAnalysis
         end
         
         %Others
-        function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)
+        function [randomStats] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)
             Nreps=50000;
             switch randomMethod
                 case 'spectralMatch'
@@ -97,6 +97,11 @@ classdef SynergyAnalysis
                 otherwise
                     throw(MException('SynAnalysisRandomRec:UnrecognizedRandomMethod','Unrecognized method for generating random data: options are timeShift and spectralMatch'))
             end
+            randomStats.cumEigPdf=cumEigPdf; %Cumulative eigenvalues distribution
+            randomStats.margEigPdf=margEigPdf; %Marginal (individual) eigenvalues distribution
+            randomStats.totalVarPdf=totalVarPdf; %Distribution of the overall variance of the data
+            randomStats.overexplanationPdf=overexplanationPdf; %Distribution of how much variance is being explained by each dimension, normalized by the minimum variance it could explain given the previous dimensions
+            randomStats.meanPdf=meanPdf; %Distribution of data mean
         end
                                   
         dim=chooseDim(this)
