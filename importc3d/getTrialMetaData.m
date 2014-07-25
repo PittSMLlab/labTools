@@ -24,9 +24,9 @@ for cond = sort(info.cond)
                
         if info.EMGs
             if t<10
-                secFileList{t} = [info.sec_dir_location filesep basename '0' num2str(t)];
+                secFileList{t} = [info.secdir_location filesep basename '0' num2str(t)];
             else
-                secFileList{t} = [info.sec_dir_location filesep basename num2str(t)];
+                secFileList{t} = [info.secdir_location filesep basename num2str(t)];
             end
         end       
         

@@ -22,7 +22,7 @@ function varargout = GetInfoGUI(varargin)
 
 % Edit the above text to modify the response to help GetInfoGUI
 
-% Last Modified by GUIDE v2.5 16-Jul-2014 15:33:20
+% Last Modified by GUIDE v2.5 24-Jul-2014 15:59:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -263,9 +263,17 @@ state = get(hObject,'Value');
 if state
     set(handles.secfile_browse,'enable','on')
     set(handles.secfileloc,'enable','on')
+    for i=1:16
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''on'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
+    end
 else
     set(handles.secfile_browse,'enable','off')
     set(handles.secfileloc,'enable','off')
+    for i=1:16
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
+    end
 end
 
 % --- Executes on button press in secfile_browse.
@@ -426,9 +434,9 @@ function loadButton_Callback(hObject, eventdata, handles)
 if file==0
     %do nothing
 else
-    eval(['aux=load('''  path file ''');'])
+    aux=load([path file]);
     fieldNames=fields(aux);
-    eval(['subInfo=aux.' fieldNames{1} ';']);
+    subInfo=aux.(fieldNames{1});
     %TO DO: check that file is correct
     
     out.bad=0;
@@ -489,6 +497,14 @@ else
             eval(['set(handles.type',num2str(c),',''string'',subInfo.type{',num2str(condNum),'})']);        
         end
     end
+    % -- emg data
+    for i=1:16
+       aux1=['emg1_' num2str(i)];
+       set(handles.(aux1),'string',subInfo.EMGList1{i});
+       aux2=['emg2_' num2str(i)];
+       set(handles.(aux2),'string',subInfo.EMGList2{i});
+    end
+    
     % --  save location
     handles.save_folder=subInfo.save_folder;
     set(handles.saveloc_edit,'string',handles.save_folder);
@@ -929,3 +945,134 @@ set(hObject, 'Enable', 'On');
 set(hObject,'String',[])
 % Create UI control
 uicontrol(handles.DOByear_edit);
+
+
+
+function emg1_1_Callback(hObject, eventdata, handles)
+
+function emg1_1_CreateFcn(hObject, eventdata, handles)
+
+function emg1_3_Callback(hObject, eventdata, handles)
+
+function emg1_3_CreateFcn(hObject, eventdata, handles)
+
+function emg1_2_Callback(hObject, eventdata, handles)
+
+function emg1_2_CreateFcn(hObject, eventdata, handles)
+
+function emg1_4_Callback(hObject, eventdata, handles)
+
+function emg1_4_CreateFcn(hObject, eventdata, handles)
+
+function emg1_5_Callback(hObject, eventdata, handles)
+
+function emg1_5_CreateFcn(hObject, eventdata, handles)
+
+function emg1_15_Callback(hObject, eventdata, handles)
+
+function emg1_15_CreateFcn(hObject, eventdata, handles)
+
+function emg1_14_Callback(hObject, eventdata, handles)
+
+function emg1_14_CreateFcn(hObject, eventdata, handles)
+
+function emg1_13_Callback(hObject, eventdata, handles)
+
+function emg1_13_CreateFcn(hObject, eventdata, handles)
+
+function emg1_11_Callback(hObject, eventdata, handles)
+
+function emg1_11_CreateFcn(hObject, eventdata, handles)
+
+function emg1_10_Callback(hObject, eventdata, handles)
+
+function emg1_10_CreateFcn(hObject, eventdata, handles)
+
+function emg1_6_Callback(hObject, eventdata, handles)
+
+function emg1_6_CreateFcn(hObject, eventdata, handles)
+
+function emg1_8_Callback(hObject, eventdata, handles)
+
+function emg1_8_CreateFcn(hObject, eventdata, handles)
+
+function emg1_7_Callback(hObject, eventdata, handles)
+
+function emg1_7_CreateFcn(hObject, eventdata, handles)
+
+function emg1_9_Callback(hObject, eventdata, handles)
+
+function emg1_9_CreateFcn(hObject, eventdata, handles)
+
+function emg1_12_Callback(hObject, eventdata, handles)
+
+function emg1_12_CreateFcn(hObject, eventdata, handles)
+
+function emg1_16_Callback(hObject, eventdata, handles)
+
+function emg1_16_CreateFcn(hObject, eventdata, handles)
+
+function emg2_1_Callback(hObject, eventdata, handles)
+
+function emg2_1_CreateFcn(hObject, eventdata, handles)
+
+function emg2_2_Callback(hObject, eventdata, handles)
+
+function emg2_2_CreateFcn(hObject, eventdata, handles)
+
+function emg2_3_Callback(hObject, eventdata, handles)
+
+function emg2_3_CreateFcn(hObject, eventdata, handles)
+
+function emg2_4_Callback(hObject, eventdata, handles)
+
+function emg2_4_CreateFcn(hObject, eventdata, handles)
+
+function emg2_5_Callback(hObject, eventdata, handles)
+
+function emg2_5_CreateFcn(hObject, eventdata, handles)
+
+function emg2_6_Callback(hObject, eventdata, handles)
+
+function emg2_6_CreateFcn(hObject, eventdata, handles)
+
+function emg2_7_Callback(hObject, eventdata, handles)
+
+function emg2_7_CreateFcn(hObject, eventdata, handles)
+
+function emg2_8_Callback(hObject, eventdata, handles)
+
+function emg2_8_CreateFcn(hObject, eventdata, handles)
+
+function emg2_9_Callback(hObject, eventdata, handles)
+
+function emg2_9_CreateFcn(hObject, eventdata, handles)
+
+function emg2_10_Callback(hObject, eventdata, handles)
+
+function emg2_10_CreateFcn(hObject, eventdata, handles)
+
+function emg2_11_Callback(hObject, eventdata, handles)
+
+function emg2_11_CreateFcn(hObject, eventdata, handles)
+
+function emg2_12_Callback(hObject, eventdata, handles)
+
+function emg2_12_CreateFcn(hObject, eventdata, handles)
+
+function emg2_13_Callback(hObject, eventdata, handles)
+
+function emg2_13_CreateFcn(hObject, eventdata, handles)
+
+function emg2_14_Callback(hObject, eventdata, handles)
+
+function emg2_14_CreateFcn(hObject, eventdata, handles)
+
+function emg2_15_Callback(hObject, eventdata, handles)
+
+function emg2_15_CreateFcn(hObject, eventdata, handles)
+
+function emg2_16_Callback(hObject, eventdata, handles)
+
+function emg2_16_CreateFcn(hObject, eventdata, handles)
+

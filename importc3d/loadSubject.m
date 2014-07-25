@@ -48,6 +48,7 @@ rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
 
 rawExpData=experimentData(expMD,subData,rawTrialData);
 
+
 %% Process data
 data={};
 for trial=cell2mat(info.trialnums)

@@ -168,6 +168,20 @@ for t=trials
     end
 end
 
+% -- EMG data
+if isfield(handles,'emg1_1')
+   for i=1:16
+       aux1=['emg1_' num2str(i)];
+       out.EMGList1(i)={get(handles.(aux1),'string')};
+       aux2=['emg2_' num2str(i)];
+       out.EMGList2(i)={get(handles.(aux2),'string')};
+   end
+   allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};
+   %Check that all muscles are allowed
+   
+   %Check for sync signals
+   
+end
 
 % --  save location
 if isfield(handles,'save_folder')

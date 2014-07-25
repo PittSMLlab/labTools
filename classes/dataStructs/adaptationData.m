@@ -408,7 +408,11 @@ classdef adaptationData
     
     
     methods(Static)
-        function plotGroupedSubjects(adaptDataList,label,removeBiasFlag)
+        function plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag)
+            
+            if nargin<4 || isempty(plotIndividualsFlag)
+                plotIndividualsFlag=true;
+            end
             
             %First: see if adaptDataList is a single subject (char), a cell
             %array of subject names (one group of subjects), or a cell array of cell arrays of
@@ -507,9 +511,13 @@ classdef adaptationData
                     end
                     
                     h(2*group)=bar([2:3:3*nConds]+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
-                    if Ngroups==1 %Only plotting individual subject performance if there is only one group
+                    if Ngroups==1 || plotIndividualsFlag %Only plotting individual subject performance if there is only one group, or flag is set
+                        if Ngroups==1
                         plot([1:3:3*nConds]-.25+(group-1)/Ngroups,veryEarlyPoints,'x','LineWidth',2)
                         plot([1:3:3*nConds]+.25+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
+                        else
+                          plot([1:3:3*nConds]+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)  
+                        end
                         plot([2:3:3*nConds]+(group-1)/Ngroups,latePoints,'x','LineWidth',2)
                     end
                     if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
