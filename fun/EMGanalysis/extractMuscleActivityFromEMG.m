@@ -12,7 +12,7 @@ if nargin<5
     notchList=[];
 end
 
-[data] = filterEMG(data,fs,BW,notchList); %Filtering
+[data,BW,notchList] = filterEMG(data,fs,BW,notchList); %Filtering
 amp=amp_estim(data,fs,1,f_cut); %linear estimator of amplitude
 procData=(amp>=0).*amp; %kills negative samples, which should not ocurr anyway
     
