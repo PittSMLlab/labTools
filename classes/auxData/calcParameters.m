@@ -32,6 +32,8 @@ paramlabels = {'good',... %Flag indicating whether the stride has events in the 
     'Tout',... %Step time difference divided by stride time
     'Tgoal',... %Stance time diff, divided by stride time
     'TgoalSW',... %Swing time diff, divided by stride time (should be same as Tgoal)
+    'direction',... %-1 if walking towards window, 1 if walking towards door
+    'hipPos',...
     'stepLengthSlow',...
     'stepLengthFast',...
     'alphaSlow',... %Leg angle (hip to angle with respect to vertical) at slow leg HS
@@ -250,22 +252,31 @@ for step=1:Nstrides
             indFTO2=round(indFTO2*CF);
             
             %Compute times with new indices:
-            timeSHS=eventsTime(indSHS);
-            timeFTO=eventsTime(indFTO);
-            timeFHS=eventsTime(indFHS);
-            timeSTO=eventsTime(indSTO);
-            timeSHS2=eventsTime(indSHS2);
-            timeFTO2=eventsTime(indFTO2);
+            timeSHS=eventsTime(indSHS*(1/CF));
+            timeFTO=eventsTime(indFTO*(1/CF));
+            timeFHS=eventsTime(indFHS*(1/CF));
+            timeSTO=eventsTime(indSTO*(1/CF));
+            timeSHS2=eventsTime(indSHS2*(1/CF));
+            timeFTO2=eventsTime(indFTO2*(1/CF));
 
             % Set all steps to have the same slope (a negative slope during stance phase is assumed)
             if (sAnkPos(indSHS)<0)
                 sAnkPos=-sAnkPos;
-                fAnkPos=-fAnkPos;
+                fAnkPos=-fAnkPos;     
             end
             if sAngle(indSHS)<0
                 sAngle=-sAngle;
                 fAngle=-fAngle;
             end
+            
+            %find walking direction
+            if sAnk(indSHS,1)<meanHipPos(indSHS)
+                direction(t)=-1;
+            else
+                direction(t)=1;
+            end
+            
+            hipPos(t)=meanHipPos(t*f_kin/f_params);
 
             %%% Intralimb
 

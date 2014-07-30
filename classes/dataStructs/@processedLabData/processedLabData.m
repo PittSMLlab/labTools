@@ -7,7 +7,7 @@ classdef processedLabData < labData
         gaitEvents %labTS
         procEMGData %processedEMGTS
         angleData %labTS (angles based off kinematics)
-        adaptParams %labTS (parameters whcih characterize adaptation process)
+        adaptParams %labTS (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
     end
     
     properties (Dependent)        
