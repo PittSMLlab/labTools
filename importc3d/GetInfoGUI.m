@@ -130,7 +130,7 @@ for conds = 1:handles.lines
     eval(['set(handles.condition',num2str(conds),',''string'','''')'])
     eval(['set(handles.condName',num2str(conds),',''string'','''')'])
     eval(['set(handles.description',num2str(conds),',''string'','''')'])
-    %eval(['set(handles.trialnum',num2str(conds),',''string'','''')'])
+    eval(['set(handles.trialnum',num2str(conds),',''string'','''')'])
     eval(['set(handles.type',num2str(conds),',''value'',',num2str(0),')'])
 end
 
