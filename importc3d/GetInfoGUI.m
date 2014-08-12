@@ -498,13 +498,14 @@ else
         end
     end
     % -- emg data
-    for i=1:16
-       aux1=['emg1_' num2str(i)];
-       set(handles.(aux1),'string',subInfo.EMGList1{i});
-       aux2=['emg2_' num2str(i)];
-       set(handles.(aux2),'string',subInfo.EMGList2{i});
+    if isfield(subInfo,'EMGList1') && isfield(subInfo,'EMGList2') %for subjects processed before 7/29/2014
+        for i=1:16
+           aux1=['emg1_' num2str(i)];
+           set(handles.(aux1),'string',subInfo.EMGList1{i});
+           aux2=['emg2_' num2str(i)];
+           set(handles.(aux2),'string',subInfo.EMGList2{i});
+        end    
     end
-    
     % --  save location
     handles.save_folder=subInfo.save_folder;
     set(handles.saveloc_edit,'string',handles.save_folder);
@@ -1075,4 +1076,3 @@ function emg2_15_CreateFcn(hObject, eventdata, handles)
 function emg2_16_Callback(hObject, eventdata, handles)
 
 function emg2_16_CreateFcn(hObject, eventdata, handles)
-

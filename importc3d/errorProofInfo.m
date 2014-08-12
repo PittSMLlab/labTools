@@ -113,11 +113,12 @@ if isfield(handles,'secfolder_location')
     if exist(handles.secfolder_location)
         out.secdir_location = handles.secfolder_location;
     else
-        h_error=errordlg('Please enter a folder that exists','Directory Error');    
-        waitfor(h_error)    
-        uicontrol(handles.secfileloc)
-        out.bad=1;
-        return
+%         h_error=errordlg('Please enter a folder that exists','Directory Error');    
+%         waitfor(h_error)    
+%         uicontrol(handles.secfileloc)
+%         out.bad=1;
+%         return
+    out.secdir_location=out.dir_location;
     end
 else
     out.secdir_location = pwd;

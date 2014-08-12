@@ -20,7 +20,7 @@ function varargout = ReviewEventsGUI(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Last Modified by GUIDE v2.5 15-Jun-2014 19:27:47
+% Last Modified by GUIDE v2.5 04-Aug-2014 14:26:14
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -154,6 +154,7 @@ set(handles.plot_button,'Enable','off');
 set(handles.next_button,'Enable','off');
 set(handles.back_button,'Enable','off');
 set(handles.delete_button,'Enable','off');
+set(handles.deleteNbutton,'Enable','off');
 set(handles.save_button,'Enable','off');
 set(handles.add_button,'Enable','off');
 set(handles.BPdataType,'Enable','off');
@@ -183,6 +184,7 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     set(handles.next_button,'Enable','on');
     %set(handles.back_button,'Enable','on');
     set(handles.delete_button,'Enable','on');
+    set(handles.deleteNbutton,'Enable','on');
     set(handles.save_button,'Enable','on');
     set(handles.add_button,'Enable','on');
     set(handles.BPdataType,'Enable','on');
@@ -241,6 +243,7 @@ if isempty(s)
     set(handles.next_button,'Enable','off');
     set(handles.back_button,'Enable','off');
     set(handles.delete_button,'Enable','off');
+    set(handles.deleteNbutton,'Enable','off');
     set(handles.save_button,'Enable','off');
     set(handles.add_button,'Enable','off');
     set(handles.BPdataType,'Enable','off');
@@ -257,6 +260,7 @@ else
     set(handles.plot_button,'Enable','on');
     set(handles.next_button,'Enable','on');    
     set(handles.delete_button,'Enable','on');
+    set(handles.deleteNbutton,'Enable','on');
     set(handles.save_button,'Enable','on');
     set(handles.add_button,'Enable','on');
     set(handles.BPdataType,'Enable','on');
@@ -381,7 +385,7 @@ function [plotFields] = makeFieldList(hObject,handles,fieldListHandle)
 
 global expData
 
-eval(['curTS=expData.data{handles.idx}.' handles.TSlist{get(hObject,'Value')} ';']);
+curTS=expData.data{handles.idx}.(handles.TSlist{get(hObject,'Value')});
 fields={};
 plotFields={};
 set(fieldListHandle,'enable','on')
@@ -500,7 +504,7 @@ global expData
 value=get(fieldHandle,'Value');
 dataType=handles.TSlist{get(dataTypeHandle,'Value')};
 
-eval(['TSdata=expData.data{handles.idx}.' dataType ';']);
+TSdata=expData.data{handles.idx}.(dataType);
 
 if TSdata.Time(end)<handles.tstop || get(handles.maxCheck,'value')
     endSamp=length(TSdata.Time);
@@ -525,8 +529,8 @@ time=TSdata.Time(startSamp:endSamp); %should be same as time=handles.tstart:TSda
 set(axesHandle,'nextplot','replace')
 if length(fieldList{value})==2
     %get data to plot
-    eval(['FdataTS=TSdata.getDataAsTS(''' fieldList{value}{1} ''');' ]);
-    eval(['SdataTS=TSdata.getDataAsTS(''' fieldList{value}{2} ''');' ]);
+    FdataTS=TSdata.getDataAsTS(fieldList{value}{1});
+    SdataTS=TSdata.getDataAsTS(fieldList{value}{2});
     if strcmp(dataType,'adaptParams')
         label=fieldList{value}{1}(1:end-4);
         %plot data
@@ -564,7 +568,7 @@ if length(fieldList{value})==2
 else
     %get data to plot
     label=fieldList{value};
-    eval(['dataTS=TSdata.getDataAsTS(''' fieldList{value} ''');' ]);
+    dataTS=TSdata.getDataAsTS(fieldList{value});
     %plot data
     if strcmp(dataType,'adaptParams')
         plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
@@ -658,6 +662,35 @@ expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 
+end
+
+% --- Executes on button press in deleteNbutton.
+function deleteNbutton_Callback(hObject, eventdata, handles)
+
+global expData
+
+[x,~]=ginput(2);
+
+%Find two closest events
+allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
+
+deltaTstart=handles.trialEvents.Time(allEventsIndexes)-x(1);
+[~,selectedEventTimeIndexStart]=min(deltaTstart.^2);
+selectedEventIndexStart=allEventsIndexes(selectedEventTimeIndexStart);
+
+deltaTend=handles.trialEvents.Time(allEventsIndexes)-x(2);
+[~,selectedEventTimeIndexEnd]=min(deltaTend.^2);
+selectedEventIndexEnd=allEventsIndexes(selectedEventTimeIndexEnd);
+    
+%Eliminate all events between two indexes from handles.trialEvents
+handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd,:)=false;
+
+expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
+
+%Re-plot
+guidata(hObject, handles)
+plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
 % --- Executes on button press in add_button.
@@ -782,6 +815,7 @@ set(handles.plot_button,'Enable','off');
 set(handles.next_button,'Enable','off');
 set(handles.back_button,'Enable','off');
 set(handles.delete_button,'Enable','off');
+set(handles.deleteNbutton,'Enable','off');          
 set(handles.save_button,'Enable','off');
 set(handles.add_button,'Enable','off');
 set(handles.BPdataType,'Enable','off');
