@@ -11,9 +11,8 @@ classdef processedLabData < labData
     end
     
     properties (Dependent)        
-%         tempParams
-%         spatialParams
         isSingleStride
+        experimentalParams
     end
     
     %%
@@ -80,21 +79,17 @@ classdef processedLabData < labData
             partialParamData=this.getPartialData('adaptParams',paramName);
         end
                 
-%         function adaptParams=calcAdaptParams(this)
-%             adaptParams=calcParameters(this);            
-%         end
+         function adaptParams=calcAdaptParams(this)
+             adaptParams=calcParameters(this);            
+         end
            
-%         %Getters for dependent properties:
-%         function tParams=get.tempParams(this)
-%             tParams=temporalParameters(this);
-%         end
-%         
-%         function sParams=get.spatialParams(this)
-%             sParams=spatialParameters(this.gaitEvents,this.markerData);
-%         end
-        
+         %Getters for dependent properties:
+         function expParams=get.experimentalParams(this)
+             expParams=calcExperimentalParams(this);
+         end
+
         function b=get.isSingleStride(this)
-           b=isa(this,'strideData'); 
+            b=isa(this,'strideData'); 
         end
         
         %Separate into strides!

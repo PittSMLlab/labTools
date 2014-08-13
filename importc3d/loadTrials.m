@@ -74,111 +74,119 @@ for t=cell2mat(info.trialnums)
         EMGList(17:32)=info.EMGList2; %This is the actual ordered in which the muscles were recorded
         relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         
-        auxData=bsxfun(@minus,relData,mean(relData,1));
-        auxData2=bsxfun(@minus,relData2,mean(relData,1));
-        if size(relData,1)>size(relData2,1) %Fixing possible differences in length by removing samples from longest dataset
-            auxData=auxData(1:size(relData2,1),:);
-        elseif size(relData2,1)>size(relData,1)
-            auxData2=auxData2(1:size(relData,1),:);
-        end
-        allData=[auxData,auxData2];
-        syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
-        sync=allData(:,syncIdx);
-        
-        
-        
-        %Time align from sync signals: standardize signals
-        refSync=GRFData.Data(:,3);
-        refSync=refSync-mean(refSync);
-        refSync=refSync/std(refSync);
-        sync=bsxfun(@minus,sync,mean(sync));
-        sync=bsxfun(@rdivide,sync,std(sync));
-        
-        %Freq similarity check
-%         [Fdata,fVector]=DiscreteTimeFourierTransform([sync;zeros(5*size(sync,1),size(sync,2))],analogsInfo.frequency);
-%         h=figure;
-%         hold on
-%         plot(fVector>=0,abs(Fdata(fVector>=0,1)))
-%         plot(fVector>=0,abs(Fdata(fVector>=0,1)),'r')
-%         legend('Sync 1','Sync 2')
-%         hold off
-%         uiwait(h)
-        
         inv1=false;
         inv2=false;
+        freqMatch=false;
+        repeatFlag=true;
+        while repeatFlag
         if abs(analogsInfo.frequency-analogsInfo2.frequency)<.00001 %Make sure the reported sample frequenciess are the same to .00001 Hz tolerance (1 extra sample per 10^5 secs ~ 1.2 days of continuous recording)
-            if length(refSync)>size(sync,1)
-                sync(end+1:length(refSync),:)=0;
-            elseif size(sync,1)>length(refSync)
-                refSync(end+1:size(sync,1))=0; 
-            end
-            [acor,lag] = xcorr(refSync,sync(:,1),'unbiased');
-            I=find(lag==0);
-            winSize=10;
-            acor(1:I-winSize/2 * round(analogsInfo.frequency))=0; acor(I+winSize/2 *round(analogsInfo.frequency):end)=0; %This is to avoid bias when dividing by small numbers: looking for max in a 2 sec window around 0.
-            [~,I1] = max(abs(acor));
-            timeDiff1 = lag(I1)/analogsInfo.frequency;
-            if acor(I1)<0
-                sync(:,1)=-sync(:,1);
-                inv1=true;
-            end
-            
-            [acor,lag] = xcorr(refSync,sync(:,2),'unbiased');
-            I=find(lag==0);
-            acor(1:I-winSize/2 * round(analogsInfo.frequency))=0; acor(I+winSize/2 * round(analogsInfo.frequency):end)=0; %This is to avoid bias when dividing by small numbers: looking for max in a 2 sec window around 0.
-            [~,I2] = max(abs(acor));
-            timeDiff2 = lag(I2)/analogsInfo.frequency;
-            if acor(I2)<0
-                sync(:,2)=-sync(:,2);
-                inv2=true;
-            end
-            
-%             h=figure;
-%             hold on
-%             plot([0:length(refSync)-1]*1/analogsInfo.frequency,refSync)
-%             plot(timeDiff1+[0:length(sync(:,1))-1]*1/analogsInfo.frequency,sync(:,1),'r')
-%             plot(timeDiff2+[0:length(sync(:,2))-1]*1/analogsInfo2.frequency,sync(:,2),'g')
-%             legend('refSync','sync1','sync2')
-%             hold off
-%             uiwait(h)
+                auxData=bsxfun(@minus,relData,mean(relData,1));
+                auxData2=bsxfun(@minus,relData2,mean(relData2,1));
+                if size(relData,1)>size(relData2,1) %Fixing possible differences in length by removing samples from longest dataset
+                    auxData=auxData(1:size(relData2,1),:);
+                elseif size(relData2,1)>size(relData,1)
+                    auxData2=auxData2(1:size(relData,1),:);
+                end
+                allData=[auxData,auxData2];
+                syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
+                sync=allData(:,syncIdx);
+
+
+
+                %Time align from sync signals: standardize signals
+                refSync=GRFData.Data(:,3);
+                refSync=refSync-mean(refSync);
+                refSync=refSync/std(refSync);
+                sync=bsxfun(@minus,sync,mean(sync));
+                sync=bsxfun(@rdivide,sync,std(sync));
+        
+
+                if length(refSync)>size(sync,1)
+                    sync(end+1:length(refSync),:)=0;
+                elseif size(sync,1)>length(refSync)
+                    refSync(end+1:size(sync,1))=0; 
+                end
+                [timeDiff1,corrCoef,lag1] = findTimeLag(refSync,sync(:,1),analogsInfo.frequency,10); %Looking in a 10-sec window
+                if corrCoef<0
+                    sync(:,1)=-sync(:,1);
+                    inv1=true;
+                end
+                [timeDiff2,corrCoef,lag2] = findTimeLag(refSync,sync(:,2),analogsInfo.frequency,10); %Looking in a 10-sec window
+                if corrCoef<0
+                    sync(:,2)=-sync(:,2);
+                    inv1=true;
+                end
+
+                %Re-align EMG data based on timeDiff found
+                %First: throw all samples prior to the second datataset's starting
+                %time
+                if timeDiff1<timeDiff2 %Means dataset 1 started recording first: only keeping sections that have overlap
+                    auxData=relData(lag2-lag1+1:end,:);
+                    timeDiff=timeDiff2;
+                else
+                    auxData2=relData2(lag1-lag2+1:end,:);
+                    timeDiff=timeDiff1;
+                end
+                if size(auxData,1)>size(auxData2,1) %Fixing possible differences in length by throwing away samples from longest dataset
+                    auxData=auxData(1:size(auxData2,1),:);
+                else
+                    auxData2=auxData2(1:size(auxData,1),:);
+                end
+
+                 %Finally: Freq similarity check (in case the sampling freqs
+                 %are reported as equal but are not actually so)
+                 allData=[auxData,auxData2];
+                sync=allData(:,syncIdx);
+                sync=bsxfun(@minus,sync,mean(sync));
+                sync=bsxfun(@rdivide,sync,std(sync));
+                if inv1
+                    sync(:,1)=-sync(:,1);
+                end
+                if inv2
+                    sync(:,2)=-sync(:,2);
+                end
+                
+                freq1=analogsInfo.frequency;
+                NsamplesIn2Sec=10*freq1;
+                sync1_init=sync(1:NsamplesIn2Sec,1);
+                sync2_init=sync(1:NsamplesIn2Sec,2);
+                [timeDiff_A,corrCoef] = findTimeLag(sync1_init,sync2_init,freq1,.2); %Looking in a 200 ms window
+                sync1_end=sync(end-NsamplesIn2Sec+1:end,1);
+                sync2_end=sync(end-NsamplesIn2Sec+1:end,2);
+                [timeDiff_B,corrCoef] = findTimeLag(sync1_end,sync2_end,freq1,.2); %Looking in a 200 ms window
+                relativeError=(timeDiff_A-timeDiff_B)/((size(sync,1)-NsamplesIn2Sec)/freq1); %Time-lag difference divided by time distance between the two portions studied
+                relativeError=-28*10^-6; %Forcing relative error to known value of 28ppm
+                if (abs(timeDiff_A-timeDiff_B)>.001) && ~freqMatch %More than a ms difference, need to resample the second signal to match the other two.
+                    A=fft(relData2,[],1);
+                    t1=[0:size(relData2,1)-1]/freq1;
+                    clear aaa
+                    for i=1:size(relData2,2)
+                        aaa(:,i) = interp1(t1*(1-relativeError),relData2(:,i),t1,'linear','extrap');
+                    end
+                    relData2=aaa;
+                    freqMatch=true; 
+                    %relData2=ifft(A,round(size(relData2,1)*(1+relativeError)),1,'symmetric'); % Ideally, this should work too and is more efficient.Right now, it doesn't
+                else 
+                    repeatFlag=false;
+                end
+
         else
             disp('Not syncing: sampling frequencies do not match.')
-            timeDiff1=0;
-            timeDiff2=0;
+            timeDiff=0;
+            timeDiff1=NaN;
+            timeDiff2=NaN;
+            freqMatch=true;
         end
         
-        %Re-align EMG data based on timeDiff found
-        %lag(I1)
-        %lag(I2)
-        %First: throw all samples prior to the second datataset's starting
-        %time
-        if lag(I1)<lag(I2) %Means dataset 1 started recording first
-            relData=relData(lag(I2)-lag(I1)+1:end,:);
-            timeDiff=timeDiff2;
-        else
-            relData2=relData2(lag(I1)-lag(I2)+1:end,:);
-            timeDiff=timeDiff1;
         end
-        if size(relData,1)>size(relData2,1) %Fixing possible differences in length by throwing away samples from longest dataset
-            relData=relData(1:size(relData2,1),:);
-        else
-            relData2=relData2(1:size(relData,1),:);
-        end
-        allData=[relData,relData2];
+       
+        %
+        
         
         %Plot to see if alignment worked:
-        sync=allData(:,syncIdx);
-        sync=bsxfun(@minus,sync,mean(sync));
-        sync=bsxfun(@rdivide,sync,std(sync));
-        if inv1
-            sync(:,1)=-sync(:,1);
-        end
-        if inv2
-            sync(:,2)=-sync(:,2);
-        end
         h=figure;
         hold on
-        plot([0:length(refSync)-1]*1/analogsInfo.frequency,refSync)
+        plot([0:length(refSync)-1]*1/analogsInfo.frequency,-refSync)
         plot(timeDiff+[0:length(sync(:,1))-1]*1/analogsInfo.frequency,sync(:,1),'r')
         plot(timeDiff+[0:length(sync(:,1))-1]*1/analogsInfo.frequency,sync(:,2),'g')
         legend('refSync',['sync1, delay=' num2str(timeDiff1) 's'],['sync1, delay=' num2str(timeDiff2) 's'])

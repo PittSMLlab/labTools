@@ -93,24 +93,41 @@ classdef experimentData
             end
         end
         
+        %Process full experiment
+        function processedThis=process(this)
+            for trial=1:length(this.data)
+                if ~isempty(this.data{trial})
+                    procData{trial}=this.data{trial}.process;
+                else
+                   procData{trial}=[];
+                end
+            end
+            processedThis=experimentData(this.metaData,this.subData,procData);
+        end
+        
         %function to make adaptationData object
         function adaptData=makeDataObj(this,filename)
             DATA=[];
+            DATA2=[];
             startind=1;
             if ~isempty(this.data)
                 for i=1:length(this.data)
                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
+                        aux=this.data{i}.experimentalParams;
+                        labels2=aux.getLabels;
+                        dataTS2=aux.getDataAsVector(labels2);
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+                        DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
                         trialTypes{i}=this.data{i}.metaData.type;
                     end
                 end
-            end            
+            end    
             %labels should be the same for all trials with adaptParams
-            parameterData=paramData(DATA,labels,indsInTrial,trialTypes);
+            parameterData=paramData([DATA, DATA2],[labels labels2],indsInTrial,trialTypes);
             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
             if nargin>1 && ~isempty(filename)
                 save([filename '.mat'],'adaptData');
@@ -143,7 +160,7 @@ classdef experimentData
 
         function h=parameterEvolutionPlot(this,field,h)
             %Check that the field actually exists in the all of
-            %data{i}.adaptatParams
+            %data{i}.adaptParams or experimentalParams
             colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
             
             %Do the plot
@@ -157,9 +174,12 @@ classdef experimentData
             for condition=1:length(this.metaData.trialsInCondition)
                for trial=this.metaData.trialsInCondition{condition}
                    plotData=this.data{trial}.adaptParams.getDataAsVector(field);
+                   if isempty(plotData)
+                       plotData=this.data{trial}.experimentalParams.getDataAsVector(field);
+                   end
                    plotData=plotData(~isnan(plotData));
                    newCounter=counter+length(plotData);
-                   plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{condition})
+                   plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{mod(condition-1,length(colors))+1})
                    counter=newCounter;
                end
             end
