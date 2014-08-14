@@ -1,4 +1,4 @@
-function [rows,cols]=subplotSize(n_plots,relWidth,relHeight)
+function [rows,cols]=subplotSize(n_plots,relHeight,relWidth)
 
 widthRatio = relWidth/(relWidth+relHeight);
 heightRatio= relHeight/(relWidth+relHeight);

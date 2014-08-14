@@ -456,6 +456,9 @@ classdef adaptationData
             end
             
             %TO DO: check condition input
+            if isa(conditions,'char')
+                conditions={conditions};
+            end
             for c=1:length(conditions)        
                 cond{c}=conditions{c}(ismember(conditions{c},['A':'Z' 'a':'z' '0':'9'])); %remove non alphanumeric characters                
             end
@@ -503,7 +506,7 @@ classdef adaptationData
             %plot the average value of parameter(s) entered over time, across all subjects entered.
             for group=1:Ngroups
                 Xstart=1;
-                lineX=[];
+                lineX=0;
                 subjects=auxList{group};
                 for c=1:length(conditions)
 
@@ -523,8 +526,7 @@ classdef adaptationData
                     while maxPts>1.25*nanmax(numPts.(cond{c})([1:loc-1 loc+1:end]))
                         numPts.(cond{c})(loc)=nanmean(numPts.(cond{c})([1:loc-1 loc+1:end])); %do not include min in mean
                         [maxPts,loc]=nanmax(numPts.(cond{c}));
-                    end
-
+                    end                    
                     for p=1:length(params)
 
                         allValues=values(group).(params{p}).(cond{c})(:,1:maxPts);
@@ -563,6 +565,7 @@ classdef adaptationData
                         E=se(group).(params{p}).(cond{c});                        
                         condLength=length(y);
                         x=Xstart:Xstart+condLength-1;
+                        
                         if nargin>4 && ~isempty(indivFlag) && indivFlag~=0
                             if nargin>5 && ~isempty(indivSubs)
                                 subsToPlot=indivSubs{group};                                
@@ -601,7 +604,7 @@ classdef adaptationData
                             %vertical lines to seperate conditions
                             title(params{p},'fontsize',12)
                             line([lineX; lineX],ylim,'color','k')
-                            xticks=[0 lineX]+diff([0 lineX Xstart+condLength])./2;                    
+                            xticks=lineX+diff([lineX Xstart+condLength])./2;                    
                             set(gca,'fontsize',8,'Xlim',[0 Xstart+condLength],'Xtick', xticks, 'Xticklabel', conditions)
                         end
                         hold off
