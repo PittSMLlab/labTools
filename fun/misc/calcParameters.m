@@ -1,80 +1,96 @@
 function out = calcParameters(in)
 %in must be an object of the class processedlabData
 %
-%To add a new parameter, it must be added to the paramLabels
-%cell and the label must be the same as the variable name the data is saved
-%to. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(i)=timeSHS2-timeSTO;)
+%To add a new parameter, it must be added to the paramLabels cell and the
+%label must be the same as the variable name the data is saved to within
+%the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)
+%note: if adding a slow and fast version of one parameter, make sure 'Fast'
+%and 'Slow' appear at the end of the respective parameter names. See
+%existing parameter names as an example.
 
-paramlabels = {'good',... %Flag indicating whether the stride has events in the expected order or not
-    'swingTimeSlow',...
-    'swingTimeFast',...
-    'stanceTimeSlow',...
-    'stanceTimeFast',...
-    'doubleSupportSlow',...
-    'doubleSupportFast',...
-    'stepTimeSlow',...
-    'stepTimeFast',...
-    'toeOffSlow',...
-    'toeOffFast',...
-    'strideTimeSlow',...
-    'strideTimeFast',...
-    'cadenceSlow',...
-    'cadenceFast',...
-    'stepCadenceSlow',...
-    'stepCadenceFast',...
-    'doubleSupportPctSlow',...
-    'doubleSupportPctFast',...
-    'doubleSupportDiff',...
-    'stepTimeDiff',...
-    'stanceTimeDiff',...
-    'swingTimeDiff',...
-    'doubleSupportAsym',...
-    'Tout',... %Step time difference divided by stride time
-    'Tgoal',... %Stance time diff, divided by stride time
-    'TgoalSW',... %Swing time diff, divided by stride time (should be same as Tgoal)
-    'direction',... %-1 if walking towards window, 1 if walking towards door
-    'hipPos',...
-    'stepLengthSlow',...
-    'stepLengthFast',...
-    'alphaSlow',... %Leg angle (hip to angle with respect to vertical) at slow leg HS
-    'alphaFast',... %Leg angle at fast leg HS
-    'betaSlow',...
-    'betaFast',...
-    'rangeSlow',...
-    'rangeFast',...
-    'omegaSlow',...
-    'omegaFast',...
-    'alphaRatioSlow',...
-    'alphaRatioFast',...
-    'alphaDeltaSlow',...
-    'alphaDeltaFast',...
-    'stepLengthDiff',...
-    'stepLengthAsym',... %Step length difference, divided by sum
-    'angularSpreadDiff',...
-    'angularSpreadAsym',...
-    'Sout',... %Alpha difference, divided by alpha sum
-    'Serror',... 
-    'SerrorOld',...
-    'Sgoal',...
-    'angleOfOscillationAsym',...
-    'phaseShift',...
-    'phaseShiftPos',...
-    'spatialContribution',... %Relative position of ankle markers at ipsi-lateral HS (i.e. slow ankle at SHS minus fast ankle at FHS)
-    'stepTimeContribution',... %Average belt speed times step time difference
-    'velocityContribution',... %Average step time times belt speed difference
-    'netContribution',... %Sum of the previous three, should be equal to stepLengthAsym
-    'equivalentSpeed',... %Relative speed of hip to feet, 
-    'singleStanceSpeedSlow',... %Relative speed of hip to slow ankle during contralateral swing
-    'singleStanceSpeedFast',... %Relative speed of hip to fast ankle during contralateral swing
-    'singleStanceSpeedSlowAbs',... %Absolute speed of slow ankle during contralateral swing
-    'singleStanceSpeedFastAbs',... %Absolute speed of fast ankle during contralateral swing
-    'stepSpeedSlow',...%Ankle relative to hip, from iHS to cHS
-    'stepSpeedFast',... %Ankle relative to hip, from iHS to cHS
-    'stanceSpeedSlow',... %Ankle relative to hip, during ipsilateral stance
-    'stanceSpeedFast',... %Ankle relative to hip, during ipsilateral stance
+
+% one "stride" contains the events: SHS,FTO,FHS,STO,SHS2,FTO2
+% see lab tools user guide for a helpful visual of events.
+paramlabels = {'good',...       Flag indicating whether the stride has events in the expected order or not
+    'swingTimeSlow',...         time from STO to SHS2 (in s)
+    'swingTimeFast',...         time from FTO to FHS (in s)
+    'stanceTimeSlow',...        time from SHS to STO (in s)
+    'stanceTimeFast',...        time from FHS to FTO (in s)
+    'doubleSupportSlow',...     time from FHS to STO (in s)
+    'doubleSupportFast',...     time from SHS to FTO (in s)
+    'stepTimeSlow',...          time from FHS to SHS2 (in s)
+    'stepTimeFast',...          time from SHS to FHS (in s)
+    'toeOffSlow',...            time from STO to FTO2 (in s)
+    'toeOffFast',...            time from FTO to STO (in s)
+    'strideTimeSlow',...        time from SHS to SHS2 (in s)
+    'strideTimeFast',...        time from FTO to FTO2 (in s)
+    'cadenceSlow',...           1/strideTimeSlow (in Hz)
+    'cadenceFast',...           1/strideTimeFast (in Hz)
+    'stepCadenceSlow',...       1/stepTimeSlow (in Hz)
+    'stepCadenceFast',...       1/stepTimeFast (in Hz)
+    'doubleSupportPctSlow',...  (doubleSupportSlow/strideTimeSlow)*100
+    'doubleSupportPctFast',...  (doubleSupportFast/strideTimeFast)*100
+    'doubleSupportDiff',...     doubleSupportSlow-doubleSupportFast (in s)    
+    'stepTimeDiff',...          stepTimeFast-stepTimeSlow (in s)
+    'stanceTimeDiff',...        stanceTimeSlow-stanceTimeFast (in s)
+    'swingTimeDiff',...         swingTimeFast-swingTimeSlow (in s)
+    'doubleSupportAsym',...     (doubleSupportPctFast-doubleSupportPctSlow)/(doubleSupportPctFast+doubleSupportPctSlow)
+    'Tout',...                  stepTimeDiff/strideTimeSlow
+    'Tgoal',...                 stanceTimeDiff/strideTimeSlow
+    'TgoalSW',...               swingTimeDiff/strideTimeSlow (should be same as Tgoal)
+    'direction',...             -1 if walking towards window, 1 if walking towards door (implemented for OG bias removal)
+    'hipPos',...                average hip position of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)
+    'stepLengthSlow',...        distance between ankle markers (relative to avg hip marker) at SHS2 (in mm)
+    'stepLengthFast',...        distance between ankel markers (relative to hip) at FHS (in mm)
+    'alphaSlow',...             ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)
+    'alphaFast',...             ankle placement of fast leg at FHS (in mm)
+    'alphaAngSlow',...          slow leg angle (hip to ankle with respect to vertical) at SHS2 (in deg)
+    'alphaAngFast',...          fast leg angle at FHS (in deg)
+    'betaSlow',...              ankle placement of slow leg at STO (relative avg hip marker) (in mm)
+    'betaFast',...              ankle placement of fast leg at FTO2 (in mm)
+    'betaAngSlow',...           slow leg angle at STO (in deg)
+    'betaAngFast',...           fast leg angle at FTO (in deg)
+    'stanceRangeSlow',...       alphaSlow + betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)
+    'stanceRangeFast',...       alphaFast + betaFast (in mm)
+    'stanceRangeAngSlow',...    |alphaAngSlow| + |betaAngSlow| (i.t total angle swept out by slow leg during stance) (in deg)
+    'stanceRangeAngFast',...    |alphaAngFast| + |betaAngFast| (in deg)
+    'swingRangeSlow',...        total distance covered by slow ankle marker realtive to hip from STO to SHS2 (in mm)
+    'swingRangeFast',...        total distance covered by fast ankle marker realtive to hip from FTO to FHS (in mm)
+    'omegaSlow',...             angle between legs at SHS2 (in deg)
+    'omegaFast',...             angle between legs at FHS (in deg)
+    'alphaRatioSlow',...        alphaSlow/(alphaSlow+alphaFast)
+    'alphaRatioFast',...        alphaFast/(alphaSlow+alphaFast)
+    'alphaDeltaSlow',...        slow leg angle at SHS2 - fast leg angle at FHS (in deg)
+    'alphaDeltaFast',...        fast leg angle at FHS - slow leg angle at SHS (in deg)
+    'stepLengthDiff',...        stepLengthFast-stepLengthSlow (in mm)
+    'stepLengthDiff2D',...      two-dimensional version of stepLengthDiff (in mm)
+    'stepLengthAsym',...        Step length difference (fast-slow), divided by sum
+    'stepLengthAsym2D',...      two-dimensional step length difference (fast-slow), divided by sum
+    'angularSpreadDiff',...     omegaFast-omegaSlow (in deg)
+    'angularSpreadAsym',...     angular spread difference / sum
+    'Sout',...                  Alpha difference (fast-slow), divided by alpha sum
+    'Serror',...                alphaRatioSlow-alphaRatioFast
+    'SerrorOld',...             alphaRatioFast/alphaRatioSlow
+    'Sgoal',...                 (stanceRangeAngFast-stanceRangeAngSlow)/stanceRangeAngFast
+    'angleOfOscillationAsym',...(alhpaAngFast+betaAngFast)/2-(alphaAngSlow+betaAngSlow)/2
+    'phaseShift',...            parcent of stride that one angle trace is shifted with respect to the other for max correlation
+    'phaseShiftPos',...         same as phaseShift, but uses ankle pos trace instead of angles
+    'spatialContribution',...   Relative position of ankle markers at ipsi-lateral HS (i.e. slow ankle at SHS minus fast ankle at FHS)
+    'stepTimeContribution',...  Average belt speed times step time difference
+    'velocityContribution',...  Average step time times belt speed difference
+    'netContribution',...       Sum of the previous three, should be equal to stepLengthAsym
+    'equivalentSpeed',...       Relative speed of hip to feet, 
+    'singleStanceSpeedSlow',... Relative speed of hip to slow ankle during contralateral swing
+    'singleStanceSpeedFast',... Relative speed of hip to fast ankle during contralateral swing
+    'singleStanceSpeedSlowAbs',...  Absolute speed of slow ankle during contralateral swing
+    'singleStanceSpeedFastAbs',...  Absolute speed of fast ankle during contralateral swing
+    'stepSpeedSlow',...         Ankle relative to hip, from iHS to cHS
+    'stepSpeedFast',...         Ankle relative to hip, from iHS to cHS
+    'stanceSpeedSlow',...       Ankle relative to hip, during ipsilateral stance
+    'stanceSpeedFast',...       Ankle relative to hip, during ipsilateral stance
     }; 
 
-%make the time series have a time vectpr as small as possible so that
+%make the time series have a time vector as small as possible so that
 % a) it does not take up an unreasonable amount of space
 % b) the paramaters can be plotted along with the GRF/kinematic data and
 % the events used to create each data point can be distinguished.
@@ -104,7 +120,7 @@ eventsTime=in.gaitEvents.Time;
 aux=SHS+2*FTO+3*FHS+4*STO; %This should get events in the sequence 1,2,3,4,1... with 0 for non-events
 
 %find median stride time
-medStride=median(diff(eventsTime(find(SHS))));
+medStride=median(diff(eventsTime(SHS==1)));
 
 paramTSlength=floor(length(eventsTime)*f_params/f_events);
 
@@ -124,8 +140,8 @@ if isempty(in.markerData.orientation)
 else
     orientation=in.markerData.orientation;
 end
-%Check that hip and ankle markers are present
-if ~isempty(in.angleData)
+
+if ~isempty(in.angleData) %This checks that hip and ankle markers are present
     %get hip position    
     sHip=in.getMarkerData({[s 'HIP' orientation.foreaftAxis],[s 'HIP' orientation.updownAxis],[s 'HIP' orientation.sideAxis]});
     sHip=[orientation.foreaftSign*sHip(:,1),orientation.updownSign*sHip(:,2),orientation.sideSign*sHip(:,3)];
@@ -138,9 +154,12 @@ if ~isempty(in.angleData)
     fAnk=[orientation.foreaftSign*fAnk(:,1),orientation.updownSign*fAnk(:,2),orientation.sideSign*fAnk(:,3)];
     %Compute mean (across the two markers) hip position (in fore-aft axis)
     meanHipPos=nanmean([sHip(:,1) fHip(:,1)],2);
+    meanHipPos2D=[meanHipPos nanmean([sHip(:,3) fHip(:,3)],2)];
     %Compute ankle position relative to average hip position
     sAnkPos=sAnk(:,1)-meanHipPos;
     fAnkPos=fAnk(:,1)-meanHipPos;
+    sAnkPos2D=sAnk(:,[1 3])-meanHipPos2D;
+    fAnkPos2D=fAnk(:,[1 3])-meanHipPos2D;
     %get angle data
     angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
     sAngle=angles(:,1);
@@ -219,7 +238,7 @@ for step=1:Nstrides
         strideTimeFast(t)=timeFTO2-timeFTO;
         %cadence (stride cycles per s)
         cadenceSlow(t)=1/strideTimeSlow(t);
-        cadenceFast(t)=1/strideTimeFast(t); %Is this correct?? Shouldn't it be strideTimeFast ??
+        cadenceFast(t)=1/strideTimeFast(t);
         %step cadence (steps per s)
         stepCadenceSlow(t)=1/stepTimeSlow(t);
         stepCadenceFast(t)=1/stepTimeFast(t);
@@ -228,11 +247,12 @@ for step=1:Nstrides
         doubleSupportPctFast(t)=doubleSupportFast(t)/strideTimeFast(t)*100;
         
         %%% interlimb
-        
+        %note: the decision on Fast-Slow vs Slow-Fast was made based on how
+        %the parameter looks when plotted.
         doubleSupportDiff(t)=doubleSupportSlow(t)-doubleSupportFast(t);
         stepTimeDiff(t)=stepTimeFast(t)-stepTimeSlow(t);
         stanceTimeDiff(t)=stanceTimeSlow(t)-stanceTimeFast(t);
-        swingTimeDiff(t)=swingTimeFast(t)-swingTimeSlow(t); %why is this fast-slow when the rest are slow-fast?
+        swingTimeDiff(t)=swingTimeFast(t)-swingTimeSlow(t);
         doubleSupportAsym(t)=(doubleSupportPctFast(t)-doubleSupportPctSlow(t))./(doubleSupportPctFast(t)+doubleSupportPctSlow(t));
         Tout(t)=(stepTimeDiff(t))/strideTimeSlow(t);
         Tgoal(t)=(stanceTimeDiff(t))/strideTimeSlow(t);
@@ -262,7 +282,9 @@ for step=1:Nstrides
             % Set all steps to have the same slope (a negative slope during stance phase is assumed)
             if (sAnkPos(indSHS)<0)
                 sAnkPos=-sAnkPos;
-                fAnkPos=-fAnkPos;     
+                fAnkPos=-fAnkPos;      
+                sAnkPos2D=-sAnkPos2D;
+                fAnkPos2D=-fAnkPos2D;
             end
             if sAngle(indSHS)<0
                 sAngle=-sAngle;
@@ -283,42 +305,63 @@ for step=1:Nstrides
             %step lengths (1D)
             stepLengthSlow(t)=sAnkPos(indSHS2)-fAnkPos(indSHS2);
             stepLengthFast(t)=fAnkPos(indFHS)-sAnkPos(indFHS);
-            %step length 2D? Express w.r.t the hip?
+            %step length (2D) Express w.r.t the hip -- don't save, for now.
+            stepLengthSlow2D=norm(sAnkPos2D(indSHS2,:)-fAnkPos2D(indSHS2,:));
+            stepLengthFast2D=norm(fAnkPos2D(indFHS,:)-sAnkPos2D(indFHS,:));
 
+            %Spatial parameters - in meters
+            
             %alpha (positive portion of interlimb angle at HS)
-            alphaSlow(t)=sAngle(indSHS2);
-            alphaTemp=sAngle(indSHS);
-            alphaFast(t)=fAngle(indFHS);
+            alphaSlow(t)=sAnkPos(indSHS2);
+            alphaTemp=sAnkPos(indSHS);
+            alphaFast(t)=fAnkPos(indFHS);
             %beta (negative portion of interlimb angle at TO)
-            betaSlow(t)=sAngle(indSTO);
-            betaFast(t)=fAngle(indFTO2);
+            betaSlow(t)=sAnkPos(indSTO);
+            betaFast(t)=fAnkPos(indFTO2);
+            %stacne range (alpha+beta)
+            stanceRangeSlow(t)=alphaTemp-betaSlow(t);
+            stanceRangeFast(t)=alphaFast(t)-betaFast(t);
+            %swing range
+            swingRangeSlow(t)=sAnkPos(indSHS2)-sAnkPos(indSTO);
+            swingRangeFast(t)=fAnkPos(indFHS)-fAnkPos(indFTO);
+            
+            %Spatial parameters - in degrees
+            
+            %alpha (positive portion of interlimb angle at HS)
+            alphaAngSlow(t)=sAngle(indSHS2);
+            alphaAngTemp=sAngle(indSHS);
+            alphaAngFast(t)=fAngle(indFHS);
+            %beta (negative portion of interlimb angle at TO)
+            betaAngSlow(t)=sAngle(indSTO);
+            betaAngFast(t)=fAngle(indFTO2);
             %range (alpha+beta)
-            rangeSlow(t)=alphaTemp-betaSlow(t);
-            rangeFast(t)=alphaFast(t)-betaFast(t);
+            stanceRangeAngSlow(t)=alphaAngTemp-betaAngSlow(t);
+            stanceRangeAngFast(t)=alphaAngFast(t)-betaAngFast(t);
             %interlimb spread at HS
             omegaSlow(t)=abs(sAngle(indSHS2)-fAngle(indSHS2));
-            omegaFast(t)=abs(fAnkPos(indFHS)-sAnkPos(indFHS));
+            omegaFast(t)=abs(fAngle(indFHS)-sAngle(indFHS));
             %alpha ratios
             alphaRatioSlow(t)=alphaSlow(t)/(alphaSlow(t)+alphaFast(t));
             alphaRatioFast(t)=alphaFast(t)/(alphaSlow(t)+alphaFast(t));
             %delta alphas
-            alphaDeltaSlow(t)=sAngle(indSHS2)-fAngle(indFHS);
+            alphaDeltaSlow(t)=sAngle(indSHS2)-fAngle(indFHS); %same as alphaAngSlow(t)-alphaAngFast(t)
             alphaDeltaFast(t)=fAngle(indFHS)-sAngle(indSHS);
 
             %%% Interlimb
 
             stepLengthDiff(t)=stepLengthFast(t)-stepLengthSlow(t);
             stepLengthAsym(t)=stepLengthDiff(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            stepLengthDiff2D(t)=stepLengthFast2D-stepLengthSlow2D;
+            stepLengthAsym2D(t)=stepLengthDiff2D(t)/(stepLengthFast2D+stepLengthSlow2D);
             angularSpreadDiff(t)=omegaFast(t)-omegaSlow(t);
             angularSpreadAsym(t)=angularSpreadDiff(t)/(omegaFast(t)+omegaSlow(t));
             Sout(t)=(alphaFast(t)-alphaSlow(t))/(alphaFast(t)+alphaSlow(t));
             Serror(t)=alphaRatioSlow(t)-alphaRatioFast(t);
             SerrorOld(t)=alphaRatioFast(t)/alphaRatioSlow(t);
-            Sgoal(t)=(rangeFast(t)-rangeSlow(t))/rangeFast(t);
-            centerSlow=(alphaSlow(t)+betaSlow(t))/2;
-            centerFast=(alphaFast(t)+betaFast(t))/2;
-            angleOfOscillationAsym(t)=centerFast-centerSlow;
-            %stepLengthAsym2D...
+            Sgoal(t)=(stanceRangeAngFast(t)-stanceRangeAngSlow(t))/stanceRangeAngFast(t);
+            centerSlow=(alphaAngSlow(t)+betaAngSlow(t))/2;
+            centerFast=(alphaAngFast(t)+betaAngFast(t))/2;
+            angleOfOscillationAsym(t)=centerFast-centerSlow;            
 
             %phase shift (using angles)
             slowlimb=sAngle(indSHS:indSHS2);
@@ -338,12 +381,16 @@ for step=1:Nstrides
 
             %% Contribution Calculations
 
-            % Compute spatial contribution
-            sAnkPosHS=abs(sAnkPos(indSHS));
-            fAnklePosHS=abs(fAnkPos(indFHS));
-            sAnkPosHS2=abs(sAnkPos(indSHS2));
-            spatialFast=fAnklePosHS - sAnkPosHS;
-            spatialSlow=sAnkPosHS2 - fAnklePosHS;
+            % Compute spatial contribution (1D)
+            spatialFast=fAnkPos(indFHS) - sAnkPos(indSHS);
+            spatialSlow=sAnkPos(indSHS2) - fAnkPos(indFHS);
+            
+            % Compute spatial contribution (2D)
+            sAnkPosHS=norm(sAnkPos2D(indSHS,:)); 
+            fAnkPosHS=norm(fAnkPos2D(indFHS,:));
+            sAnkPosHS2=norm(sAnkPos2D(indSHS2,:));
+            spatialFast2D=fAnkPosHS - sAnkPosHS;
+            spatialSlow2D=sAnkPosHS2 - fAnkPosHS;
 
             % Compute temporal contributions (convert time to be consistent with
             % kinematic sampling frequency)
@@ -355,15 +402,17 @@ for step=1:Nstrides
             dispFast=abs(fAnkPos(indSHS2)-fAnkPos(indFHS));
 
             velocitySlow=dispSlow/ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
-            velocityFast=dispFast/tf;
-            avgVel=mean([velocitySlow velocityFast]);
+            velocityFast=dispFast/tf;            
+            avgVel=mean([velocitySlow velocityFast]);           
             avgStepTime=mean([ts tf]);
+            
+            spatialContribution(t)=spatialFast-spatialSlow;            
+            stepTimeContribution(t)=avgVel*difft;            
+            velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);            
+            netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);            
+            
+            %speed calculations            
             equivalentSpeed(t)=(dispSlow+dispFast)/(ts+tf); %= (ts/tf+ts)*dispSlow/ts + (tf/tf+ts)*dispFast/tf = (ts/tf+ts)*vs + (tf/tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average
-
-            spatialContribution(t)=(spatialFast-spatialSlow);
-            stepTimeContribution(t)=avgVel*difft;
-            velocityContribution(t)=avgStepTime*(velocitySlow-velocityFast);
-            netContribution(t)=spatialContribution(t)+stepTimeContribution(t)+velocityContribution(t);
             
             singleStanceSpeedSlow(t)=abs(sAnkPos(indFTO)-sAnkPos(indFHS))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
             singleStanceSpeedFast(t)=abs(fAnkPos(indSTO)-fAnkPos(indSHS2))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing

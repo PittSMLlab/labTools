@@ -127,11 +127,11 @@ expDescrip = contents{get(hObject,'Value')};
 
 %first, clear all feilds
 for conds = 1:handles.lines
-    eval(['set(handles.condition',num2str(conds),',''string'','''')'])
-    eval(['set(handles.condName',num2str(conds),',''string'','''')'])
-    eval(['set(handles.description',num2str(conds),',''string'','''')'])
-    eval(['set(handles.trialnum',num2str(conds),',''string'','''')'])
-    eval(['set(handles.type',num2str(conds),',''value'',',num2str(0),')'])
+    set(handles.(['condition',num2str(conds)]),'string','');
+    set(handles.(['condName',num2str(conds)]),'string','');
+    set(handles.(['description',num2str(conds)]),'string','');
+    set(handles.(['trialnum',num2str(conds)]),'string','');
+    set(handles.(['type',num2str(conds)]),'string','');
 end
 
 %second, populate feilds based on experiment description entered.
@@ -223,11 +223,11 @@ numofconds = str2double(get(hObject,'String'));
 
 %first, disable ALL
 for conds = 1:handles.lines
-    eval(['set(handles.condition',num2str(conds),',''enable'',''off'')'])
-    eval(['set(handles.condName',num2str(conds),',''enable'',''off'')'])
-    eval(['set(handles.description',num2str(conds),',''enable'',''off'')'])
-    eval(['set(handles.trialnum',num2str(conds),',''enable'',''off'')'])
-    eval(['set(handles.type',num2str(conds),',''enable'',''off'')'])
+    set(handles.(['condition',num2str(conds)]),'enable','off')
+    set(handles.(['condName',num2str(conds)]),'enable','off')
+    set(handles.(['description',num2str(conds)]),'enable','off')
+    set(handles.(['trialnum',num2str(conds)]),'enable','off')
+    set(handles.(['type',num2str(conds)]),'enable','off')
 end
 %second, check number eneterd is valid
 if isnan(numofconds) || numofconds<0 || numofconds>15
@@ -240,11 +240,11 @@ end
 
 %third, enable based on number of conditions entered
 for conds = 1:numofconds
-    eval(['set(handles.condition',num2str(conds),',''enable'',''on'')'])
-    eval(['set(handles.condName',num2str(conds),',''enable'',''on'')'])
-    eval(['set(handles.description',num2str(conds),',''enable'',''on'')'])
-    eval(['set(handles.trialnum',num2str(conds),',''enable'',''on'')'])
-    eval(['set(handles.type',num2str(conds),',''enable'',''on'')'])
+    set(handles.(['condition',num2str(conds)]),'enable','on')
+    set(handles.(['condName',num2str(conds)]),'enable','on')
+    set(handles.(['description',num2str(conds)]),'enable','on')
+    set(handles.(['trialnum',num2str(conds)]),'enable','on')
+    set(handles.(['type',num2str(conds)]),'enable','on')
 end
 
 % --- Executes on button press in kinematic_check.
@@ -298,15 +298,11 @@ function trialnum1_Callback(hObject, eventdata, handles)
 function type1_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of type1
 
-
-
 function condition2_Callback(hObject, eventdata, handles)
 function condName2_Callback(hObject, eventdata, handles)
 function description2_Callback(hObject, eventdata, handles)
 function trialnum2_Callback(hObject, eventdata, handles)
 function type2_Callback(hObject, eventdata, handles)
-
-
 
 function condition3_Callback(hObject, eventdata, handles)
 function condName3_Callback(hObject, eventdata, handles)
@@ -314,13 +310,11 @@ function description3_Callback(hObject, eventdata, handles)
 function trialnum3_Callback(hObject, eventdata, handles)
 function type3_Callback(hObject, eventdata, handles)
 
-
 function condition4_Callback(hObject, eventdata, handles)
 function condName4_Callback(hObject, eventdata, handles)
 function description4_Callback(hObject, eventdata, handles)
 function trialnum4_Callback(hObject, eventdata, handles)
 function type4_Callback(hObject, eventdata, handles)
-
 
 function condition5_Callback(hObject, eventdata, handles)
 function condName5_Callback(hObject, eventdata, handles)
@@ -328,13 +322,11 @@ function description5_Callback(hObject, eventdata, handles)
 function trialnum5_Callback(hObject, eventdata, handles)
 function type5_Callback(hObject, eventdata, handles)
 
-
 function condition6_Callback(hObject, eventdata, handles)
 function condName6_Callback(hObject, eventdata, handles)
 function description6_Callback(hObject, eventdata, handles)
 function trialnum6_Callback(hObject, eventdata, handles)
 function type6_Callback(hObject, eventdata, handles)
-
 
 function condition7_Callback(hObject, eventdata, handles)
 function condName7_Callback(hObject, eventdata, handles)
@@ -342,13 +334,11 @@ function description7_Callback(hObject, eventdata, handles)
 function trialnum7_Callback(hObject, eventdata, handles)
 function type7_Callback(hObject, eventdata, handles)
 
-
 function condition8_Callback(hObject, eventdata, handles)
 function condName8_Callback(hObject, eventdata, handles)
 function description8_Callback(hObject, eventdata, handles)
 function trialnum8_Callback(hObject, eventdata, handles)
 function type8_Callback(hObject, eventdata, handles)
-
 
 function condition9_Callback(hObject, eventdata, handles)
 function condName9_Callback(hObject, eventdata, handles)
@@ -356,13 +346,11 @@ function description9_Callback(hObject, eventdata, handles)
 function trialnum9_Callback(hObject, eventdata, handles)
 function type9_Callback(hObject, eventdata, handles)
 
-
 function condition10_Callback(hObject, eventdata, handles)
 function condName10_Callback(hObject, eventdata, handles)
 function description10_Callback(hObject, eventdata, handles)
 function trialnum10_Callback(hObject, eventdata, handles)
 function type10_Callback(hObject, eventdata, handles)
-
 
 function condition11_Callback(hObject, eventdata, handles)
 function condName11_Callback(hObject, eventdata, handles)
@@ -370,15 +358,11 @@ function description11_Callback(hObject, eventdata, handles)
 function trialnum11_Callback(hObject, eventdata, handles)
 function type11_Callback(hObject, eventdata, handles)
 
-
-
 function condition12_Callback(hObject, eventdata, handles)
 function condName12_Callback(hObject, eventdata, handles)
 function description12_Callback(hObject, eventdata, handles)
 function trialnum12_Callback(hObject, eventdata, handles)
 function type12_Callback(hObject, eventdata, handles)
-
-
 
 function condition13_Callback(hObject, eventdata, handles)
 function condName13_Callback(hObject, eventdata, handles)
@@ -386,13 +370,11 @@ function description13_Callback(hObject, eventdata, handles)
 function trialnum13_Callback(hObject, eventdata, handles)
 function type13_Callback(hObject, eventdata, handles)
 
-
 function condition14_Callback(hObject, eventdata, handles)
 function condName14_Callback(hObject, eventdata, handles)
 function description14_Callback(hObject, eventdata, handles)
 function trialnum14_Callback(hObject, eventdata, handles)
 function type14_Callback(hObject, eventdata, handles)
-
 
 function condition15_Callback(hObject, eventdata, handles)
 function condName15_Callback(hObject, eventdata, handles)
@@ -478,23 +460,23 @@ else
     % -- Trial Info
     for c = 1:subInfo.numofconds
         condNum=subInfo.cond(c);
-        eval(['set(handles.condition',num2str(c),',''string'',',num2str(condNum),')']);
-        eval(['set(handles.condName',num2str(c),',''string'',subInfo.conditionNames{',num2str(condNum),'})']);
-        eval(['set(handles.description',num2str(c),',''string'',subInfo.conditionDescriptions{',num2str(condNum),'})']);
+        set(handles.(['condition',num2str(c)]),'string',num2str(condNum));
+        set(handles.(['condName',num2str(c)]),'string',subInfo.conditionNames{condNum});
+        set(handles.(['description',num2str(c)]),'string',subInfo.conditionDescriptions{condNum});
         trialnums=subInfo.trialnums{condNum};
         if length(trialnums)>2 && ~any(diff(trialnums)>1)
-            eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums(1)),':',num2str(trialnums(end)),''')']);
+            set(handles.(['trialnum',num2str(c)]),'string',[num2str(trialnums(1)),':',num2str(trialnums(end))]);
         else
-            eval(['set(handles.trialnum',num2str(c),',''string'',''',num2str(trialnums),''')']);
+            set(handles.(['trialnum',num2str(c)]),'string',num2str(trialnums));
         end
         if isfield(subInfo,'isOverGround') %for subjects processed before 7/16/2014
-            if eval(['subInfo.isOverGround(',num2str(condNum),')'])
-                eval(['set(handles.type',num2str(c),',''string'',''OG'')']);
+            if subInfo.isOverGround(condNum)
+                set(handles.(['type',num2str(c)]),'string','OG');
             else
-                eval(['set(handles.type',num2str(c),',''string'',''TM'')']);
+                set(handles.(['type',num2str(c)]),'string','TM');
             end
         else            
-            eval(['set(handles.type',num2str(c),',''string'',subInfo.type{',num2str(condNum),'})']);        
+            set(handles.(['type',num2str(c)]),'string',subInfo.type{condNum});        
         end
     end
     % -- emg data

@@ -68,7 +68,7 @@ classdef experimentData
             a=isa(this.data{idx},'rawLabData');
         end
         
-        function a=get.fastLeg(this)
+        function fastLeg=get.fastLeg(this)
             vR=[];
             vL=[];
             for trial=1:length(this.data)
@@ -93,35 +93,60 @@ classdef experimentData
             end
         end
         
+        %Process full experiment
+        function processedThis=process(this)
+            for trial=1:length(this.data)
+                if ~isempty(this.data{trial})
+                    procData{trial}=this.data{trial}.process;
+                else
+                   procData{trial}=[];
+                end
+            end
+            processedThis=experimentData(this.metaData,this.subData,procData);
+        end
+        
         %function to make adaptationData object
-        function adaptData=makeDataObj(this)
+        function adaptData=makeDataObj(this,filename)
             DATA=[];
+            DATA2=[];
             startind=1;
             if ~isempty(this.data)
                 for i=1:length(this.data)
-                    if ~isempty(this.data{i}.adaptParams)
+                    if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
+                        aux=this.data{i}.experimentalParams;
+                        labels2=aux.getLabels;
+                        dataTS2=aux.getDataAsVector(labels2);
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+                        DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
+                        trialTypes{i}=this.data{i}.metaData.type;
                     end
                 end
-            end            
+            end    
             %labels should be the same for all trials with adaptParams
-            adaptData=paramData(DATA,labels,indsInTrial);
+            parameterData=paramData([DATA, DATA2],[labels labels2],indsInTrial,trialTypes);
+            adaptData=adaptationData(this.metaData,this.subData,parameterData);  
+            if nargin>1 && ~isempty(filename)
+                save([filename '.mat'],'adaptData');
+            end
         end
         
-        function stridedExp=splitIntoStrides(this)
+        function stridedExp=splitIntoStrides(this,refEvent)
+            
             if ~this.isStepped && this.isProcessed
-                refLeg = this.metaData.refLeg;
                 for trial=1:length(this.data)
                     trialData=this.data{trial};
                     if ~isempty(trialData)
-                        %Assuming that the first event of each stride is
-                        %the heel strike of the refLeg! (check c3d2mat -
-                        %refleg should be opposite the dominant/fast leg)
-                        aux=trialData.separateIntoStrides([refLeg,'HS']);
+                        if nargin<2 || isempty(refEvent)
+                            refEvent=[trialData.metaData.refLeg,'HS'];
+                            %Assuming that the first event of each stride should be
+                            %the heel strike of the refLeg! (check c3d2mat -
+                            %refleg should be opposite the dominant/fast leg)
+                        end
+                        aux=trialData.separateIntoStrides(refEvent);
                         strides{trial}=aux;                        
                     else
                         strides{trial}=[];                        
@@ -131,6 +156,33 @@ classdef experimentData
             else
                 disp('Cannot stride experiment because it is raw or already strided.');
             end
+        end
+
+        function h=parameterEvolutionPlot(this,field,h)
+            %Check that the field actually exists in the all of data(
+            colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
+            
+            %Do the plot
+            if nargin>2 && ~isempty(h)
+                figure(h)
+            else
+                h=figure;
+            end
+            hold on
+            counter=0;
+            for condition=1:length(this.metaData.trialsInCondition)
+               for trial=this.metaData.trialsInCondition{condition}
+                   plotData=this.data{trial}.adaptParams.getDataAsVector(field);
+                   if isempty(plotData)
+                       plotData=this.data{trial}.experimentalParams.getDataAsVector(field);
+                   end
+                   plotData=plotData(~isnan(plotData));
+                   newCounter=counter+length(plotData);
+                   plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{mod(condition-1,length(colors))+1})
+                   counter=newCounter;
+               end
+            end
+            hold off
         end
         
     end

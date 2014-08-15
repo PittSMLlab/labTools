@@ -1,6 +1,6 @@
 function markerLabel=findLabel(viconLabel)
 %function to deal with different marker labels from vicon. For the code to
-%run correctly, the labels names must be as they are set in this code.
+%run correctly, the label names must be as they are set in this code.
 %
 %DO NOT edit the markerLabels, only edit the text in the cases
 

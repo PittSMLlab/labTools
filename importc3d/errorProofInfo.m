@@ -126,15 +126,14 @@ end
 
 % -- Trial Info
 for c = 1:str2double(get(handles.numofconds,'string'))
-    condNum = eval(['str2double(get(handles.condition',num2str(c),',''string''))']);
+    condNum = str2double(get(handles.(['condition',num2str(c)]),'string'));
     out.cond(c) = condNum;
-    out.conditionNames{condNum}=eval(['get(handles.condName',num2str(c),',''string'')']);
-    out.conditionDescriptions{condNum}=eval(['get(handles.description',num2str(c),',''string'')']);
-    trialnums = eval(['get(handles.trialnum',num2str(c),',''string'')']);
+    out.conditionNames{condNum}=get(handles.(['condName',num2str(c)]),'string');
+    out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
+    trialnums = get(handles.(['trialnum',num2str(c)]),'string');
     out.trialnums{condNum} = eval(['[',trialnums,']']);
-    %need double eval. First is to retrieve string from edit box, second is
-    %to accomodate for entry of numbers like '1:6' or '7 8 9'
-    out.type{condNum} = eval(['get(handles.type',num2str(c),',''string'')']);
+    %need to eval for entry of numbers like '1:6' or '7 8 9'
+    out.type{condNum} = get(handles.(['type',num2str(c)]),'string');
 end
 
 trials=cell2mat(out.trialnums);

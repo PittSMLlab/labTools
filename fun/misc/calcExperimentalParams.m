@@ -143,13 +143,13 @@ end
 
 out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
 
-try
-    if any(bad)
-        slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
-        file=in.metaData.rawDataFilename((slashes(end)+1):end);
-        disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
-    end
-catch
-    [file] = getSimpleFileName(in.metaData.rawDataFilename);
-        disp(['Warning: No strides detected in ',file])
-end
+% try
+%     if any(bad)
+%         slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
+%         file=in.metaData.rawDataFilename((slashes(end)+1):end);
+%         disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
+%     end
+% catch
+%     [file] = getSimpleFileName(in.metaData.rawDataFilename);
+%         disp(['Warning: No strides detected in ',file])
+% end
