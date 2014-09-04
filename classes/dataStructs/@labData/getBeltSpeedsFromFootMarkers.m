@@ -24,7 +24,12 @@ for i=1:length(idxLHS)
     idxNextRTO=find(RTO & events.Time>events.Time(idxLHS(i)),1);
     idxNextRHS=find(RHS & events.Time>events.Time(idxLHS(i)),1);
     if ~isempty(idxNextLTO) && ~isempty(idxNextRTO) && ~isempty(idxNextRHS)
-        beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=median(speed.split(events.Time(idxNextRTO),events.Time(idxNextRHS)).getDataAsVector('L')); %Only considering median absolute speed on single stance phase
+        aux=speed.split(events.Time(idxNextRTO),events.Time(idxNextRHS));
+        if ~isempty(aux.Data) %To avoid 'not a labeled time series' message when the events fall within two consecutive samples
+            beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=median(aux.getDataAsVector('L')); %Only considering median absolute speed on single stance phase
+        else
+            beltSpeedReadData.Data(idxLHS(i):idxNextLTO,1)=NaN;
+        end
     end
 end
 idxRHS=find(RHS);
@@ -33,6 +38,11 @@ for i=1:length(idxRHS)
     idxNextLTO=find(LTO & events.Time>events.Time(idxRHS(i)),1);
     idxNextLHS=find(LHS & events.Time>events.Time(idxRHS(i)),1);
     if ~isempty(idxNextRTO) && ~isempty(idxNextLTO) && ~isempty(idxNextLHS)
-        beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=median(speed.split(events.Time(idxNextLTO),events.Time(idxNextLHS)).getDataAsVector('R')); %Only considering median absolute speed on single stance phase
+        aux=speed.split(events.Time(idxNextLTO),events.Time(idxNextLHS));
+        if ~isempty(aux.Data)
+            beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=median(aux.getDataAsVector('R')); %Only considering median absolute speed on single stance phase
+        else
+            beltSpeedReadData.Data(idxRHS(i):idxNextRTO,2)=NaN;
+        end
     end
 end
