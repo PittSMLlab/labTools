@@ -9,6 +9,7 @@ paramlabels = {'COPrangeS',... %Range of COP movement along step direction durin
 'COPrangeF',...
 'COPsym',... %Difference in COP ranges normalized by sum
 'COPsymM',... %COPsym as defined by Mawase
+'stepTimeContribution2',...
 %'initTime',...
 %'endTime',...
     }; 
@@ -133,6 +134,33 @@ for step=1:Nstrides
         COPrangeS(t)=min(COP(2,indFHS:indSHS2))-max(COP(2,indFTO:indSTO));
         COPsymM(t)=(COPrangeF(t)-COPrangeS(t))/(COPrangeF(t)+COPrangeS(t));
         handHolding(t)=sum(mean(abs(GRFDataH)))>2;
+        
+        %Contributions
+%                     % Compute spatial contribution (1D)
+%             spatialFast=fAnkPos(indFHS) - sAnkPos(indSHS);
+%             spatialSlow=sAnkPos(indSHS2) - fAnkPos(indFHS);
+%             
+%             % Compute spatial contribution (2D)
+%             sAnkPosHS=norm(sAnkPos2D(indSHS,:)); 
+%             fAnkPosHS=norm(fAnkPos2D(indFHS,:));
+%             sAnkPosHS2=norm(sAnkPos2D(indSHS2,:));
+%             spatialFast2D=fAnkPosHS - sAnkPosHS;
+%             spatialSlow2D=sAnkPosHS2 - fAnkPosHS;
+% 
+%             % Compute temporal contributions (convert time to be consistent with
+%             % kinematic sampling frequency)
+%             ts=round((timeFHS2-timeSHS2)*f_kin)/f_kin; %This rounding should no longer be required, as we corrected indices for kinematic sampling frequency and computed the corresponding times
+%             tf=round((timeSHS2-timeFHS)*f_kin)/f_kin; %This rounding should no longer be required, as we corrected indices for kinematic sampling frequency and computed the corresponding times
+%             difft=ts-tf;
+% 
+%             dispSlow=abs(sAnkPos(indFHS2)-sAnkPos(indSHS2));
+%             dispFast=abs(fAnkPos(indSHS2)-fAnkPos(indFHS));
+% 
+%             velocitySlow=dispSlow/ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
+%             velocityFast=dispFast/tf;            
+%             avgVel=mean([velocitySlow velocityFast]);           
+%                      
+%             stepTimeContribution2(t)=avgVel*difft;  
     end
 
 end

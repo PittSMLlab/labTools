@@ -148,8 +148,29 @@ classdef labTimeSeries  < timeseries
         end
         
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
-            newThis=split(this,t0,t1);
-            [data,time,auxLabel]=getDataAsVector(newThis,label);
+            newThis=split(this.getDataAsTS(label),t0,t1);
+            [data,time,auxLabel]=getDataAsVector(newThis);
+        end
+        
+        function steppedDataArray=splitByEvents(this,eventTS,eventLabel)
+           %eventTS needs to be a labTimeSeries with binary events as data
+           %If eventLabel is not given, the first data column is used as
+           %the relevant event marker. If given, eventLabel must be the
+           %label of one of the data columns in eventTS
+           
+           %Check needed: is eventTS a labTimeSeries?
+           if nargin>2
+                eventList=eventTS.getDataAsVector(eventLabel);
+           else
+               eventList=eventTS.Data(:,1);
+           end
+           %Check needed: is eventList binary?
+            refIdxLst=find(eventList==1);
+            auxTime=eventTS.Time;
+            steppedDataArray={};
+            for i=1:length(refIdxLst)-1
+                steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)>refIdxLst(i),1,'first'))));
+            end
         end
         
         
@@ -212,6 +233,28 @@ classdef labTimeSeries  < timeseries
     
     methods(Static)
         this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
+        
+        function alignedTS=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
+            %To be used after splitByEvents
+            aux=zeros(N,size(stridedTS{1}.Data,2),length(stridedTS));
+            for i=1:length(stridedTS)
+                aa=resampleN(stridedTS{i},N);
+                aux(:,:,i)=aa.Data;
+            end
+            alignedTS=alignedTimeSeries(0,1/N,aux,stridedTS{1}.labels);
+        end
+        
+        function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)
+                if nargin<2
+                    figHandle=[];
+                end
+                if nargin<3
+                    plotHandles=[];
+                end
+               N=2^ceil(log2(1.5/stridedTS{1}.sampPeriod));
+               structure=labTimeSeries.stridedTSToAlignedTS(stridedTS,N);
+               [figHandle,plotHandles]=plot(structure,figHandle,plotHandles); %Using the alignedTimeSeries plot function
+        end
     end
     
         

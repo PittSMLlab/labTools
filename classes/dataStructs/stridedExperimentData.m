@@ -101,8 +101,9 @@ classdef stridedExperimentData
                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .02], [.02 .05]); %External function
                end
                if (numel(structure{cond}))>1e6
-                       P=floor(1e6/numel(structure{cond}(:,:,1)));
+                       P=floor(1e7/numel(structure{cond}(:,:,1)));
                        warning(['There are too many strides in this condition to plot (' num2str(size(structure{cond},3)) '). Only plotting first ' num2str(P) '.'])
+                       meanStr{cond}=mean(structure{cond},3);
                        structure{cond}=structure{cond}(:,:,1:P);
                    end
                for i=1:M
@@ -112,7 +113,7 @@ classdef stridedExperimentData
                    %title(aux{1}.(field).labels{i})
                    data=squeeze(structure{cond}(:,i,:));
                    plot([0:N-1]/N,data,'Color',[.7,.7,.7])
-                   plot([0:N-1]/N,mean(data,2),'LineWidth',2,'Color',ColorOrder(mod(cond-1,size(ColorOrder,1))+1,:));
+                   plot([0:N-1]/N,meanStr{cond}(:,i),'LineWidth',2,'Color',ColorOrder(mod(cond-1,size(ColorOrder,1))+1,:));
                    legend(aux{1}.(field).labels{i})
                    hold off
                end
@@ -138,7 +139,7 @@ classdef stridedExperimentData
                 end
                 set(figHandle,'Units','normalized','OuterPosition',[0 0 1 1])
                aux=this.getStridesFromCondition(conditions(1));
-               N=2^ceil(log2(size(aux{1}.(field).Data,2)));
+               N=2^ceil(log2(size(aux{1}.(field).Data,1)));
                structure=this.getDataAsMatrices(field,conditions,N);
                if nargin<4 || isempty(plotHandles)
                 M=size(structure{1},2);

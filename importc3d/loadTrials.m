@@ -123,7 +123,7 @@ for t=cell2mat(info.trialnums)
         end
         
         %Sorting muscles so that they are always stored in the same order
-        orderedMuscleList={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'}; %This is the desired order
+        orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
         orderedEMGList={};
         for j=1:length(orderedMuscleList)
             orderedEMGList{end+1}=['R' orderedMuscleList{j}];
@@ -137,6 +137,12 @@ for t=cell2mat(info.trialnums)
                     break;
                 end
             end
+        end
+        orderedIndexes=orderedIndexes(orderedIndexes~=0); %Avoiding missing muscles
+        aux=zeros(length(EMGList),1);
+        aux(orderedIndexes)=1;
+        if any(aux==0)
+            warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
         end
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/analogsInfo.frequency,EMGList(orderedIndexes)); %Throw away the synch signal
         

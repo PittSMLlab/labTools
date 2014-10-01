@@ -96,6 +96,7 @@ classdef experimentData
         %Process full experiment
         function processedThis=process(this)
             for trial=1:length(this.data)
+                disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
                     procData{trial}=this.data{trial}.process;
                 else
@@ -138,6 +139,7 @@ classdef experimentData
             
             if ~this.isStepped && this.isProcessed
                 for trial=1:length(this.data)
+                    disp(['Splitting trial ' num2str(trial) '...'])
                     trialData=this.data{trial};
                     if ~isempty(trialData)
                         if nargin<2 || isempty(refEvent)
