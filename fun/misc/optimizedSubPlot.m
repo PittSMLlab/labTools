@@ -1,8 +1,8 @@
-function axesHandles=optimizedSubPlot(Nplots,rowAspect,colAspect,order)
+function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order)
 
 %order is either 'ltr' or 'ttb'
 
-figureFullScreen
+[figHandle,scrsz]=figureFullScreen;
 figsz=[0 0 1 1];
 
 %in pixels:

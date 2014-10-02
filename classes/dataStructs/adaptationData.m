@@ -173,13 +173,13 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
         
-        function plotParamTimeCourse(this,label)
+        function figHandle=plotParamTimeCourse(this,label)
             
             if isa(label,'char')
                 label={label};
             end
             
-            ah=optimizedSubPlot(length(label),4,1); %this changes default color order of axes
+            [ah,figHandle]=optimizedSubPlot(length(label),4,1); %this changes default color order of axes
             
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
@@ -204,9 +204,9 @@ classdef adaptationData
             axis tight
         end
         
-        function plotParamTrialTimeCourse(this,label)
+        function figHandle=plotParamTrialTimeCourse(this,label)
             
-            ah=optimizedSubPlot(length(label),4,1);            
+            [ah,figHandle]=optimizedSubPlot(length(label),4,1);            
             
             nTrials=length(cell2mat(this.metaData.trialsInCondition));
             trials=find(~cellfun(@isempty,this.data.trialTypes));
@@ -232,13 +232,13 @@ classdef adaptationData
             axis tight
         end
         
-        function plotParamByConditions(this,label)
+        function figHandle=plotParamByConditions(this,label)
             
             N1=3; %very early number of points
             N2=5; %early number of points
             N3=20; %late number of points
             
-            ah=optimizedSubPlot(length(label),4,1);           
+            [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
             
             conds=find(~cellfun(@isempty,this.metaData.conditionName));
             nConds=length(conds);
@@ -314,7 +314,7 @@ classdef adaptationData
     
     
     methods(Static)
-        function plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag)
+        function figHandle=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag)
             
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
@@ -340,7 +340,7 @@ classdef adaptationData
             N2=5; %early number of points
             N3=20; %late number of points
             
-            ah=optimizedSubPlot(length(label),4,1);
+            [ah,figHandle]=optimizedSubPlot(length(label),4,1);
             
             load(auxList{1}{1});
             this=adaptData;
@@ -433,7 +433,7 @@ classdef adaptationData
         end
         
         %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
-        function plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
+        function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
             
             %First: see if adaptDataList is a single subject (char), a cell
             %array of subject names (one group of subjects), or a cell array of cell arrays of
@@ -468,7 +468,7 @@ classdef adaptationData
             end
             
             %Initialize plot
-            ah=optimizedSubPlot(length(params),4,1);
+            [ah,figHandle]=optimizedSubPlot(length(params),4,1);
             % Set colors
             poster_colors;
             % Set colors order

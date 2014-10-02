@@ -22,7 +22,7 @@ function varargout = GetInfoGUI(varargin)
 
 % Edit the above text to modify the response to help GetInfoGUI
 
-% Last Modified by GUIDE v2.5 24-Jul-2014 15:59:14
+% Last Modified by GUIDE v2.5 02-Oct-2014 14:48:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,7 +84,7 @@ info=handles.info;
 answer=input('Are there any observations for individual trials?(y/n) ','s');
 
 %The following makes sure the correct response is entered
-while lower(answer) ~= 'y' & lower(answer) ~= 'n' | length(answer)>1
+while (lower(answer) ~= 'y' & lower(answer) ~= 'n') | length(answer)>1
     disp('Error: you must enter either "y" or "n"')
     answer=input('Are there any observations for individual trials?(y/n) ','s');
 end
@@ -264,6 +264,8 @@ if state
     set(handles.secfile_browse,'enable','on')
     set(handles.secfileloc,'enable','on')
     for i=1:16
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''on'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
     end
@@ -275,6 +277,7 @@ else
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
     end
 end
+guidata(hObject,handles);
 
 % --- Executes on button press in secfile_browse.
 function secfile_browse_Callback(hObject, eventdata, handles)
@@ -446,6 +449,11 @@ else
     set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
     set(handles.height_edit,'string',subInfo.height);
     set(handles.weight_edit,'string',subInfo.weight);
+    set(handles.strokeCheck,'Value',subInfo.isStroke);
+    if subInfo.isStroke==1
+        set(handles.popupAffected,'Enable','On');
+        set(handles.popupAffected,'Value',subInfo.affectedValue);
+    end
     % -- Data Info
     handles.folder_location=subInfo.dir_location;
     set(handles.c3dlocation,'string',handles.folder_location);
@@ -1058,3 +1066,43 @@ function emg2_15_CreateFcn(hObject, eventdata, handles)
 function emg2_16_Callback(hObject, eventdata, handles)
 
 function emg2_16_CreateFcn(hObject, eventdata, handles)
+
+
+% --- Executes on button press in strokeCheck.
+function strokeCheck_Callback(hObject, eventdata, handles)
+% hObject    handle to strokeCheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of strokeCheck
+if get(hObject,'Value')
+    set(handles.popupAffected,'Enable','On')
+    set(handles.text63,'Enable','On')
+else
+    set(handles.popupAffected,'Enable','Off')
+    set(handles.text63,'Enable','Off')
+end
+guidata(hObject,handles)
+
+
+% --- Executes on selection change in popupAffected.
+function popupAffected_Callback(hObject, eventdata, handles)
+% hObject    handle to popupAffected (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupAffected
+
+
+% --- Executes during object creation, after setting all properties.
+function popupAffected_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupAffected (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

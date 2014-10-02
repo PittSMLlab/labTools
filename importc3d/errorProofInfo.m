@@ -89,6 +89,12 @@ if isnan(out.weight) || out.weight<0 || out.weight>140 %seems like an appropriat
     out.bad=1;
     return
 end 
+out.isStroke = get(handles.strokeCheck,'Value');
+if out.isStroke==1
+    aux=get(handles.popupAffected,'String');
+    out.affectedValue=get(handles.popupAffected,'Value');
+    out.affectedSide=aux{out.affectedValue};
+end
 
 % -- Data Info
 if isfield(handles,'folder_location')
