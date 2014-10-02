@@ -449,8 +449,12 @@ else
     set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
     set(handles.height_edit,'string',subInfo.height);
     set(handles.weight_edit,'string',subInfo.weight);
-    set(handles.strokeCheck,'Value',subInfo.isStroke);
-    if subInfo.isStroke==1
+    if isfield(subInfo,'isStroke')
+        set(handles.strokeCheck,'Value',subInfo.isStroke);
+    else %Case of old info files, prior support for stroke subjects
+       set(handles.strokeCheck,'Value',0);
+    end
+    if get(handles.strokeCheck,'Value')
         set(handles.popupAffected,'Enable','On');
         set(handles.popupAffected,'Value',subInfo.affectedValue);
     end
