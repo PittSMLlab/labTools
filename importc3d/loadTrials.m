@@ -39,7 +39,11 @@ for t=cell2mat(info.trialnums)
                         %do nothing
                 end
             end
-        end        
+        end    
+        %Sanity check: offset calibration
+        
+        
+        %Create labTimeSeries
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;
     else

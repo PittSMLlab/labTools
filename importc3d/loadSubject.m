@@ -18,7 +18,7 @@ expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
 if info.isStroke==1 %For stroke patients, reference leg is equal to affected side
     if strcmpi(info.affectedSide,'right')
         info.refLeg='R';
-    elseif strcmpi(info.domleg,'left')
+    elseif strcmpi(info.affectedSide,'left')
         info.refLeg = 'L';
     else
         warning('Reference leg could not be determined from information given. Make sure info.affectedSide is either ''Left'' or ''Right''.')

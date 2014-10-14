@@ -78,6 +78,10 @@ classdef processedLabData < labData
         function partialParamData=getParam(this,paramName)
             partialParamData=this.getPartialData('adaptParams',paramName);
         end
+        
+        function partialParamData=getExpParam(this,paramName)
+            partialParamData=this.getPartialData('experimentalParams',paramName);
+        end
                 
          function adaptParams=calcAdaptParams(this)
              adaptParams=calcParameters(this);            

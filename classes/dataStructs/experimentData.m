@@ -160,32 +160,41 @@ classdef experimentData
             end
         end
 
-        function h=parameterEvolutionPlot(this,field,h)
-            %Check that the field actually exists in the all of
-            %data{i}.adaptParams or experimentalParams
-            colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
-            
-            %Do the plot
-            if nargin>2 && ~isempty(h)
-                figure(h)
-            else
-                h=figure;
+        function [h,adaptDataObject]=parameterEvolutionPlot(this,field,h)
+%             %Check that the field actually exists in the all of
+%             %data{i}.adaptParams or experimentalParams
+              adaptDataObject=this.makeDataObj; %Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams
+              h=adaptDataObject.plotParamByConditions(field);
+%             colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
+%             
+%             %Do the plot
+%             if nargin>2 && ~isempty(h)
+%                 figure(h)
+%             else
+%                 h=figure;
+%             end
+%             hold on
+%             counter=0;
+%             for condition=1:length(this.metaData.trialsInCondition)
+%                for trial=this.metaData.trialsInCondition{condition}
+%                    plotData=this.data{trial}.adaptParams.getDataAsVector(field);
+%                    if size(plotData,2)~=length(field)
+%                        plotData=[plotData, this.data{trial}.experimentalParams.getDataAsVector(field)];
+%                    end
+%                    plotData=plotData(~isnan(plotData));
+%                    newCounter=counter+length(plotData);
+%                    plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{mod(condition-1,length(colors))+1})
+%                    counter=newCounter;
+%                end
+%             end
+%             hold off
+        end
+        
+        function this=recomputeParameters(this)
+            trials=cell2mat(this.metaData.trialsInCondition);
+            for t=trials
+                  this.data{t}.adaptParams=calcParameters(expData.data{t}); 
             end
-            hold on
-            counter=0;
-            for condition=1:length(this.metaData.trialsInCondition)
-               for trial=this.metaData.trialsInCondition{condition}
-                   plotData=this.data{trial}.adaptParams.getDataAsVector(field);
-                   if isempty(plotData)
-                       plotData=this.data{trial}.experimentalParams.getDataAsVector(field);
-                   end
-                   plotData=plotData(~isnan(plotData));
-                   newCounter=counter+length(plotData);
-                   plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{mod(condition-1,length(colors))+1})
-                   counter=newCounter;
-               end
-            end
-            hold off
         end
         
     end

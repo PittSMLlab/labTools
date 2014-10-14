@@ -3,6 +3,8 @@ function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
 %% Get stance phases
 [stanceL] = getStanceFromForces(FzL, 35, fsample);
 [stanceR] = getStanceFromForces(FzR, 35, fsample);
+%[stanceL] = getStanceFromForcesAlt(FzL, [], fsample); %New method
+%[stanceR] = getStanceFromForcesAlt(FzR, [], fsample); %New method
 
 %% Get events from stance
 [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR);

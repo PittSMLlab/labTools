@@ -51,7 +51,7 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
         FzL=upSign*trialData.getForce('L',upAxis);
         FzR=upSign*trialData.getForce('R',upAxis);
         
-        %correct non-zeroed events (most common force reading should be zero):
+        %Sanity check: correct non-zeroed force-plates: 
         if mode(FzL)~=0
             disp(['Warning: Left z-axis forces in ' file ' have non-zero mode. Subtracting mode from force data before event detection']) 
             FzL=FzL-mode(FzL);

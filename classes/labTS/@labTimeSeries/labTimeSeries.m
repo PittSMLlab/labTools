@@ -87,25 +87,31 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function data=getSample(this,timePoints)
+        function data=getSample(this,timePoints) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
             if ~isempty(timePoints)
-                newTS=timeseries(this.Data,this.Time);
-                newTS=newTS.resample(timePoints);
+                newTS=resample(this,timePoints,1);
                 data=newTS.Data;
             else
                 data=[];
             end
         end
         
+        function index=getIndexClosestToTimePoing(this,timePoints)
+            index=[]; %ToDo
+        end
         %-------------------
         
         %Modifier functions:
-        function newThis=resample(this,newTs) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
-            if newTs>this.sampPeriod %Under-sampling! be careful of aliasing
-                warning('labTS:resample','Under-sampling data, be careful of aliasing!');
+        function newThis=resample(this,newTs,hiddenFlag) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
+            if nargin<3 || hiddenFlag==0
+                if newTs>this.sampPeriod %Under-sampling! be careful of aliasing
+                    warning('labTS:resample','Under-sampling data, be careful of aliasing!');
+                end
+                newN=ceil(this.timeRange/newTs)+1;
+                newThis=resampleN(this,newN);
+            else
+                newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period!!!
             end
-            newN=ceil(this.timeRange/newTs)+1;
-            newThis=resampleN(this,newN);
         end
         
         function newThis=resampleN(this,newN) %Same as resample function, but directly fixing the number of samples instead of TS
@@ -208,7 +214,7 @@ classdef labTimeSeries  < timeseries
             for i=1:N
                 h1(i)=subplot(ceil(N/2),2,i);
                 hold on
-                plot(this.Time,relData(:,i))
+                plot(this.Time,relData(:,i),'.')
                 ylabel(relLabels{i})
                 hold off
             end
