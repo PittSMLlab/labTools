@@ -12,15 +12,15 @@ stance=forces>threshold;
 stance = deleteShortPhases(stance,fsample,0.1); %Used to be 200 ms, but that is too long for stroke subjects, who spend relatively short single stance times on their paretic leg.
 
 %% Plot some stuff to check
-figure
-hold on
-plot([1:length(forces)]/fsample,forces)
-plot(([1:length(forces)])/fsample,stance*max(forces))
-plot([1,length(forces)]/fsample,threshold*[1,1],'k--')
-plot([1:length(forces)]/fsample,Fz*forceSign)
-xlabel('Time (ms)')
-legend('Filtered forces','Detected Stance','threshold','Raw forces')
-hold off
+% figure
+% hold on
+% plot([1:length(forces)]/fsample,forces)
+% plot(([1:length(forces)])/fsample,stance*max(forces))
+% plot([1,length(forces)]/fsample,threshold*[1,1],'k--')
+% plot([1:length(forces)]/fsample,Fz*forceSign)
+% xlabel('Time (ms)')
+% legend('Filtered forces','Detected Stance','threshold','Raw forces')
+% hold off
 
 end
 
