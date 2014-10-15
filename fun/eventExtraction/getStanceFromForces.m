@@ -4,8 +4,6 @@ forces1=medfilt1(Fz,round(.01*fsample)); %Median filter with 10ms window, to get
 forces=lowpassfiltering2(forces1,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 forceSign=sign(mean(Fz));
 forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
-%forces=highpassfiltering2(forces,20,5,fsample);
-forces=forces-min(forces); %Forcing 0 to be minimum
 
 stance=forces>threshold;
 
