@@ -38,7 +38,7 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'Tout',...                  stepTimeDiff/strideTimeSlow
     'Tgoal',...                 stanceTimeDiff/strideTimeSlow
     'TgoalSW',...               swingTimeDiff/strideTimeSlow (should be same as Tgoal)
-    'direction',...             -1 if walking towards window, 1 if walking towards door (implemented for OG bias removal)
+    'direction',...             -1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)
     'hipPos',...                average hip position of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)
     'stepLengthSlow',...        distance between ankle markers (relative to avg hip marker) at SHS2 (in mm)
     'stepLengthFast',...        distance between ankel markers (relative to hip) at FHS (in mm)
@@ -88,6 +88,7 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'stepSpeedFast',...         Ankle relative to hip, from iHS to cHS
     'stanceSpeedSlow',...       Ankle relative to hip, during ipsilateral stance
     'stanceSpeedFast',...       Ankle relative to hip, during ipsilateral stance
+    'avgRotation',...           Angle that the coordinates were rotated by
     }; 
 
 %make the time series have a time vector as small as possible so that
@@ -143,23 +144,15 @@ end
 
 if ~isempty(in.angleData) %This checks that hip and ankle markers are present
     %get hip position    
-    sHip=in.getMarkerData({[s 'HIP' orientation.foreaftAxis],[s 'HIP' orientation.updownAxis],[s 'HIP' orientation.sideAxis]});
-    sHip=[orientation.foreaftSign*sHip(:,1),orientation.updownSign*sHip(:,2),orientation.sideSign*sHip(:,3)];
-    fHip=in.getMarkerData({[f 'HIP' orientation.foreaftAxis],[f 'HIP' orientation.updownAxis],[f 'HIP' orientation.sideAxis]});
-    fHip=[orientation.foreaftSign*fHip(:,1),orientation.updownSign*fHip(:,2),orientation.sideSign*fHip(:,3)];
+    sHip=in.getMarkerData({[s 'HIP' orientation.sideAxis],[s 'HIP' orientation.foreaftAxis],[s 'HIP' orientation.updownAxis]});
+    sHip=[orientation.sideSign*sHip(:,1),orientation.foreaftSign*sHip(:,2),orientation.updownSign*sHip(:,3)];
+    fHip=in.getMarkerData({[f 'HIP' orientation.sideAxis],[f 'HIP' orientation.foreaftAxis],[f 'HIP' orientation.updownAxis]});
+    fHip=[orientation.sideSign*fHip(:,1),orientation.foreaftSign*fHip(:,2),orientation.updownSign*fHip(:,3)];
     %get ankle position
-    sAnk=in.getMarkerData({[s 'ANK' orientation.foreaftAxis],[s 'ANK' orientation.updownAxis],[s 'ANK' orientation.sideAxis]});
-    sAnk=[orientation.foreaftSign*sAnk(:,1),orientation.updownSign*sAnk(:,2),orientation.sideSign*sAnk(:,3)];
-    fAnk=in.getMarkerData({[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis],[f 'ANK' orientation.sideAxis]});
-    fAnk=[orientation.foreaftSign*fAnk(:,1),orientation.updownSign*fAnk(:,2),orientation.sideSign*fAnk(:,3)];
-    %Compute mean (across the two markers) hip position (in fore-aft axis)
-    meanHipPos=nanmean([sHip(:,1) fHip(:,1)],2);
-    meanHipPos2D=[meanHipPos nanmean([sHip(:,3) fHip(:,3)],2)];
-    %Compute ankle position relative to average hip position
-    sAnkPos=sAnk(:,1)-meanHipPos;
-    fAnkPos=fAnk(:,1)-meanHipPos;
-    sAnkPos2D=sAnk(:,[1 3])-meanHipPos2D;
-    fAnkPos2D=fAnk(:,[1 3])-meanHipPos2D;
+    sAnk=in.getMarkerData({[s 'ANK' orientation.sideAxis],[s 'ANK' orientation.foreaftAxis],[s 'ANK' orientation.updownAxis]});
+    sAnk=[orientation.sideSign*sAnk(:,1),orientation.foreaftSign*sAnk(:,2),orientation.updownSign*sAnk(:,3)];
+    fAnk=in.getMarkerData({[f 'ANK' orientation.sideAxis],[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis]});
+    fAnk=[orientation.sideSign*fAnk(:,1),orientation.foreaftSign*fAnk(:,2),orientation.updownSign*fAnk(:,3)];
     %get angle data
     angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
     sAngle=angles(:,1);
@@ -209,7 +202,7 @@ for step=1:Nstrides
     %Check consistency:
     aa=aux(inds(step):indFTO2); %Get events in this interval
     bb=diff(aa(aa~=0)); %Keep only event samples
-    bad(t)= isempty(bb) || any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order of events is good
+    bad(t)= isempty(bb) || any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order and timing of events is good
     good(t)=~bad(t);
     
     if good(t)
@@ -278,7 +271,37 @@ for step=1:Nstrides
             timeSTO=eventsTime(indSTO*(1/CF));
             timeSHS2=eventsTime(indSHS2*(1/CF));
             timeFTO2=eventsTime(indFTO2*(1/CF));
-
+            
+            %find walking direction
+            if sAnk(indSHS,2)<sHip(indSHS,2)
+                direction(t)=-1;
+            else
+                direction(t)=1;
+            end
+            
+            hipPos(t)= mean([sHip(t*f_kin/f_params,2) fHip(t*f_kin/f_params,2)]);
+                         
+            %rotate coordinates to be aligned wiht walking dierection                      
+            sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction(t) sAnk(indSTO,2)])-90;
+            fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction(t) fAnk(indFTO,2)])-90;
+            
+            avgRotation(t) = (sRotation+fRotation)/2;
+            
+            rotationMatrix = [cosd(avgRotation(t)) -sind(avgRotation(t)) 0; sind(avgRotation(t)) cosd(avgRotation(t)) 0; 0 0 1];
+            sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';
+            fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';
+            sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
+            fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
+            
+            %Compute mean (across the two markers) hip position (in fore-aft axis)
+            meanHipPos=nanmean([sHip(:,2) fHip(:,2)],2);
+            meanHipPos2D=[nanmean([sHip(:,1) fHip(:,1)],2) meanHipPos];
+            %Compute ankle position relative to average hip position
+            sAnkPos=sAnk(:,2)-meanHipPos;
+            fAnkPos=fAnk(:,2)-meanHipPos;
+            sAnkPos2D=sAnk(:,[1 2])-meanHipPos2D;
+            fAnkPos2D=fAnk(:,[1 2])-meanHipPos2D;
+            
             % Set all steps to have the same slope (a negative slope during stance phase is assumed)
             if (sAnkPos(indSHS)<0)
                 sAnkPos=-sAnkPos;
@@ -290,15 +313,6 @@ for step=1:Nstrides
                 sAngle=-sAngle;
                 fAngle=-fAngle;
             end
-            
-            %find walking direction
-            if sAnk(indSHS,1)<meanHipPos(indSHS)
-                direction(t)=-1;
-            else
-                direction(t)=1;
-            end
-            
-            hipPos(t)=meanHipPos(t*f_kin/f_params);
 
             %%% Intralimb
 
@@ -358,7 +372,7 @@ for step=1:Nstrides
             Sout(t)=(alphaFast(t)-alphaSlow(t))/(alphaFast(t)+alphaSlow(t));
             Serror(t)=alphaRatioSlow(t)-alphaRatioFast(t);
             SerrorOld(t)=alphaRatioFast(t)/alphaRatioSlow(t);
-            Sgoal(t)=(stanceRangeAngFast(t)-stanceRangeAngSlow(t))/stanceRangeAngFast(t);
+            Sgoal(t)=(stanceRangeAngFast(t)-stanceRangeAngSlow(t))/(stanceRangeAngFast(t)+stanceRangeSlow(t));
             centerSlow=(alphaAngSlow(t)+betaAngSlow(t))/2;
             centerFast=(alphaAngFast(t)+betaAngFast(t))/2;
             angleOfOscillationAsym(t)=centerFast-centerSlow;            
@@ -383,14 +397,7 @@ for step=1:Nstrides
 
             % Compute spatial contribution (1D)
             spatialFast=fAnkPos(indFHS) - sAnkPos(indSHS);
-            spatialSlow=sAnkPos(indSHS2) - fAnkPos(indFHS);
-            
-            % Compute spatial contribution (2D)
-            sAnkPosHS=norm(sAnkPos2D(indSHS,:)); 
-            fAnkPosHS=norm(fAnkPos2D(indFHS,:));
-            sAnkPosHS2=norm(sAnkPos2D(indSHS2,:));
-            spatialFast2D=fAnkPosHS - sAnkPosHS;
-            spatialSlow2D=sAnkPosHS2 - fAnkPosHS;
+            spatialSlow=sAnkPos(indSHS2) - fAnkPos(indFHS);    
 
             % Compute temporal contributions (convert time to be consistent with
             % kinematic sampling frequency)
@@ -417,14 +424,23 @@ for step=1:Nstrides
             singleStanceSpeedSlow(t)=abs(sAnkPos(indFTO)-sAnkPos(indFHS))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
             singleStanceSpeedFast(t)=abs(fAnkPos(indSTO)-fAnkPos(indSHS2))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle relative to hip, during contralateral swing
             
-            singleStanceSpeedSlowAbs(t)=abs(sAnk(indFTO,1)-sAnk(indFHS,1))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
-            singleStanceSpeedFastAbs(t)=abs(fAnk(indSTO,1)-fAnk(indSHS2,1))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            singleStanceSpeedSlowAbs(t)=abs(sAnk(indFTO,2)-sAnk(indFHS,2))/(round((timeFHS-timeFTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
+            singleStanceSpeedFastAbs(t)=abs(fAnk(indSTO,2)-fAnk(indSHS2,2))/(round((timeSHS2-timeSTO)*f_kin)/f_kin); %Ankle absolute speed: should be exactly belt speed for TM trials, and exactly 0 on OG
             
             stanceSpeedSlow(t)=abs(sAnkPos(indSTO)-sAnkPos(indSHS))/(round((timeSTO-timeSHS)*f_kin)/f_kin); %Ankle relative to hip, during ipsilateral stance
             stanceSpeedFast(t)=abs(fAnkPos(indFTO)-fAnkPos(indFHS))/(round((timeFTO2-timeFHS)*f_kin)/f_kin); %Ankle relative to hip, during ipsilateral stance
             
             stepSpeedSlow(t)=dispSlow/ts; %Ankle relative to hip, from iHS to cHS
             stepSpeedFast(t)=dispFast/tf; %Ankle relative to hip, from iHS to cHS
+            
+            
+            %Rotate coordinates back to original so there are not
+            %disconinuities within next stride
+            rotationMatrix = [cosd(-avgRotation(t)) -sind(-avgRotation(t)) 0; sind(-avgRotation(t)) cosd(-avgRotation(t)) 0; 0 0 1];
+            sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';
+            fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';
+            sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
+            fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
             
         end
     end

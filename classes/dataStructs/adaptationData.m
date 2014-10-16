@@ -434,6 +434,15 @@ classdef adaptationData
         
         %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
+        %adaptDataList must be cell array of 'param.mat' file names
+        %params is cell array of parameters to plot. List with commas to
+        %plot on separate graphs or with semicolons to plot on same graph.
+        %conditions is cell array of conditions to plot
+        %binwidth is the number of data points to average in time
+        %indivFlag - set to true to plot individual subject time courses
+        %indivSubs - must be a cell array of 'param.mat' file names that is 
+        %a subset of those in the adaptDataList. Plots specific subjects
+        %instead of all subjects.
             
             %First: see if adaptDataList is a single subject (char), a cell
             %array of subject names (one group of subjects), or a cell array of cell arrays of
@@ -455,9 +464,14 @@ classdef adaptationData
                 params={params};
             end
             
-            %TO DO: check condition input
-            if isa(conditions,'char')
-                conditions={conditions};
+            %check condition input
+            if nargin>2
+                if isa(conditions,'char')
+                    conditions={conditions};
+                end
+            else
+                load(auxList{1}{1})
+                conditions=adaptData.metaData.conditionName; %default
             end
             for c=1:length(conditions)        
                 cond{c}=conditions{c}(ismember(conditions{c},['A':'Z' 'a':'z' '0':'9'])); %remove non alphanumeric characters                
@@ -467,18 +481,25 @@ classdef adaptationData
                 binwidth=1;
             end
             
+            if nargin>5 && isa(indivSubs,'cell')
+                if ~isa(adaptDataList{1},'cell')
+                    indivSubs{1}=indivSubs;
+                end
+            elseif nargin>5 && isa(indivSubs,'char')
+                indivSubs{1}={indivSubs};
+            end
+            
             %Initialize plot
-            [ah,figHandle]=optimizedSubPlot(length(params),4,1);
+            [ah,figHandle]=optimizedSubPlot(size(params,2),4,1);
+            legendStr={};
             % Set colors
             poster_colors;
             % Set colors order
-            ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+            ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];
             LineOrder={'-','--',':','-.'};
             
-            %Load data and determine length of conditions
-            
-            nConds= length(conditions);
-            
+            %Load data and determine length of conditions            
+            nConds= length(conditions);            
             s=1;
             for group=1:Ngroups
                 for subject=1:length(auxList{group})
@@ -494,9 +515,13 @@ classdef adaptationData
                             numPts.(cond{c})(s)=nPoints;
                         end                        
                         for p=1:length(params)
-                            %itialize so ther are no inconsistant dimensions or out of bounds errors
+                            %itialize so there are no inconsistant dimensions or out of bounds errors
                             values(group).(params{p}).(cond{c})(subject,:)=NaN(1,1000); %this assumes that the max number of data points that could exist in a single condition is 1000                                         
-                            values(group).(params{p}).(cond{c})(subject,1:nPoints)=dataPts(:,p);                            
+                            if strcmp(params{p},'velocityContribution')
+                                values(group).(params{p}).(cond{c})(subject,1:nPoints)=abs(dataPts(:,p));    
+                            else
+                                values(group).(params{p}).(cond{c})(subject,1:nPoints)=dataPts(:,p);
+                            end
                         end
                     end
                     s=s+1;
@@ -513,20 +538,19 @@ classdef adaptationData
                     % 1) find the length of each condition
 
                     %to plot the min number of pts in each condition:
-
 %                       [maxPts,loc]=nanmin(numPts.(cond{c}));
 %                       while maxPts<0.75*nanmin(numPts.(cond{c})([1:loc-1 loc+1:end]))
 %                           numPts.(cond{c})(loc)=nanmean(numPts.(cond{c})([1:loc-1 loc+1:end])); %do not include min in mean
 %                           [maxPts,loc]=nanmin(numPts.(cond{c}));
 %                       end
 
-                    %to plot the max:
-                    
+                    %to plot the max number of pts in each condition:
                     [maxPts,loc]=nanmax(numPts.(cond{c}));
                     while maxPts>1.25*nanmax(numPts.(cond{c})([1:loc-1 loc+1:end]))
                         numPts.(cond{c})(loc)=nanmean(numPts.(cond{c})([1:loc-1 loc+1:end])); %do not include min in mean
                         [maxPts,loc]=nanmax(numPts.(cond{c}));
-                    end                    
+                    end
+                    
                     for p=1:length(params)
 
                         allValues=values(group).(params{p}).(cond{c})(:,1:maxPts);
@@ -559,14 +583,27 @@ classdef adaptationData
                         end
 
                         % 3) plot data
-                        axes(ah(p))
+                        if size(params,1)>1
+                            axes(ah)
+                            g=p;
+                            Cdiv=group;
+                            if Ngroups==1
+                                legStr=params(p);
+                            else                                
+                                legStr={[params{p} num2str(group)]};                                    
+                            end
+                        else
+                            axes(ah(p))
+                            g=group;
+                            Cdiv=1;                                              
+                        end
                         hold on                       
                         y=avg(group).(params{p}).(cond{c});
                         E=se(group).(params{p}).(cond{c});                        
                         condLength=length(y);
                         x=Xstart:Xstart+condLength-1;
                         
-                        if nargin>4 && ~isempty(indivFlag) && indivFlag~=0
+                        if nargin>4 && ~isempty(indivFlag) && indivFlag
                             if nargin>5 && ~isempty(indivSubs)
                                 subsToPlot=indivSubs{group};                                
                             else
@@ -574,7 +611,7 @@ classdef adaptationData
                             end
                             for s=1:length(subsToPlot)
                                 subInd=find(ismember(subjects,subsToPlot{s}));
-                                % %to plot as dots
+                                %to plot as dots
                                 % plot(x,indiv.(['cond' num2str(cond)])(subInd,:),'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
                                 %to plot as lines
                                 Li{group}(s)=plot(x,indiv(group).(params{p}).(cond{c})(subInd,:),LineOrder{group},'color',ColorOrder(subInd,:));
@@ -582,16 +619,21 @@ classdef adaptationData
                             end
                             plot(x,y,'o','MarkerSize',3,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group)                            
                         else
-                            if Ngroups==1
+                            if Ngroups==1 && ~(size(params,1)>1)
                                 [Pa, Li{c}]=nanJackKnife(x,y,E,ColorOrder(c,:),ColorOrder(c,:)+0.5.*abs(ColorOrder(c,:)-1),0.7);                                
                                 set(Li{c},'Clipping','off')
                                 H=get(Li{c},'Parent');                                
                                 legendStr={conditions};
+                            elseif size(params,1)>1
+                                [Pa, Li{(group-1)*size(params,1)+p}]=nanJackKnife(x,y,E,ColorOrder(g,:)./Cdiv,ColorOrder(g,:)./Cdiv+0.5.*abs(ColorOrder(g,:)./Cdiv-1),0.7);                                
+                                set(Li{(group-1)*size(params,1)+p},'Clipping','off')
+                                H=get(Li{(group-1)*size(params,1)+p},'Parent');  
+                                legendStr{(group-1)*size(params,1)+p}=legStr;
                             else
-                                [Pa, Li{group}]=nanJackKnife(x,y,E,ColorOrder(group,:),ColorOrder(group,:)+0.5.*abs(ColorOrder(group,:)-1),0.7);                                
-                                set(Li{group},'Clipping','off')
-                                H=get(Li{group},'Parent');                                
-                                legendStr{group}={['group ' num2str(group)]};
+                                [Pa, Li{g}]=nanJackKnife(x,y,E,ColorOrder(g,:)./Cdiv,ColorOrder(g,:)./Cdiv+0.5.*abs(ColorOrder(g,:)./Cdiv-1),0.7);                                
+                                set(Li{g},'Clipping','off')
+                                H=get(Li{g},'Parent');  
+                                legendStr{g}={['group' num2str(g)]};
                             end
                             set(Pa,'Clipping','off')
                             set(H,'Layer','top')
@@ -602,7 +644,9 @@ classdef adaptationData
                         if c==length(conditions) && group==Ngroups
                             %on last iteration of conditions loop, add title and
                             %vertical lines to seperate conditions
-                            title(params{p},'fontsize',12)
+                            if ~size(params,1)>1                                
+                                title(params{p},'fontsize',12)
+                            end
                             line([lineX; lineX],ylim,'color','k')
                             xticks=lineX+diff([lineX Xstart+condLength])./2;                    
                             set(gca,'fontsize',8,'Xlim',[0 Xstart+condLength],'Xtick', xticks, 'Xticklabel', conditions)

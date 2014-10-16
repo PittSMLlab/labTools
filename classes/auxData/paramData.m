@@ -61,7 +61,7 @@ classdef paramData
             labelIdx=zeros(1,N);
             for j=1:N
                 for i=1:length(this.labels)
-                     if strcmp(auxLabel{j},this.labels{i})
+                     if strcmp(lower(auxLabel{j}),lower(this.labels{i}))
                        boolFlag(j)=true;
                        labelIdx(j)=i;
                        break;
