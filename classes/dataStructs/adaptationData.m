@@ -189,7 +189,7 @@ classdef adaptationData
                 for i=1:nConds
                     trials=this.metaData.trialsInCondition{conds(i)};
                     if ~isempty(trials)
-                        for t=1:length(trials)%t=trials
+                        for t=trials
                             inds=this.data.indsInTrial{t};
                             dataPoints(inds,i)=this.getParamInTrial(label(l),t);
                         end
