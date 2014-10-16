@@ -189,7 +189,7 @@ classdef adaptationData
                 for i=1:nConds
                     trials=this.metaData.trialsInCondition{conds(i)};
                     if ~isempty(trials)
-                        for t=trials
+                        for t=1:length(trials)%t=trials
                             inds=this.data.indsInTrial{t};
                             dataPoints(inds,i)=this.getParamInTrial(label(l),t);
                         end
@@ -201,7 +201,7 @@ classdef adaptationData
             condDes = this.metaData.conditionName;
             legend(condDes(conds)); %this is for the case when a condition number was skipped
             linkaxes(ah,'x')
-            axis tight
+            %axis tight
         end
         
         function figHandle=plotParamTrialTimeCourse(this,label)

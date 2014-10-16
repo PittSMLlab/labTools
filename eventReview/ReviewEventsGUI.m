@@ -505,14 +505,19 @@ value=get(fieldHandle,'Value');
 dataType=handles.TSlist{get(dataTypeHandle,'Value')};
 
 TSdata=expData.data{handles.idx}.(dataType);
+if isa(TSdata,'parameterSeries')
+    times=TSdata.hiddenTime;
+else
+    times=TSdata.Time;
+end
 
-if TSdata.Time(end)<handles.tstop || get(handles.maxCheck,'value')
-    endSamp=length(TSdata.Time);
-    startSamp=max([1 endSamp-find(TSdata.Time<=handles.timeWindow,1,'last')]);
+if times(end)<handles.tstop || get(handles.maxCheck,'value')
+    endSamp=length(times);
+    startSamp=max([1 endSamp-find(times<=handles.timeWindow,1,'last')]);
     last=1;    
 else
-    startSamp=find(TSdata.Time==handles.tstart);
-    endSamp=find(TSdata.Time==handles.tstop);
+    startSamp=max([1 find(times>=handles.tstart,1,'first')]);
+    endSamp=max([startSamp find(times<=handles.tstop,1,'last')]);
     last=0;
 end
 
@@ -522,10 +527,10 @@ events=handles.trialEvents;
 ECF = events.sampFreq/TSdata.sampFreq;
 for i=1:length(events.labels)
     data=events.getDataAsVector(events.labels{i});
-    eval([events.labels{i} 'times=TSdata.Time(startSamp)+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
+    eval([events.labels{i} 'times=times(startSamp)+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
 end
 
-time=TSdata.Time(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
+time=times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
 set(axesHandle,'nextplot','replace')
 if length(fieldList{value})==2
     %get data to plot

@@ -179,6 +179,21 @@ classdef labTimeSeries  < timeseries
             end
         end
         
+        function this=times(this,constant)
+            this.Data=this.Data*constant;
+        end
+        
+        function newThis=plus(this,other)
+            if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
+                newThis=labTimeSeries(this.Data+other.Data,this.Time(1),this.sampPeriod,this.labels);
+            end
+        end
+        
+        function newThis=minus(this,other)
+            if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
+                newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,this.labels);
+            end
+        end
         
         %------------------
         

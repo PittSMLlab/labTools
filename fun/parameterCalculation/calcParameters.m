@@ -123,15 +123,6 @@ aux=SHS+2*FTO+3*FHS+4*STO; %This should get events in the sequence 1,2,3,4,1... 
 %find median stride time
 medStride=median(diff(eventsTime(SHS==1)));
 
-paramTSlength=floor(length(eventsTime)*f_params/f_events);
-
-%itialize all parameters so that they are all the same length as the events
-numParams=length(paramlabels);
-for i=1:numParams
-    eval([paramlabels{i},'=NaN(paramTSlength,1);'])
-end
-data=zeros(paramTSlength,numParams);
-
 %get kinematics
 f_kin=in.markerData.sampFreq;
 %get orientation
@@ -178,6 +169,17 @@ else
     Nstrides=0;
 end
 
+%% Initialize parameters
+%paramTSlength=floor(length(eventsTime)*f_params/f_events);
+paramTSlength=Nstrides;
+
+%itialize all parameters so that they are all the same length as the events
+numParams=length(paramlabels);
+for i=1:numParams
+    eval([paramlabels{i},'=NaN(paramTSlength,1);'])
+end
+data=zeros(paramTSlength,numParams);
+times=zeros(paramTSlength,1);
 %% Calculate parameters
 
 for step=1:Nstrides
@@ -197,7 +199,10 @@ for step=1:Nstrides
     timeFTO2=eventsTime(indFTO2);
     
     %get mean index - this will be index of param.
-    t=round(mean([indSHS indFTO indFHS indSTO indSHS2 indFTO2])*f_params/f_events);
+    %t=round(mean([indSHS indFTO indFHS indSTO indSHS2 indFTO2])*f_params/f_events);
+    t=step;
+    times(step)=mean([timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2]);
+    
     
     %Check consistency:
     aa=aux(inds(step):indFTO2); %Get events in this interval
@@ -451,7 +456,8 @@ for i=1:numParams
     eval(['data(:,i)=',paramlabels{i},';'])
 end
 
-out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
+%out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
+out=parameterSeries(data,paramlabels,times);
 
 try
     if any(bad)

@@ -22,9 +22,11 @@ paramlabels = {'COPrangeS',... %Range of COP movement along step direction durin
 'rSym',... %rF-rS, 
 'cSym',... %cF-cS, center of oscillation difference
 'phiSym',... %phiF-phiS, relative heel-strike timing
-'ASym'};  %Amplitude difference
+'ASym',...  %Amplitude difference
+'uS','yS','yS_hat','eS','foreaftRatioS','uSprev','ySprev','yS_hatprev','eSprev','nS','utS','ytS','ytS_hat','etS','utSprev','ytSprev','ytS_hatprev','etSprev','ntS'}; %Gelsy's params
+
+
 %'stepTimeContribution2',...
-% 'foreAftRatioF',... %Hip to ankle pos at HS, divided by hip to ankle pos  at following (?) TO
 %'initTime',...
 %'endTime',...
 
@@ -61,7 +63,7 @@ events=in.gaitEvents.getDataAsVector({[s,'HS'],[f,'HS'],[s,'TO'],[f,'TO']});
 eventsTime=in.gaitEvents.Time;
 
 %% Initialize params
-paramTSlength=floor(length(eventsTime)*f_params/f_events);
+paramTSlength=Nstrides;
 numParams=length(paramlabels);
 for i=1:numParams
     eval([paramlabels{i},'=NaN(paramTSlength,1);'])
@@ -71,16 +73,18 @@ end
         
 for step=1:Nstrides   
     %get indices and times
-    [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2] = getIndsForThisStep(events,eventsTime,step);
-    t=round(mean([indSHS indFTO indFHS indSTO indSHS2 indFTO2])*f_params/f_events);
-    
+    [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,indFHS2,indSTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2] = getIndsForThisStep(events,eventsTime,step);
+    times(step)=round(mean([indSHS indFTO indFHS indSTO indSHS2 indFTO2])*f_params/f_events);
+    t=step;
     if good(step)
         %[COPrangeF(t),COPrangeS(t),COPsym(t),COPsymM(t),handHolding(t)] = computeForceParameters(in.GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2);
-        [rF(t),rS(t),cF(t),cS(t),TF(t),TS(t),phiF(t),phiS(t),AF(t),AS(t),rSym(t),cSym(t),phiSym(t),ASym(t)] = computePablosParameters(in.markerData.split(timeSHS,timeFTO2),s,f,timeSHS,timeSTO,timeFHS,timeFTO,timeSHS2,timeFTO2);
-
         
-        %Contributions
-%                     % Compute spatial contribution (1D)
+        [rF(t),rS(t),cF(t),cS(t),TF(t),TS(t),phiF(t),phiS(t),AF(t),AS(t),rSym(t),cSym(t),phiSym(t),ASym(t)] = computePablosParameters(in.markerData.split(timeSHS,timeFTO2),s,f,timeSHS,timeSTO,timeFHS,timeFTO,timeSHS2,timeFTO2);
+        if ~isempty(timeFTO2) && ~isempty(timeFHS2) && ~isempty(timeSTO2) && ~isempty(timeSHS2)
+            [uS(t),yS(t),yS_hat(t),eS(t),foreaftRatioS(t),utS(t),ytS(t),ytS_hat(t),etS(t)] = computeGelsysParameters(in.markerData,s,f,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2);
+        end 
+            %Contributions
+%           % Compute spatial contribution (1D)
 %             spatialFast=fAnkPos(indFHS) - sAnkPos(indSHS);
 %             spatialSlow=sAnkPos(indSHS2) - fAnkPos(indFHS);
 %             
@@ -106,15 +110,17 @@ for step=1:Nstrides
 %                      
 %             stepTimeContribution2(t)=avgVel*difft;  
     end
-
 end
+%Compute correlations for Gelsy's params:
+[uSprev,ySprev,yS_hatprev,eSprev,nS,utSprev,ytSprev,ytS_hatprev,etSprev,ntS] = computeGelsysParameterCorrelations(uS,yS,yS_hat,eS,utS,ytS,ytS_hat,etS);
 
 %% Save all the params in the data matrix & generate labTimeSeries
 for i=1:length(paramlabels)
     eval(['data(:,i)=',paramlabels{i},';'])
 end
 
-out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
+%out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
+out=parameterSeries(data,paramlabels,times);
 
 %% (?)
 % try
