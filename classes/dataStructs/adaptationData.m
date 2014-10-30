@@ -314,7 +314,7 @@ classdef adaptationData
     
     
     methods(Static)
-        function figHandle=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag)
+        function figHandle=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList)
             
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
@@ -342,9 +342,14 @@ classdef adaptationData
             
             [ah,figHandle]=optimizedSubPlot(length(label),4,1);
             
-            load(auxList{1}{1});
-            this=adaptData;
-            conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            a=load(auxList{1}{1});
+            aux=fields(a);
+            this=a.(aux{1});
+            if nargin<5 || isempty(condList)
+                conds=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
+            else
+                conds=condList;
+            end
             nConds=length(conds);
             for l=1:length(label)
                 axes(ah(l))
@@ -355,16 +360,23 @@ classdef adaptationData
                     veryEarlyPoints=[];
                     latePoints=[];
                     for subject=1:length(auxList{group}) %Getting data for each subject in the list
-                        load(auxList{group}{subject});
+                        a=load(auxList{group}{subject});
+                        aux=fields(a);
+                        this=a.(aux{1});
                         if nargin<3 || isempty(removeBiasFlag) || removeBiasFlag==1
-                            this=adaptData.removeBias; %Default behaviour
+                            this=this.removeBias; %Default behaviour
                         else
-                            this=adaptData;
+                            %this=adaptData;
                         end
                         for i=1:nConds
-                            trials=this.metaData.trialsInCondition{conds(i)};
-                            if ~isempty(trials)
-                                aux=this.getParamInCond(label(l),conds(i));
+                            %First: find if there is a condition with a
+                            %similar name to the one given
+                            condName=lower(conds{i}); %Lower case
+                            allConds=lower(this.metaData.conditionName);
+                            condIdx=find(~cellfun(@isempty,strfind(allConds,condName)),1,'first');
+                            aux=this.getParamInCond(label(l),condIdx);
+                            if ~isempty(condIdx) && ~isempty(aux)
+                                
                                 try %Try to get the first strides, if there are enough
                                     veryEarlyPoints(i,subject)=mean(aux(1:N1));
                                     earlyPoints(i,subject)=mean(aux(1:N2));
@@ -414,7 +426,7 @@ classdef adaptationData
                     errorbar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
                 end
                 xTickPos=(1:3:3*nConds)+.5;
-                set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
+                set(gca,'XTick',xTickPos,'XTickLabel',condList)
                 title([label{l}])
                 hold off
             end

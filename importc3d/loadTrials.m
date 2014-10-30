@@ -148,6 +148,7 @@ for t=cell2mat(info.trialnums)
         if any(aux==0)
             warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
         end
+        allData(allData==0)=NaN; %Eliminating samples that are exactly 0: this are unavailable samples
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/analogsInfo.frequency,EMGList(orderedIndexes)); %Throw away the synch signal
         
         %AccData (from 2 files too!)
@@ -227,6 +228,7 @@ for t=cell2mat(info.trialnums)
                 markerList{end+1}=[markerLabel 'z'];
             end
         end         
+        relData(relData==0)=NaN;
         markerData=orientedLabTimeSeries(relData,0,1/markerInfo.frequency,markerList,orientation);
         markerData.DataInfo.Units=markerInfo.units.ALLMARKERS;
     else

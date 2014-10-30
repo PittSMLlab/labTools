@@ -70,7 +70,7 @@ for i=1:numParams
 end
 
 %% Calculate parameters
-        
+times=zeros(Nstrides,1);        
 for step=1:Nstrides   
     %get indices and times
     [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,indFHS2,indSTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2] = getIndsForThisStep(events,eventsTime,step);

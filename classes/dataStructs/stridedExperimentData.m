@@ -173,7 +173,7 @@ classdef stridedExperimentData
         end
         
         function alignedData=getAlignedData(this,spacing,trial,fieldName,labelList)
-            data=this;
+                data=this;
                 M=spacing;
                 aux=[0 cumsum(M)];
                 strides=data.stridedTrials{trial};

@@ -110,26 +110,40 @@ classdef labTimeSeries  < timeseries
                 newN=ceil(this.timeRange/newTs)+1;
                 newThis=resampleN(this,newN);
             else
-                newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period!!!
+                newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period. The super-class resampling returns a super-class object.
             end
         end
         
-        function newThis=resampleN(this,newN) %Same as resample function, but directly fixing the number of samples instead of TS
-            modNewTs=this.timeRange/(newN);
-            if ~isa(this.Data(1,1),'logical')
-                newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
-            else
-               newData=false(newN,size(this.Data,2));
-               newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
-               for i=1:size(this.Data,1)
-                   if any(this.Data(i,:))
-                       timePoint=this.Time(i);
-                       [newTimePoint,newTimeInd]=min(abs(newTimeVec-timePoint));
-                       newData(newTimeInd,:)=this.Data(i,:);
-                   end
-               end
+        function newThis=resampleN(this,newN,method) %Same as resample function, but directly fixing the number of samples instead of TS
+            if nargin<3 || isempty(method)
+                 if ~isa(this.Data(1,1),'logical')
+                        method='interpft';
+                 else
+                     method='logical';
+                 end
             end
-            newThis=labTimeSeries(newData,this.Time(1),modNewTs,this.labels);
+            modNewTs=this.timeRange/(newN);
+            switch method
+                case 'interpft'
+                    newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
+                case 'logical'
+                   newData=false(newN,size(this.Data,2));
+                   newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
+                   for i=1:size(this.Data,1)
+                       if any(this.Data(i,:))
+                           timePoint=this.Time(i);
+                           [newTimePoint,newTimeInd]=min(abs(newTimeVec-timePoint));
+                           newData(newTimeInd,:)=this.Data(i,:);
+                       end
+                   end
+                otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
+                    newData=zeros(length(newTimeVec),size(this.Data,2));
+                    for i=1:size(this.Data,2)
+                        newData(:,i)=interp1(this.Time,this.Data(:,i),newTimeVec,method);
+                    end
+            end
+            t0=this.Time(1);
+            newThis=labTimeSeries(newData,t0,modNewTs,this.labels);
         end
         
         function newThis=split(this,t0,t1)
@@ -158,7 +172,7 @@ classdef labTimeSeries  < timeseries
             [data,time,auxLabel]=getDataAsVector(newThis);
         end
         
-        function steppedDataArray=splitByEvents(this,eventTS,eventLabel)
+        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel)
            %eventTS needs to be a labTimeSeries with binary events as data
            %If eventLabel is not given, the first data column is used as
            %the relevant event marker. If given, eventLabel must be the
@@ -171,11 +185,35 @@ classdef labTimeSeries  < timeseries
                eventList=eventTS.Data(:,1);
            end
            %Check needed: is eventList binary?
-            refIdxLst=find(eventList==1);
+           N=size(eventList,2); %Number of events & intervals to be found
+           auxList=eventList*2.^[0:N-1]';
+           
+            refIdxLst=find(auxList==1);
+            M=length(refIdxLst)-1;
             auxTime=eventTS.Time;
-            steppedDataArray={};
-            for i=1:length(refIdxLst)-1
-                steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)>refIdxLst(i),1,'first'))));
+            aa=auxTime(refIdxLst);
+            initTime=aa(1:M); %Initial time of each interval identified
+            duration=diff(aa); %Duration of each interval
+            steppedDataArray=cell(M,N);
+            bad=zeros(M,1);
+            for i=1:M
+                t0=auxTime(refIdxLst(i));
+                nextT0=auxTime(refIdxLst(i+1));
+                lastEventIdx=refIdxLst(i);
+                for j=1:N-1
+                   nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+                   t1= auxTime(nextEventIdx); %Look for next event
+                   if ~isempty(t1) && ~isempty(t0)
+                        steppedDataArray{i,j}=this.split(t0,t1);
+                        t0=t1;
+                        lastEventIdx=nextEventIdx;
+                   else
+                       	steppedDataArray{i,j}=[];
+                        bad(i)=1;
+                   end
+                   
+                end
+                steppedDataArray{i,N}=this.split(t0,nextT0);
             end
         end
         
@@ -275,6 +313,22 @@ classdef labTimeSeries  < timeseries
                N=2^ceil(log2(1.5/stridedTS{1}.sampPeriod));
                structure=labTimeSeries.stridedTSToAlignedTS(stridedTS,N);
                [figHandle,plotHandles]=plot(structure,figHandle,plotHandles); %Using the alignedTimeSeries plot function
+        end
+        
+        function this=join(labTSCellArray)
+            masterSampPeriod=labTSCellArray{1}.sampPeriod;
+            masterLabels=labTSCellArray{1}.labels;
+            newData=labTSCellArray{1}.Data;
+           for i=2:length(labTSCellArray(:))
+               %Check sampling rate & dimensions are consistent, and append
+               %at end of data
+               if all(cellfun(@strcmp,masterLabels,labTSCellArray{i}.labels)) && masterSampPeriod==labTSCellArray{i}.sampPeriod
+                   newData=[newData;labTSCellArray{i}.Data];
+               else
+                  warning([num2str(i) '-th element of input cell array does not have labels or sampling period consistent with other elements.']); 
+               end
+               this=labTimeSeries(newData,labTSCellArray{1}.Time(1),masterSampPeriod,masterLabels);
+           end
         end
     end
     

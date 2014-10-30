@@ -93,6 +93,16 @@ classdef experimentData
             end
         end
         
+        function slowLeg=getSlowLeg(this)
+            if strcmpi(this.fastLeg,'L')
+                slowLeg='R';
+            elseif strcmpi(this.fastLeg,'R')
+                slowLeg='L';
+            else
+                slowLeg=[];
+            end
+        end
+        
         %Process full experiment
         function processedThis=process(this)
             for trial=1:length(this.data)
@@ -135,31 +145,7 @@ classdef experimentData
             end
         end
         
-        function stridedExp=splitIntoStrides(this,refEvent)
-            
-            if ~this.isStepped && this.isProcessed
-                for trial=1:length(this.data)
-                    disp(['Splitting trial ' num2str(trial) '...'])
-                    trialData=this.data{trial};
-                    if ~isempty(trialData)
-                        if nargin<2 || isempty(refEvent)
-                            refEvent=[trialData.metaData.refLeg,'HS'];
-                            %Assuming that the first event of each stride should be
-                            %the heel strike of the refLeg! (check c3d2mat -
-                            %refleg should be opposite the dominant/fast leg)
-                        end
-                        aux=trialData.separateIntoStrides(refEvent);
-                        strides{trial}=aux;                        
-                    else
-                        strides{trial}=[];                        
-                    end
-                end
-                stridedExp=stridedExperimentData(this.metaData,this.subData,strides); 
-            else
-                disp('Cannot stride experiment because it is raw or already strided.');
-            end
-        end
-
+        %Display
         function [h,adaptDataObject]=parameterEvolutionPlot(this,field,h)
 %             %Check that the field actually exists in the all of
 %             %data{i}.adaptParams or experimentalParams
@@ -190,11 +176,49 @@ classdef experimentData
 %             hold off
         end
         
+        %Update/modify
         function this=recomputeParameters(this)
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
                   this.data{t}.adaptParams=calcParameters(this.data{t}); 
             end
+        end
+        
+        function stridedExp=splitIntoStrides(this,refEvent)
+            
+            if ~this.isStepped && this.isProcessed
+                for trial=1:length(this.data)
+                    disp(['Splitting trial ' num2str(trial) '...'])
+                    trialData=this.data{trial};
+                    if ~isempty(trialData)
+                        if nargin<2 || isempty(refEvent)
+                            refEvent=[trialData.metaData.refLeg,'HS'];
+                            %Assuming that the first event of each stride should be
+                            %the heel strike of the refLeg! (check c3d2mat -
+                            %refleg should be opposite the dominant/fast leg)
+                        end
+                        aux=trialData.separateIntoStrides(refEvent);
+                        strides{trial}=aux;                        
+                    else
+                        strides{trial}=[];                        
+                    end
+                end
+                stridedExp=stridedExperimentData(this.metaData,this.subData,strides); 
+            else
+                disp('Cannot stride experiment because it is raw or already strided.');
+            end
+        end
+        
+        function stridedField=getStridedField(this,field,conditions)
+           if nargin<3 || isempty(conditions)
+               trials=cell2mat(this.metaData.trialsInCondition);
+           else
+               trials=cell2mat(this.metaData.trialsInCondition(conditions));
+           end
+           stridedField={};
+           for i=trials
+              stridedField=[stridedField this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,[this.getSlowLeg 'HS'])]; 
+           end
         end
         
     end

@@ -84,60 +84,68 @@ for trial=1:length(rawExperimentData.data)
         signalStats{trial}.SNR=labTimeSeries(SNR',t0,Ts,auxTS.labels); %Signal to background noise ratio
         signalStats{trial}.avgSNR=avgSNR;
         
-        eventsTS=rawExperimentData.data{trial}.gaitEvents;
-        stridedTS=splitByEvents(auxTS,eventsTS,'LHS'); %Get strides individually in a cell array
-        alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!
-        [decomposition,~,avgStride,~] =energyDecomposition(alignedTS);
-        signalStats{trial}.avgStride=avgStride;
-        signalStats{trial}.energyDecomp=decomposition;
+        %eventsTS=rawExperimentData.data{trial}.gaitEvents;
+        %stridedTS=splitByEvents(auxTS,eventsTS,'LHS'); %Get strides individually in a cell array
+        %alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!
+        %[decomposition,~,avgStride,~] =energyDecomposition(alignedTS);
+        %signalStats{trial}.avgStride=avgStride;
+        %signalStats{trial}.energyDecomp=decomposition;
+        signalStats{trial}.rawCrossCorr=corr(rawExperimentData.data{trial}.EMGData.Data);
+        signalStats{trial}.rawMean=mean(rawExperimentData.data{trial}.EMGData.Data);
+        signalStats{trial}.rawVar=var(rawExperimentData.data{trial}.EMGData.Data);
+        if rawExperimentData.isProcessed==1
+            signalStats{trial}.procMean=mean(rawExperimentData.data{trial}.procEMGData.Data);
+            signalStats{trial}.procVar=var(rawExperimentData.data{trial}.procEMGData.Data);
+            signalStats{trial}.procCrossCorr=corr(rawExperimentData.data{trial}.procEMGData.Data);
+        end
         
         %Do some plotting
-        snrStrided=splitByEvents(signalStats{trial}.SNR,eventsTS,'LHS');
-        snrAligned=labTimeSeries.stridedTSToAlignedTS(snrStrided,100); 
-        %Raw data plot:
-        [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function
-        linkaxes(ph,'xy')
-        axis(ph(1),[0 1 -2e-4 2e-4])
-        set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)}) %Need to fix, so it shows reasonable numbers when re-scaled
-        figure(fh)
-        set(fh,'Name',['Raw EMG, trial ' num2str(trial)])
-        for i=1:size(decomposition,2)
-            subplot(ph(i))
-            hold on
-            plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
-            plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
-            plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')
-            text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])
-            text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])
-            hold off
-        end
-        saveFig(fh,['../fig/' rawExperimentData.subData.ID],['rawEMGTrial' num2str(trial)])
-        close(fh)
-        %Filtered plot:
-        this=rawExperimentData.data{trial}.EMGData;
-        this.Data=filterEMG(this.Data,this.sampFreq,signalBW);
-        stridedTS=splitByEvents(this,eventsTS,'LHS'); %Get strides individually in a cell array
-        alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!
-        [decomposition,~,~,~] =energyDecomposition(alignedTS);
-        alignedTS.Data=bsxfun(@minus,alignedTS.Data,mean(alignedTS.Data,1)); %Subtracting mean along first (time) dimension
-        [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function
-        linkaxes(ph,'xy')
-        axis(ph(1),[0 1 -2e-4 2e-4])
-        set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)})
-        figure(fh)
-        set(fh,'Name',['Filtered EMG, trial ' num2str(trial)])
-        for i=1:size(decomposition,2)
-            subplot(ph(i))
-            hold on
-            plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
-            plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
-            plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')
-            text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])
-            text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])
-            hold off
-        end
-        saveFig(fh,['../fig/' rawExperimentData.subData.ID],['filteredEMGTrial' num2str(trial)])
-        close(fh)
+%         snrStrided=splitByEvents(signalStats{trial}.SNR,eventsTS,'LHS');
+%         snrAligned=labTimeSeries.stridedTSToAlignedTS(snrStrided,100); 
+%         %Raw data plot:
+%         [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function
+%         linkaxes(ph,'xy')
+%         axis(ph(1),[0 1 -2e-4 2e-4])
+%         set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)}) %Need to fix, so it shows reasonable numbers when re-scaled
+%         figure(fh)
+%         set(fh,'Name',['Raw EMG, trial ' num2str(trial)])
+%         for i=1:size(decomposition,2)
+%             subplot(ph(i))
+%             hold on
+%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
+%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
+%             plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')
+%             text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])
+%             text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])
+%             hold off
+%         end
+%         saveFig(fh,['../fig/' rawExperimentData.subData.ID],['rawEMGTrial' num2str(trial)])
+%         close(fh)
+%         %Filtered plot:
+%         this=rawExperimentData.data{trial}.EMGData;
+%         this.Data=filterEMG(this.Data,this.sampFreq,signalBW);
+%         stridedTS=splitByEvents(this,eventsTS,'LHS'); %Get strides individually in a cell array
+%         alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!
+%         [decomposition,~,~,~] =energyDecomposition(alignedTS);
+%         alignedTS.Data=bsxfun(@minus,alignedTS.Data,mean(alignedTS.Data,1)); %Subtracting mean along first (time) dimension
+%         [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function
+%         linkaxes(ph,'xy')
+%         axis(ph(1),[0 1 -2e-4 2e-4])
+%         set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)})
+%         figure(fh)
+%         set(fh,'Name',['Filtered EMG, trial ' num2str(trial)])
+%         for i=1:size(decomposition,2)
+%             subplot(ph(i))
+%             hold on
+%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
+%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')
+%             plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')
+%             text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])
+%             text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])
+%             hold off
+%         end
+%         saveFig(fh,['../fig/' rawExperimentData.subData.ID],['filteredEMGTrial' num2str(trial)])
+%         close(fh)
         
     end
 end
