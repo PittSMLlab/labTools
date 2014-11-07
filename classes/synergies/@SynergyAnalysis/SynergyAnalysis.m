@@ -80,7 +80,7 @@ classdef SynergyAnalysis
                 case 'timeShift'
                     switch factMethod
                         case 'nnmf'
-                            Nreps=1000;
+                            Nreps=10;
                             sizes=size(this.trainingFactorizations{1}.originalMatrix);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricNNMFEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps);
                         case 'pca'

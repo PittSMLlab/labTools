@@ -74,7 +74,7 @@ classdef labTimeSeries  < timeseries
             end
             
             N=length(auxLabel);
-            boolFlag=zeros(N,1);
+            boolFlag=false(N,1);
             labelIdx=zeros(N,1);
             for j=1:N
                 for i=1:length(this.labels)
@@ -230,6 +230,19 @@ classdef labTimeSeries  < timeseries
         function newThis=minus(this,other)
             if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
                 newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,this.labels);
+            end
+        end
+        
+        function this=fillts(this)
+            for i=1:size(this.Data,2)
+                idx=isnan(this.Data(:,i));
+                if any(idx)
+                    disp([num2str(sum(idx)) ' samples were NaN in ' this.labels{i}])
+                    this.Quality=idx;
+                    this.QualityInfo.Code=[0 1];
+                    this.QualityInfo.Description={'good','missing'};
+                    this.Data(:,i)=interp1(this.Time(~idx),this.Data(~idx,i),this.Time,'linear','extrap');
+                end
             end
         end
         

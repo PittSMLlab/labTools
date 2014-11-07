@@ -79,6 +79,14 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'stepTimeContribution',...  Average belt speed times step time difference
     'velocityContribution',...  Average step time times belt speed difference
     'netContribution',...       Sum of the previous three, should be equal to stepLengthAsym
+    'spatialContributionAlt',...   Same as before, divided by cadence, to get velocity units instead of length units
+    'stepTimeContributionAlt',...  
+    'velocityContributionAlt',...  
+    'netContributionAlt',...  
+    'spatialContributionNorm',...   Same as before, divided by equivalentSpeed, so we get a dimensionless parameter
+    'stepTimeContributionNorm',...  
+    'velocityContributionNorm',...  
+    'netContributionNorm',... 
     'equivalentSpeed',...       Relative speed of hip to feet, 
     'singleStanceSpeedSlow',... Relative speed of hip to slow ankle during contralateral swing
     'singleStanceSpeedFast',... Relative speed of hip to fast ankle during contralateral swing
@@ -278,7 +286,7 @@ for step=1:Nstrides
             timeFTO2=eventsTime(indFTO2*(1/CF));
             
             %find walking direction
-            if sAnk(indSHS,2)<sHip(indSHS,2)
+            if sAnk(indSHS2,2)<sAnk(indSTO,2)
                 direction(t)=-1;
             else
                 direction(t)=1;
@@ -308,13 +316,17 @@ for step=1:Nstrides
             fAnkPos2D=fAnk(:,[1 2])-meanHipPos2D;
             
             % Set all steps to have the same slope (a negative slope during stance phase is assumed)
-            if (sAnkPos(indSHS)<0)
+            if sAnk(indSHS2,2)<sAnk(indSTO,2)
+                %Pablo edit 11/6/2014
+                %Changed the test: what we really want to know is whether
+                %they are walking towards the window or the door, not if
+                %the ankle is in front of the hip.
                 sAnkPos=-sAnkPos;
                 fAnkPos=-fAnkPos;      
                 sAnkPos2D=-sAnkPos2D;
                 fAnkPos2D=-fAnkPos2D;
-            end
-            if sAngle(indSHS)<0
+            %end
+            %if sAngle(indSHS)<0
                 sAngle=-sAngle;
                 fAngle=-fAngle;
             end
@@ -446,6 +458,16 @@ for step=1:Nstrides
             fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';
             sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
             fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
+            
+            %Alternative and normalized contributions
+            spatialContributionAlt(t)=spatialContribution(t)/strideTimeSlow(t);
+            stepTimeContributionAlt(t)=stepTimeContribution(t)/strideTimeSlow(t);
+            velocityContributionAlt(t)=velocityContribution(t)/strideTimeSlow(t);
+            netContributionAlt(t)=netContribution(t)/strideTimeSlow(t);
+            spatialContributionNorm(t)=spatialContributionAlt(t)/equivalentSpeed(t);
+            stepTimeContributionNorm(t)=stepTimeContributionAlt(t)/equivalentSpeed(t);
+            velocityContributionNorm(t)=velocityContributionAlt(t)/equivalentSpeed(t);
+            netContributionNorm(t)=netContributionAlt(t)/equivalentSpeed(t);
             
         end
     end

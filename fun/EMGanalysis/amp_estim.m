@@ -1,4 +1,4 @@
-function [ amplitude ] = amp_estim(signal,fs,mod_ord,cutoff,BW)
+function [ amplitude ] = amp_estim(signal,fs,mod_ord,cutoff)
 %EMG AMPLITUDE ESTIMATION Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -14,7 +14,7 @@ emg3=abs(emg2).^mod_ord;
 %aux=lowPassFilter.convert('df2');
 %emg4=filtfilt(aux.Numerator,aux.Denominator,emg3);
 %emg4=lowpassfiltering(emg3, cutoff, 5, fs);
-Wn=2*BW(2)/fs;
+Wn=2*cutoff/fs;
 lowPassFilter=design(fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,2*Wn,3,10),'butter');
 emg4=filtfilthd(lowPassFilter,emg3);
 

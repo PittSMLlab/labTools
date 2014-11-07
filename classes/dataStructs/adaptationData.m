@@ -133,7 +133,7 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
         
-        function [data,inds,auxLabel]=getParamInCond(this,label,condition)
+        function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition)
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -169,6 +169,10 @@ classdef adaptationData
             %get data
             trials=cell2mat(this.metaData.trialsInCondition(condNum));
             inds=cell2mat(this.data.indsInTrial(trials));
+            origTrials=[];
+            for i=1:length(trials)
+                origTrials(end+1:end+length(this.data.indsInTrial(i)))=i;
+            end
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
@@ -314,8 +318,8 @@ classdef adaptationData
     
     
     methods(Static)
-        function figHandle=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList)
-            
+        function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast)
+            colorScheme
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
             end
@@ -337,8 +341,21 @@ classdef adaptationData
             
             %UPDATE LEGEND IF THESE LINES ARE CHANGED
             N1=3; %very early number of points
-            N2=5; %early number of points
-            N3=20; %late number of points
+            if nargin<6 || isempty(earlyNumber)
+                N2=5; %early number of points
+            else
+                N2=earlyNumber;
+            end
+            if nargin<7 || isempty(lateNumber)
+                N3=20; %late number of points
+            else
+                N3=lateNumber;
+            end
+            if nargin<8 || isempty(exemptLast)
+                Ne=5;
+            else
+                Ne=exemptLast;
+            end
             
             [ah,figHandle]=optimizedSubPlot(length(label),4,1);
             
@@ -349,6 +366,11 @@ classdef adaptationData
                 conds=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
             else
                 conds=condList;
+                for i=1:length(condList)
+                    if iscell(condList{i})
+                        condList{i}=condList{i}{1};
+                    end
+                end
             end
             nConds=length(conds);
             for l=1:length(label)
@@ -371,9 +393,21 @@ classdef adaptationData
                         for i=1:nConds
                             %First: find if there is a condition with a
                             %similar name to the one given
-                            condName=lower(conds{i}); %Lower case
+                            clear condName
+                            if iscell(conds{i})
+                                for j=1:length(conds{i})
+                                    condName{j}=lower(conds{i}{j});
+                                end
+                            else
+                                condName{1}=lower(conds{i}); %Lower case
+                            end
                             allConds=lower(this.metaData.conditionName);
-                            condIdx=find(~cellfun(@isempty,strfind(allConds,condName)),1,'first');
+                            condIdx=[];
+                            j=0;
+                            while isempty(condIdx) && j<length(condName)
+                                j=j+1;
+                                condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
+                            end
                             aux=this.getParamInCond(label(l),condIdx);
                             if ~isempty(condIdx) && ~isempty(aux)
                                 
@@ -387,11 +421,12 @@ classdef adaptationData
                                 
                                 %Last 20 steps, excepting the very last 5
                                 try                                    
-                                    latePoints(i,subject)=mean(aux(end-N3-4:end-5));
+                                    latePoints(i,subject)=mean(aux(end-N3-Ne+1:end-Ne));
                                 catch
                                     latePoints(i,subject)=NaN;
                                 end
                             else
+                                disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
                                 veryEarlyPoints(i,subject)=NaN;
                                 earlyPoints(i,subject)=NaN;
                                 latePoints(i,subject)=NaN;
@@ -408,13 +443,14 @@ classdef adaptationData
                     h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
                     %plot individual data points
                     if Ngroups==1 || plotIndividualsFlag %Only plotting individual subject performance if there is only one group, or flag is set
-                        if Ngroups==1
-                            plot((1:3:3*nConds)-.25+(group-1)/Ngroups,veryEarlyPoints,'x','LineWidth',2)
-                            plot((1:3:3*nConds)+.25+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
+                        set(gca,'ColorOrder',cell2mat(colorConds(1:size(veryEarlyPoints,2))'));
+                        if Ngroups==1 || plotIndividualsFlag==1
+                            plot((1:3:3*nConds)-.25+(group-1)/Ngroups,veryEarlyPoints,'o','LineWidth',2)
+                            plot((1:3:3*nConds)+.25+(group-1)/Ngroups,earlyPoints,'o','LineWidth',2)
                         else
-                            plot((1:3:3*nConds)+(group-1)/Ngroups,earlyPoints,'x','LineWidth',2)
+                            plot((1:3:3*nConds)+(group-1)/Ngroups,earlyPoints,'o','LineWidth',2)
                         end
-                        plot((2:3:3*nConds)+(group-1)/Ngroups,latePoints,'x','LineWidth',2)
+                        plot((2:3:3*nConds)+(group-1)/Ngroups,latePoints,'o','LineWidth',2)
                     end
                     %plot error bars (using standard error)
                     if Ngroups==1 %Only plotting first 3 strides AND first 5 strides if there is only one group
@@ -434,11 +470,11 @@ classdef adaptationData
             axis tight
             condDes = this.metaData.conditionName;
             if Ngroups==1
-                legend([{'Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'}, auxList{1} ]);
+                legend([{['Very early (first ' num2str(N1) ' strides)'],['Early (first ' num2str(N2) ' strides)'],['Late (last ' num2str(N3) ' (-' num2str(Ne) ') strides)']}, auxList{1} ]);
             else
                 legStr={};
                 for group=1:Ngroups
-                    legStr=[legStr, {['Early (first 5), Group ' num2str(group)],['Late (last 20 (-5)), Group ' num2str(group)]}];
+                    legStr=[legStr, {['Early (first ' num2str(N1) '), Group ' num2str(group)],['Late (last ' num2str(N3) ' (-' num2str(Ne) '), Group ' num2str(group)]}];
                 end
                 legend(h,legStr)
             end

@@ -71,7 +71,7 @@ classdef experimentData
         function fastLeg=get.fastLeg(this)
             vR=[];
             vL=[];
-            for trial=1:length(this.data)
+            for trial=cell2mat(this.metaData.trialsInCondition)
                 if ~this.isStepped
                     if ~isempty(this.data{trial}.beltSpeedReadData)
                         vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
@@ -117,7 +117,7 @@ classdef experimentData
         end
         
         %function to make adaptationData object
-        function adaptData=makeDataObj(this,filename)
+        function adaptData=makeDataObj(this,filename,experimentalFlag)
             DATA=[];
             DATA2=[];
             startind=1;
@@ -126,11 +126,15 @@ classdef experimentData
                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
-                        aux=this.data{i}.experimentalParams;
-                        labels2=aux.getLabels;
-                        dataTS2=aux.getDataAsVector(labels2);
                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+                        if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
+                            %nop
+                        else
+                            aux=this.data{i}.experimentalParams;
+                            labels2=aux.getLabels;
+                            dataTS2=aux.getDataAsVector(labels2);
+                            DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+                        end
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
                         trialTypes{i}=this.data{i}.metaData.type;
@@ -138,7 +142,11 @@ classdef experimentData
                 end
             end    
             %labels should be the same for all trials with adaptParams
-            parameterData=paramData([DATA, DATA2],[labels labels2],indsInTrial,trialTypes);
+            if ~isempty(DATA2)
+                parameterData=paramData([DATA, DATA2],[labels labels2],indsInTrial,trialTypes);
+            else
+                parameterData=paramData(DATA,labels,indsInTrial,trialTypes);
+            end
             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
             if nargin>1 && ~isempty(filename)
                 save([filename '.mat'],'adaptData');
@@ -146,34 +154,23 @@ classdef experimentData
         end
         
         %Display
-        function [h,adaptDataObject]=parameterEvolutionPlot(this,field,h)
-%             %Check that the field actually exists in the all of
-%             %data{i}.adaptParams or experimentalParams
-              adaptDataObject=this.makeDataObj; %Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams
-              h=adaptDataObject.plotParamByConditions(field);
-%             colors={[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,1,1],[0,0,1],[1,0,1]};
-%             
-%             %Do the plot
-%             if nargin>2 && ~isempty(h)
-%                 figure(h)
-%             else
-%                 h=figure;
-%             end
-%             hold on
-%             counter=0;
-%             for condition=1:length(this.metaData.trialsInCondition)
-%                for trial=this.metaData.trialsInCondition{condition}
-%                    plotData=this.data{trial}.adaptParams.getDataAsVector(field);
-%                    if size(plotData,2)~=length(field)
-%                        plotData=[plotData, this.data{trial}.experimentalParams.getDataAsVector(field)];
-%                    end
-%                    plotData=plotData(~isnan(plotData));
-%                    newCounter=counter+length(plotData);
-%                    plot(counter+1:newCounter,plotData,'o','LineWidth',2,'Color',colors{mod(condition-1,length(colors))+1})
-%                    counter=newCounter;
-%                end
-%             end
-%             hold off
+        function [h,adaptDataObject]=parameterEvolutionPlot(this,field)
+                if ~isempty(this.data{1}) && (all(this.data{1}.adaptParams.isaLabel(field)))
+                    adaptDataObject=this.makeDataObj([],0);
+                    h=adaptDataObject.plotParamByConditions(field);
+                else
+                    adaptDataObject=this.makeDataObj; %Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams
+                    h=adaptDataObject.plotParamByConditions(field);
+                end
+        end
+        function [h,adaptDataObject]=parameterTimeCourse(this,field)
+                if ~isempty(this.data{1}) && (all(this.data{1}.adaptParams.isaLabel(field)))
+                    adaptDataObject=this.makeDataObj([],0);
+                    h=adaptDataObject.plotParamTimeCourse(field);
+                else
+                    adaptDataObject=this.makeDataObj; %Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams
+                    h=adaptDataObject.plotParamTimeCourse(field);
+                end
         end
         
         %Update/modify
@@ -217,7 +214,7 @@ classdef experimentData
            end
            stridedField={};
            for i=trials
-              stridedField=[stridedField this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,[this.getSlowLeg 'HS'])]; 
+              stridedField=[stridedField; this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,[this.getSlowLeg 'HS'])]; 
            end
         end
         
