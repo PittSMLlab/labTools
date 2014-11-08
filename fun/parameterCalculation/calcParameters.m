@@ -472,10 +472,10 @@ for step=1:Nstrides
             stepTimeContributionNorm(t)=stepTimeContributionAlt(t)/equivalentSpeed(t);
             velocityContributionNorm(t)=velocityContributionAlt(t)/equivalentSpeed(t);
             netContributionNorm(t)=netContributionAlt(t)/equivalentSpeed(t);
-            spatialContributionNorm2(t)=spatialContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
-            stepTimeContributionNorm2(t)=stepTimeContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
-            velocityContributionNorm2(t)=velocityContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
-            netContributionNorm2(t)=netContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
+            spatialContributionNorm2(t)=spatialContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            stepTimeContributionNorm2(t)=stepTimeContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            velocityContributionNorm2(t)=velocityContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            netContributionNorm2(t)=netContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
             
             
         end
