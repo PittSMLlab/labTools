@@ -87,6 +87,10 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'stepTimeContributionNorm',...  
     'velocityContributionNorm',...  
     'netContributionNorm',... 
+    'spatialContributionNorm2',...   Alternative normalization: spatialContribution/(stepLengthFast+stepLengthSlow)
+    'stepTimeContributionNorm2',...  
+    'velocityContributionNorm2',...  
+    'netContributionNorm2',...  With this normalization, netContributionNorm2 shoudl be IDENTICAL to stepLengthAsym
     'equivalentSpeed',...       Relative speed of hip to feet, 
     'singleStanceSpeedSlow',... Relative speed of hip to slow ankle during contralateral swing
     'singleStanceSpeedFast',... Relative speed of hip to fast ankle during contralateral swing
@@ -468,6 +472,11 @@ for step=1:Nstrides
             stepTimeContributionNorm(t)=stepTimeContributionAlt(t)/equivalentSpeed(t);
             velocityContributionNorm(t)=velocityContributionAlt(t)/equivalentSpeed(t);
             netContributionNorm(t)=netContributionAlt(t)/equivalentSpeed(t);
+            spatialContributionNorm2(t)=spatialContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
+            stepTimeContributionNorm2(t)=stepTimeContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
+            velocityContributionNorm2(t)=velocityContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
+            netContributionNorm2(t)=netContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t))
+            
             
         end
     end
