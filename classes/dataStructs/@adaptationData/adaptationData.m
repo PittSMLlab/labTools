@@ -126,7 +126,7 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
         
-        function figHandle=plotParamTimeCourse(this,label)
+        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
             
             if isa(label,'char')
                 label={label};
@@ -139,101 +139,91 @@ classdef adaptationData
             nPoints=size(this.data.Data,1);
             for l=1:length(label)
                 dataPoints=NaN(nPoints,nConds);
+                trialBreaks=[];
                 for i=1:nConds
                     trials=this.metaData.trialsInCondition{conds(i)};
                     if ~isempty(trials)
                         for t=trials
                             inds=this.data.indsInTrial{t};
                             dataPoints(inds,i)=this.getParamInTrial(label(l),t);
+                            if ~isempty(inds)
+                                trialBreaks(end+1)=inds(end);
+                            end
                         end
                     end
                 end
-                plot(ah(l),dataPoints,'.','MarkerSize',15)
+                if nargin>2 && ~isempty(runningBinSize)
+                    movingDataPoints=medfilt1(dataPoints,runningBinSize,[],1);
+                    movingStds=sqrt(conv2(dataPoints.^2,ones(runningBinSize,1)/runningBinSize,'same')-conv2(dataPoints,ones(runningBinSize,1)/runningBinSize,'same').^2);
+                    axes(ah(l))
+                    hLeg=plot(ah(l),movingDataPoints,'.','MarkerSize',15);
+                    for i=1:nConds
+                        aux1=movingDataPoints(:,i);
+                        aux2=movingStds(:,i);
+                        xCoord=[1:length(aux1),length(aux1):-1:1];
+                        yCoord=[aux1'-aux2',aux1(end:-1:1,:)'+aux2(end:-1:1,:)'];
+                        xCoord=xCoord(~isnan(yCoord));
+                        yCoord=yCoord(~isnan(yCoord));
+                        hh=patch(repmat(xCoord',1,size(aux1,2)),yCoord',[.7,.7,.7]);
+                        uistack(hh,'bottom')
+                    end
+                    maxM=max(movingDataPoints(:)+movingStds(:));
+                    minM=min(movingDataPoints(:)-movingStds(:));
+                else
+                    plot(ah(l),dataPoints,'.','MarkerSize',15)
+                    maxM=max(dataPoints(:));
+                    minM=min(dataPoints(:));
+                end
+                if nargin>3 && trialMarkerFlag==1 %Color background with trial info
+                    last=1;
+                    colorNow=[0,0,0];
+                    for i=1:length(trialBreaks)
+                        colorNow=1-colorNow;
+                        hh=patch([last trialBreaks(i) trialBreaks(i) last],[minM*[1,1] , maxM*[1,1]],1-.05*colorNow,'EdgeColor','None');
+                        uistack(hh,'bottom')
+                        last=trialBreaks(i);
+                    end
+                end
                 title(ah(l),[label{l},' (',this.subData.ID ')'])
+                axis tight
             end
             condDes = this.metaData.conditionName;
-            legend(condDes(conds)); %this is for the case when a condition number was skipped
+            legend(hLeg,condDes(conds)); %this is for the case when a condition number was skipped
             linkaxes(ah,'x')
             %axis tight
         end
         
         function figHandle=plotParamTrialTimeCourse(this,label)
-            
-            [ah,figHandle]=optimizedSubPlot(length(label),4,1);            
-            
-            nTrials=length(cell2mat(this.metaData.trialsInCondition));
-            trials=find(~cellfun(@isempty,this.data.trialTypes));
-            nPoints=size(this.data.Data,1);
-            
-            for l=1:length(label)
-                dataPoints=NaN(nPoints,nTrials);
-                for i=1:nTrials
-                    inds=this.data.indsInTrial{trials(i)};
-                    dataPoints(inds,i)=this.getParamInTrial(label(l),trials(i));
-                end
-                plot(ah(l),dataPoints,'.','MarkerSize',15)
-                title(ah(l),[label{l},' (',this.subData.ID ')'])
-            end
-            
-            trialNums = cell2mat(this.metaData.trialsInCondition);
-            legendEntry={};
-            for i=1:length(trialNums)
-                legendEntry{end+1}=num2str(trialNums(i));
-            end
-            legend(legendEntry);
-            linkaxes(ah,'x')
-            axis tight
+            warning('adaptationData.plotParamTrialTimeCourse has been deprecated. Try instead to use plotParamTimeCourse with the trialMarkerFlag set (=1)')
+%             [ah,figHandle]=optimizedSubPlot(length(label),4,1);            
+%             
+%             nTrials=length(cell2mat(this.metaData.trialsInCondition));
+%             trials=find(~cellfun(@isempty,this.data.trialTypes));
+%             nPoints=size(this.data.Data,1);
+%             
+%             for l=1:length(label)
+%                 dataPoints=NaN(nPoints,nTrials);
+%                 for i=1:nTrials
+%                     inds=this.data.indsInTrial{trials(i)};
+%                     dataPoints(inds,i)=this.getParamInTrial(label(l),trials(i));
+%                 end
+%                 plot(ah(l),dataPoints,'.','MarkerSize',15)
+%                 title(ah(l),[label{l},' (',this.subData.ID ')'])
+%             end
+%             
+%             trialNums = cell2mat(this.metaData.trialsInCondition);
+%             legendEntry={};
+%             for i=1:length(trialNums)
+%                 legendEntry{end+1}=num2str(trialNums(i));
+%             end
+%             legend(legendEntry);
+%             linkaxes(ah,'x')
+%             axis tight
         end
         
         function figHandle=plotParamByConditions(this,label)
-            
-            N1=3; %very early number of points
-            N2=5; %early number of points
-            N3=20; %late number of points
-            
-            [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
-            
-            conds=find(~cellfun(@isempty,this.metaData.conditionName));
-            nConds=length(conds);
-            for l=1:length(label)
-                earlyPoints=[];
-                veryEarlyPoints=[];
-                latePoints=[];
-                for i=1:nConds
-                    aux=this.getParamInCond(label(l),conds(i));
-                    try %Try to get the first strides, if there are enough
-                        veryEarlyPoints(i,:)=aux(1:N1);
-                        earlyPoints(i,:)=aux(1:N2);
-                    catch %In case there aren't enough strides, assign NaNs to all
-                        veryEarlyPoints(i,:)=NaN;
-                        earlyPoints(i,:)=NaN;
-                    end
-                    %Last 20 steps, excepting the very last 5
-                    try
-                        latePoints(i,:)=aux(end-N3-4:end-5);
-                    catch
-                        latePoints(i,:)=NaN;
-                    end
-                end
-                axes(ah(l))
-                hold on
-                
-                bar((1:3:3*nConds)-.25,nanmean(veryEarlyPoints,2),.15,'FaceColor',[.8,.8,.8])
-                bar((1:3:3*nConds)+.25,nanmean(earlyPoints,2),.15,'FaceColor',[.6,.6,.6])
-                bar(2:3:3*nConds,nanmean(latePoints,2),.3,'FaceColor',[0,.3,.6])
-                errorbar((1:3:3*nConds)-.25,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
-                errorbar((1:3:3*nConds)+.25,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
-                errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
-                %plot([1:3:3*nConds]-.25,veryEarlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])
-                %plot([1:3:3*nConds]+.25,earlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])
-                %plot(2:3:3*nConds,latePoints,'x','LineWidth',2,'Color',[0,.6,.2])
-                xTickPos=(1:3:3*nConds)+.5;
-                set(gca,'XTick',xTickPos,'XTickLabel',this.metaData.conditionName(conds))
-                axis tight
-                title([label{l},' (',this.subData.ID ')'])
-                hold off
-            end
-            legend('Very early (first 3 strides)','Early (first 5 strides)','Late (last 20 (-5) strides)'); %this is for the case when a condition number was skipped
+            warning('adaptationData.plotParamByConditions will be deprecated. Use plotParamBarsByConditions instead.')
+            figHandle=plotParamBarsByConditions(this,label);
         end
         
         function [boolFlag,labelIdx]=isaCondition(this,cond)

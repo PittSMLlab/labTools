@@ -121,8 +121,9 @@ classdef experimentData
             DATA=[];
             DATA2=[];
             startind=1;
+            auxLabels={'Trial','Condition'};
             if ~isempty(this.data)
-                for i=1:length(this.data)
+                for i=1:length(this.data) %Trials
                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         labels=this.data{i}.adaptParams.getLabels;
                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
@@ -135,6 +136,8 @@ classdef experimentData
                             dataTS2=aux.getDataAsVector(labels2);
                             DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
                         end
+                        auxData(1:size(DATA,1),1)=i; %Saving trial info
+                        auxData(1:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
                         trialTypes{i}=this.data{i}.metaData.type;
@@ -143,9 +146,9 @@ classdef experimentData
             end    
             %labels should be the same for all trials with adaptParams
             if ~isempty(DATA2)
-                parameterData=paramData([DATA, DATA2],[labels labels2],indsInTrial,trialTypes);
+                parameterData=paramData([DATA, DATA2, auxData],[labels labels2 auxLabels],indsInTrial,trialTypes);
             else
-                parameterData=paramData(DATA,labels,indsInTrial,trialTypes);
+                parameterData=paramData([DATA,auxData],[labels auxLabels],indsInTrial,trialTypes);
             end
             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
             if nargin>1 && ~isempty(filename)
