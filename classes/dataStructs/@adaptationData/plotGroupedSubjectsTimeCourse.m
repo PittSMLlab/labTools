@@ -1,4 +1,4 @@
-function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
+function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
             colorScheme
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
@@ -88,6 +88,19 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsT
                            end
                         end
                     end
+                    %Save all data plotted into struct
+                    if Ngroups==1
+                        allData{l}.early=earlyPoints;
+                        allData{l}.late=latePoints;
+                        allData{l}.veryEarly=veryEarlyPoints;
+                        allData{l}.subIDs=auxList{group};
+                    else
+                        allData{l}.group{group}.early=earlyPoints;
+                        allData{l}.group{group}.late=latePoints;
+                        allData{l}.group{group}.veryEarly=veryEarlyPoints;
+                        allData{l}.group{group}.subIDs=auxList{group};
+                    end
+                    allData{l}.parameterLabel=label{l};
                 end
                 xTickPos=N2+5+[0:nConds-1]*offset;
                 set(gca,'XTick',xTickPos,'XTickLabel',condList)

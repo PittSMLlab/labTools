@@ -1,4 +1,4 @@
-function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
             colorScheme
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
@@ -58,10 +58,10 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsB
                 end
             end
             nConds=length(conds);
+            allData={};
             for l=1:length(label)
                 axes(ah(l))
                 hold on
-                
                 for group=1:Ngroups
                     [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=adaptationData.getGroupedData(auxList{group},label(l),conds,removeBiasFlag,N2,N3,Ne);
                     veryEarlyPoints=squeeze(nanmean(veryEarlyPoints,2)); %Averaging over strides for each sub
@@ -112,6 +112,20 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsB
                         errorbar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
                     end
                     errorbar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                    
+                    %Save all data plotted into struct
+                    if Ngroups==1
+                        allData{l}.early=earlyPoints;
+                        allData{l}.late=latePoints;
+                        allData{l}.veryEarly=veryEarlyPoints;
+                        allData{l}.subIDs=auxList{group};
+                    else
+                        allData{l}.group{group}.early=earlyPoints;
+                        allData{l}.group{group}.late=latePoints;
+                        allData{l}.group{group}.veryEarly=veryEarlyPoints;
+                        allData{l}.group{group}.subIDs=auxList{group};
+                    end
+                    allData{l}.parameterLabel=label{l};
                 end
                 xTickPos=(1:3:3*nConds)+.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',condList)
@@ -121,6 +135,7 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsB
                     title([label{l}])
                 end
                 hold off
+                
             end
             linkaxes(ah,'x')
             axis tight
@@ -136,4 +151,4 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsB
                 end
                 legend(h,legStr)
             end
-        end
+end
