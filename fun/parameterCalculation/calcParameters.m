@@ -78,7 +78,7 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'spatialContribution',...   Relative position of ankle markers at ipsi-lateral HS (i.e. slow ankle at SHS minus fast ankle at FHS)
     'stepTimeContribution',...  Average belt speed times step time difference
     'velocityContribution',...  Average step time times belt speed difference
-    'netContribution',...       Sum of the previous three, should be equal to stepLengthAsym
+    'netContribution',...       Sum of the previous three
     'spatialContributionAlt',...   Same as before, divided by cadence, to get velocity units instead of length units
     'stepTimeContributionAlt',...  
     'velocityContributionAlt',...  
@@ -472,10 +472,10 @@ for step=1:Nstrides
             stepTimeContributionNorm(t)=stepTimeContributionAlt(t)/equivalentSpeed(t);
             velocityContributionNorm(t)=velocityContributionAlt(t)/equivalentSpeed(t);
             netContributionNorm(t)=netContributionAlt(t)/equivalentSpeed(t);
-            spatialContributionNorm2(t)=spatialContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
-            stepTimeContributionNorm2(t)=stepTimeContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
-            velocityContributionNorm2(t)=velocityContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
-            netContributionNorm2(t)=netContributionAlt(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            spatialContributionNorm2(t)=spatialContribution(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            stepTimeContributionNorm2(t)=stepTimeContribution(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            velocityContributionNorm2(t)=velocityContribution(t)/(stepLengthFast(t)+stepLengthSlow(t));
+            netContributionNorm2(t)=netContribution(t)/(stepLengthFast(t)+stepLengthSlow(t));
             
             
         end
