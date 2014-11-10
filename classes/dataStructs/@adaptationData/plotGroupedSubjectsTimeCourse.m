@@ -22,7 +22,6 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsT
             end
             Ngroups=length(auxList);
             
-            %UPDATE LEGEND IF THESE LINES ARE CHANGED
             if nargin<6 || isempty(earlyNumber)
                 N2=5; %early number of points
             else
@@ -60,58 +59,7 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsT
                 hold on
                 
                 for group=1:Ngroups
-                    earlyPoints=[];
-                    veryEarlyPoints=[];
-                    latePoints=[];
-                    for subject=1:length(auxList{group}) %Getting data for each subject in the list
-                        a=load(auxList{group}{subject});
-                        aux=fields(a);
-                        this=a.(aux{1});
-                        if nargin<3 || isempty(removeBiasFlag) || removeBiasFlag==1
-                            this=this.removeBias; %Default behaviour
-                        else
-                            %this=adaptData;
-                        end
-                        for i=1:nConds
-                            %First: find if there is a condition with a
-                            %similar name to the one given
-                            clear condName
-                            if iscell(conds{i})
-                                for j=1:length(conds{i})
-                                    condName{j}=lower(conds{i}{j});
-                                end
-                            else
-                                condName{1}=lower(conds{i}); %Lower case
-                            end
-                            allConds=lower(this.metaData.conditionName);
-                            condIdx=[];
-                            j=0;
-                            while isempty(condIdx) && j<length(condName)
-                                j=j+1;
-                                condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
-                            end
-                            aux=this.getParamInCond(label(l),condIdx);
-                            if ~isempty(condIdx) && ~isempty(aux)
-                                
-                                try %Try to get the first strides, if there are enough
-                                    earlyPoints(i,subject,:)=aux(1:N2);
-                                catch %In case there aren't enough strides, assign NaNs to all
-                                    earlyPoints(i,subject,:)=NaN;
-                                end
-                                
-                                %Last 20 steps, excepting the very last 5
-                                try                                    
-                                    latePoints(i,subject,:)=aux(end-N3-Ne+1:end-Ne);
-                                catch
-                                    latePoints(i,subject,:)=NaN;
-                                end
-                            else
-                                disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                                earlyPoints(i,subject,1:N2)=NaN;
-                                latePoints(i,subject,1:N3)=NaN;
-                            end
-                        end
-                    end
+                    [veryEarlyPoints,earlyPoints,latePoints]=adaptationData.getGroupedData(auxList{group},label(l),conds,removeBiasFlag,N2,N3,Ne);
                     %plot
                     offset=(N2+N3+15);
                     plot([1 offset*nConds],[0,0],'k--')
@@ -119,24 +67,24 @@ function [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsT
                         clear hLeg
                         %Early part
                         xCoord=(i-1)*offset + [1:N2];
-                        yCoord=squeeze(nanmean(earlyPoints(i,:,:),2));
-                        yStd=squeeze(nanstd(earlyPoints(i,:,:),[],2));
-                        hh=patch([xCoord,xCoord(end:-1:1)],[yCoord'-yStd',yCoord(end:-1:1)'+yStd(end:-1:1)'],[.6,.6,.6]);
+                        yCoord=nanmean(earlyPoints(i,:,:),3);
+                        yStd=nanstd(earlyPoints(i,:,:),[],3);
+                        hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],[.6,.6,.6]);
                         hLeg(1)=plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group});
                         if plotIndividualsFlag==1
-                           for j=1:size(earlyPoints,2)
-                               hLeg(j+1)=plot((i-1)*offset + [1:N2],squeeze(earlyPoints(i,j,:)),'Color',colorConds{j});
+                           for j=1:size(earlyPoints,3)
+                               hLeg(j+1)=plot((i-1)*offset + [1:N2],squeeze(earlyPoints(i,:,j)),'Color',colorConds{j});
                            end
                         end
                         %LAte part:
                         xCoord=(i-1)*offset + [offset-N3-4:offset-5];
-                        yCoord=squeeze(nanmean(latePoints(i,:,:),2));
-                        yStd=squeeze(nanstd(latePoints(i,:,:),[],2));
-                        hh=patch([xCoord,xCoord(end:-1:1)],[yCoord'-yStd',yCoord(end:-1:1)'+yStd(end:-1:1)'],[.6,.6,.6]);
+                        yCoord=nanmean(latePoints(i,:,:),3);
+                        yStd=nanstd(latePoints(i,:,:),[],3);
+                        hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],[.6,.6,.6]);
                         plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group})
                         if plotIndividualsFlag==1
-                           for j=1:size(earlyPoints,2)
-                               plot((i-1)*offset + [offset-N3-4:offset-5],squeeze(latePoints(i,j,:)),'Color',colorConds{j})
+                           for j=1:size(earlyPoints,3)
+                               plot((i-1)*offset + [offset-N3-4:offset-5],squeeze(latePoints(i,:,j)),'Color',colorConds{j})
                            end
                         end
                     end

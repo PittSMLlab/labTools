@@ -170,7 +170,7 @@ classdef adaptationData
                     maxM=max(movingDataPoints(:)+movingStds(:));
                     minM=min(movingDataPoints(:)-movingStds(:));
                 else
-                    plot(ah(l),dataPoints,'.','MarkerSize',15)
+                    hLeg=plot(ah(l),dataPoints,'.','MarkerSize',15);
                     maxM=max(dataPoints(:));
                     minM=min(dataPoints(:));
                 end
@@ -252,6 +252,82 @@ classdef adaptationData
                 end
             end
         end
+        
+        function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
+            earlyPoints=[];
+            veryEarlyPoints=[];
+            latePoints=[];
+            N1=3;
+            nConds=length(conds);
+            if nargin<5 || isempty(earlyNumber)
+                N2=5; %early number of points
+            else
+                N2=earlyNumber;
+            end
+            if nargin<6 || isempty(lateNumber)
+                N3=20; %late number of points
+            else
+                N3=lateNumber;
+            end
+            if nargin<7 || isempty(exemptLast)
+                Ne=5;
+            else
+                Ne=exemptLast;
+            end
+            if nargin<4 || isempty(removeBiasFlag) || removeBiasFlag==1
+                this=this.removeBias; %Default behaviour
+            else
+                %this=adaptData;
+            end
+
+            for i=1:nConds
+                %First: find if there is a condition with a
+                %similar name to the one given
+                clear condName
+                if iscell(conds{i})
+                    for j=1:length(conds{i})
+                        condName{j}=lower(conds{i}{j});
+                    end
+                else
+                    condName{1}=lower(conds{i}); %Lower case
+                end
+                allConds=lower(this.metaData.conditionName);
+                condIdx=[];
+                j=0;
+                while isempty(condIdx) && j<length(condName)
+                    j=j+1;
+                    condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
+                end
+                aux=this.getParamInCond(label,condIdx);
+                if ~isempty(condIdx) && ~isempty(aux)
+                    %First N1 points
+                    try %Try to get the first strides, if there are enough
+                        veryEarlyPoints(i,:)=aux(1:N1);
+                    catch %In case there aren't enough strides, assign NaNs to all
+                        veryEarlyPoints(i,:)=NaN;
+                    end
+                    
+                    %First N2 points
+                    try %Try to get the first strides, if there are enough
+                        earlyPoints(i,:)=aux(1:N2);
+                    catch %In case there aren't enough strides, assign NaNs to all
+                        earlyPoints(i,:)=NaN;
+                    end
+
+                    %Last N3 points, exempting very last Ne
+                    try                                    
+                        latePoints(i,:)=aux(end-N3-Ne+1:end-Ne);
+                    catch
+                        latePoints(i,:)=NaN;
+                    end
+                else
+                    disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
+                    veryEarlyPoints(i,1:N1)=NaN;
+                    earlyPoints(i,1:N2)=NaN;
+                    latePoints(i,1:N3)=NaN;
+                end
+            end
+        end
     end
     
     
@@ -261,8 +337,37 @@ classdef adaptationData
         
         [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) %Will deprecate, use plotGroupedSubjectsBars instead.
         
-        [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
+        [figHandle,veryEarlyPoints,earlyPoints,latePoints]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
 
+        function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
+            earlyPoints=[];
+            veryEarlyPoints=[];
+            latePoints=[];
+            for subject=1:length(adaptDataList) %Getting data for each subject in the list
+                a=load(adaptDataList{subject});
+                aux=fields(a);
+                this=a.(aux{1});
+                [veryEarlyPoints(:,:,subject),earlyPoints(:,:,subject),latePoints(:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
+            end
+            %Compute some stats
+            aux1=squeeze(nanmean(earlyPoints,2));
+            aux2=squeeze(nanmean(latePoints,2));
+            for i=1:size(aux1,1) %For all conditions requested
+                for j=1:size(aux1,1)
+                    if i~=j
+                        [~,pEarly(i,j)] =ttest(aux1(i,:),aux1(j,:)); %Testing early points across all conds
+                        [~,pLate(i,j)] =ttest(aux2(i,:),aux2(j,:)); %Testing late points across all conds
+                    else
+                        pEarly(i,j)=NaN;
+                        pLate(i,j)=NaN;
+                    end
+                end
+                [~,pChange(i)]=ttest(aux1(i,:),aux2(i,:)); %Testing changes within each condition
+                if i>1
+                    [~,pSwitch(i-1)]=ttest(aux2(i-1,:),aux1(i,:)); %Testing changes from end of one condition to start of the next
+                end
+            end
+        end
         
         %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
