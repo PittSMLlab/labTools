@@ -1,12 +1,14 @@
-function newThis=removeBiasV2(this,conditions)
+function [newThis,baseValues,typeList]=removeBiasV2(this,conditions)
 % removeBias('condition') or removeBias({'Condition1','Condition2',...})
 % removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
 % from each trial that is the same type as the condition entered. If no
 % condition is specified, then the condition name that contains both the
 % type string and the string 'base' is used as the baseline condition.
-%TO DO: see what happends when 2+ conditions of the same type are entered
+%TO DO: see what happens when 2+ conditions of the same type are entered
+%TO DO: see what happens when 0 conditions are given for a certain type
 
-if nargin>1
+conds=this.metaData.conditionName;
+if nargin>1 %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
     %convert input to standardized format
     if isa(conditions,'char')
         conditions={conditions};
@@ -18,10 +20,10 @@ if nargin>1
 end
 
 trialsInCond=this.metaData.trialsInCondition;
-conds=this.metaData.conditionName;
 trialTypes=this.data.trialTypes;
 types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
 labels=this.data.labels;
+baseValues=NaN(length(types),1);
 
 for itype=1:length(types)
     allTrials=[];
@@ -47,14 +49,15 @@ for itype=1:length(types)
             end
         end
     end
-    %Remove baseline tendencies from all itype trials    
+    %Remove baseline tendencies from all itype trials   
     if ~isempty(baseTrials)
         if strcmpi(types{itype},'OG')
             newData=removeOGbias(this,allTrials,baseTrials);
+            baseValues(itype)=NaN; %Need to replace this with the value actually extracted from OG trials
         else
 %             base=nanmedian(this.getParamInTrial(labels,baseTrials));
             aux=(this.getParamInTrial(labels,baseTrials));
-            %Last 40 strides, excepting the very last 5 and first 10
+            %Last (upto) 40 strides, excepting the very last 5 and first 10
             if size(aux,1)>50
                 N=40;
                 base=nanmean(aux(end-N+1:end-5,:));
@@ -63,6 +66,7 @@ for itype=1:length(types)
             end
             [data, inds]=this.getParamInTrial(labels,allTrials);
             newData(inds,:)=data-repmat(base,length(inds),1);
+            baseValues(itype)=base;
         end
     else
         warning(['No ' types{itype} ' baseline trials detected. Bias not removed from ' types{itype} ' trials.'])
@@ -73,4 +77,6 @@ end
 
 newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
 newThis=adaptationData(this.metaData,this.subData,newParamData);
+typeList=types;
+
 end

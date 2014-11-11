@@ -236,7 +236,7 @@ for step=1:Nstrides
         stanceTimeFast(t)=timeFTO2-timeFHS;
         %double support times
         doubleSupportSlow(t)=timeSTO-timeFHS;
-        doubleSupportFast(t)=timeFTO-timeSHS;
+        doubleSupportFast(t)=timeFTO2-timeSHS2; %PAblo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.
         %step times (time between heel strikes)
         stepTimeSlow(t)=timeSHS2-timeFHS;
         stepTimeFast(t)=timeFHS-timeSHS;

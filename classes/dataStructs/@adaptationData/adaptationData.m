@@ -38,7 +38,8 @@ classdef adaptationData
             end
         end
         
-        function newThis=removeBias(this,conditions)
+        %Modifier
+        function [newThis,baseValues,typeList]=removeBias(this,conditions)
             % removeBias('condition') or removeBias({'Condition1','Condition2',...}) 
             % removes the median value of every parameter from each trial of the
             % same type as the condition entered. If no condition is
@@ -47,9 +48,9 @@ classdef adaptationData
             % condition.
             
             if nargin>1
-                newThis=removeBiasV2(this,conditions);
+                [newThis,baseValues,typeList]=removeBiasV2(this,conditions);
             else
-                newThis=removeBiasV2(this);
+                [newThis,baseValues,typeList]=removeBiasV2(this);
             end            
         end
         
@@ -327,6 +328,11 @@ classdef adaptationData
                     latePoints(i,1:N3)=NaN;
                 end
             end
+        end
+        
+        function [baseValues,baseTypes]=getBias(this,conditions)
+            baseValues=[];
+            baseTypes=[];
         end
     end
     
