@@ -29,7 +29,7 @@ HipVel = diff(avghip);
 HipVel(abs(HipVel)>50) = 0;
 
 %Use hip velocity to determine when subject is walking
-midHipVel = median(abs(HipVel));
+midHipVel = nanmedian(abs(HipVel));
 walking = abs(HipVel)>0.5*midHipVel;
 % Eliminate walking or turn around phases shorter than 0.5 seconds
 [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.5);
