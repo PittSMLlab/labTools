@@ -84,16 +84,19 @@ for t=cell2mat(info.trialnums)
         
         %Align signals:
         refSync=analogs.Pin_3;
-        refAux=idealHPF([refSync;refSync(end:-1:1)],.01);
+        refAux=medfilt1(refSync,20);
+        refAux=medfilt1(diff(refAux),10);
         allData=[auxData,auxData2];
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=allData(:,syncIdx);
         N=size(sync,1);
-        aux1=idealHPF([sync(:,1);sync(end:-1:1,1)],.01);
-        aux2=idealHPF([sync(:,2);sync(end:-1:1,2)],.01);
-        [alignedSignal,timeScaleFactor,lagInSamples,gain] = matchSignals(aux1(1:N),aux2(1:N));
+        aux1=medfilt1(sync(:,1),20);
+        aux2=medfilt1(sync(:,2),20);
+        aux1=medfilt1(diff(aux1),10);
+        aux2=medfilt1(diff(aux2),10);
+        [alignedSignal,timeScaleFactor,lagInSamples,gain] = matchSignals(aux1,aux2);
         newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
-        [~,timeScaleFactorA,lagInSamplesA,gainA] = matchSignals(refSync,sync(:,1));
+        [~,timeScaleFactorA,lagInSamplesA,gainA] = matchSignals(refAux,aux1);
         newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
         newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
         

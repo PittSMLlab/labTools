@@ -127,105 +127,7 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
         
-        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
-            
-            if isa(label,'char')
-                label={label};
-            end
-            
-            [ah,figHandle]=optimizedSubPlot(length(label),4,1); %this changes default color order of axes
-            
-            conds=find(~cellfun(@isempty,this.metaData.conditionName));
-            nConds=length(conds);
-            nPoints=size(this.data.Data,1);
-            for l=1:length(label)
-                dataPoints=NaN(nPoints,nConds);
-                trialBreaks=[];
-                for i=1:nConds
-                    trials=this.metaData.trialsInCondition{conds(i)};
-                    if ~isempty(trials)
-                        for t=trials
-                            inds=this.data.indsInTrial{t};
-                            dataPoints(inds,i)=this.getParamInTrial(label(l),t);
-                            if ~isempty(inds)
-                                trialBreaks(end+1)=inds(end);
-                            end
-                        end
-                    end
-                end
-                if nargin>2 && ~isempty(runningBinSize)
-                    movingDataPoints=medfilt1(dataPoints,runningBinSize,[],1);
-                    movingStds=sqrt(conv2(dataPoints.^2,ones(runningBinSize,1)/runningBinSize,'same')-conv2(dataPoints,ones(runningBinSize,1)/runningBinSize,'same').^2);
-                    axes(ah(l))
-                    hLeg=plot(ah(l),movingDataPoints,'.','MarkerSize',15);
-                    for i=1:nConds
-                        aux1=movingDataPoints(:,i);
-                        aux2=movingStds(:,i);
-                        xCoord=[1:length(aux1),length(aux1):-1:1];
-                        yCoord=[aux1'-aux2',aux1(end:-1:1,:)'+aux2(end:-1:1,:)'];
-                        xCoord=xCoord(~isnan(yCoord));
-                        yCoord=yCoord(~isnan(yCoord));
-                        hh=patch(repmat(xCoord',1,size(aux1,2)),yCoord',[.7,.7,.7]);
-                        uistack(hh,'bottom')
-                    end
-                    maxM=max(movingDataPoints(:)+movingStds(:));
-                    minM=min(movingDataPoints(:)-movingStds(:));
-                else
-                    hLeg=plot(ah(l),dataPoints,'.','MarkerSize',15);
-                    maxM=max(dataPoints(:));
-                    minM=min(dataPoints(:));
-                end
-                if nargin>3 && trialMarkerFlag==1 %Color background with trial info
-                    last=1;
-                    colorNow=[0,0,0];
-                    for i=1:length(trialBreaks)
-                        colorNow=1-colorNow;
-                        hh=patch([last trialBreaks(i) trialBreaks(i) last],[minM*[1,1] , maxM*[1,1]],1-.05*colorNow,'EdgeColor','None');
-                        uistack(hh,'bottom')
-                        last=trialBreaks(i);
-                    end
-                end
-                title(ah(l),[label{l},' (',this.subData.ID ')'])
-                axis tight
-            end
-            condDes = this.metaData.conditionName;
-            legend(hLeg,condDes(conds)); %this is for the case when a condition number was skipped
-            linkaxes(ah,'x')
-            %axis tight
-        end
-        
-        function figHandle=plotParamTrialTimeCourse(this,label)
-            warning('adaptationData.plotParamTrialTimeCourse has been deprecated. Try instead to use plotParamTimeCourse with the trialMarkerFlag set (=1)')
-%             [ah,figHandle]=optimizedSubPlot(length(label),4,1);            
-%             
-%             nTrials=length(cell2mat(this.metaData.trialsInCondition));
-%             trials=find(~cellfun(@isempty,this.data.trialTypes));
-%             nPoints=size(this.data.Data,1);
-%             
-%             for l=1:length(label)
-%                 dataPoints=NaN(nPoints,nTrials);
-%                 for i=1:nTrials
-%                     inds=this.data.indsInTrial{trials(i)};
-%                     dataPoints(inds,i)=this.getParamInTrial(label(l),trials(i));
-%                 end
-%                 plot(ah(l),dataPoints,'.','MarkerSize',15)
-%                 title(ah(l),[label{l},' (',this.subData.ID ')'])
-%             end
-%             
-%             trialNums = cell2mat(this.metaData.trialsInCondition);
-%             legendEntry={};
-%             for i=1:length(trialNums)
-%                 legendEntry{end+1}=num2str(trialNums(i));
-%             end
-%             legend(legendEntry);
-%             linkaxes(ah,'x')
-%             axis tight
-        end
-        
-        function figHandle=plotParamByConditions(this,label)
-            warning('adaptationData.plotParamByConditions will be deprecated. Use plotParamBarsByConditions instead.')
-            figHandle=plotParamBarsByConditions(this,label);
-        end
+
         
         function [boolFlag,labelIdx]=isaCondition(this,cond)
             if isa(cond,'char')
@@ -333,6 +235,204 @@ classdef adaptationData
         function [baseValues,baseTypes]=getBias(this,conditions)
             baseValues=[];
             baseTypes=[];
+        end
+        
+        function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
+            %Looks for condition names that are similar to the ones given
+            %in conditionNames and returns the corresponding condition idx
+            %ConditionNames should be a cell array containing a string or another cell array of strings in each of its cells. E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            
+            nConds=length(conditionNames); 
+            conds=conditionNames;
+            conditionIdxs=NaN(nConds,1);
+            for i=1:nConds
+                %First: find if there is a condition with a
+                %similar name to the one given
+                clear condName
+                if iscell(conds{i})
+                    for j=1:length(conds{i})
+                        condName{j}=lower(conds{i}{j});
+                    end
+                else
+                    condName{1}=lower(conds{i}); %Lower case
+                end
+                allConds=lower(this.metaData.conditionName);
+                condIdx=[];
+                j=0;
+                while isempty(condIdx) && j<length(condName)
+                    j=j+1;
+                    condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
+                end
+                if ~isempty(condIdx)
+                    conditionIdxs(i)=condIdx;
+                end
+            end
+        end
+        
+        %Display functions:
+        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
+            
+            if isa(label,'char')
+                label={label};
+            end
+            
+            [ah,figHandle]=optimizedSubPlot(length(label),4,1); %this changes default color order of axes
+            
+            conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            nConds=length(conds);
+            nPoints=size(this.data.Data,1);
+            for l=1:length(label)
+                dataPoints=NaN(nPoints,nConds);
+                trialBreaks=[];
+                for i=1:nConds
+                    trials=this.metaData.trialsInCondition{conds(i)};
+                    if ~isempty(trials)
+                        for t=trials
+                            inds=this.data.indsInTrial{t};
+                            dataPoints(inds,i)=this.getParamInTrial(label(l),t);
+                            if ~isempty(inds)
+                                trialBreaks(end+1)=inds(end);
+                            end
+                        end
+                    end
+                end
+                if nargin>2 && ~isempty(runningBinSize)
+                    movingDataPoints=medfilt1(dataPoints,runningBinSize,[],1);
+                    movingStds=sqrt(conv2(dataPoints.^2,ones(runningBinSize,1)/runningBinSize,'same')-conv2(dataPoints,ones(runningBinSize,1)/runningBinSize,'same').^2);
+                    axes(ah(l))
+                    hLeg=plot(ah(l),movingDataPoints,'.','MarkerSize',15);
+                    for i=1:nConds
+                        aux1=movingDataPoints(:,i);
+                        aux2=movingStds(:,i);
+                        xCoord=[1:length(aux1),length(aux1):-1:1];
+                        yCoord=[aux1'-aux2',aux1(end:-1:1,:)'+aux2(end:-1:1,:)'];
+                        xCoord=xCoord(~isnan(yCoord));
+                        yCoord=yCoord(~isnan(yCoord));
+                        hh=patch(repmat(xCoord',1,size(aux1,2)),yCoord',[.7,.7,.7]);
+                        uistack(hh,'bottom')
+                    end
+                    maxM=max(movingDataPoints(:)+movingStds(:));
+                    minM=min(movingDataPoints(:)-movingStds(:));
+                else
+                    hLeg=plot(ah(l),dataPoints,'.','MarkerSize',15);
+                    maxM=max(dataPoints(:));
+                    minM=min(dataPoints(:));
+                end
+                if nargin>3 && trialMarkerFlag==1 %Color background with trial info
+                    last=1;
+                    colorNow=[0,0,0];
+                    for i=1:length(trialBreaks)
+                        colorNow=1-colorNow;
+                        hh=patch([last trialBreaks(i) trialBreaks(i) last],[minM*[1,1] , maxM*[1,1]],1-.05*colorNow,'EdgeColor','None');
+                        uistack(hh,'bottom')
+                        last=trialBreaks(i);
+                    end
+                end
+                title(ah(l),[label{l},' (',this.subData.ID ')'])
+                axis tight
+            end
+            condDes = this.metaData.conditionName;
+            legend(hLeg,condDes(conds)); %this is for the case when a condition number was skipped
+            linkaxes(ah,'x')
+            %axis tight
+        end
+        
+        function figHandle=plotParamTrialTimeCourse(this,label)
+            warning('adaptationData.plotParamTrialTimeCourse has been deprecated. Try instead to use plotParamTimeCourse with the trialMarkerFlag set (=1)')
+%             [ah,figHandle]=optimizedSubPlot(length(label),4,1);            
+%             
+%             nTrials=length(cell2mat(this.metaData.trialsInCondition));
+%             trials=find(~cellfun(@isempty,this.data.trialTypes));
+%             nPoints=size(this.data.Data,1);
+%             
+%             for l=1:length(label)
+%                 dataPoints=NaN(nPoints,nTrials);
+%                 for i=1:nTrials
+%                     inds=this.data.indsInTrial{trials(i)};
+%                     dataPoints(inds,i)=this.getParamInTrial(label(l),trials(i));
+%                 end
+%                 plot(ah(l),dataPoints,'.','MarkerSize',15)
+%                 title(ah(l),[label{l},' (',this.subData.ID ')'])
+%             end
+%             
+%             trialNums = cell2mat(this.metaData.trialsInCondition);
+%             legendEntry={};
+%             for i=1:length(trialNums)
+%                 legendEntry{end+1}=num2str(trialNums(i));
+%             end
+%             legend(legendEntry);
+%             linkaxes(ah,'x')
+%             axis tight
+        end
+        
+        function figHandle=plotParamByConditions(this,label)
+            warning('adaptationData.plotParamByConditions will be deprecated. Use plotParamBarsByConditions instead.')
+            figHandle=plotParamBarsByConditions(this,label);
+        end
+        
+        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize)
+           %Plots up to 3 parameters as coordinates in a single cartesian axes system
+           markerList={'x','o','.','+','*','s','v','^','d'};
+           colorScheme
+           if nargin<4 || isempty(figHandle)
+              figHandle=figure; 
+           else
+               figure(figHandle)
+           end
+           if nargin<5 || isempty(marker)
+               marker=markerList{randi(length(markerList),1)};
+           end
+           if nargin<3 || isempty(conditionIdxs)
+               conditionIdxs=1:length(this.metaData.conditionName);
+           end
+           aux=cell2mat(colorConds');
+           set(gca,'ColorOrder',aux(1:length(conditionIdxs),:));
+           hold on
+           if length(labels)>3
+               error('adaptationData:scatterPlo','Cannot plot more than 3 parameters at a time')
+           end
+           if length(labels)==3
+               last=[];
+               for c=1:length(conditionIdxs)
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+                    if nargin>5 && ~isempty(binSize)
+                        data2=conv2(data,ones(binSize,1)/binSize);
+                        data=data2(1:binSize:end,:);
+                    end
+                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1);%,'Color',aux(mod(conditionIdxs(c),size(aux,1))+1,:))
+                    if ~isempty(last)
+                        %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],[last(3) median(data(:,3))],'k','LineWidth',2);
+                        uistack(h,'top')
+                        plot([median(data(:,1))],[median(data(:,2))],[median(data(:,3))],'ko','MarkerFaceColor','k')
+                    end
+                    last=median(data,1);
+               end
+              xlabel(labels{1})
+              ylabel(labels{2})
+              zlabel(labels{3})
+           elseif length(labels)==2
+               last=[];
+               for c=1:length(conditionIdxs)
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+                    if nargin>5 && ~isempty(binSize)
+                        data2=conv2(data,ones(binSize,1)/binSize);
+                        data=data2(1:binSize:end,:);
+                    end
+                    hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1);%,'Color',aux(mod(conditionIdxs(c),size(aux,1))+1,:))
+                    if ~isempty(last)
+                        %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],'k','LineWidth',2);
+                        uistack(h,'top')
+                        plot([median(data(:,1))],[median(data(:,2))],'ko','MarkerFaceColor','k')
+                    end
+                    last=median(data,1);
+               end
+               xlabel(labels{1})
+              ylabel(labels{2})
+           end
+           legend(hh,this.metaData.conditionName{conditionIdxs})
+           hold off     
         end
     end
     
@@ -604,6 +704,28 @@ classdef adaptationData
             legend([Li{:}],[legendStr{:}])
         end
         
+        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize)
+            figHandle=figure;
+            markerList={'x','o','.','+','*','s','v','^','d'};
+            if nargin<3 || isempty(conditionIdxs)
+                conditionIdxs=[];
+            end
+            if nargin<4 || isempty(binSize)
+                binSize=[];
+            end
+            for i=1:length(adaptDataList)
+                a=load(adaptDataList{i});
+                fieldList=fields(a);
+                this=a.(fieldList{1});
+                if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different
+                    conditionIdxs1=getConditionIdxsFromName(this,conditionIdxs);
+                else
+                    conditionIdxs1=conditionIdxs;
+                end
+                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize);
+            end
+            
+        end
     end %static methods
     
 end
