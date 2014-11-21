@@ -67,13 +67,7 @@ rawExpData=experimentData(expMD,subData,rawTrialData);
 save([info.save_folder '/' info.ID 'RAW.mat'],'rawExpData','-v7.3')
 
 %% Process data
-data={};
-for trial=cell2mat(info.trialnums)
-    trialData=rawTrialData{trial};
-    data{trial}=trialData.process;    
-end
-%% Save data
-expData=experimentData(expMD,subData,data);
+expData=rawExpData.process;
 
-
+%Save processed
 save([info.save_folder '/' info.ID '.mat'],'expData','-v7.3')
