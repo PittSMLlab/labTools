@@ -103,14 +103,32 @@ for t=cell2mat(info.trialnums)
         %Only keeping matrices of same size to one another:
         [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
         allData=[auxData,auxData2];
-        
-        %Plot to see if alignment worked:
         refSync=idealHPF(analogs.Pin_3,0);
         [allData,refSync]=truncateToSameLength(allData,refSync);
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=idealHPF(allData(:,syncIdx),0);
         gain1=refSync'/sync(:,1)';
         gain2=refSync'/sync(:,2)';
+        
+        %Analytic measure of alignment problems
+        E1=sum((refSync-sync(:,1)*gain1).^2)/sum(refSync.^2);
+        E2=sum((refSync-sync(:,1)*gain2).^2)/sum(refSync.^2);
+        if E1>.03 || E2>.03 %Signal difference has at least 3% of original signal energy
+            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '. Using signals in an unsynchronized way.'])
+            newRelData= relData;
+            newRelData2= relData2;
+            [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+            allData=[auxData,auxData2];
+            [allData,refSync]=truncateToSameLength(allData,refSync);
+            syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
+            sync=idealHPF(allData(:,syncIdx),0);
+            gain1=refSync'/sync(:,1)';
+            gain2=refSync'/sync(:,2)';
+            lagInSamplesA=0;
+            lagInSamples=0;
+        end
+        
+        %Plot to CONFIRM VISUALLY if alignment worked:
         h=figure;
         hold on
         title(['Trial ' num2str(t) ' Synchronization'])
@@ -122,12 +140,7 @@ for t=cell2mat(info.trialnums)
         saveFig(h,'./',['Trial ' num2str(t) ' Synchronization'])
 %         uiwait(h)
         
-        %Analytic measure of alignment problems
-        E1=sum((refSync-sync(:,1)*gain1).^2)/sum(refSync.^2);
-        E2=sum((refSync-sync(:,1)*gain2).^2)/sum(refSync.^2);
-        if E1>.03 || E2>.03 %Signal difference has at least 3% of original signal energy
-            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t)])
-        end
+
         
         %Sorting muscles so that they are always stored in the same order
         orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
