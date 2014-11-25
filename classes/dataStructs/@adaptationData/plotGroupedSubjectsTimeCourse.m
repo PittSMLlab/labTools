@@ -73,7 +73,7 @@ function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,r
                         hLeg(1)=plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group});
                         if plotIndividualsFlag==1
                            for j=1:size(earlyPoints,3)
-                               hLeg(j+1)=plot((i-1)*offset + [1:N2],squeeze(earlyPoints(i,:,j)),'Color',colorConds{j});
+                               hLeg(j+1)=plot((i-1)*offset + [1:N2],squeeze(earlyPoints(i,:,j)),'Color',colorConds{mod(j,length(colorConds))+1});
                            end
                         end
                         %LAte part:
@@ -84,7 +84,7 @@ function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,r
                         plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group})
                         if plotIndividualsFlag==1
                            for j=1:size(earlyPoints,3)
-                               plot((i-1)*offset + [offset-N3-4:offset-5],squeeze(latePoints(i,:,j)),'Color',colorConds{j})
+                               plot((i-1)*offset + [offset-N3-4:offset-5],squeeze(latePoints(i,:,j)),'Color',colorConds{mod(j,length(colorConds))+1})
                            end
                         end
                     end

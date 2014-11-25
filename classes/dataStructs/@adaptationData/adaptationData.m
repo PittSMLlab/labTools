@@ -370,7 +370,7 @@ classdef adaptationData
             figHandle=plotParamBarsByConditions(this,label);
         end
         
-        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize)
+        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor)
            %Plots up to 3 parameters as coordinates in a single cartesian axes system
            markerList={'x','o','.','+','*','s','v','^','d'};
            colorScheme
@@ -378,6 +378,9 @@ classdef adaptationData
               figHandle=figure; 
            else
                figure(figHandle)
+           end
+           if nargin<7 || isempty(trajectoryColor)
+               trajectoryColor=[0,0,0]; %Black
            end
            if nargin<5 || isempty(marker)
                marker=markerList{randi(length(markerList),1)};
@@ -399,12 +402,12 @@ classdef adaptationData
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
                     end
-                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1);%,'Color',aux(mod(conditionIdxs(c),size(aux,1))+1,:))
+                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],[last(3) median(data(:,3))],'k','LineWidth',2);
+                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],[last(3) median(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot([median(data(:,1))],[median(data(:,2))],[median(data(:,3))],'ko','MarkerFaceColor','k')
+                        plot([median(data(:,1))],[median(data(:,2))],[median(data(:,3))],'o','MarkerFaceColor',trajectoryColor,'Color',trajectoryColor)
                     end
                     last=median(data,1);
                end
@@ -419,12 +422,13 @@ classdef adaptationData
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
                     end
-                    hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1);%,'Color',aux(mod(conditionIdxs(c),size(aux,1))+1,:))
+                    cc=aux(mod(c,size(aux,1))+1,:);
+                    hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],'k','LineWidth',2);
+                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot([median(data(:,1))],[median(data(:,2))],'ko','MarkerFaceColor','k')
+                        plot([median(data(:,1))],[median(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',trajectoryColor)
                     end
                     last=median(data,1);
                end
@@ -714,6 +718,8 @@ classdef adaptationData
                 binSize=[];
             end
             for i=1:length(adaptDataList)
+                r=(i-1)/(length(adaptDataList)-1);
+                trajColor=[1,0,0] + r*[0,0,1];
                 a=load(adaptDataList{i});
                 fieldList=fields(a);
                 this=a.(fieldList{1});
@@ -722,7 +728,7 @@ classdef adaptationData
                 else
                     conditionIdxs1=conditionIdxs;
                 end
-                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize);
+                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor);
             end
             
         end
