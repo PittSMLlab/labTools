@@ -164,7 +164,7 @@ for t=cell2mat(info.trialnums)
         if any(aux==0)
             warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
         end
-        allData(allData==0)=NaN; %Eliminating samples that are exactly 0: this are unavailable samples
+        allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/analogsInfo.frequency,EMGList(orderedIndexes)); %Throw away the synch signal
         
         %AccData (from 2 files too!)

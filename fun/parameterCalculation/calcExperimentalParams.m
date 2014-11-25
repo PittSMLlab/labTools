@@ -23,7 +23,8 @@ paramlabels = {'COPrangeS',... %Range of COP movement along step direction durin
 'cSym',... %cF-cS, center of oscillation difference
 'phiSym',... %phiF-phiS, relative heel-strike timing
 'ASym',...  %Amplitude difference
-'uS','yS','yS_hat','eS','foreaftRatioS','uSprev','ySprev','yS_hatprev','eSprev','nS','utS','ytS','ytS_hat','etS','utSprev','ytSprev','ytS_hatprev','etSprev','ntS'}; %Gelsy's params
+'uS','yS','yS_hat','eS','foreaftRatioS','nS','utS','ytS','ytS_hat','etS','ntS',...
+'uF','yF','yF_hat','eF','foreaftRatioF','nF','utF','ytF','ytF_hat','etF','ntF'}; %Gelsy's params
 
 
 %'stepTimeContribution2',...
@@ -81,7 +82,7 @@ for step=1:Nstrides
         
         [rF(t),rS(t),cF(t),cS(t),TF(t),TS(t),phiF(t),phiS(t),AF(t),AS(t),rSym(t),cSym(t),phiSym(t),ASym(t)] = computePablosParameters(in.markerData.split(timeSHS,timeFTO2),s,f,timeSHS,timeSTO,timeFHS,timeFTO,timeSHS2,timeFTO2);
         if ~isempty(timeFTO2) && ~isempty(timeFHS2) && ~isempty(timeSTO2) && ~isempty(timeSHS2)
-            [uS(t),yS(t),yS_hat(t),eS(t),foreaftRatioS(t),utS(t),ytS(t),ytS_hat(t),etS(t)] = computeGelsysParameters(in.markerData,s,f,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2);
+            [uS(t),yS(t),foreaftRatioS(t),utS(t),ytS(t),ytS_hat(t),uF(t),yF(t),foreaftRatioF(t),utF(t),ytF(t),ytF_hat(t)] = computeGelsysParameters(in.markerData,s,f,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2);
         end 
             %Contributions
 %           % Compute spatial contribution (1D)
@@ -112,7 +113,8 @@ for step=1:Nstrides
     end
 end
 %Compute correlations for Gelsy's params:
-[uSprev,ySprev,yS_hatprev,eSprev,nS,utSprev,ytSprev,ytS_hatprev,etSprev,ntS] = computeGelsysParameterCorrelations(uS,yS,yS_hat,eS,utS,ytS,ytS_hat,etS);
+[yS_hat,eS,nS,ytS_hat,etS,ntS] = computeGelsysParameterCorrelations(uS,yS,utS,ytS,ytS_hat);
+[yF_hat,eF,nF,ytF_hat,etF,ntF] = computeGelsysParameterCorrelations(uF,yF,utF,ytF,ytF_hat);
 
 %% Save all the params in the data matrix & generate labTimeSeries
 for i=1:length(paramlabels)
