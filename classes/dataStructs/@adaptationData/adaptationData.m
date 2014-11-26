@@ -719,7 +719,7 @@ classdef adaptationData
             end
             for i=1:length(adaptDataList)
                 r=(i-1)/(length(adaptDataList)-1);
-                trajColor=[1,0,0] + r*[0,0,1];
+                trajColor=[1,0,0] + r*[-1,0,1];
                 a=load(adaptDataList{i});
                 fieldList=fields(a);
                 this=a.(fieldList{1});
