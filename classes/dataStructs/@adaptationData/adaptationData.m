@@ -256,7 +256,9 @@ classdef adaptationData
                 else
                     condName{1}=lower(conds{i}); %Lower case
                 end
-                allConds=lower(this.metaData.conditionName);
+                aux=this.metaData.conditionName;
+                aux(cellfun(@isempty,aux))='';
+                allConds=lower(aux);
                 condIdx=[];
                 j=0;
                 while isempty(condIdx) && j<length(condName)
@@ -708,8 +710,13 @@ classdef adaptationData
             legend([Li{:}],[legendStr{:}])
         end
         
-        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize)
-            figHandle=figure;
+        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors)
+            if nargin<5 || isempty(figHandle)
+                figHandle=figure;
+            else
+                figure(figHandle);
+                hold on
+            end
             markerList={'x','o','.','+','*','s','v','^','d'};
             if nargin<3 || isempty(conditionIdxs)
                 conditionIdxs=[];
@@ -719,7 +726,16 @@ classdef adaptationData
             end
             for i=1:length(adaptDataList)
                 r=(i-1)/(length(adaptDataList)-1);
-                trajColor=[1,0,0] + r*[-1,0,1];
+                if nargin<6 || isempty(trajColors)
+                    trajColor=[1,0,0] + r*[-1,0,1];
+                elseif iscell(trajColors)
+                    trajColor=trajColors{i};
+                elseif size(trajColors,2)==3
+                    trajColor=trajColors(mod(i,size(trajColors,1))+1,:);
+                else
+                    warning('Could not interpret trajecColors input')
+                    trajColor='k';
+                end
                 a=load(adaptDataList{i});
                 fieldList=fields(a);
                 this=a.(fieldList{1});

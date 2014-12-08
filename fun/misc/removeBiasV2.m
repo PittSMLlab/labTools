@@ -23,7 +23,7 @@ trialsInCond=this.metaData.trialsInCondition;
 trialTypes=this.data.trialTypes;
 types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
 labels=this.data.labels;
-baseValues=NaN(length(types),1);
+baseValues=NaN(length(types),length(labels));
 
 for itype=1:length(types)
     allTrials=[];
@@ -53,7 +53,7 @@ for itype=1:length(types)
     if ~isempty(baseTrials)
         if strcmpi(types{itype},'OG')
             newData=removeOGbias(this,allTrials,baseTrials);
-            baseValues(itype)=NaN; %Need to replace this with the value actually extracted from OG trials
+            baseValues(itype,:)=NaN; %Need to replace this with the value actually extracted from OG trials
         else
 %             base=nanmedian(this.getParamInTrial(labels,baseTrials));
             aux=(this.getParamInTrial(labels,baseTrials));
@@ -61,12 +61,15 @@ for itype=1:length(types)
             if size(aux,1)>50
                 N=40;
                 base=nanmean(aux(end-N+1:end-5,:));
+                %base=nanmean(base);
             else
                 base=nanmean(aux(10:end,:));
+               % base=nanmean(base);
+               
             end
             [data, inds]=this.getParamInTrial(labels,allTrials);
             newData(inds,:)=data-repmat(base,length(inds),1);
-            baseValues(itype)=base;
+            baseValues(itype,:)=base;
         end
     else
         warning(['No ' types{itype} ' baseline trials detected. Bias not removed from ' types{itype} ' trials.'])
