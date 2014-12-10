@@ -108,7 +108,7 @@ classdef experimentData
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
-                    procData{trial}=this.data{trial}.process;
+                    procData{trial}=this.data{trial}.process(this.subData);
                 else
                    procData{trial}=[];
                 end

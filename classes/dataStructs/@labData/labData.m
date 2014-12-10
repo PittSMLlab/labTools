@@ -154,7 +154,7 @@ classdef labData
         
         
         % Process data method
-        function processedData=process(this)
+        function processedData=process(this,subData)
             trialData=this;
             % 1) Extract amplitude from emg data if present
             procEMGData = processEMG(trialData);
@@ -183,7 +183,7 @@ classdef labData
               
             %7) Calculate adaptation parameters - to be
             % recalculated later!!
-            processedData.adaptParams=calcParameters(processedData);
+            processedData.adaptParams=calcParameters(processedData,subData);
         end
         
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)

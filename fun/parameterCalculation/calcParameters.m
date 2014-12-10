@@ -1,4 +1,5 @@
-function out = calcParameters(in)
+function out = calcParameters(trialData,subData)
+in=trialData;
 %in must be an object of the class processedlabData
 %
 %To add a new parameter, it must be added to the paramLabels cell and the
