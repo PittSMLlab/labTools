@@ -6,6 +6,9 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             if nargin<9 || isempty(legendNames) || length(legendNames)<length(adaptDataList)
                 legendNames=adaptDataList;
             end
+            if ~plotIndividualsFlag
+                legendNames={};
+            end
             
             %First: see if adaptDataList is a single subject (char), a cell
             %array of subject names (one group of subjects), or a cell array of cell arrays of
@@ -77,7 +80,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                     h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
                     %plot individual data points
                     if plotIndividualsFlag==1
-                        set(gca,'ColorOrder',cell2mat(colorConds(1:size(veryEarlyPoints,2))'));
+                        set(gca,'ColorOrder',cell2mat(colorConds(1:min([size(veryEarlyPoints,2),length(colorConds)]))'));
                         if Ngroups==1 && isempty(significanceThreshold) %Only plotting individual subject performance if there is only one group, or flag is set
                             plot((1:3:3*nConds)-.25+(group-1)/Ngroups,veryEarlyPoints,'o','LineWidth',2)
                             plot((1:3:3*nConds)+.25+(group-1)/Ngroups,earlyPoints,'o','LineWidth',2)
@@ -106,12 +109,12 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                         
                     %plot error bars (using standard error)
                     if Ngroups==1 && isempty(significanceThreshold) %Only plotting first 3 strides AND first 5 strides if there is only one group
-                        errorbar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2)
-                        errorbar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                        errorbar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),'.','LineWidth',2,'Color',[1,0,0])
+                        errorbar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2,'Color',[1,0,0])
                     else
-                        errorbar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2)
+                        errorbar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),'.','LineWidth',2,'Color',[1,0,0])
                     end
-                    errorbar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2)
+                    errorbar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),'.','LineWidth',2,'Color',[1,0,0])
                     
                     %Save all data plotted into struct
                     if Ngroups==1

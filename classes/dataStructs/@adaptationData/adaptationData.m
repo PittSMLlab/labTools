@@ -157,9 +157,6 @@ classdef adaptationData
         end
         
         function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
-            if iscell(label) && length(label)>1
-                warning('Multiple parameters requested, returing first only')
-            end
             earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
@@ -407,16 +404,14 @@ classdef adaptationData
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
                     end
-                    cc=aux(mod(c,size(aux,1))+1,:);
-                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',cc);
-                    aux2=data(max([size(data,1)-40,1]):end,:);
+                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot3([last(1) median(aux2(:,1))],[last(2) median(aux2(:,2))],[last(3) median(aux2(:,3))],'Color',trajectoryColor,'LineWidth',2);
+                        h=plot3([last(1) median(data(:,1))],[last(2) median(data(:,2))],[last(3) median(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot3([median(aux2(:,1))],[median(aux2(:,2))],[median(aux2(:,3))],'o','MarkerFaceColor',trajectoryColor,'Color',trajectoryColor)
+                        plot3([median(data(:,1))],[median(data(:,2))],[median(data(:,3))],'o','MarkerFaceColor',trajectoryColor,'Color',trajectoryColor)
                     end
-                    last=median(aux2,1);
+                    last=median(data,1);
                end
               xlabel(labels{1})
               ylabel(labels{2})
@@ -431,15 +426,13 @@ classdef adaptationData
                     end
                     cc=aux(mod(c,size(aux,1))+1,:);
                     hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
-                    aux2=data(max([size(data,1)-40,1]):end,:);
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        
-                        h=plot([last(1) median(aux2(:,1))],[last(2) median(aux2(:,2))],'Color',trajectoryColor,'LineWidth',2);
+                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot([median(aux2(:,1))],[median(aux2(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',trajectoryColor)
+                        plot([median(data(:,1))],[median(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',trajectoryColor)
                     end
-                    last=median(aux2,1);
+                    last=median(data,1);
                end
                xlabel(labels{1})
               ylabel(labels{2})
@@ -462,10 +455,6 @@ classdef adaptationData
             earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
-            pChange=[];
-            pEarly=[];
-            pLate=[];
-            pSwitch=[];
             for subject=1:length(adaptDataList) %Getting data for each subject in the list
                 a=load(adaptDataList{subject});
                 aux=fields(a);
@@ -473,12 +462,9 @@ classdef adaptationData
                 [veryEarlyPoints(:,:,subject),earlyPoints(:,:,subject),latePoints(:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
             end
             %Compute some stats
-            aux1=reshape(nanmean(earlyPoints,2),size(earlyPoints,1),size(earlyPoints,3));
-            aux2=reshape(nanmean(latePoints,2),size(latePoints,1),size(latePoints,3));
-            %aux1=aux1(~isnan(aux1(:))); %In case a condition
-            %aux2=aux2(~isnan(aux2(:)));
+            aux1=squeeze(nanmean(earlyPoints,2));
+            aux2=squeeze(nanmean(latePoints,2));
             for i=1:size(aux1,1) %For all conditions requested
-                if size(aux1,1)>1
                 for j=1:size(aux1,1)
                     if i~=j
                         [~,pEarly(i,j)] =ttest(aux1(i,:),aux1(j,:)); %Testing early points across all conds
@@ -488,7 +474,6 @@ classdef adaptationData
                         pLate(i,j)=NaN;
                     end
                 end
-                end
                 [~,pChange(i)]=ttest(aux1(i,:),aux2(i,:)); %Testing changes within each condition
                 if i>1
                     [~,pSwitch(i-1)]=ttest(aux2(i-1,:),aux1(i,:)); %Testing changes from end of one condition to start of the next
@@ -496,7 +481,7 @@ classdef adaptationData
             end
         end
         
-        %function [avg, inpldiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
+        %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         %adaptDataList must be cell array of 'param.mat' file names
         %params is cell array of parameters to plot. List with commas to
