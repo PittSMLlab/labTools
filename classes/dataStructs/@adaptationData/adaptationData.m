@@ -83,7 +83,10 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
         
-        function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition)
+        function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
+            if nargin<4 || isempty(removeBias)
+                removeBias=0;
+            end
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -117,6 +120,9 @@ classdef adaptationData
             end
             
             %get data
+            if removeBias==1
+                this=this.removeBias;
+            end
             trials=cell2mat(this.metaData.trialsInCondition(condNum));
             inds=cell2mat(this.data.indsInTrial(trials));
             origTrials=[];
@@ -372,10 +378,13 @@ classdef adaptationData
             figHandle=plotParamBarsByConditions(this,label);
         end
         
-        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor)
+        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias)
            %Plots up to 3 parameters as coordinates in a single cartesian axes system
            markerList={'x','o','.','+','*','s','v','^','d'};
            colorScheme
+           if nargin<8 || isempty(removeBias)
+               removeBias=0;
+           end
            if nargin<4 || isempty(figHandle)
               figHandle=figure; 
            else
@@ -399,7 +408,7 @@ classdef adaptationData
            if length(labels)==3
                last=[];
                for c=1:length(conditionIdxs)
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
                     if nargin>5 && ~isempty(binSize)
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
@@ -407,11 +416,11 @@ classdef adaptationData
                     hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot3([last(1) median(data(:,1))],[last(2) median(data(:,2))],[last(3) median(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
+                        h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot3([median(data(:,1))],[median(data(:,2))],[median(data(:,3))],'o','MarkerFaceColor',trajectoryColor,'Color',trajectoryColor)
+                        plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',[0,0,0],'Color',trajectoryColor)
                     end
-                    last=median(data,1);
+                    last=nanmedian(data,1);
                end
               xlabel(labels{1})
               ylabel(labels{2})
@@ -419,7 +428,7 @@ classdef adaptationData
            elseif length(labels)==2
                last=[];
                for c=1:length(conditionIdxs)
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
                     if nargin>5 && ~isempty(binSize)
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
@@ -428,11 +437,11 @@ classdef adaptationData
                     hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot([last(1) median(data(:,1))],[last(2) median(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
+                        h=plot([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'top')
-                        plot([median(data(:,1))],[median(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',trajectoryColor)
+                        plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],'o','Color',[0,0,0],'MarkerFaceColor',trajectoryColor)
                     end
-                    last=median(data,1);
+                    last=nanmedian(data,1);
                end
                xlabel(labels{1})
               ylabel(labels{2})
@@ -710,7 +719,10 @@ classdef adaptationData
             legend([Li{:}],[legendStr{:}])
         end
         
-        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors)
+        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
+            if nargin<7 || isempty(removeBias)
+                removeBias=0;
+            end
             if nargin<5 || isempty(figHandle)
                 figHandle=figure;
             else
@@ -744,7 +756,7 @@ classdef adaptationData
                 else
                     conditionIdxs1=conditionIdxs;
                 end
-                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor);
+                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias);
             end
             
         end

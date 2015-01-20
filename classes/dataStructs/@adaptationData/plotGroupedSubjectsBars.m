@@ -90,21 +90,24 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                             plot((2:3:3*nConds)+(group-1)/Ngroups,latePoints,'o','LineWidth',2)
                         end
                     end
-                    %plot stat markers
-                    if ~isempty(significanceThreshold) %Only works with a single group, no stats across groups, yet
-                       topOffset=max(earlyPoints(:));
-                       changes=find(pChange<significanceThreshold);
-                       for j=1:length(changes)
-                          plot((changes(j)-1)*3+[1.1,1.9],1.2*topOffset*[1,1],'k','LineWidth',2); 
-                       end
-                       switches=find(pSwitch<significanceThreshold);
-                       for j=1:length(switches)
-                          plot((switches(j)-1)*3+[2.1,3.9],1.2*topOffset*[1,1],'k','LineWidth',2); 
-                       end
-                       interCond=find(pLate(1,:)<significanceThreshold);
-                       for j=1:length(interCond)
-                          plot([2.1,(interCond(j)-1)*3+2.1],(1.2 +.1*interCond(j))*topOffset*[1,1],'k','LineWidth',2); 
-                       end
+                    %plot stat markers for the case there is a single group
+                    topOffset=max(earlyPoints(:));
+                    if Ngroups==1
+                        if ~isempty(significanceThreshold) %Only works with a single group, no stats across groups, yet
+                           topOffset=max(earlyPoints(:));
+                           changes=find(pChange<significanceThreshold);
+                           for j=1:length(changes)
+                              plot((changes(j)-1)*3+[1.1,1.9],1.2*topOffset*[1,1],'k','LineWidth',2); 
+                           end
+                           switches=find(pSwitch<significanceThreshold);
+                           for j=1:length(switches)
+                              plot((switches(j)-1)*3+[2.1,3.9],1.2*topOffset*[1,1],'k','LineWidth',2); 
+                           end
+                           interCond=find(pLate(1,:)<significanceThreshold);
+                           for j=1:length(interCond)
+                              plot([2.1,(interCond(j)-1)*3+2.1],(1.2 +.1*interCond(j))*topOffset*[1,1],'k','LineWidth',2); 
+                           end
+                        end
                     end
                         
                     %plot error bars (using standard error)
@@ -130,6 +133,22 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                     end
                     allData{l}.parameterLabel=label{l};
                 end
+                %Plot stat markers for in-between group comparisons (group
+                %1 vs all other groups)
+                if Ngroups>1 && ~isempty(significanceThreshold)
+                    for i=2:Ngroups
+                            [~,pEarly(:,i-1)]=ttest2(allData{l}.group{1}.early',allData{l}.group{i}.early');
+                            [~,pLate(:,i-1)]=ttest2(allData{l}.group{1}.late',allData{l}.group{i}.late');
+                            for j=1:nConds
+                                if pEarly(j,i-1)<significanceThreshold
+                                    plot([3*(j-1)+1 3*(j-1)+1+(i-1)/Ngroups],(1.2 +.1*(i-1))*topOffset*[1,1],'k','LineWidth',2); 
+                                end
+                                if pLate(j,i-1)<significanceThreshold
+                                    plot([3*(j-1)+2 3*(j-1)+2+(i-1)/Ngroups],(1.2+.1*(i-1))*topOffset*[1,1],'k','LineWidth',2); 
+                                end
+                            end
+                    end
+                end
                 xTickPos=(1:3:3*nConds)+.5;
                 set(gca,'XTick',xTickPos,'XTickLabel',condList)
                 if removeBiasFlag==1
@@ -150,7 +169,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             else
                 legStr={};
                 for group=1:Ngroups
-                    legStr=[legStr, {['Early (first ' num2str(N1) '), Group ' num2str(group)],['Late (last ' num2str(N3) ' (-' num2str(Ne) '), Group ' num2str(group)]}];
+                    legStr=[legStr, {['Early (first ' num2str(N2) '), Group ' num2str(group)],['Late (last ' num2str(N3) ' (-' num2str(Ne) '), Group ' num2str(group)]}];
                 end
                 legend(h,legStr)
             end
