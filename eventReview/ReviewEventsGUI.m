@@ -783,6 +783,7 @@ eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %
 handles.changed=false;
 
 %re-create adaptation parameters object
+expData=expData.recomputeParameters;
 adaptData=expData.makeDataObj;
 eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
 
