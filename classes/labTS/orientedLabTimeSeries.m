@@ -51,6 +51,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
         
+%         function newThis=derivate(this)
+%             auxThis=this.derivate@labTimeSeries;
+%             newThis.orientation=this.orientation;
+%         end
+        
     end
 
 end

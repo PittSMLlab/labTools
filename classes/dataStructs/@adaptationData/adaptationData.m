@@ -405,20 +405,24 @@ classdef adaptationData
            if length(labels)>3
                error('adaptationData:scatterPlo','Cannot plot more than 3 parameters at a time')
            end
+           markerFaceColors={'r','b',[1,.8,0],'g','y','w','c','m','k'};
            if length(labels)==3
                last=[];
                for c=1:length(conditionIdxs)
                     [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
-                    if nargin>5 && ~isempty(binSize)
+                    if nargin>5 && ~isempty(binSize) && binSize>1
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
                     end
-                    hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
+                    if ~isempty(binSize) && binSize~=0
+                        hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
+                        uistack(hh(c),'bottom')
+                    end
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
                         h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
-                        uistack(h,'top')
-                        plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',[0,0,0],'Color',trajectoryColor)
+                        uistack(h,'bottom')
+                        plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1},'Color',trajectoryColor)
                     end
                     last=nanmedian(data,1);
                end
@@ -429,24 +433,29 @@ classdef adaptationData
                last=[];
                for c=1:length(conditionIdxs)
                     [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
-                    if nargin>5 && ~isempty(binSize)
+                    if nargin>5 && ~isempty(binSize) && binSize>1
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);
                     end
                     cc=aux(mod(c,size(aux,1))+1,:);
+                    if ~isempty(binSize) && binSize~=0
                     hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
+                    uistack(hh(c),'bottom')
+                    end
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
                         h=plot([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
-                        uistack(h,'top')
-                        plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],'o','Color',[0,0,0],'MarkerFaceColor',trajectoryColor)
+                        uistack(h,'bottom')
+                        plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1})
                     end
                     last=nanmedian(data,1);
                end
                xlabel(labels{1})
               ylabel(labels{2})
            end
-           legend(hh,this.metaData.conditionName{conditionIdxs})
+           if exist('hh','var') && ~isempty(hh)
+                legend(hh,this.metaData.conditionName{conditionIdxs})
+           end
            hold off     
         end
     end

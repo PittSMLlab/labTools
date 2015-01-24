@@ -96,7 +96,7 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function index=getIndexClosestToTimePoing(this,timePoints)
+        function index=getIndexClosestToTimePoint(this,timePoints)
             index=[]; %ToDo
         end
         %-------------------
@@ -129,8 +129,8 @@ classdef labTimeSeries  < timeseries
                 case 'logical'
                    newData=false(newN,size(this.Data,2));
                    newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
-                   for i=1:size(this.Data,1)
-                       if any(this.Data(i,:))
+                   for i=1:size(this.Data,1) %Go over time samples
+                       if any(this.Data(i,:)) %See if any value (label) is true
                            timePoint=this.Time(i);
                            [newTimePoint,newTimeInd]=min(abs(newTimeVec-timePoint));
                            newData(newTimeInd,:)=this.Data(i,:);
@@ -156,15 +156,21 @@ classdef labTimeSeries  < timeseries
                    ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
                    throw(ME)
                else
-                   warning('LabTS:split','Requested interval is not completely contained in TimeSeries.')
+                   warning('LabTS:split','Requested interval is not completely contained in TimeSeries. Filling with NaN.')
                end
            end
             i1=find(this.Time>=t0,1);
-            i2=find(this.Time<t1,1,'last');
+            i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1)
             if i2<i1
                 warning('LabTS:split','Requested interval falls completely within two samples: returning empty timeSeries.') 
             end
-            newThis=labTimeSeries(this.Data(i1:i2,:),this.Time(i1),this.sampPeriod,this.labels);
+            ia=floor((this.Time(i1)-t0)/this.sampPeriod); %Extra samples to be added at the beginning
+            ib=floor((t1-this.Time(i2))/this.sampPeriod); %Extra samples to be added at the end
+            if ~islogical(this.Data(1,1))
+                newThis=labTimeSeries([nan(ia,size(this.Data,2)) ; this.Data(i1:i2,:); nan(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
+            else
+                newThis=labTimeSeries([false(ia,size(this.Data,2)) ; this.Data(i1:i2,:); false(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
+            end
         end
         
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
@@ -172,7 +178,7 @@ classdef labTimeSeries  < timeseries
             [data,time,auxLabel]=getDataAsVector(newThis);
         end
         
-        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel)
+        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
            %eventTS needs to be a labTimeSeries with binary events as data
            %If eventLabel is not given, the first data column is used as
            %the relevant event marker. If given, eventLabel must be the
@@ -187,6 +193,10 @@ classdef labTimeSeries  < timeseries
            %Check needed: is eventList binary?
            N=size(eventList,2); %Number of events & intervals to be found
            auxList=eventList*2.^[0:N-1]';
+           %
+           if nargin<4 || isempty(timeMargin)
+               timeMargin=0;
+           end
            
             refIdxLst=find(auxList==1);
             M=length(refIdxLst)-1;
@@ -196,15 +206,15 @@ classdef labTimeSeries  < timeseries
             duration=diff(aa); %Duration of each interval
             steppedDataArray=cell(M,N);
             bad=zeros(M,1);
-            for i=1:M
+            for i=1:M %Going over strides
                 t0=auxTime(refIdxLst(i));
                 nextT0=auxTime(refIdxLst(i+1));
                 lastEventIdx=refIdxLst(i);
-                for j=1:N-1
+                for j=1:N-1 %Going over events
                    nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
                    t1= auxTime(nextEventIdx); %Look for next event
                    if ~isempty(t1) && ~isempty(t0)
-                        steppedDataArray{i,j}=this.split(t0,t1);
+                        steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
                         t0=t1;
                         lastEventIdx=nextEventIdx;
                    else
@@ -213,7 +223,7 @@ classdef labTimeSeries  < timeseries
                    end
                    
                 end
-                steppedDataArray{i,N}=this.split(t0,nextT0);
+                steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
             end
         end
         
@@ -233,6 +243,15 @@ classdef labTimeSeries  < timeseries
             end
         end
         
+        function newThis=derivate(this,other)
+            M=size(this.Data,2);
+            newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
+            for i=1:M
+                newLabels{i}=['d/dt_' this.labels{i}];
+            end
+            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
+        end
+        
         function this=fillts(this)
             for i=1:size(this.Data,2)
                 idx=isnan(this.Data(:,i));
@@ -243,6 +262,15 @@ classdef labTimeSeries  < timeseries
                     this.QualityInfo.Description={'good','missing'};
                     this.Data(:,i)=interp1(this.Time(~idx),this.Data(~idx,i),this.Time,'linear','extrap');
                 end
+            end
+        end
+        
+        function newThis=concatenate(this,other)
+            %Check if time vectors are the same
+            if all(this.Time==other.Time)
+                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels, other.labels]);
+            else
+                error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
             end
         end
         
@@ -262,7 +290,7 @@ classdef labTimeSeries  < timeseries
         end
         
         %Display
-        function h=plot(this,h,labels) %Alternative plot: all the traces go in different axes
+        function [h,plotHandles]=plot(this,h,labels,plotHandles,events) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;
             else
@@ -276,16 +304,36 @@ classdef labTimeSeries  < timeseries
                [relData,~,relLabels]=this.getDataAsVector(labels); 
                N=size(relData,2);
             end
-            
-            for i=1:N
-                h1(i)=subplot(ceil(N/2),2,i);
-                hold on
-                plot(this.Time,relData(:,i),'.')
-                ylabel(relLabels{i})
-                hold off
+            if nargin<4 || isempty(plotHandles) || length(plotHandles)~=length(relLabels)
+                [b,a]=getFigStruct(length(relLabels));
+                plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
             end
-            linkaxes(h1,'x')
-                
+            ax2=[];
+            h1=[];
+            for i=1:N
+                h1(i)=plotHandles(i);
+                hold on
+                plot(this.Time,relData(:,i),'LineWidth',2)
+                ylabel(relLabels{i})
+                %if i==ceil(N/2)
+                %    xlabel('Time (s)')
+                %end
+                hold off
+                if nargin>4 && ~isempty(events)
+                    [ii,jj]=find(events.Data);
+                    [ii,iaux]=sort(ii);
+                    jj=jj(iaux);
+                    ax1=gca;
+                    %ax2(i) = axes('Position',ax1.Position,...
+                    %'XAxisLocation','top',...
+                    %'YAxisLocation','right',...
+                    %'Color','none');%,'XColor','r','YColor','r');
+                   set(ax1,'Xtick',events.Time(ii),'XTickLabel',events.labels(jj))
+                   grid on
+                end
+            end
+            linkaxes([h1,ax2],'x')
+            plotHandles=h1;  
         end
         
         %Other
@@ -308,7 +356,11 @@ classdef labTimeSeries  < timeseries
         
         function alignedTS=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
-            aux=zeros(N,size(stridedTS{1}.Data,2),length(stridedTS));
+            if ~islogical(stridedTS{1}.Data(1))
+                aux=zeros(N,size(stridedTS{1}.Data,2),length(stridedTS));
+            else
+                aux=false(N,size(stridedTS{1}.Data,2),length(stridedTS));
+            end
             for i=1:length(stridedTS)
                 aa=resampleN(stridedTS{i},N);
                 aux(:,:,i)=aa.Data;
