@@ -166,7 +166,7 @@ classdef adaptationData
             earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
-            N1=3;
+            N1=3;all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
             elseif ~isa(conds,'cell') && ~all(cellfun(@(x) isa(x,'char'),conds))
@@ -205,29 +205,29 @@ classdef adaptationData
                 if ~isempty(condIdx) && ~isempty(aux)
                     %First N1 points
                     try %Try to get the first strides, if there are enough
-                        veryEarlyPoints{i}(:,:)=aux(1:N1,:);
+                        veryEarlyPoints(i,:,:)=aux(1:N1,:);
                     catch %In case there aren't enough strides, assign NaNs to all
-                        veryEarlyPoints{i}(:,:)=NaN;
+                        veryEarlyPoints(i,:,:)=NaN;
                     end
                     
                     %First N2 points
                     try %Try to get the first strides, if there are enough
-                        earlyPoints{i}(:,:)=aux(1:N2,:);
+                        earlyPoints(i,:,:)=aux(1:N2,:);
                     catch %In case there aren't enough strides, assign NaNs to all
-                        earlyPoints{i}(:,:)=NaN;
+                        earlyPoints(i,:,:)=NaN;
                     end
 
                     %Last N3 points, exempting very last Ne
                     try                                    
-                        latePoints{i}(:,:)=aux(end-N3-Ne+1:end-Ne,:);
+                        latePoints(i,:,:)=aux(end-N3-Ne+1:end-Ne,:);
                     catch
-                        latePoints{i}(:,:)=NaN;
+                        latePoints(i,:,:)=NaN;
                     end
                 else
                     disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                    veryEarlyPoints{i}(:,1:N1)=NaN;
-                    earlyPoints{i}(:,1:N2)=NaN;
-                    latePoints{i}(:,1:N3)=NaN;
+                    veryEarlyPoints(i,:,1:N1)=NaN;
+                    earlyPoints(i,:,1:N2)=NaN;
+                    latePoints(i,:,1:N3)=NaN;
                 end
             end
         end
@@ -467,14 +467,17 @@ classdef adaptationData
             earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
+            if ~(isa(label,'char') || (isa(label,'cell') && length(label)==1 && (isa(label{1},'char'))))
+                error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.');
+            end
             for subject=1:length(adaptDataList) %Getting data for each subject in the list
                 a=load(adaptDataList{subject});
                 aux=fields(a);
                 this=a.(aux{1});
-                [veryEarlyPoints(:,:,subject),earlyPoints(:,:,subject),latePoints(:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
+                [veryEarlyPoints(:,:,:,subject),earlyPoints(:,:,:,subject),latePoints(:,:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
             end
             %Compute some stats
-            aux1=squeeze(nanmean(earlyPoints,2));
+            aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
             aux2=squeeze(nanmean(latePoints,2));
             for i=1:size(aux1,1) %For all conditions requested
                 for j=1:size(aux1,1)
