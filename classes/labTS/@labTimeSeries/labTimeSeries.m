@@ -232,14 +232,22 @@ classdef labTimeSeries  < timeseries
         end
         
         function newThis=plus(this,other)
+            M=size(this.Data,2);
+            for i=1:M
+                newLabels{i}=['(' this.labels{i} ' + ' other.labels{i} ')'];
+            end
             if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
                 newThis=labTimeSeries(this.Data+other.Data,this.Time(1),this.sampPeriod,this.labels);
             end
         end
         
         function newThis=minus(this,other)
+            M=size(this.Data,2);
+            for i=1:M
+                newLabels{i}=['(' this.labels{i} ' - ' other.labels{i} ')'];
+            end
             if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
-                newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,this.labels);
+                newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,newLabels);
             end
         end
         
@@ -247,7 +255,7 @@ classdef labTimeSeries  < timeseries
             M=size(this.Data,2);
             newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
             for i=1:M
-                newLabels{i}=['d/dt_' this.labels{i}];
+                newLabels{i}=['d/dt ' this.labels{i}];
             end
             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
         end
@@ -357,15 +365,18 @@ classdef labTimeSeries  < timeseries
         function alignedTS=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
             if ~islogical(stridedTS{1}.Data(1))
-                aux=zeros(N,size(stridedTS{1}.Data,2),length(stridedTS));
+                aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             else
-                aux=false(N,size(stridedTS{1}.Data,2),length(stridedTS));
+                aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             end
-            for i=1:length(stridedTS)
-                aa=resampleN(stridedTS{i},N);
-                aux(:,:,i)=aa.Data;
+            for i=1:size(stridedTS,1) %Going over strides
+                M=[0,cumsum(N)];
+                for j=1:size(stridedTS,2) %Going over aligned phases
+                    aa=resampleN(stridedTS{i,j},N(j));
+                    aux(M(j)+1:M(j+1),:,i)=aa.Data;
+                end
             end
-            alignedTS=alignedTimeSeries(0,1/N,aux,stridedTS{1}.labels);
+            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels);
         end
         
         function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)

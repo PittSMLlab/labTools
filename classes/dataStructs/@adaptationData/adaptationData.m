@@ -162,12 +162,20 @@ classdef adaptationData
             end
         end
         
-        function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
+        function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
             earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
             N1=3;
+            if isa(conds,'char')
+                conds={conds};
+            elseif ~isa(conds,'cell') && ~all(cellfun(@(x) isa(x,'char'),conds))
+                error('adaptationData:getEarlyLateData','Conditions must be a string or a cell array containing strings.');
+            end
             nConds=length(conds);
+            if nargin<2 || ~(isa(labels,'char') || (isa(labels,'cell') && all(cellfun(@(x) isa(x,'char'),labels)) ))
+                error('adaptationData:getEarlyLateData','Labels must be a string or a cell array containing strings.')
+            end
             if nargin<5 || isempty(earlyNumber)
                 N2=5; %early number of points
             else
@@ -188,52 +196,38 @@ classdef adaptationData
             else
                 %this=adaptData;
             end
-
+            conditionIdxs=this.getConditionIdxsFromName(conds);
             for i=1:nConds
                 %First: find if there is a condition with a
                 %similar name to the one given
-                clear condName
-                if iscell(conds{i})
-                    for j=1:length(conds{i})
-                        condName{j}=lower(conds{i}{j});
-                    end
-                else
-                    condName{1}=lower(conds{i}); %Lower case
-                end
-                allConds=lower(this.metaData.conditionName);
-                condIdx=[];
-                j=0;
-                while isempty(condIdx) && j<length(condName)
-                    j=j+1;
-                    condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
-                end
-                aux=this.getParamInCond(label,condIdx);
+                condIdx=conditionIdxs(i);
+                aux=this.getParamInCond(labels,conditionIdxs(i));
                 if ~isempty(condIdx) && ~isempty(aux)
                     %First N1 points
                     try %Try to get the first strides, if there are enough
-                        veryEarlyPoints(i,:)=aux(1:N1);
+                        veryEarlyPoints{i}(:,:)=aux(1:N1,:);
                     catch %In case there aren't enough strides, assign NaNs to all
-                        veryEarlyPoints(i,:)=NaN;
+                        veryEarlyPoints{i}(:,:)=NaN;
                     end
                     
                     %First N2 points
                     try %Try to get the first strides, if there are enough
-                        earlyPoints(i,:)=aux(1:N2);
+                        earlyPoints{i}(:,:)=aux(1:N2,:);
                     catch %In case there aren't enough strides, assign NaNs to all
-                        earlyPoints(i,:)=NaN;
+                        earlyPoints{i}(:,:)=NaN;
                     end
 
                     %Last N3 points, exempting very last Ne
                     try                                    
-                        latePoints(i,:)=aux(end-N3-Ne+1:end-Ne);
+                        latePoints{i}(:,:)=aux(end-N3-Ne+1:end-Ne,:);
                     catch
-                        latePoints(i,:)=NaN;
+                        latePoints{i}(:,:)=NaN;
                     end
                 else
                     disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                    veryEarlyPoints(i,1:N1)=NaN;
-                    earlyPoints(i,1:N2)=NaN;
-                    latePoints(i,1:N3)=NaN;
+                    veryEarlyPoints{i}(:,1:N1)=NaN;
+                    earlyPoints{i}(:,1:N2)=NaN;
+                    latePoints{i}(:,1:N3)=NaN;
                 end
             end
         end
