@@ -5,14 +5,13 @@ classdef experimentData
     properties
         metaData %experimentMetaData type
         subData %subjectData type
-        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData)
+        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
     
     properties (Dependent)
         isRaw
-        isProcessed
+        isProcessed %true if the trials have been processed, and false otherwise (raw).
         isStepped %or strided
-        %isTimeNormalized %true if all elements in data share the same timeVector (equal sampling, not just range) 
         fastLeg
     end
     
@@ -51,6 +50,12 @@ classdef experimentData
         
         %Getters for Dependent properties
         function a=get.isProcessed(this)
+            % Returns true if the trials have been processed, and false if
+            % they contain rawData.
+            %INPUTS: 
+            %this: experimentData object
+            %OUTPUTS: 
+            %a: boolean
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1); %Not empty
             a=isa(this.data{idx},'processedLabData');
@@ -105,6 +110,17 @@ classdef experimentData
         
         %Process full experiment
         function processedThis=process(this)
+            % Returns a new experimentData object with same metaData, subData and processed (trial) data.
+            % This is done by iterating through data (trials) and
+            % processing each by using labData.process
+            % See also labData
+            % -------
+            % INPUTS:
+            % this: experimentData object
+            % -------
+            % OUTPUTS:
+            % processedThis: experimentData object with processed data.
+            
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
