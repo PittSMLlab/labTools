@@ -243,6 +243,5 @@ classdef experimentData
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
     end
-    
 end
 
