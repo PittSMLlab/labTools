@@ -1,6 +1,5 @@
 classdef labDate
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %This is a file
     
     properties
         day; %Num
