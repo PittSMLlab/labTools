@@ -1,6 +1,8 @@
 classdef adaptationData
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    % Class to store all parameters of interest for every stride in an experiment
+    % Objects of this class can be generated from experimentData by calling
+    % experimentData.makeDataObj
+    % See also experimentData
     
     properties
         metaData %Information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
@@ -40,6 +42,7 @@ classdef adaptationData
         
         %Modifier
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
+            % Removes baseline value for all parameters.
             % removeBias('condition') or removeBias({'Condition1','Condition2',...}) 
             % removes the median value of every parameter from each trial of the
             % same type as the condition entered. If no condition is
@@ -67,7 +70,7 @@ classdef adaptationData
         
         %Other I/O functions:
         function labelList=getParameters(this)
-		%obtain labels or parameters evaluated in the subject 
+		%obtain data for parameters evaluated in the subject 
 		%INPUT:
 		%this: experimentData object
 		%
@@ -118,8 +121,7 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
-		%Obtain data of a Parameter in a condition 
-		%
+		%Obtain all data for a parameter or set of parameters in a condition or set of conditions.
 		%INPUTS:
 		%this: experimentData object
 		%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)

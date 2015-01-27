@@ -3,7 +3,7 @@ classdef experimentData
     %   Detailed explanation goes here
     
     properties
-        metaData %experimentMetaData type
+        metaData % field that contains information from the experiment. Has to be an experimentMetaData object
         subData %subjectData type
         data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
@@ -119,7 +119,7 @@ classdef experimentData
             % this: experimentData object
             % -------
             % OUTPUTS:
-            % processedThis: experimentData object with processed data.
+            % processedThis: experimentData object with processed data
             
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
