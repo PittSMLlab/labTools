@@ -3,9 +3,9 @@ classdef adaptationData
     %   Detailed explanation goes here
     
     properties
-        metaData %experimentMetaData type
-        subData %subjectData type
-        data %Contains adaptation parameters
+        metaData %Information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
+        subData %Information of the subject (DOB, sex, height, weight...)in a subjectData object
+        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
     
     properties (Dependent)
@@ -60,6 +60,9 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
+		%Obtain a Parameter from a specific trial
+		%Ex: adaptData.getParamInTrial(Parameter,Trial)
+		
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -84,6 +87,10 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
+		%Obtain a Parameter for a condition removing or not the Bias 
+		%EX: adaptData.getParamInCond('alphaFast','OG base',0)
+		
+		
             if nargin<4 || isempty(removeBias)
                 removeBias=0;
             end
@@ -135,7 +142,7 @@ classdef adaptationData
         
 
         
-        function [boolFlag,labelIdx]=isaCondition(this,cond)
+        function [boolFlag,labelIdx]=isaCondition(this,cond)	
             if isa(cond,'char')
                 auxCond{1}=cond;
             elseif isa(cond,'cell')
@@ -163,7 +170,8 @@ classdef adaptationData
         end
         
         function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
-            earlyPoints=[];
+        %obtain the earlies and late data points for conditions
+			earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
             N1=3;all(cellfun(@(x) isa(x,'char'),conds))
