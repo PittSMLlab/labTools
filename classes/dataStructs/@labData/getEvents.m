@@ -69,5 +69,5 @@ else
     warning('Trial type should be ''OG'' or ''TM''. No events will be computed.');
 end
 
-events=labTimeSeries([LHSevent,RHSevent,LTOevent,RTOevent],t0,Ts,{'LHS','RHS','LTO','RTO'});
+events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent]),t0,Ts,{'LHS','RHS','LTO','RTO'});
 

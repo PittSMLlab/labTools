@@ -123,6 +123,7 @@ classdef labTimeSeries  < timeseries
                  end
             end
             modNewTs=this.timeRange/(newN);
+            newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
             switch method
                 case 'interpft'
                     if any(isnan(this.Data(:)))
@@ -131,14 +132,11 @@ classdef labTimeSeries  < timeseries
                     end
                     newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
                 case 'logical'
-                   newData=false(newN,size(this.Data,2));
-                   newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
-                   for i=1:size(this.Data,1) %Go over time samples
-                       if any(this.Data(i,:)) %See if any value (label) is true
-                           timePoint=this.Time(i);
-                           [newTimePoint,newTimeInd]=min(abs(newTimeVec-timePoint));
-                           newData(newTimeInd,:)=this.Data(i,:);
-                       end
+                   newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
+                   for i=1:size(this.Data,2) %Go over event labels
+                       oldEventTimes=this.Time(this.Data(:,i));
+                       closestNewEventIndexes=round((oldEventTimes-this.Time(1))/modNewTs) + 1;
+                       newData(closestNewEventIndexes,i)=true;
                    end
                 otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
                     newData=zeros(length(newTimeVec),size(this.Data,2));

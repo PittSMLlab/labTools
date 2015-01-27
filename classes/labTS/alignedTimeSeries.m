@@ -21,6 +21,30 @@ classdef alignedTimeSeries
         end
         
         function [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
+            % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
+            % Uses one subplot for each label in the timeseries (same as
+            % labTimeSeries.plot).
+            % If events are given (alignedTimeSeries with the same time vector and number of strides),
+            % it will display the average event-time ocurrence in the plot,
+            % instead of the time in the x-axis.
+            % See also labTimeSeries.plot
+            %
+            % SYNTAX:
+            % [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
+            %
+            % INPUTS:
+            % this: alignedTimeSeries object to plot
+            % figHandle: handle to the figure to be used. If absent,
+            % creates a new figure.
+            % plotHandles: handles to the subplots being used. There need
+            % to be at least as many handles as labels in the data.
+            % meanColor: color to use for the plot of the mean. %FIXME
+            % events: alignedTimeSeries of events.
+            %
+            % OUTPUT:
+            % figHandle: handle to the figure used.
+            % plotHandles: handles to the subplots used.
+            %
                 if nargin<4 || isempty(meanColor)
                    meanColor=[1,0,0]; 
                 end
@@ -32,7 +56,7 @@ classdef alignedTimeSeries
                 end
                set(figHandle,'Units','normalized','OuterPosition',[0 0 1 1])
                M=size(structure,2);
-               if nargin<3 || isempty(plotHandles)
+               if nargin<3 || isempty(plotHandles) || length(plotHandles)<size(this.Data,2)
                 [b,a]=getFigStruct(M);
                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); %External function
                end
@@ -97,7 +121,7 @@ classdef alignedTimeSeries
                     [eventTimeIndex,~]=sort(eventTimeIndex);
                     histogram(i,:)=eventTimeIndex;
                 end
-                newData=false(size(this.Data,1),length(newLabels));
+                newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
                 mH=median(histogram);
                 for i=1:size(histogram,2)
                     newData(mH(i),i)=true;
