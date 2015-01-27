@@ -46,6 +46,17 @@ classdef adaptationData
             % specified, then the condition name that contains both the
             % type string and the string 'base' is used as the baseline
             % condition.
+			%
+			%INPUTS:
+			%this: experimentData object
+			%conditions: conditions to use as reference
+			%
+			%OUTPUTS:
+			%newThis: experimentData object with the bias remove
+			%baseValues: values used to calculated the average used to remove the bias
+			%typeList; type of condition (OG or TM)		
+			%
+			%EX:[newThis,baseValues,typeList]=adaptData.removeBias('TM base');
             
             if nargin>1
                 [newThis,baseValues,typeList]=removeBiasV2(this,conditions);
@@ -56,13 +67,33 @@ classdef adaptationData
         
         %Other I/O functions:
         function labelList=getParameters(this)
-            labelList=this.data.labels;
+		%obtain labels or parameters evaluated in the subject 
+		%INPUT:
+		%this: experimentData object
+		%
+		%OUTPUT:
+		%labelList: array of strings with the labels name 
+		%
+		%EX: labelList=adaptData.getParameters;
+		            labelList=this.data.labels;
         end
         
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
-		%Obtain a Parameter from a specific trial
-		%Ex: adaptData.getParamInTrial(Parameter,Trial)
-		
+		%Obtain information of a parameter in a trial
+		%
+		%INPUTS:
+		%this: experimentData object
+		%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)
+		%trial: number of the trial that information is needed
+		%
+		%OUTPUTS:
+		%data: information of the parameter in the trial
+		%inds: Position of data points in the matrix 
+		%auxLabel: Parameter evaluated
+		%
+		%Ex: [data,inds,auxLabel]=adaptData.getParamInTrial('alphaFast',2)
+	    %See also: adaptationData.getParamInCond	
+		 
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -87,9 +118,22 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
-		%Obtain a Parameter for a condition removing or not the Bias 
+		%Obtain data of a Parameter in a condition 
+		%
+		%INPUTS:
+		%this: experimentData object
+		%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)
+		%condition: specific condition that information is needed 
+		%removeBias: 1 to activate function to remove bias, 0 or empty to no activate function
+		%
+		%OUTPUTS:
+		%data: information of the parameter in the trial
+		%inds: Position of data points in the matrix 
+		%auxLabel: Parameter evaluated
+		%origTrials: Numbers of trials that compose the condition
+		%
 		%EX: adaptData.getParamInCond('alphaFast','OG base',0)
-		
+		%See also: adaptationData.getParamInTrial
 		
             if nargin<4 || isempty(removeBias)
                 removeBias=0;
@@ -254,7 +298,10 @@ classdef adaptationData
         
         %Display functions:
         function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
-            
+        %Plot of the behaviour of parameters through the entire experiment
+        %specify the behaviour on each condition and trial
+		
+		
             if isa(label,'char')
                 label={label};
             end
@@ -479,6 +526,7 @@ classdef adaptationData
         
         %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
+		
         %adaptDataList must be cell array of 'param.mat' file names
         %params is cell array of parameters to plot. List with commas to
         %plot on separate graphs or with semicolons to plot on same graph.
