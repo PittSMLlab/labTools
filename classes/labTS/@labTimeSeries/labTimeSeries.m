@@ -125,6 +125,10 @@ classdef labTimeSeries  < timeseries
             modNewTs=this.timeRange/(newN);
             switch method
                 case 'interpft'
+                    if any(isnan(this.Data(:)))
+                        warning('labTimeSeries:resampleN','Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
+                        this=substituteNaNs(this,'linear');
+                    end
                     newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
                 case 'logical'
                    newData=false(newN,size(this.Data,2));
@@ -149,23 +153,35 @@ classdef labTimeSeries  < timeseries
         function newThis=split(this,t0,t1)
            %Check t0>= Time(1)
            %Check t1<= Time(end)
-           initT=this.Time(1)-2e-15;
-           finalT=this.Time(end)+this.sampPeriod+2e-15;
+           initT=this.Time(1)-eps;
+           finalT=this.Time(end)+eps;
            if ~(t0>= initT && t1<=finalT)
                if (t1<initT) || (t0>=finalT)
                    ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
                    throw(ME)
                else
-                   warning('LabTS:split','Requested interval is not completely contained in TimeSeries. Filling with NaN.')
+                   warning('LabTS:split','Requested interval is not completely contained in TimeSeries. Padding with NaNs.')
                end
            end
+           %Find portion of requested interval that falls within the
+           %timeseries' time vector (if any).
             i1=find(this.Time>=t0,1);
-            i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1)
+            i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)
             if i2<i1
                 warning('LabTS:split','Requested interval falls completely within two samples: returning empty timeSeries.') 
             end
-            ia=floor((this.Time(i1)-t0)/this.sampPeriod); %Extra samples to be added at the beginning
-            ib=floor((t1-this.Time(i2))/this.sampPeriod); %Extra samples to be added at the end
+            %In case the requested time interval is larger than the
+            %timeseries' actual time vector, pad with NaNs:
+            if (this.Time(1)-t0)>eps %Case we are requesting time-samples preceding the timeseries' start-time
+                ia=floor((this.Time(1)-t0)/this.sampPeriod); %Extra samples to be added at the beginning
+            else
+                ia=0;
+            end
+            if (t1-this.Time(end))> eps %Case we are requesting time-samples following the timeseries' end-time
+                ib=floor((t1-this.Time(end))/this.sampPeriod); %Extra samples to be added at the end
+            else
+                ib=0;
+            end
             if ~islogical(this.Data(1,1))
                 newThis=labTimeSeries([nan(ia,size(this.Data,2)) ; this.Data(i1:i2,:); nan(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
             else
@@ -192,7 +208,7 @@ classdef labTimeSeries  < timeseries
            end
            %Check needed: is eventList binary?
            N=size(eventList,2); %Number of events & intervals to be found
-           auxList=eventList*2.^[0:N-1]';
+           auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
            %
            if nargin<4 || isempty(timeMargin)
                timeMargin=0;
@@ -282,6 +298,18 @@ classdef labTimeSeries  < timeseries
             end
         end
         
+        function newThis=substituteNaNs(this,method)
+            if nargin<2 || isempty(method)
+                method='linear';
+            end
+            newData=zeros(size(this.Data));
+             for i=1:size(this.Data,2) %Going through labels
+                 auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
+                 newData(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method);
+             end
+             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+        end
+        
         %------------------
         
         %Getters for dependent properties
@@ -312,7 +340,7 @@ classdef labTimeSeries  < timeseries
                [relData,~,relLabels]=this.getDataAsVector(labels); 
                N=size(relData,2);
             end
-            if nargin<4 || isempty(plotHandles) || length(plotHandles)~=length(relLabels)
+            if nargin<4 || isempty(plotHandles) || length(plotHandles)<length(relLabels)
                 [b,a]=getFigStruct(length(relLabels));
                 plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
             end
@@ -320,6 +348,7 @@ classdef labTimeSeries  < timeseries
             h1=[];
             for i=1:N
                 h1(i)=plotHandles(i);
+                subplot(h1(i))
                 hold on
                 plot(this.Time,relData(:,i),'LineWidth',2)
                 ylabel(relLabels{i})

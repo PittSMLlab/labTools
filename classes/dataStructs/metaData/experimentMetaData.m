@@ -72,6 +72,42 @@ classdef experimentMetaData
                end
            end 
         end
+        
+        function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
+            %Looks for condition names that are similar to the ones given
+            %in conditionNames and returns the corresponding condition idx
+            %ConditionNames should be a cell array containing a string or another cell array of strings in each of its cells. E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            if isa(conditionNames,'char')
+                conditionNames={conditionNames};
+            end
+            nConds=length(conditionNames); 
+            conds=conditionNames;
+            conditionIdxs=NaN(nConds,1);
+            for i=1:nConds
+                %First: find if there is a condition with a
+                %similar name to the one given
+                clear condName
+                if iscell(conds{i})
+                    for j=1:length(conds{i})
+                        condName{j}=lower(conds{i}{j});
+                    end
+                else
+                    condName{1}=lower(conds{i}); %Lower case
+                end
+                aux=this.conditionName;
+                aux(cellfun(@isempty,aux))='';
+                allConds=lower(aux);
+                condIdx=[];
+                j=0;
+                while isempty(condIdx) && j<length(condName)
+                    j=j+1;
+                    condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
+                end
+                if ~isempty(condIdx)
+                    conditionIdxs(i)=condIdx;
+                end
+            end
+        end
     end
     
 end

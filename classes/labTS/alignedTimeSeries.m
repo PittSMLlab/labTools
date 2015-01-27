@@ -42,7 +42,7 @@ classdef alignedTimeSeries
                        warning(['There are too many strides in this condition to plot (' num2str(size(structure,3)) '). Only plotting first ' num2str(P) '.'])
                        structure=structure(:,:,1:P);
                end
-               for i=1:M
+               for i=1:M %Go over labels
                    %subplot(b,a,i)
                    subplot(plotHandles(i))
                    hold on                  
@@ -51,13 +51,13 @@ classdef alignedTimeSeries
                    N=size(data,1);
                    plot([0:N-1]/N,data,'Color',[.7,.7,.7])
                    %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
-                   legend(this.labels{i})
+                   %legend(this.labels{i})
                    hold off
                end
                [meanEvents,ss]=mean(events);
                [i2,~]=find(meanEvents.Data);
                [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents);
-               for i=1:length(plotHandles)
+               for i=1:length(plotHandles) %For each plot, 
                    subplot(plotHandles(i))
                    hold on
                    for j=1:length(ss)

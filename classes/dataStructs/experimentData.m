@@ -209,18 +209,39 @@ classdef experimentData
             end
         end
         
-        function stridedField=getStridedField(this,field,conditions)
+        function stridedField=getStridedField(this,field,conditions,events)
+            if nargin<4 || isempty(events)
+                events=[this.getSlowLeg 'HS'];
+            end
            if nargin<3 || isempty(conditions)
                trials=cell2mat(this.metaData.trialsInCondition);
            else
+               if ~isa(conditions,'double') %If conditions are given by name, and not by index
+                   conditions=getConditionIdxsFromName(this,conditions);
+               end
                trials=cell2mat(this.metaData.trialsInCondition(conditions));
            end
            stridedField={};
            for i=trials
-              stridedField=[stridedField; this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,[this.getSlowLeg 'HS'])]; 
+              stridedField=[stridedField; this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events)]; 
            end
         end
         
+        function alignedField=getAlignedField(this,field,conditions,events,alignmentLengths)
+            if nargin<4 
+                events=[];
+            end
+            stridedField=getStridedField(this,field,conditions,events);
+            alignedField=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
+        end
+        
+        %Auxiliar
+        function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
+            %Looks for condition names that are similar to the ones given
+            %in conditionNames and returns the corresponding condition idx
+            %ConditionNames should be a cell array containing a string or another cell array of strings in each of its cells. E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
+        end
     end
     
 end
