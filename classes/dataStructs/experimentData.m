@@ -225,7 +225,7 @@ classdef experimentData
             end
         end
         
-        function stridedField=getStridedField(this,field,conditions,events)
+        function [stridedField,bad]=getStridedField(this,field,conditions,events)
             if nargin<4 || isempty(events)
                 events=[this.getSlowLeg 'HS'];
             end
@@ -238,8 +238,11 @@ classdef experimentData
                trials=cell2mat(this.metaData.trialsInCondition(conditions));
            end
            stridedField={};
+           bad=[];
            for i=trials
-              stridedField=[stridedField; this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events)]; 
+               [aux,aux1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              stridedField=[stridedField; aux]; 
+              bad=[bad; aux1];
            end
         end
         
@@ -247,8 +250,11 @@ classdef experimentData
             if nargin<4 
                 events=[];
             end
-            stridedField=getStridedField(this,field,conditions,events);
-            alignedField=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
+            [stridedField,bad]=getStridedField(this,field,conditions,events);
+            if any(bad)
+                warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
+            end
+            alignedField=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
         end
         
         %Auxiliar

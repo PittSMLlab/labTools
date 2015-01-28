@@ -18,7 +18,7 @@ classdef labTimeSeries  < timeseries
         
         %Constructor:
         function this=labTimeSeries(data,t0,Ts,labels) %Necessarily uniformly sampled
-            if nargin==0 || isempty(data)
+            if nargin==0
                 data=[];
                 time=[];
                 labels={};
@@ -115,6 +115,7 @@ classdef labTimeSeries  < timeseries
         end
         
         function newThis=resampleN(this,newN,method) %Same as resample function, but directly fixing the number of samples instead of TS
+            if ~isempty(this.Data)
             if nargin<3 || isempty(method)
                  if ~isa(this.Data(1,1),'logical')
                         method='interpft';
@@ -126,11 +127,21 @@ classdef labTimeSeries  < timeseries
             newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
             switch method
                 case 'interpft'
+                    allNaNFlag=false;
                     if any(isnan(this.Data(:)))
-                        warning('labTimeSeries:resampleN','Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
-                        this=substituteNaNs(this,'linear');
+                        warning('Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
+                        if all(isnan(this.Data(:)))
+                            warning('All data is NaNs, not interpolating: returning NaNs')
+                            allNaNFlag=true;
+                        else
+                            this=substituteNaNs(this,'linear');
+                        end
                     end
-                    newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
+                    if ~allNaNFlag
+                        newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
+                    else
+                        newData=nan(newN,size(this.Data,2));
+                    end
                 case 'logical'
                    newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
                    for i=1:size(this.Data,2) %Go over event labels
@@ -146,6 +157,9 @@ classdef labTimeSeries  < timeseries
             end
             t0=this.Time(1);
             newThis=labTimeSeries(newData,t0,modNewTs,this.labels);
+            else %this.Data==[]
+                error('labTimeSeries:resampleN','Interpolating empty labTimeSeries,impossible.')
+            end
         end
         
         function newThis=split(this,t0,t1)
@@ -232,7 +246,12 @@ classdef labTimeSeries  < timeseries
                         t0=t1;
                         lastEventIdx=nextEventIdx;
                    else
-                       	steppedDataArray{i,j}=[];
+                        warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
+                        if islogical(this.Data)
+                            steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
+                        else
+                            steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
+                        end
                         bad(i)=1;
                    end
                    
@@ -399,8 +418,20 @@ classdef labTimeSeries  < timeseries
             for i=1:size(stridedTS,1) %Going over strides
                 M=[0,cumsum(N)];
                 for j=1:size(stridedTS,2) %Going over aligned phases
-                    aa=resampleN(stridedTS{i,j},N(j));
-                    aux(M(j)+1:M(j+1),:,i)=aa.Data;
+                    if isa(stridedTS{i,j},'labTimeSeries')
+                        if ~isempty(stridedTS{i,j}.Data)
+                            aa=resampleN(stridedTS{i,j},N(j));
+                            aux(M(j)+1:M(j+1),:,i)=aa.Data;
+                        else %Separating by strides returned empty labTimeSeries, possibly because of events in disorder
+                            if islogical(stridedTS{i,j}.Data)
+                            	aux(M(j)+1:M(j+1),:,i)=false;
+                            else
+                                aux(M(j)+1:M(j+1),:,i)=NaN;
+                            end
+                        end
+                    else
+                        error('labTimeSeries:stridedTSToAlignedTS',['First argument is not a cell array of labTimeSeries. Element i=' num2str(i) ', j=' num2str(j)])
+                    end
                 end
             end
             alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels);
