@@ -5,8 +5,8 @@ classdef adaptationData
     % See also experimentData
     
     properties
-        metaData %Information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
-        subData %Information of the subject (DOB, sex, height, weight...)in a subjectData object
+        metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
+        subData %cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object
         data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
     
@@ -70,7 +70,7 @@ classdef adaptationData
         
         %Other I/O functions:
         function labelList=getParameters(this)
-		%obtain data for parameters evaluated in the subject 
+		%obtain an array of strings with the labels of the all parameters 
 		%INPUT:
 		%this: experimentData object
 		%
@@ -82,7 +82,7 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
-		%Obtain information of a parameter in a trial
+		%Obtain strides information for a parameter in a specific trial
 		%
 		%INPUTS:
 		%this: experimentData object
@@ -121,11 +121,11 @@ classdef adaptationData
         end
         
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
-		%Obtain all data for a parameter or set of parameters in a condition or set of conditions.
+		%Obtain strides information for a parameter in a condition.
 		%INPUTS:
 		%this: experimentData object
 		%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)
-		%condition: specific condition that information is needed 
+		%condition: Specific condition that information is needed 
 		%removeBias: 1 to activate function to remove bias, 0 or empty to no activate function
 		%
 		%OUTPUTS:
@@ -136,6 +136,7 @@ classdef adaptationData
 		%
 		%EX: adaptData.getParamInCond('alphaFast','OG base',0)
 		%See also: adaptationData.getParamInTrial
+		%          adaptationData.removeBias
 		
             if nargin<4 || isempty(removeBias)
                 removeBias=0;
@@ -216,7 +217,29 @@ classdef adaptationData
         end
         
         function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
-        %obtain the earlies and late data points for conditions
+        %obtain the earliest and late data points for conditions
+		%allow to eliminate very late data points 
+		%Predefine values:  
+		%earlyNumber=5
+		%veryEarlyPoints=3
+		%latePoints=20
+		%exemptLast=5
+		%
+		%INPUTS:
+		%this:experimentData object 
+		%labels: parameters to plot 
+		%conds: condition that information is needed 
+		%removeBiasFlag:1 to activate function to remove bias, 0 or empty to no activate function
+		%earlyNumber:number of strides to take as earliest values 
+		%lateNumber: number of strides to take as late values 
+		%exemptLast: number of strides to discard
+		%OUTPUTS:
+		%veryEarlyPoints:  value of the 3 strides on the condition 
+		%earlyPoints: value of the earliest strides 
+		%latePoints: value of the late strides
+		%
+		%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);
+		
 			earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
@@ -300,8 +323,19 @@ classdef adaptationData
         
         %Display functions:
         function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
-        %Plot of the behaviour of parameters through the entire experiment
-        %specify the behaviour on each condition and trial
+        %Plot of the behaviour of parameters through the different conditions 
+        %specify the parameter behaviour on each condition and trial
+        %
+        %INPUTS:
+		%this:experimentData object 
+		%label: parameters to plot 
+		%runningBinSize: number of data points to considered to make an average 
+		%trialMarkerFlag: 1 to identify the different trials that compose a single condition. 
+		%
+		%OUTPUT:
+		%figHandle: number of the figure where is the plot 	
+		%
+		%EX: adaptData.plotParamTimeCourse('spatialContribution',2,1)
 		
 		
             if isa(label,'char')
