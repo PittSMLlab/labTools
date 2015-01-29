@@ -80,12 +80,13 @@ classdef alignedTimeSeries
                end
                [meanEvents,ss]=mean(events);
                [i2,~]=find(meanEvents.Data);
-               [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents);
-               for i=1:length(plotHandles) %For each plot, 
+               [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor);
+               for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
+                   eventSampPeriod=(events.Time(2)-events.Time(1));
                    subplot(plotHandles(i))
                    hold on
                    for j=1:length(ss)
-                    plot(((i2(j)-1)+ss(j)*[-1,1])/size(structure,1),[0,0],'k','LineWidth',1);
+                    plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
                    end
                    axis tight
                    hold off
@@ -94,12 +95,16 @@ classdef alignedTimeSeries
         
         function [labTS,stds]=mean(this,strideIdxs)
             if nargin>1 && ~isempty(strideIdxs)
+try
                 this.Data=this.Data(:,:,strideIdxs);
+catch
+    pause
+end
             end
             if ~islogical(this.Data(1))
                 labTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
                 stds=[];
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER.
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
                 [eventTimeIndex,eventType]=find(this.Data(:,:,1));
                 histogram=nan(size(this.Data,3),length(eventTimeIndex));
                 [eventTimeIndex,ii]=sort(eventTimeIndex);
@@ -118,11 +123,17 @@ classdef alignedTimeSeries
                 
                 for i=1:size(this.Data,3);
                     [eventTimeIndex,eventType]=find(this.Data(:,:,i));
+                    if length(eventTimeIndex)>length(newLabels)
+                        warning(['alignedTS:mean: Stride ' num2str(i) ' has more events than expected. Discarding.']);
+                        histogram(i,:)=nan;
+                    else
+                        %FIXME: check event order by using the labels.
                     [eventTimeIndex,~]=sort(eventTimeIndex);
                     histogram(i,:)=eventTimeIndex;
+                    end
                 end
                 newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
-                mH=median(histogram);
+                mH=nanmedian(histogram);
                 for i=1:size(histogram,2)
                     newData(mH(i),i)=true;
                 end

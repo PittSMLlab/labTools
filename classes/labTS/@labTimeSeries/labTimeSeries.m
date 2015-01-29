@@ -233,7 +233,7 @@ classdef labTimeSeries  < timeseries
             initTime=aa(1:M); %Initial time of each interval identified
             duration=diff(aa); %Duration of each interval
             steppedDataArray=cell(M,N);
-            bad=zeros(M,1);
+            bad=false(M,1);
             for i=1:M %Going over strides
                 t0=auxTime(refIdxLst(i));
                 nextT0=auxTime(refIdxLst(i+1));
@@ -252,7 +252,7 @@ classdef labTimeSeries  < timeseries
                         else
                             steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
                         end
-                        bad(i)=1;
+                        bad(i)=true;
                    end
                    
                 end
@@ -343,7 +343,7 @@ classdef labTimeSeries  < timeseries
         end
         
         %Display
-        function [h,plotHandles]=plot(this,h,labels,plotHandles,events) %Alternative plot: all the traces go in different axes
+        function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;
             else
@@ -367,7 +367,11 @@ classdef labTimeSeries  < timeseries
                 h1(i)=plotHandles(i);
                 subplot(h1(i))
                 hold on
-                plot(this.Time,relData(:,i),'LineWidth',2)
+                if nargin<6
+                    plot(this.Time,relData(:,i),'LineWidth',2)
+                else
+                    plot(this.Time,relData(:,i),'LineWidth',2,'Color',color)
+                end
                 ylabel(relLabels{i})
                 %if i==ceil(N/2)
                 %    xlabel('Time (s)')
