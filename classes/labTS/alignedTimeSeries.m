@@ -95,11 +95,7 @@ classdef alignedTimeSeries
         
         function [labTS,stds]=mean(this,strideIdxs)
             if nargin>1 && ~isempty(strideIdxs)
-try
                 this.Data=this.Data(:,:,strideIdxs);
-catch
-    pause
-end
             end
             if ~islogical(this.Data(1))
                 labTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);

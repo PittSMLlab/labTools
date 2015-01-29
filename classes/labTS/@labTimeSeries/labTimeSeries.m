@@ -127,21 +127,20 @@ classdef labTimeSeries  < timeseries
             newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
             switch method
                 case 'interpft'
-                    allNaNFlag=false;
+                    allNaNIdxs=[];
                     if any(isnan(this.Data(:)))
-                        warning('Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
-                        if all(isnan(this.Data(:)))
-                            warning('All data is NaNs, not interpolating: returning NaNs')
-                            allNaNFlag=true;
-                        else
-                            this=substituteNaNs(this,'linear');
+                        if any(all(isnan(this.Data)))
+                            allNaNIdxs=all(isnan(this.Data));
+                            warning(['All data is NaNs for labels ' this.labels{allNaNIdxs} ', not interpolating those: returning NaNs'])
                         end
                     end
-                    if ~allNaNFlag
-                        newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
-                    else
-                        newData=nan(newN,size(this.Data,2));
+                    this.Data(:,allNaNIdxs)=0; %Substituting 0's to allow the next line to run without problems
+                    if any(isnan(this.Data(:))) %Only if there are still NaNs after the previous step, we will substitute the missing data with linearly interpolated values
+                        warning('Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs (missing values) which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
+                        this=substituteNaNs(this,'linear'); %Interpolate time-series that are not all NaN (this is, there are just some values missing)
                     end
+                    newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
+                    newData(:,allNaNIdxs)=nan; %Replacing the previously filled data with NaNs
                 case 'logical'
                    newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
                    for i=1:size(this.Data,2) %Go over event labels
@@ -152,7 +151,7 @@ classdef labTimeSeries  < timeseries
                 otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
                     newData=zeros(length(newTimeVec),size(this.Data,2));
                     for i=1:size(this.Data,2)
-                        newData(:,i)=interp1(this.Time,this.Data(:,i),newTimeVec,method);
+                        newData(:,i)=interp1(this.Time,this.Data(:,i),newTimeVec,method,nan);
                     end
             end
             t0=this.Time(1);
@@ -319,10 +318,16 @@ classdef labTimeSeries  < timeseries
             if nargin<2 || isempty(method)
                 method='linear';
             end
+            if any(all(isnan(this.Data))) %Returns true if any TS contained in the data is all NaN
+                %FIXME: This throws an exception now, but it should just
+                %return all NaN labels as all NaN and substitute missing
+                %values in the others.
+                error('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference).')
+            end
             newData=zeros(size(this.Data));
              for i=1:size(this.Data,2) %Going through labels
                  auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
-                 newData(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method);
+                 newData(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,nan);
              end
              newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
         end
