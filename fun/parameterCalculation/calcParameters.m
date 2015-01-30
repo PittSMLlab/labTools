@@ -51,8 +51,8 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'betaFast',...              ankle placement of fast leg at FTO2 (in mm)
     'betaAngSlow',...           slow leg angle at STO (in deg)
     'betaAngFast',...           fast leg angle at FTO (in deg)
-    'stanceRangeSlow',...       alphaSlow + betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)
-    'stanceRangeFast',...       alphaFast + betaFast (in mm)
+    'stanceRangeSlow',...       alphaSlow - betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)
+    'stanceRangeFast',...       alphaFast - betaFast (in mm)
     'stanceRangeAngSlow',...    |alphaAngSlow| + |betaAngSlow| (i.t total angle swept out by slow leg during stance) (in deg)
     'stanceRangeAngFast',...    |alphaAngFast| + |betaAngFast| (in deg)
     'swingRangeSlow',...        total distance covered by slow ankle marker realtive to hip from STO to SHS2 (in mm)
@@ -493,11 +493,10 @@ out=parameterSeries(data,paramlabels,times);
 
 try
     if any(bad)
-        slashes=find(in.metaData.rawDataFilename=='\' | in.metaData.rawDataFilename=='/');
-        file=in.metaData.rawDataFilename((slashes(end)+1):end);
+        [file]= getSimpleFileName(in.metaData.rawDataFilename);
         disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
     end
 catch
     [file] = getSimpleFileName(in.metaData.rawDataFilename);
-        disp(['Warning: No strides detected in ',file])
+    disp(['Warning: No strides detected in ',file])
 end

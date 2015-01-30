@@ -15,7 +15,7 @@ expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
 %   2) that info.domleg is either 'left' or 'right'
 %   3) that the reference leg is the leg on the slow belt
 
-if info.isStroke==1 %For stroke patients, reference leg is equal to affected side
+if isfield(info,'isStroke') && info.isStroke==1 %For stroke patients, reference leg is equal to affected side
     if strcmpi(info.affectedSide,'right')
         info.refLeg='R';
     elseif strcmpi(info.affectedSide,'left')
@@ -45,7 +45,7 @@ elseif expDate.month == DOB.month
     end
 end
 
-if info.isStroke==0
+if ~isfield(info,'isStroke') || info.isStroke==0
     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
     info.weight,age,info.ID);
 else
