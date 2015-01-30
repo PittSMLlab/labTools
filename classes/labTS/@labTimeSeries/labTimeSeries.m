@@ -131,7 +131,7 @@ classdef labTimeSeries  < timeseries
                     if any(isnan(this.Data(:)))
                         if any(all(isnan(this.Data)))
                             allNaNIdxs=all(isnan(this.Data));
-                            warning(['All data is NaNs for labels ' this.labels{allNaNIdxs} ', not interpolating those: returning NaNs'])
+                            warning(['All data is NaNs for labels ' strcat(this.labels{allNaNIdxs},' ') ', not interpolating those: returning NaNs'])
                         end
                     end
                     this.Data(:,allNaNIdxs)=0; %Substituting 0's to allow the next line to run without problems
@@ -292,17 +292,9 @@ classdef labTimeSeries  < timeseries
             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
         end
         
-        function this=fillts(this)
-            for i=1:size(this.Data,2)
-                idx=isnan(this.Data(:,i));
-                if any(idx)
-                    disp([num2str(sum(idx)) ' samples were NaN in ' this.labels{i}])
-                    this.Quality=idx;
-                    this.QualityInfo.Code=[0 1];
-                    this.QualityInfo.Description={'good','missing'};
-                    this.Data(:,i)=interp1(this.Time(~idx),this.Data(~idx,i),this.Time,'linear','extrap');
-                end
-            end
+        function this=fillts(this) %TODO: Deprecate
+            warning('labTS.fillts is being deprecated. Use substituteNaNs instead.')
+            this=substituteNaNs(this,'linear');
         end
         
         function newThis=concatenate(this,other)
@@ -314,7 +306,7 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function newThis=substituteNaNs(this,method)
+        function this=substituteNaNs(this,method)
             if nargin<2 || isempty(method)
                 method='linear';
             end
@@ -327,9 +319,13 @@ classdef labTimeSeries  < timeseries
             newData=zeros(size(this.Data));
              for i=1:size(this.Data,2) %Going through labels
                  auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
-                 newData(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,nan);
+                 %Saving quality data (to mark which samples were
+                 %interpolated)
+                 this.Quality=~auxIdx;
+                 this.QualityInfo.Code=[0 1];
+                 this.QualityInfo.Description={'good','missing'};
+                 this.Data(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,0); %Extrapolation values are filled with 0,
              end
-             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
         end
         
         %------------------
