@@ -123,7 +123,7 @@ classdef alignedTimeSeries
                 stds=nanstd(histogram);
             end
         end
-        function [stdsTS]=std(this,strideIdxs)
+        function [stdTS]=std(this,strideIdxs)
             if nargin>1 && ~isempty(strideIdxs)
                 this.Data=this.Data(:,:,strideIdxs);
             end
@@ -131,7 +131,7 @@ classdef alignedTimeSeries
                 stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
             else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
                 [histogram,~]=logicalHist(this);
-                stds=std(histogram);
+                stdTS=std(histogram); %Not really a tS
             end
         end
         

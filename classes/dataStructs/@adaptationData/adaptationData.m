@@ -539,6 +539,7 @@ classdef adaptationData
                 aux=fields(a);
                 this=a.(aux{1});
                 [veryEarlyPoints(:,:,:,subject),earlyPoints(:,:,:,subject),latePoints(:,:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
+		%Indexes in data correspond to: condition, stride,label,subject
             end
             %Compute some stats
             aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
