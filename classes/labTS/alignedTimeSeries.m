@@ -93,47 +93,44 @@ classdef alignedTimeSeries
                end
         end
         
-        function [labTS,stds]=mean(this,strideIdxs)
+        function [meanTS,stds]=mean(this,strideIdxs)
+            %Computes mean and standard deviation across all the aligned timeSeries.
+            %For regular (double/complex) timeseries, mean and std are
+            %computed directly from this.Data and each is returned as a
+            %timeseries.
+            %For logical data (events), it is assumed that all the aligned
+            %timeSeries have the same number of true values and in the same order. 
+            %A histogram is computed for the temporal ocurrences of this
+            %values, and a logical TS is returned with events only in the
+            %median values given by this histogram. The labels in this TS are 
+            %as many as events occur in a single TS (this.Data(:,:,1)). 
+            %The std is returned as a vector of size Nx1.
             if nargin>1 && ~isempty(strideIdxs)
                 this.Data=this.Data(:,:,strideIdxs);
             end
             if ~islogical(this.Data(1))
-                labTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
                 stds=[];
             else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [eventTimeIndex,eventType]=find(this.Data(:,:,1));
-                histogram=nan(size(this.Data,3),length(eventTimeIndex));
-                [eventTimeIndex,ii]=sort(eventTimeIndex);
-                eventType=eventType(ii);
-                ii=eventType;
-                aux=zeros(length(this.labels),1);
-                newLabels=cell(size(ii));
-                for i=1:length(ii)
-                    aux(ii(i))=aux(ii(i))+1;
-                    if aux(ii(i))==1
-                        newLabels{i}=this.labels{ii(i)};
-                    else
-                        newLabels{i}=[this.labels{ii(i)} num2str(aux(ii(i)))];
-                    end
-                end
-                
-                for i=1:size(this.Data,3);
-                    [eventTimeIndex,eventType]=find(this.Data(:,:,i));
-                    if length(eventTimeIndex)>length(newLabels)
-                        warning(['alignedTS:mean: Stride ' num2str(i) ' has more events than expected. Discarding.']);
-                        histogram(i,:)=nan;
-                    else
-                        %FIXME: check event order by using the labels.
-                    [eventTimeIndex,~]=sort(eventTimeIndex);
-                    histogram(i,:)=eventTimeIndex;
-                    end
-                end
+                [histogram,newLabels]=logicalHist(this);
+                %Compute mean/median:
                 newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
                 mH=nanmedian(histogram);
                 for i=1:size(histogram,2)
                     newData(mH(i),i)=true;
                 end
-                labTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
+                meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
+                stds=nanstd(histogram);
+            end
+        end
+        function [stdsTS]=std(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            if ~islogical(this.Data(1))
+                stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,~]=logicalHist(this);
                 stds=std(histogram);
             end
         end
@@ -165,5 +162,41 @@ classdef alignedTimeSeries
         
     end
     
+    methods(Hidden)
+        function [histogram,newLabels]=logicalHist(this)
+            %Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the sam order.
+            
+            %Check: this is a logical alignedTS
+            %TODO
+            %
+            [eventTimeIndex,eventType]=find(this.Data(:,:,1));
+            histogram=nan(size(this.Data,3),length(eventTimeIndex));
+            [eventTimeIndex,ii]=sort(eventTimeIndex);
+            eventType=eventType(ii);
+            ii=eventType;
+            aux=zeros(length(this.labels),1);
+            newLabels=cell(size(ii));
+            for i=1:length(ii)
+                aux(ii(i))=aux(ii(i))+1;
+                if aux(ii(i))==1
+                    newLabels{i}=this.labels{ii(i)};
+                else
+                    newLabels{i}=[this.labels{ii(i)} num2str(aux(ii(i)))];
+                end
+            end
+
+            for i=1:size(this.Data,3);
+                [eventTimeIndex,eventType]=find(this.Data(:,:,i));
+                if length(eventTimeIndex)>length(newLabels)
+                    warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more events than expected. Discarding.']);
+                    histogram(i,:)=nan;
+                else
+                    %FIXME: check event order by using the labels.
+                    [eventTimeIndex,~]=sort(eventTimeIndex);
+                    histogram(i,:)=eventTimeIndex;
+                end
+            end
+        end
+    end
 end
 

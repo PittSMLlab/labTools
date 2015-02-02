@@ -406,8 +406,6 @@ classdef labTimeSeries  < timeseries
             f=[-floor(MM/2):floor(MM/2-1)];
         end
                 
-            
-        
     end
     
     methods(Static)

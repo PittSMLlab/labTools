@@ -646,7 +646,7 @@ classdef adaptationData
                         for p=1:length(params)
                             %itialize so there are no inconsistant dimensions or out of bounds errors
                             values(group).(params{p}).(cond{c})(subject,:)=NaN(1,1000); %this assumes that the max number of data points that could exist in a single condition is 1000                                         
-                            if strcmp(params{p},'velocityContribution')
+                            if strcmp(params{p},'velocityContribution') %FIXME: This is not recommended, we are taking abs() of the velocity Contribution without saying anything. Furthermore, what happens when velContrib ~ 0 ?
                                 values(group).(params{p}).(cond{c})(subject,1:nPoints)=abs(dataPts(:,p));    
                             else
                                 values(group).(params{p}).(cond{c})(subject,1:nPoints)=dataPts(:,p);
@@ -773,9 +773,9 @@ classdef adaptationData
                         if c==length(conditions) && group==Ngroups
                             %on last iteration of conditions loop, add title and
                             %vertical lines to seperate conditions
-                            if ~size(params,1)>1                                
+                            %if ~size(params,1)>1                                
                                 title(params{p},'fontsize',12)
-                            end
+                            %end
                             line([lineX; lineX],ylim,'color','k')
                             xticks=lineX+diff([lineX Xstart+condLength])./2;                    
                             set(gca,'fontsize',8,'Xlim',[0 Xstart+condLength],'Xtick', xticks, 'Xticklabel', conditions)

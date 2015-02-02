@@ -6,7 +6,7 @@ if ~isempty(emg)
     emg=emg.fillts;
     
     if any(isnan(emg.Data(:)))
-        a=1;
+        a=1; %FIXME!
     end
     %Step 2: do amplitude extraction
     f_cut=10; %Hz
