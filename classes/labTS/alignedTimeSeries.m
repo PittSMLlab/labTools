@@ -73,7 +73,7 @@ classdef alignedTimeSeries
                    %title(aux{1}.(field).labels{i})
                    data=squeeze(structure(:,i,:));
                    N=size(data,1);
-                   plot([0:N-1]/N,data,'Color',[.7,.7,.7])
+                   plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
                    %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
                    %legend(this.labels{i})
                    hold off
@@ -164,15 +164,27 @@ classdef alignedTimeSeries
     
     methods(Hidden)
         function [histogram,newLabels]=logicalHist(this)
-            %Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the sam order.
+            %Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the same order.
             
             %Check: this is a logical alignedTS
             %TODO
-            %
-            [eventTimeIndex,eventType]=find(this.Data(:,:,1));
-            histogram=nan(size(this.Data,3),length(eventTimeIndex));
-            [eventTimeIndex,ii]=sort(eventTimeIndex);
-            eventType=eventType(ii);
+            %TODO: dtermine the number of expected events. Currently this
+            %is as many events as stride 1 has. May be problematic if
+            %stride one is invalid.
+            eventNo=mode(sum(sum(this.Data,1),2));
+            nStrides=size(this.Data,3);
+            eventType=nan(eventNo,1);
+            for i=1:eventNo
+                aux=nan(nStrides,1);
+                for k=1:nStrides %Going over strides
+                    eventIdx=find(sum(this.Data(:,:,k),2)==1,i,'first'); %Time index of first event in stride k
+                    if length(eventIdx)==i
+                        aux(k)=find(this.Data(eventIdx(i),:,k),1,'first');
+                    end
+                end
+                eventType(i)=round(nanmedian(aux)); %Rounding is to break possible ties (very unlikely)
+            end
+            histogram=nan(nStrides,eventNo);
             ii=eventType;
             aux=zeros(length(this.labels),1);
             newLabels=cell(size(ii));
@@ -185,15 +197,19 @@ classdef alignedTimeSeries
                 end
             end
 
-            for i=1:size(this.Data,3);
+            for i=1:nStrides;
                 [eventTimeIndex,eventType]=find(this.Data(:,:,i));
-                if length(eventTimeIndex)>length(newLabels)
-                    warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more events than expected. Discarding.']);
+                if length(eventTimeIndex)~=length(newLabels)
+                    warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more or less events than expected (expecting ' num2str(length(newLabels)) ', but got ' num2str(length(eventTimeIndex)) '). Discarding.']);
                     histogram(i,:)=nan;
                 else
                     %FIXME: check event order by using the labels.
-                    [eventTimeIndex,~]=sort(eventTimeIndex);
-                    histogram(i,:)=eventTimeIndex;
+                    [eventTimeIndex,auxInds]=sort(eventTimeIndex);
+                    if all(ii==eventType(auxInds))
+                        histogram(i,:)=eventTimeIndex;
+                    else
+                        warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has events in different order than expected (expecting ' num2str(ii') ', but got ' num2str(eventType(auxInds)') '). Discarding.']);
+                    end
                 end
             end
         end
