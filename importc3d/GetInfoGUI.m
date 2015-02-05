@@ -68,8 +68,31 @@ set(gcf,'Units','pixels');
 guiPos = get(gcf,'Position');
 set(gcf, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
 
-% UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
-uiwait(handles.figure1);
+
+%Set text that pops up when fields of GUI are hovered over. Note: sprintf
+%used to allow line breaks in tool tip string.
+%------------------------Experiment Info---------------------------------%
+set(handles.description_edit,'TooltipString',sprintf(['Describes the experiment that was performed, in general terms\n',... 
+'Intended to categorize groups of subjects that all performed the same experiment. When a description is selected,\n'...
+'the Condition Info should be automatically populated. See "Adding an Experiment Description" in the User guide.']));
+set(handles.name_edit,'TooltipString','The person(s) who ran the experiment.');
+set(handles.month_list,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
+set(handles.day_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
+set(handles.year_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
+set(handles.note_edit,'TooltipString',sprintf(['Notes about the experiment as a whole. If a comment is specific to a trial,\n'...
+    'do not enter it here (there will be a chance later on to comment on individual trials).']));
+%--------------------------Subject Info----------------------------------%
+set(handles.subID_edit,'TooltipString','Coded value used to identify subject. DO NOT use the subjec''s name!');
+set(handles.DOBmonth_list,'TooltipString','');
+set(handles.DOBday_edit,'TooltipString','');
+set(handles.DOByear_edit,'TooltipString','');
+set(handles.gender_list,'TooltipString','');
+set(handles.domleg_list,'TooltipString','');
+set(handles.domhand_list,'TooltipString','');
+set(handles.height_edit,'TooltipString','');
+set(handles.weight_edit,'TooltipString','');
+
+
 
 
 % --- Outputs from this function are returned to the command line.
@@ -184,6 +207,25 @@ function domleg_list_Callback(hObject, eventdata, handles)
 % --- Executes on selection change in domhand_list.
 function domhand_list_Callback(hObject, eventdata, handles)
 
+% --- Executes on button press in strokeCheck.
+function strokeCheck_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of strokeCheck
+
+if get(hObject,'Value')
+    set(handles.popupAffected,'Enable','On')
+    set(handles.text63,'Enable','On')
+else
+    set(handles.popupAffected,'Enable','Off')
+    set(handles.text63,'Enable','Off')
+end
+guidata(hObject,handles)
+
+% --- Executes on selection change in popupAffected.
+function popupAffected_Callback(hObject, eventdata, handles)
+% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupAffected
+
+
 function height_edit_Callback(hObject, eventdata, handles)
 
 height = str2double(get(hObject, 'String'));
@@ -297,9 +339,7 @@ function condition1_Callback(hObject, eventdata, handles)
 function condName1_Callback(hObject, eventdata, handles)
 function description1_Callback(hObject, eventdata, handles)
 function trialnum1_Callback(hObject, eventdata, handles)
-% --- Executes on button press in type1.
 function type1_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of type1
 
 function condition2_Callback(hObject, eventdata, handles)
 function condName2_Callback(hObject, eventdata, handles)
@@ -581,6 +621,11 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function domhand_list_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function popupAffected_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -1070,43 +1115,3 @@ function emg2_15_CreateFcn(hObject, eventdata, handles)
 function emg2_16_Callback(hObject, eventdata, handles)
 
 function emg2_16_CreateFcn(hObject, eventdata, handles)
-
-
-% --- Executes on button press in strokeCheck.
-function strokeCheck_Callback(hObject, eventdata, handles)
-% hObject    handle to strokeCheck (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of strokeCheck
-if get(hObject,'Value')
-    set(handles.popupAffected,'Enable','On')
-    set(handles.text63,'Enable','On')
-else
-    set(handles.popupAffected,'Enable','Off')
-    set(handles.text63,'Enable','Off')
-end
-guidata(hObject,handles)
-
-
-% --- Executes on selection change in popupAffected.
-function popupAffected_Callback(hObject, eventdata, handles)
-% hObject    handle to popupAffected (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupAffected
-
-
-% --- Executes during object creation, after setting all properties.
-function popupAffected_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupAffected (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
