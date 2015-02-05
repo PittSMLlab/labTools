@@ -464,8 +464,6 @@ else
     subInfo=aux.(fieldNames{1});
     %TO DO: check that file is correct
     
-    out.bad=0;
-    
     % -- Experiment Info
     descriptionContents=cellstr(get(handles.description_edit,'string'));
     set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
@@ -489,7 +487,7 @@ else
     set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
     set(handles.height_edit,'string',subInfo.height);
     set(handles.weight_edit,'string',subInfo.weight);
-    if isfield(subInfo,'isStroke')
+    if isfield(subInfo,'isStroke') %for subject processed before 11/2014
         set(handles.strokeCheck,'Value',subInfo.isStroke);
     else %Case of old info files, prior support for stroke subjects
        set(handles.strokeCheck,'Value',0);

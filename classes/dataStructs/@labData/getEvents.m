@@ -13,7 +13,7 @@ if strcmpi(trialData.metaData.type,'OG') %Overground Trial, use limb angles to c
     [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation);
     t0=trialData.markerData.Time(1);
     Ts=trialData.markerData.sampPeriod;
-elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
+else %Treadmill trial
     noForce=false;
     if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data
         noForce=true;
@@ -65,8 +65,6 @@ elseif strcmpi(trialData.metaData.type,'TM') %Treadmill trial
         t0=trialData.GRFData.Time(1);
         Ts=trialData.GRFData.sampPeriod;
     end
-else
-    warning('Trial type should be ''OG'' or ''TM''. No events will be computed.');
 end
 
 events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent]),t0,Ts,{'LHS','RHS','LTO','RTO'});

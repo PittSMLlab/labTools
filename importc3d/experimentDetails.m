@@ -1,4 +1,18 @@
 function handles = experimentDetails(expDescrip,handles)
+%Fill in Condition Info fields of GetInfoGUI based on experiment entered
+%
+%When adding a new experiment description, follow the examples below or
+%refer to "Adding an Experiment Description" in the user guide. Make sure
+%to keep condNames values consistant with previous conventions.
+%
+%INPUTS:
+%expDescription: string containing description chosen in GetInfoGUI
+%handles: GUI handles from GetInfoGUI
+%
+%OUTPUT:
+%handles: modified handles structure with updated values for
+%condition, condName, description, trialnum, and type fields 
+
 
 switch expDescrip
     case {'Old Abrupt','Young Abrupt','Old Abrupt Second Visit','Young Abrupt Second Visit'}
@@ -223,7 +237,6 @@ switch expDescrip
         set(handles.condName10,'string','fast base')
         set(handles.condName11,'string','slow base')
         
-        
         %condition descriptions
         set(handles.description1,'string','8m walkway for 6 min')        
         set(handles.description2,'string','10 strides 2:1, at SS +/- 0.333*SS m/s')        
@@ -236,7 +249,6 @@ switch expDescrip
         set(handles.description9,'string','>=600 strides at self set pace')
         set(handles.description10,'string','150 strides at SS+0.333*SS m/s')
         set(handles.description11,'string','150 strides at SS-0.333*SS m/s')
-        
         
         %trial numbers for each condition
         set(handles.trialnum1,'string','1:6')
@@ -331,9 +343,7 @@ switch expDescrip
         set(handles.condName4,'string','Catch')
         set(handles.condName5,'string','Re-adaptation')
         set(handles.condName6,'string','OG post')
-        set(handles.condName7,'string','TM post')
-
-        
+        set(handles.condName7,'string','TM post')        
         
         %condition descriptions
         set(handles.description1,'string','8m walk for 10 min')        
@@ -343,7 +353,6 @@ switch expDescrip
         set(handles.description5,'string','150 at split 2:1')
         set(handles.description6,'string','8m walk for 10 min')
         set(handles.description7,'string','600 strides 1.125 m/s')
-        
         
         %trial numbers for each condition
         set(handles.trialnum1,'string','1:2')
@@ -380,8 +389,6 @@ switch expDescrip
         set(handles.condName6,'string','OG post')
         set(handles.condName7,'string','TM post')
 
-        
-        
         %condition descriptions
         set(handles.description1,'string','8m walk for 10 min')        
         set(handles.description2,'string','300 strides 1.125m/s')        
@@ -390,7 +397,6 @@ switch expDescrip
         set(handles.description5,'string','150 at split 2:1')
         set(handles.description6,'string','8m walk for 10 min')
         set(handles.description7,'string','600 strides 1.125 m/s')
-        
         
         %trial numbers for each condition
         set(handles.trialnum1,'string','1:10')

@@ -50,7 +50,7 @@ if ~isfield(info,'isStroke') || info.isStroke==0
     info.weight,age,info.ID);
 else
     subData=strokeSubjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
-    info.weight,age,info.ID,info.affectedSide);
+    info.weight,age,info.ID,info.affectedSide); %TO DO: add stroke date
 end
 
 %% Trial Data

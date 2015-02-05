@@ -21,20 +21,20 @@ for t=cell2mat(info.trialnums)
         for j=1:length(fieldList);
             if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') %Getting fields that start with M or F only
                 switch fieldList{j}(3)
-                    case '1'
+                    case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
                         forceLabels{end+1} = ['L',fieldList{j}(1:2)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                        eval(['relData=[relData,analogs.' fieldList{j} '];']);
-                    case '2'
+                        relData=[relData,analogs.(fieldList{j})];
+                    case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt
                         forceLabels{end+1} = ['R',fieldList{j}(1:2)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                        eval(['relData=[relData,analogs.' fieldList{j} '];']);
+                        relData=[relData,analogs.(fieldList{j})];
                     case '3'
                         % we don't want these for now
-                    case '4'
+                    case '4'%Forces/moments ending in '4' area assumed to be of handrail
                         forceLabels{end+1} = ['H',fieldList{j}(1:2)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                        eval(['relData=[relData,analogs.' fieldList{j} '];']);
+                        relData=[relData,analogs.(fieldList{j})];
                     otherwise
                         %do nothing
                 end
@@ -43,7 +43,7 @@ for t=cell2mat(info.trialnums)
         %Sanity check: offset calibration
         
         
-        %Create labTimeSeries
+        %Create labTimeSeries (data,t0,Ts,labels,orientation)
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;
     else
@@ -230,15 +230,11 @@ for t=cell2mat(info.trialnums)
         [markers,markerInfo]=btkGetMarkers(H);
         relData=[];
         fieldList=fields(markers);
-        markerList={};
-        %Possibly change this in the future to make sure that the markers
-        %are always named the same after this point (ex - if left hip
-        %marker is labeled LGT, LHIP, or anyhting else it always becomes
-        %LHIP.)
+        markerList={};        
         for j=1:length(fieldList);
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
-                eval(['relData=[relData,markers.' fieldList{j} '];']);
-                markerLabel=findLabel(fieldList{j});
+                relData=[relData,markers.(fieldList{j})];
+                markerLabel=findLabel(fieldList{j});%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)
                 markerList{end+1}=[markerLabel 'x'];
                 markerList{end+1}=[markerLabel 'y'];
                 markerList{end+1}=[markerLabel 'z'];

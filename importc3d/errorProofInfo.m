@@ -1,6 +1,6 @@
 function out = errorProofInfo(handles)
 
-out.bad=0;
+out.bad=false;
 
 % -- Experiment Info
 descriptionContents=cellstr(get(handles.description_edit,'string'));
@@ -9,7 +9,7 @@ if strcmp(out.ExpDescription,' ')
     h_error=errordlg('Please choose an experiment description','Description Error');    
     waitfor(h_error)
     uicontrol(handles.description_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end
 out.experimenter = get(handles.name_edit,'string');
@@ -17,7 +17,7 @@ if strcmp(out.experimenter,' (Enter name/initials)')
     h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');    
     waitfor(h_error)
     uicontrol(handles.name_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end
 MonthContents = cellstr(get(handles.month_list,'String'));
@@ -27,7 +27,7 @@ if isnan(out.day) || out.day<0 || out.day>31
     h_error=errordlg('Please enter a day between 1 and 31','Day Error');    
     waitfor(h_error)
     uicontrol(handles.day_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end
 out.year = str2double(get(handles.year_edit,'string'));
@@ -35,7 +35,7 @@ if isnan(out.year) || out.year<2010 || out.year>3000
     h_error=errordlg('Please enter the year when the experiment took place','Year Error');
     waitfor(h_error)
     uicontrol(handles.year_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end    
 out.exp_obs = get(handles.note_edit,'string');
@@ -46,7 +46,7 @@ if strcmp(out.ID,'Sub#')
     h_error=errordlg('Please enter the subject ID','ID Error');    
     waitfor(h_error)
     uicontrol(handles.subID_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end
 DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
@@ -56,7 +56,7 @@ if isnan(out.DOBday) || out.DOBday<0 || out.DOBday>31
     h_error=errordlg('Please enter a day between 1 and 31','Day Error');    
     waitfor(h_error)    
     uicontrol(handles.DOBday_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end
 out.DOByear = str2double(get(handles.DOByear_edit,'string'));
@@ -64,7 +64,7 @@ if isnan(out.DOByear) || out.DOByear<1900 || out.year>3000 %seems like an approp
     h_error=errordlg('Please enter the year when the subject was born','Year Error');    
     waitfor(h_error)    
     uicontrol(handles.DOByear_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end 
 genderContents = cellstr(get(handles.gender_list,'String'));
@@ -78,7 +78,7 @@ if isnan(out.height) || out.height<0 || out.height>230 %seems like an appropriat
     h_error=errordlg('Please enter the height of the subject','Height Error');    
     waitfor(h_error)    
     uicontrol(handles.height_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end 
 out.weight = str2double(get(handles.weight_edit,'string'));
@@ -86,7 +86,7 @@ if isnan(out.weight) || out.weight<0 || out.weight>140 %seems like an appropriat
     h_error=errordlg('Please enter the weight of the subject','Weight Error');    
     waitfor(h_error)    
     uicontrol(handles.weight_edit)
-    out.bad=1;
+    out.bad=true;
     return
 end 
 out.isStroke = get(handles.strokeCheck,'Value');
@@ -104,7 +104,7 @@ if isfield(handles,'folder_location')
         h_error=errordlg('Please enter a folder that exists','Directory Error');    
         waitfor(h_error)    
         uicontrol(handles.c3dlocation)
-        out.bad=1;
+        out.bad=true;
         return
     end
 else
@@ -155,7 +155,7 @@ for t=trials
         h_error=errordlg(['The file ',filename,' does not exist.'],'File Name Error');        
         waitfor(h_error)    
         uicontrol(handles.basefile)
-        out.bad=1;
+        out.bad=true;
         return
     end
     if out.EMGs
@@ -168,7 +168,7 @@ for t=trials
             h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');            
             waitfor(h_error)    
             uicontrol(handles.basefile)
-            out.bad=1;
+            out.bad=true;
             return
         end    
     end
@@ -197,7 +197,7 @@ if isfield(handles,'save_folder')
         h_error=errordlg('Please enter a save folder that exists','Directory Error');            
         waitfor(h_error)    
         uicontrol(handles.saveloc_edit)
-        out.bad=1;        
+        out.bad=true;        
     end
         
 else

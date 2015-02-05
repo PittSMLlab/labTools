@@ -7,7 +7,6 @@ fileList={};
 secFileList={};
 trialMD={};
 
-i = 1;
 
 for cond = sort(info.cond) 
     for t = info.trialnums{cond}
@@ -30,12 +29,12 @@ for cond = sort(info.cond)
             end
         end       
         
-        % (name,desc,obs,refLeg,cond,filename,type)
+        
         if ~isfield(info,'trialObs')
             info.trialObs=cell(info.numoftrials,1);
         end
-        trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},info.trialObs{t},...
-            info.refLeg,cond,filename,info.type{cond});
-        i = i+1;
+        % constructor: (name,desc,obs,refLeg,cond,filename,type)
+        trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
+            info.trialObs{t},info.refLeg,cond,filename,info.type{cond});        
     end    
 end

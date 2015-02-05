@@ -2,7 +2,8 @@ function markerLabel=findLabel(viconLabel)
 %function to deal with different marker labels from vicon. For the code to
 %run correctly, the label names must be as they are set in this code.
 %
-%DO NOT edit the markerLabels, only edit the text in the cases
+%DO NOT edit the markerLabel declarations, only edit the strings in the
+%case statements
 
 switch viconLabel
     case {'LGT','LHIP','OG80_LGT','OG88_LGT'}
@@ -20,7 +21,7 @@ switch viconLabel
     case {'LTOE','OG80_LTOE','OG88_LTOE'}
         markerLabel='LTOE';
     case {'RTOE','OG80_RTOE','OG88_RTOE'}
-        markerLabel='RTOE';
+        markerLabel='RTOE';   
     otherwise
         markerLabel=viconLabel;
 end
