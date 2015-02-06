@@ -297,7 +297,7 @@ for step=1:Nstrides
                 direction(t)=1;
             end
             
-            hipPos(t)= mean([sHip(t*f_kin/f_params,2) fHip(t*f_kin/f_params,2)]);
+            hipPos(t)= mean([sHip(round(times(t)*(1/CF)),2) fHip(round(times(t)*(1/CF)),2)]);
                          
             %rotate coordinates to be aligned wiht walking dierection                      
             sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction(t) sAnk(indSTO,2)])-90;

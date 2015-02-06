@@ -92,6 +92,9 @@ set(handles.domhand_list,'TooltipString','');
 set(handles.height_edit,'TooltipString','');
 set(handles.weight_edit,'TooltipString','');
 
+% UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
+ uiwait(handles.figure1);
+
 
 
 
