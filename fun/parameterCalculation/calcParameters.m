@@ -49,6 +49,8 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'alphaAngFast',...          fast leg angle at FHS (in deg)
     'betaSlow',...              ankle placement of slow leg at STO (relative avg hip marker) (in mm)
     'betaFast',...              ankle placement of fast leg at FTO2 (in mm)
+	'XSlow',...                 ankle postion of the slow leg @FHS (in mm)
+    'XFast',...                 ankle position of Fast leg @SHS (in mm)
     'betaAngSlow',...           slow leg angle at STO (in deg)
     'betaAngFast',...           fast leg angle at FTO (in deg)
     'stanceRangeSlow',...       alphaSlow - betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)
