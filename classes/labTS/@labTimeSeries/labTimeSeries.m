@@ -202,7 +202,7 @@ classdef labTimeSeries  < timeseries
         
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
             newThis=split(this.getDataAsTS(label),t0,t1);
-            [data,time,auxLabel]=getDataAsVector(newThis);
+            [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
         
         function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)

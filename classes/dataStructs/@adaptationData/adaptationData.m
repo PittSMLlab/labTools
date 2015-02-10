@@ -539,7 +539,7 @@ classdef adaptationData
                 aux=fields(a);
                 this=a.(aux{1});
                 [veryEarlyPoints(:,:,:,subject),earlyPoints(:,:,:,subject),latePoints(:,:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
-		%Indexes in data correspond to: condition, stride,label,subject
+            %Indexes in data correspond to: condition, stride,label,subject
             end
             %Compute some stats
             aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
@@ -603,8 +603,14 @@ classdef adaptationData
                 load(auxList{1}{1})
                 conditions=adaptData.metaData.conditionName; %default
             end
-            for c=1:length(conditions)        
-                cond{c}=conditions{c}(ismember(conditions{c},['A':'Z' 'a':'z' '0':'9'])); %remove non alphanumeric characters                
+            for c=1:length(conditions)
+                if isa(conditions{c},'cell')
+                    cond{c}=conditions{c}{1}(ismember(conditions{c}{1},['A':'Z' 'a':'z' '0':'9']));
+                elseif isa(conditions{c},'char')
+                    cond{c}=conditions{c}(ismember(conditions{c},['A':'Z' 'a':'z' '0':'9'])); %remove non alphanumeric characters        
+                else
+                    error('Conditions argument is neither a string, a cell array of strings or a cell array of cell array of string.')
+                end
             end
             
             if nargin<4
@@ -636,9 +642,12 @@ classdef adaptationData
                     %Load subject
                     load(auxList{group}{subject});
                     adaptData = adaptData.removeBias;
-                    for c=1:nConds                        
-                        dataPts=adaptData.getParamInCond(params,conditions{c});
+                    for c=1:nConds
+                        conditionIdxs=getConditionIdxsFromName(adaptData,{conditions{c}});
+                        dataPts=adaptData.getParamInCond(params,adaptData.metaData.conditionName{conditionIdxs});
                         nPoints=size(dataPts,1);
+                        
+                        %cond{c}=adaptData.metaData.conditionName{conditionIdxs};
                         if nPoints == 0
                             numPts.(cond{c})(s)=NaN;
                         else                             
@@ -646,7 +655,7 @@ classdef adaptationData
                         end                        
                         for p=1:length(params)
                             %itialize so there are no inconsistant dimensions or out of bounds errors
-                            values(group).(params{p}).(cond{c})(subject,:)=NaN(1,1000); %this assumes that the max number of data points that could exist in a single condition is 1000                                         
+                            values(group).(params{p}).(cond{c})(subject,:)=NaN(1,2000); %this assumes that the max number of data points that could exist in a single condition is 2000                                         
                             if strcmp(params{p},'velocityContribution') %FIXME: This is not recommended, we are taking abs() of the velocity Contribution without saying anything. Furthermore, what happens when velContrib ~ 0 ?
                                 values(group).(params{p}).(cond{c})(subject,1:nPoints)=abs(dataPts(:,p));    
                             else
@@ -675,7 +684,7 @@ classdef adaptationData
 %                       end
 
                     %to plot the max number of pts in each condition:
-                    [maxPts,loc]=nanmax(numPts.(cond{c}));
+                    [maxPts,loc]=nanmax(numPts.(cond{c})); %Note: a colliding version had nanmin here instead of nanmax. I believe this is the correct form.
                     while maxPts>1.25*nanmax(numPts.(cond{c})([1:loc-1 loc+1:end]))
                         numPts.(cond{c})(loc)=nanmean(numPts.(cond{c})([1:loc-1 loc+1:end])); %do not include min in mean
                         [maxPts,loc]=nanmax(numPts.(cond{c}));
@@ -779,7 +788,7 @@ classdef adaptationData
                             %end
                             line([lineX; lineX],ylim,'color','k')
                             xticks=lineX+diff([lineX Xstart+condLength])./2;                    
-                            set(gca,'fontsize',8,'Xlim',[0 Xstart+condLength],'Xtick', xticks, 'Xticklabel', conditions)
+                            set(gca,'fontsize',8,'Xlim',[0 Xstart+condLength],'Xtick', xticks, 'Xticklabel', cond)
                         end
                         hold off
                     end
