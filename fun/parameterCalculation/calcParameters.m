@@ -354,6 +354,9 @@ for step=1:Nstrides
             %beta (negative portion of interlimb angle at TO)
             betaSlow(t)=sAnkPos(indSTO);
             betaFast(t)=fAnkPos(indFTO2);
+			%position of the ankle market at contra lateral at HS
+			XSlow(t)=sAnkPos(indFHS);
+            XFast(t)=fAnkPos(indSHS);
             %stacne range (alpha+beta)
             stanceRangeSlow(t)=alphaTemp-betaSlow(t);
             stanceRangeFast(t)=alphaFast(t)-betaFast(t);
