@@ -371,6 +371,7 @@ for step=1:Nstrides
             %swing range
             swingRangeSlow(t)=sAnkPos(indSHS2)-sAnkPos(indSTO);
             swingRangeFast(t)=fAnkPos(indFHS)-fAnkPos(indFTO);
+			
             
             %Spatial parameters - in degrees
             
