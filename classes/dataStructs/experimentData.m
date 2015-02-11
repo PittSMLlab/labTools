@@ -152,8 +152,8 @@ classdef experimentData
                             dataTS2=aux.getDataAsVector(labels2);
                             DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
                         end
-                        auxData(1:size(DATA,1),1)=i; %Saving trial info
-                        auxData(1:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
+                        auxData(startind:size(DATA,1),1)=i; %Saving trial info
+                        auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
                         indsInTrial{i}= startind:size(DATA,1);
                         startind=size(DATA,1)+1;
                         trialTypes{i}=this.data{i}.metaData.type;

@@ -13,6 +13,8 @@ in=trialData;
 % one "stride" contains the events: SHS,FTO,FHS,STO,SHS2,FTO2
 % see lab tools user guide for a helpful visual of events.
 paramlabels = {'good',...       Flag indicating whether the stride has events in the expected order or not
+    'intiTime',...
+    'finalTime',...
     'swingTimeSlow',...         time from STO to SHS2 (in s)
     'swingTimeFast',...         time from FTO to FHS (in s)
     'stanceTimeSlow',...        time from SHS to STO (in s)
@@ -228,6 +230,10 @@ for step=1:Nstrides
     if good(t)
         
         %% Temporal Parameters
+        
+        %%metaDAta
+        initTime(t)=timeSHS;
+        finalTime(t)=timeFTO2;
         
         %%% intralimb
         
