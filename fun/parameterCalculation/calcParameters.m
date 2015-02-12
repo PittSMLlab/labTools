@@ -13,7 +13,7 @@ in=trialData;
 % one "stride" contains the events: SHS,FTO,FHS,STO,SHS2,FTO2
 % see lab tools user guide for a helpful visual of events.
 paramlabels = {'good',...       Flag indicating whether the stride has events in the expected order or not
-    'intiTime',...
+    'initTime',...
     'finalTime',...
     'swingTimeSlow',...         time from STO to SHS2 (in s)
     'swingTimeFast',...         time from FTO to FHS (in s)
@@ -305,7 +305,7 @@ for step=1:Nstrides
                 direction(t)=1;
             end
             
-            hipPos(t)= mean([sHip(round(times(t)*(1/CF)),2) fHip(round(times(t)*(1/CF)),2)]);
+            hipPos(t)= mean([sHip(indSHS,2) fHip(indSHS,2)]);
                          
             %rotate coordinates to be aligned wiht walking dierection                      
             sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction(t) sAnk(indSTO,2)])-90;

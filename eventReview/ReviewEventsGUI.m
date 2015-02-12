@@ -72,6 +72,13 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
+%Set text that pops up when fields of GUI are hovered over. Note: sprintf
+%used to allow line breaks in tool tip string.
+set(handles.delete_button,'TooltipString',sprintf(['Use crosshair to select the event(s) that need deleted. \n'...
+'Press the return (enter) key after clicking on the event(s) to delete them.']));
+set(handles.deleteNbutton,'TooltipString',sprintf(['Use crosshair to select the start and end of a range of events to be deleted.\n'...
+'ALL events in this range are removed.']));
+
 % UIWAIT makes ReviewEventsGUI wait for user response (see UIRESUME)
 % uiwait(handles.GUI_window);
 end
