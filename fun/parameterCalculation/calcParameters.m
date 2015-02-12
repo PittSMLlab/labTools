@@ -46,6 +46,7 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'stepLengthSlow',...        distance between ankle markers (relative to avg hip marker) at SHS2 (in mm)
     'stepLengthFast',...        distance between ankel markers (relative to hip) at FHS (in mm)
     'alphaSlow',...             ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)
+	'alphaTemp',...             ankle placement of slow leg at SHS (realtive to avg hip marker) (in mm)
     'alphaFast',...             ankle placement of fast leg at FHS (in mm)
     'alphaAngSlow',...          slow leg angle (hip to ankle with respect to vertical) at SHS2 (in deg)
     'alphaAngFast',...          fast leg angle at FHS (in deg)
@@ -53,6 +54,10 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
     'betaFast',...              ankle placement of fast leg at FTO2 (in mm)
 	'XSlow',...                 ankle postion of the slow leg @FHS (in mm)
     'XFast',...                 ankle position of Fast leg @SHS (in mm)
+	'RFastPos',...              Ratio of FTO/FHS
+    'RSloWPos',...              Ratio of STO/SHS
+    'RFastPosSHS',...           Ratio of fank@SHS/FHS
+    'RSlowPosFHS',...           Ratio of sank@FHS/SHS
     'betaAngSlow',...           slow leg angle at STO (in deg)
     'betaAngFast',...           fast leg angle at FTO (in deg)
     'stanceRangeSlow',...       alphaSlow - betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)
@@ -357,7 +362,7 @@ for step=1:Nstrides
             
             %alpha (positive portion of interlimb angle at HS)
             alphaSlow(t)=sAnkPos(indSHS2);
-            alphaTemp=sAnkPos(indSHS);
+            alphaTemp(t)=sAnkPos(indSHS);
             alphaFast(t)=fAnkPos(indFHS);
             %beta (negative portion of interlimb angle at TO)
             betaSlow(t)=sAnkPos(indSTO);
@@ -366,12 +371,20 @@ for step=1:Nstrides
 			XSlow(t)=sAnkPos(indFHS);
             XFast(t)=fAnkPos(indSHS);
             %stacne range (alpha+beta)
-            stanceRangeSlow(t)=alphaTemp-betaSlow(t);
+            stanceRangeSlow(t)=alphaTemp(t)-betaSlow(t);
             stanceRangeFast(t)=alphaFast(t)-betaFast(t);
             %swing range
             swingRangeSlow(t)=sAnkPos(indSHS2)-sAnkPos(indSTO);
             swingRangeFast(t)=fAnkPos(indFHS)-fAnkPos(indFTO);
 			
+			%Ratio TO/HS
+            RFastPos(t)=abs(betaFast(t)/alphaFast(t));
+            RSloWPos(t)=abs(betaSlow(t)/ alphaTemp(t)); 
+            
+            %Ratio ankle position @HS of contralateral leg/HS
+            RFastPosSHS(t)=abs(XFast(t)/alphaFast(t));
+            RSlowPosFHS(t)=abs(XSlow(t)/alphaTemp(t));
+            
             
             %Spatial parameters - in degrees
             
