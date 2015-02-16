@@ -751,7 +751,7 @@ classdef adaptationData
                             for s=1:length(subsToPlot)
                                 subInd=find(ismember(subjects,subsToPlot{s}));
                                 %to plot as dots
-                                % plot(x,indiv.(['cond' num2str(cond)])(subInd,:),'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
+                                %  Li{group}(s)=plot(x,indiv(group).(params{p}).(cond{c})(subInd,:),'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
                                 %to plot as lines
                                 Li{group}(s)=plot(x,indiv(group).(params{p}).(cond{c})(subInd,:),LineOrder{group},'color',ColorOrder(subInd,:));
                                 legendStr{group}=subsToPlot;
