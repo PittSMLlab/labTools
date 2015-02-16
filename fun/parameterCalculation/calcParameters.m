@@ -343,8 +343,8 @@ for step=1:Nstrides
                 fAnkPos=-fAnkPos;      
                 sAnkPos2D=-sAnkPos2D;
                 fAnkPos2D=-fAnkPos2D;
-            %end
-            %if sAngle(indSHS)<0
+            end
+            if sAngle(indSHS)<0
                 sAngle=-sAngle;
                 fAngle=-fAngle;
             end
@@ -420,9 +420,9 @@ for step=1:Nstrides
             Serror(t)=alphaRatioSlow(t)-alphaRatioFast(t);
             SerrorOld(t)=alphaRatioFast(t)/alphaRatioSlow(t);
             Sgoal(t)=(stanceRangeAngFast(t)-stanceRangeAngSlow(t))/(stanceRangeAngFast(t)+stanceRangeSlow(t));
-            centerSlow=(alphaAngSlow(t)+betaAngSlow(t))/2;
-            centerFast=(alphaAngFast(t)+betaAngFast(t))/2;
-            angleOfOscillationAsym(t)=centerFast-centerSlow;            
+            centerSlow(t)=(alphaAngSlow(t)+betaAngSlow(t))/2;
+            centerFast(t)=(alphaAngFast(t)+betaAngFast(t))/2;
+            angleOfOscillationAsym(t)=(centerFast(t)-centerSlow(t));            
 
             %phase shift (using angles)
             slowlimb=sAngle(indSHS:indSHS2);
