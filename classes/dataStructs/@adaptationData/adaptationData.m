@@ -778,8 +778,8 @@ classdef adaptationData
                                 abrevGroup=group2(spaces+1);
                                 group2=group2(ismember(group2,['A':'Z' 'a':'z']));
                                 abrevGroup=[group2];
-                               %legendStr{g}={['group ' abrevGroup]};								
-                                legendStr{g}={['group' num2str(g)]};
+                               legendStr{g}={['group ' abrevGroup]};								
+                               %legendStr{g}={['group' num2str(g)]};
                             end
                             set(Pa,'Clipping','off')
                             set(H,'Layer','top')
