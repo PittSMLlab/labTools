@@ -771,7 +771,14 @@ classdef adaptationData
                             else
                                 [Pa, Li{g}]=nanJackKnife(x,y,E,ColorOrder(g,:)./Cdiv,ColorOrder(g,:)./Cdiv+0.5.*abs(ColorOrder(g,:)./Cdiv-1),0.7);                                
                                 set(Li{g},'Clipping','off')
-                                H=get(Li{g},'Parent');  
+                                H=get(Li{g},'Parent'); 
+                                load([adaptDataList{g}{1,1}])
+                                group2=adaptData.subData.ID;
+                                spaces=find(group2==' ');
+                                abrevGroup=group2(spaces+1);
+                                group2=group2(ismember(group2,['A':'Z' 'a':'z']));
+                                abrevGroup=[group2];
+                               %legendStr{g}={['group ' abrevGroup]};								
                                 legendStr{g}={['group' num2str(g)]};
                             end
                             set(Pa,'Clipping','off')
