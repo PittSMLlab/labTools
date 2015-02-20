@@ -385,6 +385,7 @@ classdef adaptationData
                     minM=min(dataPoints(:));
                 end
                 if nargin>3 && trialMarkerFlag==1 %Color background with trial info
+                    axes(ah(l))
                     last=1;
                     colorNow=[0,0,0];
                     for i=1:length(trialBreaks)
