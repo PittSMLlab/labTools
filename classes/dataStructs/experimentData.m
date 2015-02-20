@@ -168,7 +168,7 @@ classdef experimentData
             end
             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
             if nargin>1 && ~isempty(filename)
-                save([filename '.mat'],'adaptData');
+                save([filename 'params.mat'],'adaptData'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
         end
         
@@ -240,7 +240,7 @@ classdef experimentData
            stridedField={};
            bad=[];
            for i=trials
-               [aux,aux1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              [aux,aux1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
               stridedField=[stridedField; aux]; 
               bad=[bad; aux1];
            end

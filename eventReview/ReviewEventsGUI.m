@@ -106,9 +106,11 @@ end
 % --- Executes on button press in browseButton.
 function browseButton_Callback(hObject, eventdata, handles)
 direct = uigetdir; %pulls up a broswer window so a folder can be selected
-set(handles.directory,'string',[direct,filesep])
-guidata(hObject,handles)
-directory_Callback(handles.directory,eventdata,handles)
+if direct~=0 %if file browser is not canceled
+    set(handles.directory,'string',[direct,filesep])
+    guidata(hObject,handles)
+    directory_Callback(handles.directory,eventdata,handles)
+end
 end
 
 function directory_Callback(hObject, eventdata, handles)
@@ -126,7 +128,8 @@ if exist(direct,'dir')
     files=what(direct);
     subFileList={};
     if isempty(files.mat)
-        errordlg('Directory entered does not contain any .mat files','Directory Error');
+        h_error=errordlg('Directory entered does not contain any .mat files','Directory Error');
+        waitfor(h_error);
         set(handles.subject,'Enable','off');
         % Give the edit text box focus so user can correct the error
         uicontrol(hObject)
@@ -138,7 +141,8 @@ if exist(direct,'dir')
         set(handles.subject,'string',subFileList)
     end    
 else
-    errordlg('Path entered is not a directory.','Directory Error');    
+    h_error=errordlg('Path entered is not a directory.','Directory Error');
+    waitfor(h_error);
     set(handles.subject,'Enable','off');
     % Give the edit text box focus so user can correct the error
     uicontrol(hObject)
@@ -182,7 +186,7 @@ eval(['aux=load('''  handles.Dir handles.filename ''');']) %.mat file can only c
 fieldNames=fields(aux);
 handles.varName=fieldNames{1};
 
-eval(['expData=aux.' fieldNames{1} ';']);
+expData=aux.(fieldNames{1});
 if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
     set(handles.subject_text,'String', 'Filename') 
     
@@ -211,7 +215,6 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     condMenu_Callback(handles.condMenu, [], handles);
 else
     h_error=errordlg('Subject file must be of the class ''processedTrialData''','Subject Error');
-    set(h_error,'color',[0.8 0.8 0.8])
     waitfor(h_error)
     % Give the edit text box focus so user can correct the error
     uicontrol(hObject)
@@ -461,13 +464,13 @@ function timeSlider_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 handles.timeWindow=round(get(hObject,'Value'));
 
-% % % %to make zooming in start in middle of previous time window: % % % %
+% % % %to make zoomed-in time window start in middle of previous time window: % % % %
 % timeToAdd=handles.timeWindow-(handles.tstop-handles.tstart);
 % time1=max([handles.tstart-floor(timeToAdd/2) 0]);
 % handles.tstop=handles.tstop+ceil(timeToAdd-(handles.tstart-time1));
 % handles.tstart=time1;
 
-% to make zooming in start at the beginning of the trial:
+% to make zoomed-in time window start at the beginning of the trial:
 handles.tstop=handles.timeWindow;
 handles.tstart=0;
 set(handles.timeWindowText,'string',handles.timeWindow);
@@ -752,9 +755,9 @@ end
 function save_button_Callback(hObject, eventdata, handles)
 
 global expData
-expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+expData.data{handles.idx}.gaitEvents=handles.trialEvents; % HH: I think this line and the next may be unneccesary since any changes to events would have already been saved to expData. Possibly in the future we could force user to hit save if he/she wants changes to be saved.
 expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
-handles.changed=true;
+handles.changed=true; %% HH: this forces the changes to be saved, even if GUI is closed.
 set(handles.write,'Enable','on');
 guidata(hObject, handles)
 end
@@ -790,9 +793,9 @@ eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %
 handles.changed=false;
 
 %re-create adaptation parameters object
-expData=expData.recomputeParameters;
-adaptData=expData.makeDataObj;
-eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
+%expData=expData.recomputeParameters; %% HH: I don't think this is necessary, should have already been re-computed earlier. 
+adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
+% eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj method automatically saves file.
 
 %Enable everything
 set(handles.plot_button,'Enable','on');
@@ -849,8 +852,8 @@ if handles.changed
     eval([handles.varName '=expData;']); %Assigning same var name
     eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %Saving with same var name
     %re-create adaptation parameters object
-    adaptData=expData.makeDataObj;
-    eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
+    adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
+    %eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
     handles.changed=false;
 end
 guidata(hObject, handles);
