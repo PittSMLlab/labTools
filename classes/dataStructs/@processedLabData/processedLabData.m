@@ -8,6 +8,7 @@ classdef processedLabData < labData
         procEMGData %processedEMGTS
         angleData %labTS (angles based off kinematics)
         adaptParams %labTS (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
+        %EMGData, which is inherited from labData, saves the FILTERED EMG data used for processing afterwards (not the RAW, which is saved in the not-procesed labData)
     end
     
     properties (Dependent)        

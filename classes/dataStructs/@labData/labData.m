@@ -157,7 +157,7 @@ classdef labData
         function processedData=process(this,subData)
             trialData=this;
             % 1) Extract amplitude from emg data if present
-            procEMGData = processEMG(trialData);
+            [procEMGData,filteredEMGData] = processEMG(trialData);
                 
             % 2) Attempt to interpolate marker data if there is missing data
             % (make into function once we have a method to do this)
@@ -179,7 +179,7 @@ classdef labData
             end     
                 
             % 6) Generate processedTrial object    
-            processedData=processedTrialData(trialData.metaData,trialData.markerData,trialData.EMGData,trialData.GRFData,trialData.beltSpeedSetData,trialData.beltSpeedReadData,trialData.accData,trialData.EEGData,trialData.footSwitchData,events,procEMGData,angleData);
+            processedData=processedTrialData(trialData.metaData,trialData.markerData,filteredEMGData,trialData.GRFData,trialData.beltSpeedSetData,trialData.beltSpeedReadData,trialData.accData,trialData.EEGData,trialData.footSwitchData,events,procEMGData,angleData);
               
             %7) Calculate adaptation parameters - to be
             % recalculated later!!

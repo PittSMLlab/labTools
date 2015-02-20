@@ -20,6 +20,11 @@ classdef alignedTimeSeries
             end
         end
         
+        function newThis=getPartialDataAsATS(this,labels)
+            [~,relIdx]=this.isaLabel(labels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx));
+        end
+        
         function [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
@@ -159,6 +164,26 @@ classdef alignedTimeSeries
             decomposition=sqrt(decomposition/(size(alignedData,3)*size(alignedData,1)));
         end
         
+        function [boolFlag,labelIdx]=isaLabel(this,label)
+            if isa(label,'char')
+                auxLabel{1}=label;
+            elseif isa(label,'cell')
+                auxLabel=label;
+            end
+            
+            N=length(auxLabel);
+            boolFlag=false(N,1);
+            labelIdx=zeros(N,1);
+            for j=1:N
+                for i=1:length(this.labels)
+                     if strcmpi(auxLabel{j},this.labels{i})
+                       boolFlag(j)=true;
+                       labelIdx(j)=i;
+                       break;
+                     end
+                end
+            end
+        end
         
     end
     

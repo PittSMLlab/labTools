@@ -391,7 +391,7 @@ classdef labTimeSeries  < timeseries
                    grid on
                 end
             end
-            linkaxes([h1,ax2],'x')
+            %linkaxes([h1,ax2],'x')
             plotHandles=h1;  
         end
         
