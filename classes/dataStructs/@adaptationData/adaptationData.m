@@ -243,7 +243,7 @@ classdef adaptationData
 			earlyPoints=[];
             veryEarlyPoints=[];
             latePoints=[];
-            N1=3;all(cellfun(@(x) isa(x,'char'),conds))
+            N1=3;%all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
             elseif ~isa(conds,'cell') && ~all(cellfun(@(x) isa(x,'char'),conds))
@@ -540,7 +540,7 @@ classdef adaptationData
                 aux=fields(a);
                 this=a.(aux{1});
                 nConds=length(conds);
-                nLabs=length(labels);
+                nLabs=length(label);
                 [veryEarlyPoints(1:nConds,:,1:nLabs,subject),earlyPoints(1:nConds,1:earlyNumber,1:nLabs,subject),latePoints(1:nConds,1:lateNumber,1:nLabs,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
             %Indexes in data correspond to: condition, stride,label,subject
             end

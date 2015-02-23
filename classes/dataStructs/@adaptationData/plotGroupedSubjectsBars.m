@@ -67,9 +67,9 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                 hold on
                 for group=1:Ngroups
                     [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=adaptationData.getGroupedData(auxList{group},label(l),conds,removeBiasFlag,N2,N3,Ne);
-                    veryEarlyPoints=squeeze(nanmean(veryEarlyPoints,2)); %Averaging over strides for each sub
-                    earlyPoints=squeeze(nanmean(earlyPoints,2)); %Averaging over strides for each sub
-                    latePoints=squeeze(nanmean(latePoints,2)); %Averaging over strides for each sub
+                    veryEarlyPoints=permute(nanmean(veryEarlyPoints,2),[1,4,2,3]); %Averaging over strides for each sub
+                    earlyPoints=permute(nanmean(earlyPoints,2),[1,4,2,3]); %Averaging over strides for each sub
+                    latePoints=permute(nanmean(latePoints,2),[1,4,2,3]); %Averaging over strides for each sub
                     %plot bars
                     if Ngroups==1  && isempty(significanceThreshold)%Only plotting first N1 strides AND first N2 strides if there is only one group, and no stats are being shown
                         bar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor',[.85,.85,.85].^group)
