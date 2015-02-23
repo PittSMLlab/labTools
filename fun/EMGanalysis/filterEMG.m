@@ -2,11 +2,12 @@ function [filteredData,BW,notchList] = filterEMG(data,fs,BW,notchList)
 
 if nargin<3 || isempty(BW)
     %BW=[20,450]; %As per recommendations on De Luca et al. 2010 (Filtering the surface EMG signal: Movement artifact and baseline noise contamination).
-    BW=[50,450]; %Changed on Sept 23 2014, by Pablo, because of artifacts detected in P0001. This should not alter the envelope detected for actual EMG activity.
+    %BW=[50,450]; %Changed on Sept 23 2014, by Pablo, because of artifacts detected in P0001. This should not alter the envelope detected for actual EMG activity.
+    BW=[30,450]; %Changed on Feb 20 2015, by Pablo, following recommendations on the book Electromyography by Merletti and Parker (Section 5.6, First Edition, p.121)
 end
 if nargin<4 || isempty(notchList)
     %notchList=[23.5,60,120,180,100,200,300,400];
-    notchList=[]; %Changed on Sept 23 2014, by Pablo, not sure we need all these notch filters
+    notchList=[]; %Changed on Sept 23 2014, by Pablo, not sure we need all these notch filters. On Merletti & Parker (see above) notchFilters are discouraged, more strongly for online filtering because of phase distortion.
 end
 
     

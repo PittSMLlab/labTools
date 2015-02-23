@@ -17,9 +17,9 @@ if ~isempty(emg)
     procEMGData=processedEMGTimeSeries(procEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
     procInfo=processingInfo(BW,NaN,notchList);
     filteredEMGData=processedEMGTimeSeries(filteredEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-    w=warning('off','labTS:resample');
+    %w=warning('off','labTS:resample');
     %procEMGData=procEMGData.resample(1.2/(2*f_cut)); %Resample with 20% margin to avoid aliasing
-    w=warning('on','labTS:resample');
+    %w=warning('on','labTS:resample');
 else
     procEMGData=[];
 end

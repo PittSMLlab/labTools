@@ -302,9 +302,9 @@ classdef adaptationData
                     end
                 else
                     disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                    veryEarlyPoints(i,:,1:N1)=NaN;
-                    earlyPoints(i,:,1:N2)=NaN;
-                    latePoints(i,:,1:N3)=NaN;
+                    veryEarlyPoints(i,1:N1,:)=NaN;
+                    earlyPoints(i,1:N2,:)=NaN;
+                    latePoints(i,1:N3,:)=NaN;
                 end
             end
         end
@@ -539,7 +539,9 @@ classdef adaptationData
                 a=load(adaptDataList{subject});
                 aux=fields(a);
                 this=a.(aux{1});
-                [veryEarlyPoints(:,:,:,subject),earlyPoints(:,:,:,subject),latePoints(:,:,:,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
+                nConds=length(conds);
+                nLabs=length(labels);
+                [veryEarlyPoints(1:nConds,:,1:nLabs,subject),earlyPoints(1:nConds,1:earlyNumber,1:nLabs,subject),latePoints(1:nConds,1:lateNumber,1:nLabs,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
             %Indexes in data correspond to: condition, stride,label,subject
             end
             %Compute some stats
