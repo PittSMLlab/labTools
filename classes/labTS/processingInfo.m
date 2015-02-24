@@ -30,9 +30,10 @@ classdef processingInfo
 %                 ME=MException('processingInfo:Constructor','NotchList is not a 1xn double');
 %                 throw(ME)
 %             end
-            if ~isacell(filterList)
+            if ~isa(filterList,'cell')
                 ME=MException('processingInfo:Constructor','Filter list is not a cell array');
             end
+            this.filterList=filterList;
         end
     end
     
