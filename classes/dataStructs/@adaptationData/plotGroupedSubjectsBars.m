@@ -162,7 +162,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             linkaxes(ah,'x')
             axis tight
             condDes = this.metaData.conditionName;
-            if isa(legendNames{1},'cell') %Case in which the list of subjects is of the form {{'name1','name2',...}}, so there is actually a single group. Without this fix it fails to write the legend.
+            if ~isempty(legendNames) && isa(legendNames{1},'cell') %Case in which the list of subjects is of the form {{'name1','name2',...}}, so there is actually a single group. Without this fix it fails to write the legend.
                 legendNames=legendNames{1};
             end
             if Ngroups==1 && isempty(significanceThreshold)

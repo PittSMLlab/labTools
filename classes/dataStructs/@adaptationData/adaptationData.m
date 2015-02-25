@@ -547,6 +547,7 @@ classdef adaptationData
             %Compute some stats
             aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
             aux2=squeeze(nanmean(latePoints,2));
+            pSwitch=[];
             for i=1:size(aux1,1) %For all conditions requested
                 for j=1:size(aux1,1)
                     if i~=j
