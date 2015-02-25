@@ -22,4 +22,5 @@ if ~isempty(emg)
     %w=warning('on','labTS:resample');
 else
     procEMGData=[];
+    filteredEMGData = [];
 end
