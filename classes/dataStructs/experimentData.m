@@ -225,7 +225,7 @@ classdef experimentData
             end
         end
         
-        function [stridedField,bad]=getStridedField(this,field,conditions,events)
+        function [stridedField,bad,originalTrial,originalInitTime]=getStridedField(this,field,conditions,events)
             if nargin<4 || isempty(events)
                 events=[this.getSlowLeg 'HS'];
             end
@@ -239,22 +239,28 @@ classdef experimentData
            end
            stridedField={};
            bad=[];
+           originalInitTime=[];
+           originalTrial=[];
            for i=trials
-              [aux,aux1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              [aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
               stridedField=[stridedField; aux]; 
-              bad=[bad; aux1];
+              bad=[bad; bad1];
+              originalTrial=[originalTrial; trial*ones(size(bad1))];
+              originalInitTime=[originalInitTime; initTime1];
            end
         end
         
-        function alignedField=getAlignedField(this,field,conditions,events,alignmentLengths)
+        function [alignedField,originalDurations,originalTrial,originalInitTime]=getAlignedField(this,field,conditions,events,alignmentLengths)
             if nargin<4 
                 events=[];
             end
-            [stridedField,bad]=getStridedField(this,field,conditions,events);
+            [stridedField,bad,originalTrial,originalInitTime]=getStridedField(this,field,conditions,events);
             if any(bad)
                 warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
             end
-            alignedField=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+            originalTrial=originalTrial(~bad);
+            originalInitTime=originalInitTime(~bad);
         end
         
         %Auxiliar

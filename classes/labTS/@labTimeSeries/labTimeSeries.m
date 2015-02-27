@@ -411,17 +411,21 @@ classdef labTimeSeries  < timeseries
     methods(Static)
         this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
         
-        function alignedTS=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
+        function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
             if ~islogical(stridedTS{1}.Data(1))
                 aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             else
                 aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             end
-            for i=1:size(stridedTS,1) %Going over strides
+            Nstrides=size(stridedTS,1);
+            Nphases=size(stridedTS,2);
+            originalDurations=nan(Nstrides,Nphases);
+            for i=1:Nstrides %Going over strides
                 M=[0,cumsum(N)];
-                for j=1:size(stridedTS,2) %Going over aligned phases
+                for j=1:Nphases %Going over aligned phases
                     if isa(stridedTS{i,j},'labTimeSeries')
+                        originalDurations(i,j)=stridedTS{i,j}.timeRange;
                         if ~isempty(stridedTS{i,j}.Data)
                             aa=resampleN(stridedTS{i,j},N(j));
                             aux(M(j)+1:M(j+1),:,i)=aa.Data;
