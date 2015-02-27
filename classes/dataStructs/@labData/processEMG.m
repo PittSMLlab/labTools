@@ -3,7 +3,7 @@ function [procEMGData,filteredEMGData] = processEMG(trialData)
 emg=trialData.EMGData;
 if ~isempty(emg)
     %Step 1: interpolate missing samples
-    emg=emg.fillts;
+    emg=emg.substituteNaNs('linear');
     
     if any(isnan(emg.Data(:)))
         error('processEMG:isNaN','Some samples in the EMG data are NaN, the filters will fail'); %FIXME!

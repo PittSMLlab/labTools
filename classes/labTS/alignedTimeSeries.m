@@ -25,7 +25,7 @@ classdef alignedTimeSeries
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx));
         end
         
-        function [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)
+        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
             % labTimeSeries.plot).
@@ -66,10 +66,14 @@ classdef alignedTimeSeries
                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); %External function
                end
                meanStr=mean(structure,3);
-               if (numel(structure))>1e7
-                       P=floor(1e7/numel(structure(:,:,1)));
-                       warning(['There are too many strides in this condition to plot (' num2str(size(structure,3)) '). Only plotting first ' num2str(P) '.'])
-                       structure=structure(:,:,1:P);
+               if nargin<7 || issempty(plottedInds)
+                   plottedInds=1:size(structure,3);
+                   if (numel(structure))>1e7
+                           P=floor(1e7/numel(structure(:,:,1)));
+                           warning(['There are too many strides in this condition to plot (' num2str(size(structure,3)) '). Only plotting first ' num2str(P) '.'])
+                           plottedInds=1:P;  
+                           structure=structure(:,:,plottedInds);
+                   end
                end
                for i=1:M %Go over labels
                    %subplot(b,a,i)
@@ -78,9 +82,14 @@ classdef alignedTimeSeries
                    %title(aux{1}.(field).labels{i})
                    data=squeeze(structure(:,i,:));
                    N=size(data,1);
-                   plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                   if nargin<6
+                        plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                   else
+                       plot([0:N-1]/N,data,individualLineStyle);
+                   end
                    %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
                    %legend(this.labels{i})
+                   maxM(i)=2*norm(data(:))/sqrt(length(data(:)));
                    hold off
                end
                [meanEvents,ss]=mean(events);
@@ -93,7 +102,8 @@ classdef alignedTimeSeries
                    for j=1:length(ss)
                     plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
                    end
-                   axis tight
+                   axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
+                   axis([0 1 -maxM(i) maxM(i)])
                    hold off
                end
         end
