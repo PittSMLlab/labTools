@@ -1,4 +1,4 @@
-function [procEMGData,filteredEMGData] = processEMG(trialData)
+ function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
 
 emg=trialData.EMGData;
 if ~isempty(emg)
@@ -8,6 +8,27 @@ if ~isempty(emg)
     if any(isnan(emg.Data(:)))
         error('processEMG:isNaN','Some samples in the EMG data are NaN, the filters will fail'); %FIXME!
     end
+	
+	%Step 1.5: Find spikes and remove them by setting them to 0
+    %load('../matData/subP0001.mat')
+    %template=expData.data{1}.EMGData.getPartialDataAsVector('LGLU',235.695,235.755);
+    quality=sparse([],[],[],size(emg.Data),round(.01*numel(emg.Data)));%Pre-allocating for 1% spikes total.
+    if nargin>1 && ~isempty(spikeFlag) && spikeFlag==1
+        load('../../../fun/EMGanalysis/template.mat');
+        for j=1:size(emg.labels)
+            [c,k,~,~] = findTemplate(template,emg.Data(j,:),whitenFlag);
+            beta=.95; %Define threshold
+            t=find(abs(c)>beta);
+            t_=t(diff(diff([t;Inf]))>0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
+            k=k(t_);
+            for i=1:lengt(t_)
+                %Setting to 0s
+                quality(t_(i):t_(i)+length(template)-1,j)=2;
+                emg.Data(t_(i):t_(i)+length(template)-1,j)=0;
+            end
+        end
+    end
+
     %Step 2: do amplitude extraction
     f_cut=10; %Hz
     [procEMG,filteredEMG,filterList,procList] = extractMuscleActivityFromEMG(emg.Data,emg.sampFreq,f_cut);
@@ -17,10 +38,22 @@ if ~isempty(emg)
     procEMGData=processedEMGTimeSeries(procEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
     procInfo=processingInfo(filterList);
     filteredEMGData=processedEMGTimeSeries(filteredEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-    %w=warning('off','labTS:resample');
-    %procEMGData=procEMGData.resample(1.2/(2*f_cut)); %Resample with 20% margin to avoid aliasing
-    %w=warning('on','labTS:resample');
-else
+    
+    %Step 4: update quality info on timeseries, incorporating previously
+    %existing quality info
+    if ~isempty(emg.Quality) %Case where there was pre-existing quality info
+        filteredEMGData.Quality(quality==2)=max(emg.quality)+1;
+        filteredEMGData.QualityInfo.Code=[emg.QualityInfo.Code max(emg.quality)+1];
+        filteredEMGData.QualityInfo.Description=[emg.QualityInfo.Description, 'spike'];
+    else
+        filteredEMGData.Quality=quality;
+        filteredEMGData.QualityInfo.Code=[0 2];
+        filteredEMGData.QualityInfo.Description={'good', 'spike'};
+    end
+    procEMGData.Quality= filteredEMGData.Quality;
+    procEMGData.QualityInfo=filteredEMGData.QualityInfo;
+    
+else %Case of empty emg data
     procEMGData=[];
     filteredEMGData = [];
 end

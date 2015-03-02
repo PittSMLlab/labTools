@@ -321,7 +321,7 @@ classdef labTimeSeries  < timeseries
                  auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
                  %Saving quality data (to mark which samples were
                  %interpolated)
-                 this.Quality=~auxIdx;
+                 this.Quality=sparse(~auxIdx);
                  this.QualityInfo.Code=[0 1];
                  this.QualityInfo.Description={'good','missing'};
                  this.Data(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,0); %Extrapolation values are filled with 0,
