@@ -20,6 +20,10 @@ classdef alignedTimeSeries
             end
         end
         
+        function newThis=getPartialStridesAsATS(this,inds)
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels);
+        end
+        
         function newThis=getPartialDataAsATS(this,labels)
             [~,relIdx]=this.isaLabel(labels);
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx));
@@ -66,7 +70,7 @@ classdef alignedTimeSeries
                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); %External function
                end
                meanStr=mean(structure,3);
-               if nargin<7 || issempty(plottedInds)
+               if nargin<7 || isempty(plottedInds)
                    plottedInds=1:size(structure,3);
                    if (numel(structure))>1e7
                            P=floor(1e7/numel(structure(:,:,1)));
@@ -138,6 +142,7 @@ classdef alignedTimeSeries
                 stds=nanstd(histogram);
             end
         end
+        
         function [stdTS]=std(this,strideIdxs)
             if nargin>1 && ~isempty(strideIdxs)
                 this.Data=this.Data(:,:,strideIdxs);
@@ -152,26 +157,7 @@ classdef alignedTimeSeries
         
         function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
             alignedData=this.Data;
-            avgStride=mean(alignedData,3);
-            meanValue=mean(avgStride,1);
-            trial2trialVariability=bsxfun(@minus,alignedData,avgStride);
-            avgStride=bsxfun(@minus,avgStride,meanValue);
-
-
-            decomposition(1,:)=meanValue.^2 * size(alignedData,3) * size(alignedData,1);
-            decomposition(2,:)=sum(avgStride.^2,1) * size(alignedData,3);
-            decomposition(3,:)=sum(sum(trial2trialVariability.^2,3),1);
-
-
-            %Check: difference btw decomposition and actual energy is not more than .1%
-            %of total energy
-            if any(sum(decomposition,1)-sum(sum(alignedData.^2,3),1)>.001*sum(sum(alignedData.^2,3),1))
-                warning('Decomposition does not add up to actual signal energy')
-            end
-
-
-            %Normalize decomposition so we get RMS values of each component:
-            decomposition=sqrt(decomposition/(size(alignedData,3)*size(alignedData,1)));
+            [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
         end
         
         function [boolFlag,labelIdx]=isaLabel(this,label)

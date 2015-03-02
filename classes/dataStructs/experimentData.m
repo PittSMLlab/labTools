@@ -245,7 +245,7 @@ classdef experimentData
               [aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
               stridedField=[stridedField; aux]; 
               bad=[bad; bad1];
-              originalTrial=[originalTrial; trial*ones(size(bad1))];
+              originalTrial=[originalTrial; i*ones(size(bad1))];
               originalInitTime=[originalInitTime; initTime1];
            end
         end
