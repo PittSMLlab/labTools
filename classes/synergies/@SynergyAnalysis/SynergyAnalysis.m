@@ -57,7 +57,7 @@ classdef SynergyAnalysis
         end
         
         %Others
-        function [randomStats] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)
+        function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)
             Nreps=50000;
             switch randomMethod
                 case 'spectralMatch'
@@ -80,7 +80,7 @@ classdef SynergyAnalysis
                 case 'timeShift'
                     switch factMethod
                         case 'nnmf'
-                            Nreps=10;
+                            Nreps=1000;
                             sizes=size(this.trainingFactorizations{1}.originalMatrix);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricNNMFEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps);
                         case 'pca'
@@ -97,16 +97,36 @@ classdef SynergyAnalysis
                 otherwise
                     throw(MException('SynAnalysisRandomRec:UnrecognizedRandomMethod','Unrecognized method for generating random data: options are timeShift and spectralMatch'))
             end
-            randomStats.cumEigPdf=cumEigPdf; %Cumulative eigenvalues distribution
-            randomStats.margEigPdf=margEigPdf; %Marginal (individual) eigenvalues distribution
-            randomStats.totalVarPdf=totalVarPdf; %Distribution of the overall variance of the data
-            randomStats.overexplanationPdf=overexplanationPdf; %Distribution of how much variance is being explained by each dimension, normalized by the minimum variance it could explain given the previous dimensions
-            randomStats.meanPdf=meanPdf; %Distribution of data mean
         end
                                   
-        dim=chooseDim(this)
+        dim=chooseDim(this) %TODO
         
-        assessDimensionality(this)
+        function [errTrain,errTest]=assessDimensionality(this,plotFlag)
+
+            %First: find error norm as a function of dimension for training and testing
+            %data
+
+            auxTrain=norm(this.trainingData(:,:),'fro');
+            auxTest=norm(this.testingData(:,:),'fro');
+            for i=1:this.testingFactorizations{1}.originalDimension
+
+                errTrain(i)=norm(this.trainingFactorizations{i}.errorMatrix(:,:),'fro')/auxTrain;
+                errTest(i)=norm(this.testingFactorizations{i}.errorMatrix(:,:),'fro')/auxTest;
+            end
+
+            if nargin<2 || plotFlag~=0
+            figure
+            hold on
+            plot(errTrain.^2)
+            plot(errTest.^2)
+            xlabel('Dims.')
+            ylabel('Normalized reconstruction error squared')
+            hold off
+            legend('Training Data','Testing Data')
+            end
+
+
+        end
         
         %Display
         function [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)
@@ -124,8 +144,8 @@ classdef SynergyAnalysis
            [figHandle,plotHandles1,plotHandles2]=plot(this.testingFactorizations{dim},plotHandles1,plotHandles2,colors);
            for i=1:length(plotHandles1)
                subplot(plotHandles1(i))
-               set(plotHandles1(i),'XTick',1:this.testingFactorizations{dim}.matrixSize(end))
-               set(plotHandles1(i),'XTickLabels',this.muscleList)
+               set(plotHandles1(i),'XTick',1:this.testingFactorizations{dim}.matrixSize(end),'XTickLabels',this.muscleList,'XTickLabelRotation',90)
+               axis tight
            end
         end
         
@@ -168,9 +188,8 @@ classdef SynergyAnalysis
             opts= optimset('display','off','TolFun',.0001/size(data,2)^2,'TolX',.0001);
 
             poolFlag=0;
-            matlabpool size;
-            if (ans==0)
-                matlabpool open
+            if isempty(gcp('nocreate'))
+                parpool
                 poolFlag=1;
             end
 
@@ -181,10 +200,9 @@ classdef SynergyAnalysis
             end
             dim1Vectors=coefs;
             if poolFlag==1
-                matlabpool close
+                parpool close
             end
        end
         
     end
 end
-

@@ -157,7 +157,8 @@ classdef labData
         function processedData=process(this,subData)
             trialData=this;
             % 1) Extract amplitude from emg data if present
-            [procEMGData,filteredEMGData] = processEMG(trialData);
+            spikeRemovalFlag=1;
+            [procEMGData,filteredEMGData] = processEMG(trialData,spikeRemovalFlag);
                 
             % 2) Attempt to interpolate marker data if there is missing data
             % (make into function once we have a method to do this)

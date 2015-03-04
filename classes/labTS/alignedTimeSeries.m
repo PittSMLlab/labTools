@@ -93,7 +93,8 @@ classdef alignedTimeSeries
                    end
                    %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
                    %legend(this.labels{i})
-                   maxM(i)=2*norm(data(:))/sqrt(length(data(:)));
+                   %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
+                   maxM(i)=2*prctile(data(:),99);
                    hold off
                end
                [meanEvents,ss]=mean(events);
