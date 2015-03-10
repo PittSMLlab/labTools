@@ -16,13 +16,17 @@ if ~isempty(emg)
     if nargin>1 && ~isempty(spikeFlag) && spikeFlag==1
         spikeFlag %This is just for testing
         load('template.mat');
-        for j=1:size(emg.labels)
+        for j=1:length(emg.labels)
             whitenFlag=0; %Not used until the whitening mechanism is further tested
             [c,k,~,~] = findTemplate(template,emg.Data(:,j),whitenFlag);
             beta=.95; %Define threshold
             t=find(abs(c)>beta);
-            t_=t(diff(diff([t;Inf]))>0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
+            if ~isempty(t)
+            t_=t(diff(t)==1 & diff(diff([-Inf;t]))<0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
             k=k(t_);
+            else
+                t_=[];
+            end
             for i=1:length(t_)
                 %Setting to 0s
                 quality(t_(i):t_(i)+length(template)-1,j)=2;

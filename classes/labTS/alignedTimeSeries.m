@@ -6,30 +6,43 @@ classdef alignedTimeSeries
         Data
         Time
         labels
+        alignmentVector=[];
+        alignmentLabels={};
     end
     
     methods
-        function this=alignedTimeSeries(t0,Ts,Data,labels)
+        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels)
             %Check: 
+            if nargin<6
+                warning('alignedTimeSeries being created without specifying alignment criteria.')
+                alignmentVector=[1];
+                alignmentLabels={'Unknown'}; 
+            end
             if size(Data,2)==length(labels)
                 this.Data=Data;
                 this.Time=t0+[0:size(Data,1)-1]*Ts;
                 this.labels=labels;
+                if length(alignmentVector)~=length(alignmentLabels)
+                    error('alignedTS:Constructor','Alignment vector and labels sizes do not match.')
+                else
+                    this.alignmentVector=alignmentVector;
+                    this.alignmentLabels=alignmentLabels;
+                end
             else
                 error('alignedTS:Constructor','Data size and label number do not match.')
             end
         end
         
         function newThis=getPartialStridesAsATS(this,inds)
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
         end
         
         function newThis=getPartialDataAsATS(this,labels)
             [~,relIdx]=this.isaLabel(labels);
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx));
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx),this.alignmentVector,this.alignmentLabels);
         end
         
-        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds)
+        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
             % labTimeSeries.plot).
@@ -86,7 +99,7 @@ classdef alignedTimeSeries
                    %title(aux{1}.(field).labels{i})
                    data=squeeze(structure(:,i,:));
                    N=size(data,1);
-                   if nargin<6
+                   if nargin<6 || isempty(individualLineStyle)
                         plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
                    else
                        plot([0:N-1]/N,data,individualLineStyle);
@@ -94,22 +107,41 @@ classdef alignedTimeSeries
                    %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
                    %legend(this.labels{i})
                    %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
-                   maxM(i)=2*prctile(data(:),99);
+                   meanM(i)=prctile(data(:),50);
+                   maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i);
+                   minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
+                   axis([0 1 minM(i) maxM(i)])
                    hold off
                end
-               [meanEvents,ss]=mean(events);
-               [i2,~]=find(meanEvents.Data);
-               [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor);
-               for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
-                   eventSampPeriod=(events.Time(2)-events.Time(1));
-                   subplot(plotHandles(i))
-                   hold on
-                   for j=1:length(ss)
-                    plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
+               if nargin<5 || isempty(events)
+                    events=[];
+                    meanEvents=[];
+               else
+                   if isa(events,'alignedTimeSeries')
+                    [meanEvents,ss]=mean(events);
+                   else
+                       meanEvents=events;
+                       ss=[];
                    end
-                   axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
-                   axis([0 1 -maxM(i) maxM(i)])
-                   hold off
+                    [i2,~]=find(meanEvents.Data);
+               end
+               if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
+                   for k=1:length(bounds)
+                        [figHandle,plotHandles]=plot(prctile(this,bounds(k)),figHandle,[],plotHandles,[],meanColor*.8,.5);
+                   end
+               end
+               [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               if ~isempty(events)
+                   for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
+                       eventSampPeriod=(events.Time(2)-events.Time(1));
+                       subplot(plotHandles(i))
+                       hold on
+                       for j=1:length(ss)
+                        plot(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],'k','LineWidth',1);
+                       end
+                       %axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
+                       hold off
+                   end
                end
         end
         
@@ -154,6 +186,17 @@ classdef alignedTimeSeries
                 [histogram,~]=logicalHist(this);
                 stdTS=std(histogram); %Not really a tS
             end
+        end
+        
+        function [prctileTS]=prctile(this,p,strideIdxs)
+            if nargin>2 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            if ~islogical(this.Data(1))
+                prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+            else %Logical timeseries. 
+                error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
+            end 
         end
         
         function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)

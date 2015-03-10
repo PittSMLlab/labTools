@@ -71,6 +71,8 @@ classdef labTimeSeries  < timeseries
                 auxLabel{1}=label;
             elseif isa(label,'cell')
                 auxLabel=label;
+            else
+                error('labTimeSeries:isaLabel','label input argument has to be a string or a cell array containing strings.')
             end
             
             N=length(auxLabel);
@@ -317,6 +319,7 @@ classdef labTimeSeries  < timeseries
                 error('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference).')
             end
             newData=zeros(size(this.Data));
+            this.Quality=zeros(size(this.Data),'int8');
              for i=1:size(this.Data,2) %Going through labels
                  auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
                  %Saving quality data (to mark which samples were
@@ -344,7 +347,7 @@ classdef labTimeSeries  < timeseries
         end
         
         %Display
-        function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color) %Alternative plot: all the traces go in different axes
+        function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;
             else
@@ -362,16 +365,19 @@ classdef labTimeSeries  < timeseries
                 [b,a]=getFigStruct(length(relLabels));
                 plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
             end
+            if nargin<7 || isempty(lineWidth)
+                lineWidth=2;
+            end
             ax2=[];
             h1=[];
             for i=1:N
                 h1(i)=plotHandles(i);
                 subplot(h1(i))
                 hold on
-                if nargin<6
-                    plot(this.Time,relData(:,i),'LineWidth',2)
+                if nargin<6 || isempty(color)
+                    plot(this.Time,relData(:,i),'LineWidth',lineWidth)
                 else
-                    plot(this.Time,relData(:,i),'LineWidth',2,'Color',color)
+                    plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color)
                 end
                 ylabel(relLabels{i})
                 %if i==ceil(N/2)
@@ -441,7 +447,7 @@ classdef labTimeSeries  < timeseries
                     end
                 end
             end
-            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels);
+            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,cell(size(N)));
         end
         
         function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)

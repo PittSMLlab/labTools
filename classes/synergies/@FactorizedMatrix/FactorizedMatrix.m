@@ -84,9 +84,7 @@ classdef FactorizedMatrix
             origDim=min([size(this.dim1Vectors(:,:),2),size(this.dim2Vectors(:,:),2)]);
         end
         function matrixSize=get.matrixSize(this)
-            size1=size(this.dim1Vectors);
-            size2=size(this.dim2Vectors);
-            matrixSize=[size1(2:end) size2(2:end)];
+            matrixSize=size(this.originalMatrix);
         end
         function reducedDim=get.reducedDimension(this)
             reducedDim=size(this.dim2Vectors,1);
@@ -241,6 +239,9 @@ classdef FactorizedMatrix
             end
             %DimInd should be strictly less than the dim of matrix (i.e.
             %dimInd < ndims(matrix)
+            if dimInd>=ndims(matrix)
+                error('FactorizedMatrix:factorize','dimInd input argument has to be strictly less than the dimensions of the matrix, as it establishes the last dimension that will be part of the first factorized tensor, and there has to be at least one extra dimension for the second tensor.')
+            end
             matSize=size(matrix);
             aux=reshape(matrix,[prod(matSize(1:dimInd)), prod(matSize(dimInd+1:end))]);
             

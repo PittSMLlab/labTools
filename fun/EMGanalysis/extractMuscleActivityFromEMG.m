@@ -1,7 +1,7 @@
-function [procData,f_cut,BW,notchList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)
-% Extract EMG amplitude
+function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)
+% Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.
 
-
+N=size(data,2); %Number of channels
 if nargin<3
     f_cut=10;
 end
@@ -12,9 +12,9 @@ if nargin<5
     notchList=[];
 end
 
-[data,BW,notchList] = filterEMG(data,fs,BW,notchList); %Filtering
-amp=amp_estim(data,fs,1,f_cut); %linear estimator of amplitude
-procData=(amp>=0).*amp; %kills negative samples, which should not ocurr anyway
+    [filteredData,filterList] = filterEMG(data,fs,BW,notchList); %Does a band-pass filter of the data, and removes some specific frequencies through notch-filters
+    
+    [procData,procList]=amp_estim(filteredData,fs,1,f_cut); %Amplitude estimation. 3rd argument defines order of estimation.
     
 end
 

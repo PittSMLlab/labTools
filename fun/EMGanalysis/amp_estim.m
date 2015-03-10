@@ -6,8 +6,11 @@ function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)
 N=size(signal,1);
 
 %% Stage 1: whitening
-[emg2, filter] = whitenEMG(signal,fs);
-procList{1}=filter; %Whitening filter
+%[emg2, filter] = whitenEMG(signal,fs);
+%procList{1}=filter; %Whitening filter
+%No whitening:
+emg2=signal;
+procList{1}=[];
 
 %% Stage 2: rectification
 emg3=abs(emg2).^mod_ord;

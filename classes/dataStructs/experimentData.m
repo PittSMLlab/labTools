@@ -225,7 +225,7 @@ classdef experimentData
             end
         end
         
-        function [stridedField,bad,originalTrial,originalInitTime]=getStridedField(this,field,conditions,events)
+        function [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)
             if nargin<4 || isempty(events)
                 events=[this.getSlowLeg 'HS'];
             end
@@ -254,11 +254,12 @@ classdef experimentData
             if nargin<4 
                 events=[];
             end
-            [stridedField,bad,originalTrial,originalInitTime]=getStridedField(this,field,conditions,events);
+            [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events);
             if any(bad)
                 warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
             end
             [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+            alignedField.alignmentLabels=events;
             originalTrial=originalTrial(~bad);
             originalInitTime=originalInitTime(~bad);
         end

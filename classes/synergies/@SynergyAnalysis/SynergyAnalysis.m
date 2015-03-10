@@ -26,11 +26,13 @@ classdef SynergyAnalysis
             end
             %Check that size of testingData and trainingData are the same
             
-            %Dim 1 is time, dim 2 are steps, dim 3 are muscles
-            for dim=1:size(trainingData,3)
+            %Dim 1 is time, dim 2 are steps, dim 3 are muscles (muscles
+            %have to be in the last dimension for the factorization to be
+            %done properly with this code).
+            for dim=1:size(trainingData,3) %Factorizing from 1 to Nmuscles
                 
                 %Compute synergies from training data
-                trainingFactorizations{dim}=FactorizedMatrix.factorize(trainingData,2,method,dim,[name '_trainingSet_dim' num2str(dim)]);
+                trainingFactorizations{dim}=FactorizedMatrix.factorize(trainingData,2,method,dim,[name '_trainingSet_dim' num2str(dim)]); %The second argument has to be the dimension corresponding to the muscles dim-1.
                 %reshapedData=reshape(trainingData,[size(trainingData,1)*size(trainingData,2),size(trainingData,3)]);
                 %[syns,coefs,~,~]=getSynergies(reshapedData,dim,5,'always');
                 %reshapedCoefs=reshape(coefs',[dim,size(trainingData,1),size(trainingData,2)]);
