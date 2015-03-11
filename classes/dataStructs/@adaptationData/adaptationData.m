@@ -437,10 +437,13 @@ classdef adaptationData
             figHandle=plotParamBarsByConditions(this,label);
         end
         
-        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias)
+        function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
            %Plots up to 3 parameters as coordinates in a single cartesian axes system
            markerList={'x','o','.','+','*','s','v','^','d'};
            colorScheme
+           if nargin<9 || isempty(addID)
+              addID=0; 
+           end
            if nargin<8 || isempty(removeBias)
                removeBias=0;
            end
@@ -478,10 +481,16 @@ classdef adaptationData
                         uistack(hh(c),'bottom')
                     end
                     if ~isempty(last)
-                        %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+                            %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
                         h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
                         uistack(h,'bottom')
                         plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1},'Color',trajectoryColor)
+                    else
+                       if addID==1
+                            %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+                            hhh=text([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],this.subData.ID);
+                            set(hhh,'LineWidth',1,'FontSize',14);
+                       end
                     end
                     last=nanmedian(data,1);
                end
@@ -848,7 +857,7 @@ classdef adaptationData
                 else
                     conditionIdxs1=conditionIdxs;
                 end
-                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias);
+                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);
             end
             
         end
