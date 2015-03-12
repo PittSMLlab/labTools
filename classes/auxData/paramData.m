@@ -74,8 +74,31 @@ classdef paramData
                 end
             end 
         end          
-        
-    end    
+       
+        function [boolFlag,labelIdx]=isaLabel(this,label)
+        if isa(label,'char')
+            auxLabel{1}=label;
+        elseif isa(label,'cell')
+            auxLabel=label;
+        end
+
+        N=length(auxLabel);
+        boolFlag=false(N,1);
+        labelIdx=zeros(N,1);
+        for j=1:N
+            for i=1:length(this.labels)
+                 if strcmpi(auxLabel{j},this.labels{i})
+                   boolFlag(j)=true;
+                   labelIdx(j)=i;
+                   break;
+                 end
+            end
+        end
+        end
+    end
+    
+    
+
         
 end
 
