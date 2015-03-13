@@ -15,13 +15,13 @@ filterList={};
     % HF noise 
     Wn=2*BW(2)/fs;
     %lowPassFilter=design(fdesign.lowpass('N,F3dB,Ap,Ast',10,Wn,.5,40));
-    filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),3,10);
+    filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),3,10); %Ast=10dB results in a 4th order Butterworth filter (-80dB/dec fall).
     lowPassFilter=design(filterList{1},'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.
     data=filtfilthd(lowPassFilter,data);  %Ext function
     % LF noise 
     Wn=2*BW(1)/fs;
     %highPassFilter=design(fdesign.highpass('N,F3dB,Ast,Ap',10,Wn,60,.5)); %Changed Fp to 2*1.1*BW(1)*... from 2*BW(2)*... on 28/5/2014 becuase I think it was not correct.
-    filterList{2}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
+    filterList{2}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3); %Ast=10dB results in a 2nd order Butter filter (-40dB/dec), while setting Ast=20dB would result in a 4th order.
     highPassFilter=design(filterList{2},'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 2nd order filter.
     data=filtfilthd(highPassFilter,data); 
     

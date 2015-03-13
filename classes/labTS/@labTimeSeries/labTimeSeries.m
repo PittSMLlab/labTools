@@ -247,7 +247,7 @@ classdef labTimeSeries  < timeseries
                         t0=t1;
                         lastEventIdx=nextEventIdx;
                    else
-                        warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
+                       warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
                         if islogical(this.Data)
                             steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
                         else
