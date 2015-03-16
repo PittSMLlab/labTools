@@ -1,5 +1,9 @@
 function [expData,rawExpData]=loadSubject(info)
 
+%% Initialize diary to save all information displayed during loading
+diaryFileName=[info.save_folder '/' info.ID 'loading.log'];
+diary(diaryFileName)
+%%
 expDate = labDate(info.day,info.month,info.year);
 %% Experiment info
 
@@ -71,3 +75,6 @@ expData=rawExpData.process;
 
 %Save processed
 save([info.save_folder '/' info.ID '.mat'],'expData','-v7.3')
+
+%%
+diary off

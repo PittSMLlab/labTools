@@ -126,6 +126,8 @@ for t=cell2mat(info.trialnums)
             gain2=refSync'/sync(:,2)';
             lagInSamplesA=0;
             lagInSamples=0;
+        else
+            disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1) ' and ' num2str(E2) '.'])
         end
         
         %Plot to CONFIRM VISUALLY if alignment worked:

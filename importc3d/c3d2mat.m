@@ -7,5 +7,5 @@
 % Get info!
 info = GetInfoGUI;
 
-%Do the actual loading
+%Do the actual loading 
 loadSubject(info);
