@@ -106,6 +106,10 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 info=handles.info;
 
+%Forcing save before the rest of the things are done (so, if it fails, we
+%don't lose it).
+save([info.save_folder filesep info.ID 'info'],'info')
+
 %asks user if there are observations for individual trials
 answer=input('Are there any observations for individual trials?(y/n) ','s');
 
