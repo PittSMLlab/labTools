@@ -10,10 +10,10 @@ if ~isempty(emg)
     %back and re-process from scratch, but it was only in a short time
     %period (~200ms) so decided to clip, issue warning, and add new quality
     %category.
-    if any(any(abs(emg.Data)>5e-3))
-        quality(abs(emg.Data)>5e-3)=3;
-        emg.Data(abs(emg.Data)>5e-3)=0;
-        warning('Found samples outside the valid range (+-5e-3), clipping.')
+    if any(any(abs(emg.Data)>=5.6e-3))
+        quality(abs(emg.Data)>=5.6e-3)=3;
+        emg.Data(abs(emg.Data)>=5.6e-3)=0;
+        warning('Found samples outside the valid range (+-5.6e-3), clipping.')
     end
     
     
