@@ -112,9 +112,9 @@ for t=cell2mat(info.trialnums)
         
         %Analytic measure of alignment problems
         E1=sum((refSync-sync(:,1)*gain1).^2)/sum(refSync.^2);
-        E2=sum((refSync-sync(:,1)*gain2).^2)/sum(refSync.^2);
-        if E1>.03 || E2>.03 %Signal difference has at least 3% of original signal energy
-            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '. Using signals in an unsynchronized way.'])
+        E2=sum((refSync-sync(:,2)*gain2).^2)/sum(refSync.^2);
+        if E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
+            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '. Using signals in an unsynchronized way(!).'])
             newRelData= relData;
             newRelData2= relData2;
             [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
