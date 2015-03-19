@@ -150,6 +150,9 @@ classdef adaptationData
             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
             
             % validate condition(s)
+            if nargin<3 || isempty(condition)
+                condition=this.metaData.conditionName;
+            end
             condNum = [];
             if isa(condition,'char')
                 condition={condition};

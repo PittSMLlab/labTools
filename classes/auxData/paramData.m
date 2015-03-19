@@ -95,6 +95,11 @@ classdef paramData
             end
         end
         end
+        
+        % Modifiers:
+        function newThis=appendData(this,newData,newLabels)
+            newThis=paramData([this.Data newData],[this.labels newLabels],this.indsInTrial,this.trialTypes);
+        end
     end
     
     
