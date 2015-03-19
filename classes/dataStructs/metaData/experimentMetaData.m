@@ -50,6 +50,16 @@ classdef experimentMetaData
                 this.conditionDescription=desc;
             end            
             if nargin>6 || ~isempty(trialLst)
+                %Check that no trial is repeated
+                aux=cell2mat(trialLst);
+                aux2=unique(aux);
+                for i=1:length(aux2)
+                   a=find(aux==aux2(i)); 
+                   if numel(a)>1
+                       ME=MException('experimentMetaData:Constructor',['Trial ' num2str(aux2(i)) ' is listed as part of more than one condition.']);
+                       throw(ME)
+                   end
+                end
                 this.trialsInCondition=trialLst; %Must be cell of doubles
             end
             if nargin>7 && isa(Ntrials,'double')
