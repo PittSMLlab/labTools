@@ -117,8 +117,8 @@ paramlabels = {'good',...       Flag indicating whether the stride has events in
 % a) it does not take up an unreasonable amount of space
 % b) the paramaters can be plotted along with the GRF/kinematic data and
 % the events used to create each data point can be distinguished.
-sampPeriod=0.2;
-f_params=1/sampPeriod;
+%sampPeriod=0.2;
+%f_params=1/sampPeriod;
 
 if in.metaData.refLeg == 'R'
     s = 'R';
