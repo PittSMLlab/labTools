@@ -50,7 +50,7 @@ classdef experimentMetaData
                 this.conditionDescription=desc;
             end            
             if nargin>6 || ~isempty(trialLst)
-                %Check that no trial is repeated
+                %Check that no trial is repeatede
                 aux=cell2mat(trialLst);
                 aux2=unique(aux);
                 for i=1:length(aux2)

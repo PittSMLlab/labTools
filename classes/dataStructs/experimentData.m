@@ -196,7 +196,7 @@ classdef experimentData
         function this=recomputeParameters(this)
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t}); 
+                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData); 
             end
         end
         
