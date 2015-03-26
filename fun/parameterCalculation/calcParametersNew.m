@@ -140,7 +140,7 @@ FHS=events(:,2);
 STO=events(:,3);
 FTO=events(:,4);
 eventsTime=in.gaitEvents.Time;
-aux=SHS+2*FTO+3*FHS+4*STO; %This should get events in the sequence 1,2,3,4,1... with 0 for non-events
+eventNumbers=SHS+2*FTO+3*FHS+4*STO; %This should get events in the sequence 1,2,3,4,1... with 0 for non-events
 
 %find median stride time
 medStride=median(diff(eventsTime(SHS==1)));
@@ -180,12 +180,13 @@ end
     fToe=nan(length(eventsTime),3);
     
     legs={s,f};
+    legs2={'s','f'};
     for i=1:3 %x,y,z
         for j=1:length(markers)
             for leg=1:2 %1=s, 2=f
                 aux=newMarkerData(:,strcmp(labels,[legs{leg} markers{j} directions{i}]));
                 if ~isempty(aux) %Missing marker
-                    eval([legs{leg} upper(markers{j}(1)) lower(markers{j}(2:end)) '(:,i)=aux*signs(i);']);
+                    eval([legs2{leg} upper(markers{j}(1)) lower(markers{j}(2:end)) '(:,i)=aux*signs(i);']);
                 else
                     warning([[legs{leg} markers{j} directions{i}] ' marker is missing.'])
                 end
@@ -256,7 +257,7 @@ for step=1:Nstrides
     
     
     %Check consistency:
-    aa=aux(inds(step):indFTO2); %Get events in this interval
+    aa=eventNumbers(inds(step):indFTO2); %Get events in this interval
     bb=diff(aa(aa~=0)); %Keep only event samples
     bad(t)= isempty(bb) || any(mod(bb,4)~=1) || (timeSHS2-timeSHS)>1.5*medStride; %Make sure the order and timing of events is good
     good(t)=~bad(t);
@@ -495,8 +496,12 @@ for step=1:Nstrides
             singleStanceSpeedSlow(t)=nanmedian(f_events*diff(sAnkPos(indFTO:indFHS)));
             singleStanceSpeedFast(t)=nanmedian(f_events*diff(fAnkPos(indSTO:indSHS2)));
 
-            singleStanceSpeedSlowAbs(t)=nanmedian(f_events*diff(sAnk(indFTO:indFHS,2)));
-            singleStanceSpeedFastAbs(t)=nanmedian(f_events*diff(fAnk(indSTO:indSHS2,2)));
+            %singleStanceSpeedSlowAbs(t)=nanmedian(f_events*diff(sAnk(indFTO:indFHS,2)));
+            %singleStanceSpeedFastAbs(t)=nanmedian(f_events*diff(fAnk(indSTO:indSHS2,2)));
+            sStanceIdxs=indFTO:indFHS;
+            fStanceIdxs=indSTO:indSHS2;
+            singleStanceSpeedSlowAbs(t)=prctile(f_events*diff(sToe(sStanceIdxs,2)),70);
+            singleStanceSpeedFastAbs(t)=prctile(f_events*diff(fToe(fStanceIdxs,2)),70);
 
             
             stanceSpeedSlow(t)=abs(sAnkPos(indSTO)-sAnkPos(indSHS))/(timeSTO-timeSHS); %Ankle relative to hip, during ipsilateral stance
