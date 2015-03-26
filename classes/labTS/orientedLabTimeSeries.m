@@ -32,7 +32,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
         %-------------------
         
         %Other I/O functions:
-        function newTS=getDataAsTS(this,label)
+        function [newTS,auxLabel]=getDataAsTS(this,label)
             [data,time,auxLabel]=getDataAsVector(this,label);
             newTS=orientedLabTimeSeries(data,time(1),this.sampPeriod,auxLabel,this.orientation);
         end

@@ -153,44 +153,57 @@ else
     orientation=in.markerData.orientation;
 end
 
-if ~isempty(in.angleData) %This checks that hip and ankle markers are present
+    calcSpatial=true;
     %Alternative version: interpolating kinematics to eventTimes, so we can
     %use the same indexing.
-    labels={'LHIPx','LHIPy','LHIPz','RHIPx','RHIPy','RHIPz','LANKx','LANKy','LANKz','RANKx','RANKy','RANKz'};
-    newMarkerData=in.markerData.getDataAsTS(labels);
+    directions={orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
+    signs=[orientation.sideSign,orientation.foreaftSign,orientation.updownSign];
+    markers={'HIP','ANK','TOE'};
+    labels={};
+    legs={'L','R'};
+    for i=1:3
+        for j=1:length(markers)
+            for leg=1:2
+                labels{end+1}=[legs{leg} markers{j} directions{i}];
+            end
+        end
+    end
+    [newMarkerData,labels]=in.markerData.getDataAsTS(labels);
     newMarkerData=newMarkerData.getSample(eventsTime);
     
-    directions={orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
-    sHip=zeros(length(eventsTime),3);
-    fHip=zeros(length(eventsTime),3);
-    sAnk=zeros(length(eventsTime),3);
-    fAnk=zeros(length(eventsTime),3);
-    for i=1:3 %x,y,z
-        %get hip position 
-        sHip(:,i)=newMarkerData(:,strcmp(labels,[s 'HIP' directions{i}]));
-        fHip(:,i)=newMarkerData(:,strcmp(labels,[f 'HIP' directions{i}]));
-        %get ank position 
-        sAnk(:,i)=newMarkerData(:,strcmp(labels,[s 'ANK' directions{i}]));
-        fAnk(:,i)=newMarkerData(:,strcmp(labels,[f 'ANK' directions{i}]));
-    end
-        
-    sHip=[orientation.sideSign*sHip(:,1),orientation.foreaftSign*sHip(:,2),orientation.updownSign*sHip(:,3)];
-    fHip=[orientation.sideSign*fHip(:,1),orientation.foreaftSign*fHip(:,2),orientation.updownSign*fHip(:,3)];
     
-    sAnk=[orientation.sideSign*sAnk(:,1),orientation.foreaftSign*sAnk(:,2),orientation.updownSign*sAnk(:,3)];
-    fAnk=[orientation.sideSign*fAnk(:,1),orientation.foreaftSign*fAnk(:,2),orientation.updownSign*fAnk(:,3)];
+    sHip=nan(length(eventsTime),3);
+    fHip=nan(length(eventsTime),3);
+    sAnk=nan(length(eventsTime),3);
+    fAnk=nan(length(eventsTime),3);
+    sToe=nan(length(eventsTime),3);
+    fToe=nan(length(eventsTime),3);
+    
+    legs={s,f};
+    for i=1:3 %x,y,z
+        for j=1:length(markers)
+            for leg=1:2 %1=s, 2=f
+                aux=newMarkerData(:,strcmp(labels,[legs{leg} markers{j} directions{i}]));
+                if ~isempty(aux) %Missing marker
+                    eval([legs{leg} upper(markers{j}(1)) lower(markers{j}(2:end)) '(:,i)=aux*signs(i);']);
+                else
+                    warning([[legs{leg} markers{j} directions{i}] ' marker is missing.'])
+                end
+            end
+        end
+    end
     
     %get angle data
+    if ~isempty(in.angleData)
     newAngleData=in.angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
     newAngleData=newAngleData.getSample(eventsTime);
     sAngle=newAngleData(:,1);
     fAngle=newAngleData(:,2);
+    else
+        sAngle=nan(length(eventsTime),1);
+        fAngle=nan(length(eventsTime),1);
+    end
     
-    
-    calcSpatial=true;
-else
-    calcSpatial=false;    
-end
 
 %% Find number of strides
 lastSHStime=eventsTime(find(SHS,2,'last'));

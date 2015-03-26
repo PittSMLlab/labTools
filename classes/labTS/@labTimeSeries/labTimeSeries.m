@@ -57,7 +57,7 @@ classdef labTimeSeries  < timeseries
             auxLabel=this.labels(labelIdx(boolFlag==1));
         end
         
-        function newTS=getDataAsTS(this,label)
+        function [newTS,auxLabel]=getDataAsTS(this,label)
             [data,time,auxLabel]=getDataAsVector(this,label);
             newTS=labTimeSeries(data,time(1),this.sampPeriod,auxLabel);
         end

@@ -155,32 +155,63 @@ else
     orientation=in.markerData.orientation;
 end
 
-if ~isempty(in.angleData) %This checks that hip and ankle markers are present
+% On 26th March 2015, Pablo removed the pre-check for angle data, so that
+% spatial parameters that can be calculated are, even with missing markers.
+    calcSpatial=true;
+    
     %get hip position    
     sHip=in.getMarkerData({[s 'HIP' orientation.sideAxis],[s 'HIP' orientation.foreaftAxis],[s 'HIP' orientation.updownAxis]});
-    sHip=[orientation.sideSign*sHip(:,1),orientation.foreaftSign*sHip(:,2),orientation.updownSign*sHip(:,3)];
     fHip=in.getMarkerData({[f 'HIP' orientation.sideAxis],[f 'HIP' orientation.foreaftAxis],[f 'HIP' orientation.updownAxis]});
+    if size(sHip,2)<3 || size(fHip,2)<3
+        warning('Some HIP markers are missing from trial.')
+        if size(sHip,2)<3
+            sHip=nan(size(in.markerData.Data,1),3);
+        else
+            fHip=nan(size(in.markerData.Data,1),3);
+        end
+    end
+    sHip=[orientation.sideSign*sHip(:,1),orientation.foreaftSign*sHip(:,2),orientation.updownSign*sHip(:,3)];
     fHip=[orientation.sideSign*fHip(:,1),orientation.foreaftSign*fHip(:,2),orientation.updownSign*fHip(:,3)];
+    
     %get ankle position
     sAnk=in.getMarkerData({[s 'ANK' orientation.sideAxis],[s 'ANK' orientation.foreaftAxis],[s 'ANK' orientation.updownAxis]});
-    sAnk=[orientation.sideSign*sAnk(:,1),orientation.foreaftSign*sAnk(:,2),orientation.updownSign*sAnk(:,3)];
     fAnk=in.getMarkerData({[f 'ANK' orientation.sideAxis],[f 'ANK' orientation.foreaftAxis],[f 'ANK' orientation.updownAxis]});
+    if size(sAnk,2)<3 || size(fAnk,2)<3
+        warning('Some HIP markers are missing from trial.')
+        if size(sAnk,2)<3
+            sAnk=nan(size(in.markerData.Data,1),3);
+        else
+            fAnk=nan(size(in.markerData.Data,1),3);
+        end
+    end
+    sAnk=[orientation.sideSign*sAnk(:,1),orientation.foreaftSign*sAnk(:,2),orientation.updownSign*sAnk(:,3)];
     fAnk=[orientation.sideSign*fAnk(:,1),orientation.foreaftSign*fAnk(:,2),orientation.updownSign*fAnk(:,3)];
+    
     %get angle data
-    angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
-    sAngle=angles(:,1);
-    fAngle=angles(:,2);
+    if ~isempty(in.angleData)
+        angles=in.angleData.getDataAsVector({[s,'Limb'],[f,'Limb']});
+        sAngle=angles(:,1);
+        fAngle=angles(:,2);
+    else
+        sAngle=nan(size(in.markerData.Data,1),1);
+        fAngle=nan(size(in.markerData.Data,1),1);
+    end
     
     %get toe position
     sToe=in.getMarkerData({[s 'TOE' orientation.sideAxis],[s 'TOE' orientation.foreaftAxis],[s 'TOE' orientation.updownAxis]});
-    sToe=[orientation.sideSign*sToe(:,1),orientation.foreaftSign*sToe(:,2),orientation.updownSign*sToe(:,3)];
     fToe=in.getMarkerData({[f 'TOE' orientation.sideAxis],[f 'TOE' orientation.foreaftAxis],[f 'TOE' orientation.updownAxis]});
+    if size(sToe,2)<3 || size(fToe,2)<3
+        warning('Some HIP markers are missing from trial.')
+        if size(sToe,2)<3
+            sToe=nan(size(in.markerData.Data,1),3);
+        else
+            fToe=nan(size(in.markerData.Data,1),3);
+        end
+    end
+    sToe=[orientation.sideSign*sToe(:,1),orientation.foreaftSign*sToe(:,2),orientation.updownSign*sToe(:,3)];
     fToe=[orientation.sideSign*fToe(:,1),orientation.foreaftSign*fToe(:,2),orientation.updownSign*fToe(:,3)];
     
-    calcSpatial=true;
-else
-    calcSpatial=false;    
-end
+
 
 %% Find number of strides
 lastSHStime=eventsTime(find(SHS,2,'last'));
@@ -256,7 +287,7 @@ for step=1:Nstrides
         stanceTimeFast(t)=timeFTO2-timeFHS;
         %double support times
         doubleSupportSlow(t)=timeSTO-timeFHS;
-        doubleSupportFast(t)=timeFTO2-timeSHS2; %PAblo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.
+        doubleSupportFast(t)=timeFTO2-timeSHS2; %Pablo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.
         %step times (time between heel strikes)
         stepTimeSlow(t)=timeSHS2-timeFHS;
         stepTimeFast(t)=timeFHS-timeSHS;
@@ -324,6 +355,9 @@ for step=1:Nstrides
             fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction(t) fAnk(indFTO,2)])-90;
             
             avgRotation(t) = (sRotation+fRotation)/2;
+            if isnan(avgRotation(t))
+                warning('Could not determine proper rotation for walking direction.')
+            end
             
             rotationMatrix = [cosd(avgRotation(t)) -sind(avgRotation(t)) 0; sind(avgRotation(t)) cosd(avgRotation(t)) 0; 0 0 1];
             sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';
