@@ -76,11 +76,20 @@ classdef experimentData
         function fastLeg=get.fastLeg(this)
             vR=[];
             vL=[];
-            for trial=cell2mat(this.metaData.trialsInCondition)
+            trials=cell2mat(this.metaData.trialsInCondition);
+            for i=1:length(trials)
+                trial=trials(i);
                 if ~this.isStepped
                     if ~isempty(this.data{trial}.beltSpeedReadData)
+                        %Old version: Need to fix, as
+                        %we are not really populating the beltSpeedReadData
+                        %field.
                         vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
                         vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
+                        %New version:
+                        %TODO: Need to come up with an appropriate velocity
+                        %measurement if we want this function to work
+                        %properly.
                     end
                 else %Stepped trial
                     for step=1:length(this.data{trial})
@@ -91,10 +100,16 @@ classdef experimentData
                     end
                 end
             end
-            if mean(vR)<mean(vL)
-                fastLeg='L';
+            if ~isempty(vR) && ~isempty(vL)
+                if mean(vR)<mean(vL)
+                    fastLeg='L';
+                elseif mean(vR)>mean(vL)
+                    fastLeg='R'; %Defaults to this, even if there is no beltSpeedData
+                else
+                    error('experimentData:fastLeg','Both legs are moving at the same speed');
+                end
             else
-                fastLeg='R'; %Defaults to this, even if there is no beltSpeedData
+                error('experimentData:fastLeg','No data to compute fastest leg, try using expData.getRefLeg which reads from each trial''s metaData.');
             end
         end
         
@@ -106,6 +121,24 @@ classdef experimentData
             else
                 slowLeg=[];
             end
+        end
+        
+        function refLeg=getRefLeg(this) %By majority vote over trials
+            refLeg={};
+           for i=1:length(this.data)%Going over trials
+               if ~isempty(this.data{i})
+               refLeg{i}=this.data{i}.metaData.refLeg;
+               end
+           end
+           Rvotes=sum(strcmp(refLeg,'R'));
+           Lvotes=sum(strcmp(refLeg,'L'));
+           if Rvotes>Lvotes
+               refLeg='R';
+           elseif Rvotes<Lvotes
+               refLeg='L';
+           else
+               error('experimentData:getRefLeg','Could not determine unique reference leg');
+           end
         end
         
         %Process full experiment
