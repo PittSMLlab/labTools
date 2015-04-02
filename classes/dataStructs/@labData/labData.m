@@ -164,7 +164,8 @@ classdef labData
             % (make into function once we have a method to do this)
             markers=trialData.markerData;
             if ~isempty(markers)
-                %function goes here?
+                %function goes here: check marker data health
+                
             end
             
             % 3) Calculate limb angles

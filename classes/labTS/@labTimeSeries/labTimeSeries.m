@@ -79,6 +79,9 @@ classdef labTimeSeries  < timeseries
             boolFlag=false(N,1);
             labelIdx=zeros(N,1);
             for j=1:N
+                %Alternative efficient formulation:
+                %boolFlag(j)=any(strcmp(auxLabel{j},this.labels));
+                %labelIdx(j)=find(strcmp(auxLabel{j},this.labels));
                 for i=1:length(this.labels)
                      if strcmpi(auxLabel{j},this.labels{i})
                        boolFlag(j)=true;
@@ -285,7 +288,7 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function newThis=derivate(this,other)
+        function newThis=derivate(this)
             M=size(this.Data,2);
             newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
             for i=1:M
@@ -370,6 +373,10 @@ classdef labTimeSeries  < timeseries
             end
             ax2=[];
             h1=[];
+            if any(~isreal(relData(:)))
+                warning('labTimeSeries:plot','Data is complex, plotting the modulus only.')
+                relData=abs(relData);
+            end
             for i=1:N
                 h1(i)=plotHandles(i);
                 subplot(h1(i))
@@ -402,14 +409,39 @@ classdef labTimeSeries  < timeseries
         end
         
         %Other
-        function [F,f]=fourierTransform(this,M)
+        function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
             if nargin>1
-                MM=2^ceil(log2(M)); %Force next power of 2
-            else
-                MM=this.Nsamples;
+                warning('labTimeSeries:fourierTransform','Ignoring second argument')
             end
-            F=fft(this.Data,MM);
-            f=[-floor(MM/2):floor(MM/2-1)];
+            [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
+            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',newLabels),')'));
+            Fthis.TimeInfo.Units='Hz';
+        end
+        
+        function newThis=lowPassFilter(this,fcut)
+                Wn=fcut*2/this.sampFreq;
+                Wst=min([2*Wn,Wn+.2*(1-Wn)]);
+               filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
+                lowPassFilter=design(filterList{1},'butter'); 
+                newData=filtfilthd(lowPassFilter,this.Data);  %Ext function
+                newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+                if ~isfield(this.UserData,'processingInfo')
+                    this.UserData.processingInfo={};
+                end
+                newThis.UserData=this.UserData;
+                newThis.UserData.processingInfo{end+1}=filterList{1};
+        end
+        function newThis=highPassFilter(this,fcut)
+                Wn=fcut*2/this.sampFreq;
+                filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3); 
+                highPassFilter=design(filterList{1},'butter'); 
+                newData=filtfilthd(highPassFilter,this.Data); 
+                newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+                if ~isfield(this.UserData,'processingInfo')
+                    this.UserData.processingInfo={};
+                end
+                newThis.UserData=this.UserData;
+                newThis.UserData.processingInfo{end+1}=filterList{1};
         end
                 
     end

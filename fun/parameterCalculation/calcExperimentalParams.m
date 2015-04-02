@@ -120,7 +120,7 @@ for i=1:length(paramlabels)
 end
 
 %out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
-out=parameterSeries(data,paramlabels,times);
+out=parameterSeries(data,paramlabels,times,cell(size(paramlabels)));
 
 %% (?)
 % try

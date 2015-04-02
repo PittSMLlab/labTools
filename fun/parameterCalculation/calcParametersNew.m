@@ -539,13 +539,16 @@ for step=1:Nstrides
     
 end
 
+%% Assign parameters to data matrix
 for i=1:numParams
     eval(['data(:,i)=',paramlabels{i},';'])
 end
 
+%% Create parameterSeries
 %out=labTimeSeries(data,eventsTime(1),sampPeriod,paramlabels);
-out=parameterSeries(data,paramlabels,times);
+out=parameterSeries(data,paramlabels,times,cell(size(paramlabels)));
 
+%% Issue bad strides warning
 try
     if any(bad)
         [file]= getSimpleFileName(in.metaData.rawDataFilename);

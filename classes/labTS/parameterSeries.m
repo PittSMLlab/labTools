@@ -4,15 +4,56 @@ classdef parameterSeries < labTimeSeries
     
     properties
         hiddenTime
+        
+    end
+    properties(Dependent)
+       bad
+       stridesTrial
+       stridesInitTime
+       description
+    end
+    properties(Hidden)
+       description_={}; 
     end
     
     methods
-        function this=parameterSeries(data,labels,times)
+        function this=parameterSeries(data,labels,times,description)
             this@labTimeSeries(data,1,1,labels);
             this.hiddenTime=times;
+            if length(description)==length(labels)
+                this.description_=description; %Needs to be cell-array of same length as labels
+            else
+                error('paramtereSeries:constructor','Description input needs to be same length as labels')
+            end
         end
         
-        %Other functions that need redefining:
+        %% Getters for dependent variabls
+        function vals=get.bad(this)
+            vals=this.getDataAsVector('bad');
+        end
+        function vals=get.stridesTrial(this)
+            vals=this.getDataAsVector('trial');
+        end
+        function vals=get.stridesInitTime(this)
+            vals=this.getDataAsVector('initTime');
+        end
+        function vals=get.description(this)
+           if isfield(this,'description_')
+              vals=this.description_; 
+           else
+              vals=cell(size(this.labels)); 
+           end
+        end
+        %% Modifiers
+        function newThis=cat(this,other)
+            if size(this.Data,1)==size(other.Data,1)
+                newThis=paramterSeries([this.data other.data],[this.labels other.labels],this.times,[this.description other.description]); 
+            else
+                error('parameterSeries:cat','Cannot concatenate series with different number of strides');
+            end
+        end
+        
+        %% Other functions that need redefining:
         function [F,f]=fourierTransform(~,~)
             error('parameterSeries:fourierTransform','You cannot do that!')
             F=[];
@@ -29,7 +70,7 @@ classdef parameterSeries < labTimeSeries
             newThis=[];
         end
         
-        %Display
+        %% Display
         function h=plot(this,h,labels) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;

@@ -118,24 +118,37 @@ classdef processedLabData < labData
             
             %Determine end event (ex: if triggerEvent='LHS' then we
             %need 'RHS')           
-            if strcmpi(triggerEvent(2:3),'HS')
-                eventType = 'HS';
-            else
-                eventType = 'TO';
+            %Version deprecated on Apr 2nd 2015
+%             if strcmpi(triggerEvent(2:3),'HS')
+%                 eventType = 'HS';
+%             else
+%                 eventType = 'TO';
+%             end
+%             if strcmpi(triggerEvent(1),'R')
+%                 opLeg = 'L';
+%             else
+%                 opLeg = 'R';
+%             end
+%             refLegEventList=this.getPartialGaitEvents(triggerEvent);
+%             opLegEventList=this.getPartialGaitEvents([opLeg,eventType]);
+%             refIdxLst=find(refLegEventList==1);
+%             opIdxLst=find(opLegEventList==1);
+%             auxTime=this.gaitEvents.Time;
+%             steppedDataArray={};
+%             for i=1:length(refIdxLst)-2
+%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(opIdxLst(find(opIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
+%             end
+            if strcmp(triggerEvent(1),'L')
+                contraLeg='R';
+            else 
+                contraLeg='L';
             end
-            if strcmpi(triggerEvent(1),'R')
-                opLeg = 'L';
-            else
-                opLeg = 'R';
-            end
-            refLegEventList=this.getPartialGaitEvents(triggerEvent);
-            opLegEventList=this.getPartialGaitEvents([opLeg,eventType]);
-            refIdxLst=find(refLegEventList==1);
-            opIdxLst=find(opLegEventList==1);
-            auxTime=this.gaitEvents.Time;
+            contraLateralTriggerEvent=[contraLeg triggerEvent(2:end)];
+            [strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
+            [CstrideIdxs,CinitTime,CendTime]=getStrideInfo(this,contraLateralTriggerEvent);
             steppedDataArray={};
-            for i=1:length(refIdxLst)-2
-                steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(opIdxLst(find(opIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
+            for i=strideIdxs-1
+                steppedDataArray{i}=this.split(initTime(i),CendTime(find(CendTime>initTime(i),1,'first')),'strideData');
             end
         end
         
@@ -162,13 +175,20 @@ classdef processedLabData < labData
 %         end
         
         function steppedDataArray=separateIntoDoubleStrides(this,triggerEvent) %DoubleStride= 2 full strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
+             %Version deprecated on Apr 2nd 2015
             %triggerEvent needs to be one of the valid gaitEvent labels
-            refLegEventList=this.getPartialGaitEvents(triggerEvent);
-            refIdxLst=find(refLegEventList==1);
-            auxTime=this.gaitEvents.Time;
+%             refLegEventList=this.getPartialGaitEvents(triggerEvent);
+%             refIdxLst=find(refLegEventList==1);
+%             auxTime=this.gaitEvents.Time;
+%             steppedDataArray={};
+%             for i=1:length(refIdxLst)-2
+%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
+%             end
+            
+            [strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
             steppedDataArray={};
-            for i=1:length(refIdxLst)-2
-                steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
+            for i=strideIdxs(1:end-1)
+                steppedDataArray{i}=this.split(initTime(i),endTime(i+1),'strideData');
             end
         end
         
