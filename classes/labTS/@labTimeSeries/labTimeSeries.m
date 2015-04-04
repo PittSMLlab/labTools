@@ -94,7 +94,7 @@ classdef labTimeSeries  < timeseries
         
         function data=getSample(this,timePoints) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
             if ~isempty(timePoints)
-                newTS=resample(this,timePoints,1);
+                newTS=resample(this,timePoints,this.Time(1),1);
                 data=newTS.Data;
             else
                 data=[];
@@ -107,19 +107,41 @@ classdef labTimeSeries  < timeseries
         %-------------------
         
         %Modifier functions:
-        function newThis=resample(this,newTs,hiddenFlag) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
-            if nargin<3 || hiddenFlag==0
+        function newThis=resample(this,newTs,newT0,hiddenFlag) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
+            if nargin<3 || isempty(newT0)
+                error('labTS:resample','Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.')
+            end
+            if nargin<4 || hiddenFlag==0 %hiddenFlag allows to do non-uniform sampling
                 if newTs>this.sampPeriod %Under-sampling! be careful of aliasing
                     warning('labTS:resample','Under-sampling data, be careful of aliasing!');
                 end
-                newN=ceil(this.timeRange/newTs)+1;
-                newThis=resampleN(this,newN);
-            else
+                %Commented on 4/4/2015 by Pablo. No longer think this is a
+                %good idea. If we are explicitly trying to do uniform
+                %resampling on the same range, should use resampleN.
+                %Otherwise, if we try to synch two signals, and there is an
+                %offset in initial time, this returns something else.
+                
+                %newN=ceil(this.timeRange/newTs)+1;
+                %newThis=resampleN(this,newN);
+                newTime=newT0:newTs:this.Time(end);
+                 if ~isa(this.Data(1,1),'logical')
+                        newThis=this.resample@timeseries(newTime);
+                        newThis=labTimeSeries(newThis.Data,newThis.Time(1),newTs,this.labels);
+                 else %logical timeseries
+                       newThis=resampleLogical(this,newTs,newT0);
+                 end
+                
+            elseif hiddenFlag==1% this allows for non-uniform resampling, and returns a timeseries object.
                 newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period. The super-class resampling returns a super-class object.
+            else
+                error('labTS:resample','HiddenFlag argument has to be 0 or 1');
             end
         end
         
-        function newThis=resampleN(this,newN,method) %Same as resample function, but directly fixing the number of samples instead of TS
+        function newThis=resampleN(this,newN,method) 
+            %Uniform resampling of data, over the same time range. This
+            %keeps the initial time on the same value, and returns newN
+            %time-samples in the time interval of the original timeseries
             if ~isempty(this.Data)
             if nargin<3 || isempty(method)
                  if ~isa(this.Data(1,1),'logical')
@@ -147,12 +169,8 @@ classdef labTimeSeries  < timeseries
                     newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
                     newData(:,allNaNIdxs)=nan; %Replacing the previously filled data with NaNs
                 case 'logical'
-                   newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
-                   for i=1:size(this.Data,2) %Go over event labels
-                       oldEventTimes=this.Time(this.Data(:,i));
-                       closestNewEventIndexes=round((oldEventTimes-this.Time(1))/modNewTs) + 1;
-                       newData(closestNewEventIndexes,i)=true;
-                   end
+                   newThis=resampleLogical(this,modNewTs,t0);
+                   newData=newThis.Data;
                 otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
                     newData=zeros(length(newTimeVec),size(this.Data,2));
                     for i=1:size(this.Data,2)
@@ -444,6 +462,20 @@ classdef labTimeSeries  < timeseries
                 newThis.UserData.processingInfo{end+1}=filterList{1};
         end
                 
+    end
+    
+    methods(Private)
+        function newThis=resampleLogical(this,newTs,newT0)
+            newTime=newT0:newTs:this.Time(end);
+            newN=length(newTime);
+            newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
+           for i=1:size(this.Data,2) %Go over event labels
+               oldEventTimes=this.Time(this.Data(:,i));
+               closestNewEventIndexes=round((oldEventTimes-this.Time(1))/newTs) + 1;
+               newData(closestNewEventIndexes,i)=true;
+           end
+           newThis=labTimeSeries(newData,newT0,newTs,this.labels);
+        end
     end
     
     methods(Static)

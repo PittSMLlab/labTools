@@ -22,7 +22,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 labels={};
                 orientation=orientationInfo();
             end
-                if ~checkLabelSanity(labels)
+                if ~orientedLabTimeSeries.checkLabelSanity(labels)
                     error('orientedLabTimeSeries:Constructor','Provided labels do not pass the sanity check. See issued warnings.')
                 end
                 this@labTimeSeries(data,t0,Ts,labels);

@@ -47,7 +47,7 @@ classdef parameterSeries < labTimeSeries
         %% Modifiers
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
-                newThis=paramterSeries([this.data other.data],[this.labels other.labels],this.times,[this.description other.description]); 
+                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[this.description(:); other.description(:)]); 
             else
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
@@ -85,11 +85,12 @@ classdef parameterSeries < labTimeSeries
                [relData,~,relLabels]=this.getDataAsVector(labels); 
                N=size(relData,2);
             end
-            
+            bad=this.bad;
             for i=1:N
                 h1(i)=subplot(ceil(N/2),2,i);
                 hold on
-                plot(this.hiddenTime,relData(:,i),'.')
+                plot(this.hiddenTime(bad==0),relData(bad==0,i),'.')
+                plot(this.hiddenTime(bad==1),relData(bad==1,i),'x')
                 ylabel(relLabels{i})
                 hold off
             end

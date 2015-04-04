@@ -98,7 +98,7 @@ classdef processedLabData < labData
         end
         
         %Separate into strides!
-        function steppedDataArray=separateIntoStrides(this,triggerEvent) %Splitting into single strides!
+        function [steppedDataArray,initTime,endTime]=separateIntoStrides(this,triggerEvent) %Splitting into single strides!
             %triggerEvent needs to be one of the valid gaitEvent labels
                      
             %refLegEventList=this.getPartialGaitEvents(triggerEvent);
@@ -113,7 +113,7 @@ classdef processedLabData < labData
         end
         
 
-        function steppedDataArray=separateIntoSuperStrides(this,triggerEvent) %SuperStride= 1.5 strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
+        function [steppedDataArray,initTime,endTime]=separateIntoSuperStrides(this,triggerEvent) %SuperStride= 1.5 strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
             %triggerEvent needs to be one of the valid gaitEvent labels
             
             %Determine end event (ex: if triggerEvent='LHS' then we
@@ -174,7 +174,7 @@ classdef processedLabData < labData
 %             end
 %         end
         
-        function steppedDataArray=separateIntoDoubleStrides(this,triggerEvent) %DoubleStride= 2 full strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
+        function [steppedDataArray,initTime,endTime]=separateIntoDoubleStrides(this,triggerEvent) %DoubleStride= 2 full strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
              %Version deprecated on Apr 2nd 2015
             %triggerEvent needs to be one of the valid gaitEvent labels
 %             refLegEventList=this.getPartialGaitEvents(triggerEvent);
