@@ -43,17 +43,16 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
 
         function [data,label]=getOrientedData(this,label)
-            [T,N]=size(this.Data);
+            T=size(this.Data,1);
             if nargin<2 || isempty(label)
-                extendedLabels=addLabelSuffix(label);
-            else
-                extendedLabels=this.labels;
+                label=this.getLabelPrefix; %All of them
+            end
+                extendedLabels=this.addLabelSuffix(label);
                 if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
                    error('Labels in this object do not pass the sanity check.') 
                 end
-            end
             data=this.getDataAsVector(extendedLabels);
-            data=permute(reshape(data,T,3,round(N/3)),[1,3,2]);
+            data=permute(reshape(data,T,3,round(length(extendedLabels)/3)),[1,3,2]);
         end
         
         function [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)
@@ -149,6 +148,50 @@ classdef orientedLabTimeSeries  < labTimeSeries
            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
         
+        function newThis=translate(this,vector)
+            %Check: vector is 1x3 or Tx3
+            [M,N]=size(vector);
+            if N~=3 || (M~=1 && M~=length(this.Time))
+                error('orientedLabTS:translate','Translation vector has to be size 3 on second dim, and singleton or of length(time) in the first.')
+            end
+            [data,~]=getOrientedData(this);
+            vector=reshape(vector,M,1,3);
+            newData=permute(bsxfun(@plus,data,vector),[1,3,2]);
+            newThis=orientedLabTimeSeries(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
+            %newThis.UserData.translation=; %ToDo: store the translation
+            %info in some structure so that it can be backtracked
+        end
+        
+        function newThis=rotate(this, matrix)
+            [data,label]=getOrientedData(this);
+            M=size(matrix,1);
+            matrix=reshape(matrix,M,1,3,3);
+            newData=permute(sum(bsxfun(@times,data,matrix),3),[1,4,2,3]);
+            newThis=orientedLabTimeSeries(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
+            %newThis.UserData.rotation=; %ToDo: store the rotation
+            %info in some structure so that it can be backtracked
+        end
+        
+        function newThis=alignRotate(this,newX,newZ)
+            newX=bsxfun(@rdivide,newX,sqrt(sum(newX.^2,2)));
+            newZ=bsxfun(@rdivide,newZ,sqrt(sum(newZ.^2,2)));
+           %Find rotation matrix
+           newY=cross(newX,newZ); %orthogonal to the other two
+           newY=bsxfun(@rdivide,newY,sqrt(sum(newY.^2,2)));
+           matrix(:,1,:)=permute(newX,[1,3,2]);
+           matrix(:,2,:)=permute(newY,[1,3,2]);
+           matrix(:,3,:)=permute(newZ,[1,3,2]);
+           matrix=inv(matrix);
+           %Rotate
+           newThis=this;
+           %newThis=rotate(this, );
+        end
+        
+        function newThis=referenceToMarker(this,marker)
+            %Check: marker needs to be a suffix of this object.
+            [data,~]=getOrientedData(this,marker);
+            newThis=translate(this,squeeze(-1*data));
+        end
 %         function newThis=derivate(this)
 %             auxThis=this.derivate@labTimeSeries;
 %             newThis.orientation=this.orientation;
@@ -157,7 +200,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
     end
     methods (Static)
         function extendedLabels=addLabelSuffix(labels)
-            	extendedLabels=cell(length(labels)*3);
+                if ischar(labels)
+                    labels={labels};
+                end
+            	extendedLabels=cell(length(labels)*3,1);
                 extendedLabels(1:3:end)=strcat(labels,'x');
                 extendedLabels(2:3:end)=strcat(labels,'y');
                 extendedLabels(3:3:end)=strcat(labels,'z');

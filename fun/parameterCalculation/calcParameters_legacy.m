@@ -334,7 +334,7 @@ for step=1:Nstrides
             indFTO2=round(indFTO2*CF);
             
             %Compute times with new indices:
-            timeSHS=eventsTime(indSHS*(1/CF));
+           	eventsTime(indSHS*(1/CF));
             timeFTO=eventsTime(indFTO*(1/CF));
             timeFHS=eventsTime(indFHS*(1/CF));
             timeSTO=eventsTime(indSTO*(1/CF));

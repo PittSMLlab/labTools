@@ -161,13 +161,13 @@ end
     markers={'HIP','ANK','TOE'};
     labels={};
     legs={'L','R'};
-    for i=1:3
         for j=1:length(markers)
             for leg=1:2
+                for i=1:3
                 labels{end+1}=[legs{leg} markers{j} directions{i}];
+                end
             end
         end
-    end
     [newMarkerData,labels]=in.markerData.getDataAsTS(labels);
     newMarkerData=newMarkerData.getSample(eventsTime);
     

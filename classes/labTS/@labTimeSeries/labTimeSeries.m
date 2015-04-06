@@ -94,8 +94,15 @@ classdef labTimeSeries  < timeseries
         
         function data=getSample(this,timePoints) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
             if ~isempty(timePoints)
-                newTS=resample(this,timePoints,this.Time(1),1);
-                data=newTS.Data;
+                M=length(this.labels);
+                data=nan(numel(timePoints),M);
+                notNaNIdxs=~isnan(timePoints) & ~isinf(timePoints) & timePoints<this.Time(end) & timePoints>this.Time(1); %Excluding NaNs, Infs and out-of-range times from interpolation.
+                [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),'ascend');
+                newTS=resample(this,notNaNTimes,this.Time(1),1); %Using timeseres.resample which does linear interp by default
+
+                newTS.Data(sorting,:)=newTS.Data;
+                data(notNaNIdxs,:)=newTS.Data;
+                data=reshape(data,[size(timePoints),M]);
             else
                 data=[];
             end
@@ -464,7 +471,7 @@ classdef labTimeSeries  < timeseries
                 
     end
     
-    methods(Private)
+    methods(Hidden)
         function newThis=resampleLogical(this,newTs,newT0)
             newTime=newT0:newTs:this.Time(end);
             newN=length(newTime);
