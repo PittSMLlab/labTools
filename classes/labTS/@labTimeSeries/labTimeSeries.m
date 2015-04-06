@@ -433,6 +433,10 @@ classdef labTimeSeries  < timeseries
             plotHandles=h1;  
         end
         
+        %function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
+            %Ideally we would plot 'L' and 'R' timeseries on top of each
+            %other, to do a bilateral comparison. Need to implement.
+        %end
         %Other
         function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
             if nargin>1
