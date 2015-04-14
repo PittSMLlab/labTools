@@ -756,7 +756,7 @@ function save_button_Callback(hObject, eventdata, handles)
 
 global expData
 expData.data{handles.idx}.gaitEvents=handles.trialEvents; % HH: I think this line and the next may be unneccesary since any changes to events would have already been saved to expData. Possibly in the future we could force user to hit save if he/she wants changes to be saved.
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
 handles.changed=true; %% HH: this forces the changes to be saved, even if GUI is closed.
 set(handles.write,'Enable','on');
 guidata(hObject, handles)
