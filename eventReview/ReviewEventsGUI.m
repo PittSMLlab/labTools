@@ -671,7 +671,7 @@ for i=1:length(x);
 end
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
 
 %Re-plot
 guidata(hObject, handles)
@@ -701,7 +701,7 @@ selectedEventIndexEnd=allEventsIndexes(selectedEventTimeIndexEnd);
 handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd,:)=false;
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
 
 %Re-plot
 guidata(hObject, handles)
