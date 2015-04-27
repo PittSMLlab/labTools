@@ -1,10 +1,21 @@
 classdef labDate
-    %This is a file
+    %labDate   stores a single date.
+    %
+    %labDate properties:
+    %   day - number
+    %   month - number (1-12)
+    %   year - four digit number
+    %
+    %labDate Methods:
+    %   monthString - outputs month as a 3-letter string
+    %   genIDFromClock
+    %   getCurrent
+    %   default
     
     properties
-        day; %Num
-        month;%Num
-        year;%Num
+        day; %a day (ex: 27)
+        month; %a month (ex: 4)
+        year;% a year (ex: 2015)
     end
     
     methods
@@ -59,6 +70,11 @@ classdef labDate
     methods(Static)
         
         function str=monthString(a)
+        % monthString  turns numeric month value into a string
+        %   str=monthString(a) outputs a three-character string for an
+        %   integer between 1 and 12 (inclusive).
+        %   example:
+        %       monthString(1) returns 'jan'.
             switch a
                 case 1
                     str='jan';

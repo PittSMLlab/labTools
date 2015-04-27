@@ -22,6 +22,10 @@ switch viconLabel
         markerLabel='LTOE';
     case {'RTOE','OG80_RTOE','OG88_RTOE'}
         markerLabel='RTOE';   
+    case {'RKNE','RKNEE'}
+        markerLabel='RKNE';
+    case {'LKNE','LKNEE'}
+        markerLabel='LKNE';
     otherwise
         markerLabel=viconLabel;
 end

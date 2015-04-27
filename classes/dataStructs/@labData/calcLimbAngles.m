@@ -1,7 +1,14 @@
 function angleData = calcLimbAngles(trialData)
-% Calculates angles using marker data
-%   Created 5/14/2014 by HMH
-%   only calculates leg angle at the moment (using hip and ankle markers)
+% calcLimbAngles  Calculates angles using marker data   
+%   angleData=clacLimbAngles(trailData) returns a labTimeSeries object
+%   containg angles computed from marker data given an object of the
+%   labData class. As of 4/27/2015, only the limb angles are calculated
+%   (angle between verticle line through hip and vector connecting hip 
+%   marker to ankle marker)
+%
+%Created 5/14/2014 by HMH
+
+[file] = getSimpleFileName(trialData.metaData.rawDataFilename); %for error printout purposes
 
 %get orientation
 if isempty(trialData.markerData.orientation)
@@ -10,9 +17,6 @@ if isempty(trialData.markerData.orientation)
 else
     orientation=trialData.markerData.orientation;
 end
-
-[file] = getSimpleFileName(trialData.metaData.rawDataFilename);
-
 
 % get hip position in fore-aft and up-down axes
 if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIPx')
@@ -28,10 +32,10 @@ end
 
 % get ankle position in fore-aft and up-down axes
 if trialData.markerData.isaLabel('RANKx') && trialData.markerData.isaLabel('LANKx')
-    LanklePos2D=trialData.getMarkerData({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
-    LanklePos2D=[orientation.foreaftSign* LanklePos2D(:,1),orientation.updownSign*LanklePos2D(:,2)];
-    RanklePos2D=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
-    RanklePos2D=[orientation.foreaftSign* RanklePos2D(:,1),orientation.updownSign*RanklePos2D(:,2)];
+    LankPos2D=trialData.getMarkerData({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
+    LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
+    RankPos2D=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
+    RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
 else    
     warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
     angleData=[];
@@ -39,8 +43,8 @@ else
 end
 
 % calculate limb angles
-RLimbAngle = calcangle([RanklePos2D(:,1) RanklePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;
-LLimbAngle = calcangle([LanklePos2D(:,1) LanklePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
+RLimbAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;
+LLimbAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
 
 % time info needed for labtimeseries object
 t0=trialData.markerData.Time(1);

@@ -1,14 +1,23 @@
 classdef experimentMetaData
-    %Information concerning/describing the experiment as a whole.
+    %experimentMetaData   Information concerning/describing the experiment as a whole.
     %
-    %   experimentMetaData(ID,date,experimenter,obs,conds,trialLst,NTrials)
-    %   ID - the study protocol
-    %   date - the date of the experiment
-    %   experimenter - the person(s) who ran the experiment
-    %   obs - overall observations
-    %   conds - decriptions of each condition
-    %   trialLst - a cell with the trial numbers for each condition
+    %experimentMetaData Properties:
+    %   ID - string containing the group that the subject belongs to (i.e. the
+    %   study protocol)
+    %   date - labDate object containing the date of the experiment
+    %   experimenter - string with the person(s) who ran the experiment
+    %   observations - string with overall study observations (observations for individual
+    %   trials are stored in trailMetaData class objects)
+    %   conditionName - cell array of strings contatining labels given to each condition of the experiment
+    %   conditionDescription - cell array of strings contatining a detailed description of each condition.
+    %   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
+    %   trailsInCondition - cell array of numbers matching condition number to
+    %   trial numbers
     %   Ntrials - total number of trials
+    %
+    %experimentMetaData Methods:
+    %   getCondLstPerTrial -
+    %   getConditionIdxsFromName -
     
     properties
         ID;
