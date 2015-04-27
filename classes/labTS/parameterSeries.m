@@ -4,7 +4,6 @@ classdef parameterSeries < labTimeSeries
     
     properties
         hiddenTime
-        
     end
     properties(Dependent)
        bad
@@ -44,6 +43,28 @@ classdef parameterSeries < labTimeSeries
               vals=cell(size(this.labels)); 
            end
         end
+        
+        %% I/O
+        function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib
+            [bool,idx]=this.isaLabel(labels);
+        end
+        
+        function inds=indsInTrial(this,t)
+            if nargin<2 || isempty(t)
+                inds=[];
+            else
+                inds=cell(length(t),1);
+                for ii=1:length(t)
+                    inds{ii,1}=find(this.stridesTrial==t(ii));
+                end
+            end
+        end
+        
+        function [data,auxLabel]=getParameter(this,label) %Backwards compat
+            [data,~,auxLabel]=this.getDataAsVector(label);
+        end                  
+       
+  
         %% Modifiers
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
@@ -51,6 +72,35 @@ classdef parameterSeries < labTimeSeries
             else
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
+        end
+        
+        function newThis=addStrides(this,other)
+            %TODO: Check that the labels are actually the same
+            aux=other.getDataAsVector(this.labels);
+            if size(this.Data,2)==size(other.Data,2)
+                newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
+            else
+                error('parameterSeries:addStrides','Cannot concatenate series with different number of parameters.');
+            end
+        end
+        
+        function newThis=getDataAsPS(this,labels,strides)
+            if nargin<2 || isempty(labels)
+                labels=this.labels;
+            end
+            extendedLabels=[{'bad';'trial';'initTime'} ;labels(:)];
+            extendedLabels=unique(extendedLabels); %To avoid repeating bad, trial, initTime
+            [bool,idx]=this.isaLabel(extendedLabels);
+            idx=idx(bool);
+            if nargin<3 || isempty(strides)
+               strides=1:size(this.Data,1); 
+            end
+            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx));
+        end
+        
+        function newThis=appendData(this,newData,newLabels) %For back compat
+            other=parameterSeries(newData,newLabels,this.hiddenTime,cell(size(newLabels)));
+            newThis=cat(this,other);
         end
         
         %% Other functions that need redefining:
@@ -71,7 +121,7 @@ classdef parameterSeries < labTimeSeries
         end
         
         %% Display
-        function h=plot(this,h,labels) %Alternative plot: all the traces go in different axes
+        function h=plotAlt(this,h,labels)
             if nargin<2 || isempty(h)
                 h=figure;
             else
@@ -88,9 +138,10 @@ classdef parameterSeries < labTimeSeries
             bad=this.bad;
             for i=1:N
                 h1(i)=subplot(ceil(N/2),2,i);
+                T=1:length(bad);
                 hold on
-                plot(this.hiddenTime(bad==0),relData(bad==0,i),'.')
-                plot(this.hiddenTime(bad==1),relData(bad==1,i),'x')
+                plot(T(bad==0),relData(bad==0,i),'.')
+                plot(T(bad==1),relData(bad==1,i),'x')
                 ylabel(relLabels{i})
                 hold off
             end

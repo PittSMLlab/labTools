@@ -1,29 +1,6 @@
 classdef experimentData
-    %experimentData  Contains all information for a single experiment  
-    %
-    %experimentData properties:
-    %   metaData - experimentMetaData object
-    %   subData - subjectData object
-    %   data - cell array of labData objects or any objects which extend
-    %          labData
-    %(dependent)
-    %   isRaw - returns true if data is an object of the rawLabData class
-    %   isProcessed - returns true if data is an oibject of the processedLabData class
-    %   isStepped - returns true if data is an object of the strideData class
-    %   fastLeg - computes which blet ('L' or 'R') was the fast belt
-    %
-    %labDate Methods:
-    %   getSlowLeg - 
-    %   getRefLeg - 
-    %   process - 
-    %   makeDataObj - 
-    %   parameterEvolutionPlot - 
-    %   parameterTimeCourse - 
-    %   recomputeParameters - 
-    %   splitIntoStrides - 
-    %   getStridedField - 
-    %   getAlignedField - 
-    %   getConditionIdxsFromName - 
+    %UNTITLED2 Summary of this class goes here
+    %   Detailed explanation goes here
     
     properties
         metaData % field that contains information from the experiment. Has to be an experimentMetaData object
@@ -32,8 +9,8 @@ classdef experimentData
     end
     
     properties (Dependent)
-        isRaw %true if data is an object of the rawLabData class
-        isProcessed %true if data is an oibject of the processedLabData class
+        isRaw
+        isProcessed %true if the trials have been processed, and false otherwise (raw).
         isStepped %or strided
         fastLeg
     end
@@ -73,12 +50,12 @@ classdef experimentData
         
         %Getters for Dependent properties
         function a=get.isProcessed(this)
-            %Returns true if the trials have been processed, and false if
-            %they contain rawData.
-            %   INPUTS: 
-            %       this: experimentData object
-            %   OUTPUTS: 
-            %       a: boolean
+            % Returns true if the trials have been processed, and false if
+            % they contain rawData.
+            %INPUTS: 
+            %this: experimentData object
+            %OUTPUTS: 
+            %a: boolean
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1); %Not empty
             a=isa(this.data{idx},'processedLabData');
@@ -164,18 +141,27 @@ classdef experimentData
            end
         end
         
+        function fL=getNonRefLeg(this)
+            sL=this.getRefLeg;
+            if strcmp(sL,'R')
+                fL='L';
+            else
+                fL='R';
+            end
+        end
+        
         %Process full experiment
         function processedThis=process(this)
             % Returns a new experimentData object with same metaData, subData and processed (trial) data.
             % This is done by iterating through data (trials) and
-            % processing each by using labData.process 
-            %   processedThis=process(this)
-            %   INPUTS:
-            %       this: experimentData object
-            %   OUTPUTS:
-            %       processedThis: experimentData object with processed data
-            %
-            %See also: labData
+            % processing each by using labData.process
+            % See also labData
+            % -------
+            % INPUTS:
+            % this: experimentData object
+            % -------
+            % OUTPUTS:
+            % processedThis: experimentData object with processed data
             
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
@@ -190,60 +176,70 @@ classdef experimentData
         
         %function to make adaptationData object
         function adaptData=makeDataObj(this,filename,experimentalFlag)
-        %MAKEDATAOBJ  creates an object of the adaptationData class.
-        %   adaptData=makeDataObj(this,filename,experimentalFlag)   
-        %   INPUTS: 
-        %       this: experimentData object
-        %       filename: string (typically subject identifier)
-        %       experimentalFlag: boolean - false (or 0) prevents experimental
-        %       parameter calculation and inclusion
-        %   OUTPUTS: 
-        %       adptData: object if the adaptationData class, which is
-        %       saved to present working directory if a filename is
-        %       specified.
-        %
-        %   Examples:
-        %   
-        %   adaptData=expData.makeDataObj('Sub01') saves adaptationData 
-        %   object to Sub01params.mat
-        %
-        %   adaptData=expData.makeDataObj('Sub01','',1) does not include
-        %   experimentalParams in adaptData object and does not save to file
-        %
-        %   See also: adaptationData, paramData
-            DATA=[];
-            DATA2=[];
-            startind=1;
-            auxLabels={'Trial','Condition'};
-            if ~isempty(this.data)
+            warning('adaptData.makeDataObj is using a new version which may not be back-compatible');
+            if nargin<3
+                experimentalFlag=[];
+            end
+            if nargin<2
+                filename=[];
+            end
+            adaptData=makeDataObjNew(this,filename,experimentalFlag);
+%             DATA=[];
+%             DATA2=[];
+%             startind=1;
+%             auxLabels={'Trial','Condition'};
+%             if ~isempty(this.data)
+%                 for i=1:length(this.data) %Trials
+%                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+%                         labels=this.data{i}.adaptParams.getLabels;
+%                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
+%                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+%                         if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
+%                             %nop
+%                         else
+%                             aux=this.data{i}.experimentalParams;
+%                             labels2=aux.getLabels;
+%                             dataTS2=aux.getDataAsVector(labels2);
+%                             DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+%                         end
+%                         auxData(startind:size(DATA,1),1)=i; %Saving trial info
+%                         auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
+%                         indsInTrial{i}= startind:size(DATA,1);
+%                         startind=size(DATA,1)+1;
+%                         trialTypes{i}=this.data{i}.metaData.type;
+%                     end
+%                 end
+%             end    
+%             %labels should be the same for all trials with adaptParams
+%             if ~isempty(DATA2)
+%                 parameterData=paramData([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
+%                 %parameterData=parameterSeries([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
+%             else
+%                 parameterData=paramData([DATA,auxData],[labels(:) auxLabels(:)],indsInTrial,trialTypes);
+%             end
+%             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
+%             if nargin>1 && ~isempty(filename)
+%                 save([filename 'params.mat'],'adaptData'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
+%             end
+        end
+        
+        function adaptData=makeDataObjNew(this,filename,experimentalFlag)
                 for i=1:length(this.data) %Trials
                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-                        labels=this.data{i}.adaptParams.getLabels;
-                        dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
-                        DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
-                            %nop
-                        else
-                            aux=this.data{i}.experimentalParams;
-                            labels2=aux.getLabels;
-                            dataTS2=aux.getDataAsVector(labels2);
-                            DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+                        %Get data from this trial:
+                        aux=this.data{i}.adaptParams;
+                        if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
+                            aux=cat(aux,this.data{i}.experimentalParams); 
                         end
-                        auxData(startind:size(DATA,1),1)=i; %Saving trial info
-                        auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
-                        indsInTrial{i}= startind:size(DATA,1);
-                        startind=size(DATA,1)+1;
-                        trialTypes{i}=this.data{i}.metaData.type;
+                        %Concatenate with other trials:
+                        if ~exist('paramData','var')
+                            paramData=aux;
+                        else
+                            paramData=addStrides(paramData,aux);
+                        end
                     end
-                end
-            end    
-            %labels should be the same for all trials with adaptParams
-            if ~isempty(DATA2)
-                parameterData=paramData([DATA, DATA2, auxData],[labels labels2 auxLabels],indsInTrial,trialTypes);
-            else
-                parameterData=paramData([DATA,auxData],[labels auxLabels],indsInTrial,trialTypes);
-            end
-            adaptData=adaptationData(this.metaData,this.subData,parameterData);  
+                end    
+            adaptData=adaptationData(this.metaData,this.subData,paramData);  
             if nargin>1 && ~isempty(filename)
                 save([filename 'params.mat'],'adaptData'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
@@ -271,19 +267,16 @@ classdef experimentData
         end
         
         %Update/modify
-        function this=recomputeParameters(this)
-        %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
-        %objects in experimentData.data.
-        %
-        %   Example: if expData is an object of the experimentalData class,
-        %       expData=expData.recomputeParameters
-        %   will recompute expData.data{i}.adaptParams for all i where
-        %   i is a trial of the experiment
-        %
-        %   See also: parameterSeries
+        function this=recomputeParameters(this,eventClass,initEventType)
+            if nargin<2 || isempty(eventClass)
+                eventClass=[];
+            end
+            if nargin<3 || isempty(initEventType)
+                initEventType=[];
+            end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData); 
+                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventType); 
             end
         end
         
@@ -329,7 +322,8 @@ classdef experimentData
            originalInitTime=[];
            originalTrial=[];
            for i=trials
-              [aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
               stridedField=[stridedField; aux]; 
               bad=[bad; bad1];
               originalTrial=[originalTrial; i*ones(size(bad1))];
@@ -337,7 +331,7 @@ classdef experimentData
            end
         end
         
-        function [alignedField,originalDurations,originalTrial,originalInitTime]=getAlignedField(this,field,conditions,events,alignmentLengths)
+        function [alignedField,originalDurations,originalTrial,originalInitTime,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
             if nargin<4 
                 events=[];
             end
@@ -345,10 +339,10 @@ classdef experimentData
             if any(bad)
                 warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
             end
-            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
             alignedField.alignmentLabels=events;
-            originalTrial=originalTrial(~bad);
-            originalInitTime=originalInitTime(~bad);
+            originalTrial=originalTrial;
+            originalInitTime=originalInitTime;
         end
         
         %Auxiliar

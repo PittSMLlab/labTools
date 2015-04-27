@@ -164,7 +164,7 @@ end
         for j=1:length(markers)
             for leg=1:2
                 for i=1:3
-                labels{end+1}=[legs{leg} markers{j} directions{i}];
+                    labels{end+1}=[legs{leg} markers{j} directions{i}];
                 end
             end
         end

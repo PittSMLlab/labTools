@@ -1,4 +1,4 @@
-        function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast)
+        function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)
             
             N1=3; %very early number of points
            if nargin<3 || isempty(earlyNumber)
@@ -19,28 +19,37 @@
             
             [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
             
-            conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            if nargin<6 || isempty(condList)
+                conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            else
+                conds=this.getConditionIdxsFromName(condList);
+            end
             nConds=length(conds);
+            [allVeryEarlyPoints,allEarlyPoints,allLatePoints]=getEarlyLateData...
+                (this,label,this.metaData.conditionName(conds),0,N2,N3,Ne);
             for l=1:length(label)
-                earlyPoints=NaN(nConds,N2);
-                veryEarlyPoints=NaN(nConds,N1);
-                latePoints=NaN(nConds,N3);
-                for i=1:nConds
-                    aux=this.getParamInCond(label(l),conds(i));
-                    try %Try to get the first strides, if there are enough
-                        veryEarlyPoints(i,:)=aux(1:N1);
-                        earlyPoints(i,:)=aux(1:N2);
-                    catch %In case there aren't enough strides, assign NaNs to all
-                        veryEarlyPoints(i,:)=NaN;
-                        earlyPoints(i,:)=NaN;
-                    end
-                    %Last 20 steps, excepting the very last 5
-                    try
-                        latePoints(i,:)=aux(end-N3-Ne+1:end-Ne);
-                    catch
-                        latePoints(i,:)=NaN;
-                    end
-                end
+                earlyPoints=allEarlyPoints(:,:,l);
+                veryEarlyPoints=allVeryEarlyPoints(:,:,l);
+                latePoints=allLatePoints(:,:,l);
+%                 earlyPoints=NaN(nConds,N2);
+%                 veryEarlyPoints=NaN(nConds,N1);
+%                 latePoints=NaN(nConds,N3);
+%                 for i=1:nConds
+%                     aux=this.getParamInCond(label(l),conds(i));
+%                     try %Try to get the first strides, if there are enough
+%                         veryEarlyPoints(i,:)=aux(1:N1);
+%                         earlyPoints(i,:)=aux(1:N2);
+%                     catch %In case there aren't enough strides, assign NaNs to all
+%                         veryEarlyPoints(i,:)=NaN;
+%                         earlyPoints(i,:)=NaN;
+%                     end
+%                     %Last 20 steps, excepting the very last 5
+%                     try
+%                         latePoints(i,:)=aux(end-N3-Ne+1:end-Ne);
+%                     catch
+%                         latePoints(i,:)=NaN;
+%                     end
+%                 end
                 axes(ah(l))
                 hold on
                 

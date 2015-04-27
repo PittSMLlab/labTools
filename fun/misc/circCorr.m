@@ -15,7 +15,7 @@ end
 [cmax,lag]=max(c);
 lag=lag/n;
 
-if cmax<0.5
+if cmax<0.5 || isnan(cmax);
     lag=NaN;
 end
 

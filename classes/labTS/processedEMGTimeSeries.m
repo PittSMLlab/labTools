@@ -12,13 +12,17 @@ classdef processedEMGTimeSeries  < labTimeSeries
     methods
         
         %Constructor:
-        function this=processedEMGTimeSeries(data,t0,Ts,labels,processingInfo) %Necessarily uniformly sampled
+        function this=processedEMGTimeSeries(data,t0,Ts,labels,processingInfo,Quality,QualInfo) %Necessarily uniformly sampled
             this@labTimeSeries(data,t0,Ts,labels);
             if isa(processingInfo,'processingInfo')
                 this.processingInfo=processingInfo;
             else
                 ME=MException('processedEMGTimeSeries:Constructor','processingInfo parameter is not an processingInfo object.');
                 throw(ME)
+            end
+            if nargin>5
+                this.Quality=Quality;
+                this.QualityInfo=QualInfo;
             end
         end
         
@@ -41,10 +45,11 @@ classdef processedEMGTimeSeries  < labTimeSeries
         function newThis=split(this,t0,t1)
            auxThis=this.split@labTimeSeries(t0,t1);
                if auxThis.Nsamples>0 %Empty series was returned
-                   newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo);
+                   newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
                else
-                   newThis=processedEMGTimeSeries(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo);
+                   newThis=processedEMGTimeSeries(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
                end
+               
         end
         
     end

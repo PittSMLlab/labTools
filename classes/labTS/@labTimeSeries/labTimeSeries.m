@@ -24,7 +24,7 @@ classdef labTimeSeries  < timeseries
                 labels={};
                 Ts=[];
             else
-                time=[0:size(data,1)-1]*Ts+t0;
+                time=[0:size(data,1)-1]*Ts+t0';
             end
             this=this@timeseries(data,time);
             this.sampPeriod=Ts;
@@ -64,6 +64,20 @@ classdef labTimeSeries  < timeseries
         
         function labelList=getLabels(this)
            labelList=this.labels; 
+        end
+        
+        function labelList=getLabelsThatMatch(this,exp)
+            %Returns labels on this labTS that match the regular expression exp.
+            %labelList=getLabelsThatMatch(this,exp)
+            %INPUT:
+            %this: labTS object
+            %exp: any regular expression (as string). 
+            %OUTPUT:
+            %labelList: cell array containing labels of this labTS that match
+            %See also regexp
+            labelList=this.labels; 
+            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+            labelList=labelList(flags);
         end
         
         function [boolFlag,labelIdx]=isaLabel(this,label)
@@ -114,7 +128,7 @@ classdef labTimeSeries  < timeseries
         %-------------------
         
         %Modifier functions:
-        function newThis=resample(this,newTs,newT0,hiddenFlag) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
+        function newThis=resample(this,newTs,newT0,hiddenFlag)
             if nargin<3 || isempty(newT0)
                 error('labTS:resample','Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.')
             end
@@ -192,6 +206,14 @@ classdef labTimeSeries  < timeseries
         end
         
         function newThis=split(this,t0,t1)
+            
+            %Need to test this chunk of code before enabling:
+            %if isnan(t0) || isnan(t1)
+            %    warning('labTS:split','One of the interval limits is NaN. Returning empty TS.')
+            %    newTS=[];
+            %    return
+            %end
+            
            %Check t0>= Time(1)
            %Check t1<= Time(end)
            initT=this.Time(1)-eps;
@@ -201,7 +223,7 @@ classdef labTimeSeries  < timeseries
                    ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
                    throw(ME)
                else
-                   warning('LabTS:split','Requested interval is not completely contained in TimeSeries. Padding with NaNs.')
+                   warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is not completely contained in TimeSeries. Padding with NaNs.'])
                end
            end
            %Find portion of requested interval that falls within the
@@ -209,7 +231,7 @@ classdef labTimeSeries  < timeseries
             i1=find(this.Time>=t0,1);
             i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)
             if i2<i1
-                warning('LabTS:split','Requested interval falls completely within two samples: returning empty timeSeries.') 
+                warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] falls completely within two samples: returning empty timeSeries.']) 
             end
             %In case the requested time interval is larger than the
             %timeseries' actual time vector, pad with NaNs:
@@ -228,6 +250,11 @@ classdef labTimeSeries  < timeseries
             else
                 newThis=labTimeSeries([false(ia,size(this.Data,2)) ; this.Data(i1:i2,:); false(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
             end
+            if ~isempty(this.Quality)
+                newThis.QualityInfo=this.QualityInfo;
+                k=find(strcmp(this.QualityInfo.Description,'missing'));
+                newThis.Quality=[k*ones(ia,size(this.Quality,2)) ; this.Quality(i1:i2,:); k*ones(ib,size(this.Quality,2))];
+            end
         end
         
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
@@ -235,58 +262,67 @@ classdef labTimeSeries  < timeseries
             [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
         
-        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
-           %eventTS needs to be a labTimeSeries with binary events as data
-           %If eventLabel is not given, the first data column is used as
-           %the relevant event marker. If given, eventLabel must be the
-           %label of one of the data columns in eventTS
-           
-           %Check needed: is eventTS a labTimeSeries?
-           if nargin>2
-                eventList=eventTS.getDataAsVector(eventLabel);
-           else
-               eventList=eventTS.Data(:,1);
-           end
-           %Check needed: is eventList binary?
-           N=size(eventList,2); %Number of events & intervals to be found
-           auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
-           %
-           if nargin<4 || isempty(timeMargin)
-               timeMargin=0;
-           end
-           
-            refIdxLst=find(auxList==1);
-            M=length(refIdxLst)-1;
-            auxTime=eventTS.Time;
-            aa=auxTime(refIdxLst);
-            initTime=aa(1:M); %Initial time of each interval identified
-            duration=diff(aa); %Duration of each interval
-            steppedDataArray=cell(M,N);
-            bad=false(M,1);
-            for i=1:M %Going over strides
-                t0=auxTime(refIdxLst(i));
-                nextT0=auxTime(refIdxLst(i+1));
-                lastEventIdx=refIdxLst(i);
-                for j=1:N-1 %Going over events
-                   nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
-                   t1= auxTime(nextEventIdx); %Look for next event
-                   if ~isempty(t1) && ~isempty(t0)
-                        steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
-                        t0=t1;
-                        lastEventIdx=nextEventIdx;
-                   else
-                       warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
-                        if islogical(this.Data)
-                            steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
-                        else
-                            steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
-                        end
-                        bad(i)=true;
-                   end
-                   
-                end
-                steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
-            end
+%         function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
+%            %eventTS needs to be a labTimeSeries with binary events as data
+%            %If eventLabel is not given, the first data column is used as
+%            %the relevant event marker. If given, eventLabel must be the
+%            %label of one of the data columns in eventTS
+%            
+%            %Check needed: is eventTS a labTimeSeries?
+%            if nargin>2
+%                 eventList=eventTS.getDataAsVector(eventLabel);
+%            else
+%                eventList=eventTS.Data(:,1);
+%            end
+%            %Check needed: is eventList binary?
+%            N=size(eventList,2); %Number of events & intervals to be found
+%            auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
+%            %
+%            if nargin<4 || isempty(timeMargin)
+%                timeMargin=0;
+%            end
+%            
+%             refIdxLst=find(auxList==1);
+%             M=length(refIdxLst)-1;
+%             auxTime=eventTS.Time;
+%             aa=auxTime(refIdxLst);
+%             initTime=aa(1:M); %Initial time of each interval identified
+%             duration=diff(aa); %Duration of each interval
+%             steppedDataArray=cell(M,N);
+%             bad=false(M,1);
+%             for i=1:M %Going over strides
+%                 t0=auxTime(refIdxLst(i));
+%                 nextT0=auxTime(refIdxLst(i+1));
+%                 lastEventIdx=refIdxLst(i);
+%                 for j=1:N-1 %Going over events
+%                    nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+%                    t1= auxTime(nextEventIdx); %Look for next event
+%                    if ~isempty(t1) && ~isempty(t0)
+%                         steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
+%                         t0=t1;
+%                         lastEventIdx=nextEventIdx;
+%                    else
+%                        warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
+%                         if islogical(this.Data)
+%                             steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
+%                         else
+%                             steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
+%                         end
+%                         bad(i)=true;
+%                    end
+%                    
+%                 end
+%                 steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
+%             end
+%         end
+        
+        function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)
+          %Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints
+          for i=1:length(timeBreakpoints)-1
+              slicedTS{i}=this.split(timeBreakpoints(i)-timeMargin,timeBreakpoints(i+1)+timeMargin);
+          end
+            initTime=timeBreakpoints(1:end-1)-timeMargin;
+            duration=diff(timeBreakpoints)+2*timeMargin;
         end
         
         function this=times(this,constant)
@@ -316,6 +352,7 @@ classdef labTimeSeries  < timeseries
         function newThis=derivate(this)
             M=size(this.Data,2);
             newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
+            newLabels={};
             for i=1:M
                 newLabels{i}=['d/dt ' this.labels{i}];
             end
@@ -433,10 +470,41 @@ classdef labTimeSeries  < timeseries
             plotHandles=h1;  
         end
         
-        %function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
+        function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
             %Ideally we would plot 'L' and 'R' timeseries on top of each
             %other, to do a bilateral comparison. Need to implement.
-        %end
+            if nargin<2 || isempty(h)
+                h=figure;
+            else
+                figure(h)
+            end
+            if nargin<5 || isempty(events)
+                events=[];
+            end
+            if nargin<6 || isempty(color)
+                color=[];
+            end
+            if nargin<3 || isempty(labels)
+                labels=this.labels;
+            end
+            suffix=unique(cellfun(@(x) x(2:end),labels,'UniformOutput',false));
+            if nargin<4 || isempty(plotHandles) || length(plotHandles)<length(suffix)
+                [b,a]=getFigStruct(length(suffix));
+                plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); %External function
+            end
+            if nargin<7 || isempty(lineWidth)
+                lineWidth=2;
+            end
+            [h,plotHandles]=plot(this,h,strcat('L',suffix),plotHandles,events,color,lineWidth);
+            [h,plotHandles]=plot(this,h,strcat('R',suffix),plotHandles,events,color,lineWidth);
+            for i=1:length(suffix)
+                subplot(plotHandles(i))
+                ylabel(suffix{i})
+                if i==length(suffix)
+                legend('L','R')
+                end
+            end
+        end
         %Other
         function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
             if nargin>1
@@ -494,7 +562,7 @@ classdef labTimeSeries  < timeseries
         
         function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
-            if ~islogical(stridedTS{1}.Data(1))
+            if ~islogical(stridedTS{1}.Data)
                 aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             else
                 aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));

@@ -7,7 +7,7 @@ classdef adaptationData
     properties
         metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
         subData %cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object
-        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
+        data
     end
     
     properties (Dependent)
@@ -32,7 +32,7 @@ classdef adaptationData
                 throw(ME);
             end
             
-            if nargin>2 && isa(data,'paramData')
+            if nargin>2 && isa(data,'parameterSeries')
                 this.data=data;
             else
                 ME=MException('adaptationData:Constructor','Data is not a paramData type object.');
@@ -141,6 +141,9 @@ classdef adaptationData
             if nargin<4 || isempty(removeBias)
                 removeBias=0;
             end
+            if nargin<2 || isempty(label)
+                label=this.data.labels;
+            end
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -157,23 +160,20 @@ classdef adaptationData
             if isa(condition,'char')
                 condition={condition};
             end
+            
             if isa(condition,'cell')
-                for i=1:length(condition)
-                    boolFlags=strcmpi(this.metaData.conditionName,condition{i});
-                    if any(boolFlags)
-                        condNum(end+1)=find(boolFlags);
-                    else
-                        warning([this.subData.ID ' did not perform condition ''' condition{i} ''''])
-                    end
+                condNum=this.metaData.getConditionIdxsFromName(condition);
+                if any(isnan(condNum))
+                   warning([this.subData.ID ' did not perform condition ''' condition{isnan(condNum)} ''''])
                 end
-            else %a numerical vector
-                for i=1:length(condition)
-                    if length(this.metaData.trialsInCondition)<i || isempty(this.metaData.trialsInCondition(condition(i)))
-                        warning([this.subData.ID ' did not perform condition number ' num2str(condition(i))])
-                    else
-                        condNum(end+1)=condition(i);
-                    end
-                end
+%             else %a numerical vector
+%                 for i=1:length(condition)
+%                     if length(this.metaData.trialsInCondition)<i || isempty(this.metaData.trialsInCondition(condition(i)))
+%                         warning([this.subData.ID ' did not perform condition number ' num2str(condition(i))])
+%                     else
+%                         condNum(end+1)=condition(i);
+%                     end
+%                 end
             end
             
             %get data
@@ -189,9 +189,7 @@ classdef adaptationData
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
-        
-
-        
+             
         function [boolFlag,labelIdx]=isaCondition(this,cond)	
             if isa(cond,'char')
                 auxCond{1}=cond;
@@ -324,6 +322,22 @@ classdef adaptationData
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
         
+        function inds=getIndsInCondition(this,conditionNames)
+            %Get condition indexes if not already provided:
+            if isa(conditionNames,'char') || isa(conditionNames,'cell')
+                conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
+            else
+                conditionIdxs=conditionNames;
+            end
+            inds={};
+            for i=1:length(conditionIdxs)
+                %Get trials in each condition:
+                trials=cell2mat(this.metaData.trialsInCondition(conditionIdxs(i)));
+                %Now, get inds in each trial:
+                inds{i}=cell2mat(this.data.indsInTrial(trials));
+            end
+        end
+        
         %Display functions:
         function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
         %Plot of the behaviour of parameters through the different conditions 
@@ -357,10 +371,10 @@ classdef adaptationData
                     trials=this.metaData.trialsInCondition{conds(i)};
                     if ~isempty(trials)
                         for t=trials
-                            inds=this.data.indsInTrial{t};
-                            dataPoints(inds,i)=this.getParamInTrial(label(l),t);
-                            if ~isempty(inds)
-                                trialBreaks(end+1)=inds(end);
+                            inds=this.data.indsInTrial(t);
+                            dataPoints(inds{1},i)=this.getParamInTrial(label(l),t);
+                            if ~isempty(inds{1})
+                                trialBreaks(end+1)=inds{1}(end);
                             end
                         end
                     end

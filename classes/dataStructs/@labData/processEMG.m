@@ -10,10 +10,16 @@ if ~isempty(emg)
     %back and re-process from scratch, but it was only in a short time
     %period (~200ms) so decided to clip, issue warning, and add new quality
     %category.
-    if any(any(abs(emg.Data)>=5.6e-3))
-        quality(abs(emg.Data)>=5.6e-3)=3;
-        emg.Data(abs(emg.Data)>=5.6e-3)=0;
-        warning('Found samples outside the valid range (+-5.6e-3), clipping.')
+    aaux=abs(emg.Data)>=5e-3; %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
+    if any(any(aaux))
+        quality(aaux)=4;
+        warning(['Found samples outside the normal range (+-5e-3), sensor '  ' was probably loose.'])
+    end
+    aaux=abs(emg.Data)>=6e-3; %Delsys claims the sensor range is +-5.5mV, but samples up to 5.9mV do appear
+    if any(any(aaux))
+        quality(aaux)=8;
+        emg.Data(aaux)=0;
+        warning('Found samples outside the valid range (+-6e-3). Clipping.')
     end
     
     
@@ -69,13 +75,14 @@ if ~isempty(emg)
     if ~isempty(emg.Quality) %Case where there was pre-existing quality info
         filteredEMGData.Quality=emg.Quality;
         filteredEMGData.Quality(quality==2)=2;
-        filteredEMGData.Quality(quality==3)=3;
-        filteredEMGData.QualityInfo.Code=[emg.QualityInfo.Code 2 3];
-        filteredEMGData.QualityInfo.Description=[emg.QualityInfo.Description, 'spike', 'outsideValidRange'];
+        filteredEMGData.Quality(quality==3)=4;
+        filteredEMGData.Quality(quality==3)=8;
+        filteredEMGData.QualityInfo.Code=[emg.QualityInfo.Code 2 4 8];
+        filteredEMGData.QualityInfo.Description=[emg.QualityInfo.Description, 'spike', 'sensorLoose' ,'outsideValidRange'];
     else
         filteredEMGData.Quality=int8(quality); %Need to cast as int8 because Matlab's timeseries forces this for the quality property
-        filteredEMGData.QualityInfo.Code=[0 2 3];
-        filteredEMGData.QualityInfo.Description={'good', 'spike', 'outsideValidRange'};
+        filteredEMGData.QualityInfo.Code=[0 2 4 8];
+        filteredEMGData.QualityInfo.Description={'good', 'spike', 'sensorLoose','outsideValidRange'};
     end
     procEMGData.Quality= filteredEMGData.Quality;
     procEMGData.QualityInfo=filteredEMGData.QualityInfo;

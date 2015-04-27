@@ -38,21 +38,43 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         %Other I/O functions:
         function [newTS,auxLabel]=getDataAsTS(this,label)
-            [data,time,auxLabel]=getDataAsVector(this,label);
-            newTS=orientedLabTimeSeries(data,time(1),this.sampPeriod,auxLabel,this.orientation);
+            [newTS,auxLabel]=getDataAsTS@labTimeSeries(this,label);
         end
 
         function [data,label]=getOrientedData(this,label)
+            %Returns data as a 3D tensor, where the last dim contains the componentes x,y,z
+            %[data,label]=getOrientedData(this,label)
+            %INPUT:
+            %this = orientedLabTS object
+            %label = cell array of strings, each containing the prefix of a
+            %marker present in this TS (e.g.: label={'LHIP','RHIP'}, not
+            %{'LHIPx','RHIPx'}. If any of the provided labels do not exist 
+            %AS A PREFIX, NaNs are returned in the corresponding matrix components.
+            %OUTPUT:
+            %data= matrix of dimensions TxNx3, where N is the length of label 
+            %(# of requested markers), T is the number of available time
+            %samples. Each slice data(:,i,:) contains 3D position of marker
+            %i at all time samples.
+            %label=Currently returns the same label given as input. 
+            
             T=size(this.Data,1);
             if nargin<2 || isempty(label)
                 label=this.getLabelPrefix; %All of them
             end
+            data=nan(T,length(label)*3);
                 extendedLabels=this.addLabelSuffix(label);
                 if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
                    error('Labels in this object do not pass the sanity check.') 
                 end
-            data=this.getDataAsVector(extendedLabels);
+                [bool,~]=this.isaLabel(extendedLabels);
+                [data(:,bool),~]=this.getDataAsVector(extendedLabels(bool));
             data=permute(reshape(data,T,3,round(length(extendedLabels)/3)),[1,3,2]);
+        end
+        
+        function newThis=getDataAsOTS(this,label)
+            [data,label]=getOrientedData(this,label);
+            data=permute(data,[1,3,2]);
+            newThis=orientedLabTimeSeries(data(:,:),this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(label),this.orientation);
         end
         
         function [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)
@@ -130,10 +152,25 @@ classdef orientedLabTimeSeries  < labTimeSeries
             for j=1:N
                 %Alternative efficient formulation:
                 boolFlag(j)=any(strcmp(auxLabel{j},this.getLabelPrefix));
-                labelIdx(j)=find(strcmp(auxLabel{j},this.getLabelPrefix));
+                if boolFlag(j)
+                    labelIdx(j)=find(strcmp(auxLabel{j},this.getLabelPrefix));
+                end
             end
         end
         
+        %-------------------
+        function plot3(this)
+           h=figure;
+           [data,labelPref]=getOrientedData(this);
+           hold on
+           
+           for i=1:length(labelPref)
+               plot3(data(:,i,1),data(:,i,2),data(:,i,3))
+           end
+           hold off
+           axis equal
+           legend(labelPref)
+        end
         
         %-------------------
         %Modifier functions:
@@ -145,7 +182,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         function newThis=split(this,t0,t1)
            auxThis=this.split@labTimeSeries(t0,t1);
-           newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+           newThis=orientedLabTimeSeries(auxThis.Data,t0,auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
         
         function newThis=translate(this,vector)
@@ -204,7 +241,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
            matrix=cat(2,matrix1,matrix2);
            matrix=cat(2,matrix,matrix3);
            for i=1:size(matrix,1)
+               if ~any(isnan(matrix(i,:,:)))
                 matrix(i,1:3,1:3)=inv(squeeze(matrix(i,:,:)));
+               else
+                   matrix(i,1:3,1:3)=nan;
+               end
            end
            %Rotate
            newThis=rotate(this, matrix);
@@ -215,10 +256,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
             [data,~]=getOrientedData(this,marker);
             newThis=translate(this,squeeze(-1*data));
         end
-%         function newThis=derivate(this)
-%             auxThis=this.derivate@labTimeSeries;
-%             newThis.orientation=this.orientation;
-%         end
+        
+        function newThis=derivate(this)
+            auxThis=this.derivate@labTimeSeries;
+            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+        end
         
     end
     methods (Static)
