@@ -9,16 +9,30 @@ else
     orientation=trialData.markerData.orientation;
 end
 
-if strcmpi(trialData.metaData.type,'OG') %Overground Trial, use limb angles to calculate events
+if strcmpi(trialData.metaData.type,'OG') %Overground Trial, default is to use limb angles to calculate events
+    
     [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation);
+    
+    LHSeventKin=LHSevent; %Make a redundant compy to label as kinematic events
+    RHSeventKin=RHSevent;
+    LTOeventKin=LTOevent;
+    RTOeventKin=RTOevent;
+    
+    LHSeventForce=false(length(LHSevent),1); %No force events, fill with logical 0's
+    RHSeventForce=false(length(RHSevent),1);
+    LTOeventForce=false(length(LTOevent),1);
+    RTOeventForce=false(length(RTOevent),1);
+    
     t0=trialData.markerData.Time(1);
     Ts=trialData.markerData.sampPeriod;
+    
+%     t0=trialData.GRFData.Time(1);
+%     Ts=trialData.GRFData.sampPeriod;
 else %Treadmill trial
-    noForce=false;
-    if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data
-        noForce=true;
-    end
-    if noForce
+    
+    [kinLHS,kinRHS,kinLTO,kinRTO] = getEventsFromAngles(trialData,angleData,orientation);        
+    
+    if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data, default events calculatd from marker data (not labeled as kin events though!!) 
         disp(['No ground reaction forces data in ' file '. Using marker data to compute events.'])
         
         LtoePos=trialData.getMarkerData({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis],['LTOE' orientation.sideAxis]});
@@ -43,8 +57,20 @@ else %Treadmill trial
         end
         fs_kin=trialData.markerData.sampFreq;
         [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromToeAndHeel(LtoePos,LheelPos,RtoePos,RheelPos,fs_kin); %EVENTS from a mix of kinematics;
-        t0=trialData.markerData.Time(1);
+        
+        LHSeventForce=false(length(LHSevent),1); %No force events, fill with logical 0's
+        RHSeventForce=false(length(RHSevent),1);
+        LTOeventForce=false(length(LTOevent),1);
+        RTOeventForce=false(length(RTOevent),1); 
+        
+        LHSeventKin=kinLHS;
+        RHSeventKin=kinRHS;
+        LTOeventKin=kinLTO;
+        RTOeventKin=kinRTO;
+        
+        t0=trialData.markerData.Time(1);        
         Ts=trialData.markerData.sampPeriod;
+        
     else        
         upAxis=trialData.GRFData.orientation.updownAxis;
         upSign=trialData.GRFData.orientation.updownSign;
@@ -62,10 +88,23 @@ else %Treadmill trial
         end
         
         [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromForces(FzL,FzR,trialData.GRFData.sampFreq);
+        
+        LHSeventForce=LHSevent; %Make a redundant copy to label as force events
+        RHSeventForce=RHSevent;
+        LTOeventForce=LTOevent;
+        RTOeventForce=RTOevent;        
+        
         t0=trialData.GRFData.Time(1);
         Ts=trialData.GRFData.sampPeriod;
+        [LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin] = deal(false(trialData.GRFData.Length,1));
+        
+        LHSeventKin((find(kinLHS)-1)*10+1)=true;
+        RHSeventKin((find(kinRHS)-1)*10+1)=true;
+        LTOeventKin((find(kinLTO)-1)*10+1)=true;
+        RTOeventKin((find(kinRTO)-1)*10+1)=true;
     end
 end
 
-events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent]),t0,Ts,{'LHS','RHS','LTO','RTO'});
+events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])...
+    ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO'});
 

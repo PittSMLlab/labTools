@@ -8,42 +8,39 @@ nsamples = trialData.markerData.Length;
 rdata = angleData.getDataAsVector({'RLimb'});
 ldata = angleData.getDataAsVector({'LLimb'});
 
-%get rid of angles that are artifacts of marker drop outs
-% rdata(abs(rdata)>45) = 0;
-% ldata(abs(ldata)>45) = 0;
-
-% %Get fore-aft ankle positions
-% rankle = trialData.getMarkerData({['RANK' orientation.foreaftAxis]});
-% lankle = trialData.getMarkerData({['LANK' orientation.foreaftAxis]});
-
-%Get fore-aft hip positions
-rhip = trialData.getMarkerData({['RHIP' orientation.foreaftAxis]});
-lhip = trialData.getMarkerData({['LHIP' orientation.foreaftAxis]});
-
-avghip = (rhip+lhip)./2;
-
-%Get hip velocity
-HipVel = diff(avghip);
-
-%Clean up velocities to remove artifacts of marker drop-outs
-HipVel(abs(HipVel)>50) = 0;
-
-%Use hip velocity to determine when subject is walking
-midHipVel = nanmedian(abs(HipVel));
-walking = abs(HipVel)>0.5*midHipVel;
-% Eliminate walking or turn around phases shorter than 0.5 seconds
-[walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.5);
-
-% split walking into individual bouts
-walkingSamples = find(walking);
-
-if ~isempty(walkingSamples)
-    StartStop = [walkingSamples(1) walkingSamples(diff(walkingSamples)~=1)'...
-        walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
-    StartStop = sort(StartStop);
+if strcmpi(trialData.metaData.type,'OG')
+    %Get fore-aft hip positions
+    newMarkerData = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['LHIP' orientation.foreaftAxis]});
+    rhip=newMarkerData(:,1);
+    lhip=newMarkerData(:,2);
+    
+    avghip = (rhip+lhip)./2;
+    
+    %Get hip velocity
+    HipVel = diff(avghip);
+    
+    %Clean up velocities to remove artifacts of marker drop-outs
+    HipVel(abs(HipVel)>50) = 0;
+    
+    %Use hip velocity to determine when subject is walking
+    midHipVel = nanmedian(abs(HipVel));
+    walking = abs(HipVel)>0.5*midHipVel;
+    % Eliminate walking or turn around phases shorter than 0.25 seconds
+    [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.25);
+    
+    % split walking into individual bouts
+    walkingSamples = find(walking);
+    
+    if ~isempty(walkingSamples)
+        StartStop = [walkingSamples(1) walkingSamples(diff(walkingSamples)~=1)'...
+            walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
+        StartStop = sort(StartStop);
+    else
+        warning('Subject was not walking during one of the overground trials');
+        return
+    end
 else
-    warning('Subject was not walking during one of the overground trials');
-    return
+    StartStop= [1 length(rdata)];
 end
 
 RightTO = [];
@@ -58,15 +55,15 @@ for i = 1:2:(length(StartStop))
     start = StartStop(i);
     stop = StartStop(i+1);
     
-    if median(HipVel(start:stop))>0 % in our lab, walking towards door
-        % Reverse angles for walking towards lab door (this is to make angle 
+    if strcmpi(trialData.metaData.type,'OG') && median(HipVel(start:stop))>0 % in our lab, walking towards door
+        % Reverse angles for walking towards lab door (this is to make angle
         % maximums HS and minimums TO, as they are when on treadmill)
         rdata(start:stop) = -rdata(start:stop);
         ldata(start:stop) = -ldata(start:stop);
     end
     
     startHS = start;
-    startTO  = start;    
+    startTO  = start;
     
     %Find all maximum (HS)
     while (startHS<stop)
@@ -83,12 +80,12 @@ for i = 1:2:(length(StartStop))
     end
     
     RightTO(RightTO == start | RightTO == stop) = [];
-    RightHS(RightHS == start | RightHS == stop) = [];    
+    RightHS(RightHS == start | RightHS == stop) = [];
     
     %% find HS/TO for left leg
     startHS = start;
     startTO  = start;
-        
+    
     %find all maximum (HS)
     while (startHS<stop)
         LHS = FindKinHS(startHS,stop,ldata,pad);
@@ -104,7 +101,7 @@ for i = 1:2:(length(StartStop))
     end
     
     LeftTO(LeftTO == start | LeftTO == stop)=[];
-    LeftHS(LeftHS == start | LeftHS == stop)=[];    
+    LeftHS(LeftHS == start | LeftHS == stop)=[];
 end
 
 % Remove any events due to marker dropouts

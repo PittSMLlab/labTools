@@ -20,7 +20,7 @@ function varargout = ReviewEventsGUI(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Last Modified by GUIDE v2.5 04-Aug-2014 14:26:14
+% Last Modified by GUIDE v2.5 27-Apr-2015 15:01:49
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,6 +54,7 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output=hObject;
 handles.changed=false;
 handles.backButtonFlag=false;
+handles.eventType='';
 
 %Initialize with subject options if there are .mat files in current
 %directory
@@ -161,21 +162,8 @@ function subject_Callback(hObject, eventdata, handles)
 handles.Dir=get(handles.directory,'string');
 
 %Disable everything
-set(handles.plot_button,'Enable','off');
-set(handles.next_button,'Enable','off');
-set(handles.back_button,'Enable','off');
-set(handles.delete_button,'Enable','off');
-set(handles.deleteNbutton,'Enable','off');
-set(handles.save_button,'Enable','off');
-set(handles.add_button,'Enable','off');
-set(handles.BPdataType,'Enable','off');
-set(handles.BPfield,'Enable','off');
-set(handles.TPdataType,'Enable','off');
-set(handles.TPfield,'Enable','off');
-set(handles.condMenu, 'Enable','off');
-set(handles.trialMenu,'Enable','off');
-set(handles.timeSlider,'Enable','off');
-set(handles.maxCheck,'Enable','off');
+disableFields;
+
 drawnow
 
 global expData
@@ -204,6 +192,9 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     set(handles.TPfield,'Enable','on');
     set(handles.timeSlider,'Enable','on');
     set(handles.maxCheck,'Enable','on');
+    set(handles.defaultRadio,'Enable','on');
+    set(handles.kinematicRadio,'Enable','on');
+    set(handles.forceRadio,'Enable','on');
     
     %Enable and initialize condition menu:
     set(handles.condMenu, 'Enable','on');
@@ -224,7 +215,7 @@ end
 
 end
 %% ---------------------------------------------------------------------
-%Then: select condition:
+% Select condition:
 
 % --- Executes on selection change in condMenu.
 function condMenu_Callback(hObject, eventdata, handles)
@@ -249,21 +240,9 @@ if isempty(s)
     cla(handles.axes1)
     cla(handles.axes2)
     %Disable everything
-    set(handles.plot_button,'Enable','off');
-    set(handles.next_button,'Enable','off');
-    set(handles.back_button,'Enable','off');
-    set(handles.delete_button,'Enable','off');
-    set(handles.deleteNbutton,'Enable','off');
-    set(handles.save_button,'Enable','off');
-    set(handles.add_button,'Enable','off');
-    set(handles.BPdataType,'Enable','off');
-    set(handles.BPfield,'Enable','off');
-    set(handles.TPdataType,'Enable','off');
-    set(handles.TPfield,'Enable','off');
-    set(handles.trialMenu,'Enable','off');
-    set(handles.timeSlider,'Enable','off');
-    set(handles.maxCheck,'Enable','off');
-    
+    disableFields;
+    set(handles.condMenu, 'Enable','on');
+    drawnow
 else
     
     %enable everything
@@ -299,7 +278,7 @@ end
 
 
 %% ---------------------------------------------------------------------
-%Then: select specific trial:
+%Select specific trial:
 
 function trialMenu_Callback(hObject, eventdata, handles)
 
@@ -470,9 +449,13 @@ handles.timeWindow=round(get(hObject,'Value'));
 % handles.tstop=handles.tstop+ceil(timeToAdd-(handles.tstart-time1));
 % handles.tstart=time1;
 
-% to make zoomed-in time window start at the beginning of the trial:
-handles.tstop=handles.timeWindow;
-handles.tstart=0;
+% % % to make zoomed-in time window start at the beginning of the trial: % % % % %
+% handles.tstop=handles.timeWindow;
+% handles.tstart=0;
+
+% % % %to make zoomed-in time window start at beginning of previous time window: % % % %
+handles.tstop=handles.tstart+handles.timeWindow;
+
 set(handles.timeWindowText,'string',handles.timeWindow);
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button,eventdata,handles)
@@ -563,20 +546,21 @@ if length(fieldList{value})==2
         legendEntries = {'Fast','Slow'};
         %Overlay events (only those in the time window...otherwise there
         %will be warnings for the extra legend entries
+        type=handles.eventType;
         if eval(['~isempty(',handles.fast,'HStimes)'])
-            eval(['plot(axesHandle,',handles.fast,'HStimes,FdataTS.getSample(',handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
+            eval(['plot(axesHandle,',type,handles.fast,'HStimes,FdataTS.getSample(',type,handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
             legendEntries{end+1}='FHS';
         end
         if eval(['~isempty(',handles.fast,'TOtimes)'])
-            eval(['plot(axesHandle,',handles.fast,'TOtimes,FdataTS.getSample(',handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
+            eval(['plot(axesHandle,',type,handles.fast,'TOtimes,FdataTS.getSample(',type,handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
             legendEntries{end+1}='FTO';
         end
         if eval(['~isempty(',handles.slow,'HStimes)'])
-            eval(['plot(axesHandle,',handles.slow,'HStimes,SdataTS.getSample(',handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
+            eval(['plot(axesHandle,',type,handles.slow,'HStimes,SdataTS.getSample(',type,handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
             legendEntries{end+1}='SHS';
         end
         if eval(['~isempty(',handles.slow,'TOtimes)'])
-            eval(['plot(axesHandle,',handles.slow,'TOtimes,SdataTS.getSample(',handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
+            eval(['plot(axesHandle,',type,handles.slow,'TOtimes,SdataTS.getSample(',type,handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
             legendEntries{end+1}='STO';
         end        
     end
@@ -650,6 +634,25 @@ end
 
 end
 
+% --- Executes when selected object is changed in event selection button group.
+function eventButton_SelectionChangeFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in eventButton 
+% eventdata  structure with the following fields (see UIBUTTONGROUP)
+%	EventName: string 'SelectionChanged' (read only)
+%	OldValue: handle of the previously selected object or empty if none was selected
+%	NewValue: handle of the currently selected object
+% handles    structure with handles and user data (see GUIDATA)
+switch get(eventdata.NewValue,'Tag')
+    case 'defaultRadio'
+        handles.eventType='';
+    case 'kinematicRadio'
+        handles.eventType='kin';
+    case 'forceRadio'
+        handles.eventType='force';        
+end
+plot_button_Callback(handles.plot_button, eventdata, handles)
+end
+
 % --- Executes on button press in delete_button.
 function delete_button_Callback(hObject, eventdata, handles)
 
@@ -662,12 +665,16 @@ axes(handles.axes1)
 %Find closest event(s)
 allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
 for i=1:length(x);
-    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(i);
-    [~,selectedEventTimeIndex]=min(deltaT.^2);
-    selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
-    
-    %Eliminate it from handles.trialEvents
-    handles.trialEvents.Data(selectedEventIndex,:)=false;
+    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(i);  
+    minDeltaT=min(abs(deltaT));
+    if minDeltaT<1 %s
+        %pad min value to delete events in same region from alt calcualtion
+        selectedEventTimeIndex=find(abs(deltaT)<minDeltaT+0.05);    
+        selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
+        
+        %Eliminate it from handles.trialEvents
+        handles.trialEvents.Data(selectedEventIndex,:)=false;
+    end
 end
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
@@ -726,7 +733,6 @@ end
 
 % --- Executes on selection change in eventType.
 function eventType_Callback(hObject, eventdata, handles)
-
 % Hints: contents = cellstr(get(hObject,'String')) returns eventType contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from eventType
 global expData
@@ -735,11 +741,11 @@ global expData
 [x,~]=ginput(1);
 
 %create new event in handles.trialEvents
-[~,closestTimeIdx]=min((handles.trialEvents.Time-x).^2);
-handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true;
+[~,closestTimeIdx]=min(abs((handles.trialEvents.Time-x)));
+handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true; % ONLY ADDS TO DEFAULT EVENTS FOR NOW!!!
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
 
 %Disable this
 set(hObject,'Enable','off');
@@ -749,14 +755,15 @@ guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
-
-
 % --- Executes on button press in save_button.
 function save_button_Callback(hObject, eventdata, handles)
 
-global expData
-expData.data{handles.idx}.gaitEvents=handles.trialEvents; % HH: I think this line and the next may be unneccesary since any changes to events would have already been saved to expData. Possibly in the future we could force user to hit save if he/she wants changes to be saved.
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
+global expData 
+% Possibly in the future we could force user to hit save if he/she wants changes to be saved.
+
+% HH: I think thenext two lines are unneccesary since any changes to events would have already been saved to expData.
+% expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+% expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 handles.changed=true; %% HH: this forces the changes to be saved, even if GUI is closed.
 set(handles.write,'Enable','on');
 guidata(hObject, handles)
@@ -767,24 +774,12 @@ function write_Callback(hObject, eventdata, handles)
 global expData
 
 %Disable everything
-set(handles.plot_button,'Enable','off');
-set(handles.next_button,'Enable','off');
-set(handles.back_button,'Enable','off');
-set(handles.delete_button,'Enable','off');
-set(handles.save_button,'Enable','off');
-set(handles.add_button,'Enable','off');
-set(handles.BPdataType,'Enable','off');
-set(handles.BPfield,'Enable','off');
-set(handles.TPdataType,'Enable','off');
-set(handles.TPfield,'Enable','off');
-set(handles.condMenu, 'Enable','off');
+disableFields;
 set(handles.directory,'Enable','off');
 set(handles.subject,'Enable','off');
 set(handles.write,'Enable','off');
-set(handles.timeSlider,'Enable','off');
-set(handles.maxCheck,'Enable','off');
 set(handles.write,'String', 'Writing...');
-set(handles.trialMenu,'Enable','off');
+
 drawnow
 
 %Write to disk
@@ -826,28 +821,30 @@ end
 function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
 
 global expData
-%Disable everything
-set(handles.plot_button,'Enable','off');
-set(handles.next_button,'Enable','off');
-set(handles.back_button,'Enable','off');
-set(handles.delete_button,'Enable','off');
-set(handles.deleteNbutton,'Enable','off');          
-set(handles.save_button,'Enable','off');
-set(handles.add_button,'Enable','off');
-set(handles.BPdataType,'Enable','off');
-set(handles.BPfield,'Enable','off');
-set(handles.TPdataType,'Enable','off');
-set(handles.TPfield,'Enable','off');
-set(handles.condMenu, 'Enable','off');
-set(handles.directory,'Enable','off');
-set(handles.subject,'Enable','off');
-set(handles.write,'Enable','off');
-set(handles.timeSlider,'Enable','off');
-set(handles.maxCheck,'Enable','off');
-set(handles.write,'String', 'Writing...');
 
 drawnow
+if ~handles.changed
+    choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
+	'ReviewEventsGUI', ...
+	'Save','Don''t Save','Cancel','Save');
+    switch choice
+        case 'Save'
+            handles.changed=true;
+        case 'Don''t Save'
+            handles.changed=false;
+        case {'Cancel',''}
+            return
+    end
+end
+
 if handles.changed
+    %Disable everything
+    disableFields;
+    set(handles.directory,'Enable','off');
+    set(handles.subject,'Enable','off');
+    set(handles.write,'Enable','off');
+    set(handles.write,'String', 'Writing...');
+    
     %write to disk
     eval([handles.varName '=expData;']); %Assigning same var name
     eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %Saving with same var name
@@ -856,6 +853,7 @@ if handles.changed
     %eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
     handles.changed=false;
 end
+
 guidata(hObject, handles);
 % Hint: delete(hObject) closes the figure
 delete(handles.output);

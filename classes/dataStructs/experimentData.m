@@ -1,6 +1,29 @@
 classdef experimentData
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %experimentData  Contains all information for a single experiment  
+    %
+    %experimentData properties:
+    %   metaData - experimentMetaData object
+    %   subData - subjectData object
+    %   data - cell array of labData objects or any objects which extend
+    %          labData
+    %(dependent)
+    %   isRaw - returns true if data is an object of the rawLabData class
+    %   isProcessed - returns true if data is an oibject of the processedLabData class
+    %   isStepped - returns true if data is an object of the strideData class
+    %   fastLeg - computes which blet ('L' or 'R') was the fast belt
+    %
+    %labDate Methods:
+    %   getSlowLeg - 
+    %   getRefLeg - 
+    %   process - 
+    %   makeDataObj - 
+    %   parameterEvolutionPlot - 
+    %   parameterTimeCourse - 
+    %   recomputeParameters - 
+    %   splitIntoStrides - 
+    %   getStridedField - 
+    %   getAlignedField - 
+    %   getConditionIdxsFromName - 
     
     properties
         metaData % field that contains information from the experiment. Has to be an experimentMetaData object
@@ -9,8 +32,8 @@ classdef experimentData
     end
     
     properties (Dependent)
-        isRaw
-        isProcessed %true if the trials have been processed, and false otherwise (raw).
+        isRaw %true if data is an object of the rawLabData class
+        isProcessed %true if data is an oibject of the processedLabData class
         isStepped %or strided
         fastLeg
     end
@@ -50,12 +73,12 @@ classdef experimentData
         
         %Getters for Dependent properties
         function a=get.isProcessed(this)
-            % Returns true if the trials have been processed, and false if
-            % they contain rawData.
-            %INPUTS: 
-            %this: experimentData object
-            %OUTPUTS: 
-            %a: boolean
+            %Returns true if the trials have been processed, and false if
+            %they contain rawData.
+            %   INPUTS: 
+            %       this: experimentData object
+            %   OUTPUTS: 
+            %       a: boolean
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1); %Not empty
             a=isa(this.data{idx},'processedLabData');
@@ -154,14 +177,14 @@ classdef experimentData
         function processedThis=process(this)
             % Returns a new experimentData object with same metaData, subData and processed (trial) data.
             % This is done by iterating through data (trials) and
-            % processing each by using labData.process
-            % See also labData
-            % -------
-            % INPUTS:
-            % this: experimentData object
-            % -------
-            % OUTPUTS:
-            % processedThis: experimentData object with processed data
+            % processing each by using labData.process 
+            %   processedThis=process(this)
+            %   INPUTS:
+            %       this: experimentData object
+            %   OUTPUTS:
+            %       processedThis: experimentData object with processed data
+            %
+            %See also: labData
             
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
@@ -176,6 +199,27 @@ classdef experimentData
         
         %function to make adaptationData object
         function adaptData=makeDataObj(this,filename,experimentalFlag)
+        %MAKEDATAOBJ  creates an object of the adaptationData class.
+        %   adaptData=makeDataObj(this,filename,experimentalFlag)   
+        %   INPUTS: 
+        %       this: experimentData object
+        %       filename: string (typically subject identifier)
+        %       experimentalFlag: boolean - false (or 0) prevents experimental
+        %       parameter calculation and inclusion
+        %   OUTPUTS: 
+        %       adptData: object if the adaptationData class, which is
+        %       saved to present working directory if a filename is
+        %       specified.
+        %
+        %   Examples:
+        %   
+        %   adaptData=expData.makeDataObj('Sub01') saves adaptationData 
+        %   object to Sub01params.mat
+        %
+        %   adaptData=expData.makeDataObj('Sub01','',1) does not include
+        %   experimentalParams in adaptData object and does not save to file
+        %
+        %   See also: adaptationData, paramData
             warning('adaptData.makeDataObj is using a new version which may not be back-compatible');
             if nargin<3
                 experimentalFlag=[];
@@ -268,6 +312,15 @@ classdef experimentData
         
         %Update/modify
         function this=recomputeParameters(this,eventClass,initEventType)
+        %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
+        %objects in experimentData.data.
+        %
+        %   Example: if expData is an object of the experimentalData class,
+        %       expData=expData.recomputeParameters
+        %   will recompute expData.data{i}.adaptParams for all i where
+        %   i is a trial of the experiment
+        %
+        %   See also: parameterSeries
             if nargin<2 || isempty(eventClass)
                 eventClass=[];
             end
