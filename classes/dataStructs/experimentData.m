@@ -175,16 +175,18 @@ classdef experimentData
         
         %Process full experiment
         function processedThis=process(this)
-            % Returns a new experimentData object with same metaData, subData and processed (trial) data.
-            % This is done by iterating through data (trials) and
-            % processing each by using labData.process 
-            %   processedThis=process(this)
-            %   INPUTS:
-            %       this: experimentData object
-            %   OUTPUTS:
-            %       processedThis: experimentData object with processed data
-            %
-            %See also: labData
+        %Returns a new experimentData object with same metaData, subData and processed (trial) data.
+        %This is done by iterating through data (trials) and
+        %processing each by using labData.process 
+        %ex: expData=rawExpData.process
+        %
+        %INPUTS:
+        %this: experimentData object
+        %
+        %OUTPUTS:
+        %processedThis: experimentData object with processed data
+        %
+        %See also: labData
             
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
@@ -201,15 +203,16 @@ classdef experimentData
         function adaptData=makeDataObj(this,filename,experimentalFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=makeDataObj(this,filename,experimentalFlag)   
-        %   INPUTS: 
-        %       this: experimentData object
-        %       filename: string (typically subject identifier)
-        %       experimentalFlag: boolean - false (or 0) prevents experimental
-        %       parameter calculation and inclusion
-        %   OUTPUTS: 
-        %       adptData: object if the adaptationData class, which is
-        %       saved to present working directory if a filename is
-        %       specified.
+        %
+        %INPUTS: 
+        %this: experimentData object
+        %filename: string (typically subject identifier)
+        %experimentalFlag: boolean - false (or 0) prevents experimental
+        %parameter calculation and inclusion
+        %
+        %OUTPUTS: 
+        %adptData: object if the adaptationData class, which is
+        %saved to present working directory if a filename is specified.
         %
         %   Examples:
         %   
@@ -219,7 +222,7 @@ classdef experimentData
         %   adaptData=expData.makeDataObj('Sub01','',1) does not include
         %   experimentalParams in adaptData object and does not save to file
         %
-        %   See also: adaptationData, paramData
+        %See also: adaptationData, paramData
             warning('adaptData.makeDataObj is using a new version which may not be back-compatible');
             if nargin<3
                 experimentalFlag=[];

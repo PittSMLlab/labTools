@@ -3,11 +3,11 @@ function varargout = ReviewEventsGUI(varargin)
 %      ReviewEVENTSGUI, by itself, creates a new ReviewEVENTSGUI or raises the existing
 %      singleton*.
 %
-%      H = revieweventsgui returns the handle to a new revieweventsgui or the handle to
+%      H = revieweventsgui returns the handle to a new reviewEventsGUI or the handle to
 %      the existing singleton*.
 %
-%      revieweventsgui('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in revieweventsgui.M with the given input arguments.
+%      ReviewEventsGUI('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in reviewEventsGUI.M with the given input arguments.
 %
 %      revieweventsgui('Property','Value',...) creates a new revieweventsgui or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
@@ -51,6 +51,7 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % varargin   command line arguments to ReviewEventsGUI (see VARARGIN)
 
+%initialize values
 handles.output=hObject;
 handles.changed=false;
 handles.backButtonFlag=false;
@@ -60,9 +61,7 @@ handles.eventType='';
 %directory
 files=what;
 subFileList={};
-if isempty(files.mat)
-    %do nothing
-else
+if ~isempty(files.mat)    
     for i=1:length(files.mat)
         subFileList{end+1}=files.mat{i}(1:end-4);
     end
@@ -193,8 +192,10 @@ if isa(expData,'experimentData') && expData.isProcessed %if not processed, there
     set(handles.timeSlider,'Enable','on');
     set(handles.maxCheck,'Enable','on');
     set(handles.defaultRadio,'Enable','on');
-    set(handles.kinematicRadio,'Enable','on');
-    set(handles.forceRadio,'Enable','on');
+    if length(expData.data{end}.gaitEvents.labels)==12
+        set(handles.kinematicRadio,'Enable','on');
+        set(handles.forceRadio,'Enable','on');
+    end
     
     %Enable and initialize condition menu:
     set(handles.condMenu, 'Enable','on');
@@ -258,16 +259,21 @@ else
     set(handles.TPfield,'Enable','on');
     set(handles.trialMenu,'Enable','on');
     set(handles.timeSlider,'Enable','on');
-    set(handles.maxCheck,'Enable','on');
-    
+    set(handles.maxCheck,'Enable','on');    
     set(handles.trialMenu, 'Enable','on');
     set(handles.trialMenu, 'String',s);
+    set(handles.defaultRadio,'Enable','on');
+    if length(expData.data{1}.gaitEvents.labels)==12
+        set(handles.kinematicRadio,'Enable','on');
+        set(handles.forceRadio,'Enable','on');
+    end
     if handles.backButtonFlag
         set(handles.trialMenu, 'Value',length(s));
     else
         set(handles.trialMenu, 'Value',1);
     end
     handles.backButtonFlag=false;
+    
     guidata(hObject, handles)
     trialMenu_Callback(handles.trialMenu, eventdata, handles);
 end
@@ -540,7 +546,7 @@ if length(fieldList{value})==2
     else
         label=fieldList{value}{1}(2:end);
         %plot data
-        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r','MarkerSize',20);
+        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r','MarkerSize',20); %is MarkerSize needed?
         set(axesHandle,'nextplot','add')
         plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b','MarkerSize',20);
         legendEntries = {'Fast','Slow'};
@@ -577,7 +583,7 @@ else
     set(axesHandle,'nextplot','add')
     legendEntries = {'data'};
 end
-
+set(axesHandle,'Xlim',[handles.tstart handles.tstop]);
 h_legend = legend(axesHandle,legendEntries);
 set(h_legend,'FontSize',6)
 
@@ -812,6 +818,11 @@ set(handles.timeSlider,'Enable','on');
 set(handles.maxCheck,'Enable','on');
 set(handles.write,'String', 'Write to disk');
 set(handles.trialMenu,'Enable','on');
+set(handles.defaultRadio,'Enable','on');
+if length(expData.data{1}.gaitEvents.labels)==12
+    set(handles.kinematicRadio,'Enable','on');
+    set(handles.forceRadio,'Enable','on');
+end
 guidata(hObject, handles);
 
 end
@@ -825,7 +836,7 @@ function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
 global expData
 
 drawnow
-if ~handles.changed
+if ~handles.changed && exist(handles.filename,'var')
     choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
 	'ReviewEventsGUI', ...
 	'Save','Don''t Save','Cancel','Save');

@@ -10,7 +10,7 @@ classdef labDate
     %   monthString - outputs month as a 3-letter string
     %   genIDFromClock
     %   getCurrent
-    %   default
+    %   default - generates default date (Jan 1, 1900)
     
     properties
         day; %a day (ex: 27)

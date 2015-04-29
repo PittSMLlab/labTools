@@ -1,4 +1,19 @@
 function trials=loadTrials(trialMD,fileList,secFileList,info)
+%loadTrials  generates rawTrialData objects for each trial of a
+%given experiment.
+%
+%INPUTS:
+%trialMD: cell array of trailMetaData objects where the cell index corresponds
+%to the trial number
+%fileList: list of .c3d files containing kinematic and force data for a given experiment
+%secFileList: list of files containing EMG data for a given experiment
+%info: structured array output from GetInfoGUI
+%
+%OUTPUT:
+%trials: cell array of rawTrialData objects where the cell index corresponds
+%to the trial number
+%
+%See also: rawTrialData
 
 %orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
 orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs!
@@ -41,8 +56,7 @@ for t=cell2mat(info.trialnums)
             end
         end    
         %Sanity check: offset calibration
-        
-        
+                
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;

@@ -1,3 +1,6 @@
+%%% THIS FUNCTION IS NO LONGER IN USE. INSTEAD OF EDITING THIS CODE, ADD
+%%% NEW EXPEPERIMENTS TO THE importc3d/expDetails FOLDER.
+
 function handles = experimentDetails(expDescrip,handles)
 %Fill in Condition Info fields of GetInfoGUI based on experiment entered
 %

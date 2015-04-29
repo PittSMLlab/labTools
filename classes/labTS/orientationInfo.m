@@ -1,6 +1,16 @@
 classdef orientationInfo
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %orientationInfo holds information about a three dimensional coordinate
+    %system
+    %
+    %orientationInfo properties:
+    %   offset
+    %   foreaftAxis
+    %   foreaftSign
+    %   sideAxis=
+    %   sideSign
+    %   updownAxis
+    %   updownSign
+
     
     properties
         offset=0; %Should be 1x3 for vector data;

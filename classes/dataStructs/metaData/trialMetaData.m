@@ -1,13 +1,15 @@
 classdef trialMetaData
-    %Information that is specifc to an individual trial
-    %   trialMetaData(desc,obs,refLeg,cond,filename,type)
-    %   desc - describes condition(ex. 'split 2:1')
-    %   obs - any trial-specific observations
-    %   refLeg - the reference leg for parameter calculations (slow leg)
-    %   cond - condition number
-    %   rawDataFilename - path of file where vicon (.c3d) file was stored
-    %   at time of creation
-    %   type - indicates whether the trial was overground or on the treadmill
+%trailMetaData  Information that is specifc to an individual trial
+%
+%trialMetaData properties:   
+%   name - short description of condition (ex. 'slow base')
+%   description - long description of condition (ex. '300 strides at 0.5 m/s')
+%   observations - any trial-specific observations (ex: 'L heel marker fell off')
+%   refLeg - the reference leg for parameter calculations (either 'L' or 'R')
+%   condition - condition number
+%   rawDataFilename - path of file where vicon (.c3d) file was stored at time of creation
+%   type - string describing broader conditions than given in the name (ex:'OG' for overground trials)
+%
     
     properties
         name='';
@@ -22,6 +24,7 @@ classdef trialMetaData
     
     methods
         %Constructor
+        %trialMetaData(desc,obs,refLeg,cond,filename,type)
         function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)                  
             if isa(name,'char')
                 this.name=name;

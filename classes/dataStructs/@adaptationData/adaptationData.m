@@ -1,13 +1,38 @@
 classdef adaptationData
-    % Class to store all parameters of interest for every stride in an experiment
-    % Objects of this class can be generated from experimentData by calling
-    % experimentData.makeDataObj
-    % See also experimentData
+%ADAPTATIONDATA - Class to store all parameters of interest for every stride 
+%in an experiment
+%   Objects of this class can be generated from experimentData by calling
+%   experimentData.makeDataObj
+%
+%adaptationData properties:
+%   metaData - object if the experimentMetaData class
+%   subData - object of the subjectData class
+%   data - object of the parameterSeries class
+%
+%adaptationData methods:
+%   removeBias - 
+%   getParameters -
+%   getParamInTrial -
+%   getParamInCond -
+%   isaCondition -
+%   getEarlyLateData -
+%   getBias -
+%   getConditionIdxsFromName -
+%   getIndsInCondition -
+%   plotParamTimeCourse -
+%   plotParamTrialTimeCourse -
+%   plotGroupedSubjectsTimeCourse -
+%   plotGroupedSubjects -
+%   plotGroupedSubjectsBars -
+%   getGroupedData -
+%   plotAvgTimeCourse -
+%   groupedScatterPlot -
+%   See also: experimentData -
     
     properties
         metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
         subData %cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object
-        data
+        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
     
     properties (Dependent)
@@ -78,9 +103,9 @@ classdef adaptationData
 		%labelList: array of strings with the labels name 
 		%
 		%EX: labelList=adaptData.getParameters;
-		            labelList=this.data.labels;
+            labelList=this.data.labels;
         end
-        
+
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
 		%Obtain strides information for a parameter in a specific trial
 		%
@@ -119,7 +144,7 @@ classdef adaptationData
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
-        
+
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
 		%Obtain strides information for a parameter in a condition.
 		%INPUTS:
@@ -151,7 +176,7 @@ classdef adaptationData
             end
             % validate label(s)
             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
-            
+
             % validate condition(s)
             if nargin<3 || isempty(condition)
                 condition=this.metaData.conditionName;
@@ -189,7 +214,7 @@ classdef adaptationData
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
-             
+
         function [boolFlag,labelIdx]=isaCondition(this,cond)	
             if isa(cond,'char')
                 auxCond{1}=cond;
@@ -353,8 +378,7 @@ classdef adaptationData
 		%figHandle: number of the figure where is the plot 	
 		%
 		%EX: adaptData.plotParamTimeCourse('spatialContribution',2,1)
-		
-		
+
             if isa(label,'char')
                 label={label};
             end
@@ -548,6 +572,7 @@ classdef adaptationData
     
     
     methods(Static)
+
         [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
         
         [figHandle,allData]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) %Will deprecate, use plotGroupedSubjectsBars instead.
@@ -593,14 +618,13 @@ classdef adaptationData
         
         %function [avg, indiv]=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
         function figHandle=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,indivFlag,indivSubs)
-		
         %adaptDataList must be cell array of 'param.mat' file names
         %params is cell array of parameters to plot. List with commas to
         %plot on separate graphs or with semicolons to plot on same graph.
         %conditions is cell array of conditions to plot
         %binwidth is the number of data points to average in time
         %indivFlag - set to true to plot individual subject time courses
-        %indivSubs - must be a cell array of 'param.mat' file names that is 
+        %indivSubs - must be a cell array of 'param.mat' file names that is
         %a subset of those in the adaptDataList. Plots specific subjects
         %instead of all subjects.
             

@@ -1,4 +1,17 @@
 function [trialMD,fileList,secFileList] = getTrialMetaData(info)
+%getTrialMetaData  generates trialMetaData objects for each trial of a
+%given experiment.
+%
+%INPUTS:
+%info: structured array output from GetInfoGUI
+%
+%OUTPUT:
+%trialMD: cell array of trailMetaData objects where the cell index corresponds
+%to the trial number
+%fileList: list of .c3d files containing kinematic and force data for a given experiment
+%secFileList: list of files containing EMG data for a given experiment
+%
+%See also: trailMetaData
 
 dirStr = info.dir_location;
 basename = info.basename;

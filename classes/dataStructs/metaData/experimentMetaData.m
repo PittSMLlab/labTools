@@ -1,23 +1,23 @@
 classdef experimentMetaData
-    %experimentMetaData   Information concerning/describing the experiment as a whole.
-    %
-    %experimentMetaData Properties:
-    %   ID - string containing the group that the subject belongs to (i.e. the
-    %   study protocol)
-    %   date - labDate object containing the date of the experiment
-    %   experimenter - string with the person(s) who ran the experiment
-    %   observations - string with overall study observations (observations for individual
-    %   trials are stored in trailMetaData class objects)
-    %   conditionName - cell array of strings contatining labels given to each condition of the experiment
-    %   conditionDescription - cell array of strings contatining a detailed description of each condition.
-    %   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
-    %   trailsInCondition - cell array of numbers matching condition number to
-    %   trial numbers
-    %   Ntrials - total number of trials
-    %
-    %experimentMetaData Methods:
-    %   getCondLstPerTrial -
-    %   getConditionIdxsFromName -
+%experimentMetaData   Information describing the experiment as a whole.
+%
+%experimentMetaData Properties:
+%   ID - string containing the group that the subject belongs to (i.e. the
+%   study protocol)
+%   date - labDate object containing the date of the experiment
+%   experimenter - string with the person(s) who ran the experiment
+%   observations - string with overall study observations (observations for individual
+%   trials are stored in trailMetaData class objects)
+%   conditionName - cell array of strings contatining labels given to each condition of the experiment
+%   conditionDescription - cell array of strings contatining a detailed description of each condition.
+%   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
+%   trailsInCondition - cell array of numbers matching condition number to
+%   trial numbers
+%   Ntrials - total number of trials
+%
+%experimentMetaData Methods:
+%   getCondLstPerTrial -
+%   getConditionIdxsFromName -
     
     properties
         ID;
@@ -95,7 +95,9 @@ classdef experimentMetaData
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
-            %ConditionNames should be a cell array containing a string or another cell array of strings in each of its cells. E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            %ConditionNames should be a cell array containing a string or 
+            %another cell array of strings in each of its cells. 
+            %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             if isa(conditionNames,'char')
                 conditionNames={conditionNames};
             end

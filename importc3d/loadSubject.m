@@ -1,4 +1,15 @@
 function [expData,rawExpData]=loadSubject(info)
+%loadSubject  Load, organize, process, and save data from .c3d files as a 
+%             subject's .mat file
+%
+%INPUT:
+%info: structured array output from GetInfoGUI
+%
+%OUTPUTS:
+%expData: a processed object of the experimentData class
+%rawExpData: an unprocessed object of the experimentData class
+%
+%See also: getTrialMetaData, experimentData, experimentData.process
 
 %% Initialize diary to save all information displayed during loading
 diaryFileName=[info.save_folder '/' info.ID 'loading.log'];

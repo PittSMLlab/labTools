@@ -3,8 +3,9 @@ function out = errorProofInfo(handles)
 out.bad=false;
 
 % -- Experiment Info
-descriptionContents=cellstr(get(handles.description_edit,'string'));
-out.ExpDescription=descriptionContents{get(handles.description_edit,'Value')};
+% descriptionContents=cellstr(get(handles.description_edit,'string'));
+% out.ExpDescription=descriptionContents{get(handles.description_edit,'Value')};
+out.ExpDescription=handles.group;
 if strcmp(out.ExpDescription,' ')
     h_error=errordlg('Please choose an experiment description','Description Error');    
     waitfor(h_error)

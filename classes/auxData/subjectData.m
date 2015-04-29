@@ -1,19 +1,29 @@
 classdef subjectData
-    %UNTITLED3 Summary of this class goes here
-    %   Detailed explanation goes here
+%subjectData  stores information about study participants
+%   
+%subjectData properties:
+%   dateOfBirth - labData object
+%   sex - string, either 'male' or 'female'
+%   dominantLeg - string, either 'L' or 'R'
+%   dominantArm - string, either 'L' or 'R'
+%   height - number (in cm)
+%   weight - number (in Kg)
+%   age - labDate object
+%   ID - string containing experimental identifier
     
     properties (SetAccess=private)
         dateOfBirth='';
         sex='';
         dominantLeg='';
         dominantArm='';
-        height=[]; %meters
+        height=[]; %centimeters
         weight=[]; %kgs
-        age=[]; %in months, at time of experiment
+        age=[]; %in years, at time of experiment
         ID=[]; %experimental ID assigned
     end
     
     methods
+        %constructor
         function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)
             if nargin>0 && ~isempty(DOB)
                 this.dateOfBirth=DOB;

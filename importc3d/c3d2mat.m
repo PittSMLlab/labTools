@@ -5,7 +5,7 @@
 %and then processes that data to give HS and TO events, limb angles,
 %adaptation parameters, and processed EMG data (if EMG data are present)
 %
-%See also loadSubject
+%See also: GetInfoGUI, loadSubject
 
 % Get info!
 info = GetInfoGUI;

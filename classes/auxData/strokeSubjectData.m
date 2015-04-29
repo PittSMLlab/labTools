@@ -1,6 +1,12 @@
 classdef strokeSubjectData<subjectData
-    %strokeSubjectData is an extension of subjectData to support stroke
-    %patients and keep data about their condition.
+%strokeSubjectData is an extension of subjectData to support stroke
+%patients and keep data about their condition.
+%
+%strokeSubjectData properies:
+%   affectedSide - string, either 'L' or 'R' 
+%   strokeDate - labDate object
+%
+%see also: subjectData
     
     properties (SetAccess=private)
         affectedSide='';
@@ -8,6 +14,7 @@ classdef strokeSubjectData<subjectData
     end
     
     methods
+        %constructor
         function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,affected,strokeDate)
             this@subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID);
             if nargin>8 || ~(strcmpi(affected,'R') || strcmpi(affected,'L'))

@@ -1,26 +1,9 @@
 function varargout = GetInfoGUI(varargin)
-% GETINFOGUI MATLAB code for GetInfoGUI.fig
-%      GETINFOGUI, by itself, creates a new GETINFOGUI or raises the existing
-%      singleton*.
+% GETINFOGUI  Graphical user intergace used to collect information regarding
+%             a single experiment conducted in the HMRL. Refer to help text
+%             in GUI by hovering mouse over a given field.%      
 %
-%      H = GETINFOGUI returns the handle to a new GETINFOGUI or the handle to
-%      the existing singleton*.
-%
-%      GETINFOGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in GETINFOGUI.M with the given input arguments.
-%
-%      GETINFOGUI('Property','Value',...) creates a new GETINFOGUI or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before GetInfoGUI_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to GetInfoGUI_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
-
-% Edit the above text to modify the response to help GetInfoGUI
+% See also: experimentDescriptions, errorProofInfo, experimentDetails
 
 % Last Modified by GUIDE v2.5 02-Oct-2014 14:48:41
 
@@ -96,8 +79,6 @@ set(handles.weight_edit,'TooltipString','');
  uiwait(handles.figure1);
 
 
-
-
 % --- Outputs from this function are returned to the command line.
 function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
@@ -156,6 +137,7 @@ contents = cellstr(get(hObject,'String'));
 expDescrip = contents{get(hObject,'Value')};
 
 %first, clear all feilds
+set(handles.numofconds,'String','0');
 for conds = 1:handles.lines
     set(handles.(['condition',num2str(conds)]),'string','');
     set(handles.(['condName',num2str(conds)]),'string','');
@@ -165,7 +147,7 @@ for conds = 1:handles.lines
 end
 
 %second, populate feilds based on experiment description entered.
-handles=experimentDetails(expDescrip,handles);
+eval(expDescrip)
 numofconds_Callback(handles.numofconds, eventdata, handles)
 
 guidata(hObject,handles)
@@ -450,6 +432,7 @@ guidata(hObject,handles)
 % --- Executes on button press in ok_button.
 function ok_button_Callback(hObject, eventdata, handles)
 
+% % % GET INFORMATION FROM GUI FIELDS AND ERROR PROOF BEFORE SAVING % % %
 handles.info=errorProofInfo(handles);
 if handles.info.bad
     return
@@ -473,6 +456,10 @@ else
     
     % -- Experiment Info
     descriptionContents=cellstr(get(handles.description_edit,'string'));
+    if ~any(strcmp(descriptionContents,subInfo.ExpDescription)==1)
+        set(handles.description_edit,'String',[descriptionContents; subInfo.ExpDescription])
+        descriptionContents=cellstr(get(handles.description_edit,'string'));
+    end
     set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
     set(handles.name_edit,'string',subInfo.experimenter);
     monthContents = cellstr(get(handles.month_list,'String'));
@@ -566,7 +553,16 @@ end
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
 
-set(hObject,'String',{'','Old Abrupt','Old Abrupt Second Visit','Old Abrupt No Catch','Old Abrupt Self Selected','Old Gradual','Old Gradual No Catch','Old Gradual Self Selected','Young Abrupt','Young Abrupt Second Visit','Young Gradual','Young Gradual No Catch','Young Abrupt Self Selected','Young Gradual Self Selected', '0002: Distraction', '0002: Old'})
+%initialize drop down list with different experiment types
+path=which('GetInfoGUI');
+path=strrep(path,'GetInfoGUI.m','ExpDetails');
+W=what(path);
+experiments=cellstr(W.m);
+for i=1:length(experiments)
+    fileExt=find(experiments{i}=='.');
+    experiments{i}=experiments{i}(1:fileExt-1);
+end
+set(hObject,'String',[' ';experiments])
 
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
