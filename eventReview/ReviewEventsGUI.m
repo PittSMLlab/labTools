@@ -792,7 +792,7 @@ drawnow
 eval([handles.varName '=expData;']); %Assigning same var name
 %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName
 %''');']); %PI: replaced this with the line below on 28/4/2015
-save([handles.Dir handles.filename],handles.varName);%Saving with same var name
+save([handles.Dir handles.filename],handles.varName,'-v7.3');%Saving with same var name
 handles.changed=false;
 
 %re-create adaptation parameters object
@@ -861,7 +861,7 @@ if handles.changed
     %write to disk
     eval([handles.varName '=expData;']); %Assigning same var name
     %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %PI: replaced this with the line below on 28/4/2015
-    save([handles.Dir handles.filename],handles.varName);%Saving with same var name
+    save([handles.Dir handles.filename],handles.varName,'-v7.3');%Saving with same var name
     %re-create adaptation parameters object
     adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
     %eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
