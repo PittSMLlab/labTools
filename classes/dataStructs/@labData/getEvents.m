@@ -98,10 +98,14 @@ else %Treadmill trial
         Ts=trialData.GRFData.sampPeriod;
         [LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin] = deal(false(trialData.GRFData.Length,1));
         
-        LHSeventKin((find(kinLHS)-1)*10+1)=true;
-        RHSeventKin((find(kinRHS)-1)*10+1)=true;
-        LTOeventKin((find(kinLTO)-1)*10+1)=true;
-        RTOeventKin((find(kinRTO)-1)*10+1)=true;
+        
+        % TO DO: use a method to re-sample kinematic events to be consistent
+        % with forces.
+        CF=trialData.GRFData.sampFreq/trialData.markerData.sampFreq; %correction factor
+        LHSeventKin(round((find(kinLHS)-1)*CF+1))=true;
+        RHSeventKin(round((find(kinRHS)-1)*CF+1))=true;
+        LTOeventKin(round((find(kinLTO)-1)*CF+1))=true;
+        RTOeventKin(round((find(kinRTO)-1)*CF+1))=true;
     end
 end
 

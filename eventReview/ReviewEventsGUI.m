@@ -263,7 +263,7 @@ else
     set(handles.trialMenu, 'Enable','on');
     set(handles.trialMenu, 'String',s);
     set(handles.defaultRadio,'Enable','on');
-    if length(expData.data{1}.gaitEvents.labels)==12
+    if length(expData.data{end}.gaitEvents.labels)==12
         set(handles.kinematicRadio,'Enable','on');
         set(handles.forceRadio,'Enable','on');
     end
@@ -819,7 +819,7 @@ set(handles.maxCheck,'Enable','on');
 set(handles.write,'String', 'Write to disk');
 set(handles.trialMenu,'Enable','on');
 set(handles.defaultRadio,'Enable','on');
-if length(expData.data{1}.gaitEvents.labels)==12
+if length(expData.data{end}.gaitEvents.labels)==12
     set(handles.kinematicRadio,'Enable','on');
     set(handles.forceRadio,'Enable','on');
 end
