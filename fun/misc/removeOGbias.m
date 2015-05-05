@@ -32,7 +32,7 @@ for i=1:size(allData,1)
     end
 end
 
-%Modal baseline tendency
+%Model baseline tendency and subtract from data
 baseOG1=sortrows(baseOG1,2); %ordered based on hip pos
 baseOG1Fit=bin_dataV1(baseOG1,5); %runnning average of 5 data points
 baseOG2=sortrows(baseOG2,2);

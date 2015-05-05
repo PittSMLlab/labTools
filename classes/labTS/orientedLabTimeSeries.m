@@ -62,12 +62,12 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 label=this.getLabelPrefix; %All of them
             end
             data=nan(T,length(label)*3);
-                extendedLabels=this.addLabelSuffix(label);
-                if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
-                   error('Labels in this object do not pass the sanity check.') 
-                end
-                [bool,~]=this.isaLabel(extendedLabels);
-                [data(:,bool),~]=this.getDataAsVector(extendedLabels(bool));
+            extendedLabels=this.addLabelSuffix(label);
+            if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
+               error('Labels in this object do not pass the sanity check.') 
+            end
+            [bool,~]=this.isaLabel(extendedLabels);
+            [data(:,bool),~]=this.getDataAsVector(extendedLabels(bool));
             data=permute(reshape(data,T,3,round(length(extendedLabels)/3)),[1,3,2]);
         end
         
@@ -230,8 +230,8 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 end
             end
             
-            newX=bsxfun(@rdivide,newX,sqrt(sum(newX.^2,2)));
-            newZ=bsxfun(@rdivide,newZ,sqrt(sum(newZ.^2,2)));
+           newX=bsxfun(@rdivide,newX,sqrt(sum(newX.^2,2)));
+           newZ=bsxfun(@rdivide,newZ,sqrt(sum(newZ.^2,2)));
            %Find rotation matrix
            newY=-cross(newX,newZ); %orthogonal to the other two
            newY=bsxfun(@rdivide,newY,sqrt(sum(newY.^2,2)));
@@ -265,13 +265,13 @@ classdef orientedLabTimeSeries  < labTimeSeries
     end
     methods (Static)
         function extendedLabels=addLabelSuffix(labels)
-                if ischar(labels)
-                    labels={labels};
-                end
-            	extendedLabels=cell(length(labels)*3,1);
-                extendedLabels(1:3:end)=strcat(labels,'x');
-                extendedLabels(2:3:end)=strcat(labels,'y');
-                extendedLabels(3:3:end)=strcat(labels,'z');
+            if ischar(labels)
+                labels={labels};
+            end
+            extendedLabels=cell(length(labels)*3,1);
+            extendedLabels(1:3:end)=strcat(labels,'x');
+            extendedLabels(2:3:end)=strcat(labels,'y');
+            extendedLabels(3:3:end)=strcat(labels,'z');
         end 
         function labelSane=checkLabelSanity(labels)
             labelSane=true;

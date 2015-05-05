@@ -1,4 +1,4 @@
-function [expData,rawExpData]=loadSubject(info)
+function [expData,rawExpData,adaptData]=loadSubject(info)
 %loadSubject  Load, organize, process, and save data from .c3d files as a 
 %             subject's .mat file
 %
@@ -86,6 +86,9 @@ expData=rawExpData.process;
 
 %Save processed
 save([info.save_folder '/' info.ID '.mat'],'expData','-v7.3')
+
+%create adaptationData object
+adaptData=expData.makeDataObj([info.save_folder '/' info.ID]);
 
 %%
 diary off

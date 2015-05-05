@@ -7,9 +7,10 @@ timeSTO=strideEvents.tSTO;
 timeSHS2=strideEvents.tSHS2;
 timeFTO2=strideEvents.tFTO2;
 eventTimes=[timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2];
+SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6;
 %% Labels and descriptions:
 aux={'direction',               '-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)';...
-    'hipPos',                'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)';...
+    'hipPos',                   'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)';...
     'stepLengthSlow',           'distance between ankle markers (relative to avg hip marker) at SHS2 (in mm)';...
     'stepLengthFast',           'distance between ankel markers (relative to hip) at FHS (in mm)';...
     'alphaSlow',                'ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)';...
@@ -134,25 +135,21 @@ for j=1:length(labels) %Assign each marker data to a x3 str
     end
 end 
     
-    %get angle data
-    if ~isempty(angleData)
-        newAngleData=angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
-        newAngleData=newAngleData.getSample(eventTimes);
-        sAngle=newAngleData(:,:,1);
-        fAngle=newAngleData(:,:,2);
-    else
-        sAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
-        fAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
-    end
+%get angle data
+if ~isempty(angleData)
+    newAngleData=angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
+    newAngleData=newAngleData.getSample(eventTimes);
+    sAngle=newAngleData(:,:,1);
+    fAngle=newAngleData(:,:,2);
+else
+    sAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
+    fAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
+end
     
 %% Compute:
 %find walking direction
 direction=sign(diff(sAnk(:,4:5,2),1,2));
-% if sAnk(indSHS2,2)<sAnk(indSTO,2)
-%     direction=-1;
-% else
-%     direction=1;
-% end
+
 
 hipPos3D=.5*(sHip+fHip);
 hipPosFwd=hipPos3D(:,:,2);
@@ -173,9 +170,6 @@ hipPos=hipPosFwd(:,1);
 
 %NEED TO ROTATE
 
-%Compute mean (across the two markers) hip position (in fore-aft axis)
-%meanHipPos=nanmean([sHip(:,2) fHip(:,2)],2);
-%meanHipPos2D=[nanmean([sHip(:,1) fHip(:,1)],2) meanHipPos];
 hipPos2D=hipPos3D(:,:,1:2);
 %Compute ankle position relative to average hip position
 sAnkFwd=sAnk(:,:,2)-hipPosFwd;
@@ -201,31 +195,33 @@ aux=sign(sAngle(:,1)); %Checks for sAngle(indSHS)<0
 sAngle=bsxfun(@times,sAngle,aux);
 fAngle=bsxfun(@times,fAngle,aux);
 
-%%% Intralimb
+%% Intralimb
+
 %step lengths (1D)
-stepLengthSlow=sAnkFwd(:,5)-fAnkFwd(:,5);
-stepLengthFast=fAnkFwd(:,3)-sAnkFwd(:,3);
+stepLengthSlow=sAnkFwd(:,SHS2)-fAnkFwd(:,SHS2);
+stepLengthFast=fAnkFwd(:,FHS)-sAnkFwd(:,FHS);
 %step length (2D) Express w.r.t the hip -- don't save, for now.
-stepLengthSlow2D=sqrt(sum((sAnk2D(:,5,:)-fAnk2D(:,5,:)).^2,3));
-stepLengthFast2D=sqrt(sum((fAnk2D(:,3,:)-sAnk2D(:,3,:)).^2,3));
+stepLengthSlow2D=sqrt(sum((sAnk2D(:,SHS2,:)-fAnk2D(:,SHS2,:)).^2,3));
+stepLengthFast2D=sqrt(sum((fAnk2D(:,FHS,:)-sAnk2D(:,FHS,:)).^2,3));
 
 %Spatial parameters - in meters
+
 %alpha (positive portion of interlimb angle at HS)
-alphaSlow=sAnkFwd(:,5); %SHS2
-alphaTemp=sAnkFwd(:,1); %SHS
-alphaFast=fAnkFwd(:,3); %FHS
+alphaSlow=sAnkFwd(:,SHS2);
+alphaTemp=sAnkFwd(:,SHS);
+alphaFast=fAnkFwd(:,FHS);
 %beta (negative portion of interlimb angle at TO)
-betaSlow=sAnkFwd(:,4); %STO
-betaFast=fAnkFwd(:,6); %FTO2
+betaSlow=sAnkFwd(:,STO);
+betaFast=fAnkFwd(:,FTO2);
 %position of the ankle marker at contra lateral at HS
-XSlow=sAnkFwd(:,3); %FHS
-XFast=fAnkFwd(:,1); %SHS
-%stacne range (alpha+beta)
+XSlow=sAnkFwd(:,FHS);
+XFast=fAnkFwd(:,SHS);
+%stance range (subtract since beta is a negative value)
 stanceRangeSlow=alphaTemp-betaSlow;
 stanceRangeFast=alphaFast-betaFast;
 %swing range
-swingRangeSlow=sAnkFwd(:,5)-sAnkFwd(:,4);
-swingRangeFast=fAnkFwd(:,3)-fAnkFwd(:,2);
+swingRangeSlow=sAnkFwd(:,SHS2)-sAnkFwd(:,STO);
+swingRangeFast=fAnkFwd(:,FHS)-fAnkFwd(:,FTO);
 
 %Ratio TO./HS
 RFastPos=abs(betaFast./alphaFast);
@@ -239,26 +235,26 @@ RSlowPosFHS=abs(XSlow./alphaTemp);
 %Spatial parameters - in degrees
 
 %alpha (positive portion of interlimb angle at HS)
-alphaAngSlow=sAngle(:,5); %SHS2
-alphaAngTemp=sAngle(:,1); %SHS
-alphaAngFast=fAngle(:,3); %FHS
+alphaAngSlow=sAngle(:,SHS2);
+alphaAngTemp=sAngle(:,SHS);
+alphaAngFast=fAngle(:,FHS);
 %beta (negative portion of interlimb angle at TO)
-betaAngSlow=sAngle(:,4); %STO
-betaAngFast=fAngle(:,6); %FTO2
+betaAngSlow=sAngle(:,STO);
+betaAngFast=fAngle(:,FTO2);
 %range (alpha+beta)
 stanceRangeAngSlow=alphaAngTemp-betaAngSlow;
 stanceRangeAngFast=alphaAngFast-betaAngFast;
 %interlimb spread at HS
-omegaSlow=abs(sAngle(:,5)-fAngle(:,5)); %SHS2
-omegaFast=abs(fAngle(:,3)-sAngle(:,3)); %FHS
+omegaSlow=abs(sAngle(:,SHS2)-fAngle(:,SHS2));
+omegaFast=abs(fAngle(:,FHS)-sAngle(:,FHS));
 %alpha ratios
 alphaRatioSlow=alphaSlow./(alphaSlow+alphaFast);
 alphaRatioFast=alphaFast./(alphaSlow+alphaFast);
 %delta alphas
-alphaDeltaSlow=sAngle(:,5)-fAngle(:,3); %same as alphaAngSlow-alphaAngFast
-alphaDeltaFast=fAngle(:,3)-sAngle(:,1);
+alphaDeltaSlow=sAngle(:,SHS2)-fAngle(:,FHS); %same as alphaAngSlow-alphaAngFast
+alphaDeltaFast=fAngle(:,FHS)-sAngle(:,SHS);
 
-%%% Interlimb
+%% Interlimb
 
 stepLengthDiff=stepLengthFast-stepLengthSlow;
 stepLengthAsym=stepLengthDiff./(stepLengthFast+stepLengthSlow);
@@ -293,16 +289,18 @@ T=length(timeSHS);
 phaseShift=nan(T,1);
 phaseShiftPos=nan(T,1);
 for i=1:T
-    if ~isempty(angleData)
-        sLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[s,'Limb']});
-        fLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[f,'Limb']});
-        if ~isempty(sLimb) & ~isempty(fLimb)
-            phaseShift(i)=circCorr(sLimb,fLimb);
+    if ~isnan(timeSHS(i)) && ~isnan(timeSHS2(i))
+        if ~isempty(angleData)
+            sLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[s,'Limb']});
+            fLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[f,'Limb']});
+            if ~isempty(sLimb) & ~isempty(fLimb)
+                phaseShift(i)=circCorr(sLimb,fLimb);
+            end
         end
-    end
-    Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,'ANK'],[f,'ANK']});    
-    if ~isempty(Pos)
-        phaseShiftPos(i)=circCorr(Pos(:,1,2),Pos(:,2,2)); %Using y components only, which is equivalent to sAnkFwd
+        Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,'ANK'],[f,'ANK']});    
+        if ~isempty(Pos)
+            phaseShiftPos(i)=circCorr(Pos(:,1,2),Pos(:,2,2)); %Using y components only, which is equivalent to sAnkFwd
+        end
     end
 end
 
@@ -310,16 +308,16 @@ end
 %% Contribution Calculations
 
 % Compute spatial contribution (1D)
-spatialFast=fAnkFwd(:,3) - sAnkFwd(:,1);
-spatialSlow=sAnkFwd(:,5) - fAnkFwd(:,3);    
+spatialFast=fAnkFwd(:,FHS) - sAnkFwd(:,SHS);
+spatialSlow=sAnkFwd(:,SHS2) - fAnkFwd(:,FHS);    
 
 % Compute temporal contributions
 ts=(timeFHS-timeSHS); 
 tf=(timeSHS2-timeFHS); 
 difft=ts-tf;
 
-dispSlow=abs(sAnkFwd(:,3)-sAnkFwd(:,1));
-dispFast=abs(fAnkFwd(:,5)-fAnkFwd(:,3));
+dispSlow=abs(sAnkFwd(:,FHS)-sAnkFwd(:,SHS));
+dispFast=abs(fAnkFwd(:,SHS2)-fAnkFwd(:,FHS));
 
 velocitySlow=dispSlow./ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
 velocityFast=dispFast./tf;            
@@ -384,7 +382,6 @@ spatialContributionNorm2=spatialContribution./(stepLengthFast+stepLengthSlow);
 stepTimeContributionNorm2=stepTimeContribution./(stepLengthFast+stepLengthSlow);
 velocityContributionNorm2=velocityContribution./(stepLengthFast+stepLengthSlow);
 netContributionNorm2=netContribution./(stepLengthFast+stepLengthSlow);
-            
             
 
 %% Assign parameters to data matrix

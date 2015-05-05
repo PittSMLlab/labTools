@@ -212,15 +212,15 @@ classdef processedLabData < labData
             end
         end
         
-        function [strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)
+        function [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)
             if nargin<2 || isempty(triggerEvent)
-                triggerEvent=[this.metaData.refLeg 'HS']; %Using rHS as default event for striding.
+                triggerEvent=[this.metaData.refLeg 'HS']; %Using refLeg's HS as default event for striding.
             end
-                refLegEventList=this.getPartialGaitEvents(triggerEvent);
-                refIdxLst=find(refLegEventList==1);
-                auxTime=this.gaitEvents.Time;
-                initTime=auxTime(refIdxLst(1:end-1));
-                strideIdxs=1:length(initTime);
+            refLegEventList=this.getPartialGaitEvents(triggerEvent);
+            refIdxLst=find(refLegEventList==1);
+            auxTime=this.gaitEvents.Time;
+            initTime=auxTime(refIdxLst(1:end-1));
+            numStrides=length(initTime);
             if nargin<3 || isempty(endEvent) %using triggerEvent for endEvent
                 endTime=auxTime(refIdxLst(2:end));
             else %End of interval depends on another event
@@ -228,7 +228,7 @@ classdef processedLabData < labData
                 endIdxLst=find(endEventList==1);
                 i=0;
                 noEnd=true;
-                while i<length(strideIdxs) && noEnd
+                while i<numStrides && noEnd %This is an infinite loop...
                     i=i+1;
                     aux=auxTime(find(endIdxLst>refIdxLst(i),1,'first')); 
                     if ~isempty(aux)

@@ -13,28 +13,35 @@ classdef parameterSeries < labTimeSeries
     %   
     
     properties
-        hiddenTime
+        hiddenTime        
     end
     properties(Dependent)
        bad
        stridesTrial
        stridesInitTime
        description
+       trialTypes
     end
     properties(Hidden)
        description_={}; 
+       trialTypes_={};
     end
     
     methods
-        function this=parameterSeries(data,labels,times,description)
+        function this=parameterSeries(data,labels,times,description)            
             this@labTimeSeries(data,1,1,labels);
             this.hiddenTime=times;
             if length(description)==length(labels)
                 this.description_=description; %Needs to be cell-array of same length as labels
             else
                 error('paramtereSeries:constructor','Description input needs to be same length as labels')
-            end
+            end       
         end
+        
+        function this=setTrialTypes(this,types)
+            this.trialTypes_=types;
+        end
+       
         
         %% Getters for dependent variabls
         function vals=get.bad(this)
@@ -47,12 +54,21 @@ classdef parameterSeries < labTimeSeries
             vals=this.getDataAsVector('initTime');
         end
         function vals=get.description(this)
-           if isfield(this,'description_')
+%            if isfield(this,'description_')
               vals=this.description_; 
-           else
-              vals=cell(size(this.labels)); 
-           end
+%            else
+%               vals=cell(size(this.labels)); 
+%            end
         end
+        function vals=get.trialTypes(this)  
+%             if isfield(this,'trialTypes_')
+               vals=this.trialTypes_;
+%             else
+%                 disp('trying to access trialTypes')
+%                vals={}; 
+%             end
+        end
+        
         
         %% I/O
         function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib

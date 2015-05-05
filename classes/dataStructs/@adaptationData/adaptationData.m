@@ -10,8 +10,8 @@ classdef adaptationData
 %   data - object of the parameterSeries class
 %
 %adaptationData methods:
-%   removeBias - 
-%   getParameters -
+%   removeBias - subtract off mean baseline values
+%   getParameterList - obtain an array of strings with the labels of the all parameters
 %   getParamInTrial -
 %   getParamInCond -
 %   isaCondition -
@@ -94,7 +94,7 @@ classdef adaptationData
         end
         
         %Other I/O functions:
-        function labelList=getParameters(this)
+        function labelList=getParameterList(this)
 		%obtain an array of strings with the labels of the all parameters 
 		%INPUT:
 		%this: experimentData object
@@ -164,7 +164,7 @@ classdef adaptationData
 		%          adaptationData.removeBias
 		
             if nargin<4 || isempty(removeBias)
-                removeBias=0;
+                removeBias=false;
             end
             if nargin<2 || isempty(label)
                 label=this.data.labels;
@@ -191,14 +191,6 @@ classdef adaptationData
                 if any(isnan(condNum))
                    warning([this.subData.ID ' did not perform condition ''' condition{isnan(condNum)} ''''])
                 end
-%             else %a numerical vector
-%                 for i=1:length(condition)
-%                     if length(this.metaData.trialsInCondition)<i || isempty(this.metaData.trialsInCondition(condition(i)))
-%                         warning([this.subData.ID ' did not perform condition number ' num2str(condition(i))])
-%                     else
-%                         condNum(end+1)=condition(i);
-%                     end
-%                 end
             end
             
             %get data
@@ -209,7 +201,7 @@ classdef adaptationData
             inds=cell2mat(this.data.indsInTrial(trials));
             origTrials=[];
             for i=1:length(trials)
-                origTrials(end+1:end+length(this.data.indsInTrial(i)))=i;
+                origTrials(end+1:end+length(this.data.indsInTrial(i)))=i; %What's the purpose of this??
             end
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
@@ -343,7 +335,9 @@ classdef adaptationData
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
-            %ConditionNames should be a cell array containing a string or another cell array of strings in each of its cells. E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            %ConditionNames should be a cell array containing a string or 
+            %another cell array of strings in each of its cells. 
+            %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
         

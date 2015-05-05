@@ -256,53 +256,54 @@ classdef experimentData
             if nargin<2
                 filename=[];
             end
-            %adaptData=makeDataObjNew(this,filename,experimentalFlag);
-            DATA=[];
-            DATA2=[];
-            startind=1;
-            auxLabels={'Trial','Condition'};
-            if ~isempty(this.data)
-                for i=1:length(this.data) %Trials
-                    if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-                        labels=this.data{i}.adaptParams.getLabels;
-                        dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
-                        DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
-                            %nop
-                        else
-                            aux=this.data{i}.experimentalParams;
-                            labels2=aux.getLabels;
-                            dataTS2=aux.getDataAsVector(labels2);
-                            DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-                        end
-                        auxData(startind:size(DATA,1),1)=i; %Saving trial info
-                        auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
-                        indsInTrial{i}= startind:size(DATA,1);
-                        startind=size(DATA,1)+1;
-                        trialTypes{i}=this.data{i}.metaData.type;
-                    end
-                end
-            end    
-            %labels should be the same for all trials with adaptParams
-            if ~isempty(DATA2)
-                parameterData=paramData([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
-                %parameterData=parameterSeries([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
-            else
-                parameterData=paramData([DATA,auxData],[labels(:) auxLabels(:)],indsInTrial,trialTypes);
-            end
-            adaptData=adaptationData(this.metaData,this.subData,parameterData);  
-            if nargin>1 && ~isempty(filename)
-                save([filename 'params.mat'],'adaptData'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
-            end
+            adaptData=makeDataObjNew(this,filename,experimentalFlag);
+%             DATA=[];
+%             DATA2=[];
+%             startind=1;
+%             auxLabels={'Trial','Condition'};
+%             if ~isempty(this.data)
+%                 for i=1:length(this.data) %Trials
+%                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+%                         labels=this.data{i}.adaptParams.getLabels;
+%                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
+%                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+%                         if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
+%                             %nop
+%                         else
+%                             aux=this.data{i}.experimentalParams;
+%                             labels2=aux.getLabels;
+%                             dataTS2=aux.getDataAsVector(labels2);
+%                             DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
+%                         end
+%                         auxData(startind:size(DATA,1),1)=i; %Saving trial info
+%                         auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
+%                         indsInTrial{i}= startind:size(DATA,1);
+%                         startind=size(DATA,1)+1;
+%                         trialTypes{i}=this.data{i}.metaData.type;
+%                     end
+%                 end
+%             end    
+%             %labels should be the same for all trials with adaptParams
+%             if ~isempty(DATA2)
+%                 parameterData=paramData([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
+%                 %parameterData=parameterSeries([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
+%             else
+%                 parameterData=paramData([DATA,auxData],[labels(:) auxLabels(:)],indsInTrial,trialTypes);
+%             end
+%             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
+%             if nargin>1 && ~isempty(filename)
+%                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
+%             end
         end
         
         function adaptData=makeDataObjNew(this,filename,experimentalFlag)
-        %This function is not (yet) compatible with most methods of the
+        %This function may not be compatible with certain methods of the
         %adaptationData class
                 for i=1:length(this.data) %Trials
                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
                         %Get data from this trial:
                         aux=this.data{i}.adaptParams;
+                        trialTypes{i}=this.data{i}.metaData.type;
                         if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
                             aux=cat(aux,this.data{i}.experimentalParams); 
                         end
@@ -314,9 +315,10 @@ classdef experimentData
                         end
                     end
                 end    
+            paramData=paramData.setTrialTypes(trialTypes);
             adaptData=adaptationData(this.metaData,this.subData,paramData);  
             if nargin>1 && ~isempty(filename)
-                save([filename 'params.mat'],'adaptData'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
+                save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
         end
         

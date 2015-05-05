@@ -11,4 +11,4 @@
 info = GetInfoGUI;
 
 %Do the actual loading 
-[expData,rawExpData]=loadSubject(info);
+[expData,rawExpData,adaptData]=loadSubject(info);

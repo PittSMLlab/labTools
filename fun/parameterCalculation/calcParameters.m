@@ -1,5 +1,5 @@
 function out = calcParameters(trialData,subData,eventClass,initEvent)
-%Computes events on a per-stride basis
+%Computes gait parameters on a per-stride basis
 %out = calcParameters(trialData,subData,eventClass,initEvent)
 %INPUT:
 %trialData: processedLabData object

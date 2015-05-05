@@ -77,8 +77,17 @@ for itype=1:length(types)
         newData(inds,:)=this.data.Data(inds,:);
     end
 end
+%fix any parameters that should not have bias removal
+[~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime'});
+if ~isempty(idxs)
+    newData(:,idxs)=this.data.Data(:,idxs);
+end
 
-newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
+if isa(this.data,'paramData')
+    newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
+else
+    newParamData=parameterSeries(newData,labels,this.data.hiddenTime,this.data.description);
+end
 newThis=adaptationData(this.metaData,this.subData,newParamData);
 typeList=types;
 
