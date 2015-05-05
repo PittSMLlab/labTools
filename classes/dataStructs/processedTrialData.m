@@ -1,7 +1,8 @@
 classdef processedTrialData < processedLabData
-    %UNTITLED2 Summary of this class goes here
     %Almost dummy class: implements processedLabData as is, just checking that
     %metaData is of trialMetaData type.
+    %
+    %See also: processedLabData
     
     %%
     properties (SetAccess=private)

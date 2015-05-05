@@ -1,3 +1,5 @@
+%OG study: old subjects adapted gradually without a catch
+
 %condition numbers
 i=1;
 for cond = [1 2 4:6 8:10]

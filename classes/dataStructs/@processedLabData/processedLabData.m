@@ -1,18 +1,47 @@
 classdef processedLabData < labData
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %processedLabData  Extends labData to include proccessed data derived
+    %from the raw data.
+    %
+    %processedLabData properties:
+    %   gaitEvents - labTS object with HS and TO events
+    %   procEMGdata - processedEMGTS object
+    %   angleData - labTS object with angles calculated from marker data
+    %   adaptParams - parameterSeries adaptation values on a strid-by-stide basis
+    %   isSingleStride - boolean flag to check length of data
+    %   experimentalParams - parameterSeries for testing new adaptation
+    %   parameters
+    %
+    %processedLabData methods:
+    %
+    %   getProcEMGData - accessor for processed EMGs
+    %   getProcEMGList - returns list of processed EMG labels        
+    %   getPartialGaitEvents - accessor for specific events        
+    %   getEventList - returns list of event labels         
+    %   getAngleData - accessor for angle data      
+    %   getParam - accessor for adaptation parameters       
+    %   getExpParam - accessor for experimental adaptation parameters          
+    %   calcAdaptParams - re-computes adaptation parameters     
+    %   
+    %   separateIntoStrides - ?
+    %   separateIntoSuperStrides - ?
+    %   separateIntoDoubleStrides - ?
+    %   getStrideInfo - ?
+    %   getStridedField - ?
+    %   getAlignedField - ?
+    %
+    %See also: labData, labTimeSeries, processedEMGTimeSeries, parameterSeries
     
     %%
     properties %(SetAccess= private)  Cannot set to private, because labData will try to set it when using split()
         gaitEvents %labTS
         procEMGData %processedEMGTS
         angleData %labTS (angles based off kinematics)
-        adaptParams %labTS (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
+        adaptParams %paramterSeris (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
         %EMGData, which is inherited from labData, saves the FILTERED EMG data used for processing afterwards (not the RAW, which is saved in the not-procesed labData)
     end
     
     properties (Dependent)        
-        isSingleStride
+        isSingleStride %ever used?
         experimentalParams
     end
     
@@ -35,24 +64,42 @@ classdef processedLabData < labData
                angleData = [];
             end
             this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches);
+            this.gaitEvents=events;
+            this.procEMGData=procEMG;
+            this.angleData=angleData;                         
+        end
+        %Setters
+        function this=set.gaitEvents(this,events)
             if isa(events,'labTimeSeries') || isempty(events)
                 this.gaitEvents=events;
             else
                 ME=MException('processedLabData:Constructor','events parameter is not a labTimeSeries object.');
                 throw(ME);
             end
+        end
+        function this=set.procEMGData(this,procEMG)
             if isa(procEMG,'processedEMGTimeSeries') || isempty(procEMG)
                 this.procEMGData=procEMG;
             else
                 ME=MException('processedLabData:Constructor','procEMG parameter is not a processedEMGTimeSeries object.');
                 throw(ME);
             end
+        end
+        function this=set.angleData(this,angleData)
             if isa(angleData,'labTimeSeries') || isempty(angleData)
                 this.angleData=angleData;
             else             
                 ME=MException('processedLabData:Constructor','angleData parameter is not a labTimeSeries object.');
                 throw(ME);
-            end             
+            end
+        end
+        function this=set.adaptParams(this,adaptData)
+            if isa(adaptData,'parameterSeries')
+                this.adaptParams=adaptData;
+            else             
+                ME=MException('processedLabData:Constructor','adaptParams parameter is not a parameterSeries object.');
+                throw(ME);
+            end
         end
        
         %Access method for fields not defined in raw class.
@@ -86,12 +133,12 @@ classdef processedLabData < labData
                 
         function adaptParams=calcAdaptParams(this)
              adaptParams=calcParameters(this);            
-         end
+        end
            
         %Getters for dependent properties:
         function expParams=get.experimentalParams(this)
              expParams=calcExperimentalParams(this);
-         end
+        end
 
         function b=get.isSingleStride(this)
             b=isa(this,'strideData'); 

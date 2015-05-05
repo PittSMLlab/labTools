@@ -1,6 +1,16 @@
 classdef parameterSeries < labTimeSeries
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %parameterSeries  Extends labTimeSeries to hold adaptation parameters
+    %   
+    %parameterSeries properties:
+    %   hiddenTime
+    %   bad
+    %   stridesTrial
+    %   stridesInitTime
+    %   description
+    %
+    %parameterSeries methods:
+    %   idk
+    %   
     
     properties
         hiddenTime

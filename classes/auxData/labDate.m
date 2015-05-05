@@ -19,14 +19,24 @@ classdef labDate
     end
     
     methods
+        %constructor
         function this=labDate(dd,mm,year)
+            this.day=dd;
+            this.month=mm;
+            this.year=year;
+        end
+        
+        %Setters
+        function this=set.day(this,dd)
             if dd<32 && dd>0 && rem(dd,1)==0
                 this.day=dd;
             else
                 ME=MException('labDate:Constructor','Day parameter is not an integer in the [1,31] range.');
                 throw(ME);
             end
-            if isa(mm,'char') && length(mm)==3
+        end        
+        function this=set.month(this,mm)
+           if isa(mm,'char') && length(mm)==3
                 switch lower(mm)
                     case {'jan','ene'}
                         this.month=1;
@@ -54,19 +64,28 @@ classdef labDate
                         this.month=12;
                     otherwise
                         ME=MException('labDate:Constructor','Unrecognized month string.');
+                        throw(ME);
                 end
             else
                 ME=MException('labDate:Constructor','Month parameter is not a 3-letter string.');
                 throw(ME);
-            end
+            end 
+        end        
+        function this=set.year(this,year)
             if rem(year,1)==0
                 this.year=year;
             else
                 ME=MException('labDate:Constructor','Year parameter is not an integer.');
                 throw(ME);
-            end
+           end 
         end
-    end
+    end 
+    
+    
+    %Suggested method: find number of years/months/days that separate two
+    %dates. The method could be called like
+    %[days,months,years]=labDate1.timeSince(labDate2)
+    
     methods(Static)
         
         function str=monthString(a)

@@ -1,6 +1,22 @@
 classdef labTimeSeries  < timeseries
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %labTimeSeries  Extends timeseries (built-in MATLAB class) to conform
+    %               to our lab's needs for storing data we collect.
+    %
+    %labTimeSeries properties:
+    %   labels - cell array of strings with labels for the columns of Data
+    %   sampPeriod - time between samples, equal to 1/sampFreq
+    %   sampFreq - sampling rate in Hz, equal to 1/sampPeriod
+    %   Nsamples - total number of samples if timeSeries
+    %   Data - matrix of data values, size is Nsamples x length(labels)
+    %   Time - time values corresponding to each sample
+    %   Length - should be same as Nsamples
+    %
+    %labTimeSeries methods:
+    %   getDataAsVector - get a vector of data for a given label
+    %   getDataAsTS - returns a new labTimeSeries with data for given label(s) 
+    %   getLabels - returns list of labels
+    %   isaLabel - checks if a string is contained in label array
+    %   plot - plots data...
     
     %%
     properties(SetAccess=private)
@@ -159,7 +175,7 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function newThis=resampleN(this,newN,method) 
+        function newThis=resampleN(this,newN,method)
             %Uniform resampling of data, over the same time range. This
             %keeps the initial time on the same value, and returns newN
             %time-samples in the time interval of the original timeseries

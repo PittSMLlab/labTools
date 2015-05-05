@@ -57,10 +57,10 @@ classdef adaptationData
                 throw(ME);
             end
             
-            if nargin>2 && isa(data,'parameterSeries')
+            if nargin>2 && (isa(data,'parameterSeries') || isa(data,'paramData'))
                 this.data=data;
             else
-                ME=MException('adaptationData:Constructor','Data is not a paramData type object.');
+                ME=MException('adaptationData:Constructor','Data is not a parameterSeries type object.');
                 throw(ME);
             end
         end

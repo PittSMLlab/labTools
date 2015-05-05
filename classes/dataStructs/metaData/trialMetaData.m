@@ -1,5 +1,5 @@
 classdef trialMetaData
-%trailMetaData  Information that is specifc to an individual trial
+%trialMetaData  Information that is specifc to an individual trial
 %
 %trialMetaData properties:   
 %   name - short description of condition (ex. 'slow base')

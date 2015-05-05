@@ -1,7 +1,8 @@
 classdef rawTrialData < rawLabData
-    %UNTITLED Summary of this class goes here
     %Almost dummy class: implements rawLabData as is, just checking that
     %metaData is of trialMetaData type.
+    %
+    %See also: rawLabData
     
     properties
         

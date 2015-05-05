@@ -2,7 +2,7 @@ classdef subjectData
 %subjectData  stores information about study participants
 %   
 %subjectData properties:
-%   dateOfBirth - labData object
+%   dateOfBirth - labDate object
 %   sex - string, either 'male' or 'female'
 %   dominantLeg - string, either 'L' or 'R'
 %   dominantArm - string, either 'L' or 'R'
@@ -10,6 +10,8 @@ classdef subjectData
 %   weight - number (in Kg)
 %   age - labDate object
 %   ID - string containing experimental identifier
+%
+%See also: labDate, strokeSubjectData
     
     properties (SetAccess=private)
         dateOfBirth='';

@@ -1,6 +1,5 @@
 classdef paramData
-    %UNTITLED Summary of this class goes here
-    %   Detailed explanation goes here
+    %This may no longer be in use...
     
     %%
     properties %(SetAccess=private)
@@ -55,19 +54,8 @@ classdef paramData
                 auxLabel{1}=label;
             elseif isa(label,'cell')
                 auxLabel=label;
-            end            
-            N=length(auxLabel);
-            boolFlag=zeros(1,N);
-            labelIdx=zeros(1,N);
-            for j=1:N
-                for i=1:length(this.labels)
-                     if strcmp(lower(auxLabel{j}),lower(this.labels{i}))
-                       boolFlag(j)=true;
-                       labelIdx(j)=i;
-                       break;
-                     end
-                end
             end
+            [boolFlag, labelIdx]=isaLabel(this,label);
              for i=1:length(boolFlag)
                 if boolFlag(i)==0
                     warning(['Label ' auxLabel{i} ' is not a parameter in this dataset.'])

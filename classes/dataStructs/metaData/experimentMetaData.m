@@ -16,8 +16,11 @@ classdef experimentMetaData
 %   Ntrials - total number of trials
 %
 %experimentMetaData Methods:
-%   getCondLstPerTrial -
-%   getConditionIdxsFromName -
+%   getCondLstPerTrial - returns list of condition numbers for each trial
+%   getConditionIdxsFromName - returns the number of conditions with a
+%   similar name to the string(s) entered.
+%
+%See also: labDate
     
     properties
         ID;
@@ -34,32 +37,80 @@ classdef experimentMetaData
     methods
         %Constructor
         function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+            this.ID=ID;           
+            if nargin>1
+                this.date=date;
+            end
+            if nargin>2
+                this.experimenter=experimenter;
+            end            
+            if nargin>3
+                this.observations=obs;
+            end      
+            if nargin>4
+                this.conditionName=conds;
+            end
+            if nargin>5 
+                this.conditionDescription=desc;
+            end            
+            if nargin>6                
+                this.trialsInCondition=trialLst;
+            end
+            if nargin>7
+                this.Ntrials=Ntrials; 
+            end            
+        end
+        
+        %% Setters
+        function this=set.ID(this,ID)
             if isa(ID,'char') %&& nargin>0
                 this.ID=ID; %Mandatory field, needs to be string
             elseif isempty(ID) %|| nargin==0
                 this.ID='';
                 %disp('Warning: creating emtpy ID field.')
             else
-                ME=MException('labMetaData:Constructor','ID is not a string.');
+                ME=MException('experimentMetaData:Constructor','ID is not a string.');
                 throw(ME);
-            end            
-            if nargin>1 && isa(date,'labDate');
+            end 
+        end        
+        function this=set.date(this,date)
+            if isa(date,'labDate')
                 this.date=date;
-            end
-            if nargin>2 && isa(experimenter,'char');
+            else
+                ME=MException('experimentMetaData:Constructor','date is not labDate object.');
+                throw(ME);
+            end                           
+        end
+        function this=set.experimenter(this,experimenter)
+            if isa(experimenter,'char');
                 this.experimenter=experimenter;
-            end            
-            if nargin>3 && isa(obs,'char')
-                this.observations=obs;
-            end      
-            if nargin>4 || ~isempty(conds)
-                this.conditionName=conds;
+            else
+                ME=MException('experimentMetaData:Constructor','experimenter is not a string.');
+                throw(ME);
             end
-            if nargin>5 || ~isempty(desc)
-                this.conditionDescription=desc;
-            end            
-            if nargin>6 || ~isempty(trialLst)
-                %Check that no trial is repeatede
+        end
+        function this=set.observations(this,obs)
+            if isa(obs,'char')
+                this.observations=obs;
+            else
+                ME=MException('experimentMetaData:Constructor','observations is not a string.');
+                throw(ME);
+            end
+        end
+        function this=set.conditionName(this,conds)
+            if ~isempty(conds) && isa(conds,'cell')
+               this.conditionName=conds; 
+            end
+        end
+        function this=set.conditionDescription(this,desc)
+            if ~isempty(desc) && isa(desc,'cell')
+               this.conditionDescription=desc; 
+            end
+        end
+        function this=set.trialsInCondition(this,trialLst)
+            %Must be cell of doubles
+            if ~isempty(trialLst) && isa(trialLst,'cell')
+            %Check that no trial is repeated
                 aux=cell2mat(trialLst);
                 aux2=unique(aux);
                 for i=1:length(aux2)
@@ -69,14 +120,20 @@ classdef experimentMetaData
                        throw(ME)
                    end
                 end
-                this.trialsInCondition=trialLst; %Must be cell of doubles
+                this.trialsInCondition=trialLst;
             end
-            if nargin>7 && isa(Ntrials,'double')
-                this.Ntrials=Ntrials; 
-            end            
+        end
+        function this=set.Ntrials(this,Ntrials)
+            if isa(Ntrials,'double')
+                this.Ntrials=Ntrials;
+            end
         end
         
+        %% Other methods
         function condLst=getCondLstPerTrial(this)
+           %getCondLstPerTrial  Returns a vector with length equal to the
+           %number of trials in the experiment and with values equal to the
+           %condition number for each trial.
            for i=1:this.Ntrials
                for cond=1:length(this.trialsInCondition)
                     k=find(i==this.trialsInCondition{cond},1);
@@ -102,18 +159,17 @@ classdef experimentMetaData
                 conditionNames={conditionNames};
             end
             nConds=length(conditionNames); 
-            conds=conditionNames;
             conditionIdxs=NaN(nConds,1);
             for i=1:nConds
                 %First: find if there is a condition with a
                 %similar name to the one given
                 clear condName
-                if iscell(conds{i})
-                    for j=1:length(conds{i})
-                        condName{j}=lower(conds{i}{j});
+                if iscell(conditionNames{i})
+                    for j=1:length(conditionNames{i})
+                        condName{j}=lower(conditionNames{i}{j});
                     end
                 else
-                    condName{1}=lower(conds{i}); %Lower case
+                    condName{1}=lower(conditionNames{i}); %Lower case
                 end
                 aux=this.conditionName;
                 aux(cellfun(@isempty,aux))='';

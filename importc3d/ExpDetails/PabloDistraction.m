@@ -1,3 +1,5 @@
+% Pablo: distraction study
+
 handles.group='0002: Distraction';
 
 %condition numbers

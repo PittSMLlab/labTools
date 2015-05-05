@@ -1,3 +1,5 @@
+%OG study: old subjects adapted abruptly
+
 handles.group='Old Abrupt';
 
 %condition numbers

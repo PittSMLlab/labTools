@@ -1,3 +1,6 @@
+%EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS
+% ex - OG study: old subjects adapted abruptly
+
 %Don't worry about what 'handles' is and do not edit anything in the set
 %command besides the very last entry.
 

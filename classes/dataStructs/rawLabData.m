@@ -1,6 +1,7 @@
 classdef rawLabData < labData
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %rawLabData  Does nothing at the moment.
+    %
+    %See also: labData
     
     %%
     properties (SetAccess=private)
