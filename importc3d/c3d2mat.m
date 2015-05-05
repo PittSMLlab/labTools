@@ -1,4 +1,4 @@
-%c3d2mat    The main function for turing .c3d files into a subject .mat file.
+%c3d2mat    The main function for turning .c3d files into a subject .mat file.
 %
 %This script collects information regarding the experiment conducted,
 %trnasforms the raw data from .c3d files into matlab objects,
@@ -11,4 +11,4 @@
 info = GetInfoGUI;
 
 %Do the actual loading 
-loadSubject(info);
+[expData,rawExpData]=loadSubject(info);

@@ -1,11 +1,11 @@
 function varargout = GetInfoGUI(varargin)
-% GETINFOGUI  Graphical user intergace used to collect information regarding
+% GETINFOGUI  Graphical user interface used to collect information regarding
 %             a single experiment conducted in the HMRL. Refer to help text
-%             in GUI by hovering mouse over a given field.%      
+%             in GUI by hovering mouse over a given field.      
 %
-% See also: experimentDescriptions, errorProofInfo, experimentDetails
+% See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 02-Oct-2014 14:48:41
+% Last Modified by GUIDE v2.5 01-May-2015 13:36:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -66,14 +66,14 @@ set(handles.note_edit,'TooltipString',sprintf(['Notes about the experiment as a 
     'do not enter it here (there will be a chance later on to comment on individual trials).']));
 %--------------------------Subject Info----------------------------------%
 set(handles.subID_edit,'TooltipString','Coded value used to identify subject. DO NOT use the subjec''s name!');
-set(handles.DOBmonth_list,'TooltipString','');
-set(handles.DOBday_edit,'TooltipString','');
-set(handles.DOByear_edit,'TooltipString','');
-set(handles.gender_list,'TooltipString','');
-set(handles.domleg_list,'TooltipString','');
-set(handles.domhand_list,'TooltipString','');
-set(handles.height_edit,'TooltipString','');
-set(handles.weight_edit,'TooltipString','');
+set(handles.DOBmonth_list,'TooltipString','Month subject was born');
+set(handles.DOBday_edit,'TooltipString','Day subject was born');
+set(handles.DOByear_edit,'TooltipString','Year subject was born');
+set(handles.gender_list,'TooltipString','Subject''s gender');
+set(handles.domleg_list,'TooltipString','Dominant leg of subject');
+set(handles.domhand_list,'TooltipString','Dominant hand/arm of subject');
+set(handles.height_edit,'TooltipString','Height of subject as measured in the lab (in cm)');
+set(handles.weight_edit,'TooltipString','Weight of subject as measured in the lab (in Kg)');
 
 % UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
  uiwait(handles.figure1);
@@ -85,46 +85,50 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-info=handles.info;
 
-%Forcing save before the rest of the things are done (so, if it fails, we
-%don't lose it).
-save([info.save_folder filesep info.ID 'info'],'info')
+if ~(isfield(handles,'noSave') && handles.noSave)
+    info=handles.info;
 
-%asks user if there are observations for individual trials
-answer=input('Are there any observations for individual trials?(y/n) ','s');
+    %Forcing save before the rest of the things are done (so, if it fails, we
+    %don't lose it).
+    save([info.save_folder filesep info.ID 'info'],'info')
 
-%The following makes sure the correct response is entered
-while (lower(answer) ~= 'y' & lower(answer) ~= 'n') | length(answer)>1
-    disp('Error: you must enter either "y" or "n"')
+    %asks user if there are observations for individual trials
     answer=input('Are there any observations for individual trials?(y/n) ','s');
-end
 
-%The following creates a menu to choose any trial
-expTrials = cell2mat(info.trialnums);
-numTrials = length(expTrials);
-if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
-    %if a subject wasn't loaded
-    info.trialObs{1,info.numoftrials} = '';
-end
-if lower(answer) == 'y'    
-    trialstr = [];
-    %create trial string
-    for t = expTrials
-        trialstr = [trialstr,',''Trial ',num2str(t),''''];
+    %The following makes sure the correct response is entered
+    while (lower(answer) ~= 'y' & lower(answer) ~= 'n') | length(answer)>1
+        disp('Error: you must enter either "y" or "n"')
+        answer=input('Are there any observations for individual trials?(y/n) ','s');
     end
-    %generate menu
-    eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-    while choice ~= numTrials+1
-        % get observation for trial selected
-        obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
-        info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+
+    %The following creates a menu to choose any trial
+    expTrials = cell2mat(info.trialnums);
+    numTrials = length(expTrials);
+    if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
+        %if a subject wasn't loaded
+        info.trialObs{1,info.numoftrials} = '';
+    end
+    if lower(answer) == 'y'    
+        trialstr = [];
+        %create trial string
+        for t = expTrials
+            trialstr = [trialstr,',''Trial ',num2str(t),''''];
+        end
+        %generate menu
         eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-    end   
+        while choice ~= numTrials+1
+            % get observation for trial selected
+            obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
+            info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+            eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        end   
+    end
+
+    varargout{1}=info;
+    save([info.save_folder filesep info.ID 'info'],'info')
 end
 
-varargout{1}=info;
-save([info.save_folder filesep info.ID 'info'],'info')
 
 delete(handles.figure1)
 
@@ -134,7 +138,7 @@ delete(handles.figure1)
 function description_edit_Callback(hObject, eventdata, handles)
 %This was changed to a list!
 contents = cellstr(get(hObject,'String'));
-expDescrip = contents{get(hObject,'Value')};
+expFile = contents{get(hObject,'Value')};
 
 %first, clear all feilds
 set(handles.numofconds,'String','0');
@@ -147,7 +151,7 @@ for conds = 1:handles.lines
 end
 
 %second, populate feilds based on experiment description entered.
-eval(expDescrip)
+eval(expFile)
 numofconds_Callback(handles.numofconds, eventdata, handles)
 
 guidata(hObject,handles)
@@ -456,11 +460,22 @@ else
     
     % -- Experiment Info
     descriptionContents=cellstr(get(handles.description_edit,'string'));
-    if ~any(strcmp(descriptionContents,subInfo.ExpDescription)==1)
-        set(handles.description_edit,'String',[descriptionContents; subInfo.ExpDescription])
-        descriptionContents=cellstr(get(handles.description_edit,'string'));
+    if isfield(subInfo,'ExpFile') %processed after 4/2015        
+        if ~any(strcmp(descriptionContents,subInfo.ExpFile)==1)
+            set(handles.description_edit,'String',[descriptionContents; subInfo.ExpFile])
+            descriptionContents=cellstr(get(handles.description_edit,'string'));
+        end
+        set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpFile)));       
+    else        
+        if ~any(strcmp(descriptionContents,subInfo.ExpDescription)==1)
+            set(handles.description_edit,'String',[descriptionContents; subInfo.ExpDescription])
+            descriptionContents=cellstr(get(handles.description_edit,'string'));
+        end
+        set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));        
     end
-    set(handles.description_edit,'Value',find(strcmp(descriptionContents,subInfo.ExpDescription)));
+    handles.group=subInfo.ExpDescription;
+    
+    
     set(handles.name_edit,'string',subInfo.experimenter);
     monthContents = cellstr(get(handles.month_list,'String'));
     set(handles.month_list,'Value',find(strcmp(monthContents,subInfo.month)));
@@ -540,6 +555,27 @@ else
         handles.trialObs=subInfo.trialObs;
     end
     guidata(hObject,handles)
+end
+
+
+% --- Executes when user attempts to close figure1.
+function figure1_CloseRequestFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+choice = questdlg('Do you want to save changes?', ...
+'GetInfoGUI', ...
+'Save','Don''t Save','Cancel','Cancel');
+switch choice
+    case 'Save'
+        ok_button_Callback(hObject, eventdata, handles);
+    case 'Don''t Save'
+        handles.noSave=true;
+        guidata(hObject,handles)
+        uiresume(handles.figure1);      
+    case {'Cancel',''}
+        return
 end
 
 

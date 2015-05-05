@@ -1,12 +1,14 @@
 function out = errorProofInfo(handles)
+%Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.
+%If entry is invalid, issues warning about which field is incorrect.
 
 out.bad=false;
 
 % -- Experiment Info
-% descriptionContents=cellstr(get(handles.description_edit,'string'));
-% out.ExpDescription=descriptionContents{get(handles.description_edit,'Value')};
+descriptionContents=cellstr(get(handles.description_edit,'string'));
+out.ExpFile=descriptionContents{get(handles.description_edit,'Value')};
 out.ExpDescription=handles.group;
-if strcmp(out.ExpDescription,' ')
+if strcmp(out.ExpFile,' ')
     h_error=errordlg('Please choose an experiment description','Description Error');    
     waitfor(h_error)
     uicontrol(handles.description_edit)
@@ -83,7 +85,7 @@ if isnan(out.height) || out.height<0 || out.height>230 %seems like an appropriat
     return
 end 
 out.weight = str2double(get(handles.weight_edit,'string'));
-if isnan(out.weight) || out.weight<0 || out.weight>140 %seems like an appropriate range...
+if isnan(out.weight) || out.weight<0 || out.weight>170 %seems like an appropriate range...
     h_error=errordlg('Please enter the weight of the subject','Weight Error');    
     waitfor(h_error)    
     uicontrol(handles.weight_edit)

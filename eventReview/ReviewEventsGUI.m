@@ -836,7 +836,7 @@ function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
 global expData
 
 drawnow
-if ~handles.changed && exist(handles.filename,'var')
+if ~handles.changed && isfield(handles,'filename')
     choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
 	'ReviewEventsGUI', ...
 	'Save','Don''t Save','Cancel','Save');

@@ -9,14 +9,19 @@ else
     orientation=trialData.markerData.orientation;
 end
 
+if ~isempty(angleData)
+    [kinLHS,kinRHS,kinLTO,kinRTO] = getEventsFromAngles(trialData,angleData,orientation);
+else
+    [kinLHS,kinRHS,kinLTO,kinRTO] = deal(false(10,1)); %length 10 to prevent errors downstream
+end
+ 
+
 if strcmpi(trialData.metaData.type,'OG') %Overground Trial, default is to use limb angles to calculate events
     
-    [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation);
-    
-    LHSeventKin=LHSevent; %Make a redundant compy to label as kinematic events
-    RHSeventKin=RHSevent;
-    LTOeventKin=LTOevent;
-    RTOeventKin=RTOevent;
+    [LHSevent,LHSeventKin]=deal(kinLHS); %Make a redundant compy to make kinematic events deafault
+    [RHSevent,RHSeventKin]=deal(kinRHS);
+    [LTOevent,LTOeventKin]=deal(kinLTO);
+    [RTOevent,RTOeventKin]=deal(kinRTO);
     
     LHSeventForce=false(length(LHSevent),1); %No force events, fill with logical 0's
     RHSeventForce=false(length(RHSevent),1);
@@ -29,8 +34,6 @@ if strcmpi(trialData.metaData.type,'OG') %Overground Trial, default is to use li
 %     t0=trialData.GRFData.Time(1);
 %     Ts=trialData.GRFData.sampPeriod;
 else %Treadmill trial
-    
-    [kinLHS,kinRHS,kinLTO,kinRTO] = getEventsFromAngles(trialData,angleData,orientation);        
     
     if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data, default events calculatd from marker data (not labeled as kin events though!!) 
         disp(['No ground reaction forces data in ' file '. Using marker data to compute events.'])
