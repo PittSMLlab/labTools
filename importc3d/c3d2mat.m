@@ -10,5 +10,7 @@
 % Get info!
 info = GetInfoGUI;
 
-%Do the actual loading 
-[expData,rawExpData,adaptData]=loadSubject(info);
+%Do the actual loading
+if ~isempty(info)
+    [expData,rawExpData,adaptData]=loadSubject(info);
+end

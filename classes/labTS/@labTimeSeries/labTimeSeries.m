@@ -1,12 +1,12 @@
 classdef labTimeSeries  < timeseries
-    %labTimeSeries  Extends timeseries (built-in MATLAB class) to conform
-    %               to our lab's needs for storing data we collect.
+    %labTimeSeries  Extends timeseries (built-in MATLAB class) to meet
+    %               our lab's needs for storing data.
     %
     %labTimeSeries properties:
     %   labels - cell array of strings with labels for the columns of Data
     %   sampPeriod - time between samples, equal to 1/sampFreq
     %   sampFreq - sampling rate in Hz, equal to 1/sampPeriod
-    %   Nsamples - total number of samples if timeSeries
+    %   Nsamples - total number of samples in timeSeries
     %   Data - matrix of data values, size is Nsamples x length(labels)
     %   Time - time values corresponding to each sample
     %   Length - should be same as Nsamples

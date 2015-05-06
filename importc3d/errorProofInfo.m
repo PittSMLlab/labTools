@@ -161,12 +161,33 @@ for t=trials
         out.bad=true;
         return
     end
+    %Check marker labels are good in .c3d files
+    H=btkReadAcquisition(filename);
+    markerLabels=fieldnames(btkGetMarkers(H));
+    mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};    
+    labelPresent=false(1,length(mustHaveLabels));
+    for i=1:length(markerLabels)
+       label=findLabel(markerLabels{i});
+       labelPresent=labelPresent+ismember(mustHaveLabels,label);
+    end
+    if any(~labelPresent)
+        missingLabels=find(~labelPresent);
+        str='';
+        for j=missingLabels
+            str=[str ', ' mustHaveLabels{j}];
+        end
+        h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');            
+        waitfor(h_error)    
+        uicontrol(handles.basefile)
+        out.bad=true;
+        return
+    end
     if out.EMGs
         if t<10            
             filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
         else            
             filename2 = [out.secdir_location filesep out.basename num2str(t) '.c3d'];
-        end
+        end        
         if ~exist(filename2,'file')
             h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');            
             waitfor(h_error)    
@@ -176,6 +197,8 @@ for t=trials
         end    
     end
 end
+
+
 
 % -- EMG data
 if isfield(handles,'emg1_1')

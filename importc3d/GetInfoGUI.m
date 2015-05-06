@@ -127,6 +127,8 @@ if ~(isfield(handles,'noSave') && handles.noSave)
 
     varargout{1}=info;
     save([info.save_folder filesep info.ID 'info'],'info')
+else
+    varargout{1}=[];
 end
 
 
