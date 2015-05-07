@@ -80,7 +80,7 @@ end
 %fix any parameters that should not have bias removal
 [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime'});
 if ~isempty(idxs)
-    newData(:,idxs)=this.data.Data(:,idxs);
+    newData(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
 end
 
 if isa(this.data,'paramData')

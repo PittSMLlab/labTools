@@ -12,6 +12,7 @@ function out = calcParametersNew_test(trialData,subData,eventClass,initEventSide
 %note: if adding a slow and fast version of one parameter, make sure 'Fast'
 %and 'Slow' appear at the end of the respective parameter names. See
 %existing parameter names as an example.
+[file]= getSimpleFileName(trialData.metaData.rawDataFilename);
 
 if nargin<3 || isempty(eventClass)
     eventClass='';
@@ -42,10 +43,9 @@ triggerEvent=eventTypes{1};
 
 %Initialize:
 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
-if numStrides==0;
-    [file] = getSimpleFileName(trialData.metaData.rawDataFilename);
+if numStrides==0;    
     disp(['Warning: No strides detected in ',file])
-    out=[];
+    out=parameterSeries([],{},[],{});
     return
 end
 stridedProcEMG=cell(numStrides,1);
@@ -68,14 +68,14 @@ for i=1:numStrides
     for j=1:length(eventTypes)
         aux=stridedEventData{i}.getDataAsVector(eventTypes{j});
         aux=find(aux,2,'first'); %Finding next two events of the type %HH: it is pointless to find the next two events, since find will still return a value even if it only finds one.
-        if ~isempty(aux)
+        if ~isempty(aux) %HH: maybe instead we should check if aux is has a length of 2
             eventTimes(i,j)=stridedEventData{i}.Time(aux(1));
         end
     end
 end
 eventTimes2=[eventTimes(2:end,:);nan(1,size(eventTimes,2))]; %This could be improved by trying to find if there exist any other events after the end of the last stride.
 for j=1:length(eventTypes)
-    strideEvents.(['t' upper(eventLables{j})])=eventTimes(:,j);
+    strideEvents.(['t' upper(eventLables{j})])=eventTimes(:,j); %generates a structure of tSHS, tFTO, etc
     strideEvents.(['t' upper(eventLables{j}) '2'])=eventTimes2(:,j);
 end
 
@@ -88,7 +88,7 @@ bad=any(isnan(extendedEventTimes),2) | any(diff(extendedEventTimes,1,2)<0,2) | (
 
 %initialize trial number
 try
-    trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); %Need to FIX, but this data is not currently available on labMetaData
+    trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); %Need to FIX, but this data is not currently available on trialMetaData
 catch
     warning('calcParametersNew:gettingTrialNumber','Could not determine trial number from metaData, setting to NaN.');
     trial=nan;
@@ -100,7 +100,7 @@ initTime=extendedEventTimes(:,1); %SHS
 finalTime=extendedEventTimes(:,6); %FTO2
 
 %Initialize parameterSeries
-data=[bad,~bad,trial,initTime,finalTime]; %What's the point of saving bad and good?
+data=[bad,~bad,trial,initTime,finalTime];
 labels={'bad','good','trial','initTime','finalTime'};
 description={'True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
 out=parameterSeries(data,labels,times,description);  
@@ -120,14 +120,27 @@ if ~isempty(trialData.procEMGData)
     out=cat(out,emg);
 end
 %% Compute an updated bad/good flag based on computed parameters
-
-
+badStart=bad; %make a copy to compare at the end
+%TODO: make this process generalized so that it can filter any parameter
+%TODO: make this into a method of parameterSeries or labTimeSeries
+%should also consider a different method of filtering...
+paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
+for i=1:length(paramsToFilter)
+    aux=out.getDataAsVector(paramsToFilter{i});
+    aux=aux-runAvg(aux,50); % remove effects of adaptation
+    % mark strides bad if values for SL or alpha are larger than 3x the
+    % interquartile range away from the median.
+    bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+end
+[~,idxs]=out.isaParameter({'bad','good'});
+out.Data(:,idxs)=[bad,~bad];
+outlierStrides=find(bad & ~badStart);
+disp(['Removed ' num2str(length(find(bad))-length(find(badStart))) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
 %% Issue bad strides warning
-if any(bad)
-    [file]= getSimpleFileName(trialData.metaData.rawDataFilename);
-    disp(['Warning: Non consistent event detection in ' num2str(sum(bad)) ' strides of ',file])    
+if any(bad)    
+    disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])    
 end
 
 %% Use 'bad' as mask (necessary?)
-out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime
+%out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime

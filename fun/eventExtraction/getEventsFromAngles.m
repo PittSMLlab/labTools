@@ -112,9 +112,9 @@ LeftHS(rdata(LeftHS)==0)=[];
 
 % Remove any events that don't make sense
 RightTO(rdata(RightTO)>5 | abs(rdata(RightTO))>40)=[];
-RightHS(rdata(RightHS)<5 | abs(rdata(RightHS))>40)=[];
+RightHS(rdata(RightHS)<0 | abs(rdata(RightHS))>40)=[];
 LeftTO(ldata(LeftTO)>5 | abs(ldata(LeftTO))>40)=[];
-LeftHS(ldata(LeftHS)<5 | abs(ldata(LeftHS))>40)=[];
+LeftHS(ldata(LeftHS)<0 | abs(ldata(LeftHS))>40)=[];
 
 LHSevent(LeftHS)=true;
 RTOevent(RightTO)=true;

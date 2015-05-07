@@ -2,6 +2,10 @@ function out = errorProofInfo(handles)
 %Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.
 %If entry is invalid, issues warning about which field is incorrect.
 
+h=waitbar(0, 'Checking input for errors...');
+hw=findobj(h,'Type','Patch');
+set(hw,'EdgeColor',[0 0 1],'FaceColor',[0 0 1]) % changes the color to green
+
 out.bad=false;
 
 % -- Experiment Info
@@ -148,7 +152,7 @@ end
 trials=cell2mat(out.trialnums);
 out.numoftrials = max(trials);
 
-for t=trials
+for t=trials    
     if t<10
         filename = [out.dir_location filesep out.basename  '0' num2str(t) '.c3d'];        
     else
@@ -195,7 +199,8 @@ for t=trials
             out.bad=true;
             return
         end    
-    end
+    end 
+    waitbar(t/length(trials))
 end
 
 
@@ -234,3 +239,5 @@ end
 if isfield(handles,'trialObs')
     out.trialObs=handles.trialObs;
 end
+
+close(h)
