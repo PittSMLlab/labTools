@@ -222,6 +222,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
             
             %In case of one being 1x3 and the other Nx3, making them both
             %Nx3
+            %FIXME: Align z to newZ, and x to newX projected in a direction
+            %orthogonal to newZ (or check that newX is orthogonal to newZ
+            %to start with)
             if size(newX,1)~=size(newZ,1)
                 if size(newX,1)==1
                     newX=repmat(newX,N,1);

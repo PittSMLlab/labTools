@@ -198,6 +198,12 @@ classdef alignedTimeSeries
                 error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
             end 
         end
+        function medianTS=median(this,strideIdxs)
+            if nargin<2 || isempty(strideIdxs)
+                strideIdxs=[];
+            end
+            [medianTS]=prctile(this,50,strideIdxs);
+        end
         
         function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
             alignedData=this.Data;
