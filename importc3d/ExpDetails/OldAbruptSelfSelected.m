@@ -1,5 +1,7 @@
 %OG study: old subjects adapted abruptly at self-selected speed
 
+handles.group= 'Old Abrupt Self Selected';
+
 %condition numbers
 i=1;
 for cond = [1 3 5 6:11 4 2]
