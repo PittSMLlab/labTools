@@ -101,6 +101,8 @@ classdef alignedTimeSeries
                    N=size(data,1);
                    if nargin<6 || isempty(individualLineStyle)
                         plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                   elseif individualLineStyle==0
+                       %nop
                    else
                        plot([0:N-1]/N,data,individualLineStyle);
                    end
@@ -126,8 +128,19 @@ classdef alignedTimeSeries
                     [i2,~]=find(meanEvents.Data);
                end
                if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
-                   for k=1:length(bounds)
+                   if length(bounds)==2 %Alt visualization: add patch
+                       aux1=prctile(this,bounds(1));
+                       aux2=prctile(this,bounds(2));
+                       for i=1:M
+                           subplot(plotHandles(i))
+                           hold on
+                           patch([aux1.Time; aux1.Time(end:-1:1)],[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none')
+                           hold off
+                       end
+                   else
+                       for k=1:length(bounds)
                         [figHandle,plotHandles]=plot(prctile(this,bounds(k)),figHandle,[],plotHandles,[],meanColor*.8,.5);
+                       end
                    end
                end
                [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
@@ -229,6 +242,39 @@ classdef alignedTimeSeries
                      end
                 end
             end
+        end
+        
+        function newThis=cat(this,other,forceFlag)
+            if nargin<3
+                forceFlag=false;
+            end
+            %Check dimensions coincide
+            s1=size(this.Data);
+            s2=size(this.Data);
+            if any(s1(1:2)~=s2(1:2))
+                ME=MException('ATS:cat','Data dimension mismatch.');
+                throw(ME);
+            end
+            
+            %Check alignment vectors coincide & alignment labels coincide
+            if any(this.alignmentVector~=other.alignmentVector)
+                ME=MException('ATS:cat','Alignment vector mismatch');
+                throw(ME);
+            end
+            if ~forceFlag && ~all(strcmp(this.alignmentLabels,other.alignmentLabels))
+                ME=MException('ATS:cat','Alignment labels mismatch, this check can be ignored by setting forceFlag=true');
+                throw(ME);
+            end
+            
+            %Check labels coincide (unless forced)
+            if ~forceFlag && ~all(strcmp(this.labels,other.labels))
+                ME=MException('ATS:cat','Label mismatch, this check can be ignored by setting forceFlag=true');
+                throw(ME);
+            end
+            
+            %Do the cat:
+            newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
+           
         end
         
     end

@@ -191,6 +191,11 @@ classdef adaptationData
                 if any(isnan(condNum))
                    warning([this.subData.ID ' did not perform condition ''' condition{isnan(condNum)} ''''])
                 end
+            elseif isa(condition,'double')
+                condNum=condition;
+            else
+                ME=MException('AdaptData.getCondInParam','Condition has to be char, cell of char, or double');
+                throw(ME)
             end
             
             %get data
