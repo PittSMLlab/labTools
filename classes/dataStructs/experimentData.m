@@ -7,7 +7,7 @@ classdef experimentData
     %   data - cell array of labData objects or any objects which extend
     %          labData
     %   isRaw - returns true if data is an object of the rawLabData class
-    %   isProcessed - returns true if data is an oibject of the processedLabData class
+    %   isProcessed - returns true if data is an object of the processedLabData class
     %   isStepped - returns true if data is an object of the strideData class
     %   fastLeg - computes which blet ('L' or 'R') was the fast belt
     %
@@ -195,7 +195,11 @@ classdef experimentData
         end
         
         %% processing 
-        function processedThis=process(this)
+        function processedThis=process(this,eventClass)
+            
+        if nargin<2 || isempty(eventClass)
+            eventClass=[];
+        end
         %process  process full experiment
         %
         %Returns a new experimentData object with same metaData, subData and processed (trial) data.
@@ -214,7 +218,7 @@ classdef experimentData
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
-                    procData{trial}=this.data{trial}.process(this.subData);
+                    procData{trial}=this.data{trial}.process(this.subData,eventClass);
                 else
                    procData{trial}=[];
                 end
@@ -299,23 +303,25 @@ classdef experimentData
         function adaptData=makeDataObjNew(this,filename,experimentalFlag)
         %This function may not be compatible with certain methods of the
         %adaptationData class
-                for i=1:length(this.data) %Trials
-                    if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-                        %Get data from this trial:
-                        aux=this.data{i}.adaptParams;
-                        trialTypes{i}=this.data{i}.metaData.type;
-                        if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
-                            aux=cat(aux,this.data{i}.experimentalParams); 
-                        end
-                        %Concatenate with other trials:
-                        if ~exist('paramData','var')
-                            paramData=aux;
-                        else
-                            paramData=addStrides(paramData,aux);
-                        end
+            for i=1:length(this.data) %Trials
+                if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+                    %Get data from this trial:
+                    aux=this.data{i}.adaptParams;
+                    trialTypes{i}=this.data{i}.metaData.type;
+                    if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
+                        aux=cat(aux,this.data{i}.experimentalParams); 
                     end
-                end    
-            paramData=paramData.setTrialTypes(trialTypes);
+                    %Concatenate with other trials:
+                    if ~exist('paramData','var')
+                        paramData=aux;
+                    else
+                        paramData=addStrides(paramData,aux);
+                    end
+                end
+            end
+            % HH: remove all bad strides completely
+            % paramData=parameterSeries(paramData.Data(paramData.bad==0,:),paramData.labels,paramData.hiddenTime(paramData.bad==0),paramData.description);
+            paramData=paramData.setTrialTypes(trialTypes);             
             adaptData=adaptationData(this.metaData,this.subData,paramData);  
             if nargin>1 && ~isempty(filename)
                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten

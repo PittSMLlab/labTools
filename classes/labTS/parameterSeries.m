@@ -30,8 +30,8 @@ classdef parameterSeries < labTimeSeries
     methods
         function this=parameterSeries(data,labels,times,description)            
             this@labTimeSeries(data,1,1,labels);
-            this.hiddenTime=times;
-            if length(description)==length(labels)
+            this.hiddenTime=times;            
+            if length(description)==length(labels)                
                 this.description_=description; %Needs to be cell-array of same length as labels
             else
                 error('paramtereSeries:constructor','Description input needs to be same length as labels')
@@ -45,7 +45,15 @@ classdef parameterSeries < labTimeSeries
         
         %% Getters for dependent variabls
         function vals=get.bad(this)
-            vals=this.getDataAsVector('bad');
+            if this.isaParameter('bad')
+                vals=this.getDataAsVector('bad');
+            elseif this.isaParameter('good')
+                vals=this.getDataAsVector('good');
+                vals=~vals;
+            else
+                %This should never be the case. Setting all values as good.
+                vals=false(size(this.Data,1),1);
+            end
         end
         function vals=get.stridesTrial(this)
             vals=this.getDataAsVector('trial');
@@ -94,7 +102,17 @@ classdef parameterSeries < labTimeSeries
         %% Modifiers
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
-                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[this.description(:); other.description(:)]); 
+                if isempty(this.description)
+                    thisDescription=cell(size(this.labels));
+                else
+                    thisDescription=this.description;
+                end
+                if isempty(other.description)
+                    otherDescription=cell(size(other.labels));
+                else
+                    otherDescription=other.description;
+                end 
+                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription(:); otherDescription(:)]); 
             else
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
@@ -102,11 +120,15 @@ classdef parameterSeries < labTimeSeries
         
         function newThis=addStrides(this,other)
             %TODO: Check that the labels are actually the same
-            aux=other.getDataAsVector(this.labels);
-            if size(this.Data,2)==size(other.Data,2)
-                newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
+            if ~isempty(other.Data)
+                aux=other.getDataAsVector(this.labels);
+                if size(this.Data,2)==size(other.Data,2)                    
+                    newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
+                else
+                    error('parameterSeries:addStrides','Cannot concatenate series with different number of parameters.');
+                end
             else
-                error('parameterSeries:addStrides','Cannot concatenate series with different number of parameters.');
+                newThis=this;
             end
         end
         

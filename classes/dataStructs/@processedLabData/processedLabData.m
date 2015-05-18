@@ -66,7 +66,7 @@ classdef processedLabData < labData
             this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches);
             this.gaitEvents=events;
             this.procEMGData=procEMG;
-            this.angleData=angleData;                         
+            this.angleData=angleData;
         end
         %Setters
         function this=set.gaitEvents(this,events)
@@ -94,7 +94,7 @@ classdef processedLabData < labData
             end
         end
         function this=set.adaptParams(this,adaptData)
-            if isa(adaptData,'parameterSeries')
+            if isa(adaptData,'parameterSeries') || isa(adaptData,'labTimeSeries')
                 this.adaptParams=adaptData;
             else             
                 ME=MException('processedLabData:Constructor','adaptParams parameter is not a parameterSeries object.');

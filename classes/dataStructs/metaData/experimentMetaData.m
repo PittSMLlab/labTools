@@ -172,7 +172,7 @@ classdef experimentMetaData
                     condName{1}=lower(conditionNames{i}); %Lower case
                 end
                 aux=this.conditionName;
-                aux(cellfun(@isempty,aux))='';
+                aux(cellfun(@isempty,aux))={''};
                 allConds=lower(aux);
                 condIdx=[];
                 j=0;

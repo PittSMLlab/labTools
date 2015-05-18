@@ -184,7 +184,11 @@ classdef labData
         
         
         % Process data method
-        function processedData=process(this,subData)
+        function processedData=process(this,subData,eventClass)
+            if nargin<3 || isempty(eventClass)
+                eventClass=[];
+            end
+            
             trialData=this;
             % 1) Extract amplitude from emg data if present
             spikeRemovalFlag=1;
@@ -214,7 +218,7 @@ classdef labData
             
             %7) Calculate adaptation parameters - to be
             % recalculated later!!
-            processedData.adaptParams=calcParameters(processedData,subData);
+            processedData.adaptParams=calcParameters(processedData,subData,eventClass);
         end
         
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
