@@ -460,10 +460,11 @@ classdef labTimeSeries  < timeseries
                 subplot(h1(i))
                 hold on
                 if nargin<6 || isempty(color)
-                    plot(this.Time,relData(:,i),'LineWidth',lineWidth)
+                    pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth);
                 else
-                    plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color)
+                    pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color);
                 end
+                uistack(pp,'top')
                 ylabel(relLabels{i})
                 %if i==ceil(N/2)
                 %    xlabel('Time (s)')

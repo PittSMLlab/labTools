@@ -45,7 +45,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             if nargin<10 || isempty(significanceThreshold)
                 significanceThreshold=[];
             end
-            [ah,figHandle]=optimizedSubPlot(length(label),4,1);
+            [ah,figHandle]=optimizedSubPlot(length(label),2,2);
             
             a=load(auxList{1}{1});
             aux=fields(a);

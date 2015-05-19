@@ -5,7 +5,7 @@ function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials)
 %taking spatial dependancies into account.
 
 labels=adaptData.data.labels;
-
+newData=nan(size(adaptData.data.Data));
 %seperate data based on walking direction
 baseOG1=[];
 baseOG2=[];

@@ -64,6 +64,31 @@ classdef adaptationData
             end
         end
         
+        function tT=trialTypes(this) 
+            if ~isempty(this.data.trialTypes)
+                tT=this.data.trialTypes; %Tries to read from parameterSeries' trialType field, if it was populated, as we expect it to be with newer versions
+            else %If the field was not populated, make an educated guess.
+                tT=cell(1,this.metaData.Ntrials);
+                for i=1:this.metaData.Ntrials
+                    condInd=nan;
+                   for j=1:length(this.metaData.conditionName)
+                      if any(this.metaData.trialsInCondition{j}==i)
+                          condInd=j;
+                          break
+                      end
+                   end
+                   if isnan(condInd)
+                       tT{i}='mis';
+                   elseif ~isempty(strfind(this.metaData.conditionName{condInd},'OG'))
+                    tT{i}='OG';
+                   elseif ~isempty(strfind(this.metaData.conditionName{condInd},'incline')) || ~isempty(strfind(this.metaData.conditionName{condInd},'hill'))
+                       tT{i}='IN';
+                   else
+                       tT{i}='TM';
+                   end
+                end
+            end
+        end
         %Modifier
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
         % Removes baseline value for all parameters.

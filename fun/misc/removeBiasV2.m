@@ -21,10 +21,11 @@ end
 
 trialsInCond=this.metaData.trialsInCondition;
 trialTypes=this.data.trialTypes;
+trialTypes=this.trialTypes; %Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible
 types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
 labels=this.data.labels;
 baseValues=NaN(length(types),length(labels));
-
+newData=nan(size(this.data.Data));
 for itype=1:length(types)
     allTrials=[];
     baseTrials=[];
@@ -52,7 +53,8 @@ for itype=1:length(types)
     %Remove baseline tendencies from all itype trials   
     if ~isempty(baseTrials)
         if strcmpi(types{itype},'OG')
-            newData=removeOGbias(this,allTrials,baseTrials);
+            %[~, inds]=this.getParamInTrial(labels,allTrials);
+            newData(:,:)=removeOGbias(this,allTrials,baseTrials);
             baseValues(itype,:)=NaN; %Need to replace this with the value actually extracted from OG trials
         else
 %             base=nanmedian(this.getParamInTrial(labels,baseTrials));
@@ -80,7 +82,11 @@ end
 %fix any parameters that should not have bias removal
 [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime'});
 if ~isempty(idxs)
+    try
     newData(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
+    catch
+        a=1;
+    end
 end
 
 if isa(this.data,'paramData')

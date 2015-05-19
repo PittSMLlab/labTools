@@ -92,29 +92,7 @@ classdef alignedTimeSeries
                            structure=structure(:,:,plottedInds);
                    end
                end
-               for i=1:M %Go over labels
-                   %subplot(b,a,i)
-                   subplot(plotHandles(i))
-                   hold on                  
-                   %title(aux{1}.(field).labels{i})
-                   data=squeeze(structure(:,i,:));
-                   N=size(data,1);
-                   if nargin<6 || isempty(individualLineStyle)
-                        plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
-                   elseif individualLineStyle==0
-                       %nop
-                   else
-                       plot([0:N-1]/N,data,individualLineStyle);
-                   end
-                   %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
-                   %legend(this.labels{i})
-                   %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
-                   meanM(i)=prctile(data(:),50);
-                   maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i);
-                   minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
-                   axis([0 1 minM(i) maxM(i)])
-                   hold off
-               end
+               %Plot percentiles (bounds)
                if nargin<5 || isempty(events)
                     events=[];
                     meanEvents=[];
@@ -134,7 +112,8 @@ classdef alignedTimeSeries
                        for i=1:M
                            subplot(plotHandles(i))
                            hold on
-                           patch([aux1.Time; aux1.Time(end:-1:1)],[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none')
+                           pp=patch([aux1.Time; aux1.Time(end:-1:1)],[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                           uistack(pp,'bottom');
                            hold off
                        end
                    else
@@ -143,7 +122,39 @@ classdef alignedTimeSeries
                        end
                    end
                end
-               [figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               
+               %PLot mean trace
+               %[figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               [figHandle,plotHandles]=plot(median(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+          
+               %Plot individual traces
+               for i=1:M %Go over labels
+                   %subplot(b,a,i)
+                   subplot(plotHandles(i))
+                   hold on                  
+                   %title(aux{1}.(field).labels{i})
+                   data=squeeze(structure(:,i,:));
+                   N=size(data,1);
+                   if nargin<6 || isempty(individualLineStyle)
+                        ppp=plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                        uistack(ppp,'bottom')
+                   elseif individualLineStyle==0
+                       %nop
+                   else
+                       ppp=plot([0:N-1]/N,data,individualLineStyle);
+                       uistack(ppp,'bottom')
+                   end
+                   
+                   %plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);
+                   %legend(this.labels{i})
+                   %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
+                   meanM(i)=prctile(data(:),50);
+                   maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i);
+                   minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
+                   axis([0 1 minM(i) maxM(i)])
+                   hold off
+               end
+     
                if ~isempty(events)
                    for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
                        eventSampPeriod=(events.Time(2)-events.Time(1));
@@ -224,38 +235,38 @@ classdef alignedTimeSeries
         end
         
         function [boolFlag,labelIdx]=isaLabel(this,label)
-            if isa(label,'char')
-                auxLabel{1}=label;
-            elseif isa(label,'cell')
-                auxLabel=label;
-            end
-            
-            N=length(auxLabel);
-            boolFlag=false(N,1);
-            labelIdx=zeros(N,1);
-            for j=1:N
-                for i=1:length(this.labels)
-                     if strcmpi(auxLabel{j},this.labels{i})
-                       boolFlag(j)=true;
-                       labelIdx(j)=i;
-                       break;
-                     end
+            [bool,idx] = compareLists(label,this.labels);
+            for j=1:length(label)
+                if any(idx==j)
+                    boolFlag(j)=true;
+                    labelIdx(j)=find(idx==j);
                 end
             end
+
+%             if isa(label,'char')
+%                 auxLabel{1}=label;
+%             elseif isa(label,'cell')
+%                 auxLabel=label;
+%             end
+%             
+%             N=length(auxLabel);
+%             boolFlag=false(N,1);
+%             labelIdx=zeros(N,1);
+%             for j=1:N
+%                 for i=1:length(this.labels)
+%                      if strcmpi(auxLabel{j},this.labels{i})
+%                        boolFlag(j)=true;
+%                        labelIdx(j)=i;
+%                        break;
+%                      end
+%                 end
+%             end
         end
         
-        function newThis=cat(this,other,forceFlag)
-            if nargin<3
+        function newThis=cat(this,other,dim,forceFlag)
+            if nargin<4
                 forceFlag=false;
             end
-            %Check dimensions coincide
-            s1=size(this.Data);
-            s2=size(this.Data);
-            if any(s1(1:2)~=s2(1:2))
-                ME=MException('ATS:cat','Data dimension mismatch.');
-                throw(ME);
-            end
-            
             %Check alignment vectors coincide & alignment labels coincide
             if any(this.alignmentVector~=other.alignmentVector)
                 ME=MException('ATS:cat','Alignment vector mismatch');
@@ -266,6 +277,15 @@ classdef alignedTimeSeries
                 throw(ME);
             end
             
+            if dim==3
+            %Check dimensions coincide
+            s1=size(this.Data);
+            s2=size(other.Data);
+            if any(s1(1:2)~=s2(1:2))
+                ME=MException('ATS:cat','Data dimension mismatch.');
+                throw(ME);
+            end
+
             %Check labels coincide (unless forced)
             if ~forceFlag && ~all(strcmp(this.labels,other.labels))
                 ME=MException('ATS:cat','Label mismatch, this check can be ignored by setting forceFlag=true');
@@ -274,7 +294,24 @@ classdef alignedTimeSeries
             
             %Do the cat:
             newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
-           
+            elseif dim==2
+                %Check dimensions coincide
+                s1=size(this.Data);
+                s2=size(other.Data);
+                if any(s1([1,3])~=s2([1,3]))
+                    ME=MException('ATS:cat','Data dimension mismatch.');
+                    throw(ME);
+                end
+                %Check no repeated labels
+            
+                %Check alignmentVector & Labels
+            
+                %Do the cat
+                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels);
+            else
+                ME=MException();
+                throw(ME);
+            end
         end
         
     end

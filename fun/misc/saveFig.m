@@ -1,6 +1,7 @@
 function saveFig(h,dir,fileName)
 %saveFig saves figure h as .fig and .png for further reference
 
+set(h,'Units','Normalized','OuterPosition',[0 0 1 1])
 fullName=[dir fileName];
 if ~exist(dir,'dir')
     mkdir(dir)
