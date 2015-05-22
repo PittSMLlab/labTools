@@ -80,7 +80,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                     h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
                     %plot individual data points
                     if plotIndividualsFlag==1
-                        set(gca,'ColorOrder',cell2mat(colorConds(1:min([size(veryEarlyPoints,2),length(colorConds)]))'));
+                        %set(gca,'ColorOrder',cell2mat(colorConds(1:min([size(veryEarlyPoints,2),length(colorConds)]))'));
                         if Ngroups==1 && isempty(significanceThreshold) %Only plotting individual subject performance if there is only one group, or flag is set
                             plot((1:3:3*nConds)-.25+(group-1)/Ngroups,veryEarlyPoints,'o','LineWidth',2)
                             plot((1:3:3*nConds)+.25+(group-1)/Ngroups,earlyPoints,'o','LineWidth',2)

@@ -12,7 +12,12 @@ out.bad=false;
 
 % -- Experiment Info
 descriptionContents=cellstr(get(handles.description_edit,'string'));
+if ~isempty(get(handles.description_edit,'Value'))
 out.ExpFile=descriptionContents{get(handles.description_edit,'Value')};
+else
+    out.ExpFile=descriptionContents{1}; %Empty string
+end
+    
 if isfield(handles,'group')
     out.ExpDescription=handles.group;
 else
@@ -109,12 +114,12 @@ if ~(nargin>1 && ignoreErrors)
     set(hw,'EdgeColor',[0 0 1],'FaceColor',[0 0 1]) % changes the color to green
         
     % -- Experiment Info
-    if strcmp(out.ExpFile,' ')
-        h_error=errordlg('Please choose an experiment description','Description Error');
-        waitfor(h_error)
-        uicontrol(handles.description_edit)
-        out.bad=true; close(h); return
-    end
+%     if strcmp(out.ExpFile,' ')
+%         h_error=errordlg('Please choose an experiment description','Description Error');
+%         waitfor(h_error)
+%         uicontrol(handles.description_edit)
+%         out.bad=true; close(h); return
+%     end
     if strcmp(out.experimenter,' (Enter name/initials)')
         h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');
         waitfor(h_error)
