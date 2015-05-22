@@ -71,9 +71,9 @@ for t=cell2mat(info.trialnums)
         fieldList=fields(analogs);
         idxList=[];
         for j=1:length(fieldList);
-            if length(fieldList{j})>2 && strcmp(fieldList{j}(1:3),'EMG')  %Getting fields that start with 'EMG' only
+            if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
                 relData=[relData,analogs.(fieldList{j})];
-                idxList(end+1)=str2num(fieldList{j}(4:end));
+                idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
             end
         end
         EMGList(1:16)=info.EMGList1;
@@ -84,9 +84,9 @@ for t=cell2mat(info.trialnums)
         fieldList=fields(analogs2);
         idxList2=[];
         for j=1:length(fieldList);
-            if length(fieldList{j})>2 && strcmp(fieldList{j}(1:3),'EMG')  %Getting fields that start with 'EMG' only
+            if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
                 relData2=[relData2,analogs2.(fieldList{j})];
-                idxList2(end+1)=str2num(fieldList{j}(4:end));
+                idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
             end
         end
         EMGList(17:32)=info.EMGList2; %This is the actual ordered in which the muscles were recorded
@@ -97,10 +97,19 @@ for t=cell2mat(info.trialnums)
         
         
         %Align signals:
-        refSync=analogs.Pin_3;
+        try
+            refSync=analogs.Pin_3;
+        catch
+            try
+                refSync=analogs.Raw_Pin_3;  
+            catch
+                refSync=analogs.Raw_Raw_Pin_3; 
+            end
+        end
         refAux=medfilt1(refSync,20);
         refAux=medfilt1(diff(refAux),10);
         allData=[auxData,auxData2];
+        clear auxData*
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=allData(:,syncIdx);
         N=size(sync,1);
@@ -116,8 +125,10 @@ for t=cell2mat(info.trialnums)
         
         %Only keeping matrices of same size to one another:
         [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+        clear newRelData*
         allData=[auxData,auxData2];
-        refSync=idealHPF(analogs.Pin_3,0);
+        clear auxData*
+        refSync=idealHPF(refSync,0);
         [allData,refSync]=truncateToSameLength(allData,refSync);
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=idealHPF(allData(:,syncIdx),0);
@@ -129,10 +140,9 @@ for t=cell2mat(info.trialnums)
         E2=sum((refSync-sync(:,2)*gain2).^2)/sum(refSync.^2);
         if E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
             warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '. Using signals in an unsynchronized way(!).'])
-            newRelData= relData;
-            newRelData2= relData2;
-            [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+            [auxData, auxData2] = truncateToSameLength(relData,relData2);
             allData=[auxData,auxData2];
+            clear auxData*
             [allData,refSync]=truncateToSameLength(allData,refSync);
             syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
             sync=idealHPF(allData(:,syncIdx),0);
@@ -182,6 +192,7 @@ for t=cell2mat(info.trialnums)
         end
         allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/analogsInfo.frequency,EMGList(orderedIndexes)); %Throw away the synch signal
+        clear allData
         
         %AccData (from 2 files too!)
         %Primary file
@@ -189,9 +200,9 @@ for t=cell2mat(info.trialnums)
         idxList=[];
         fieldList=fields(analogs);
         for j=1:length(fieldList);
-            if length(fieldList{j})>2 && strcmp(fieldList{j}(1:3),'ACC')  %Getting fields that start with 'EMG' only
-                idxList(j)=str2num(fieldList{j}(5:end));
-                switch fieldList{j}(4)
+            if ~isempty(strfind(fieldList{j},'ACC'))  %Getting fields that start with 'EMG' only
+                idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},'ACC')+4:end));
+                switch fieldList{j}(strfind(fieldList{j},'ACC')+3)
                     case 'X'
                         aux=1;
                     case 'Y'
@@ -213,9 +224,9 @@ for t=cell2mat(info.trialnums)
         fieldList=fields(analogs2);
         idxList2=[];
         for j=1:length(fieldList);
-            if length(fieldList{j})>2 && strcmp(fieldList{j}(1:3),'ACC')  %Getting fields that start with 'EMG' only
-                idxList2(j)=str2num(fieldList{j}(5:end));
-                switch fieldList{j}(4)
+            if ~isempty(strfind(fieldList{j},'ACC'))  %Getting fields that start with 'EMG' only
+                idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},'ACC')+4:end));
+                switch fieldList{j}(strfind(fieldList{j},'ACC')+3)
                     case 'X'
                         aux=1;
                     case 'Y'
@@ -230,12 +241,16 @@ for t=cell2mat(info.trialnums)
         %Fixing time alignment
         newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
         newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
+        clear relData*
         newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
         [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+        clear newRelData*
         allData=[auxData,auxData2];
+        clear auxData*  
        
         accData=orientedLabTimeSeries(allData(1:13:end,:),0,13/analogsInfo.frequency,ACCList,orientation); %Downsampling to ~150Hz, which is much closer to the original 148Hz sampling rate (where does this get upsampled? why?)
         % orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.
+        clear allData*
     else
         EMGData=[];
         accData=[];
@@ -258,6 +273,7 @@ for t=cell2mat(info.trialnums)
         end         
         relData(relData==0)=NaN;
         markerData=orientedLabTimeSeries(relData,0,1/markerInfo.frequency,markerList,orientation);
+        clear relData
         markerData.DataInfo.Units=markerInfo.units.ALLMARKERS;
     else
         markerData=[];
