@@ -397,7 +397,8 @@ classdef labTimeSeries  < timeseries
                 %FIXME: This throws an exception now, but it should just
                 %return all NaN labels as all NaN and substitute missing
                 %values in the others.
-                error('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference).')
+                warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference), setting to 0.')
+                this.Data(:,all(isnan(this.Data)))=0;
             end
             newData=zeros(size(this.Data));
             this.Quality=zeros(size(this.Data),'int8');
