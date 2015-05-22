@@ -34,30 +34,36 @@ for t=cell2mat(info.trialnums)
         units={};
         fieldList=fields(analogs);
         for j=1:length(fieldList);
-            if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') %Getting fields that start with M or F only
-                switch fieldList{j}(3)
+            if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
+                if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
+                    warning('loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding.')
+                else
+                switch fieldList{j}(end)
                     case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
-                        forceLabels{end+1} = ['L',fieldList{j}(1:2)];
+                        forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
                     case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt
-                        forceLabels{end+1} = ['R',fieldList{j}(1:2)];
+                        forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
-                    case '3'
-                        % we don't want these for now
                     case '4'%Forces/moments ending in '4' area assumed to be of handrail
-                        forceLabels{end+1} = ['H',fieldList{j}(1:2)];
+                        forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
                     otherwise
+                        warning('loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected channels (L=1, R=2, H=4). Discarding.')
                         %do nothing
+                end
                 end
             end
         end    
         %Sanity check: offset calibration
                 
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
+        if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
+            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(trial)])
+        end
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;
     else
