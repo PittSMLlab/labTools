@@ -132,10 +132,10 @@ for i=1:length(paramsToFilter)
     % interquartile range away from the median.
     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
 end
-[~,idxs]=out.isaParameter({'bad','good'});
-out.Data(:,idxs)=[bad,~bad];
-outlierStrides=find(bad & ~badStart);
-disp(['Removed ' num2str(length(find(bad))-length(find(badStart))) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+%[~,idxs]=out.isaParameter({'bad','good'});
+%out.Data(:,idxs)=[bad,~bad];
+%outlierStrides=find(bad & ~badStart);
+%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
 %% Issue bad strides warning
 if any(bad)    
