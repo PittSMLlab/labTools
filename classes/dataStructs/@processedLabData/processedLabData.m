@@ -245,8 +245,8 @@ classdef processedLabData < labData
                 events={events};
             end
             %Step 1: separate strides by the first event
-            [strideIdxs,initTime,endTime]=getStrideInfo(this,events{1});
-            M=length(strideIdxs);
+            [numStrides,initTime,endTime]=getStrideInfo(this,events{1});
+            M=numStrides;
             N=length(events);
             %Step 2: for each stride, find the other events (if any)
             intermediateTimes=nan(M,N-1);

@@ -206,7 +206,7 @@ classdef labTimeSeries  < timeseries
                     newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
                     newData(:,allNaNIdxs)=nan; %Replacing the previously filled data with NaNs
                 case 'logical'
-                   newThis=resampleLogical(this,modNewTs,t0);
+                   newThis=resampleLogical(this,modNewTs,this.Time(1),newN);
                    newData=newThis.Data;
                 otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
                     newData=zeros(length(newTimeVec),size(this.Data,2));
@@ -562,13 +562,13 @@ classdef labTimeSeries  < timeseries
     end
     
     methods(Hidden)
-        function newThis=resampleLogical(this,newTs,newT0)
-            newTime=newT0:newTs:this.Time(end);
+        function newThis=resampleLogical(this,newTs, newT0,newN)
+            newTime=[0:newN-1]*newTs+newT0;
             newN=length(newTime);
             newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
            for i=1:size(this.Data,2) %Go over event labels
-               oldEventTimes=this.Time(this.Data(:,i));
-               closestNewEventIndexes=round((oldEventTimes-this.Time(1))/newTs) + 1;
+               oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
+               closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; %Find closest index in new event 
                newData(closestNewEventIndexes,i)=true;
            end
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);

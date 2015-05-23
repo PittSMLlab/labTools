@@ -325,22 +325,23 @@ classdef alignedTimeSeries
             %TODO: dtermine the number of expected events. Currently this
             %is as many events as stride 1 has. May be problematic if
             %stride one is invalid.
-            eventNo=mode(sum(sum(this.Data,1),2));
+            aaux=cellfun(@(x) isempty(x),strfind(this.labels,'force')) & cellfun(@(x) isempty(x),strfind(this.labels,'kin'));
+            eventNo=mode(sum(sum(this.Data(:,aaux),1),2)); %Mode of the # of events per stride, assuming this is what should happen on every stride.
             nStrides=size(this.Data,3);
             eventType=nan(eventNo,1);
             for i=1:eventNo
                 aux=nan(nStrides,1);
                 for k=1:nStrides %Going over strides
-                    eventIdx=find(sum(this.Data(:,:,k),2)==1,i,'first'); %Time index of first event in stride k
-                    if length(eventIdx)==i
-                        aux(k)=find(this.Data(eventIdx(i),:,k),1,'first');
+                    eventIdx=find(sum(this.Data(:,aaux,k),2)==1,i,'first'); %Time index of first i events in stride k
+                    if length(eventIdx)==i %Checking that I found i events
+                        aux(k)=find(this.Data(eventIdx(i),aaux,k),1,'first');
                     end
                 end
                 eventType(i)=round(nanmedian(aux)); %Rounding is to break possible ties (very unlikely)
             end
             histogram=nan(nStrides,eventNo);
             ii=eventType;
-            aux=zeros(length(this.labels),1);
+            aux=zeros(eventNo,1);
             newLabels=cell(size(ii));
             for i=1:length(ii)
                 aux(ii(i))=aux(ii(i))+1;
@@ -352,7 +353,7 @@ classdef alignedTimeSeries
             end
 
             for i=1:nStrides;
-                [eventTimeIndex,eventType]=find(this.Data(:,:,i));
+                [eventTimeIndex,eventType]=find(this.Data(:,aaux,i));
                 if length(eventTimeIndex)~=length(newLabels)
                     warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more or less events than expected (expecting ' num2str(length(newLabels)) ', but got ' num2str(length(eventTimeIndex)) '). Discarding.']);
                     histogram(i,:)=nan;
