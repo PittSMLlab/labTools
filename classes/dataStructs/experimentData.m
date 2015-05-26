@@ -226,7 +226,7 @@ classdef experimentData
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
         
-        function adaptData=makeDataObj(this,filename,experimentalFlag)
+        function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=expData.makeDataObj(filename,experimentalFlag)
         %
@@ -260,7 +260,10 @@ classdef experimentData
             if nargin<2
                 filename=[];
             end
-            adaptData=makeDataObjNew(this,filename,experimentalFlag);
+            if nargin<4
+                contraLateralFlag=[];
+            end
+            adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
 %             DATA=[];
 %             DATA2=[];
 %             startind=1;
@@ -300,32 +303,48 @@ classdef experimentData
 %             end
         end
         
-        function adaptData=makeDataObjNew(this,filename,experimentalFlag)
+        function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
         %This function may not be compatible with certain methods of the
         %adaptationData class
-            for i=1:length(this.data) %Trials
-                if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-                    %Get data from this trial:
-                    aux=this.data{i}.adaptParams;
-                    trialTypes{i}=this.data{i}.metaData.type;
-                    if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
-                        aux=cat(aux,this.data{i}.experimentalParams); 
-                    end
-                    %Concatenate with other trials:
-                    if ~exist('paramData','var')
-                        paramData=aux;
-                    else
-                        paramData=addStrides(paramData,aux);
-                    end
+        
+        if isempty(contraLateralFlag) || contraLateralFlag==0 %Normal parameters
+            %nop
+        else %Computing all parameters on a contraLateral way (this is, we compute parameters using the NON reference leg as the 'slow' one, opposite to the default computation)
+            if strcmp(this.getRefLeg,'R')
+                initEventSide='L';
+            elseif strcmp(this.getRefLeg,'L')
+                initEventSide='R';
+            else
+                ME=MException('makeDataObject:ContralateralComputation','Could not determine proper reference leg for this experiment.');
+                throw(ME);
+            end
+            this=recomputeParameters(this,[],initEventSide); %Using default event class ('', as opposed to 'force' or 'kin')
+        end
+        
+        for i=1:length(this.data) %Trials
+            if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+                %Get data from this trial:
+                aux=this.data{i}.adaptParams;
+                trialTypes{i}=this.data{i}.metaData.type;
+                if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
+                    aux=cat(aux,this.data{i}.experimentalParams); 
+                end
+                %Concatenate with other trials:
+                if ~exist('paramData','var')
+                    paramData=aux;
+                else
+                    paramData=addStrides(paramData,aux);
                 end
             end
-            % HH: remove all bad strides completely
-            % paramData=parameterSeries(paramData.Data(paramData.bad==0,:),paramData.labels,paramData.hiddenTime(paramData.bad==0),paramData.description);
-            paramData=paramData.setTrialTypes(trialTypes);             
-            adaptData=adaptationData(this.metaData,this.subData,paramData);  
-            if nargin>1 && ~isempty(filename)
-                save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
-            end
+        end
+     
+        % HH: remove all bad strides completely
+        % paramData=parameterSeries(paramData.Data(paramData.bad==0,:),paramData.labels,paramData.hiddenTime(paramData.bad==0),paramData.description);
+        paramData=paramData.setTrialTypes(trialTypes);             
+        adaptData=adaptationData(this.metaData,this.subData,paramData);  
+        if nargin>1 && ~isempty(filename)
+            save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
+        end
         end
         
         %% Display
@@ -335,6 +354,12 @@ classdef experimentData
         %experimentalParams (which is a bad assumption becasue it could
         %result in 5+ minutes of waiting just to find out the parameter
         %doesn't exist.)
+        %PI, 5/26/2015: Agreed. Is there any other way to do it if someone asks for a
+        %label that does not exist? Do note that these functions are here
+        %for flexibility of the code, but the really efficient way to do it
+        %is generate an adaptData object (and save it) and use its plotting
+        %functions (which is what these do). Perhaps we could issue a
+        %warning or a disclaimer telling the user that this takes TOO long.
         function [h,adaptDataObject]=parameterEvolutionPlot(this,field)
             if ~(this.isProcessed)
                 ME=MException('experimentData:parameterEvolutionPlot','Cannot generate parameter evolution plot from unprocessed data!');
@@ -364,7 +389,7 @@ classdef experimentData
         end
         
         %% Update/modify
-        function this=recomputeParameters(this,eventClass,initEventType)
+        function this=recomputeParameters(this,eventClass,initEventSide)
         %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
         %objects in experimentData.data.
         %
@@ -377,12 +402,12 @@ classdef experimentData
             if nargin<2 || isempty(eventClass)
                 eventClass=[];
             end
-            if nargin<3 || isempty(initEventType)
-                initEventType=[];
+            if nargin<3 || isempty(initEventSide)
+                initEventSide=[];
             end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventType); 
+                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide); 
             end
         end
         

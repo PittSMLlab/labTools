@@ -1,4 +1,4 @@
-function out = calcParameters(trialData,subData,eventClass,initEvent)
+function out = calcParameters(trialData,subData,eventClass,initEventSide)
 %Computes gait parameters on a per-stride basis
 %out = calcParameters(trialData,subData,eventClass,initEvent)
 %INPUT:
@@ -10,11 +10,11 @@ function out = calcParameters(trialData,subData,eventClass,initEvent)
 if nargin<3 || isempty(eventClass)
     eventClass=[];
 end
-if nargin<4 || isempty(initEvent)
-    initEvent=[];
+if nargin<4 || isempty(initEventSide)
+    initEventSide=[];
 end
 %out = calcParametersNew(trialData,subData); %Calling new function
-out = calcParametersNew_test(trialData,subData,eventClass,initEvent); %Calling new function
+out = calcParametersNew_test(trialData,subData,eventClass,initEventSide); %Calling new function
 
 %Uncomment this line to compute the old way:
 %out = calcParameters_legacy(trialData,subData);
