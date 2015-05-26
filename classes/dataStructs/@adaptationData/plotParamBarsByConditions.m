@@ -23,6 +23,7 @@
                 conds=find(~cellfun(@isempty,this.metaData.conditionName));
             else
                 conds=this.getConditionIdxsFromName(condList);
+                conds=conds(~isnan(conds));
             end
             nConds=length(conds);
             [allVeryEarlyPoints,allEarlyPoints,allLatePoints]=getEarlyLateData...

@@ -102,7 +102,8 @@ direction=sign(diff(sAnk(:,4:5,2),1,2));
 
 
 hipPos3D=.5*(sHip+fHip);
-hipPosFwd=hipPos3D(:,:,2);
+hipPos3DRel=.5*(sHipRel+fHipRel); %Just for check, should be all zeros
+hipPosFwd=hipPos3D(:,:,2);%Y-axis component    
 %hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPos=hipPosFwd(:,1);
 
@@ -135,7 +136,11 @@ fAnkFwd=bsxfun(@times,fAnkFwd,aux);
 sAnk2D=bsxfun(@times,sAnk2D,aux);
 fAnk2D=bsxfun(@times,fAnk2D,aux);
 
-%Alternative definition:
+%Alternative definition: should be equivalent, since we reference to midHip
+%when doing the rotation. Only difference may be in sign of walking, since
+%its computed slighltly different. Should not cause issues as differences
+%may only ocurr when subject is turning around, which is a bad stride
+%anyway
 sAnkFwd=sAnkRel(:,:,2);
 fAnkFwd=fAnkRel(:,:,2);
 sAnk2D=sAnkRel(:,:,1:2);

@@ -405,7 +405,7 @@ classdef adaptationData
         end
         
         %Display functions:
-        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag)
+        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions)
         %Plot of the behaviour of parameters through the different conditions 
         %specify the parameter behaviour on each condition and trial
         %
@@ -426,7 +426,12 @@ classdef adaptationData
             
             [ah,figHandle]=optimizedSubPlot(length(label),4,1); %this changes default color order of axes
             
-            conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            if nargin<5 || isempty(conditions)
+                conds=find(~cellfun(@isempty,this.metaData.conditionName));
+            else
+                conds=this.metaData.getConditionIdxsFromName(conditions);
+                conds=conds(~isnan(conds));
+            end
             nConds=length(conds);
             nPoints=size(this.data.Data,1);
             for l=1:length(label)
@@ -447,6 +452,7 @@ classdef adaptationData
                 if nargin>2 && ~isempty(runningBinSize)
                     movingDataPoints=medfilt1(dataPoints,runningBinSize,[],1);
                     movingStds=sqrt(conv2(dataPoints.^2,ones(runningBinSize,1)/runningBinSize,'same')-conv2(dataPoints,ones(runningBinSize,1)/runningBinSize,'same').^2);
+                    movingStds=sqrt(conv2((movingDataPoints-conv2(movingDataPoints,ones(runningBinSize,1)/runningBinSize,'same')).^2,ones(runningBinSize,1)/runningBinSize,'same'));
                     axes(ah(l))
                     hLeg=plot(ah(l),movingDataPoints,'.','MarkerSize',15);
                     for i=1:nConds
@@ -456,7 +462,7 @@ classdef adaptationData
                         yCoord=[aux1'-aux2',aux1(end:-1:1,:)'+aux2(end:-1:1,:)'];
                         xCoord=xCoord(~isnan(yCoord));
                         yCoord=yCoord(~isnan(yCoord));
-                        hh=patch(repmat(xCoord',1,size(aux1,2)),yCoord',[.7,.7,.7]);
+                        hh=patch(repmat(xCoord',1,size(aux1,2)),yCoord',[.7,.7,.7],'EdgeColor','None');
                         uistack(hh,'bottom')
                     end
                     maxM=max(movingDataPoints(:)+movingStds(:));
