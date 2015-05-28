@@ -73,7 +73,7 @@ end
 axesFontSize=8;
 labelFontSize=0;
 titleFontSize=12;
-[ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'ttb',axesFontSize,labelFontSize,titleFontSize);
+[ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
 legendStr={};
 
 % Set colors

@@ -108,10 +108,6 @@ end
 %% Check for errors
 
 if ~(nargin>1 && ignoreErrors)
-    
-    h=waitbar(0, 'Checking input for errors...');
-    hw=findobj(h,'Type','Patch');
-    set(hw,'EdgeColor',[0 0 1],'FaceColor',[0 0 1]) % changes the color to green
         
     % -- Experiment Info
 %     if strcmp(out.ExpFile,' ')
@@ -124,19 +120,19 @@ if ~(nargin>1 && ignoreErrors)
         h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');
         waitfor(h_error)
         uicontrol(handles.name_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.day) || out.day<0 || out.day>31
         h_error=errordlg('Please enter a day between 1 and 31','Day Error');
         waitfor(h_error)
         uicontrol(handles.day_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.year) || out.year<2010 || out.year>3000
         h_error=errordlg('Please enter the year when the experiment took place','Year Error');
         waitfor(h_error)
         uicontrol(handles.year_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     
     % -- Subject Info
@@ -144,43 +140,43 @@ if ~(nargin>1 && ignoreErrors)
         h_error=errordlg('Please enter the subject ID','ID Error');
         waitfor(h_error)
         uicontrol(handles.subID_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.DOBday) || out.DOBday<0 || out.DOBday>31
         h_error=errordlg('Please enter a day between 1 and 31','Day Error');
         waitfor(h_error)
         uicontrol(handles.DOBday_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.DOByear) || out.DOByear<1900 || out.year>3000 %seems like an appropriate range...
         h_error=errordlg('Please enter the year when the subject was born','Year Error');
         waitfor(h_error)
         uicontrol(handles.DOByear_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.height) || out.height<0 || out.height>230 %seems like an appropriate range...
         h_error=errordlg('Please enter the height of the subject','Height Error');
         waitfor(h_error)
         uicontrol(handles.height_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if isnan(out.weight) || out.weight<0 || out.weight>170 %seems like an appropriate range...
         h_error=errordlg('Please enter the weight of the subject','Weight Error');
         waitfor(h_error)
         uicontrol(handles.weight_edit)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if strcmp(out.domhand,' ')
         h_error=errordlg('Please select a dominant arm','Dominant Arm Error');
         waitfor(h_error)
         uicontrol(handles.domhand_list)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if strcmp(out.domleg,' ')
         h_error=errordlg('Please select a dominant leg','Dominant Leg Error');
         waitfor(h_error)
         uicontrol(handles.domleg_list)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if out.isStroke==1
         aux=get(handles.popupAffected,'String');
@@ -193,7 +189,7 @@ if ~(nargin>1 && ignoreErrors)
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.c3dlocation)
-        out.bad=true; close(h); return
+        out.bad=true; return
     end
     if ~exist(out.secdir_location,'dir')
         %     h_error=errordlg('Please enter a folder that exists','Directory Error');
@@ -215,7 +211,7 @@ if ~(nargin>1 && ignoreErrors)
             h_error=errordlg(['The file ',filename,' does not exist.'],'File Name Error');
             waitfor(h_error)
             uicontrol(handles.basefile)
-            out.bad=true; close(h); return
+            out.bad=true; return
         end
 %         %Check marker labels are good in .c3d files
 %         H=btkReadAcquisition(filename);
@@ -235,22 +231,21 @@ if ~(nargin>1 && ignoreErrors)
 %             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
 %             waitfor(h_error)
 %             uicontrol(handles.basefile)
-%             out.bad=true; close(h); return
+%             out.bad=true; return
 %         end
-%         if out.EMGs
-%             if t<10
-%                 filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
-%             else
-%                 filename2 = [out.secdir_location filesep out.basename num2str(t) '.c3d'];
-%             end
-%             if ~exist(filename2,'file')
-%                 h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');
-%                 waitfor(h_error)
-%                 uicontrol(handles.basefile)
-%                 out.bad=true; close(h); return
-%             end
-%         end
-%         waitbar(t/length(trials))
+        if out.EMGs
+            if t<10
+                filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
+            else
+                filename2 = [out.secdir_location filesep out.basename num2str(t) '.c3d'];
+            end
+            if ~exist(filename2,'file')
+                h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');
+                waitfor(h_error)
+                uicontrol(handles.basefile)
+                out.bad=true; return
+            end
+        end
    end
 %     
 %     % -- EMG data
@@ -267,8 +262,7 @@ if ~(nargin>1 && ignoreErrors)
         waitfor(h_error)
         uicontrol(handles.saveloc_edit)
         out.bad=true; 
-    end   
-    close(h);
+    end       
 end
 
 

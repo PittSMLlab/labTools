@@ -1,26 +1,17 @@
 function varargout = ReviewEventsGUI(varargin)
-% revieweventsgui MATLAB code for ReviewEventsGUI.fig
-%      ReviewEVENTSGUI, by itself, creates a new ReviewEVENTSGUI or raises the existing
-%      singleton*.
+% ReviewEventsGUI  Plots data in experimentData object and allows you to
+%                  add or remove events (HS, TO), and label strides as good
+%                  or bad.%      
 %
-%      H = revieweventsgui returns the handle to a new reviewEventsGUI or the handle to
-%      the existing singleton*.
-%
-%      ReviewEventsGUI('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in reviewEventsGUI.M with the given input arguments.
-%
-%      revieweventsgui('Property','Value',...) creates a new revieweventsgui or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before ReviewEventsGUI_OpeningFcn gets called.  An
-%      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to ReviewEventsGUI_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
-%
-% See also: GUIDE, GUIDATA, GUIHANDLES
+% See also: experimentData
 
-% Last Modified by GUIDE v2.5 27-Apr-2015 15:01:49
+%In all functions:
+% hObject    handle to object calling function (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% Last Modified by GUIDE v2.5 15-May-2015 15:52:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -42,11 +33,8 @@ end
 % End initialization code - DO NOT EDIT
 end
 
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% --- Executes just before ReviewEventsGUI is made visible.
+%% --- Executes just before ReviewEventsGUI is made visible.
 function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % varargin   command line arguments to ReviewEventsGUI (see VARARGIN)
@@ -54,20 +42,9 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 %initialize values
 handles.output=hObject;
 handles.changed=false;
+handles.saved=false;
 handles.backButtonFlag=false;
-handles.eventType='';
-
-%Initialize with subject options if there are .mat files in current
-%directory
-files=what;
-subFileList={};
-if ~isempty(files.mat)    
-    for i=1:length(files.mat)
-        subFileList{end+1}=files.mat{i}(1:end-4);
-    end
-    set(handles.subject,'enable','on')
-    set(handles.subject,'string',subFileList)
-end
+handles.type='';
 
 % Update handles structure
 guidata(hObject, handles);
@@ -86,137 +63,91 @@ end
 % --- Outputs from this function are returned to the command line.
 function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
 
-%Set GUI position to middle of screen (not sure what happens if screen is
-%smaller than GUI, also not sure why this code only works within this
-%function...)
+%Set GUI position to middle of screen (not sure why this code only works 
+%within this function...)
 % left, bottom, width, height
 scrsz = get(0,'ScreenSize'); 
 set(gcf,'Units','pixels');
 guiPos = get(gcf,'Position');
-set(gcf, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+width=min([guiPos(3) scrsz(3)]);
+height=min([guiPos(4) scrsz(4)]);
+set(gcf, 'Position', [(scrsz(3)-width)/2 (scrsz(4)-height)/2 width height]);
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 end
 
-%% ----------------------------------------------------------------
-%First step: set directory name to load files from. By default it is the
-%current dir: './'
 
-% --- Executes on button press in browseButton.
-function browseButton_Callback(hObject, eventdata, handles)
-direct = uigetdir; %pulls up a broswer window so a folder can be selected
-if direct~=0 %if file browser is not canceled
-    set(handles.directory,'string',[direct,filesep])
-    guidata(hObject,handles)
-    directory_Callback(handles.directory,eventdata,handles)
-end
-end
+%% -------------------------Open subject file--------------------------
 
-function directory_Callback(hObject, eventdata, handles)
-% hObject    handle to directory (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+function uiOpenFile_ClickedCallback(hObject, eventdata, handles)
 
-% Hints: get(hObject,'String') returns contents of directory as text
-%        str2double(get(hObject,'String')) returns contents of directory as a double
-
-direct = get(hObject, 'String');
-
-%checks if Sub is a file
-if exist(direct,'dir')    
-    files=what(direct);
-    subFileList={};
-    if isempty(files.mat)
-        h_error=errordlg('Directory entered does not contain any .mat files','Directory Error');
-        waitfor(h_error);
-        set(handles.subject,'Enable','off');
-        % Give the edit text box focus so user can correct the error
-        uicontrol(hObject)
-    else
-        set(handles.subject,'Enable','on');
-        for i=1:length(files.mat)
-            subFileList{end+1}=files.mat{i}(1:end-4);
-        end
-        set(handles.subject,'string',subFileList)
-    end    
-else
-    h_error=errordlg('Path entered is not a directory.','Directory Error');
-    waitfor(h_error);
-    set(handles.subject,'Enable','off');
-    % Give the edit text box focus so user can correct the error
-    uicontrol(hObject)
-end
-guidata(hObject, handles);
-end
-
-%% -------------------------------------------------------------------
-%Second, the subject filename needs to be entered.
-
-function subject_Callback(hObject, eventdata, handles)
-% hObject    handle to subject (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.Dir=get(handles.directory,'string');
-
-%Disable everything
-disableFields;
-
-drawnow
-
-global expData
-options=cellstr(get(hObject,'String'));
-handles.filename = [options{get(hObject,'Value')},'.mat'];
-
-eval(['aux=load('''  handles.Dir handles.filename ''');']) %.mat file can only contain 1 variable, of the experimentData type
-fieldNames=fields(aux);
-handles.varName=fieldNames{1};
-
-expData=aux.(fieldNames{1});
-if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
-    set(handles.subject_text,'String', 'Filename') 
-    
-    %Enable and init all menus
-    set(handles.plot_button,'Enable','on');
-    set(handles.next_button,'Enable','on');
-    %set(handles.back_button,'Enable','on');
-    set(handles.delete_button,'Enable','on');
-    set(handles.deleteNbutton,'Enable','on');
-    set(handles.save_button,'Enable','on');
-    set(handles.add_button,'Enable','on');
-    set(handles.BPdataType,'Enable','on');
-    set(handles.BPfield,'Enable','on');
-    set(handles.TPdataType,'Enable','on');
-    set(handles.TPfield,'Enable','on');
-    set(handles.timeSlider,'Enable','on');
-    set(handles.maxCheck,'Enable','on');
-    set(handles.defaultRadio,'Enable','on');
-    if length(expData.data{end}.gaitEvents.labels)==12
-        set(handles.kinematicRadio,'Enable','on');
-        set(handles.forceRadio,'Enable','on');
+%If a subject's file is currently open, ask to save.
+if isfield(handles,'filename') && ~handles.changed && ~handles.saved
+    choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
+    'ReviewEventsGUI', ...
+    'Save','Don''t Save','Cancel','Save');
+    switch choice
+        case 'Save'
+            handles.changed=true;
+        case 'Don''t Save'
+            handles.changed=false;
+        case {'Cancel',''}
+            return
     end
+end
+
+if handles.changed
+    write_Callback(handles.write,eventdata,handles)
+end
+
+[handles.filename,handles.Dir]=uigetfile('*.mat','Choose subject file'); %opens browse window
+
+if handles.filename~=0
+    global expData
     
-    %Enable and initialize condition menu:
-    set(handles.condMenu, 'Enable','on');
-    condDes = expData.metaData.conditionName;
-    set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes))); %this is for the case when a condition number was skipped
-    set(handles.condMenu, 'Value',1);
-    set(handles.trialMenu,'Value',1);
-    guidata(hObject, handles);
-    condMenu_Callback(handles.condMenu, [], handles);
-else
-    h_error=errordlg('Subject file must be of the class ''processedTrialData''','Subject Error');
-    waitfor(h_error)
-    % Give the edit text box focus so user can correct the error
-    uicontrol(hObject)
-    guidata(hObject, handles)
+    %Disable everything
+    handles=disableFields(handles,'plot_button','next_button','back_button',...
+        'delete_button','deleteNbutton','save_button','add_button',...
+        'BPdataType','BPfield','TPdataType','TPfield','condMenu','trialMenu',...
+        'timeSlider','maxCheck','defaultRadio','kinematicRadio','forceRadio',...
+        'labelBadButton','labelGoodButton','showBadCheck');
+    drawnow
+    
+    aux=load([handles.Dir handles.filename]); %.mat file can only contain 1 variable, of the experimentData type
+    fieldNames=fields(aux);
+    handles.varName=fieldNames{1};
+    
+    expData=aux.(fieldNames{1});
+    if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
+                
+        %Enable things
+        handles=enableFields(handles,'plot_button','next_button','delete_button',...
+            'deleteNbutton','save_button','add_button','BPdataType','BPfield',...
+            'TPdataType','TPfield','timeSlider','maxCheck','defaultRadio',...
+            'showBadCheck','condMenu','labelBadButton','labelGoodButton');
+        if length(expData.data{end}.gaitEvents.labels)==12
+            set(handles.kinematicRadio,'Enable','on');
+            set(handles.forceRadio,'Enable','on');
+        end        
+        
+        %initialize condition menu:
+        condDes = expData.metaData.conditionName;
+        set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes))); %this is for the case when a condition number was skipped
+        set(handles.condMenu, 'Value',1);
+        set(handles.trialMenu,'Value',1);
+        guidata(hObject, handles);
+        condMenu_Callback(handles.condMenu, [], handles);
+    else
+        h_error=errordlg('Subject file must contain a processed object of the class ''experimentData''','Subject Error');
+        waitfor(h_error)       
+    end    
+end
 end
 
 
-end
-%% ---------------------------------------------------------------------
-% Select condition:
+
+%% ---------------------------Select condition----------------------------
 
 % --- Executes on selection change in condMenu.
 function condMenu_Callback(hObject, eventdata, handles)
@@ -240,33 +171,25 @@ end
 if isempty(s)
     cla(handles.axes1)
     cla(handles.axes2)
-    %Disable everything
-    disableFields;
-    set(handles.condMenu, 'Enable','on');
+    %Disable everything (besides condMenu)
+     handles=disableFields(handles,'plot_button','next_button','back_button',...
+        'delete_button','deleteNbutton','save_button','add_button',...
+        'BPdataType','BPfield','TPdataType','TPfield','trialMenu',...
+        'timeSlider','maxCheck','defaultRadio','kinematicRadio','forceRadio',...
+        'labelBadButton','labelGoodButton','showBadCheck');
     drawnow
 else
-    
     %enable everything
-    set(handles.plot_button,'Enable','on');
-    set(handles.next_button,'Enable','on');    
-    set(handles.delete_button,'Enable','on');
-    set(handles.deleteNbutton,'Enable','on');
-    set(handles.save_button,'Enable','on');
-    set(handles.add_button,'Enable','on');
-    set(handles.BPdataType,'Enable','on');
-    set(handles.BPfield,'Enable','on');
-    set(handles.TPdataType,'Enable','on');
-    set(handles.TPfield,'Enable','on');
-    set(handles.trialMenu,'Enable','on');
-    set(handles.timeSlider,'Enable','on');
-    set(handles.maxCheck,'Enable','on');    
-    set(handles.trialMenu, 'Enable','on');
-    set(handles.trialMenu, 'String',s);
-    set(handles.defaultRadio,'Enable','on');
+    handles=enableFields(handles,'plot_button','next_button','delete_button',...
+        'deleteNbutton','save_button','add_button','BPdataType','BPfield',...
+        'TPdataType','TPfield','trialMenu','timeSlider','maxCheck','trialMenu',...
+        'defaultRadio','showBadCheck','labelBadButton','labelGoodButton');   
     if length(expData.data{end}.gaitEvents.labels)==12
         set(handles.kinematicRadio,'Enable','on');
         set(handles.forceRadio,'Enable','on');
     end
+    %set other values
+    set(handles.trialMenu, 'String',s);
     if handles.backButtonFlag
         set(handles.trialMenu, 'Value',length(s));
     else
@@ -279,8 +202,6 @@ else
 end
 
 end
-
-
 
 
 %% ---------------------------------------------------------------------
@@ -350,11 +271,7 @@ end
 %% -------------------------Data Selection -------------------------------
 
 function TPdataType_Callback(hObject, eventdata, handles)
-
 handles.TPfieldlist = makeFieldList(hObject,handles,handles.TPfield);
-
-handles.test=1;
-% guidata(hObject, handles)
 TPfield_Callback(handles.TPfield, eventdata, handles)
 end
 
@@ -365,9 +282,7 @@ end
 
 
 function BPdataType_Callback(hObject, eventdata, handles)
-
 handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
-
 BPfield_Callback(handles.BPfield, eventdata, handles)
 end
 
@@ -441,7 +356,7 @@ end
 
 
 
-%% -----------------------------BUTTONS:----------------------------------
+%% -----------------------------PLOTTING:----------------------------------
 
 % --- Executes on slider movement.
 function timeSlider_Callback(hObject, eventdata, handles)
@@ -472,11 +387,13 @@ function maxCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of maxCheck
 global expData
 maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
+set(handles.timeSlider,'enable','on');
 if get(handles.maxCheck,'value')
     handles.timeWindow=maxTime;
     handles.tstop=maxTime;
     set(handles.timeSlider,'Value',maxTime);
     set(handles.timeWindowText,'String',handles.timeWindow);
+    set(handles.timeSlider,'enable','off');
 end
 plot_button_Callback(handles.plot_button,eventdata,handles)
 end
@@ -505,7 +422,7 @@ dataType=handles.TSlist{get(dataTypeHandle,'Value')};
 
 TSdata=expData.data{handles.idx}.(dataType);
 if isa(TSdata,'parameterSeries')
-    times=TSdata.hiddenTime;
+    times=TSdata.hiddenTime;    
 else
     times=TSdata.Time;
 end
@@ -520,39 +437,47 @@ else
     last=0;
 end
 
-%Events to plot:
-events=handles.trialEvents;
-%event correction factor:
-ECF = events.sampFreq/TSdata.sampFreq;
-for i=1:length(events.labels)
-    data=events.getDataAsVector(events.labels{i});
-    eval([events.labels{i} 'times=times(startSamp)+events.Time(data(ceil(startSamp.*ECF):floor(endSamp.*ECF))==1);'])
-end
-
 time=times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
 set(axesHandle,'nextplot','replace')
 if length(fieldList{value})==2
-    %get data to plot
+    %get data to plot    
     FdataTS=TSdata.getDataAsTS(fieldList{value}{1});
     SdataTS=TSdata.getDataAsTS(fieldList{value}{2});
-    if strcmp(dataType,'adaptParams')
+    if strcmp(dataType,'adaptParams')        
         label=fieldList{value}{1}(1:end-4);
         %plot data
-    plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r.','MarkerSize',20);
-    set(axesHandle,'nextplot','add')
-    plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
-    legendEntries = {'Fast','Slow'};
+        bad=TSdata.bad(startSamp:endSamp);
+        badStrides=find(bad);
+        goodStrides=find(~bad);
+        plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
+        set(axesHandle,'nextplot','add')
+        plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
+        legendEntries = {'Fast','Slow'};
+        if get(handles.showBadCheck,'Value')
+             plot(axesHandle,time(badStrides),FdataTS.Data(badStrides),'ro','MarkerSize',6);
+             plot(axesHandle,time(badStrides),SdataTS.Data(badStrides),'bo','MarkerSize',6);
+             legendEntries ={'Fast','Slow','Bad Fast','Bad Slow'};
+        end
         % do not overlay events
     else
         label=fieldList{value}{1}(2:end);
         %plot data
-        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r','MarkerSize',20); %is MarkerSize needed?
+        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r');
         set(axesHandle,'nextplot','add')
-        plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b','MarkerSize',20);
+        plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b');
         legendEntries = {'Fast','Slow'};
+        %Events to plot:
+        events=handles.trialEvents;
+        %event correction factor:
+        % TO DO: use a method to make sampling frequencies equivalent instead of using ECF.
+        ECF = events.sampFreq/TSdata.sampFreq; 
+        for i=1:length(events.labels)
+            data=events.getDataAsVector(events.labels{i});
+            eval([events.labels{i} 'times=times(startSamp)+events.Time(data(round((startSamp-1).*ECF+1):round((endSamp-1).*ECF+1))==1);'])
+        end
         %Overlay events (only those in the time window...otherwise there
         %will be warnings for the extra legend entries
-        type=handles.eventType;
+        type=handles.type;
         if eval(['~isempty(',handles.fast,'HStimes)'])
             eval(['plot(axesHandle,',type,handles.fast,'HStimes,FdataTS.getSample(',type,handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
             legendEntries{end+1}='FHS';
@@ -574,14 +499,23 @@ else
     %get data to plot
     label=fieldList{value};
     dataTS=TSdata.getDataAsTS(fieldList{value});
-    %plot data
-    if strcmp(dataType,'adaptParams')
-        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b.','MarkerSize',20);
-    else
-        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b');
-    end
-    set(axesHandle,'nextplot','add')
     legendEntries = {'data'};
+    %plot data
+    if strcmp(dataType,'adaptParams')             
+        %plot data
+        bad=TSdata.bad(startSamp:endSamp);
+        badStrides=find(bad);
+        goodStrides=find(~bad);        
+        plot(axesHandle,time(goodStrides),dataTS.Data(goodStrides),'b.','MarkerSize',20);  
+        set(axesHandle,'nextplot','add')
+        if get(handles.showBadCheck,'Value')
+             plot(axesHandle,time(badStrides),dataTS.Data(badStrides),'bo','MarkerSize',6);
+             legendEntries ={'data','bad data'};
+        end
+    else
+        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b'); 
+        set(axesHandle,'nextplot','add')
+    end   
 end
 set(axesHandle,'Xlim',[handles.tstart handles.tstop]);
 h_legend = legend(axesHandle,legendEntries);
@@ -640,6 +574,8 @@ end
 
 end
 
+%% --------------------------Event Editing:----------------------------------
+
 % --- Executes when selected object is changed in event selection button group.
 function eventButton_SelectionChangeFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in eventButton 
@@ -650,11 +586,11 @@ function eventButton_SelectionChangeFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 switch get(eventdata.NewValue,'Tag')
     case 'defaultRadio'
-        handles.eventType='';
+        handles.type='';
     case 'kinematicRadio'
-        handles.eventType='kin';
+        handles.type='kin';
     case 'forceRadio'
-        handles.eventType='force';        
+        handles.type='force';        
 end
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -683,7 +619,9 @@ for i=1:length(x);
     end
 end
 
+%update events
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
+%update parameters (NOTE: this undoes any stride edits)
 expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
 
 %Re-plot
@@ -714,7 +652,7 @@ selectedEventIndexEnd=allEventsIndexes(selectedEventTimeIndexEnd);
 handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd,:)=false;
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData,handles.type);
 
 %Re-plot
 guidata(hObject, handles)
@@ -723,6 +661,7 @@ end
 
 % --- Executes on button press in add_button.
 function add_button_Callback(hObject, eventdata, handles)
+%Should this add a TO/HS for all event classes?
 
 %Ask subject to select event type: SHS, FHS, STO, FTO
 events=handles.trialEvents.getLabels;
@@ -748,10 +687,10 @@ global expData
 
 %create new event in handles.trialEvents
 [~,closestTimeIdx]=min(abs((handles.trialEvents.Time-x)));
-handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true; % ONLY ADDS TO DEFAULT EVENTS FOR NOW!!!
+handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true;
 
 expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
+expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData,handles.type);
 
 %Disable this
 set(hObject,'Enable','off');
@@ -761,13 +700,68 @@ guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
+%% ---------------------------Stride Editing:-----------------------------
+
+% --- Executes on button press in labelBadButton.
+function labelBadButton_Callback(hObject, eventdata, handles)
+
+global expData
+
+%Select stride
+axes(handles.axes1)
+[x,~]=ginput;
+[boolFlag,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
+
+for i=1:length(x);
+    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(i);
+    [~,loc]=min(abs(deltaT));
+    %update 'bad' and 'good'  
+    if all(boolFlag)
+        expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false]; 
+    else
+        expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false]; 
+    end
+end
+%Re-plot
+guidata(hObject, handles)
+plot_button_Callback(handles.plot_button, eventdata, handles)
+end
+
+% --- Executes on button press in labelGoodButton.
+function labelGoodButton_Callback(hObject, eventdata, handles)
+
+global expData
+
+%Select stride
+axes(handles.axes1)
+[x,~]=ginput;
+[~,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
+
+for i=1:length(x);
+    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(i);
+    [~,loc]=min(abs(deltaT));
+    %update 'bad' and 'good'     
+    expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[false, true];   
+end
+%Re-plot
+guidata(hObject, handles)
+plot_button_Callback(handles.plot_button, eventdata, handles)
+end
+
+% --- Executes on button press in showBadCheck.
+function showBadCheck_Callback(hObject, eventdata, handles)
+plot_button_Callback(handles.plot_button,eventdata,handles)
+end
+
+%% ---------------------------Saving:-----------------------------
+
 % --- Executes on button press in save_button.
 function save_button_Callback(hObject, eventdata, handles)
 
 global expData 
 % Possibly in the future we could force user to hit save if he/she wants changes to be saved.
 
-% HH: I think thenext two lines are unneccesary since any changes to events would have already been saved to expData.
+% HH: I think the next two lines are unneccesary since any changes to events would have already been saved to expData.
 % expData.data{handles.idx}.gaitEvents=handles.trialEvents;
 % expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 handles.changed=true; %% HH: this forces the changes to be saved, even if GUI is closed.
@@ -775,15 +769,21 @@ set(handles.write,'Enable','on');
 guidata(hObject, handles)
 end
 
+function uiSaveButton_ClickedCallback(hObject, eventdata, handles)
+write_Callback(handles.write,eventdata,handles)
+end
+
 % --- Executes on button press in write.
 function write_Callback(hObject, eventdata, handles)
 global expData
 
 %Disable everything
-disableFields;
-set(handles.directory,'Enable','off');
-set(handles.subject,'Enable','off');
-set(handles.write,'Enable','off');
+ handles=disableFields(handles,'plot_button','next_button','back_button',...
+     'delete_button','deleteNbutton','save_button','add_button','BPdataType',...
+     'BPfield','TPdataType','TPfield','condMenu','trialMenu','timeSlider',...
+     'maxCheck','defaultRadio','kinematicRadio','forceRadio','write',...
+     'labelBadButton','labelGoodButton','showBadCheck');
+
 set(handles.write,'String', 'Writing...');
 
 drawnow
@@ -794,6 +794,7 @@ eval([handles.varName '=expData;']); %Assigning same var name
 %''');']); %PI: replaced this with the line below on 28/4/2015
 save([handles.Dir handles.filename],handles.varName,'-v7.3');%Saving with same var name
 handles.changed=false;
+handles.saved=true;
 
 %re-create adaptation parameters object
 %expData=expData.recomputeParameters; %% HH: I don't think this is necessary, should have already been re-computed earlier. 
@@ -801,28 +802,15 @@ adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
 % eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj method automatically saves file.
 
 %Enable everything
-set(handles.plot_button,'Enable','on');
-set(handles.next_button,'Enable','on');
-set(handles.back_button,'Enable','on');
-set(handles.delete_button,'Enable','on');
-set(handles.save_button,'Enable','on');
-set(handles.add_button,'Enable','on');
-set(handles.BPdataType,'Enable','on');
-set(handles.BPfield,'Enable','on');
-set(handles.TPdataType,'Enable','on');
-set(handles.TPfield,'Enable','on');
-set(handles.condMenu, 'Enable','on');
-set(handles.directory,'Enable','on');
-set(handles.subject,'Enable','on');
-set(handles.timeSlider,'Enable','on');
-set(handles.maxCheck,'Enable','on');
-set(handles.write,'String', 'Write to disk');
-set(handles.trialMenu,'Enable','on');
-set(handles.defaultRadio,'Enable','on');
+handles=enableFields(handles,'plot_button','next_button','back_button',...
+    'delete_button','deleteNbutton','save_button','add_button','BPdataType',...
+    'BPfield','TPdataType','TPfield','condMenu','timeSlider','maxCheck',...
+    'trialMenu','defaultRadio','labelBadButton','labelGoodButton');
 if length(expData.data{end}.gaitEvents.labels)==12
     set(handles.kinematicRadio,'Enable','on');
     set(handles.forceRadio,'Enable','on');
 end
+set(handles.write,'String', 'Write to disk');
 guidata(hObject, handles);
 
 end
@@ -833,10 +821,8 @@ end
 % --- Executes when user attempts to close GUI_window.
 function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
 
-global expData
-
-drawnow
-if ~handles.changed && isfield(handles,'filename')
+%See if subject file should be saved before closing
+if ~handles.changed && isfield(handles,'filename') && ~handles.saved
     choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
 	'ReviewEventsGUI', ...
 	'Save','Don''t Save','Cancel','Save');
@@ -850,22 +836,8 @@ if ~handles.changed && isfield(handles,'filename')
     end
 end
 
-if handles.changed
-    %Disable everything
-    disableFields;
-    set(handles.directory,'Enable','off');
-    set(handles.subject,'Enable','off');
-    set(handles.write,'Enable','off');
-    set(handles.write,'String', 'Writing...');
-    
-    %write to disk
-    eval([handles.varName '=expData;']); %Assigning same var name
-    %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName ''');']); %PI: replaced this with the line below on 28/4/2015
-    save([handles.Dir handles.filename],handles.varName,'-v7.3');%Saving with same var name
-    %re-create adaptation parameters object
-    adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
-    %eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name
-    handles.changed=false;
+if handles.changed 
+    write_Callback(handles.write,eventdata,handles)
 end
 
 guidata(hObject, handles);
@@ -873,7 +845,7 @@ guidata(hObject, handles);
 delete(handles.output);
 end
 
-%------------------------ Create Functions -----------------------------%
+%% ------------------------ Create Functions -----------------------------%
 % --- Executes during object creation, after setting all properties. ---%
 
 % hObject    handle to eventType (see GCBO)
@@ -944,3 +916,4 @@ if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColo
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
 end
+

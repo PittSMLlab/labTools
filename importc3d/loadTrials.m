@@ -267,7 +267,36 @@ for t=cell2mat(info.trialnums)
         [markers,markerInfo]=btkGetMarkers(H);
         relData=[];
         fieldList=fields(markers);
-        markerList={};        
+        markerList={};
+        
+        %Check marker labels are good in .c3d files        
+        mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
+        labelPresent=false(1,length(mustHaveLabels));
+        for i=1:length(fieldList)
+            label=findLabel(fieldList{i});
+            labelPresent=labelPresent+ismember(mustHaveLabels,label);
+        end
+        if any(~labelPresent)
+            missingLabels=find(~labelPresent);
+            str=' ';
+            for j=missingLabels
+                str=[str ', ' mustHaveLabels{j}];
+            end
+            ME=MException('loadTrials:markerDataError',['Marker data does not contain:' str '. Edit ''findLabel'' code to fix.']);
+            throe(ME)
+        end
+        
+%         %atlernatively, 
+%         if any(~labelPresent)
+%             missingLabels=find(~labelPresent);
+%             for j=missingLables
+%                 %generate menu
+%                 choice = menu(['Which marker is the ' mustHaveLabels{j} 'marker?'] ,fieldList);
+%                 %Then, somehow specifiy that the label corresponding to
+%                 %choice should be labeled as one of the must-have labels
+%             end
+%         end
+        
         for j=1:length(fieldList);
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
                 relData=[relData,markers.(fieldList{j})];

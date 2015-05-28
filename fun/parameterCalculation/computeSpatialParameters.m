@@ -7,8 +7,10 @@ timeFHS=strideEvents.tFHS;
 timeSTO=strideEvents.tSTO;
 timeSHS2=strideEvents.tSHS2;
 timeFTO2=strideEvents.tFTO2;
-eventTimes=[timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2];
-SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6; %numbers correspond to column of eventTimes matrix
+timeFHS2=strideEvents.tFHS2;
+timeSTO2=strideEvents.tSTO2;
+eventTimes=[timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2 timeFHS2 timeSTO2];
+SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6; FHS2=7; STO2=8; %numbers correspond to column of eventTimes matrix
 %% Labels and descriptions:
 aux={'direction',               '-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)';...
     'hipPos',                   'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)';...

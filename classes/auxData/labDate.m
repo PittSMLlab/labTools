@@ -22,21 +22,7 @@ classdef labDate
         %constructor
         function this=labDate(dd,mm,year)
             this.day=dd;
-            this.month=mm;
-            this.year=year;
-        end
-        
-        %Setters
-        function this=set.day(this,dd)
-            if dd<32 && dd>0 && rem(dd,1)==0
-                this.day=dd;
-            else
-                ME=MException('labDate:Constructor','Day parameter is not an integer in the [1,31] range.');
-                throw(ME);
-            end
-        end        
-        function this=set.month(this,mm)
-           if isa(mm,'char') && length(mm)==3
+            if isa(mm,'char') && length(mm)==3
                 switch lower(mm)
                     case {'jan','ene'}
                         this.month=1;
@@ -66,11 +52,29 @@ classdef labDate
                         ME=MException('labDate:Constructor','Unrecognized month string.');
                         throw(ME);
                 end
-            else
-                ME=MException('labDate:Constructor','Month parameter is not a 3-letter string.');
+           elseif isa(mm,'double') && mm<=12
+               this.month=mm;
+           else
+                ME=MException('labDate:Constructor','Month parameter is not a 3-letter string or a valid numerical value.');
                 throw(ME);
-            end 
+           end 
+            this.year=year;
+        end
+        
+        %Setters
+        function this=set.day(this,dd)
+            if dd<32 && dd>0 && rem(dd,1)==0
+                this.day=dd;
+            else
+                ME=MException('labDate:Constructor','Day parameter is not an integer in the [1,31] range.');
+                throw(ME);
+            end
         end        
+        
+        % HH: no setter for month because it was mis-behaving
+%         function this=set.month(this,mm)
+%            
+%         end        
         function this=set.year(this,year)
             if rem(year,1)==0
                 this.year=year;
