@@ -45,7 +45,7 @@ triggerEvent=eventTypes{1};
 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
 if numStrides==0;    
     disp(['Warning: No strides detected in ',file])
-    out=parameterSeries([],{},[],{});
+    out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
     return
 end
 stridedProcEMG=cell(numStrides,1);

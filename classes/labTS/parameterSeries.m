@@ -169,31 +169,46 @@ classdef parameterSeries < labTimeSeries
         end
         
         %% Display
-        function h=plotAlt(this,h,labels)
-            if nargin<2 || isempty(h)
-                h=figure;
-            else
-                figure(h)
+        function [h,h1]=plotAlt(this,h,labels,plotHandles,color)
+            if nargin<5
+                color=[];
             end
-            N=length(this.labels);
-            if nargin<3 || isempty(labels)
-                relData=this.Data;
-                relLabels=this.labels;
-            else
-               [relData,~,relLabels]=this.getDataAsVector(labels); 
-               N=size(relData,2);
+            if nargin<4
+                plotHandles=[];
             end
-            bad=this.bad;
-            for i=1:N
-                h1(i)=subplot(ceil(N/2),2,i);
-                T=1:length(bad);
-                hold on
-                plot(T(bad==0),relData(bad==0,i),'.')
-                plot(T(bad==1),relData(bad==1,i),'x')
-                ylabel(relLabels{i})
-                hold off
+            if nargin<3
+                labels=[];
             end
-            linkaxes(h1,'x')
+            if nargin<2
+                h=[];
+            end
+            [h,h1]=this.plot(h,labels,plotHandles,[],color,1);
+            ll=findobj(h,'Type','Line');
+            set(ll,'LineStyle','None','Marker','.')
+%             if nargin<2 || isempty(h)
+%                 h=figure;
+%             else
+%                 figure(h)
+%             end
+%             N=length(this.labels);
+%             if nargin<3 || isempty(labels)
+%                 relData=this.Data;
+%                 relLabels=this.labels;
+%             else
+%                [relData,~,relLabels]=this.getDataAsVector(labels); 
+%                N=size(relData,2);
+%             end
+%             bad=this.bad;
+%             for i=1:N
+%                 h1(i)=subplot(ceil(N/2),2,i);
+%                 T=1:length(bad);
+%                 hold on
+%                 plot(T(bad==0),relData(bad==0,i),'.')
+%                 plot(T(bad==1),relData(bad==1,i),'x')
+%                 ylabel(relLabels{i})
+%                 hold off
+%             end
+             linkaxes(h1,'x')
                 
         end
     end

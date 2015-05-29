@@ -56,6 +56,9 @@ classdef labTimeSeries  < timeseries
         
         %Other I/O functions:
         function [data,time,auxLabel]=getDataAsVector(this,label)
+            if nargin<2 || isempty(label)
+                label=this.labels;
+            end
             if isa(label,'char')
                 auxLabel={label};
             else

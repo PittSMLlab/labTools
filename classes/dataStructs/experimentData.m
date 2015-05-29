@@ -330,7 +330,7 @@ classdef experimentData
                     aux=cat(aux,this.data{i}.experimentalParams); 
                 end
                 %Concatenate with other trials:
-                if ~exist('paramData','var')
+                if ~exist('paramData','var') & ~isempty(aux.Data) %Case in which no strides were detected for a trial, it could happen
                     paramData=aux;
                 else
                     paramData=addStrides(paramData,aux);

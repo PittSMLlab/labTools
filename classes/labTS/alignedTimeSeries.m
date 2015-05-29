@@ -1,4 +1,4 @@
-classdef alignedTimeSeries
+classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTimeSeries, as it should
     %alignedTimeSeries is a time-series-like object, but where it is
     %assumed that Data stores several repetitions of some recorded set
     
@@ -38,8 +38,8 @@ classdef alignedTimeSeries
         end
         
         function newThis=getPartialDataAsATS(this,labels)
-            [~,relIdx]=this.isaLabel(labels);
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx,:),this.labels(relIdx),this.alignmentVector,this.alignmentLabels);
+            [boolIdx,relIdx]=this.isaLabel(labels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
         end
         
         function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)
@@ -112,20 +112,25 @@ classdef alignedTimeSeries
                        for i=1:M
                            subplot(plotHandles(i))
                            hold on
-                           pp=patch([aux1.Time; aux1.Time(end:-1:1)],[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                           if size(aux1.Time,1)==numel(aux1.Time) %column vector
+                               megaTime=[aux1.Time; aux1.Time(end:-1:1)];
+                           else %row vector
+                               megaTime=[aux1.Time, aux1.Time(end:-1:1)];
+                           end
+                           pp=patch(megaTime,[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none');
                            uistack(pp,'bottom');
                            hold off
                        end
                    else
                        for k=1:length(bounds)
-                        [figHandle,plotHandles]=plot(prctile(this,bounds(k)),figHandle,[],plotHandles,[],meanColor*.8,.5);
+                        [figHandle,plotHandles]=plot(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
                        end
                    end
                end
                
                %PLot mean trace
-               %[figHandle,plotHandles]=plot(mean(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
-               [figHandle,plotHandles]=plot(median(this),figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               %[figHandle,plotHandles]=plot(this.mean.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               [figHandle,plotHandles]=plot(this.median.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
           
                %Plot individual traces
                for i=1:M %Go over labels
@@ -195,7 +200,8 @@ classdef alignedTimeSeries
                 for i=1:size(histogram,2)
                     newData(mH(i),i)=true;
                 end
-                meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
+                %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
+                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),newData,newLabels,this.alignmentVector,this.alignmentLabels);
                 stds=nanstd(histogram);
             end
         end
@@ -205,7 +211,8 @@ classdef alignedTimeSeries
                 this.Data=this.Data(:,:,strideIdxs);
             end
             if ~islogical(this.Data(1))
-                stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                %stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                stdTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanstd(this.Data,[],3),this.labels,this.alignmentVector,this.alignmentLabels);
             else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
                 [histogram,~]=logicalHist(this);
                 stdTS=std(histogram); %Not really a tS
@@ -217,11 +224,13 @@ classdef alignedTimeSeries
                 this.Data=this.Data(:,:,strideIdxs);
             end
             if ~islogical(this.Data(1))
-                prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                %prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                prctileTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),prctile(this.Data,p,3),this.labels,this.alignmentVector,this.alignmentLabels);
             else %Logical timeseries. 
                 error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
             end 
         end
+        
         function medianTS=median(this,strideIdxs)
             if nargin<2 || isempty(strideIdxs)
                 strideIdxs=[];
@@ -235,6 +244,8 @@ classdef alignedTimeSeries
         end
         
         function [boolFlag,labelIdx]=isaLabel(this,label)
+            boolFlag=false(size(label));
+            labelIdx=zeros(size(label));
             [bool,idx] = compareLists(label,this.labels);
             for j=1:length(label)
                 if any(idx==j)
@@ -314,6 +325,14 @@ classdef alignedTimeSeries
             end
         end
         
+        function newThis=castAsTS(this)
+           %Function to change the class to labTS (instead of ATS). This is a temp function, until alignedTS is changed to inherit from labTS
+           if size(this.Data,3)>1
+               ME=MException('alignedTS:castAsTS','To cast as TS, there may be a single alignedTS (i.e. size(this.Data,3)==1)');
+               throw(ME)
+           end
+           newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
+        end
     end
     
     methods(Hidden)
