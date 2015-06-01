@@ -21,10 +21,14 @@ for i=1:length(fileList)
         wt=adaptData.subData.weight;
         %get group
         group=adaptData.metaData.ID;
-        spaces=find(group==' ');
-        abrevGroup=group(spaces+1);
-        group=group(ismember(group,['A':'Z' 'a':'z']));
-        abrevGroup=[group(1) abrevGroup];
+        abrevGroup=group(ismember(group,['A':'Z' 'a':'z'])); %remove non-alphabetic characters
+        if isempty(abrevGroup)
+            abrevGroup='NoDescription';
+            group = '(empty)';
+        end
+%         spaces=find(group==' ');
+%         abrevGroup=group(spaces+1);%         
+%         abrevGroup=[group(1) abrevGroup];
         %get conditions
         conditions=adaptData.metaData.conditionName;
         conditions=conditions(~cellfun('isempty',conditions));
@@ -32,20 +36,18 @@ for i=1:length(fileList)
         if isfield(Subs,abrevGroup)
             Subs.(abrevGroup).IDs(end+1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs};
             if isfield(Subs.(abrevGroup),'conditions')
-                %check if current subject had conditions other than the
-                %rest
+                %check if current subject had conditions other than the rest
                 for c=1:length(conditions)
-                    if ~ismember(Subs.(abrevGroup).conditions,conditions(c))
+                    if ~ismember(conditions(c),Subs.(abrevGroup).conditions)
                         %Subs.(abrevGroup).conditions{end+1}=conditions{c};
-                        disp(['Warning: not all conditions in ' group ' were performed by all subjects.'])
+                        disp(['Warning: ' subID ' performed ' conditions{c} ', but it was not perfomred by all subjects in ' group '.'])
                     end                    
                 end
-                %check if current subject didn't have a condition that the
-                %rest had
+                %check if current subject didn't have a condition that the rest had
                 for c=1:length(Subs.(abrevGroup).conditions)
-                    if ~ismember(conditions,Subs.(abrevGroup).conditions(c))
-                        Subs.(abrevGroup).conditions{c}='';                        
-                        disp(['Warning: not all conditions in ' group ' were performed by all subjects.'])
+                    if ~ismember(Subs.(abrevGroup).conditions(c),conditions) && ~isempty(Subs.(abrevGroup).conditions{c})                                          
+                        disp(['Warning: ' subID ' did not perform ' Subs.(abrevGroup).conditions{c}, '.'])
+                        Subs.(abrevGroup).conditions{c}='';
                     end                    
                 end
                 %refresh conditions by removing empty cells

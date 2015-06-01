@@ -1,5 +1,7 @@
 %OG study: old subjects adapted gradually
 
+handles.group='Old Gradual';
+
 %condition numbers
 i=1;
 for cond = [1 2 4:10]

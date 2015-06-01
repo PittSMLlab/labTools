@@ -1,5 +1,7 @@
 %OG study: old subjects adapted abruptly without a catch
 
+handles.group='Old Abrupt No Catch';
+
 %condition numbers
 i=1;
 for cond = [1:6 8:10]

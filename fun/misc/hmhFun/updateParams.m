@@ -14,7 +14,7 @@ function updateParams(subjects,eventClass,ignoreMatFlag)
 %   
 %   See also calcParameters, experimentData.recomputeParameters, experimentData.makeDataObj.
 
-h=waitbar(0, 'Checking input for errors...');
+h=waitbar(0, 'Updating...');
 hw=findobj(h,'Type','Patch');
 set(hw,'EdgeColor',[0 0 1],'FaceColor',[0 0 1]) % changes the color to green
 
@@ -44,5 +44,5 @@ for s=1:length(subjects)
     expData.makeDataObj([saveloc subjects{s}]); %overwrites file
     waitbar(s/length(subjects))
 end
-
+close(h)
 end

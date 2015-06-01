@@ -1,18 +1,19 @@
 %EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS
 % ex - OG study: old subjects adapted abruptly
 
-%Don't worry about what 'handles' is and do not edit anything in the set
-%command besides the very last entry.
+%The set commands populate the different fields of the contition info
+% section of the GetIntoGUI. You should only need to edit the last input
+% of the set commands or the iterations of the for loops.
 
 % Define Name of group
 handles.group='Old Abrupt';
 
 % Define Condition numbers (maximum number of conditions is 15 as of 4/2015)
-for cond = 1:10
+for cond = 1:10 %<-- edit this number
     set(handles.(['condition' num2str(cond)]),'string',num2str(cond))
 end
 % Define total number of conditions
-set(handles.numofconds,'string','10')
+set(handles.numofconds,'string','10') %<-- this should match the number above
 
 % Define trial types. These descibe the general condition of the trial. For
 % example, if the subject is walking overground or at an incline, it would

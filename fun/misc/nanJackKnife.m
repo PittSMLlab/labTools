@@ -145,7 +145,7 @@ Pa = patch(Xcoords,Ycoords,PatchColor);
 set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
 hold on;
 %Li = plot(x,y,'color',LineColor,'linewidth',2);
-Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
+Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',LineColor-0.5.*abs(LineColor),'MarkerFaceColor',LineColor);
 hold on;
 
 

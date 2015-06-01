@@ -40,23 +40,36 @@ function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,ord
 
 %   Copyright 2014 HMRL.
 
-if nargin<3 || isempty(rowAspect)
-   rowAspect=1; 
+%% Check Inputs
+
+if nargin<2 
+    rowAspect=1; 
 end
-if nargin<4 || isempty(colAspect)
+if nargin<3    
     colAspect=1;
 end
+
+if nargin<4 || isempty(order)
+     order='lr';    
+else
+    if ~strcmpi(order,'lr') && ~strcmpi(order,'tb')
+        ME=MException('optimizedSubPlot:InvalidInput','order must be ''tb'' or ''lr'' if specified');
+        throw(ME);
+    end   
+end
+
 %if font sizes aren't specified, assume default
-if nargin<5 || isempty(axesFontSize)
+if nargin<5 || isempty(axesFontSize)    
     axesFontSize=10;
 end
-if nargin<6 || isempty(labelFontSize)
+if nargin<6 || isempty(labelFontSize)    
     labelFontSize=10;
 end
 if nargin<7 || isempty(titleFontSize)
     titleFontSize=10;
 end
 
+%% Generate Subplot
 [figHandle,scrsz]=figureFullScreen; % Maybe this could be an option?
 figsz=[0 0 1 1];
 
@@ -76,7 +89,7 @@ set(gcf,'DefaultAxesColorOrder',ColorOrder);
 
 W=(figsz(3)/cols)-(horpad+axesFontSize/scrsz(3));
 H=(figsz(4)/rows)-(vertpad_bottom+vertpad_top);
-if nargin>3 && strcmpi(order,'lr') %plots left to right then goes down a row
+if strcmpi(order,'lr') %plots left to right then goes down a row
     rowind=1;
     colind=0;
     axesHandles=NaN(1,Nplots);
@@ -88,9 +101,9 @@ if nargin>3 && strcmpi(order,'lr') %plots left to right then goes down a row
             rowind=rowind+1;
             colind=0;
         end
-        axesHandles(i)=subplot('Position',[left bottom W H]);
+        axesHandles(i)=subplot('Position',[left bottom W H],'Parent',figHandle);
     end
-elseif (nargin>3 && (strcmpi(order,'tb') || isempty(order))) || nargin<4 %default behavior (plots top to bottom then goes over a column)    
+else %default behavior (plots top to bottom then goes over a column)    
     rowind=1;
     colind=0;
     axesHandles=NaN(1,Nplots);
@@ -103,9 +116,6 @@ elseif (nargin>3 && (strcmpi(order,'tb') || isempty(order))) || nargin<4 %defaul
             colind=colind+1;
             rowind=1;
         end
-        axesHandles(i)=subplot('Position',[left bottom W H]);
+        axesHandles(i)=subplot('Position',[left bottom W H],'Parent',figHandle);
     end
-else
-    ME=MException('optimizedSubPlot:InvalidInput','order must be ''tb'' or ''lr'' if specified');
-    throw(ME);
 end
