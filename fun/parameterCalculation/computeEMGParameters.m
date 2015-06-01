@@ -12,7 +12,7 @@ phases={'DS1','EfSwing','LfSwing','DS2','EsSwing','LsSwing'};
 desc={'SHS to FTO', 'FTO to mid fast swing', 'mid fast swing to FHS', 'FHS to STO', 'STO to mid slow swing', 'mid slow swing to SHS'};
 %%
 N=length(stridedProcEMG);
-data=nan(N,30*12);
+data=nan(N,30*16);
 for i=1:N
     counter=0;
     Time=stridedProcEMG{i}.Time;
@@ -61,6 +61,36 @@ for i=1:N
         description{counter}=['Average (mean) proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=mean(Data(:,j));
+        
+        counter=counter+1;
+        if i==1
+        paramLabels{counter}=[labs{j} 'var'];
+        description{counter}=['Variance of proc EMG in muscle ' labs{j}];
+        end
+        data(i,counter)=var(Data(:,j),0); %Unbiased
+        
+        counter=counter+1;
+        if i==1
+        paramLabels{counter}=[labs{j} 'skw'];
+        description{counter}=['Skewness proc EMG in muscle ' labs{j}];
+        end
+        data(i,counter)=skewness(Data(:,j),0); %Unbiased estimation
+        
+        counter=counter+1;
+        if i==1
+        paramLabels{counter}=[labs{j} 'kur'];
+        description{counter}=['Kurtosis proc EMG in muscle ' labs{j}];
+        end
+        data(i,counter)=kurtosis(Data(:,j),0); %Unbiased estimation
+        
+        counter=counter+1;
+        if i==1
+        paramLabels{counter}=[labs{j} 'iqr'];
+        description{counter}=['Inter-quartile range in proc EMG in muscle ' labs{j}];
+        end
+        data(i,counter)=iqr(Data(:,j));
+        
+        
         
         counter=counter+1;
         if i==1

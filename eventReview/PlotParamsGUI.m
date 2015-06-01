@@ -51,7 +51,7 @@ end
 set(handles.subjectList,'String',subs)
 
 %populate parameter list (Just load one subject for now)
-load([handles.SMatrix.(g{1}).IDs{1,1} 'params.mat'])
+load(handles.SMatrix.(g{1}).IDs{1,9})
 set(handles.parameterList,'String',adaptData.getParameterList)
 
 %populate group list
@@ -214,7 +214,9 @@ if ~isempty(get(handles.groupList,'Value'))
         for g=1:length(groups)
             for s=1:length(indivSubs)
                 if ismember(indivSubs{s},handles.SMatrix.(groups{g}).IDs(:,1))
-                    indivSubList{g}{end+1}=[indivSubs{s} 'params.mat'];
+                    [~,locb]=ismember(indivSubs{s},handles.SMatrix.(groups{g}).IDs(:,1));
+                    indivSubList{g}{end+1}=handles.SMatrix.(groups{g}).IDs{locb,9};
+                    %indivSubList{g}{end+1}=[indivSubs{s} 'params.mat'];
                 end
             end
         end
@@ -223,7 +225,14 @@ else
     if ~isempty(get(handles.subjectList,'Value'))    
         indivSubs=handles.subjects(get(handles.subjectList,'Value'));
         for s=1:length(indivSubs)
-            adaptDataList{end+1}={[indivSubs{s} 'params.mat']};
+            %adaptDataList{end+1}={[indivSubs{s} 'params.mat']};
+            groups=fields(handles.SMatrix);
+            for g=1:numel(groups)
+                [~,locb]=ismember(indivSubs{s},handles.SMatrix.(groups{g}).IDs(:,1));
+                if ~isempty(locb)
+                    adaptDataList{end+1}={handles.SMatrix.(groups{g}).IDs{locb,9}};
+                end
+            end
         end
     end
 end

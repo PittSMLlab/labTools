@@ -43,7 +43,6 @@ classdef labMetaData
                 throw(ME);
             end            
         end
-        
     end
     
 end

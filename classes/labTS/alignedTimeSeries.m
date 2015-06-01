@@ -154,7 +154,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    %legend(this.labels{i})
                    %maxM(i)=5*norm(data(:))/sqrt(length(data(:)));
                    meanM(i)=prctile(data(:),50);
-                   maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i);
+                   maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i)+eps;
                    minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
                    axis([0 1 minM(i) maxM(i)])
                    hold off

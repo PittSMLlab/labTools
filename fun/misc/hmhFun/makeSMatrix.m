@@ -8,9 +8,10 @@ fileList=files.mat;
 
 for i=1:length(fileList)
     %find files in pwd that are (Subject)param.mat files
-    aux1=strfind(fileList{i},'params');
+    aux1=strfind(lower(fileList{i}),'params');
     if ~isempty(aux1)
         subID=fileList{i}(1:(aux1-1));
+        %subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo
         load(fileList{i});        
         subAge=adaptData.subData.age;
         expDate=adaptData.metaData.date;
@@ -19,6 +20,7 @@ for i=1:length(fileList)
         gender=adaptData.subData.sex;
         ht=adaptData.subData.height;
         wt=adaptData.subData.weight;
+        fileName=fileList{i};
         %get group
         group=adaptData.metaData.ID;
         abrevGroup=group(ismember(group,['A':'Z' 'a':'z'])); %remove non-alphabetic characters
@@ -34,7 +36,7 @@ for i=1:length(fileList)
         conditions=conditions(~cellfun('isempty',conditions));
         
         if isfield(Subs,abrevGroup)
-            Subs.(abrevGroup).IDs(end+1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs};
+            Subs.(abrevGroup).IDs(end+1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};
             if isfield(Subs.(abrevGroup),'conditions')
                 %check if current subject had conditions other than the rest
                 for c=1:length(conditions)
@@ -54,7 +56,7 @@ for i=1:length(fileList)
                 Subs.(abrevGroup).conditions=Subs.(abrevGroup).conditions(~cellfun('isempty',Subs.(abrevGroup).conditions));
             end
         else
-            Subs.(abrevGroup).IDs(1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs};            
+            Subs.(abrevGroup).IDs(1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};            
             Subs.(abrevGroup).conditions=conditions;
         end       
     end

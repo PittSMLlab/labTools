@@ -244,7 +244,7 @@ for group=1:Ngroups
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
                         %%to plot as lines:
-                        Li{group}(s)=plot(x,y_ind,LineOrder{g},'color',ColorOrder(subInd,:));
+                        Li{group}(s)=plot(x,y_ind,LineOrder{g},'color',ColorOrder(mod(subInd-1,size(ColorOrder,1))+1,:));
                         legendStr{group}=subsToPlot;
                     end
                     if length(adaptDataList{group})>1

@@ -185,6 +185,20 @@ classdef experimentMetaData
                 end
             end
         end
+        
+        function this=replaceConditionNames(this,currentName,newName)
+            %Looks for conditions whose name match the options in
+            %currentName & changes them to newName
+            
+           %Check currentName and newName are cell arrays of same length
+           conditionIdxs=this.getConditionIdxsFromName(currentName);
+           %this.conditionName(conditionIdxs)=newName;
+           for i=1:length(currentName)
+               if ~isnan(conditionIdxs(i))
+                    this.conditionName{conditionIdxs(i)}=newName{i};
+               end
+           end
+        end
     end
     
 end
