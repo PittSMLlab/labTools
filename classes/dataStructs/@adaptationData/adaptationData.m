@@ -328,6 +328,7 @@ classdef adaptationData
                 Ne=exemptLast;
             end
             if nargin<4 || isempty(removeBiasFlag) || removeBiasFlag==1
+                this=this.removeBadStrides; 
                 this=this.removeBias; %Default behaviour
             else
                 %this=adaptData;
