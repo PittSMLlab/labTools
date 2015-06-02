@@ -229,7 +229,7 @@ else
             groups=fields(handles.SMatrix);
             for g=1:numel(groups)
                 [~,locb]=ismember(indivSubs{s},handles.SMatrix.(groups{g}).IDs(:,1));
-                if ~isempty(locb)
+                if locb~=0
                     adaptDataList{end+1}={handles.SMatrix.(groups{g}).IDs{locb,9}};
                 end
             end
