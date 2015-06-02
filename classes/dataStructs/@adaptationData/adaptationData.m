@@ -401,7 +401,7 @@ classdef adaptationData
         function [trials]=getTrialsInCond(this,cond) %This function can be improved greatly, but is only used in plotAvgTimeCourse for time being.
             conditions=this.metaData.conditionName(~cellfun('isempty',this.metaData.conditionName));
             trials=this.metaData.trialsInCondition(~cellfun('isempty',this.metaData.conditionName));
-            trials=trials{ismember(conditions,cond)==true};
+            trials=trials{ismember(lower(conditions),lower(cond))==true};
         end
         
         %Display functions:
