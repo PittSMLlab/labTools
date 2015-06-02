@@ -157,7 +157,7 @@ if ~isempty(get(hObject,'Value'))
             auxCond=handles.SMatrix.(groups{i}).conditions;
             condPresent=false(1,length(conditions));
             for c=1:length(auxCond)
-                condPresent=condPresent+ismember(conditions,auxCond(c));
+                condPresent=condPresent+ismember(lower(conditions),lower(auxCond(c)));
             end
             if any(~condPresent)
                 conditions(~condPresent)=[];
