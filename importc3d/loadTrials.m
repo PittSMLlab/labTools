@@ -52,12 +52,14 @@ for t=cell2mat(info.trialnums)
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
                     otherwise
-                        warning('loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected channels (L=1, R=2, H=4). Discarding.')
-                        %do nothing
+                        showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output                        
                 end
                 end
             end
         end    
+        if showWarning
+            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Discarding.'])
+        end
         %Sanity check: offset calibration
                 
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
@@ -273,29 +275,39 @@ for t=cell2mat(info.trialnums)
         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
         labelPresent=false(1,length(mustHaveLabels));
         for i=1:length(fieldList)
-            label=findLabel(fieldList{i});
-            labelPresent=labelPresent+ismember(mustHaveLabels,label);
-        end
-        if any(~labelPresent)
-            missingLabels=find(~labelPresent);
-            str=' ';
-            for j=missingLabels
-                str=[str ', ' mustHaveLabels{j}];
-            end
-            ME=MException('loadTrials:markerDataError',['Marker data does not contain:' str '. Edit ''findLabel'' code to fix.']);
-            throe(ME)
+            newFieldList{i}=findLabel(fieldList{i});
+            labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
         end
         
-%         %atlernatively, 
+%         %if any of the must-have labels are not present, terminate script
+%         %and throw warning.
 %         if any(~labelPresent)
 %             missingLabels=find(~labelPresent);
-%             for j=missingLables
-%                 %generate menu
-%                 choice = menu(['Which marker is the ' mustHaveLabels{j} 'marker?'] ,fieldList);
-%                 %Then, somehow specifiy that the label corresponding to
-%                 %choice should be labeled as one of the must-have labels
+%             str=' ';
+%             for j=missingLabels
+%                 str=[str ', ' mustHaveLabels{j}];
 %             end
+%             ME=MException('loadTrials:markerDataError',['Marker data does not contain:' str '. Edit ''findLabel'' code to fix.']);
+%             throw(ME)
 %         end
+        
+        %atlernatively, 
+        if any(~labelPresent)
+            missingLabels=find(~labelPresent);
+            potentialMatches=newFieldList(~ismember(newFieldList,mustHaveLabels));
+            for j=missingLabels
+                %generate menu
+                choice = menu([{['WARNING: the marker label ' mustHaveLabels{j}]},{' was not found, but is necessary for'},...
+                    {'future calculations.Please indicate which'},{[' marker corresponds to the ' mustHaveLabels{j} ' label:']}] ,potentialMatches);
+                if choice==0
+                    ME=MException('loadTrials:markerDataError','Operation terminated by user while finding names of necessary labels.');
+                    throw(ME)
+                else
+                    %set the label corresponding to choice as one of the must-have labels
+                    addMarkerPair(mustHaveLabels{j},potentialMatches{choice})
+                end
+            end
+        end
         
         for j=1:length(fieldList);
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
