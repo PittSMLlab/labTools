@@ -3,7 +3,7 @@ function varargout = PlotParamsGUI(varargin)
 %
 % See also: 
 
-% Last Modified by GUIDE v2.5 29-May-2015 15:32:08
+% Last Modified by GUIDE v2.5 01-Jun-2015 16:48:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -324,6 +324,37 @@ end
 end
 
 function conditionSubList_CreateFcn(hObject, eventdata, handles)
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+end
+
+
+
+function regExpBox_Callback(hObject, eventdata, handles)
+% hObject    handle to regExpBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of regExpBox as text
+%        str2double(get(hObject,'String')) returns contents of regExpBox as a double
+
+expression=get(hObject,'String');
+%Get labels that match:
+paramList=cellstr(get(handles.parameterList,'String'));
+aux=regexp(paramList,expression);
+bool=cellfun(@(x) ~isempty(x),aux);
+set(handles.parameterList,'Value',find(bool));
+end
+
+% --- Executes during object creation, after setting all properties.
+function regExpBox_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to regExpBox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end

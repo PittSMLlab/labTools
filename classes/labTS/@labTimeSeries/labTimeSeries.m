@@ -561,6 +561,10 @@ classdef labTimeSeries  < timeseries
                 newThis.UserData=this.UserData;
                 newThis.UserData.processingInfo{end+1}=filterList{1};
         end
+        
+        function this=medianFilter(this,N)
+           this.Data=medfilt1(this.Data,N);
+        end
                 
     end
     

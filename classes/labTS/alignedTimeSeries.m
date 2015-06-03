@@ -190,7 +190,8 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 this.Data=this.Data(:,:,strideIdxs);
             end
             if ~islogical(this.Data(1))
-                meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                %meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanmean(this.Data,3),this.labels,this.alignmentVector,this.alignmentLabels);
                 stds=[];
             else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
                 [histogram,newLabels]=logicalHist(this);
