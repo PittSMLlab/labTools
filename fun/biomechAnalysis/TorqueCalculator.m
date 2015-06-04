@@ -1,4 +1,4 @@
-function [ AllMoments,COPTS,COMTS ] = TorqueCalculator(rawTrialData,events)
+function [ AllMomentsTS,COPTS,COMTS ] = TorqueCalculator(rawTrialData)
 %TorqueCalculator This function calculates the torques at each of the
 %joints of the lower body based on inverse dynamics calculations.
 

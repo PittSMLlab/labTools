@@ -36,8 +36,11 @@ classdef processedLabData < labData
         gaitEvents %labTS
         procEMGData %processedEMGTS
         angleData %labTS (angles based off kinematics)
-        adaptParams %paramterSeris (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
+        adaptParams %paramterSeries (parameters whcih characterize adaptation process) --> must be calculated, therefore not part of constructor.
         %EMGData, which is inherited from labData, saves the FILTERED EMG data used for processing afterwards (not the RAW, which is saved in the not-procesed labData)
+        COPData
+        COMData
+        jointMomentsData
     end
     
     properties (Dependent)        
@@ -49,8 +52,8 @@ classdef processedLabData < labData
     methods
         
         %Constructor:
-        function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData) %All arguments are mandatory
-            if nargin<12 %metaData does not get replaced!
+        function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData) %All arguments are mandatory
+            if nargin<15 %metaData does not get replaced!
                markerData=[];
                EMGData=[];
                GRFData=[];
@@ -62,11 +65,17 @@ classdef processedLabData < labData
                events=[];
                procEMG=[];
                angleData = [];
+               COPData=[];
+               COMData=[];
+               jointMomentsData=[];
             end
             this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches);
             this.gaitEvents=events;
             this.procEMGData=procEMG;
             this.angleData=angleData;
+            this.COPData=COPData;
+            this.COMData=COMData;
+            this.jointMomentsData=jointMomentsData;
         end
         %Setters
         function this=set.gaitEvents(this,events)

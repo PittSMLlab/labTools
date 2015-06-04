@@ -213,12 +213,18 @@ classdef labData
                 trialData.beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events);
             end
             
-            % 6) Generate processedTrial object
-            processedData=processedTrialData(trialData.metaData,trialData.markerData,filteredEMGData,trialData.GRFData,trialData.beltSpeedSetData,trialData.beltSpeedReadData,trialData.accData,trialData.EEGData,trialData.footSwitchData,events,procEMGData,angleData);
+            %6) Get COP, COM and joint torque data.
+            [jointMomentsData,COPData,COMData] = TorqueCalculator(rawTrialData);
             
-            %7) Calculate adaptation parameters - to be
+            % 7) Generate processedTrial object
+            processedData=processedTrialData(trialData.metaData,trialData.markerData,filteredEMGData,trialData.GRFData,trialData.beltSpeedSetData,trialData.beltSpeedReadData,trialData.accData,trialData.EEGData,trialData.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
+            
+            % 8) Calculate adaptation parameters - to be
             % recalculated later!!
             processedData.adaptParams=calcParameters(processedData,subData,eventClass);
+            
+            
+            
         end
         
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
