@@ -6,6 +6,14 @@ function [filteredData] = filtfilthd(filterObj,data,method)
 %the DSP toolbox.
 %Uses 'reflect' method for dealing with borders.
 
+if size(data,1)==1 
+    warning('filtfiltHD expects input data to be entered as columns, transposing')
+    data=data';
+end
+if size(data,1)<size(data,2)
+    warning('Input data seems to be organized as rows, and filtfilthd filters along columns.')
+end
+
 M=size(data,1);
 
 if nargin<3
