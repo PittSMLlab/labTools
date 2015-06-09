@@ -58,7 +58,7 @@ if nargin<4
     binwidth=1; %default
 end
 
-if nargin<5 || length(trialMarkerFlag)==length(cond)
+if nargin<5 || length(trialMarkerFlag)~=length(cond)
     trialMarkerFlag=false(1,length(cond));
 end     
 
@@ -152,7 +152,7 @@ for group=1:Ngroups
             
             % 1) find the length of each trial
             if maxNumPts
-                %to plot the max number of pts in each trial:
+                %to plot the MAX number of pts in each trial:
                 [maxPts,loc]=nanmax(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts>1.25*nanmax(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
                     numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean
@@ -162,7 +162,7 @@ for group=1:Ngroups
                     continue
                 end
             else
-                %to plot the min number of pts in each trial:
+                %to plot the MIN number of pts in each trial:
                 [maxPts,loc]=nanmin(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts<0.75*nanmin(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
                     numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean

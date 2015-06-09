@@ -399,10 +399,8 @@ classdef adaptationData
             end
         end
         
-        function [trials]=getTrialsInCond(this,cond) %This function can be improved greatly, but is only used in plotAvgTimeCourse for time being.
-            conditions=this.metaData.conditionName(~cellfun('isempty',this.metaData.conditionName));
-            trials=this.metaData.trialsInCondition(~cellfun('isempty',this.metaData.conditionName));
-            trials=trials{ismember(lower(conditions),lower(cond))==true};
+        function trialNums=getTrialsInCond(this,conditionNames)
+            trialNums=this.metaData.getTrialsInCondition(conditionNames);            
         end
         
         %Display functions:
@@ -608,7 +606,7 @@ classdef adaptationData
                     last=nanmedian(data,1);
                end
                xlabel(labels{1})
-              ylabel(labels{2})
+               ylabel(labels{2})
            end
            if exist('hh','var') && ~isempty(hh)
                 legend(hh,this.metaData.conditionName{conditionIdxs})

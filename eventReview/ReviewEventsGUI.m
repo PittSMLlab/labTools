@@ -473,7 +473,7 @@ if length(fieldList{value})==2
         ECF = events.sampFreq/TSdata.sampFreq; 
         for i=1:length(events.labels)
             data=events.getDataAsVector(events.labels{i});
-            eval([events.labels{i} 'times=times(startSamp)+events.Time(data(round((startSamp-1).*ECF+1):round((endSamp-1).*ECF+1))==1);'])
+            eval([events.labels{i} 'times=times(startSamp)+events.Time(data(ceil((startSamp-1).*ECF+1):floor((endSamp-1).*ECF+1))==1);'])
         end
         %Overlay events (only those in the time window...otherwise there
         %will be warnings for the extra legend entries

@@ -17,7 +17,7 @@ classdef experimentMetaData
 %
 %experimentMetaData Methods:
 %   getCondLstPerTrial - returns list of condition numbers for each trial
-%   getConditionIdxsFromName - returns the number of conditions with a
+%   getConditionIdxsFromName - returns the condition number for conditions with a
 %   similar name to the string(s) entered.
 %
 %See also: labDate
@@ -184,6 +184,11 @@ classdef experimentMetaData
                     conditionIdxs(i)=condIdx;
                 end
             end
+        end
+        
+        function trialNums=getTrialsInCondition(this,conditionNames)
+            conditionIdx=this.getConditionIdxsFromName(conditionNames);
+            trialNums=cell2mat(this.trialsInCondition(conditionIdx));
         end
         
         function this=replaceConditionNames(this,currentName,newName)
