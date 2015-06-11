@@ -189,35 +189,35 @@ classdef labData
                 eventClass=[];
             end
             
-            trialData=this;
+            
             % 1) Extract amplitude from emg data if present
             spikeRemovalFlag=0;
-            [procEMGData,filteredEMGData] = processEMG(trialData,spikeRemovalFlag);
+            [procEMGData,filteredEMGData] = processEMG(this,spikeRemovalFlag);
             
             % 2) Attempt to interpolate marker data if there is missing data
             % (make into function once we have a method to do this)
-            markers=trialData.markerData;
+            markers=this.markerData;
             if ~isempty(markers)
                 %function goes here: check marker data health
             end
             
             % 3) Calculate limb angles
-            angleData = calcLimbAngles(trialData);
+            angleData = calcLimbAngles(this);
             
             % 4) Calculate events from kinematics or force if available
-            events = getEvents(trialData,angleData);
+            events = getEvents(this,angleData);
             
             % 5) If 'beltSpeedReadData' is empty, try to generate it
             % from foot markers, if existent
-            if isempty(trialData.beltSpeedReadData)
-                trialData.beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events);
+            if isempty(this.beltSpeedReadData)
+                this.beltSpeedReadData = getBeltSpeedsFromFootMarkers(this,events);
             end
             
             %6) Get COP, COM and joint torque data.
-            [jointMomentsData,COPData,COMData] = TorqueCalculator(rawTrialData);
+            [jointMomentsData,COPData,COMData] = TorqueCalculator(this);
             
             % 7) Generate processedTrial object
-            processedData=processedTrialData(trialData.metaData,trialData.markerData,filteredEMGData,trialData.GRFData,trialData.beltSpeedSetData,trialData.beltSpeedReadData,trialData.accData,trialData.EEGData,trialData.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
+            processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
             
             % 8) Calculate adaptation parameters - to be
             % recalculated later!!
