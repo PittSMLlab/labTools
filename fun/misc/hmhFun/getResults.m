@@ -77,9 +77,10 @@ for g=1:ngroups
         
     for s=1:length(subjects)
         % load subject
-        load([subjects{s} 'params.mat'])       
+        adaptData=SMatrix.(groups{g}).(subjects{s});      
         
         % remove baseline bias
+        adaptData=adaptData.removeBadStrides;
         adaptData=adaptData.removeBias;        
         
          if nargin>3 && maxPerturb==1             
@@ -177,9 +178,14 @@ for g=1:ngroups
     end   
     
     %calculate relative after-effects
-%     transfer=[transfer; 100*(ogafter./(tmcatch))];
+
 %     transfer=[transfer; 100*(ogafter./(tmcatch(:,3)*ones(1,3)))];
-    transfer=[transfer; 100*(ogafter./(tmCatch))];
+    idx = find(strcmp(params, 'stepLengthAsym'));
+    if ~isempty(idx)
+        transfer=[transfer; 100*(ogafter./(tmCatch(:,idx)*ones(1,length(params))))];
+    else
+        transfer=[transfer; 100*(ogafter./tmCatch)];
+    end
     washout=[washout; 100-(100*(tmafter./tmCatch))];
 
     transfer2=[transfer2; 100*(ogafter./tmsteady)];
@@ -229,7 +235,7 @@ for g=1:ngroups
     results.Washout2.avg(end+1,:)=nanmean(washout2,1);
     results.Washout2.se(end+1,:)=nanstd(washout2,1)./sqrt(nSubs);
     
-    if g==1 %This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever) structure needs to be in this format to make life easier for using SPSS
+    if g==1 %This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS
         for p=1:length(params)        
             results.OGbase.indiv.(params{p})=[g*ones(nSubs,1) OGbase(:,p)];
             results.TMbase.indiv.(params{p})=[g*ones(nSubs,1) TMbase(:,p)];
@@ -245,6 +251,21 @@ for g=1:ngroups
             results.Washout.indiv.(params{p})=[g*ones(nSubs,1) washout(:,p)];
             results.Transfer2.indiv.(params{p})=[g*ones(nSubs,1) transfer2(:,p)];
             results.Washout2.indiv.(params{p})=[g*ones(nSubs,1) washout2(:,p)];
+
+%             results.OGbase.indiv=[g*ones(nSubs,1) OGbase];
+%             results.TMbase.indiv=[g*ones(nSubs,1) TMbase];
+%             results.AvgAdaptBeforeCatch.indiv=[g*ones(nSubs,1) avgAdaptBC];
+%             results.AvgAdaptAll.indiv=[g*ones(nSubs,1) avgAdaptAll];
+%             results.ErrorsOut.indiv=[g*ones(nSubs,1) errorsOut];
+%             results.TMsteadyBeforeCatch.indiv=[g*ones(nSubs,1) tmsteadyBC];
+%             results.catch.indiv=[g*ones(nSubs,1) tmCatch];
+%             results.TMsteady.indiv=[g*ones(nSubs,1) tmsteady];
+%             results.OGafter.indiv=[g*ones(nSubs,1) ogafter];
+%             results.TMafter.indiv=[g*ones(nSubs,1) tmafter];
+%             results.Transfer.indiv=[g*ones(nSubs,1) transfer];
+%             results.Washout.indiv=[g*ones(nSubs,1) washout];
+%             results.Transfer2.indiv=[g*ones(nSubs,1) transfer2];
+%             results.Washout2.indiv=[g*ones(nSubs,1) washout2];            
         end
     else        
         for p=1:length(params)     
@@ -262,6 +283,21 @@ for g=1:ngroups
             results.Washout.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) washout(:,p)];
             results.Transfer2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) transfer2(:,p)];
             results.Washout2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) washout2(:,p)];
+
+%             results.OGbase.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) OGbase];
+%             results.TMbase.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) TMbase];
+%             results.AvgAdaptBeforeCatch.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) avgAdaptBC];
+%             results.AvgAdaptAll.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) avgAdaptAll];
+%             results.ErrorsOut.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) errorsOut];
+%             results.TMsteadyBeforeCatch.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) tmsteadyBC];
+%             results.catch.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) tmCatch];
+%             results.TMsteady.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) tmsteady];
+%             results.OGafter.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) ogafter];
+%             results.TMafter.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) tmafter];
+%             results.Transfer.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) transfer];
+%             results.Washout.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) washout];
+%             results.Transfer2.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) transfer2];
+%             results.Washout2.indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) washout2];
         end
     end
 end
@@ -270,21 +306,28 @@ end
 if nargin>4 && plotFlag
     
     % FIRST: plot baseline values against catch and transfer
-    epochs={'AvgAdaptAll','TMsteady','catch','TMafter','OGafter'};
+    epochs={'TMsteady','catch','OGafter','TMafter'};
     if nargin>5 %I imagine there has to be a better way to do this...
         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
     else
         barGroups(SMatrix,results,groups,params,epochs)
     end
     
-    % SECOND: plot average adaptation values?
-    epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
-    if nargin>5 
-        barGroups(SMatrix,results,groups,params,epochs,indivFlag)
-    else
-        barGroups(SMatrix,results,groups,params,epochs)
-    end   
+%     % SECOND: plot average adaptation values?
+%     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};
+%     if nargin>5 
+%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
+%     else
+%         barGroups(SMatrix,results,groups,params,epochs)
+%     end   
 
+%     % SECOND: plot average adaptation values?
+%     epochs={'AvgAdaptAll','TMsteady','catch','Transfer'};
+%     if nargin>5 
+%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)
+%     else
+%         barGroups(SMatrix,results,groups,params,epochs)
+%     end   
 end
 
 

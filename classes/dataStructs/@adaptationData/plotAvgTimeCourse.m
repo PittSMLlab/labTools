@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -86,18 +86,13 @@ titleFontSize=12;
 [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
 legendStr={};
 
-% Set colors
-%poster_colors
 % Set colors order
-%ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];
+if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
+    poster_colors;
+    colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];
+end
 
-poster_colorsHH;
-% Set colors order
-%            %OA       OG        OANC       YA     OASV         OGNC       YASV        YG      YGNC           YASS        YGSS          OGSS          OASS
-% ColorOrder=[p_red; p_orange; p_violet; p_green; p_dark_red; p_yellow; p_dark_green; p_blue; p_dark_blue; p_fade_green; p_fade_blue; p_fade_orange; p_fade_red];
-ColorOrder= [p_red; p_orange; p_green; p_blue; p_indigo;  p_dark_red; p_dark_green; p_dark_blue; p_violet; p_fade_red; p_fade_orange; p_fade_yellow; p_fade_green; p_fade_blue; p_gray; p_black];
-
-LineOrder={'-',':','--','-.'};
+lineOrder={'-','--','-.',':'};
 
 %% Load data and determine length of trials or conditions
 nConds=length(conditions);
@@ -244,29 +239,31 @@ for group=1:Ngroups
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
                         %%to plot as lines:
-                        Li{group}(s)=plot(x,y_ind,LineOrder{g},'color',ColorOrder(mod(subInd-1,size(ColorOrder,1))+1,:));
+                        Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:));
                         legendStr{group}=subsToPlot;
                     end
+                    %plot average of group if there is more than one person
+                    %in the group
                     if length(adaptDataList{group})>1
-                        Li{group}(end+1)=plot(x,y,'o','MarkerSize',3,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
+                        Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',3,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
                         load(adaptDataList{group}{1})
                         legendStr{group}(end+1)={['Average ' adaptData.metaData.ID]};                                               
                     end                    
                 else %only plot group averages
                     if Ngroups==1 && ~(size(params,1)>1) %one group (each condition colored different)
-                        [Pa, Li{c}]=nanJackKnife(x,y,E,ColorOrder(c,:),ColorOrder(c,:)+0.5.*abs(ColorOrder(c,:)-1),0.7);
+                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7);
                         set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
                     elseif size(params,1)>1 %Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
-                        color=ColorOrder(g,:)./Cdiv;
+                        color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
                     else %Each group colored differently
-                        color=ColorOrder(g,:)./Cdiv;
+                        color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
@@ -298,9 +295,9 @@ for group=1:Ngroups
                 line([lineX; lineX],ylim,'color','k')
                 xticks=lineX+diff([lineX Xstart])./2;
                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', conditions)
-            end
-            h=refline(0,0);
-            set(h,'color','k')
+                h=refline(0,0);
+                set(h,'color','k')
+            end            
             hold off
         end
         lineX(end+1)=Xstart-0.5;        

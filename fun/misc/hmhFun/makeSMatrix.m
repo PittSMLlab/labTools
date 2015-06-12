@@ -37,6 +37,7 @@ for i=1:length(fileList)
         
         if isfield(Subs,abrevGroup)
             Subs.(abrevGroup).IDs(end+1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};
+            Subs.(abrevGroup).(subID)=adaptData;
             if isfield(Subs.(abrevGroup),'conditions')
                 %check if current subject had conditions other than the rest
                 for c=1:length(conditions)
@@ -58,6 +59,8 @@ for i=1:length(fileList)
         else
             Subs.(abrevGroup).IDs(1,:)={subID,gender,subAge,ht,wt,expDate,experimenter,obs,fileName};            
             Subs.(abrevGroup).conditions=conditions;
+            Subs.(abrevGroup).(subID)=adaptData;            
+            
         end       
     end
 end
