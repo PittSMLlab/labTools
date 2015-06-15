@@ -44,7 +44,8 @@ a=load(auxList{1}{1});
 aux=fields(a);
 this=a.(aux{1});
 if nargin<5 || isempty(condList)
-    conds=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
+    condList=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
+    conds=condList;
 else
     conds=condList;
     for i=1:length(condList)

@@ -24,6 +24,10 @@ classdef subjectData
         ID=[]; %experimental ID assigned
     end
     
+    properties %other
+        cognitiveScores
+    end
+    
     methods
         %constructor
         function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)
@@ -52,7 +56,17 @@ classdef subjectData
                 this.ID=ID;
             end
         end
+        
+        function this=set.cognitiveScores(this,scores)
+            if isa(scores,'cognitiveData') || isempty(scores)
+                this.cognitiveScores=scores;
+            else
+                ME=MException('subjectData:Setter','cognitiveScores parameter is not object of the cognitiveData class');
+                throw(ME);
+            end
+        end  
     end
     
+         
 end
 

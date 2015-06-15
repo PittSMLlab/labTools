@@ -213,8 +213,8 @@ classdef adaptationData
             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
             
             % validate condition(s)
-            if nargin<3 || isempty(condition)
-                condition=this.metaData.conditionName;
+            if nargin<3 || isempty(condition) || (~isa(condition,'cell') && any(isnan(condition)))
+                condition=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));                
             end
             condNum = [];
             if isa(condition,'char')
@@ -625,7 +625,7 @@ classdef adaptationData
         
         [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
         
-        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)
+        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder)
 
         function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
             earlyPoints=[];
@@ -665,6 +665,16 @@ classdef adaptationData
         end
           
         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
+            
+            if isa(adaptDataList,'cell')
+                if ~isa(adaptDataList{1},'cell')
+                    adaptDataList{1}=adaptDataList;
+                end
+            elseif isa(adaptDataList,'char')
+                adaptDataList{1}={adaptDataList};
+            end
+            Ngroups=length(adaptDataList);
+            
             if nargin<7 || isempty(removeBias)
                 removeBias=0;
             end
@@ -681,27 +691,29 @@ classdef adaptationData
             if nargin<4 || isempty(binSize)
                 binSize=[];
             end
-            for i=1:length(adaptDataList)
-                r=(i-1)/(length(adaptDataList)-1);
-                if nargin<6 || isempty(trajColors)
-                    trajColor=[1,0,0] + r*[-1,0,1];
-                elseif iscell(trajColors)
-                    trajColor=trajColors{i};
-                elseif size(trajColors,2)==3
-                    trajColor=trajColors(mod(i,size(trajColors,1))+1,:);
-                else
-                    warning('Could not interpret trajecColors input')
-                    trajColor='k';
+            for g=1:Ngroups
+                for i=1:length(adaptDataList(g))
+                    r=(i-1)/(length(adaptDataList{g})-1);
+                    if nargin<6 || isempty(trajColors)
+                        trajColor=[1,0,0] + r*[-1,0,1];
+                    elseif iscell(trajColors)
+                        trajColor=trajColors{i};
+                    elseif size(trajColors,2)==3
+                        trajColor=trajColors(mod(i,size(trajColors,1))+1,:);
+                    else
+                        warning('Could not interpret trajecColors input')
+                        trajColor='k';
+                    end
+                    a=load(adaptDataList{g}{i});
+                    fieldList=fields(a);
+                    this=a.(fieldList{1});
+                    if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different
+                        conditionIdxs1=getConditionIdxsFromName(this,conditionIdxs);
+                    else
+                        conditionIdxs1=conditionIdxs;
+                    end
+                    figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);
                 end
-                a=load(adaptDataList{i});
-                fieldList=fields(a);
-                this=a.(fieldList{1});
-                if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different
-                    conditionIdxs1=getConditionIdxsFromName(this,conditionIdxs);
-                else
-                    conditionIdxs1=conditionIdxs;
-                end
-                figHandle=scatterPlot(this,labels,conditionIdxs1,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);
             end
             
         end
