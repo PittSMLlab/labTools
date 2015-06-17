@@ -29,6 +29,7 @@ for t=cell2mat(info.trialnums)
     
     %% GRFData
     if info.forces
+        showWarning = false;%must define or else error is thrown when otherwise case is skipped
         relData=[];
         forceLabels ={};
         units={};
