@@ -152,10 +152,10 @@ GRFyR = filtfilthd(TheDesign,GRFyR);
 GRFzR = filtfilthd(TheDesign,GRFzR);
 % Apply a filter to the moment data collected as well.
 [Bmom, Amom]=butter(4,10/(1000/2));
-GRMxL=filtfilt(Bmom, Amom, GRMxL);
-GRMyL=filtfilt(Bmom, Amom, GRMyL);
-GRMxR=filtfilt(Bmom, Amom, GRMxR);
-GRMyR=filtfilt(Bmom, Amom, GRMyR);
+GRMxL=filtfilt(Bmom, Amom, GRMxL)';
+GRMyL=filtfilt(Bmom, Amom, GRMyL)';
+GRMxR=filtfilt(Bmom, Amom, GRMxR)';
+GRMyR=filtfilt(Bmom, Amom, GRMyR)';
 
 
 % Set all moment and some force data equal to zero when the foot is not
