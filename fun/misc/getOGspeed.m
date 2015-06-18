@@ -2,7 +2,7 @@ function OGspeed = getOGspeed(expData)
 %must load subject before running function
 
 %detemine overground baseline trials
-OGtrials=cell2mat(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName('OG base')));
+OGtrials=cell2mat(expData.metaData.trialsInCondition(expData.metaData.getConditionIdxsFromName('OG base')))
 
 speeds=[];
 
@@ -44,7 +44,7 @@ for i=1:length(OGtrials) %loop through each og trail
     %find walking speed in m/s
     sampDiff=stop-start;
     distanceDiff=avghip(stop)-avghip(start); 
-    speeds= [speeds; (distanceDiff/1000)./(sampDiff'/trialData.markerData.sampFreq)]; %distance divided by 1000 to convert to m, samples converted to seconds by dividing by samp freq
+    speeds= [speeds; (distanceDiff/1000)./(sampDiff'/trialData.markerData.sampFreq)] %distance divided by 1000 to convert to m, samples converted to seconds by dividing by samp freq
 end
 
-OGspeed=nanmean(speeds);
+OGspeed=nanmean(abs(speeds));
