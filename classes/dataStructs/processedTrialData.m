@@ -14,9 +14,13 @@ classdef processedTrialData < processedLabData
     methods
         
         %Constructor:
+<<<<<<< HEAD
         function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData); %All arguments are mandatory
+=======
+        function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData) %All arguments are mandatory
+>>>>>>> origin/master
             
-            if nargin<12 %metaData does not get replaced.
+            if nargin<15 %metaData does not get replaced.
                markerData=[];
                EMGData=[];
                GRFData=[];
