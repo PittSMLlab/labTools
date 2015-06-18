@@ -5,17 +5,21 @@ function [ AllMomentsTS,COPTS,COMTS ] = TorqueCalculator(rawTrialData)
 in=rawTrialData;
 clear rawTrialData
 
-%%
-%STEP 1: Compute COP
-[COPTS] = COPCalculator(in.GRFData);
-
-%% 
-%STEP 2: Compute COM & extract values
-[COMTS] = COMCalculator(in.markerData);
-
-%% ---------------
-%STEP 3: Compute Torques
-
-[AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, in.markerData, in.GRFData);
-
+%% STEP 1: Compute COP
+if isempty(in.GRFData)
+    COPTS = [];
+else
+    [COPTS] = COPCalculator(in.GRFData);
+end
+%% STEP 2: Compute COM & extract values
+if isempty(in.markerData)
+    COMTS = [];
+else
+    [COMTS] = COMCalculator(in.markerData);
+end
+%% %STEP 3: Compute Torques
+if isempty(COMTS) || isempty(COPTS)
+    [AllMomentsTS] = [];
+else
+    [AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, in.markerData, in.GRFData);
 end
