@@ -477,7 +477,7 @@ classdef adaptationData
                     colorNow=[0,0,0];
                     for i=1:length(trialBreaks)
                         colorNow=1-colorNow;
-                        hh=patch([last trialBreaks(i) trialBreaks(i) last],[minM*[1,1] , maxM*[1,1]],1-.05*colorNow,'EdgeColor','None');
+                        hh=patch([last trialBreaks(i) trialBreaks(i) last],[minM*[1,1] , maxM*[1,1]],1-.09*colorNow,'EdgeColor','None');
                         uistack(hh,'bottom')
                         last=trialBreaks(i);
                     end
