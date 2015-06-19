@@ -165,13 +165,32 @@ for t=cell2mat(info.trialnums)
         
         %Plot to CONFIRM VISUALLY if alignment worked:
         h=figure;
+        subplot(2,2,[1:2])
         hold on
         title(['Trial ' num2str(t) ' Synchronization'])
-        plot([0:length(refSync)-1]*1/analogsInfo.frequency,refSync)
-        plot([0:length(sync)-1]*1/analogsInfo.frequency,sync(:,1)*gain1,'r')
-        plot([0:length(sync)-1]*1/analogsInfo.frequency,sync(:,2)*gain2,'g')
-        legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency)  's'])
+        time=[0:length(refSync)-1]*1/analogsInfo.frequency;
+        plot(time,refSync)
+        plot(time,sync(:,1)*gain1,'r')
+        plot(time,sync(:,2)*gain2,'g')
+        legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
         hold off
+        subplot(2,2,3)
+        T=round(3*analogsInfo.frequency); %To plot just 3 secs at the beginning and at the end
+        if T<length(refSync)
+        hold on
+         plot(time(1:T),refSync(1:T))
+        plot(time(1:T),sync(1:T,1)*gain1,'r')
+        plot(time(1:T),sync(1:T,2)*gain2,'g')
+        %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+        hold off
+        subplot(2,2,4)
+        hold on
+        plot(time(end-T:end),refSync(end-T:end))
+        plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
+        plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+        %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+        hold off
+        end
         saveFig(h,'./',['Trial ' num2str(t) ' Synchronization'])
 %         uiwait(h)
         

@@ -28,6 +28,12 @@ classdef strokeSubjectData<subjectData
         function this=set.affectedSide(this,affected)
             if strcmpi(affected,'R') || strcmpi(affected,'L')
                 this.affectedSide=affected;
+            elseif strcmpi(affected,'Right') || strcmpi(affected,'Left')
+                if strcmpi(affected,'Right')
+                    this.affectedSide='R';
+                else
+                    this.affectedSide='L';
+                end
             else
                 error('strokeSubjectData:Constructor','Argument ''affected'' needs to be either ''R'' or ''L''.')
             end
