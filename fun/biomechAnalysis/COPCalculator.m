@@ -327,7 +327,7 @@ end
 %     if yL(i)==1
 %         NewCOPyL(i)=NaN;
 %     end
-% endC3
+% end
 %----------------------------------
 
 
