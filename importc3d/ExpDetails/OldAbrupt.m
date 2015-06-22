@@ -1,53 +1,53 @@
 %OG study: old subjects adapted abruptly
 
-handles.group='Old Abrupt';
+expDes.group='Old Abrupt';
 
 %condition numbers
 for cond = 1:10
-    set(handles.(['condition' num2str(cond)]),'string',num2str(cond))
+    expDes.(['condition' num2str(cond)])=cond;
 end
-set(handles.numofconds,'string','10')    
+expDes.numofconds=10;  
 
 %condition names
-set(handles.condName1,'string','OG base')
-set(handles.condName2,'string','slow base')
-set(handles.condName3,'string','short split')
-set(handles.condName4,'string','fast base')
-set(handles.condName5,'string','TM base')
-set(handles.condName6,'string','adaptation')
-set(handles.condName7,'string','catch')
-set(handles.condName8,'string','re-adaptation')
-set(handles.condName9,'string','OG post')
-set(handles.condName10,'string','TM post')
+expDes.condName1='OG base';
+expDes.condName2='slow base';
+expDes.condName3='short split';
+expDes.condName4='fast base';
+expDes.condName5='TM base';
+expDes.condName6='adaptation';
+expDes.condName7='catch';
+expDes.condName8='re-adaptation';
+expDes.condName9='OG post';
+expDes.condName10='TM post';
 
 %condition descriptions
-set(handles.description1,'string','8m walkway for 6 min')
-set(handles.description2,'string','150 strides at 0.5 m/s')
-set(handles.description3,'string','10 strides 2:1, 1 m/s and 0.5 m/s')
-set(handles.description4,'string','150 strides at 1 m/s')
-set(handles.description5,'string','150 strides at 0.75 m/s')
-set(handles.description6,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
-set(handles.description7,'string','10 strides at 0.75 m/s')
-set(handles.description8,'string','150 strides 2:1, 1 m/s and 0.5 m/s')
-set(handles.description9,'string','8 m walkway for 6 min')
-set(handles.description10,'string','150 strides at 0.75 m/s')
+expDes.description1='8m walkway for 6 min';
+expDes.description2='150 strides at 0.5 m/s';
+expDes.description3='10 strides 2:1, 1 m/s and 0.5 m/s';
+expDes.description4='150 strides at 1 m/s';
+expDes.description5='150 strides at 0.75 m/s';
+expDes.description6='150 strides 2:1, 1 m/s and 0.5 m/s';
+expDes.description7='10 strides at 0.75 m/s';
+expDes.description8='150 strides 2:1, 1 m/s and 0.5 m/s';
+expDes.description9='8 m walkway for 6 min';
+expDes.description10='150 strides at 0.75 m/s';
 
 %trial numbers for each condition
-set(handles.trialnum1,'string','1:6')
-set(handles.trialnum2,'string','7')
-set(handles.trialnum3,'string','8')
-set(handles.trialnum4,'string','9')
-set(handles.trialnum5,'string','10')
-set(handles.trialnum6,'string','11:14')
-set(handles.trialnum7,'string','15')
-set(handles.trialnum8,'string','16 17')
-set(handles.trialnum9,'string','18:23')
-set(handles.trialnum10,'string','24:26')
+expDes.trialnum1='1:6';
+expDes.trialnum2='7';
+expDes.trialnum3='8';
+expDes.trialnum4='9';
+expDes.trialnum5='10';
+expDes.trialnum6='11:14';
+expDes.trialnum7='15';
+expDes.trialnum8='16 17';
+expDes.trialnum9='18:23';
+expDes.trialnum10='24:26';
 
 %set trial types
 for t=[1 9]
-    set(handles.(['type' num2str(t)]),'string','OG')
+    expDes.(['type' num2str(t)])='OG';
 end
 for t=[2:8 10]
-    set(handles.(['type' num2str(t)]),'string','TM')
+    expDes.(['type' num2str(t)])='TM';
 end

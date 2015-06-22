@@ -1,5 +1,5 @@
-function batchReProcess(subjects)
-% ex: subs= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}
+function batchReProcess(subjects,eventClass)
+% ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}
 
 if isa(subjects,'char')
     subjects={subjects};    
@@ -18,11 +18,10 @@ for s=subjects
             throw(ME)
         end
     end
-    
-    
-    expData=rawExpData.process;
+        
+    expData=rawExpData.process(eventClass);
     save([saveloc,char(s)],'expData','-v7.3')
     expData.makeDataObj([saveloc char(s)]); %overwrites file
     
-    clear all
+    clearvars -except eventClass
 end

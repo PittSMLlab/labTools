@@ -5,7 +5,7 @@ function varargout = GetInfoGUI(varargin)
 %
 % See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 01-May-2015 13:36:55
+% Last Modified by GUIDE v2.5 16-Jun-2015 14:33:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -48,8 +48,8 @@ guidata(hObject, handles);
 % left, bottom, width, height
 scrsz = get(0,'ScreenSize'); 
 set(gcf,'Units','pixels');
-guiPos = get(gcf,'Position');
-set(gcf, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+guiPos = get(hObject,'Position');
+set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
 
 
 %Set text that pops up when fields of GUI are hovered over. Note: sprintf
@@ -91,18 +91,26 @@ if ~(isfield(handles,'noSave') && handles.noSave)
 
     %Forcing save before the rest of the things are done (so, if it fails, we
     %don't lose it).
+    if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
+        choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
+        if strcmp(choice,'No')            
+            info.ID = [info.ID '_' date];
+            h=msgbox(['Saving as ' info.ID],'');
+            waitfor(h)          
+        end                
+    end
     save([info.save_folder filesep info.ID 'info'],'info')
 
-    %asks user if there are observations for individual trials
+    %ask user if there are observations for individual trials
     answer=input('Are there any observations for individual trials?(y/n) ','s');
 
-    %The following makes sure the correct response is entered
+    %make sure the correct response is entered
     while (lower(answer) ~= 'y' & lower(answer) ~= 'n') | length(answer)>1
         disp('Error: you must enter either "y" or "n"')
         answer=input('Are there any observations for individual trials?(y/n) ','s');
     end
 
-    %The following creates a menu to choose any trial
+    %create a menu to choose any trial
     expTrials = cell2mat(info.trialnums);
     numTrials = length(expTrials);
     if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
@@ -142,19 +150,28 @@ function description_edit_Callback(hObject, eventdata, handles)
 contents = cellstr(get(hObject,'String'));
 expFile = contents{get(hObject,'Value')};
 
-%first, clear all feilds
-set(handles.numofconds,'String','0');
-for conds = 1:handles.lines
-    set(handles.(['condition',num2str(conds)]),'string','');
-    set(handles.(['condName',num2str(conds)]),'string','');
-    set(handles.(['description',num2str(conds)]),'string','');
-    set(handles.(['trialnum',num2str(conds)]),'string','');
-    set(handles.(['type',num2str(conds)]),'string','');
-end
+% HH 6/16
+% eval(expFile)
+path=which('GetInfoGUI');
+path=strrep(path,'GetInfoGUI.m','ExpDetails');
+if exist([path filesep expFile '.mat'],'file')>0
+    %first, clear all feilds
+    set(handles.numofconds,'String','0');
+    for conds = 1:handles.lines
+        set(handles.(['condition',num2str(conds)]),'string','');
+        set(handles.(['condName',num2str(conds)]),'string','');
+        set(handles.(['description',num2str(conds)]),'string','');
+        set(handles.(['trialnum',num2str(conds)]),'string','');
+        set(handles.(['type',num2str(conds)]),'string','');
+    end
 
-%second, populate feilds based on experiment description entered.
-eval(expFile)
-numofconds_Callback(handles.numofconds, eventdata, handles)
+    %second, populate feilds based on experiment description entered.
+    a=load([path filesep expFile]);
+    aux=fields(a);
+    expDes=a.(aux{1});
+    handles=setExpDescription(handles,expDes);
+    numofconds_Callback(handles.numofconds, eventdata, handles)
+end
 
 guidata(hObject,handles)
 
@@ -220,17 +237,9 @@ function popupAffected_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupAffected
 
-
 function height_edit_Callback(hObject, eventdata, handles)
 
-height = str2double(get(hObject, 'String'));
-guidata(hObject,handles)
-
 function weight_edit_Callback(hObject, eventdata, handles)
-
-weight = str2double(get(hObject, 'String'));
-guidata(hObject,handles)
-
 
 %------------------------Data Info------------------------------%
 
@@ -327,7 +336,7 @@ function secfileloc_Callback(hObject, eventdata, handles) %runs if folder is inp
 handles.secfolder_location = get(hObject,'string');
 guidata(hObject,handles)
 
-%---------------------------Trial Info--------------------------------%
+% ------------------------Condition Info-------------------------------%
 
 function condition1_Callback(hObject, eventdata, handles)
 function condName1_Callback(hObject, eventdata, handles)
@@ -419,6 +428,65 @@ function description15_Callback(hObject, eventdata, handles)
 function trialnum15_Callback(hObject, eventdata, handles)
 function type15_Callback(hObject, eventdata, handles)
 
+
+% --- Executes on button press in saveExpButton.
+function saveExpButton_Callback(hObject, eventdata, handles)
+%generate expDes structure
+
+c=0;
+for i=1:handles.lines
+    %condition numbers
+    condNum=get(handles.(['condition' num2str(i)]),'string');
+    if ~isempty(condNum)
+        expDes.(['condition' num2str(i)])=condNum;
+        c=c+1;
+    end
+    %condition names
+    condName=get(handles.(['condName' num2str(i)]),'string');
+    if ~isempty(condName)
+        expDes.(['condName' num2str(i)])=condName;
+    end
+    %condition descriptions
+    condDesc=get(handles.(['description' num2str(i)]),'string');
+    if ~isempty(condDesc)
+        expDes.(['description' num2str(i)])=condDesc;
+    end
+    %trial numbers for each condition
+    trialNum=get(handles.(['trialnum' num2str(i)]),'string');
+    if ~isempty(trialNum)
+        expDes.(['trialnum' num2str(i)])=trialNum;
+    end
+    %trial types
+    type=get(handles.(['type' num2str(i)]),'string');
+    if ~isempty(type)
+        expDes.(['type' num2str(i)])=type;
+    end
+end
+expDes.numofconds=c;  
+
+answer = inputdlg('Enter name of new experiment description: ','Experiment Description Name');
+if ~isempty(answer)
+    answer = char(answer);
+    expDes.group=answer;
+    answer=answer(ismember(answer,['A':'Z' 'a':'z' '0':'9'])); %remove non-alphanumeric characters        
+    path=which('GetInfoGUI');
+    path=strrep(path,'GetInfoGUI.m','ExpDetails');
+    if exist([path filesep answer '.mat'],'file')>0
+        choice=questdlg('File name already exists. Overwrite?','File Name Warning','Yes','No','No');
+        if strcmp(choice,'No')
+            h=msgbox('Experiment description was not saved.','');
+            waitfor(h)
+            return
+        end                
+    end
+    save([path filesep answer],'expDes')
+    description_edit_CreateFcn(handles.description_edit, eventdata, handles)
+    newContents=get(handles.description_edit,'string');
+    ind=find(ismember(newContents,answer));
+    set(handles.description_edit,'Value',ind)
+end
+
+
 %---------------------Save as / Okay Button--------------------------%
 
 function saveloc_edit_Callback(hObject, eventdata, handles)
@@ -428,8 +496,9 @@ guidata(hObject,handles)
 
 % --- Executes on button press in save_browse.
 function save_browse_Callback(hObject, eventdata, handles)
-handles.save_folder = uigetdir;
-if ~handles.save_folder==0
+path = uigetdir;
+if ~path==0
+    handles.save_folder=path;
     set(handles.saveloc_edit,'string',handles.save_folder);
 end
 guidata(hObject,handles)
@@ -602,7 +671,8 @@ function description_edit_CreateFcn(hObject, eventdata, handles)
 path=which('GetInfoGUI');
 path=strrep(path,'GetInfoGUI.m','ExpDetails');
 W=what(path);
-experiments=cellstr(W.m);
+% experiments=cellstr(W.m); %HH 6/16
+experiments=cellstr(W.mat);
 for i=1:length(experiments)
     fileExt=find(experiments{i}=='.');
     experiments{i}=experiments{i}(1:fileExt-1);

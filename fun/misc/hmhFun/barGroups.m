@@ -1,4 +1,4 @@
-function barGroups(SMatrix,results,groups,params,epochs,indivFlag,colorOrder)
+function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder)
 %Make a bar plot to compare groups for a given epoch and parameter
 %   TO DO: make function be able to accept a group array that is different
 %   thand the groups in the results matrix
@@ -10,12 +10,10 @@ end
 % Set grey colors to use when individual subjects are plotted 
 greyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.2 0.2 0.2;0.9 0.9 0.9;0.1 0.1 0.1;0.8 0.8 0.8;0.3 0.3 0.3;0.7 0.7 0.7];
 
-          
-
 ngroups=length(groups);         
 numPlots=length(epochs)*length(params);
 numE=length(epochs);
-ah=optimizedSubPlot(numPlots,length(params),numE,'lr',12,10,10);
+ah=optimizedSubPlot(numPlots,length(params),numE,'lr',12,10,12);
 i=1;
 for p=1:length(params)
    limy=[];
@@ -23,16 +21,16 @@ for p=1:length(params)
        axes(ah(i))
        hold on
        for b=1:ngroups
-           nSubs=length(SMatrix.(groups{b}).IDs(:,1));
+           nSubs=length(Study.(groups{b}).ID);
            
            %attempt to abbreviate group name
-           adaptData=SMatrix.(groups{b}).(SMatrix.(groups{b}).IDs{1,1});
+           adaptData=Study.(groups{b}).adaptData{1};
            group=adaptData.metaData.ID;
            spaces=find(group==' ');
            abrevGroup=group(spaces+1);%
            abrevGroups{b}=[group(1) abrevGroup];
                       
-           ind=find(strcmp(fields(SMatrix),groups{b}));
+           ind=find(strcmp(fields(Study),groups{b}));
            if nargin>5 && indivFlag
                bar(b,results.(epochs{t}).avg(b,p),'facecolor',greyOrder(ind,:));
                for s=1:nSubs

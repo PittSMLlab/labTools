@@ -10,7 +10,16 @@
 % Get info!
 info = GetInfoGUI;
 
+%Ask which event class to use
+eventClass={'','kin','force'};
+answer=menu('How should the events be computed?','default method','strictly using kinematics','strictly using forces');
+if answer==0
+    answer=1;
+end
+
 %Do the actual loading
 if ~isempty(info)
-    [expData,rawExpData,adaptData]=loadSubject(info);
+    [expData,rawExpData,adaptData]=loadSubject(info,eventClass{answer});
 end
+
+clear answer eventClass

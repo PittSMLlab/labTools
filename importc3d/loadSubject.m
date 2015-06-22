@@ -1,4 +1,4 @@
-function [expData,rawExpData,adaptData]=loadSubject(info)
+function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)
 %loadSubject  Load, organize, process, and save data from .c3d files as a 
 %             subject's .mat file
 %
@@ -11,8 +11,12 @@ function [expData,rawExpData,adaptData]=loadSubject(info)
 %
 %See also: getTrialMetaData, experimentData, experimentData.process
 
+if nargin<2 || isempty(eventClass)
+    eventClass='';
+end
+
 %% Initialize diary to save all information displayed during loading
-diaryFileName=[info.save_folder '/' info.ID 'loading.log'];
+diaryFileName=[info.save_folder filesep info.ID 'loading.log'];
 diary(diaryFileName)
 %%
 expDate = labDate(info.day,info.month,info.year);
@@ -79,16 +83,16 @@ rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
 rawExpData=experimentData(expMD,subData,rawTrialData);
 
 %save raw
-save([info.save_folder '/' info.ID 'RAW.mat'],'rawExpData','-v7.3')
+save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3')
 
 %% Process data
-expData=rawExpData.process;
+expData=rawExpData.process(eventClass);
 
 %Save processed
-save([info.save_folder '/' info.ID '.mat'],'expData','-v7.3')
+save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3')
 
 %create adaptationData object
-adaptData=expData.makeDataObj([info.save_folder '/' info.ID]);
+adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
 
 %%
 diary off

@@ -58,7 +58,7 @@ results.Washout2.se=[];
 for g=1:ngroups
     
     % get subjects in group
-    subjects=SMatrix.(groups{g}).IDs(:,1);
+    subjects=SMatrix.(groups{g}).ID;
     
     OGbase=[];
     TMbase=[];
@@ -77,7 +77,7 @@ for g=1:ngroups
         
     for s=1:length(subjects)
         % load subject
-        adaptData=SMatrix.(groups{g}).(subjects{s});      
+        adaptData=SMatrix.(groups{g}).adaptData{s};      
         
         % remove baseline bias
         adaptData=adaptData.removeBadStrides;
