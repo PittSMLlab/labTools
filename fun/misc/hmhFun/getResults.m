@@ -146,7 +146,7 @@ for g=1:ngroups
             ogafter=[ogafter; nanmean(ogafterData(1:transientNumPts,:))];
             
             % compute TM post
-            tmafterData=adaptData.getParamInCond(params,'Washout');
+            tmafterData=adaptData.getParamInCond(params,'TM post');
             tmafter=[tmafter; nanmean(tmafterData(1:transientNumPts,:))];            
         end
                 
