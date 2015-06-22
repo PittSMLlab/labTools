@@ -274,8 +274,11 @@ ll={'NewCOPxL','NewCOPxR','NewCOPyL','NewCOPyR'};
 for i=1:length(ll)
     eval(['aux=' ll{i} ';']);
     badInds(i,:)=isnan(aux);
-    aux=interp1(find(~badInds(i,:)),aux(~badInds(i,:)),1:length(aux),'linear','extrap');
-    eval([ll{i} '=aux;']);
+    goodInds=~badInds(i,:);
+    if any(goodInds) %% HH temproary fix.
+        aux=interp1(find(~badInds(i,:)),aux(~badInds(i,:)),1:length(aux),'linear','extrap');
+        eval([ll{i} '=aux;']);
+    end    
 end
 %---------------------------------------------
 

@@ -1,4 +1,4 @@
-function [Pa,Li,t] = JackKnife(varargin)
+function [Pa,Li] = nanJackKnife(varargin)
 % JACKKNIFE plots jackknife errorbars around a given curve
 %
 %     [Pa,Li,t] = JACKKNIFE(x,y,L,U,'r','g')
@@ -142,26 +142,25 @@ switch(nargin)
 %         Opacity= varargin{7};
 end
 Xcoords = [x x(end:-1:1)];
-Ycoords = [U L(end:-1:1)];
+Ycoords = [U+1e-8 L(end:-1:1)];
 
 % Pa = patch(Xcoords,Ycoords,PatchColor);
 % set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
 hold on;
 %Li = plot(x,y,'color',LineColor,'linewidth',2);
-if size(varargin,2)<7
+if varargin<7
     Pa = patch(Xcoords,Ycoords,PatchColor);
     set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
     Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
-elseif size(varargin,2)>=7
+elseif varargin>=7
     % Pa = patch(Xcoords,Ycoords,'w');
-% Pa=[];
-Pa = patch(Xcoords,Ycoords,PatchColor);
-    for l=1:length(x)
-        
+    % Pa=[];
+    Pa = patch(Xcoords,Ycoords,PatchColor);
+    for l=1:length(x)        
         if w(l)==0;
             set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
             Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
-%             Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
+            % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
         else
             set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
             Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
@@ -171,9 +170,6 @@ Pa = patch(Xcoords,Ycoords,PatchColor);
 end
 
 hold on;
-
-
-
 
 
 

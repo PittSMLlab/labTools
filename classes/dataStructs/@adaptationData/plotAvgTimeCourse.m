@@ -12,9 +12,7 @@ function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,tr
 % figHandle = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)
 % [Avg, Indiv] = plotAvgTimeCourse(figHandle,adaptDataList,params,conditions,binwidth,trialMarkerFlag)
 
-maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
-                 %otherwise, the subject with the fewest strides in a particular trial/condition
-                 %determines the number of strides plotted.
+
 %% Check inputs
 
 % See if adaptDataList is a single subject (char), a cell
@@ -40,11 +38,12 @@ if nargin>2
     if isa(conditions,'char')
         conditions={conditions};
     end
-else
-    load(adaptDataList{1}{1})
-    conditions=adaptData.metaData.conditionName; %default
+else    
+    conditions=adaptDataList{1}{1}.metaData.conditionName; %default
 end
-for c=1:length(conditions)
+nConds=length(conditions);
+cond=cell(1,nConds);
+for c=1:nConds
     if isa(conditions{c},'cell')
         cond{c}=conditions{c}{1}(ismember(conditions{c}{1},['A':'Z' 'a':'z' '0':'9']));
     elseif isa(conditions{c},'char')
@@ -78,13 +77,19 @@ else
     indivSubs={{}};    
 end
 
+% if nargin<9
+    maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
+                     %otherwise, the subject with the fewest strides in a particular trial/condition
+                     %determines the number of strides plotted.
+% end
+
 %% Initialize plot
 
 axesFontSize=8;
 labelFontSize=0;
 titleFontSize=12;
 [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
-legendStr={};
+legendStr=cell(1);
 
 % Set colors order
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
@@ -94,13 +99,13 @@ end
 
 lineOrder={'-','--','-.',':'};
 
-%% Load data and determine length of trials or conditions
-nConds=length(conditions);
+%% determine length of trials or conditions
 s=1; %subject counter
+values=struct([]);
 for group=1:Ngroups
     for subject=1:length(adaptDataList{group})
         %Load subject
-        load(adaptDataList{group}{subject});
+        adaptData = adaptDataList{group}{subject};
         adaptData = adaptData.removeBadStrides;
         adaptData = adaptData.removeBias;
         
@@ -137,12 +142,15 @@ for group=1:Ngroups
 end
 
 %% Do the actual plotting
+Li=cell(1);
+avg=struct([]);
+se=struct([]);
+indiv=struct([]);
 
 for group=1:Ngroups
     Xstart=1;
-    lineX=0;
-    subjects=adaptDataList{group};
-    for c=1:length(conditions)
+    lineX=0;    
+    for c=1:nConds
         for t=1:length(fields(values(group).(params{p}).(cond{c})));
             
             % 1) find the length of each trial
@@ -185,18 +193,20 @@ for group=1:Ngroups
                     t1 = start(i);
                     t2 = stop(i);
                     bin = allValues(:,t1:t2);
-
-                    %errors calculated as standard error of averaged subject points
-                    subBin=nanmean(bin,2);
-                    avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
-                    se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
-                    indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
-
-%                     %errors calculated as standard error of all data
-%                     %points (before indiv subjects are averaged)
-%                     avg.(params{p}).(cond{c})(i)=nanmean(reshape(bin,1,numel(bin)));
-%                     se.(params{p}).(cond{c})(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
-%                     indiv.(params{p}).(cond{c})(:,i)=nanmean(bin,2);
+                    
+                    if length(adaptDataList{group})>1
+                        %errors calculated as standard error of averaged subject points
+                        subBin=nanmean(bin,2);
+                        avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
+                        se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
+                        indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
+                    else
+                        %errors calculated as standard error of all data
+                        %points within a bin
+                        avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(reshape(bin,1,numel(bin)));
+                        se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
+                        indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmean(bin,2);
+                    end
                 end
 
                 % 3) plot data
@@ -207,11 +217,10 @@ for group=1:Ngroups
                     if Ngroups==1
                         legStr=params(p);
                     else
-                        if length(adaptDataList{group})>1
-                            load(adaptDataList{group}{1})
-                            legStr={[params{p} ' ' adaptData.metaData.ID]};
+                        if length(adaptDataList{group})>1                            
+                            legStr={[params{p} ' ' adaptDataList{group}{1}.metaData.ID]};
                         else
-                            legStr={[params{p} ' ' adaptDataList{group}{:}]};                            
+                            legStr={[params{p} ' ' adaptDataList{group}{1}.subData.ID]};                            
                         end
                         
                     end
@@ -228,66 +237,81 @@ for group=1:Ngroups
                 x=Xstart:Xstart+condLength-1;
                 
                 %Biofeedback
-                if nargin>6 && ~isempty(biofeedback)
-                    load(adaptDataList{g}{1})
+                if nargin>8 && ~isempty(biofeedback)                    
                     if biofeedback==1 && strcmp(params{p},'alphaFast')
-                        w=adaptData.getParamInCond('TargetHitR',conditions{c});
+                        w=adaptData{group}{1}.getParamInCond('TargetHitR',conditions{c});
                     elseif biofeedback==1 &&  strcmp(params{p},'alphaSlow')
-                        w=adaptData.getParamInCond('TargetHitL',conditions{c});
+                        w=adaptData{group}{1}.getParamInCond('TargetHitL',conditions{c});
                     elseif biofeedback==0
                         biofeedback=[];
                     else
-                        w=adaptData.getParamInCond('TargetHit',conditions{c});
-                        
+                        w=adaptData.getParamInCond('TargetHit',conditions{c});                        
                     end
                 end
-
+                
                 if indivFlag %plotting all individual subjects
+                    nSubs=length(adaptDataList{group});
+                    subjects=cell(1,nSubs);
+                    for s=1:nSubs
+                        subjects{s}=adaptDataList{group}{s}.subData.ID;
+                    end
                     if ~isempty(indivSubs{1}) %plot specific individual subjects
                         subsToPlot=indivSubs{group};
                     else
-                        subsToPlot=subjects;
+                        subsToPlot=adaptDataList{group};
                     end
                     for s=1:length(subsToPlot)
-                        subInd=find(ismember(subjects,subsToPlot{s}));
+                        subInd=find(ismember(subjects,subsToPlot{s}.subData.ID));
                         y_ind=[indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
                         Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:));
-                        legendStr{group}=subsToPlot;
+                        legendStr{group}(s)={subsToPlot{s}.subData.ID};
                     end
                     %plot average of group if there is more than one person
                     %in the group
                     if length(adaptDataList{group})>1
                         Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',3,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
-                        load(adaptDataList{group}{1})
-                        legendStr{group}(end+1)={['Average ' adaptData.metaData.ID]};                                               
-                    end                    
+                        legendStr{group}(length(subsToPlot)+1)={['Average ' adaptDataList{group}{1}.metaData.ID]};                                               
+                    end
                 else %only plot group averages
                      if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
-                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7);
+                        if isempty(biofeedback)
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7);
+                        else
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
+                        end
                         set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
-                   elseif size(params,1)>1  && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
-                        ind=(group-1)*size(params,1)+p;
+<<<<<<< .mine                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
+=======                   elseif size(params,1)>1  && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
+>>>>>>> .theirs                        ind=(group-1)*size(params,1)+p;
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
-                     elseif  isempty(biofeedback) %Each group colored differently
-                        color=colorOrder(g,:)./Cdiv;
+<<<<<<< .mine                    elseif  isempty(biofeedback) %Each group colored differently
+=======                     elseif  isempty(biofeedback) %Each group colored differently
+>>>>>>> .theirs                        color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
                         if length(adaptDataList{g})>1
-                            load(adaptDataList{g}{1})
-                            legendStr{g}={adaptData.metaData.ID};
+                            legendStr{g}={adaptDataList{g}{1}.metaData.ID};
                         else
-                            legendStr{g}=adaptDataList{g}(:);
-                        end
+                            legendStr{g}={adaptDataList{g}{1}.subData.ID};
+                        end                    
+                    elseif ~(size(params,1)>1) && ~isempty(biofeedback)
+                        color=colorOrder(g,:)./Cdiv;
+                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
+                        set(Li{g},'Clipping','off')
+                        H=get(Li{g},'Parent');                        
+                        group=adaptData{g}{1}.subData.ID;
+                        abrevGroup=[group];
+                        legendStr{g}={[ abrevGroup]};
                         elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
                         [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
                         set(Li{c},'Clipping','off')
@@ -305,7 +329,7 @@ for group=1:Ngroups
                     end
                     set(Pa,'Clipping','off')
                     set(H,'Layer','top')
-                end               
+                end
             end
             Xstart=Xstart+condLength;
         end

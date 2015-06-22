@@ -129,7 +129,7 @@ classdef adaptationData
         end
         
         %Other I/O functions:
-        function labelList=getParameterList(this)
+        function [labelList,descriptionList]=getParameterList(this)
         %obtain an array of strings with the labels of the all parameters
         %INPUT:
         %this: experimentData object
@@ -139,6 +139,7 @@ classdef adaptationData
         %
         %EX: labelList=adaptData.getParameters;
             labelList=this.data.labels;
+            descriptionList=this.data.description;
         end
         
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
