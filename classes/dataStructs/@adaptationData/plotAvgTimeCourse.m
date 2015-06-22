@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -226,6 +226,21 @@ for group=1:Ngroups
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
                 condLength=length(y);
                 x=Xstart:Xstart+condLength-1;
+                
+                %Biofeedback
+                if nargin>6 && ~isempty(biofeedback)
+                    load(adaptDataList{g}{1})
+                    if biofeedback==1 && strcmp(params{p},'alphaFast')
+                        w=adaptData.getParamInCond('TargetHitR',conditions{c});
+                    elseif biofeedback==1 &&  strcmp(params{p},'alphaSlow')
+                        w=adaptData.getParamInCond('TargetHitL',conditions{c});
+                    elseif biofeedback==0
+                        biofeedback=[];
+                    else
+                        w=adaptData.getParamInCond('TargetHit',conditions{c});
+                        
+                    end
+                end
 
                 if indivFlag %plotting all individual subjects
                     if ~isempty(indivSubs{1}) %plot specific individual subjects
@@ -237,7 +252,7 @@ for group=1:Ngroups
                         subInd=find(ismember(subjects,subsToPlot{s}));
                         y_ind=[indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
                         %%to plot as dots:
-                        %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',ColorOrder(subInd,:),'MarkerFaceColor',ColorOrder(subInd,:));
+                        %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
                         Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:));
                         legendStr{group}=subsToPlot;
@@ -250,19 +265,19 @@ for group=1:Ngroups
                         legendStr{group}(end+1)={['Average ' adaptData.metaData.ID]};                                               
                     end                    
                 else %only plot group averages
-                    if Ngroups==1 && ~(size(params,1)>1) %one group (each condition colored different)
+                     if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
                         [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7);
                         set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
-                    elseif size(params,1)>1 %Each parameter colored differently (and shaded differently for different groups)
+                   elseif size(params,1)>1  && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
-                    else %Each group colored differently
+                     elseif  isempty(biofeedback) %Each group colored differently
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{g},'Clipping','off')
@@ -273,6 +288,20 @@ for group=1:Ngroups
                         else
                             legendStr{g}=adaptDataList{g}(:);
                         end
+                        elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
+                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
+                        set(Li{c},'Clipping','off')
+                        H=get(Li{c},'Parent');
+                        legendStr={conditions};
+                    elseif ~(size(params,1)>1) && ~isempty(biofeedback)
+                        color=colorOrder(g,:)./Cdiv;
+                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
+                        set(Li{g},'Clipping','off')
+                        H=get(Li{g},'Parent');
+                        load([adaptDataList{g}{1,1}])
+                        group=adaptData.subData.ID;
+                        abrevGroup=[group];
+                        legendStr{g}={[ abrevGroup]};
                     end
                     set(Pa,'Clipping','off')
                     set(H,'Layer','top')

@@ -3,7 +3,7 @@ function varargout = PlotParamsGUI(varargin)
 %
 % See also:
 
-% Last Modified by GUIDE v2.5 11-Jun-2015 11:12:24
+% Last Modified by GUIDE v2.5 22-Jun-2015 09:53:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -124,7 +124,7 @@ function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)
 handles = disableFields(handles,'groupList','subjectList','parameterList',...
     'conditionList','plotButton','binEdit','conditionSubList','indivSubs',...
     'samePlotCheck','regExpBox','maxPerturbCheck','earlyNumPts','lateNumPts',...
-    'exptLastNumPts','removeBiasCheck','printCodeCheck','colorMenu','saveColorsButton');
+    'exptLastNumPts','removeBiasCheck','printCodeCheck','colorMenu','saveColorsButton','biofeedback');
 
 for i=1:17
     set(handles.(['color' num2str(i)]),'Enable','off');
@@ -136,7 +136,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=1;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','samePlotCheck','conditionList','conditionSubList',...
-            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton');
+            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback');
         for i=1:17
             set(handles.(['color' num2str(i)]),'Enable','on');
         end
@@ -379,12 +379,12 @@ condContents=cellstr(get(handles.conditionList,'String'));
 conds=condContents(get(handles.conditionList,'Value'));
 
 indivSubFlag=get(handles.indivSubs,'Value');
-
+biofeedbackFlag=get(handles.biofeedback,'Value');
 switch handles.plotType
     case 1
         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,'Value')));
         binwidth=str2double(get(handles.binEdit,'string'));
-        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder);
+        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag,indivSubFlag,indivSubList,colorOrder,biofeedbackFlag);
         %to print code previous line to command window:
         if get(handles.printCodeCheck,'value')
             for g=1:length(adaptDataList)
@@ -491,6 +491,10 @@ function printCodeCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of printCodeCheck
 end
 
+% --- Executes on button press in biofeedback.
+function biofeedback_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of biofeedback
+end
 
 % --- Executes on selection change in colorMenu.
 function colorMenu_Callback(hObject, eventdata, handles)
@@ -727,3 +731,5 @@ function regExpBox_ButtonDownFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 end
+
+
