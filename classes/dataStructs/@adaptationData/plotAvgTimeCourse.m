@@ -285,17 +285,15 @@ for group=1:Ngroups
                         set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
-<<<<<<< .mine                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
-=======                   elseif size(params,1)>1  && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
->>>>>>> .theirs                        ind=(group-1)*size(params,1)+p;
+                   elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
+                        ind=(group-1)*size(params,1)+p;
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
-<<<<<<< .mine                    elseif  isempty(biofeedback) %Each group colored differently
-=======                     elseif  isempty(biofeedback) %Each group colored differently
->>>>>>> .theirs                        color=colorOrder(g,:)./Cdiv;
+                elseif  isempty(biofeedback) %Each group colored differently
+                        color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
