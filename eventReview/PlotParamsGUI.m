@@ -502,16 +502,14 @@ conds=condContents(get(handles.conditionList,'Value'));
 condStr=['{' strjoin(strcat('''',conds,'''')',',') '}'];
 
 indivSubFlag=get(handles.indivSubs,'Value');
-<<<<<<< .minebiofeedbackFlag=get(handles.biofeedback,'Value');
+biofeedbackFlag=get(handles.biofeedback,'Value');
 
-=======biofeedbackFlag=get(handles.biofeedback,'Value');
->>>>>>> .theirsswitch handles.plotType
+switch handles.plotType
     case 1 %time course
         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,'Value')));
         binwidth=str2double(get(handles.binEdit,'string'));
-<<<<<<< .mine        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag);
-=======        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag,indivSubFlag,indivSubList,colorOrder,biofeedbackFlag);
->>>>>>> .theirs        %to print code previous line to command window:
+        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag);
+        %to print code previous line to command window:
         if get(handles.printCodeCheck,'value')
             disp(['load(''' handles.dir handles.filename ''')'])
             disp(['adaptDataList = ' adaptDataStr ';'])
