@@ -300,9 +300,6 @@ classdef adaptationData
 		%
 		%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);
 		
-			earlyPoints=[];
-            veryEarlyPoints=[];
-            latePoints=[];
             N1=3;%all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
@@ -334,43 +331,50 @@ classdef adaptationData
             else
                 %this=adaptData;
             end
-            conditionIdxs=this.getConditionIdxsFromName(conds);
-            for i=1:nConds
-                %First: find if there is a condition with a
-                %similar name to the one given
-                condIdx=conditionIdxs(i);
-                aux=this.getParamInCond(labels,conditionIdxs(i));
-                if ~isempty(condIdx) && ~isempty(aux)
-                    %First N1 points
-                    try %Try to get the first strides, if there are enough
-                        veryEarlyPoints(i,:,:)=aux(1:N1,:);
-                    catch %In case there aren't enough strides, assign NaNs to all
-                        veryEarlyPoints(i,:,:)=NaN;
-                    end
-                    
-                    %First N2 points
-                    try %Try to get the first strides, if there are enough
-                        earlyPoints(i,:,:)=aux(1:N2,:);
-                    catch %In case there aren't enough strides, assign NaNs to all
-                        earlyPoints(i,:,:)=NaN;
-                    end
-
-                    %Last N3 points, exempting very last Ne
-                    try                                    
-                        latePoints(i,:,:)=aux(end-N3-Ne+1:end-Ne,:);
-                    catch
-                        latePoints(i,:,:)=NaN;
-                    end
-                else
-                    disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                    veryEarlyPoints(i,1:N1,:)=NaN;
-                    earlyPoints(i,1:N2,:)=NaN;
-                    latePoints(i,1:N3,:)=NaN;
-                end
-            end
+            [dataPoints]=getEarlyLateData_v2(this,labels,conds,0,[N1,N2,-N3],Ne,0);
+            veryEarlyPoints=dataPoints{1};
+            earlyPoints=dataPoints{2};
+            latePoints=dataPoints{3};
+            warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
+            %Pablo deprecated on June 24th, 2015:
+%             conditionIdxs=this.getConditionIdxsFromName(conds);
+%             for i=1:nConds
+%                 %First: find if there is a condition with a
+%                 %similar name to the one given
+%                 condIdx=conditionIdxs(i);
+%                 aux=this.getParamInCond(labels,conditionIdxs(i));
+%                 if ~isempty(condIdx) && ~isempty(aux)
+%                     %First N1 points
+%                     try %Try to get the first strides, if there are enough
+%                         veryEarlyPoints(i,:,:)=aux(1:N1,:);
+%                     catch %In case there aren't enough strides, assign NaNs to all
+%                         veryEarlyPoints(i,:,:)=NaN;
+%                     end
+%                     
+%                     %First N2 points
+%                     try %Try to get the first strides, if there are enough
+%                         earlyPoints(i,:,:)=aux(1:N2,:);
+%                     catch %In case there aren't enough strides, assign NaNs to all
+%                         earlyPoints(i,:,:)=NaN;
+%                     end
+% 
+%                     %Last N3 points, exempting very last Ne
+%                     try                                    
+%                         latePoints(i,:,:)=aux(end-N3-Ne+1:end-Ne,:);
+%                     catch
+%                         latePoints(i,:,:)=NaN;
+%                     end
+%                 else
+%                     disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
+%                     veryEarlyPoints(i,1:N1,:)=NaN;
+%                     earlyPoints(i,1:N2,:)=NaN;
+%                     latePoints(i,1:N3,:)=NaN;
+%                 end
+%             end
         end
         
         function [baseValues,baseTypes]=getBias(this,conditions)
+            warning('adaptationData:getBias','This function is not yet implemented.')
             baseValues=[];
             baseTypes=[];
         end
@@ -614,6 +618,10 @@ classdef adaptationData
            end
            hold off     
         end
+        
+        [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
+        
+        [figHandle]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode);
     end
     
     
