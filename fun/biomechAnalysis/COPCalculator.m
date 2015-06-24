@@ -144,12 +144,12 @@ GRMyR=-1*NewRightForces(5,:);
 % a heavy duty filter. Should not drastically affect other data.
 FiltDesign=fdesign.lowpass('N,F3db',6,25/1000);
 TheDesign=design(FiltDesign,'butter');
-GRFxL = filtfilthd(TheDesign,GRFxL);
-GRFyL = filtfilthd(TheDesign,GRFyL);
-GRFzL = filtfilthd(TheDesign,GRFzL);
-GRFxR = filtfilthd(TheDesign,GRFxR);
-GRFyR = filtfilthd(TheDesign,GRFyR);
-GRFzR = filtfilthd(TheDesign,GRFzR);
+GRFxL = filtfilthd(TheDesign,GRFxL');
+GRFyL = filtfilthd(TheDesign,GRFyL');
+GRFzL = filtfilthd(TheDesign,GRFzL');
+GRFxR = filtfilthd(TheDesign,GRFxR');
+GRFyR = filtfilthd(TheDesign,GRFyR');
+GRFzR = filtfilthd(TheDesign,GRFzR');
 % Apply a filter to the moment data collected as well.
 [Bmom, Amom]=butter(4,10/(1000/2));
 GRMxL=filtfilt(Bmom, Amom, GRMxL)';
