@@ -142,7 +142,7 @@ switch(nargin)
 %         Opacity= varargin{7};
 end
 Xcoords = [x x(end:-1:1)];
-Ycoords = [U+1e-8 L(end:-1:1)];
+Ycoords = [U+0.001 L(end:-1:1)];
 
 % Pa = patch(Xcoords,Ycoords,PatchColor);
 % set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
