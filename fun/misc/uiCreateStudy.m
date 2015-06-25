@@ -184,7 +184,7 @@ handles.studyData.(abbrevGroup)=groupAdaptationData(sub.IDs,sub.adaptData);
 set(handles.selectSubList,'String',[])
 
 groupContents=get(handles.groupList,'String');
-newGroupContents=[groupContents; group];
+newGroupContents=[groupContents; {group}];
 set(handles.groupList,'String',newGroupContents)
 
 guidata(hObject, handles);
