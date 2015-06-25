@@ -12,7 +12,7 @@ info = GetInfoGUI;
 
 %Ask which event class to use
 eventClass={'','kin','force'};
-answer=menu('Which events should be used to compute parameters?','default','strictly from kinematics','strictly from forces');
+answer=menu('Which events should be used to compute parameters?','default (use kinematics for TM trials, forces otherwise)','strictly from kinematics','strictly from forces');
 if answer==0
     answer=1;
 end

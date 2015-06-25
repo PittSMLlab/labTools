@@ -446,9 +446,9 @@ end
 
 groupContents=fields(handles.Study);
 adaptDataList={};
+indivSubList={};%cell(1,length(get(handles.subjectList,'Value')));
 indivSubStr='[]';
-if ~isempty(get(handles.groupList,'Value'))
-    indivSubList=cell(1,length(get(handles.groupList,'Value')));
+if ~isempty(get(handles.groupList,'Value'))    
     groups=groupContents(get(handles.groupList,'Value'));
     for g=1:length(groups)
         %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
@@ -456,6 +456,7 @@ if ~isempty(get(handles.groupList,'Value'))
     end
     adaptDataStr=['{' strjoin(strcat([handles.varName '.'],groups,'.adaptData')',',') '}'];
     if ~isempty(get(handles.subjectList,'Value'))
+        indivSubList=cell(1,length(get(handles.groupList,'Value')));
         indivSubStr=adaptDataStr;
         %need to segregate individual subjects by group
         indivSubs=handles.subjects(get(handles.subjectList,'Value'));
@@ -469,8 +470,7 @@ if ~isempty(get(handles.groupList,'Value'))
             indivSubStr=strrep(indivSubStr,[groups{g} '.adaptData'],[groups{g} '.adaptData{' num2str(locAinB(isAinB)) '}']);
         end
     end
-else
-    indivSubList=cell(1,length(get(handles.subjectList,'Value')));
+else    
     if ~isempty(get(handles.subjectList,'Value'))
         indivSubs=handles.subjects(get(handles.subjectList,'Value'));
         for s=1:length(indivSubs)

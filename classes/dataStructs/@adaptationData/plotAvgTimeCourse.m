@@ -66,15 +66,18 @@ if nargin<6 || isempty(indivFlag)
 end
 
 if nargin>6    
-    if isa(indivSubs,'cell')
+    if isa(indivSubs,'cell') && ~isempty(indivSubs)
         if ~isa(indivSubs{1},'cell')
             indivSubs{1}=indivSubs;
         end
     elseif isa(indivSubs,'char')
         indivSubs{1}={indivSubs};
     end
+    if length(indivSubs)~=Ngroups
+        indivSubs={cell(1,Ngroups)}; 
+    end
 else
-    indivSubs={{}};    
+    indivSubs={cell(1,Ngroups)};    
 end
 
 % if nargin<9
@@ -85,7 +88,10 @@ end
 
 %% Initialize plot
 
-axesFontSize=8;
+% axesFontSize=14;
+% labelFontSize=0;
+% titleFontSize=24;
+axesFontSize=10;
 labelFontSize=0;
 titleFontSize=12;
 [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
@@ -255,7 +261,7 @@ for group=1:Ngroups
                     for s=1:nSubs
                         subjects{s}=adaptDataList{group}{s}.subData.ID;
                     end
-                    if ~isempty(indivSubs{1}) %plot specific individual subjects
+                    if ~isempty(indivSubs{group}{1}) %plot specific individual subjects
                         subsToPlot=indivSubs{group};
                     else
                         subsToPlot=adaptDataList{group};

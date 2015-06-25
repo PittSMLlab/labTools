@@ -20,7 +20,7 @@ if nargin>1 %Ideally, number of conditions given should be the same as the amoun
 end
 
 trialsInCond=this.metaData.trialsInCondition;
-trialTypes=this.data.trialTypes;
+% trialTypes=this.data.trialTypes;
 trialTypes=this.trialTypes; %Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible
 types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
 labels=this.data.labels;

@@ -109,6 +109,7 @@ switch(nargin)
         L = y - E;
         U = y + E;
         LineColor =  varargin{4};
+        EdgeColor=LineColor-0.5.*abs(LineColor);
         PatchColor = varargin{5};
         Opacity=1;
     case 6,
@@ -122,6 +123,7 @@ switch(nargin)
         L = y - E;
         U = y + E;
         LineColor =  varargin{4};
+        EdgeColor=LineColor-0.5.*abs(LineColor);
         PatchColor = varargin{5};
         Opacity= varargin{6};
     case 7,
@@ -136,6 +138,7 @@ switch(nargin)
         L = y - E;
         U = y + E;
         LineColor =  varargin{4};
+        EdgeColor = LineColor-0.5.*abs(LineColor);
         PatchColor = varargin{5};
         Opacity= varargin{6};
         w=varargin{7};
@@ -151,7 +154,7 @@ hold on;
 if nargin<7
     Pa = patch(Xcoords,Ycoords,PatchColor);
     set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
-    Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
+    Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',LineColor);
 elseif nargin>=7
     % Pa = patch(Xcoords,Ycoords,'w');
     % Pa=[];
@@ -159,11 +162,11 @@ elseif nargin>=7
     for l=1:length(x)        
         if w(l)==0;
             set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
-            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
+            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',[0 0 0]);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
         else
             set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
-            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
+            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeCOlor,'MarkerFaceColor',LineColor);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
         end
     end
