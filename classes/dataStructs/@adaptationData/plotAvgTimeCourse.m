@@ -253,6 +253,8 @@ for group=1:Ngroups
                     else
                         w=adaptData.getParamInCond('TargetHit',conditions{c});                        
                     end
+                else
+                    biofeedback=[];
                 end
                 
                 if indivFlag %plotting all individual subjects
