@@ -435,7 +435,7 @@ classdef adaptationData
             if nargin<5 || isempty(conditions)
                 conditions=this.metaData.conditionName;
             end
-            figHandle=adaptationData.plotAvgTimeCourse({this},label,conditions,runningBinSize,trialMarkerFlag);
+            figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag);
         end
         
         function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
