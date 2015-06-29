@@ -548,40 +548,57 @@ classdef adaptationData
         [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
         
         varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback)
+        
+        function groupData=createGroupAdaptData(adaptDataList)
+            %Check that it is a single cell array of chars (subIDs):
+            
+            %Load and construct object:
+            for i=1:length(adaptDataList)
+                a=load(adaptDataList{i});
+                data{i}=a.adaptData;
+                ID{i}=a.adaptData.subData.ID;
+            end
+            groupData=groupAdaptationData(ID,data);
+        end
 
         function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
-            earlyPoints=[];
-            veryEarlyPoints=[];
-            latePoints=[];
+            
             if ~(isa(label,'char') || (isa(label,'cell') && length(label)==1 && (isa(label{1},'char'))))
-                error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.');
+                error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.'); %This is NOT true (?). Fix.
             end
-            for subject=1:length(adaptDataList) %Getting data for each subject in the list
-                a=load(adaptDataList{subject});
-                aux=fields(a);
-                this=a.(aux{1});
-                nConds=length(conds);
-                nLabs=length(label);
-                [veryEarlyPoints(1:nConds,:,1:nLabs,subject),earlyPoints(1:nConds,1:earlyNumber,1:nLabs,subject),latePoints(1:nConds,1:lateNumber,1:nLabs,subject)]=getEarlyLateData(this,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
-            %Indexes in data correspond to: condition, stride,label,subject
-            end
-            %Compute some stats
-            aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
-            aux2=squeeze(nanmean(latePoints,2));
-            pSwitch=[];
-            for i=1:size(aux1,1) %For all conditions requested
-                for j=1:size(aux1,1)
-                    if i~=j
-                        [~,pEarly(i,j)] =ttest(aux1(i,:),aux1(j,:)); %Testing early points across all conds
-                        [~,pLate(i,j)] =ttest(aux2(i,:),aux2(j,:)); %Testing late points across all conds
-                    else
-                        pEarly(i,j)=NaN;
-                        pLate(i,j)=NaN;
+            
+            %Create a groupAdaptationData object and use it to get the
+            %requested data in matrix form:
+            groupData=createGroupAdaptData(adaptDataList);
+            [data]=groupData.getGroupedData(label,conds,removeBiasFlag,[3,earlyNumber,-lateNumber],0,exemptLast);
+            earlyPoints=data{2};
+            veryEarlyPoints=data{1};
+            latePoints=data{3};
+            
+            %Compute some stats (this may only work properly if length(label)==1)
+            if length(label)>1
+                pEarly=[];
+                pLate=[];
+                pChange=[];
+                pSwitch=[];
+            else
+                aux1=squeeze(nanmean(earlyPoints,2)); %Averaging across strides
+                aux2=squeeze(nanmean(latePoints,2));
+                pSwitch=[];
+                for i=1:size(aux1,1) %For all conditions requested
+                    for j=1:size(aux1,1)
+                        if i~=j
+                            [~,pEarly(i,j)] =ttest(aux1(i,:),aux1(j,:)); %Testing early points across all conds
+                            [~,pLate(i,j)] =ttest(aux2(i,:),aux2(j,:)); %Testing late points across all conds
+                        else
+                            pEarly(i,j)=NaN;
+                            pLate(i,j)=NaN;
+                        end
                     end
-                end
-                [~,pChange(i)]=ttest(aux1(i,:),aux2(i,:)); %Testing changes within each condition
-                if i>1
-                    [~,pSwitch(i-1)]=ttest(aux2(i-1,:),aux1(i,:)); %Testing changes from end of one condition to start of the next
+                    [~,pChange(i)]=ttest(aux1(i,:),aux2(i,:)); %Testing changes within each condition
+                    if i>1
+                        [~,pSwitch(i-1)]=ttest(aux2(i-1,:),aux1(i,:)); %Testing changes from end of one condition to start of the next
+                    end
                 end
             end
         end

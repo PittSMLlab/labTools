@@ -113,6 +113,19 @@ classdef groupAdaptationData
                data =[];
            end
         end
+        
+        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
+            data=cell(size(numberOfStrides));
+            nConds=length(conds);
+            nLabs=length(label);
+            for subject=1:length(this.adaptData) %Getting data for each subject in the list
+                data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
+                for i=1:length(data)
+                    data{i}(1:nConds,1:abs(numberOfStrides(i)),1:nLabs,subject)=data_aux{i};
+                end
+            %Indexes in data correspond to: condition, stride,label,subject
+            end
+        end
     end
 end
 
