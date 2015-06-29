@@ -225,8 +225,7 @@ classdef experimentData
             end
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
-        
-        function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
+		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=expData.makeDataObj(filename,experimentalFlag)
         %
@@ -264,80 +263,6 @@ classdef experimentData
                 contraLateralFlag=[];
             end
             adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
-%             DATA=[];
-%             DATA2=[];
-%             startind=1;
-%             auxLabels={'Trial','Condition'};
-%             if ~isempty(this.data)
-%                 for i=1:length(this.data) %Trials
-%                     if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-%                         labels=this.data{i}.adaptParams.getLabels;
-%                         dataTS=this.data{i}.adaptParams.getDataAsVector(labels);
-%                         DATA=[DATA; dataTS(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-%                         if nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0
-%                             %nop
-%                         else
-%                             aux=this.data{i}.experimentalParams;
-%                             labels2=aux.getLabels;
-%                             dataTS2=aux.getDataAsVector(labels2);
-%                             DATA2=[DATA2; dataTS2(this.data{i}.adaptParams.getDataAsVector('good')==true,:)];
-%                         end
-%                         auxData(startind:size(DATA,1),1)=i; %Saving trial info
-%                         auxData(startind:size(DATA,1),2)=this.data{i}.metaData.condition; %Saving condition info
-%                         indsInTrial{i}= startind:size(DATA,1);
-%                         startind=size(DATA,1)+1;
-%                         trialTypes{i}=this.data{i}.metaData.type;
-%                     end
-%                 end
-%             end    
-%             %labels should be the same for all trials with adaptParams
-%             if ~isempty(DATA2)
-%                 parameterData=paramData([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
-%                 %parameterData=parameterSeries([DATA, DATA2, auxData],[labels(:); labels2(:); auxLabels(:)],indsInTrial,trialTypes);
-%             else
-%                 parameterData=paramData([DATA,auxData],[labels(:) auxLabels(:)],indsInTrial,trialTypes);
-%             end
-%             adaptData=adaptationData(this.metaData,this.subData,parameterData);  
-%             if nargin>1 && ~isempty(filename)
-%                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
-%             end
-        end
-        
-        function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
-        %This function may not be compatible with certain methods of the
-        %adaptationData class
-        
-        if isempty(contraLateralFlag) || contraLateralFlag==0 %Normal parameters
-            %nop
-        else %Computing all parameters on a contraLateral way (this is, we compute parameters using the NON reference leg as the 'slow' one, opposite to the default computation)
-            if strcmp(this.getRefLeg,'R')
-                initEventSide='L';
-            elseif strcmp(this.getRefLeg,'L')
-                initEventSide='R';
-            else
-                ME=MException('makeDataObject:ContralateralComputation','Could not determine proper reference leg for this experiment.');
-                throw(ME);
-            end
-            this=recomputeParameters(this,[],initEventSide); %Using default event class ('', as opposed to 'force' or 'kin')
-        end
-        
-        for i=1:length(this.data) %Trials
-            if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
-                %Get data from this trial:
-                aux=this.data{i}.adaptParams;
-                trialTypes{i}=this.data{i}.metaData.type;
-                if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
-                    aux=cat(aux,this.data{i}.experimentalParams); 
-                end
-                %Concatenate with other trials:
-                if ~isempty(aux.Data) %Case in which no strides were detected for a trial, it could happen. Not concatenating those
-                    if ~exist('paramData','var') 
-                        paramData=aux;
-                    else 
-                        paramData=addStrides(paramData,aux);
-                    end
-                end
-            end
         end
      
         % HH: remove all bad strides completely
@@ -488,5 +413,43 @@ classdef experimentData
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
     end
+	methods (Hidden=true, Access=private)
+		function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
+        %This function may not be compatible with certain methods of the
+        %adaptationData class
+        
+        if isempty(contraLateralFlag) || contraLateralFlag==0 %Normal parameters
+            %nop
+        else %Computing all parameters on a contraLateral way (this is, we compute parameters using the NON reference leg as the 'slow' one, opposite to the default computation)
+            if strcmp(this.getRefLeg,'R')
+                initEventSide='L';
+            elseif strcmp(this.getRefLeg,'L')
+                initEventSide='R';
+            else
+                ME=MException('makeDataObject:ContralateralComputation','Could not determine proper reference leg for this experiment.');
+                throw(ME);
+            end
+            this=recomputeParameters(this,[],initEventSide); %Using default event class ('', as opposed to 'force' or 'kin')
+        end
+        
+        for i=1:length(this.data) %Trials
+            if ~isempty(this.data{i}) && ~isempty(this.data{i}.adaptParams)
+                %Get data from this trial:
+                aux=this.data{i}.adaptParams;
+                trialTypes{i}=this.data{i}.metaData.type;
+                if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
+                    aux=cat(aux,this.data{i}.experimentalParams); 
+                end
+                %Concatenate with other trials:
+                if ~isempty(aux.Data) %Case in which no strides were detected for a trial, it could happen. Not concatenating those
+                    if ~exist('paramData','var') 
+                        paramData=aux;
+                    else 
+                        paramData=addStrides(paramData,aux);
+                    end
+                end
+            end
+        end
+	end
 end
 
