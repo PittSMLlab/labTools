@@ -3,7 +3,7 @@ function varargout = PlotParamsGUI(varargin)
 %
 % See also:
 
-% Last Modified by GUIDE v2.5 26-Jun-2015 13:48:05
+% Last Modified by GUIDE v2.5 22-Jun-2015 13:56:18
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -119,18 +119,6 @@ switch get(eventdata.NewValue,'Tag')
     case 'epochBarButton'
         results=getResults(handles.Study,{'good'},handles.groups(1));
         handles.plotType=4;
-        handles = enableFields(handles,'groupList','parameterList','regExpBox',...
-            'conditionList','maxPerturbCheck','indivSubs','printCodeCheck',...
-            'colorMenu','saveColorsButton');
-        for i=1:17
-            set(handles.(['color' num2str(i)]),'Enable','on');
-        end
-        set(handles.parameterList,'max',10)
-        set(handles.conditionText,'String','Epochs')
-        set(handles.conditionList,'String',fields(results));
-    case 'errorbarButton'
-        results=getResults(handles.Study,{'good'},handles.groups(1));
-        handles.plotType=6;
         handles = enableFields(handles,'groupList','parameterList','regExpBox',...
             'conditionList','maxPerturbCheck','indivSubs','printCodeCheck',...
             'colorMenu','saveColorsButton');
@@ -557,18 +545,6 @@ switch handles.plotType
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])                 
             disp(['barGroups(' handles.varName ',results,groups,params,epochs,indivSubFlag)'])
         end
-    case 6 %epoch errorbars
-        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
-        barGroups(handles.Study,results,groups,params,conds,indivSubFlag,colorOrder,2);
-        if get(handles.printCodeCheck,'value')
-            disp(['load(''' handles.dir handles.filename ''')'])
-            disp(['groups = {' strjoin(strcat('''',groups,'''')',',') '};'])
-            disp(['params = ' paramStr ';'])
-            disp(['results = getResults(' handles.varName ',params,groups,' num2str(get(handles.maxPerturbCheck,'value')) ');'])
-            disp(['epochs = ' condStr ';'])            
-            disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])                 
-            disp(['barGroups(' handles.varName ',results,groups,params,epochs,indivSubFlag)'])
-        end
 end
 end
 
@@ -812,11 +788,3 @@ function regExpBox_ButtonDownFcn(hObject, eventdata, handles)
 end
 
 
-% --- Executes on button press in errorbarButton.
-function errorbarButton_Callback(hObject, eventdata, handles)
-% hObject    handle to errorbarButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of errorbarButton
-end
