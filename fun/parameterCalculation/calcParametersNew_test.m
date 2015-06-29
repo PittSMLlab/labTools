@@ -131,11 +131,14 @@ for i=1:length(paramsToFilter)
     % mark strides bad if values for SL or alpha are larger than 3x the
     % interquartile range away from the median.
     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+%  inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+%     inds=inds(inds>5);
+%     bad(inds)=true;
 end
-%[~,idxs]=out.isaParameter({'bad','good'});
-%out.Data(:,idxs)=[bad,~bad];
-%outlierStrides=find(bad & ~badStart);
-%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+% [~,idxs]=out.isaParameter({'bad','good'});
+% out.Data(:,idxs)=[bad,~bad];
+% outlierStrides=find(bad & ~badStart);
+% disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
 %% Issue bad strides warning
 if any(bad)    

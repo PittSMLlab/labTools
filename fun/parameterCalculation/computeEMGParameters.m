@@ -27,7 +27,7 @@ for i=1:N
             description{counter}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc{k}];
             end
             data(i,counter)=mean(Data(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j));
-            if any(Qual(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j)~=0) %Quality points to bad muscle
+            if ~isempty(Qual) & any(Qual(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j)~=0) %Quality points to bad muscle
                 data(i,counter)=nan;
             end
         end
@@ -104,8 +104,11 @@ for i=1:N
         paramLabels{counter}=[labs{j} 'bad'];
         description{counter}=['Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
         end
+        if ~isempty(Qual)
         data(i,counter)=sum(unique(Qual(:,j))); %Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.
-        
+        else
+            data(i,counter)=0;
+        end
     end
 end
 
