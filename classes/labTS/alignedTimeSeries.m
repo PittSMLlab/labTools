@@ -171,6 +171,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                        %axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.
                        hold off
                    end
+               else
+                   for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
+                        subplot(plotHandles(i))
+                        set(gca,'XTick',[0,cumsum(this.alignmentVector)]/sum(this.alignmentVector),'XTickLabel',[this.alignmentLabels, this.alignmentLabels(1)])
+                        set(gca,'xgrid','on')
+                   end
                end
         end
         
