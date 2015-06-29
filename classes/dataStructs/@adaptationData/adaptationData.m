@@ -397,10 +397,14 @@ classdef adaptationData
             end
             inds={};
             for i=1:length(conditionIdxs)
-                %Get trials in each condition:
-                trials=cell2mat(this.metaData.trialsInCondition(conditionIdxs(i)));
-                %Now, get inds in each trial:
-                inds{i}=cell2mat(this.data.indsInTrial(trials));
+                if ~isnan(conditionIdxs)
+                    %Get trials in each condition:
+                    trials=cell2mat(this.metaData.trialsInCondition(conditionIdxs(i)));
+                    %Now, get inds in each trial:
+                    inds{i}=cell2mat(this.data.indsInTrial(trials));
+                else
+                    inds{i}=[];
+                end
             end
         end
         
