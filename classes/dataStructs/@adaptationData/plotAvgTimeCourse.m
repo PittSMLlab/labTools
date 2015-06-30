@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -21,10 +21,14 @@ function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,tr
 % cases into the same format
 if isa(adaptDataList,'cell')
     if ~isa(adaptDataList{1},'cell')
-        adaptDataList{1}=adaptDataList;
+        adaptDataList={adaptDataList};
     end
-elseif isa(adaptDataList,'char')
-    adaptDataList{1}={adaptDataList};
+elseif isa(adaptDataList,'char') || isa(adaptDataList,'adaptationData')
+    adaptDataList={{adaptDataList}};
+end
+legacyVersion=false;
+if isa(adaptDataList{1}{1},'char')
+    legacyVersion=true;
 end
 Ngroups=length(adaptDataList);
 
@@ -53,7 +57,7 @@ for c=1:nConds
     end
 end
 
-if nargin<4
+if nargin<4 || isempty(binwidth)
     binwidth=1; %default
 end
 
@@ -85,6 +89,9 @@ end
                      %otherwise, the subject with the fewest strides in a particular trial/condition
                      %determines the number of strides plotted.
 % end
+if nargin<10 || isempty(removeBiasFlag)
+    removeBiasFlag=1;
+end
 
 %% Initialize plot
 
@@ -112,14 +119,18 @@ for group=1:Ngroups
     for subject=1:length(adaptDataList{group})
         %Load subject
         adaptData = adaptDataList{group}{subject};
+        if legacyVersion
+            load(adaptData)
+        end
         adaptData = adaptData.removeBadStrides;
-        adaptData = adaptData.removeBias;
-        
+        if removeBiasFlag==1
+            adaptData = adaptData.removeBias;
+        end
         for c=1:nConds
             if trialMarkerFlag(c)
-                trials=num2cell(adaptData.getTrialsInCond(conditions{c}));
+                trials=num2cell(adaptData.getTrialsInCond({conditions{c}}));
             else
-                trials={adaptData.getTrialsInCond(conditions{c})}; %all trials in the condition are one "trial"
+                trials={adaptData.getTrialsInCond({conditions{c}})}; %all trials in the condition are one "trial"
             end
             
             for t=1:length(trials)
@@ -223,10 +234,19 @@ for group=1:Ngroups
                     if Ngroups==1
                         legStr=params(p);
                     else
-                        if length(adaptDataList{group})>1                            
-                            legStr={[params{p} ' ' adaptDataList{group}{1}.metaData.ID]};
+                        if ~legacyVersion
+                            if length(adaptDataList{group})>1                            
+                                legStr={[params{p} ' ' adaptDataList{group}{1}.metaData.ID]};
+                            else
+                                legStr={[params{p} ' ' adaptDataList{group}{1}.subData.ID]};                            
+                            end
                         else
-                            legStr={[params{p} ' ' adaptDataList{group}{1}.subData.ID]};                            
+                            if length(adaptDataList{group})>1                            
+                                legStr={[params{p} ' ' adaptDataList{group}{1}]};
+                            else
+                                legStr={[params{p} ' ' adaptDataList{group}{1}]};                            
+                            end
+
                         end
                         
                     end
@@ -292,7 +312,7 @@ for group=1:Ngroups
                         end
                         set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
-                        legendStr={conditions};
+                        legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(g,:)./Cdiv;
@@ -305,11 +325,20 @@ for group=1:Ngroups
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
-                        if length(adaptDataList{g})>1
-                            legendStr{g}={adaptDataList{g}{1}.metaData.ID};
+                        if ~legacyVersion
+                            if length(adaptDataList{g})>1
+                                legendStr{g}={adaptDataList{g}{1}.metaData.ID};
+                            else
+                                legendStr{g}={adaptDataList{g}{1}.subData.ID};
+                            end      
                         else
-                            legendStr{g}={adaptDataList{g}{1}.subData.ID};
-                        end                    
+                            if length(adaptDataList{g})>1
+                                legendStr{g}={adaptDataList{g}{1}};
+                            else
+                                legendStr{g}={adaptDataList{g}{1}};
+                            end      
+
+                        end
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
@@ -353,7 +382,7 @@ for group=1:Ngroups
                 axis tight
                 line([lineX; lineX],ylim,'color','k')
                 xticks=lineX+diff([lineX Xstart])./2;
-                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', conditions)
+                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
                 h=refline(0,0);
                 set(h,'color','k')
             end            
