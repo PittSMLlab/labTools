@@ -101,11 +101,8 @@ for t=cell2mat(info.trialnums)
         EMGList(17:32)=info.EMGList2; %This is the actual ordered in which the muscles were recorded
         relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         
-        %Only keeping matrices of same size to one another:
-        [auxData, auxData2] = truncateToSameLength(relData,relData2);
-        
-        
-        %Align signals:
+        %For some reasing the naming convention for analog pins is not kept
+        %across Nexus versions:
         try
             refSync=analogs.Pin_3;
         catch
@@ -115,6 +112,32 @@ for t=cell2mat(info.trialnums)
                 refSync=analogs.Raw_Raw_Pin_3; 
             end
         end
+        
+        %Check for frequencies between the two PCs
+        if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
+            warning('Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.')
+            %Assuming that the sampling rates are multiples of one another
+            if analogsInfo.frequency>analogsInfo2.frequency 
+                %First set is the up-sampled one, reducing
+                P=analogsInfo.frequency/analogsInfo2.frequency;
+                R=round(P);
+                relData=relData(1:R:end,:);
+                refSync=refSync(1:R:end);
+                EMGfrequency=analogsInfo2.frequency;
+            else
+                P=round(analogsInfo2.frequency/analogsInfo.frequency);
+                R=round(P);
+                relData2=relData2(1:R:end,:);
+                EMGfrequency=analogsInfo.frequency;
+            end
+            if abs(R-P)>1e-7
+                error('loadTrials:unmatchedSamplingRatesForEMG','The different EMG files are sampled at different rates and they are not multiple of one another')
+            end
+        end
+        
+        %Only keeping matrices of same size to one another:
+        [auxData, auxData2] = truncateToSameLength(relData,relData2);
+        
         refAux=medfilt1(refSync,20);
         refAux=medfilt1(diff(refAux),10);
         allData=[auxData,auxData2];
@@ -168,14 +191,14 @@ for t=cell2mat(info.trialnums)
         subplot(2,2,[1:2])
         hold on
         title(['Trial ' num2str(t) ' Synchronization'])
-        time=[0:length(refSync)-1]*1/analogsInfo.frequency;
+        time=[0:length(refSync)-1]*1/EMGfrequency;
         plot(time,refSync)
         plot(time,sync(:,1)*gain1,'r')
         plot(time,sync(:,2)*gain2,'g')
-        legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+        legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
         hold off
         subplot(2,2,3)
-        T=round(3*analogsInfo.frequency); %To plot just 3 secs at the beginning and at the end
+        T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
         if T<length(refSync)
         hold on
          plot(time(1:T),refSync(1:T))
@@ -219,7 +242,7 @@ for t=cell2mat(info.trialnums)
             warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
         end
         allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
-        EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/analogsInfo.frequency,EMGList(orderedIndexes)); %Throw away the synch signal
+        EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
         clear allData
         
         %AccData (from 2 files too!)
@@ -266,6 +289,28 @@ for t=cell2mat(info.trialnums)
             end
         end
         
+                %Check for frequencies between the two PCs
+        if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
+            warning('Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.')
+            %Assuming that the sampling rates are multiples of one another
+            if analogsInfo.frequency>analogsInfo2.frequency 
+                %First set is the up-sampled one, reducing
+                P=analogsInfo.frequency/analogsInfo2.frequency;
+                R=round(P);
+                relData=relData(1:R:end,:);
+                refSync=refSync(1:R:end);
+                EMGfrequency=analogsInfo2.frequency;
+            else
+                P=round(analogsInfo2.frequency/analogsInfo.frequency);
+                R=round(P);
+                relData2=relData2(1:R:end,:);
+                EMGfrequency=analogsInfo.frequency;
+            end
+            if abs(R-P)>1e-7
+                error('loadTrials:unmatchedSamplingRatesForEMG','The different EMG files are sampled at different rates and they are not multiple of one another')
+            end
+        end
+        
         %Fixing time alignment
         newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
         newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
@@ -276,7 +321,7 @@ for t=cell2mat(info.trialnums)
         allData=[auxData,auxData2];
         clear auxData*  
        
-        accData=orientedLabTimeSeries(allData(1:13:end,:),0,13/analogsInfo.frequency,ACCList,orientation); %Downsampling to ~150Hz, which is much closer to the original 148Hz sampling rate (where does this get upsampled? why?)
+        accData=orientedLabTimeSeries(allData(1:13:end,:),0,13/EMGfrequency,ACCList,orientation); %Downsampling to ~150Hz, which is much closer to the original 148Hz sampling rate (where does this get upsampled? why?)
         % orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.
         clear allData*
     else
