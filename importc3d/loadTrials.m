@@ -101,6 +101,26 @@ for t=cell2mat(info.trialnums)
         EMGList(17:32)=info.EMGList2; %This is the actual ordered in which the muscles were recorded
         relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         
+        %Check if names match with expectation, otherwise query user
+        orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
+        orderedEMGList={};
+        for j=1:length(orderedMuscleList)
+            orderedEMGList{end+1}=['R' orderedMuscleList{j}];
+            orderedEMGList{end+1}=['L' orderedMuscleList{j}];
+        end
+        for k=1:length(EMGList)
+            while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k},'sync')
+                disp(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} ').'])
+                aux= input(['(' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
+                if k<17
+                    info.EMGList1{k}=aux; %This is to keep the same message from being prompeted for each trial processed.
+                else
+                    info.EMGList2{k-16}=aux;
+                end
+                EMGList{k}=aux;
+            end
+        end
+        
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         try
@@ -183,7 +203,7 @@ for t=cell2mat(info.trialnums)
             lagInSamplesA=0;
             lagInSamples=0;
         else
-            disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1) ' and ' num2str(E2) '.'])
+            disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
         end
         
         %Plot to CONFIRM VISUALLY if alignment worked:
@@ -238,7 +258,7 @@ for t=cell2mat(info.trialnums)
         orderedIndexes=orderedIndexes(orderedIndexes~=0); %Avoiding missing muscles
         aux=zeros(length(EMGList),1);
         aux(orderedIndexes)=1;
-        if any(aux==0)
+        if any(aux==0) && ~all(strcmpi(EMGList(aux==0),'sync'))
             warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
         end
         allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples

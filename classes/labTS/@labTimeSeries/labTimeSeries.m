@@ -587,6 +587,7 @@ classdef labTimeSeries  < timeseries
         
         function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
+            if numel(stridedTS)~=0
             if ~islogical(stridedTS{1}.Data)
                 aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
             else
@@ -616,6 +617,10 @@ classdef labTimeSeries  < timeseries
                 end
             end
             alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,cell(size(N)));
+            else
+                alignedTS=alignedTimeSeries(0,1/sum(N),zeros(0,0),[],N,cell(size(N)));
+                originalDurations=[];
+            end
         end
         
         function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)

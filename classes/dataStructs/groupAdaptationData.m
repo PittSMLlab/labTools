@@ -118,10 +118,14 @@ classdef groupAdaptationData
             data=cell(size(numberOfStrides));
             nConds=length(conds);
             nLabs=length(label);
+            nSubs=length(this.ID);
+            for i=1:length(data)
+               data{i}=zeros(nConds,abs(numberOfStrides(i)),nLabs,nSubs); 
+            end
             for subject=1:length(this.adaptData) %Getting data for each subject in the list
                 data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
                 for i=1:length(data)
-                    data{i}(1:nConds,1:abs(numberOfStrides(i)),1:nLabs,subject)=data_aux{i};
+                    data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects
                 end
             %Indexes in data correspond to: condition, stride,label,subject
             end

@@ -555,8 +555,8 @@ classdef adaptationData
             %Load and construct object:
             for i=1:length(adaptDataList)
                 a=load(adaptDataList{i});
-                data{i}=a.adaptData;
-                ID{i}=a.adaptData.subData.ID;
+                data{i}=a.('adaptData');
+                ID{i}=a.('adaptData').subData.ID;
             end
             groupData=groupAdaptationData(ID,data);
         end
@@ -656,6 +656,8 @@ classdef adaptationData
             end
             
         end
+        
+        [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold)
     end %static methods
     
 end
