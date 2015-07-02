@@ -18,6 +18,14 @@ function trials=loadTrials(trialMD,fileList,secFileList,info)
 %orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
 orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs!
 
+%Create list of expected/accepted muscles:
+orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
+orderedEMGList={};
+for j=1:length(orderedMuscleList)
+    orderedEMGList{end+1}=['R' orderedMuscleList{j}];
+    orderedEMGList{end+1}=['L' orderedMuscleList{j}];
+end
+        
 for t=cell2mat(info.trialnums)
     %Import data from c3d, uses external toolbox BTK
     H=btkReadAcquisition([fileList{t} '.c3d']);
@@ -102,22 +110,15 @@ for t=cell2mat(info.trialnums)
         relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         
         %Check if names match with expectation, otherwise query user
-        orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
-        orderedEMGList={};
-        for j=1:length(orderedMuscleList)
-            orderedEMGList{end+1}=['R' orderedMuscleList{j}];
-            orderedEMGList{end+1}=['L' orderedMuscleList{j}];
-        end
         for k=1:length(EMGList)
             while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k},'sync')
-                disp(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} ').'])
-                aux= input(['(' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
+                aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
                 if k<17
-                    info.EMGList1{k}=aux; %This is to keep the same message from being prompeted for each trial processed.
+                    info.EMGList1{k}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
                 else
-                    info.EMGList2{k-16}=aux;
+                    info.EMGList2{k-16}=aux{1};
                 end
-                EMGList{k}=aux;
+                EMGList{k}=aux{1};
             end
         end
         
@@ -239,13 +240,7 @@ for t=cell2mat(info.trialnums)
         
 
         
-        %Sorting muscles so that they are always stored in the same order
-        orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
-        orderedEMGList={};
-        for j=1:length(orderedMuscleList)
-            orderedEMGList{end+1}=['R' orderedMuscleList{j}];
-            orderedEMGList{end+1}=['L' orderedMuscleList{j}];
-        end
+        %Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
         orderedIndexes=zeros(length(orderedEMGList),1);
         for j=1:length(orderedEMGList)
             for k=1:length(EMGList)

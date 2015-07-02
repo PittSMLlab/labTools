@@ -102,12 +102,12 @@ if ~(isfield(handles,'noSave') && handles.noSave)
     save([info.save_folder filesep info.ID 'info'],'info')
 
     %ask user if there are observations for individual trials
-    answer=input('Are there any observations for individual trials?(y/n) ','s');
+    answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
 
     %make sure the correct response is entered
-    while (lower(answer) ~= 'y' & lower(answer) ~= 'n') | length(answer)>1
+    while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
         disp('Error: you must enter either "y" or "n"')
-        answer=input('Are there any observations for individual trials?(y/n) ','s');
+        answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
     end
 
     %create a menu to choose any trial
@@ -117,7 +117,7 @@ if ~(isfield(handles,'noSave') && handles.noSave)
         %if a subject wasn't loaded
         info.trialObs{1,info.numoftrials} = '';
     end
-    if lower(answer) == 'y'    
+    if strcmpi(answer{1},'y')    
         trialstr = [];
         %create trial string
         for t = expTrials
