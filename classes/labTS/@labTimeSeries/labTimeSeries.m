@@ -50,6 +50,13 @@ classdef labTimeSeries  < timeseries
                 ME=MException('labTimeSeries:ConstructorInconsistentArguments','The size of the labels array is inconsistent with the data being provided.');
                 throw(ME)
             end
+            %Check for repeat labels:
+            for i=1:length(labels)
+                if sum(strcmpi(labels,labels{i}))>1
+                    ME=MException('labTimeSeries:ConstructorRepeatedLabels','Two labels provided are the same (caps don''t matter).');
+                    throw(ME)
+                end
+            end
         end
         
         %-------------------
