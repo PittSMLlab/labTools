@@ -9,7 +9,7 @@ if ~exist(dir,'dir')
     mkdir(dir)
 end
 %print(h, '-painters', '-dpng', '-r900', [fullName '.png']);
-saveas(h,[fullName '.fig']) ;
+savefig(h,[fullName '.fig'],'compact') ;
 %set(h,'Renderer','opengl');
 hgexport(h, [fullName '.png'], hgexport('factorystyle'), 'Format', 'png');
 

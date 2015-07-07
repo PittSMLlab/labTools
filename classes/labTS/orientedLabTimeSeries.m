@@ -60,7 +60,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
             T=size(this.Data,1);
             if nargin<2 || isempty(label)
                 label=this.getLabelPrefix; %All of them
+            elseif isa(label,'char')
+                label={label};
             end
+                
             data=nan(T,length(label)*3);
             extendedLabels=this.addLabelSuffix(label);
             if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
@@ -96,7 +99,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
               t0=this.Time(1); 
            end
            if nargin<3 || isempty(t1)
-               t1=this.Time(end)+eps;
+               t1=this.Time(end);
            end
            if nargin<4 || isempty(labels)
                labels=this.getLabelPrefix;
@@ -105,11 +108,35 @@ classdef orientedLabTimeSeries  < labTimeSeries
                labels2=this.getLabelPrefix;
            end
            %Reduce it:
-           timeIdxs=find(this.Time<t1 & this.Time>=t0);
+           timeIdxs=find(this.Time<=t1 & this.Time>=t0);
            [~,labelIdxs]=isaLabelPrefix(this,labels);
            [~,label2Idxs]=isaLabelPrefix(this,labels2);
            diffMatrix=diffMatrix(timeIdxs,labelIdxs,label2Idxs,:);
            Time=this.Time(timeIdxs);
+           
+        end
+        function [diffOTS]=computeDifferenceOTS(this,t0,t1,labels,labels2)
+            if nargin<2 || isempty(t0)
+              t0=this.Time(1); 
+           end
+           if nargin<3 || isempty(t1)
+               t1=this.Time(end)+eps;
+           end
+           if nargin<4 || isempty(labels)
+               labels=this.getLabelPrefix;
+           end
+           if nargin<5 || isempty(labels2)
+               labels2=this.getLabelPrefix;
+           end
+           [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2);
+           newLabels=cell(1,length(labels)*length(labels2));
+           for i=1:length(labels2)
+               newLabels((i-1)*length(labels)+1:i*length(labels))=strcat(labels,[' - ' labels2{i}]);
+           end
+           newLabels2=[strcat(newLabels,'x');strcat(newLabels,'y');strcat(newLabels,'z')];
+           aux=reshape(diffMatrix,size(diffMatrix,1),size(diffMatrix,2)*size(diffMatrix,3),size(diffMatrix,4));
+           aux=permute(aux,[1,3,2]);
+           diffOTS=orientedLabTimeSeries(aux(:,:),Time(1),this.sampPeriod,newLabels2(:),this.orientation);
            
         end
         
@@ -159,13 +186,17 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         %-------------------
-        function plot3(this)
-           h=figure;
+        function fh=plot3(this,fh)
+            if nargin<2 || isempty(fh)
+                fh=figure;
+            else
+                figure(fh);
+            end
            [data,labelPref]=getOrientedData(this);
            hold on
            
            for i=1:length(labelPref)
-               plot3(data(:,i,1),data(:,i,2),data(:,i,3))
+               plot3(data(:,i,1),data(:,i,2),data(:,i,3),'.')
            end
            hold off
            axis equal
@@ -175,8 +206,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
         %-------------------
         %Modifier functions:
         
-        function newThis=resampleN(this,newN) %Same as resample function, but directly fixing the number of samples instead of TS
-            auxThis=this.resampleN@labTimeSeries(newN);
+        function newThis=resampleN(this,newN,method) %Same as resample function, but directly fixing the number of samples instead of TS
+            if nargin<3
+                method=[];
+            end
+            auxThis=this.resampleN@labTimeSeries(newN,method);
             newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
         
@@ -263,6 +297,16 @@ classdef orientedLabTimeSeries  < labTimeSeries
         function newThis=derivate(this)
             auxThis=this.derivate@labTimeSeries;
             newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+        end
+        
+        function newThis=lowPassFilter(this,fcut)
+           newThis=lowPassFilter@labTimeSeries(this,fcut); 
+           newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newThis.labels,this.orientation);
+        end
+        
+        function newThis=highPassFilter(this,fcut)
+           newThis=highPassFilter@labTimeSeries(this,fcut); 
+           newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newthis.sampPeriod,newThis.labels,this.orientation);
         end
         
     end

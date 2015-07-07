@@ -227,6 +227,55 @@ classdef labData
             
         end
         
+        function checkMarkerDataHealth(this)
+            ts=this.markerData;
+            %Check for missing samples (and do nothing?):
+            ll=ts.getLabelPrefix;
+            dd=ts.getOrientedData;
+            for i=1:length(ll)
+                l=ll{i};
+                aux=any(isnan(dd(:,i,:)),3);
+                if any(aux)
+                    warning('labData:checkMarkerDataHealth',['Marker ' l ' is missing for ' num2str(sum(aux)*ts.sampPeriod) ' secs.'])
+                    for j=1:3
+                        dd(aux,i,j)=nanmean(dd(:,i,j)); %Filling gaps just for healthCheck purposes
+                    end
+                end
+            end
+            
+            %Check for outliers:
+            %Do a data translation:
+            %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist
+            %Do a label-agnostic data translation:
+            refMarker=squeeze(nanmean(dd,2));
+            newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis
+            %Not agnostic rotation:
+            %relData=squeeze(markerData.getOrientedData('RHIP'));
+            %Label agnostic data rotation:
+            newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
+            medianTS=newTS.median; %Gets the median skeleton of the markers
+            
+            %With this median skeleton, a minimization can be done to find
+            %another label agnostic data rotation that does not depend on
+            %estimating the translation velocity:
+            
+            %Another attempt at label agnostic rotation (not using
+            %velocity, but actually some info about the skeleton having
+            %Left and Right)
+            %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);
+            %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);
+            %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));
+            %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this
+            
+            
+                      
+            %Try to fit a 2-cluster model, to see if some marker labels are
+            %switched at some point during experiment
+            
+            %Assuming single mode/cluster, find outliers by getting stats
+            %on distribution of positions/distance and velocities.
+        end
+        
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
             newThis=[]; %Just to avoid Matlab saying this is not defined
             cname=class(this);
