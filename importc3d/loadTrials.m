@@ -111,7 +111,7 @@ for t=cell2mat(info.trialnums)
         
         %Check if names match with expectation, otherwise query user
         for k=1:length(EMGList)
-            while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k},'sync')
+            while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
                 aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
                 if k<17
                     info.EMGList1{k}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
