@@ -159,6 +159,7 @@ for t=cell2mat(info.trialnums)
         %Only keeping matrices of same size to one another:
         [auxData, auxData2] = truncateToSameLength(relData,relData2);
         
+        %Pre-process:
         refAux=medfilt1(refSync,20);
         refAux=medfilt1(diff(refAux),10);
         allData=[auxData,auxData2];
@@ -170,11 +171,13 @@ for t=cell2mat(info.trialnums)
         aux2=medfilt1(sync(:,2),20);
         aux1=medfilt1(diff(aux1),10);
         aux2=medfilt1(diff(aux2),10);
+        
+        %Find 
         [alignedSignal,timeScaleFactor,lagInSamples,gain] = matchSignals(aux1,aux2);
         newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
         [~,timeScaleFactorA,lagInSamplesA,gainA] = matchSignals(refAux,aux1);
-        newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
-        newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
+        newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1); %Aligning relData1 to original force signal
+        newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1); %Aligning relData2 to original force signal
         
         %Only keeping matrices of same size to one another:
         [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
@@ -189,22 +192,59 @@ for t=cell2mat(info.trialnums)
         gain2=refSync'/sync(:,2)';
         
         %Analytic measure of alignment problems
-        E1=sum((refSync-sync(:,1)*gain1).^2)/sum(refSync.^2);
-        E2=sum((refSync-sync(:,2)*gain2).^2)/sum(refSync.^2);
+        E1=sum((refSync(max([lagInSamplesA+1,1]):end)-sync(max([lagInSamplesA+1,1]):end,1)*gain1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
+        E2=sum((refSync(max([lagInSamplesA+1+lagInSamples,1]):end)-sync(max([lagInSamplesA+1+lagInSamples,1]):end,2)*gain2).^2)/sum(refSync.^2);
+        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
+        disp(['Sync parameters were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's; sampling mismatch= ' num2str(1-timeScaleFactor,5)]);
         if E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
-            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '. Using signals in an unsynchronized way(!).'])
-            [auxData, auxData2] = truncateToSameLength(relData,relData2);
-            allData=[auxData,auxData2];
-            clear auxData*
-            [allData,refSync]=truncateToSameLength(allData,refSync);
-            syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
-            sync=idealHPF(allData(:,syncIdx),0);
-            gain1=refSync'/sync(:,1)';
-            gain2=refSync'/sync(:,2)';
-            lagInSamplesA=0;
-            lagInSamples=0;
-        else
-            disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
+            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
+            h=figure;
+            subplot(2,2,[1:2])
+            hold on
+            title(['Trial ' num2str(t) ' Synchronization'])
+            time=[0:length(refSync)-1]*1/EMGfrequency;
+            plot(time,refSync)
+            plot(time,sync(:,1)*gain1,'r')
+            plot(time,sync(:,2)*gain2,'g')
+            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+            hold off
+            subplot(2,2,3)
+            T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
+            if T<length(refSync)
+            hold on
+             plot(time(1:T),refSync(1:T))
+            plot(time(1:T),sync(1:T,1)*gain1,'r')
+            plot(time(1:T),sync(1:T,2)*gain2,'g')
+            %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+            hold off
+            subplot(2,2,4)
+            hold on
+            plot(time(end-T:end),refSync(end-T:end))
+            plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
+            plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+            %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+            hold off
+            end
+            s=inputdlg('Please confirm that you want to proceed like this (y/n)','str');
+            switch s{1}
+                case {'y','Y','yes'}
+                     disp(['Using signals in a possibly unsynchronized way!.'])
+                     close(h)
+                case {'n','N','no'}
+                    error('loadTrials:EMGCouldNotBeSynched','Could not synchronize EMG data, stopping data loading.')
+                    %If we wanted to use the signals as they werer (no
+                    %synching):
+%                     [auxData, auxData2] = truncateToSameLength(relData,relData2);
+%                     allData=[auxData,auxData2];
+%                     clear auxData*
+%                     [allData,refSync]=truncateToSameLength(allData,refSync);
+%                     syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
+%                     sync=idealHPF(allData(:,syncIdx),0);
+%                     gain1=refSync'/sync(:,1)';
+%                     gain2=refSync'/sync(:,2)';
+%                     lagInSamplesA=0;
+%                     lagInSamples=0;
+            end
         end
         
         %Plot to CONFIRM VISUALLY if alignment worked:
