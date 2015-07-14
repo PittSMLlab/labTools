@@ -394,11 +394,11 @@ end
 
 %linkaxes(ah,'x')
 %set(gcf,'Renderer','painters');
-if ~isempty(labels) 
+if nargin<11 || isempty(labels) 
+legend([Li{:}],[legendStr{:}])
+else
 labels={labels}';
 legend([Li{:}],[labels{:}])
-else
-legend([Li{:}],[legendStr{:}])
 end
 %% outputs
 if nargout<2
