@@ -98,7 +98,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=1;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','samePlotCheck','conditionList','conditionSubList',...
-            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback');
+            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck');
         for i=1:17
             set(handles.(['color' num2str(i)]),'Enable','on');
         end
@@ -503,12 +503,13 @@ condStr=['{' strjoin(strcat('''',conds,'''')',',') '}'];
 
 indivSubFlag=get(handles.indivSubs,'Value');
 biofeedbackFlag=get(handles.biofeedback,'Value');
+removeBias=get(handles.removeBiasCheck,'Value');
 
 switch handles.plotType
     case 1 %time course
         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,'Value')));
         binwidth=str2double(get(handles.binEdit,'string'));
-        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag);
+        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups);
         %to print code previous line to command window:
         if get(handles.printCodeCheck,'value')
             disp(['load(''' handles.dir handles.filename ''')'])
@@ -518,8 +519,10 @@ switch handles.plotType
             disp(['binWidth = ' num2str(binwidth) ';'])
             disp(['trialMarkerFlag = [' num2str(trialMarkerFlag') '];'])
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])
-            disp(['IndivSubList = ' indivSubStr ';'])        
-            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' num2str(biofeedbackFlag) ')'])
+            disp(['IndivSubList = ' indivSubStr ';'])   
+            disp(['removeBias = ' removeBias ';'])
+            disp(['groups = ' groups ';'])
+            disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' num2str(biofeedbackFlag) ')','removeBias','groups'])
         end
     case 2 % early/late bars
         removeBiasFlag=1;

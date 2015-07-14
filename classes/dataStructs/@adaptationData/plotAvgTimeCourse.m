@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -394,8 +394,12 @@ end
 
 %linkaxes(ah,'x')
 %set(gcf,'Renderer','painters');
+if ~isempty(labels) 
+labels={labels}';
+legend([Li{:}],[labels{:}])
+else
 legend([Li{:}],[legendStr{:}])
-
+end
 %% outputs
 if nargout<2
     varargout{1}=figHandle;
