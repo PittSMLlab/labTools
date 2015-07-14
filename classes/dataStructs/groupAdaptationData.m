@@ -51,14 +51,14 @@ classdef groupAdaptationData
                 conds=conds(~cellfun('isempty',conds));
                 %check if current subject had conditions other than the rest
                 for c=1:length(conds)                    
-                    if ~ismember(conds(c),conditions)
+                    if ~ismember(lower(conds(c)),lower(conditions))
                         %Subs.(abrevGroup).conditions{end+1}=conditions{c};
                         disp(['Warning: ' this.ID{subs(s)} ' performed ' conds{c} ', but it was not perfomred by all subjects.'])
                     end                    
                 end
                 %check if current subject didn't have a condition that the rest had
                 for c=1:length(conditions)
-                    if ~ismember(conditions(c),conds) && ~isempty(conditions{c})
+                    if ~ismember(lower(conditions(c)),lower(conds)) && ~isempty(conditions{c})
                         disp(['Warning: ' this.ID{subs(s)} ' did not perform ' conditions{c} ' but ' strjoin(this.ID(subs(1:s-1)),', ') ' did.'])
                         conditions{c}='';
                     end
