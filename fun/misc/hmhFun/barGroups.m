@@ -27,11 +27,11 @@ for p=1:length(params)
            nSubs=length(Study.(groups{b}).ID);
            
            %attempt to abbreviate group name
-           adaptData=Study.(groups{b}).adaptData{1};
-           group=adaptData.metaData.ID;
-           spaces=find(group==' ');
-           abrevGroup=group(spaces+1);%
-           abrevGroups{b}=[group(1) abrevGroup];
+%            adaptData=Study.(groups{b}).adaptData{1};
+%            group=adaptData.metaData.ID;
+%            spaces=find(group==' ');
+%            abrevGroup=group(spaces+1);%
+%            abrevGroups{b}=[group(1) abrevGroup];
                       
            ind=find(strcmp(fields(Study),groups{b}));
            switch mode
@@ -56,7 +56,7 @@ for p=1:length(params)
            case 2
                errorbar(results.(epochs{t}).avg(:,p),results.(epochs{t}).se(:,p),'LineWidth',2,'Color','k')
        end
-       set(gca,'Xtick',1:ngroups,'XTickLabel',abrevGroups,'fontSize',12)
+       set(gca,'Xtick',1:ngroups,'XTickLabel',groups,'fontSize',12)
        axis tight
        limy=[limy get(gca,'Ylim')];
        ylabel(params{p})
