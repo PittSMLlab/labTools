@@ -394,7 +394,7 @@ end
 
 %linkaxes(ah,'x')
 %set(gcf,'Renderer','painters');
-if nargin<11 || isempty(labels) 
+if nargin<11 || isempty(labels) || indivFlag==1
 legend([Li{:}],[legendStr{:}])
 else
 labels={labels}';
