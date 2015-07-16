@@ -1,4 +1,4 @@
-classdef derivedMetaData < labMetaData
+classdef derivedMetaData < trialMetaData
     %UNTITLED2 Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -10,7 +10,7 @@ classdef derivedMetaData < labMetaData
     methods
         %Constructor
         function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta)
-            this@labMetaData(ID,date,experimenter,desc,obs,refLeg);
+            this@trialMetaData(ID,desc,obs,refLeg,'','',parentMeta.type) 
             %if isa(parentMeta,'labMetaData'); %Had to comment this on
             %10/7/2014, because trialMetaData and experimentMetaData are no
             %longer labMetaData objects. -Pablo

@@ -35,7 +35,7 @@ classdef experimentData
     
     properties (Dependent)
         isRaw %true if data is an object of the rawLabData class
-        isProcessed %true if data is an oibject of the processedLabData class
+        isProcessed %true if data is an object of the processedLabData class
         isStepped %or strided
         fastLeg
     end

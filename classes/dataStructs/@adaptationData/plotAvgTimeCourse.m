@@ -90,7 +90,7 @@ end
                      %determines the number of strides plotted.
 % end
 if nargin<10 || isempty(removeBiasFlag)
-    removeBiasFlag=1;
+    removeBiasFlag=0;
 end
 
 %% Initialize plot

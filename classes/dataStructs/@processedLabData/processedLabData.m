@@ -157,9 +157,9 @@ classdef processedLabData < labData
         function [steppedDataArray,initTime,endTime]=separateIntoStrides(this,triggerEvent) %Splitting into single strides!
             %triggerEvent needs to be one of the valid gaitEvent labels  
             
-            [strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
+            [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent);
             steppedDataArray={};
-            for i=strideIdxs
+            for i=1:numStrides
                 steppedDataArray{i}=this.split(initTime(i),endTime(i),'strideData');
             end
         end
@@ -246,6 +246,57 @@ classdef processedLabData < labData
                         endTime(i)=NaN;
                     end
                 end
+            end
+        end
+        
+        function [numSteps,initTime,endTime,initEventSide]=getStepInfo(this,triggerEvent)
+            if nargin<2 || isempty(triggerEvent)
+                triggerEvent='HS'; %Using HS as default event for striding.
+            end
+            
+            %Find starting events:
+            rEventList=this.getPartialGaitEvents(['R' triggerEvent]);
+            rIdxLst=find(rEventList==1);
+            lEventList=this.getPartialGaitEvents(['L' triggerEvent]);
+            lIdxLst=find(lEventList==1);
+            
+            auxTime=this.gaitEvents.Time;
+
+            i=0;
+            noEnd=true;
+            firstIdx=min([rIdxLst;lIdxLst]);
+            numSteps=0;
+            initTime=[];
+            endTime=[];
+            initEventSide={};
+            if ~isempty(firstIdx)
+                initTime(1)=auxTime(firstIdx);
+                if any(rIdxLst==firstIdx)
+                    lastSideRight=true;
+                else
+                    lastSideRight=false;
+                end
+                while noEnd %This is an infinite loop...
+                    i=i+1;
+                    if lastSideRight
+                            aux=find(auxTime(lIdxLst)>initTime(i),1,'first'); 
+                            t=auxTime(lIdxLst(aux));
+                            initEventSide{i}='R';
+                    else
+                            aux=find(auxTime(rIdxLst)>initTime(i),1,'first'); 
+                            t=auxTime(rIdxLst(aux));
+                            initEventSide{i}='L';
+                    end
+                    lastSideRight=~lastSideRight;
+                    if ~isempty(aux)
+                        endTime(i)=t;
+                        initTime(i+1)=t;
+                    else
+                        endTime(i)=NaN;
+                        noEnd=false;
+                    end
+                end
+                numSteps=i;
             end
         end
         

@@ -98,7 +98,7 @@ end
     
 %% Compute:
 %find walking direction
-direction=sign(diff(sAnk(:,4:5,2),1,2));
+direction=sign(diff(sAnk(:,2:3,2),1,2));
 
 
 hipPos3D=.5*(sHip+fHip);

@@ -34,12 +34,14 @@ for cond = sort(info.cond)
         
         fileList{t}=filename;
                
-        if info.EMGs
+        if ~isempty(info.secdir_location) %Pablo changed on 7/16/2015 to consider the case where there is EMG from a single file.
             if t<10
                 secFileList{t} = [info.secdir_location filesep basename '0' num2str(t)];
             else
                 secFileList{t} = [info.secdir_location filesep basename num2str(t)];
             end
+        else
+            secFileList{t}='';
         end       
         
         

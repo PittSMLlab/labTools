@@ -60,7 +60,7 @@ classdef SynergyAnalysis
         
         %Others
         function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)
-            Nreps=50000;
+            Nreps=10000;
             switch randomMethod
                 case 'spectralMatch'
                     if strcmpi(factMethod,'nnmf')
@@ -82,7 +82,7 @@ classdef SynergyAnalysis
                 case 'timeShift'
                     switch factMethod
                         case 'nnmf'
-                            Nreps=1000;
+                            Nreps=200;
                             sizes=size(this.trainingFactorizations{1}.originalMatrix);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricNNMFEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps);
                         case 'pca'
@@ -202,7 +202,7 @@ classdef SynergyAnalysis
             end
             dim1Vectors=coefs;
             if poolFlag==1
-                parpool close
+                delete(gcp('nocreate'))
             end
        end
         

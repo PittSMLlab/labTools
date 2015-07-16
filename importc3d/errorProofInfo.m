@@ -60,7 +60,7 @@ out.EMGs = get(handles.emg_check,'Value');
 if isfield(handles,'secfolder_location')
     out.secdir_location = handles.secfolder_location;
 else
-    out.secdir_location = out.dir_location;
+    out.secdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
 end
 
 % -- Trial Info
@@ -191,13 +191,12 @@ if ~(nargin>1 && ignoreErrors)
         uicontrol(handles.c3dlocation)
         out.bad=true; return
     end
-    if ~exist(out.secdir_location,'dir')
-        %     h_error=errordlg('Please enter a folder that exists','Directory Error');
-        %     waitfor(h_error)
-        %     uicontrol(handles.secfileloc)
-        %     out.bad=1;
-        %     return
-        out.secdir_location=out.dir_location;
+    if ~isempty(out.secdir_location) && ~exist(out.secdir_location,'dir')
+        h_error=errordlg('Please enter a folder that exists','Directory Error');
+        waitfor(h_error)
+        uicontrol(handles.secfileloc)
+        out.bad=1;
+        return
     end
     
     % -- Trial Info
@@ -233,7 +232,7 @@ if ~(nargin>1 && ignoreErrors)
 %             uicontrol(handles.basefile)
 %             out.bad=true; return
 %         end
-        if out.EMGs
+        if ~isempty(out.secdir_location)
             if t<10
                 filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
             else
