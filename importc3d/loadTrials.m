@@ -46,7 +46,7 @@ for t=cell2mat(info.trialnums)
         fieldList=fields(analogs);
         for j=1:length(fieldList);
             %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
-            if ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
+            if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
                 if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
                     warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
                 else
@@ -66,8 +66,8 @@ for t=cell2mat(info.trialnums)
                     otherwise
                         showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output                        
                 end
-                end
                 analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+                end
             end
         end    
         if showWarning
@@ -77,7 +77,7 @@ for t=cell2mat(info.trialnums)
                 
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
         if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
-            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(trial)])
+            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(t)])
         end
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;
@@ -90,38 +90,37 @@ for t=cell2mat(info.trialnums)
     if info.EMGs
         %Primary file (PC)
         relData=[];
+        relDataTemp=[];
         fieldList=fields(analogs);
         idxList=[];
         for j=1:length(fieldList);
             if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-                relData=[relData,analogs.(fieldList{j})];
+                relDataTemp=[relDataTemp,analogs.(fieldList{j})];
                 idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
                 analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
             end
         end
-        EMGList1=info.EMGList1(idxList);
-        relData(:,idxList)=relData; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-        emptyChannels1=cellfun(@(x) isempty(x),EMGList1);
-        EMGList1=EMGList1(~emptyChannels1);
+        emptyChannels1=cellfun(@(x) isempty(x),info.EMGList1);
+        EMGList1=info.EMGList1(~emptyChannels1);
+        relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         relData=relData(:,~emptyChannels1);
         EMGList=EMGList1;
         
         %Secondary file (PC)
-        relData2=[];
+        relDataTemp2=[];
         idxList2=[];
         if secondFile
             fieldList=fields(analogs2);
             for j=1:length(fieldList);
                 if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-                    relData2=[relData2,analogs2.(fieldList{j})];
+                    relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
                     idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
                     analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
                 end
             end
-            EMGList2=info.EMGList2(idxList2); %Just using the names for the channels that were actually in the file
-            relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-            emptyChannels2=cellfun(@(x) isempty(x),EMGList2);
-            EMGList2=EMGList2(~emptyChannels2);
+            emptyChannels2=cellfun(@(x) isempty(x),info.EMGList2);
+            EMGList2=info.EMGList2(~emptyChannels2); %Just using the names for the channels that were actually in the file
+            relData2(:,idxList2)=relDataTemp2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
             relData2=relData2(:,~emptyChannels2);
             EMGList=[EMGList1,EMGList2];
         end
@@ -282,8 +281,12 @@ for t=cell2mat(info.trialnums)
         time=[0:length(refSync)-1]*1/EMGfrequency;
         plot(time,refSync)
         plot(time,sync(:,1)*gain1,'r')
-        plot(time,sync(:,2)*gain2,'g')
-        legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+        if secondFile
+            plot(time,sync(:,2)*gain2,'g')
+            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+        else           
+            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'])
+        end
         hold off
         subplot(2,2,3)
         T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
@@ -291,14 +294,18 @@ for t=cell2mat(info.trialnums)
         hold on
          plot(time(1:T),refSync(1:T))
         plot(time(1:T),sync(1:T,1)*gain1,'r')
+        if secondFile
         plot(time(1:T),sync(1:T,2)*gain2,'g')
+        end
         %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
         hold off
         subplot(2,2,4)
         hold on
         plot(time(end-T:end),refSync(end-T:end))
         plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
+        if secondFile
         plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+        end
         %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
         hold off
         end
