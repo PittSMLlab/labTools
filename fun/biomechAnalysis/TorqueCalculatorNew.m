@@ -1,4 +1,4 @@
-function [AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, markerData, GRFData)
+function [AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, markerData, GRFData, weight)
 
 %% Get data from COMTS
 fcomR=squeeze(COMTS.getOrientedData({'RfCOM'}));
@@ -58,7 +58,7 @@ end
 % Define the body weight of the patient
 LFz=GRFData.getDataAsVector('LFz');
 RFz=GRFData.getDataAsVector('RFz');
-BW=abs(LFz(1,1)+RFz(1,1));
+BW=weight;%abs(LFz(1,1)+RFz(1,1));
 
 FootWeight=(BW*.0145);
 ShankWeight=BW*.0465;
