@@ -410,7 +410,6 @@ classdef labTimeSeries  < timeseries
                 warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference), setting to 0.')
                 this.Data(:,all(isnan(this.Data)))=0;
             end
-            newData=zeros(size(this.Data));
             this.Quality=zeros(size(this.Data),'int8');
              for i=1:size(this.Data,2) %Going through labels
                  auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label

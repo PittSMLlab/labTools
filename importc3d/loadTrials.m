@@ -45,9 +45,10 @@ for t=cell2mat(info.trialnums)
         units={};
         fieldList=fields(analogs);
         for j=1:length(fieldList);
-            if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
+            %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
+            if ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
                 if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
-                    warning('loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding.')
+                    warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
                 else
                 switch fieldList{j}(end)
                     case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
@@ -70,7 +71,7 @@ for t=cell2mat(info.trialnums)
             end
         end    
         if showWarning
-            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Discarding.'])
+            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
         end
         %Sanity check: offset calibration
                 
@@ -98,7 +99,7 @@ for t=cell2mat(info.trialnums)
                 analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
             end
         end
-        EMGList1=info.EMGList1;
+        EMGList1=info.EMGList1(idxList);
         relData(:,idxList)=relData; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
         emptyChannels1=cellfun(@(x) isempty(x),EMGList1);
         EMGList1=EMGList1(~emptyChannels1);
@@ -117,7 +118,7 @@ for t=cell2mat(info.trialnums)
                     analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
                 end
             end
-            EMGList2=info.EMGList2; %This is the actual ordered in which the muscles were recorded
+            EMGList2=info.EMGList2(idxList2); %Just using the names for the channels that were actually in the file
             relData2(:,idxList2)=relData2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
             emptyChannels2=cellfun(@(x) isempty(x),EMGList2);
             EMGList2=EMGList2(~emptyChannels2);
@@ -130,9 +131,9 @@ for t=cell2mat(info.trialnums)
             while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
                 aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
                 if k<=length(EMGList1)
-                    info.EMGList1{k}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
+                    info.EMGList1{idxList(k)}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
                 else
-                    info.EMGList2{k-length(EMGList1)}=aux{1};
+                    info.EMGList2{idxList2(k-length(EMGList1))}=aux{1};
                 end
                 EMGList{k}=aux{1};
             end
