@@ -405,6 +405,22 @@ classdef experimentData
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
+        
+        function [numStrides,trials,initTimes,endTimes]=getStrideInfo(this,eventClass)
+            numStrides=0;
+            initTimes=[];
+            endTimes=[];
+            trials=[];
+            for t=1:length(this.data)
+                if ~isempty(this.data{t})
+                [numStrides_,initTimes_,endTimes_]=getStrideInfo(this.data{t},eventClass);
+                numStrides=numStrides+numStrides_;
+                initTimes=[initTimes;initTimes_];
+                endTimes=[endTimes;endTimes_];
+                trials=[trials;t*ones(numStrides_,1)];
+                end
+            end
+        end
     end
 	methods (Hidden=true, Access=private)
 		function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)

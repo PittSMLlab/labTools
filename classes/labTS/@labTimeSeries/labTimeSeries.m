@@ -489,7 +489,7 @@ classdef labTimeSeries  < timeseries
                     %'XAxisLocation','top',...
                     %'YAxisLocation','right',...
                     %'Color','none');%,'XColor','r','YColor','r');
-                   set(ax1,'Xtick',events.Time(ii),'XTickLabel',events.labels(jj))
+                   set(ax1,'XTick',events.Time(ii),'XTickLabel',events.labels(jj))
                    grid on
                 end
             end
