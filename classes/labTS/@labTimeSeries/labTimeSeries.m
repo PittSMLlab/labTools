@@ -496,6 +496,13 @@ classdef labTimeSeries  < timeseries
             %linkaxes([h1,ax2],'x')
             plotHandles=h1;  
         end
+        function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
+            %First attempt: align the data to the first column of events
+            %provided
+            for i=1:length(ee)
+               this.split(t1,t2).plot 
+            end
+        end
         
         function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
             %Ideally we would plot 'L' and 'R' timeseries on top of each
