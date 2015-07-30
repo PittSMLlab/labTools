@@ -511,9 +511,9 @@ classdef adaptationData
                         data=data2(1:binSize:end,:);
                     end
                     cc=aux(mod(c,size(aux,1))+1,:);
-                    if ~isempty(binSize) && binSize~=0
-                    hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
-                    uistack(hh(c),'bottom')
+                    if nargin>5 && ~isempty(binSize) && binSize==0
+                        hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
+                        uistack(hh(c),'bottom')
                     end
                     if ~isempty(last)
                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
