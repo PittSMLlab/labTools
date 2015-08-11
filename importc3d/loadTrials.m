@@ -82,8 +82,8 @@ for t=cell2mat(info.trialnums)
             gain=nan(size(list));
             trueOffset=nan(size(list));
             differenceInForceUnits=nan(size(list));
-            tolF=5; %N
-            tolM=5e3;%N.mm
+            m=nan(size(list));
+            tol=5; %N or N.m
             for j=1:length(list)
                 k=find(strcmp(forceLabels,list{j}));
                 if ~isempty(k)
@@ -91,40 +91,37 @@ for t=cell2mat(info.trialnums)
                     proc=relData(:,k);
                     %figure; plot(raw,proc,'.')
                     rel=proc~=0;
-                    coef=polyfit(raw(rel),proc(rel),1);
-                    gain(j)=coef(1); %This could be rounded to keep only 2 significant figures, which is the more likely value
-                    offset(j)=-coef(2)/coef(1); 
-                    C=[-1:.001:1];
-                    Hh=hist(raw,C);
-                    trueOffset(j)=C(Hh==max(Hh));
-                    differenceInForceUnits(j)=gain(j)*(trueOffset(j)-offset(j));
+                    if ~isempty(proc)
+                        m(j)=min(abs(proc(rel)));
+                        coef=polyfit(raw(rel),proc(rel),1);
+                        gain(j)=coef(1); %This could be rounded to keep only 2 significant figures, which is the more likely value
+                        offset(j)=-coef(2)/coef(1); 
+                        C=[-1:.001:1];
+                        Hh=hist(raw,C);
+                        trueOffset(j)=C(Hh==max(Hh));
+                        differenceInForceUnits(j)=gain(j)*(trueOffset(j)-offset(j));
+                    end
                     switch list{j}(2)
                         case 'F' %Forces
-                            if differenceInForceUnits(j)>tolF
-                                a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated value is ' num2str(differenceInForceUnits(j)) 'N. Please confirm that you want to subtract this offset.']);
-                                switch a
-                                    case 'Yes'
-                                        rawData(:,k)=rawData(:,k)-differenceInForceUnits(j);
-                                    case 'No'
-                                        
-                                    otherwise
-                                        error('');
-                                end
-                            end
+                            ttol=tol;
+                            units='N';
                         case 'M' %Moments
-                            if differenceInForceUnits(j)>tolM
-                            a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated value is ' num2str(differenceInForceUnits(j)) 'N.mm. Please confirm that you want to subtract this offset.']);
-                               switch a
-                                    case 'Yes'
-                                        rawData(:,k)=rawData(:,k)-differenceInForceUnits(j);
-                                    case 'No'
-                                        
-                                    otherwise
-                                        error('');
-                               end
-                            end
+                            ttol=tol*1000; %moments are in N.mm
+                            units='N.mm';
                         otherwise
                             error('');
+                    end
+                    if differenceInForceUnits(j)>ttol
+                        a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated offset is ' num2str(differenceInForceUnits(j)) ' ' units '. Please confirm that you want to subtract this offset.']);
+                        switch a
+                            case 'Yes'
+                                relData(:,k)=gain(j)*(raw -trueOffset(j));
+                                relData(abs(relData(:,k))<m,k)=0; %Thresholding
+                            case 'No'
+                                %nop
+                            otherwise
+                                error('');
+                        end
                     end
                 end
             end
