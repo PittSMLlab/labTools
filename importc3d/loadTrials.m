@@ -73,8 +73,65 @@ for t=cell2mat(info.trialnums)
         if showWarning
             warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
         end
+        
         %Sanity check: offset calibration
-                
+        try
+            map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in 
+            list={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz','HFx','HFy','HFz','HMx','HMy','HMz'};
+            offset=nan(size(list));
+            gain=nan(size(list));
+            trueOffset=nan(size(list));
+            differenceInForceUnits=nan(size(list));
+            tolF=5; %N
+            tolM=5e3;%N.mm
+            for j=1:length(list)
+                k=find(strcmp(forceLabels,list{j}));
+                if ~isempty(k)
+                    raw=analogs.(['Raw_Pin_' num2str(map(k))]);
+                    proc=relData(:,k);
+                    %figure; plot(raw,proc,'.')
+                    rel=proc~=0;
+                    coef=polyfit(raw(rel),proc(rel),1);
+                    gain(j)=coef(1); %This could be rounded to keep only 2 significant figures, which is the more likely value
+                    offset(j)=-coef(2)/coef(1); 
+                    C=[-1:.001:1];
+                    Hh=hist(raw,C);
+                    trueOffset(j)=C(Hh==max(Hh));
+                    differenceInForceUnits(j)=gain(j)*(trueOffset(j)-offset(j));
+                    switch list{j}(2)
+                        case 'F' %Forces
+                            if differenceInForceUnits(j)>tolF
+                                a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated value is ' num2str(differenceInForceUnits(j)) 'N. Please confirm that you want to subtract this offset.']);
+                                switch a
+                                    case 'Yes'
+                                        rawData(:,k)=rawData(:,k)-differenceInForceUnits(j);
+                                    case 'No'
+                                        
+                                    otherwise
+                                        error('');
+                                end
+                            end
+                        case 'M' %Moments
+                            if differenceInForceUnits(j)>tolM
+                            a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated value is ' num2str(differenceInForceUnits(j)) 'N.mm. Please confirm that you want to subtract this offset.']);
+                               switch a
+                                    case 'Yes'
+                                        rawData(:,k)=rawData(:,k)-differenceInForceUnits(j);
+                                    case 'No'
+                                        
+                                    otherwise
+                                        error('');
+                               end
+                            end
+                        otherwise
+                            error('');
+                    end
+                end
+            end
+        catch
+           warning('loadTrials:GRFs','Could not perform offset check. Proceeding with data as is.') 
+        end
+        
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
         if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
             warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(t)])
