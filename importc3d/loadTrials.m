@@ -87,12 +87,14 @@ for t=cell2mat(info.trialnums)
             for j=1:length(list)
                 k=find(strcmp(forceLabels,list{j}));
                 if ~isempty(k)
-                    raw=analogs.(['Raw_Pin_' num2str(map(k))]);
+                    aux=fields(analogs);
+                    iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' num2str(map(k)) '$'])));
+                    raw=analogs.(aux{iii});
                     proc=relData(:,k);
                     %figure; plot(raw,proc,'.')
                     rel=proc~=0;
                     if ~isempty(proc)
-                        m(j)=min(abs(proc(rel)));
+                        m(j)=4*prctile(abs(proc(rel)),1); %This can be used for thresholding
                         coef=polyfit(raw(rel),proc(rel),1);
                         gain(j)=coef(1); %This could be rounded to keep only 2 significant figures, which is the more likely value
                         offset(j)=-coef(2)/coef(1); 
@@ -116,7 +118,7 @@ for t=cell2mat(info.trialnums)
                         switch a
                             case 'Yes'
                                 relData(:,k)=gain(j)*(raw -trueOffset(j));
-                                relData(abs(relData(:,k))<m,k)=0; %Thresholding
+                                relData(abs(relData(:,k))<4*ttol,k)=0; %Thresholding using the tolerance, should never be less than 2*ttol
                             case 'No'
                                 %nop
                             otherwise
@@ -125,7 +127,7 @@ for t=cell2mat(info.trialnums)
                     end
                 end
             end
-        catch
+        catch ME
            warning('loadTrials:GRFs','Could not perform offset check. Proceeding with data as is.') 
         end
         
@@ -194,15 +196,8 @@ for t=cell2mat(info.trialnums)
         
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
-        try
-            refSync=analogs.Pin_3;
-        catch
-            try
-                refSync=analogs.Raw_Pin_3;  
-            catch
-                refSync=analogs.Raw_Raw_Pin_3; 
-            end
-        end
+        fieldNames=fields(analogs);
+        refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Pin3'))});
         
         %Check for frequencies between the two PCs
         if secondFile
