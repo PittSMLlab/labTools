@@ -2,17 +2,16 @@ classdef experimentMetaData
 %experimentMetaData   Information describing the experiment as a whole.
 %
 %experimentMetaData Properties:
-%   ID - string containing the group that the subject belongs to (i.e. the
-%   study protocol)
+%   ID - string containing the subject ID e.g. 'OG90' or 'CGN05' 
 %   date - labDate object containing the date of the experiment
-%   experimenter - string with the person(s) who ran the experiment
+%   experimenter - string, initials/name of person(s) who ran the experiment
 %   observations - string with overall study observations (observations for individual
 %   trials are stored in trailMetaData class objects)
-%   conditionName - cell array of strings contatining labels given to each condition of the experiment
-%   conditionDescription - cell array of strings contatining a detailed description of each condition.
+%   conditionName - cell array of strings containing labels given to each condition of the experiment
+%   conditionDescription - cell array of strings containing a detailed description of each condition.
 %   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
-%   trailsInCondition - cell array of numbers matching condition number to
-%   trial numbers
+%   trailsInCondition - cell array of numbers (type double?) matching condition number to
+%   trial numbers -- trial numbers must match up with c3d file names
 %   Ntrials - total number of trials
 %
 %experimentMetaData Methods:
@@ -131,7 +130,7 @@ classdef experimentMetaData
         
         %% Other methods
         function condLst=getCondLstPerTrial(this)
-           %getCondLstPerTrial  Returns a vector with length equal to the
+           %Returns a vector with length equal to the
            %number of trials in the experiment and with values equal to the
            %condition number for each trial.
            for i=1:this.Ntrials
@@ -152,7 +151,9 @@ classdef experimentMetaData
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
-            %ConditionNames should be a cell array containing a string or 
+            %
+            %Inputs:
+            %ConditionNames -- cell array containing a string or 
             %another cell array of strings in each of its cells. 
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             if isa(conditionNames,'char')
@@ -187,6 +188,18 @@ classdef experimentMetaData
         end
         
         function trialNums=getTrialsInCondition(this,conditionNames)
+            %Return trial numbers in each condition
+            %
+            %Inputs:
+            %conditionNames -- cell containing string(s)
+            %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            %
+            %output:
+            %trialNums -- a matrix of trial numbers in a condition
+            %
+            %example:
+            %trialNums = getTrialsInCondition({'Base'})
+            %trialNums = [1 2 3]
             conditionIdx=this.getConditionIdxsFromName(conditionNames);
             trialNums=cell2mat(this.trialsInCondition(conditionIdx));
         end
