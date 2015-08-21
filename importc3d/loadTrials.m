@@ -15,7 +15,7 @@ function trials=loadTrials(trialMD,fileList,secFileList,info)
 %See also: rawTrialData
 
 %orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
-orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs!
+orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs! For use in biomechanics calculations
 
 %Create list of expected/accepted muscles:
 orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
@@ -25,7 +25,7 @@ for j=1:length(orderedMuscleList)
     orderedEMGList{end+1}=['L' orderedMuscleList{j}];
 end
         
-for t=cell2mat(info.trialnums)
+for t=cell2mat(info.trialnums) %loop through each trial
     %Import data from c3d, uses external toolbox BTK
     H=btkReadAcquisition([fileList{t} '.c3d']);
     [analogs,analogsInfo]=btkGetAnalogs(H);
@@ -37,19 +37,19 @@ for t=cell2mat(info.trialnums)
     end    
     
     %% GRFData
-    if info.forces
+    if info.forces %check to see if there are GRF forces in the trial
         showWarning = false;%must define or else error is thrown when otherwise case is skipped
         relData=[];
         forceLabels ={};
         units={};
         fieldList=fields(analogs);
-        for j=1:length(fieldList);
+        for j=1:length(fieldList);%parse analog channels by force, moment, cop
             %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
             if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
                 if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
                     warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
                 else
-                switch fieldList{j}(end)
+                switch fieldList{j}(end)%parse devices
                     case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
                         forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
@@ -73,7 +73,8 @@ for t=cell2mat(info.trialnums)
             warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
         end
         
-        %Sanity check: offset calibration
+        %Sanity check: offset calibration, make sure that force values from
+        %analog pins have zero mode, correct scale units etc.
         try
             map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in 
             list={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz','HFx','HFy','HFz','HMx','HMy','HMz'};
