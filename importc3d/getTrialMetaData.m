@@ -6,7 +6,7 @@ function [trialMD,fileList,secFileList] = getTrialMetaData(info)
 %info: structured array output from GetInfoGUI
 %
 %OUTPUT:
-%trialMD: cell array of trailMetaData objects where the cell index corresponds
+%trialMD: cell array of trialMetaData objects where the cell index corresponds
 %to the trial number
 %fileList: list of .c3d files containing kinematic and force data for a given experiment
 %secFileList: list of files containing EMG data for a given experiment

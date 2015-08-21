@@ -1,6 +1,5 @@
 function trials=loadTrials(trialMD,fileList,secFileList,info)
-%loadTrials  generates rawTrialData objects for each trial of a
-%given experiment.
+%loadTrials  generates rawTrialData instances for each trial
 %
 %INPUTS:
 %trialMD: cell array of trailMetaData objects where the cell index corresponds
