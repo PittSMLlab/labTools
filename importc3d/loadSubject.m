@@ -3,27 +3,29 @@ function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)
 %             subject's .mat file
 %
 %INPUT:
-%info: structured array output from GetInfoGUI
+%'info' is the structured array output from GetInfoGUI
+%'eventClass' can be a string value: '' or 'kin' or 'force'   it
+%specifies the method to determine gait events. When in doubt use ''
 %
 %OUTPUTS:
-%expData: a processed object of the experimentData class
-%rawExpData: an unprocessed object of the experimentData class
+%expData: a processed instance of the experimentData class
+%rawExpData: an unprocessed instance of the experimentData class
 %
 %See also: getTrialMetaData, experimentData, experimentData.process
 
 if nargin<2 || isempty(eventClass)
-    eventClass='';
+    eventClass='';%default, will choose based on trial type TM or OG
 end
 
 %% Initialize diary to save all information displayed during loading
 diaryFileName=[info.save_folder filesep info.ID 'loading.log'];
 diary(diaryFileName)
-%%
-expDate = labDate(info.day,info.month,info.year);
+%% Determine Experiment Date
+expDate = labDate(info.day,info.month,info.year);%labDate is a labTools class
 %% Experiment info
 
 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-    info.exp_obs,info.conditionNames,info.conditionDescriptions,info.trialnums,info.numoftrials);
+    info.exp_obs,info.conditionNames,info.conditionDescriptions,info.trialnums,info.numoftrials);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
 %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
 
 %% Subject info

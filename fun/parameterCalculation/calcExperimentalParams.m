@@ -1,5 +1,13 @@
 function out = calcExperimentalParams(in,subData,eventClass,initEventSide)
-%in must be an object of the class processedlabData
+%Calculate parameters: 
+%
+%INPUTS
+%'in' must be an instance of the class "processedlabData"
+%'subData' is the instance of subjectData e.g. subject.mat/expData.subData
+%'eventClass' 
+%'initEventSide' can be either 'R' or 'L', if blank this comes from come from
+%subjectRAW.mat/rawExpData.data{i,j}.metaData.refLeg, or the first input
+%'in'
 
 if nargin<2 || isempty(eventClass)
     eventClass='';
