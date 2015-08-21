@@ -6,10 +6,10 @@ classdef subjectData
 %   sex - string, either 'male' or 'female'
 %   dominantLeg - string, either 'L' or 'R'
 %   dominantArm - string, either 'L' or 'R'
-%   height - number (in cm)
-%   weight - number (in Kg)
-%   age - labDate object
-%   ID - string containing experimental identifier
+%   height - double (cm)
+%   weight - double (kg)
+%   age - labDate object e.g. age = expDate.year - DOB.year;
+%   ID - string containing experimental identifier e.g. 'OG90'
 %
 %See also: labDate, strokeSubjectData
     
