@@ -1,5 +1,5 @@
 classdef labDate
-    %labDate   stores a single date.
+    %labDate   stores a single date as day, month, year
     %
     %labDate properties:
     %   day - number
@@ -19,8 +19,19 @@ classdef labDate
     end
     
     methods
-        %constructor
+
         function this=labDate(dd,mm,year)
+            %Constructor 
+            %
+            %inputs: dd, mm, yyyy
+            %
+            %dd must be 2 digit double
+            %
+            %mm can be either 2 digit double, or 3 char string e.g.
+            %'jan' or 'dec'
+            %
+            %yyyy must be 4 digit double
+            
             this.day=dd;
             if isa(mm,'char') && length(mm)==3
                 switch lower(mm)
@@ -129,16 +140,31 @@ classdef labDate
         end
         
         function id=genIDFromClock()
+            %get the current time and convert it to date ID: yyyymmddhhmmss
+            %
+            %example:
+            %id = genIDFromClock()
+            %id = 20150821111631
            aux=clock;
            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
         end
         
         function d=getCurrent()
+            %create labDate instance d as the current time and date
+            %
+            %example:
+            %d = getCurrent()
+            %             d =
+            %labDate with properties:
+            %day: 21
+            %month: 8
+            %year: 2015
             aux=clock;
             d=labDate(aux(3),labDate.monthString(aux(2)),aux(1));
         end
         
         function d=default()
+            %set date to 1 Jan 1900
             d=labDate(1,'jan',1900);
         end
     end
