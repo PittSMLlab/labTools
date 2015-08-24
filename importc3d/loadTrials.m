@@ -545,6 +545,6 @@ for t=cell2mat(info.trialnums) %loop through each trial
     %% Construct trialData
     
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);
+    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);%simple organize trial data into organized object, rawTrialData
     
 end

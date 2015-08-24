@@ -56,6 +56,9 @@ classdef experimentData
         
         %% Setters for class properties
         function this=set.metaData(this,meta)
+            %define or re-define metaData for this experiment
+            %
+            %INPUT: metaData object
             if isa(meta,'experimentMetaData')
                this.metaData=meta;
            else
@@ -64,6 +67,9 @@ classdef experimentData
            end
         end
         function this=set.subData(this,sub)
+            %define or re-define subjectData
+            %
+            %INPUT: subjectData object
             if isa(sub,'subjectData')
                this.subData=sub;
            else
@@ -72,6 +78,9 @@ classdef experimentData
             end
         end
         function this=set.data(this,data)
+            %define or redefine experiment data
+            %
+            %INPUT: labData object or one of its subclasses
             if isa(data,'cell')  % Has to be array of labData type cells. 
                aux=find(cellfun('isempty',data)~=1);
                for i=1:length(aux)
@@ -90,7 +99,7 @@ classdef experimentData
         %% Getters for Dependent properties
         function a=get.isProcessed(this)
             %Returns true if the trials have been processed, and false if
-            %they contain rawData.
+            %they contain only rawData.
             %   INPUTS: 
             %       this: experimentData object
             %   OUTPUTS: 
@@ -106,6 +115,7 @@ classdef experimentData
         end
         
         function a=get.isStepped(this)
+
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1);
             a=isa(this.data{idx},'strideData');
@@ -118,6 +128,10 @@ classdef experimentData
         end
         
         function fastLeg=get.fastLeg(this)
+            %based on each trial, determine which leg is the fast leg, even
+            %if there is no belt data
+            %
+            %returns 'R' or 'L'
             vR=[];
             vL=[];
             trials=cell2mat(this.metaData.trialsInCondition);
@@ -158,6 +172,10 @@ classdef experimentData
         end
         
         function slowLeg=getSlowLeg(this)
+            %determine which leg is the slow leg, simply the opposite of
+            %the fast leg, be sure to call get.fastLeg() first
+            %
+            %returns 'R' or 'L'
             if strcmpi(this.fastLeg,'L')
                 slowLeg='R';
             elseif strcmpi(this.fastLeg,'R')
@@ -167,7 +185,11 @@ classdef experimentData
             end
         end
         
-        function refLeg=getRefLeg(this) %By majority vote over trials
+        function refLeg=getRefLeg(this) 
+            %By majority vote over trials, returns the reference leg for
+            %the entire experiment
+            %
+            %returns 'R' or 'L'
             refLeg={};
            for i=1:length(this.data)%Going over trials
                if ~isempty(this.data{i})
@@ -186,6 +208,7 @@ classdef experimentData
         end
         
         function fL=getNonRefLeg(this)
+            %returns the non-reference leg, 'R' or 'L'
             sL=this.getRefLeg;
             if strcmp(sL,'R')
                 fL='L';
@@ -281,6 +304,10 @@ classdef experimentData
         %functions (which is what these do). Perhaps we could issue a
         %warning or a disclaimer telling the user that this takes TOO long.
         function [h,adaptDataObject]=parameterEvolutionPlot(this,field)
+            %???
+            %
+            %INPUTS:
+            %field, 
             if ~(this.isProcessed)
                 ME=MException('experimentData:parameterEvolutionPlot','Cannot generate parameter evolution plot from unprocessed data!');
                 throw(ME);
