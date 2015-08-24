@@ -1,5 +1,5 @@
 classdef orientedLabTimeSeries  < labTimeSeries
-    
+%
     %%
     properties(SetAccess=private)
         orientation %orientationInfo object
@@ -38,6 +38,8 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         %Other I/O functions:
         function [newTS,auxLabel]=getDataAsTS(this,label)
+            %return data as a time series
+            %
             [newTS,auxLabel]=getDataAsTS@labTimeSeries(this,label);
         end
 
@@ -75,6 +77,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function newThis=getDataAsOTS(this,label)
+            %get data as an oriented time series
             [data,label]=getOrientedData(this,label);
             data=permute(data,[1,3,2]);
             newThis=orientedLabTimeSeries(data(:,:),this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(label),this.orientation);
@@ -115,7 +118,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
            Time=this.Time(timeIdxs);
            
         end
+        
         function [diffOTS]=computeDifferenceOTS(this,t0,t1,labels,labels2)
+            %compute difference matrix for oriented time series
             if nargin<2 || isempty(t0)
               t0=this.Time(1); 
            end
@@ -141,6 +146,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function [distMatrix,labels,labels2,Time]=computeDistanceMatrix(this,t0,t1,labels,labels2)
+           %Computes the distance vector between two markers, for the time interval [t0,t1] 
+           %If labels is specified, only those markers are used
+           %If labels2 is specified, distance to those markers only is
+           %specified
            if nargin<2 || isempty(t0)
               t0=[]; 
            end
@@ -160,11 +169,30 @@ classdef orientedLabTimeSeries  < labTimeSeries
         %-------------------
         
         function labelPref=getLabelPrefix(this)
-            aux=cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);
-            labelPref=aux(1:3:end);
+            %return label prefixes from this.labels
+            %works for any orientedTS instance, GRFData and markerdata
+            %
+            %example:
+            %this.labels = {'RPSISx','RPSISy',RPSISz','LPSISx','LPSISy','LPSISz',...}
+            %aux = cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);
+            %labelPref=aux(1:3:end);
+            %labelPref = {'RPSIS','LPSIS',...}
+            
+            aux=cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);%isolate correct prefixes
+            labelPref=aux(1:3:end);%remove duplicate prefixes for each marker
         end
         
         function [boolFlag,labelIdx]=isaLabelPrefix(this,label)
+            %checks if a label(s) is/are a valid prefix
+            %
+            %INPUT:
+            %label, can be a string or cell array of strings containing a
+            %label
+            %
+            %OUTPUT:
+            %boolFlag, a boolean vector TRUE for matches, FALSE if not
+            %labelIdx, a vector containing the indices of the TRUE labels
+            
              if isa(label,'char')
                 auxLabel{1}=label;
             elseif isa(label,'cell')
@@ -187,8 +215,16 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         %-------------------
         function fh=plot3(this,fh)
+            %plots all 3 components of all variables in OTS instance
+            %
+            %INPUTS:
+            %fh, figure handle. If none passed in, a new one is created
+            %OUTPUTS:
+            %fh, figure handle to figure that shows 3D plot of each data
+            %variable (e.g. marker data or GRFdata)
+            
             if nargin<2 || isempty(fh)
-                fh=figure;
+                fh=figure;%return handle to a figure
             else
                 figure(fh);
             end
@@ -206,7 +242,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
         %-------------------
         %Modifier functions:
         
-        function newThis=resampleN(this,newN,method) %Same as resample function, but directly fixing the number of samples instead of TS
+        function newThis=resampleN(this,newN,method)
+            %Same as resample function, but directly fixing the number of samples instead of TS
+            
             if nargin<3
                 method=[];
             end
@@ -215,11 +253,15 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function newThis=split(this,t0,t1)
+            %returns TS from t0 to t1
            auxThis=this.split@labTimeSeries(t0,t1);
            newThis=orientedLabTimeSeries(auxThis.Data,t0,auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
         
         function newThis=translate(this,vector)
+            %translate OTS data by input vector (vector addition)
+            
+            
             %Check: vector is 1x3 or Tx3
             [M,N]=size(vector);
             if N~=3 || (M~=1 && M~=length(this.Time))
@@ -234,6 +276,8 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function newThis=rotate(this, matrix)
+            %rotate OTS data using input rotation matrix
+
             [data,label]=getOrientedData(this);
             M=size(matrix,1);
             matrix=reshape(matrix,M,1,3,3);
@@ -289,12 +333,17 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function newThis=referenceToMarker(this,marker)
+            %align data relative to input marker, calls
+            %orientedLabTimeSeries.translate()
+            
             %Check: marker needs to be a suffix of this object.
             [data,~]=getOrientedData(this,marker);
             newThis=translate(this,squeeze(-1*data));
         end
         
         function newThis=derivate(this)
+            %take derivative of OTS
+            
             auxThis=this.derivate@labTimeSeries;
             newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
@@ -312,6 +361,13 @@ classdef orientedLabTimeSeries  < labTimeSeries
     end
     methods (Static)
         function extendedLabels=addLabelSuffix(labels)
+            %Add component suffix to each label
+            %
+            %example:
+            %labels = {'RHIP','LHIP',...}
+            %extendedLabels = addLabelSuffix(labels);
+            %extendedLabels = {'RHIPx','RHIPy','RHIPz','LHIPx','LHIPy','LHIPz',...}
+            
             if ischar(labels)
                 labels={labels};
             end
@@ -321,6 +377,16 @@ classdef orientedLabTimeSeries  < labTimeSeries
             extendedLabels(3:3:end)=strcat(labels,'z');
         end 
         function labelSane=checkLabelSanity(labels)
+            %Check to make sure that labels are in expected or workable
+            %format
+            %
+            %checks that there are multiples of 3 labels,i.e.
+            %{'RHIPx','RHIPy','RHIPz',...}
+            %
+            %checks that x,y,z are labeled in that order
+            %
+            %also checks that each group of 3 labels have the same prefix
+            
             labelSane=true;
             %Check: labels is a multiple of 3
             if mod(length(labels),3)~=0
