@@ -183,6 +183,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         
         %Check if names match with expectation, otherwise query user
         for k=1:length(EMGList)
+%             keyboard
             while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
                 aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
                 if k<=length(EMGList1)
@@ -197,7 +198,12 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         fieldNames=fields(analogs);
-        refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Pin3'))});
+%         keyboard
+        try
+            refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Pin3'))});
+        catch me
+            refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Pin_3'))});
+        end
         
         %Check for frequencies between the two PCs
         if secondFile
