@@ -486,14 +486,14 @@ for t=cell2mat(info.trialnums) %loop through each trial
     
     %% MarkerData
     clear analogs* %Save memory space, no longer need analog data, it was already loaded
-    if info.kinematics
+    if info.kinematics %check to see if there is kinematic data
         [markers,markerInfo]=btkGetMarkers(H);
         relData=[];
         fieldList=fields(markers);
         markerList={};
         
         %Check marker labels are good in .c3d files        
-        mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
+        mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really
         labelPresent=false(1,length(mustHaveLabels));
         for i=1:length(fieldList)
             newFieldList{i}=findLabel(fieldList{i});
@@ -551,6 +551,6 @@ for t=cell2mat(info.trialnums) %loop through each trial
     %% Construct trialData
     
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);%simple organize trial data into organized object, rawTrialData
+    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);%organize trial data into organized object of class rawTrialData
     
 end
