@@ -311,6 +311,14 @@ classdef labData
     methods (Access=protected)
         
         function partialData=getPartialData(this,fieldName,labels)
+            %returns requested data
+            %
+            %inputs:
+            %fieldName -- looks for property of the instance (see top of
+            %file for list of properties)
+            %
+            %labels -- 
+            
             if nargin<3 || isempty(labels)
                 eval(['partialData=this.' fieldName ';']);
             else

@@ -54,13 +54,14 @@ classdef BiofeedbackSL
         Ltmtarget=[];
         OGsteplength=[];
         OGspeed=[];
+        datalocation=pwd;
         
         
     end
     
     methods
         %constuctor
-        function this=BiofeedbackSL(ID,date,day,sex,dob,dleg,dhand,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed);
+        function this=BiofeedbackSL(ID,date,day,sex,dob,dleg,dhand,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)
         
             if nargin ~= 15
 %                 disp('Error, incorrect # of input arguments provided');
@@ -275,22 +276,6 @@ classdef BiofeedbackSL
                    fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    
-                   
-                   
-                   %                    if length(rhits) >= 6
-%                        temp = cell2mat(rhits(1:6)');
-%                        fill([0 length(temp) length(temp) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(rhits) >=14
-%                        temp = cell2mat(rhits(1:14)');
-%                        temp2 = cell2mat(rhits(1:8)');
-%                        fill([length(temp2) length(temp) length(temp) length(temp2)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(rhits) >=26
-%                        temp = cell2mat(rhits(1:26)');
-%                        temp2 = cell2mat(rhits(1:20)');
-%                        fill([length(temp2) length(temp) length(temp) length(temp2)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
                    h = 0;
                    for z = 1:length(filename)
                        figure(2)
@@ -307,27 +292,12 @@ classdef BiofeedbackSL
                    title('Step Length Error Fast Leg');
                    xlabel('step #');
                    ylabel('Error (m)');
-                   
-                   
+
                    figure(3)
                    hold on
                    fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    
-%                    if length(lhits) >= 6
-%                        temp = cell2mat(lhits(1:6)');
-%                        fill([0 length(temp) length(temp) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(lhits) >=14
-%                        temp = cell2mat(lhits(1:14)');
-%                        temp2 = cell2mat(lhits(1:8)');
-%                        fill([length(temp2) length(temp) length(temp) length(temp2)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(lhits) >=26
-%                        temp = cell2mat(lhits(1:26)');
-%                        temp2 = cell2mat(lhits(1:23)');
-%                        fill([length(temp2) length(temp) length(temp) length(temp2)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
                    h = 0;
                    for z = 1:length(filename)
                        figure(3)
@@ -350,6 +320,7 @@ classdef BiofeedbackSL
                    for z=1:length(rhits)
                        temp = rhits{z};
                        temp(abs(temp) > 0.1) = [];
+                       meanrhits0(z) = nanmean(temp);
                        meanrhits1(z) = mean(temp(1:3));
                        stdrhits1(z) = std(temp(1:3));
                        meanrhits2(z) = mean(temp(end-2:end));
@@ -358,6 +329,7 @@ classdef BiofeedbackSL
                    for z=1:length(lhits)
                        temp = lhits{z};
                        temp(abs(temp) > 0.1) = [];
+                       meanlhits0(z) = nanmean(temp);
                        meanlhits1(z) = mean(temp(1:3));
                        stdlhits1(z) = std(temp(1:3));
                        meanlhits2(z) = mean(temp(end-2:end));
@@ -369,15 +341,6 @@ classdef BiofeedbackSL
                    hold on
                    fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   %                    if length(rhits) >= 6
-%                        fill([0 12.5 12.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(rhits) >=8
-%                        fill([16.5 28.5 28.5 16.5],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(rhits) >=26
-%                        fill([44.5 52.5 52.5 44.5],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
                    h = 1:2:2*length(meanrhits1);
                    h2 = 2:2:2*length(meanrhits2);
                    errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);
@@ -406,16 +369,6 @@ classdef BiofeedbackSL
                    hold on
                    fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-
-%                    if length(lhits) >= 6
-%                        fill([0 12.5 12.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(lhits) >=8
-%                        fill([16.5 28.5 28.5 16.5],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
-%                    if length(lhits) >=26
-%                        fill([44.5 52.5 52.5 44.5],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-%                    end
                    h = 1:2:2*length(meanlhits1);
                    h2 = 2:2:2*length(meanlhits2);
                    errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);
@@ -437,6 +390,14 @@ classdef BiofeedbackSL
                    ylim([-0.25 0.25]);
                    title('Slow Leg Errors')
                    ylabel('Error (m)');
+                   
+                   figure(7)
+                   hold on
+                   fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   for z = 1:length(meanrhits0)
+                       bar(meanrhits0(z),0.5);
+                   end
                    
                    
                    %save rhits and lhits
