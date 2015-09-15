@@ -340,6 +340,32 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            end
            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
         end
+        
+        function newThis=fftshift(this,labels)
+            if nargin>1 && ~isempty(labels)
+                [~,idxs]=this.isaLabel(labels);
+            else
+                idxs=1:length(this.labels);
+            end
+           newThis=this;
+           M=round(length(this.alignmentVector)/2);
+           N=sum(this.alignmentVector(1:M));
+           newThis.Data(:,idxs,:)=this.Data([N+1:size(this.Data,1),1:N],idxs,:);
+        end
+        
+        function labelList=getLabelsThatMatch(this,exp)
+            %Returns labels on this labTS that match the regular expression exp.
+            %labelList=getLabelsThatMatch(this,exp)
+            %INPUT:
+            %this: labTS object
+            %exp: any regular expression (as string). 
+            %OUTPUT:
+            %labelList: cell array containing labels of this labTS that match
+            %See also regexp
+            labelList=this.labels; 
+            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+            labelList=labelList(flags);
+        end
     end
     
     methods(Hidden)

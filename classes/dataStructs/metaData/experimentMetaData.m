@@ -47,7 +47,13 @@ classdef experimentMetaData
                 this.observations=obs;
             end      
             if nargin>4
-                this.conditionName=conds;
+                if length(unique(conds))<length(conds)
+                    error('ExperimentMetaData:Constructor','There are repeated condition names, which is not allowed')
+                elseif sum(cellfun(@(x) ~isempty(strfind(x,'TM base')),conds))>1 || sum(cellfun(@(x) ~isempty(strfind(x,'OG base')),conds))>1
+                    error('ExperimentMetaData:Constructor','More than one condition name contains the string ''TM base'' or ''OG base'' which is not allowed.')
+                else
+                    this.conditionName=conds;
+                end
             end
             if nargin>5 
                 this.conditionDescription=desc;
