@@ -210,16 +210,17 @@ classdef experimentMetaData
             trialNums=cell2mat(this.trialsInCondition(conditionIdx));
         end
         
-        function this=replaceConditionNames(this,currentName,newName)
+        function [this,change]=replaceConditionNames(this,currentName,newName)
             %Looks for conditions whose name match the options in
             %currentName & changes them to newName
-            
+            change=false;
            %Check currentName and newName are cell arrays of same length
            conditionIdxs=this.getConditionIdxsFromName(currentName);
            %this.conditionName(conditionIdxs)=newName;
            for i=1:length(currentName)
-               if ~isnan(conditionIdxs(i))
+               if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conitionIdxs(i)},newName{i})
                     this.conditionName{conditionIdxs(i)}=newName{i};
+                    change=true;
                end
            end
         end

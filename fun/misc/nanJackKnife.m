@@ -127,7 +127,7 @@ switch(nargin)
         PatchColor = varargin{5};
         Opacity= varargin{6};
     case 7,
-        % If there are 6 inputs then
+        % If there are 7 inputs then
     
         x = varargin{1};
         y = varargin{2};
@@ -141,31 +141,34 @@ switch(nargin)
         EdgeColor = LineColor-0.5.*abs(LineColor);
         PatchColor = varargin{5};
         Opacity= varargin{6};
-        w=varargin{7};
+        w=varargin{7}; %Binary flag to make some markers white (?)
 %         Opacity= varargin{7};
 end
 Xcoords = [x x(end:-1:1)];
-Ycoords = [U+0.001 L(end:-1:1)];
-
+Ycoords = [U L(end:-1:1)];
+Pa=[];
 % Pa = patch(Xcoords,Ycoords,PatchColor);
 % set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
 hold on;
 %Li = plot(x,y,'color',LineColor,'linewidth',2);
 if nargin<7
+    if ~all(U==L)
     Pa = patch(Xcoords,Ycoords,PatchColor);
     set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
+    end
     Li = plot(x,y,'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',LineColor);
 elseif nargin>=7
     % Pa = patch(Xcoords,Ycoords,'w');
-    % Pa=[];
-    Pa = patch(Xcoords,Ycoords,PatchColor);
+
+    if ~all(U==L)
+        Pa = patch(Xcoords,Ycoords,PatchColor);
+        set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
+    end
     for l=1:length(x)        
         if w(l)==0;
-            set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
             Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',[0 0 0]);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
         else
-            set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);
             Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeCOlor,'MarkerFaceColor',LineColor);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
         end

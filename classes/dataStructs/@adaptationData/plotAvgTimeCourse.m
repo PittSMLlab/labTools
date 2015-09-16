@@ -1,6 +1,6 @@
 function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels)
 %adaptDataList must be cell array of 'param.mat' file names
-%params is cell array of parameters to plot. List with commas to
+%params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
 %conditions is cell array of conditions to plot
 %binwidth is the number of data points to average in time
@@ -310,20 +310,20 @@ for group=1:Ngroups
                         else
                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
                         end
-                        set(Li{c},'Clipping','off')
+                        %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
-                        set(Li{ind},'Clipping','off')
+                        %set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
                 elseif  isempty(biofeedback) %Each group colored differently
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
-                        set(Li{g},'Clipping','off')
+                        %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
                         if ~legacyVersion
                             if length(adaptDataList{g})>1
@@ -342,27 +342,27 @@ for group=1:Ngroups
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
-                        set(Li{g},'Clipping','off')
+                        %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');                        
                         group=adaptData{g}{1}.subData.ID;
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
                         elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
                         [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
-                        set(Li{c},'Clipping','off')
+                        %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
-                        set(Li{g},'Clipping','off')
+                        %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
                         load([adaptDataList{g}{1,1}])
                         group=adaptData.subData.ID;
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
                     end
-                    set(Pa,'Clipping','off')
+                    %set(Pa,'Clipping','off')
                     set(H,'Layer','top')
                 end
             end
