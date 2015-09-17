@@ -183,7 +183,6 @@ for t=cell2mat(info.trialnums) %loop through each trial
         
         %Check if names match with expectation, otherwise query user
         for k=1:length(EMGList)
-%             keyboard
             while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
                 aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
                 if k<=length(EMGList1)
@@ -198,6 +197,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         fieldNames=fields(analogs);
+% <<<<<<< HEAD
         
         %TO DO: try to ensure that Nexus doesn't give stupid names to these
         %channels to begin with, not exactly sure how though...
@@ -211,6 +211,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Raw_Raw_Raw_3'))});
             end
         end
+% =======
+       refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')),fieldNames)});
+% >>>>>>> origin/master
         
         %Check for frequencies between the two PCs
         if secondFile
