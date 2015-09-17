@@ -198,11 +198,18 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         fieldNames=fields(analogs);
-%         keyboard
+        
+        %TO DO: try to ensure that Nexus doesn't give stupid names to these
+        %channels to begin with, not exactly sure how though...
         try
             refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Pin3'))});
         catch me
-            refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Pin_3'))});
+            try
+                refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Pin_3'))});
+            catch me
+%                 keyboard
+                refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Raw_Raw_Raw_3'))});
+            end
         end
         
         %Check for frequencies between the two PCs
