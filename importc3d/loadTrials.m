@@ -197,23 +197,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         fieldNames=fields(analogs);
-% <<<<<<< HEAD
-        
-        %TO DO: try to ensure that Nexus doesn't give stupid names to these
-        %channels to begin with, not exactly sure how though...
-        try
-            refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Pin3'))});
-        catch me
-            try
-                refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Pin_3'))});
-            catch me
-%                 keyboard
-                refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(x),strfind(fieldNames,'Raw_Raw_Raw_Raw_3'))});
-            end
-        end
-% =======
+
        refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')),fieldNames)});
-% >>>>>>> origin/master
         
         %Check for frequencies between the two PCs
         if secondFile
@@ -550,7 +535,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
             markers=rmfield(markers,fieldList{j}); %Save memory
         end         
-        relData(relData==0)=NaN;
+        relData(relData==0)=NaN; %This forces missing labels to be labeled as NaN
         markerData=orientedLabTimeSeries(relData,0,1/markerInfo.frequency,markerList,orientation);
         clear relData
         markerData.DataInfo.Units=markerInfo.units.ALLMARKERS;

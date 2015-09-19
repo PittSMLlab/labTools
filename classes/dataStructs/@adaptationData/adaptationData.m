@@ -569,7 +569,7 @@ classdef adaptationData
             
             %Create a groupAdaptationData object and use it to get the
             %requested data in matrix form:
-            groupData=createGroupAdaptData(adaptDataList);
+            groupData=adaptationData.createGroupAdaptData(adaptDataList);
             [data]=groupData.getGroupedData(label,conds,removeBiasFlag,[3,earlyNumber,-lateNumber],0,exemptLast);
             earlyPoints=data{2};
             veryEarlyPoints=data{1};
@@ -607,10 +607,10 @@ classdef adaptationData
             
             if isa(adaptDataList,'cell')
                 if ~isa(adaptDataList{1},'cell')
-                    adaptDataList{1}=adaptDataList;
+                    adaptDataList={adaptDataList};
                 end
             elseif isa(adaptDataList,'char')
-                adaptDataList{1}={adaptDataList};
+                adaptDataList={{adaptDataList}};
             end
             Ngroups=length(adaptDataList);
             

@@ -28,7 +28,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             N1=3;%all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
-            elseif ~isa(conds,'cell') || ~all(cellfun(@(x) isa(x,'char'),conds))
+            elseif ~isa(conds,'cell') || ~all(cellfun(@(x) (isa(x,'char') || isa(x,'cell')),conds))
                 error('adaptationData:getEarlyLateData','Conditions must be a string or a cell array containing strings.');
             end
             nConds=length(conds);

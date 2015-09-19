@@ -42,8 +42,12 @@ if nargin>2
     if isa(conditions,'char')
         conditions={conditions};
     end
-else    
-    conditions=adaptDataList{1}{1}.metaData.conditionName; %default
+else   
+    if ~legacyVersion
+        conditions=adaptDataList{1}{1}.metaData.conditionName; %default
+    else
+        error('No condition list provided')
+    end
 end
 nConds=length(conditions);
 cond=cell(1,nConds);
@@ -76,12 +80,7 @@ if nargin>6
         end
     elseif isa(indivSubs,'char')
         indivSubs{1}={indivSubs};
-    end
-    if length(indivSubs)~=Ngroups
-        indivSubs={cell(1,Ngroups)}; 
-    end
-else
-    indivSubs={cell(1,Ngroups)};    
+    end  
 end
 
 % if nargin<9
@@ -281,26 +280,39 @@ for group=1:Ngroups
                     nSubs=length(adaptDataList{group});
                     subjects=cell(1,nSubs);
                     for s=1:nSubs
-                        subjects{s}=adaptDataList{group}{s}.subData.ID;
+                        if ~legacyVersion
+                            subjects{s}=adaptDataList{group}{s}.subData.ID;
+                        else
+                            subjects{s}=adaptDataList{group}{s}(1:end-6);
+                        end
                     end
-                    if ~isempty(indivSubs{group}{1}) %plot specific individual subjects
+                    if ~isempty(indivSubs) && ~isempty(indivSubs{group}{1}) %plot specific individual subjects
                         subsToPlot=indivSubs{group};
                     else
                         subsToPlot=adaptDataList{group};
                     end
                     for s=1:length(subsToPlot)
-                        subInd=find(ismember(subjects,subsToPlot{s}.subData.ID));
+                        if ~legacyVersion
+                            id=subsToPlot{s}.subData.ID;
+                        else
+                            id=subsToPlot{s}(1:end-6);
+                        end
+                        subInd=find(ismember(subjects,id),1,'first');
                         y_ind=[indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
-                        Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:));
-                        legendStr{group}(s)={subsToPlot{s}.subData.ID};
+                        Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:),'Tag',id);
+                        if ~legacyVersion
+                            legendStr{group}(s)={subsToPlot{s}.subData.ID};
+                        else
+                            legendStr{group}(s)={subsToPlot{s}};
+                        end
                     end
                     %plot average of group if there is more than one person
                     %in the group
                     if length(adaptDataList{group})>1
-                        Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',3,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
+                        Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',5,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
                         legendStr{group}(length(subsToPlot)+1)={['Average ' adaptDataList{group}{1}.metaData.ID]};                                               
                     end
                 else %only plot group averages
