@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -92,6 +92,9 @@ if nargin<10 || isempty(removeBiasFlag)
     removeBiasFlag=0;
 end
 
+if nargin<12 || isempty(medianFlag)
+    medianFlag=0;
+end
 %% Initialize plot
 
 % axesFontSize=14;
@@ -213,15 +216,26 @@ for group=1:Ngroups
                     if length(adaptDataList{group})>1
                         %errors calculated as standard error of averaged subject points
                         subBin=nanmean(bin,2);
-                        avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
-                        se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
-                        indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
+                        if medianFlag==0
+                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
+                        else %Using median and 15.87-84.13 percentiles
+                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(subBin);
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(subBin,[16,84]))/sqrt(length(subBin));
+                        end
+                         indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
                     else
                         %errors calculated as standard error of all data
                         %points within a bin
-                        avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(reshape(bin,1,numel(bin)));
-                        se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
-                        indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmean(bin,2);
+                        if medianFlag==0
+                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(reshape(bin,1,numel(bin)));
+                            indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmean(bin,2);
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
+                        else
+                           avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
+                            indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmedian(bin,2); 
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidth);
+                        end
                     end
                 end
 

@@ -83,7 +83,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             trueOffset=nan(size(list));
             differenceInForceUnits=nan(size(list));
             m=nan(size(list));
-            tol=5; %N or N.m
+            tol=10; %N or N.m
             for j=1:length(list)
                 k=find(strcmp(forceLabels,list{j}));
                 if ~isempty(k)
@@ -92,8 +92,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
                     raw=analogs.(aux{iii});
                     proc=relData(:,k);
                     %figure; plot(raw,proc,'.')
-                    rel=proc~=0;
-                    if ~isempty(proc)
+                    rel=find(proc~=0);
+                    if ~isempty(rel)
                         m(j)=4*prctile(abs(proc(rel)),1); %This can be used for thresholding
                         coef=polyfit(raw(rel),proc(rel),1);
                         gain(j)=coef(1); %This could be rounded to keep only 2 significant figures, which is the more likely value
@@ -114,6 +114,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
                             error('');
                     end
                     if differenceInForceUnits(j)>ttol
+                        figure
+                        hold on
+                        plot(raw(rel),proc(rel),'.')
+                        plot([-.01 .01],([-.01 .01]+offset(j))*gain(j))
+                        hold off
                         a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated offset is ' num2str(differenceInForceUnits(j)) ' ' units '. Please confirm that you want to subtract this offset.']);
                         switch a
                             case 'Yes'

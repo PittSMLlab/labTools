@@ -95,6 +95,30 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
 paramLabels=aux(:,1);
 description=aux(:,2);
 
+%% Sanity check & correction: look for markers at (0,0,0) and set data to NaN
+[dd,ll]=markerData.getOrientedData;
+dd=permute(dd,[1,3,2]);
+ee=all(dd==0,2);
+if any(ee(:))
+    msg=['Markers were reconstructed at the origin. Setting to NaN for spatial parameter computation.'];
+    
+    for i=1:size(ee,3)
+        if any(ee(:,1,i)) && sum(ee(:,1,i))*markerData.sampPeriod > 1
+            msg=[msg ' ' ll{i} ' was at origin for ' num2str(sum(ee(:,1,i))*markerData.sampPeriod) 's.'];
+        end
+    end
+    warning(msg)
+end
+
+ee=repmat(ee,1,3,1);
+
+markerData.Data(ee)=NaN;
+dd=markerData.getOrientedData;
+dd=permute(dd,[1,3,2]);
+ee=all(dd==0,2);
+if any(ee(:))
+    error('Setting markers at the origin to NaN did not work')
+end
 %% Get rotated data
 [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s);
 
