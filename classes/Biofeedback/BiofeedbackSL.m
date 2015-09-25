@@ -479,13 +479,16 @@ classdef BiofeedbackSL
             end
         end
         
-        function []=comparedays(this)
+        function []=comparedays(this,flag)
             %make bar plots of day1 and day2 means to compare performances
             %no inputs required, data is located from a uitable
             %
             %creates figures of bar plots for fast and slow legs, day 1 and
             %day 2
-            
+            %
+            %flag indicates whether to normalize data by last training
+            %phase evaluation, 0 for no, 1 for yes
+            %
             %use a uitable to assign the locations of each Results.mat
             %file, should be 4 of them, 2 per day
 
@@ -541,6 +544,10 @@ classdef BiofeedbackSL
                     temp2 = fast2{z};
                     temp1(abs(temp1) > 0.1) = [];
                     temp2(abs(temp2) > 0.1) = [];
+                    if flag%normalize
+                        temp1 = (temp1-mean(fast1{length(train)}))./abs(mean(fast1{length(train)}))*100;
+                        temp2 = (temp2-mean(fast2{length(train)}))./abs(mean(fast2{length(train)}))*100;
+                    end
                     meanfast1(z) = mean(temp1);
                     meanfast2(z) = mean(temp2);
                     stdfast1(z) = std(temp1);
@@ -552,6 +559,10 @@ classdef BiofeedbackSL
                     temp2 = slow2{z};
                     temp1(abs(temp1) > 0.1) = [];
                     temp2(abs(temp2) > 0.1) = [];
+                    if flag%normalize
+                        temp1 = (temp1-mean(slow1{length(train)}))./abs(mean(slow1{length(train)}))*100;
+                        temp2 = (temp2-mean(slow2{length(train)}))./abs(mean(slow2{length(train)}))*100;
+                    end
                     meanslow1(z) = mean(temp1);
                     meanslow2(z) = mean(temp2);
                     stdslow1(z) = std(temp1);
@@ -561,66 +572,81 @@ classdef BiofeedbackSL
                 hand = zeros(4,1);
                 %fast leg
                 figure(7)
+                subplot(2,1,1)
                 hold on
-                fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[max([meanfast1 meanfast2])+1000 max([meanfast1 meanfast2])+1000 -1*max([meanfast1 meanfast2])-1000 -1*max([meanfast1 meanfast2])-1000],[230 230 230]./256);
+                fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[max([meanfast1 meanfast2])+1000 max([meanfast1 meanfast2])+1000 -1*max([meanfast1 meanfast2])-1000 -1*max([meanfast1 meanfast2])-1000],[230 230 230]./256);
                 h = 1:2:2*length(meanfast1);
                 h2 = 1.5:2:2*length(meanfast2);
-                errorbar(h,meanfast1,stdfast1,'k','LineWidth',1.5);
-                errorbar(h2,meanfast2,stdfast2,'k','LineWidth',1.5);
-                plot([0 2*length(meanfast1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                plot([0 2*length(meanfast1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+%                 plot([0 2*length(meanfast1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                 plot([0 2*length(meanfast1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+%                 keyboard
                 for z = 1:2:length(h)%trainings
-                    figure(7)
+%                     figure(7)
                     hand(1) = bar(h(z),meanfast1(z),0.5,'FaceColor',colors1{z});
                 end
                 for z = 2:2:length(h)%evaluations
-                    figure(7)
+%                     figure(7)
                     hand(2) = bar(h(z),meanfast1(z),0.5,'FaceColor',colors1{z});
                 end
                 for z=1:2:length(h2)
-                    figure(7)
+%                     figure(7)
                     hand(3) = bar(h2(z),meanfast2(z),0.5,'FaceColor',colors2{z});
                 end
                 for z=2:2:length(h2)
-                    figure(7)
+%                     figure(7)
                     hand(4) = bar(h2(z),meanfast2(z),0.5,'FaceColor',colors2{z});
                 end
-                ylim([-0.25 0.25]);
+                if ~flag
+                    errorbar(h,meanfast1,stdfast1,'k','LineWidth',1.5);
+                    errorbar(h2,meanfast2,stdfast2,'k','LineWidth',1.5);
+                    plot([0 2*length(meanfast1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+                    plot([0 2*length(meanfast1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                    ylim([-1*max([meanfast1 meanfast2 stdfast1 stdfast2])-0.05 max([meanfast1 meanfast2 stdfast1 stdfast2])+0.05]);
+                else
+                    ylim([-1*abs(min([meanfast1 meanfast2]))-50 max([meanfast1 meanfast2])+50]);
+                end
                 title([this.subjectcode ' Fast Leg Day 1 vs. Day 2 Errors']);
-                ylabel('Error (m)');
+                ylabel('% Error from Baseline');
                 legend(hand,'train D1','eval D1','train D2','eval D2')
 %                 keyboard
 
-                figure(8)
+%                 figure(7)
+                subplot(2,1,2)
                 hold on
-                fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[max([meanslow1 meanslow2])+1000 max([meanslow1 meanslow2])+1000 -1*max([meanslow1 meanslow2])-1000 -1*max([meanslow1 meanslow2])-1000],[230 230 230]./256);
+                fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[max([meanslow1 meanslow2])+1000 max([meanslow1 meanslow2])+1000 -1*max([meanslow1 meanslow2])-1000 -1*max([meanslow1 meanslow2])-1000],[230 230 230]./256);
                 h = 1:2:2*length(meanslow1);
                 h2 = 1.5:2:2*length(meanslow2);
-                errorbar(h,meanslow1,stdslow1,'k','LineWidth',1.5);
-                errorbar(h2,meanslow2,stdslow2,'k','LineWidth',1.5);
-                plot([0 2*length(meanslow1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                plot([0 2*length(meanslow1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+%                 plot([0 2*length(meanslow1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                 plot([0 2*length(meanslow1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                 for z = 1:2:length(h)%trainings
-                    figure(8)
+%                     figure(8)
                     hand(1) = bar(h(z),meanslow1(z),0.5,'FaceColor',colors1{z});
                 end
                 for z = 2:2:length(h)%evaluations
-                    figure(8)
+%                     figure(8)
                     hand(2) = bar(h(z),meanslow1(z),0.5,'FaceColor',colors1{z});
                 end
                 for z=1:2:length(h2)
-                    figure(8)
+%                     figure(8)
                     hand(3) = bar(h2(z),meanslow2(z),0.5,'FaceColor',colors2{z});
                 end
                 for z=2:2:length(h2)
-                    figure(8)
+%                     figure(8)
                     hand(4) = bar(h2(z),meanslow2(z),0.5,'FaceColor',colors2{z});
                 end
-                ylim([-0.25 0.25]);
+                if ~flag
+                    errorbar(h,meanslow1,stdslow1,'k','LineWidth',1.5);
+                    errorbar(h2,meanslow2,stdslow2,'k','LineWidth',1.5);
+                    plot([0 2*length(meanslow1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+                    plot([0 2*length(meanslow1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                    ylim([-1*max([meanslow1 meanslow2 stdslow1 stdslow2])-0.05 max([meanslow1 meanslow2 stdslow1 stdslow2])+0.05]);
+                else
+                    ylim([-1*abs(min([meanslow1 meanslow2]))-50 max([meanslow1 meanslow2])+50]);
+                end
                 title([this.subjectcode ' Slow Leg Day 1 vs. Day 2 Errors']);
-                ylabel('Error (m)');
+                ylabel('% Error from Baseline');
                 legend(hand,'train D1','eval D1','train D2','eval D2')
 
                             end
