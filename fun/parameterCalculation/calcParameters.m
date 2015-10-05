@@ -119,7 +119,7 @@ if ~isempty(trialData.procEMGData)
     [emg] = computeEMGParameters(strideEvents,stridedProcEMG);
     out=cat(out,emg);
 end
-%% Compute an updated bad/good flag based on computed parameters
+%% Compute an updated bad/good flag based on computed parameters & finding outliers
 badStart=bad; %make a copy to compare at the end
 %TODO: make this process generalized so that it can filter any parameter
 %TODO: make this into a method of parameterSeries or labTimeSeries
@@ -130,15 +130,21 @@ for i=1:length(paramsToFilter)
     aux=aux-runAvg(aux,50); % remove effects of adaptation
     % mark strides bad if values for SL or alpha are larger than 3x the
     % interquartile range away from the median.
-    bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
-%  inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-%     inds=inds(inds>5);
-%     bad(inds)=true;
+    %Criteria 1: anything outside +-3.5 interquartile ranges
+%     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+
+%Criteria 2: anything outside +-3.5 interquartile ranges, except the first
+%5 strides of any trial.
+% inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+%    inds=inds(inds>5);
+%    bad(inds)=true;
 end
-% [~,idxs]=out.isaParameter({'bad','good'});
-% out.Data(:,idxs)=[bad,~bad];
-% outlierStrides=find(bad & ~badStart);
-% disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+
+%Remove outliers according to new values of 'bad':
+[~,idxs]=out.isaParameter({'bad','good'});
+out.Data(:,idxs)=[bad,~bad];
+outlierStrides=find(bad & ~badStart);
+disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
 %% Issue bad strides warning
 if any(bad)    
