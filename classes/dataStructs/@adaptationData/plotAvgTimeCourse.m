@@ -61,6 +61,7 @@ for c=1:nConds
     end
 end
 
+
 if nargin<4 || isempty(binwidth)
     binwidth=1; %default
 end
