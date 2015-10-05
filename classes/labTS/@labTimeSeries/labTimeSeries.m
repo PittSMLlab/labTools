@@ -132,16 +132,26 @@ classdef labTimeSeries  < timeseries
             end
         end
         
-        function data=getSample(this,timePoints) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
+        function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
+            if nargin<3 || isempty(method)
+                method='linear';
+            end
+            
             if ~isempty(timePoints)
                 M=length(this.labels);
                 data=nan(numel(timePoints),M);
-                notNaNIdxs=~isnan(timePoints) & ~isinf(timePoints) & timePoints<this.Time(end) & timePoints>this.Time(1); %Excluding NaNs, Infs and out-of-range times from interpolation.
-                [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),'ascend');
-                newTS=resample(this,notNaNTimes,this.Time(1),1); %Using timeseres.resample which does linear interp by default
+                switch method
+                    case 'linear'
+                        notNaNIdxs=~isnan(timePoints) & ~isinf(timePoints) & timePoints<this.Time(end) & timePoints>this.Time(1); %Excluding NaNs, Infs and out-of-range times from interpolation.
+                        [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),'ascend');
+                        newTS=resample(this,notNaNTimes,this.Time(1),1); %Using timeseres.resample which does linear interp by default
 
-                newTS.Data(sorting,:)=newTS.Data;
-                data(notNaNIdxs,:)=newTS.Data;
+                        newTS.Data(sorting,:)=newTS.Data;
+                        data(notNaNIdxs,:)=newTS.Data;
+                    case 'closest'
+                        aux=this.getIndexClosestToTimePoint(timePoints(:));
+                        data(~isnan(aux),:)=this.Data(aux(~isnan(aux)),:);
+                end
                 data=reshape(data,[size(timePoints),M]);
             else
                 data=[];
@@ -149,7 +159,11 @@ classdef labTimeSeries  < timeseries
         end
         
         function index=getIndexClosestToTimePoint(this,timePoints)
-            index=[]; %ToDo
+            aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))<=(this.sampPeriod/2+eps);
+            index=nan(size(timePoints));
+            [ii,jj]=find(aux);
+            index(jj)=ii;
+            index=reshape(index,size(timePoints));
         end
         %-------------------
         

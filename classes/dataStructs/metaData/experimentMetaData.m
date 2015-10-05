@@ -218,7 +218,7 @@ classdef experimentMetaData
            conditionIdxs=this.getConditionIdxsFromName(currentName);
            %this.conditionName(conditionIdxs)=newName;
            for i=1:length(currentName)
-               if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conitionIdxs(i)},newName{i})
+               if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})
                     this.conditionName{conditionIdxs(i)}=newName{i};
                     change=true;
                end

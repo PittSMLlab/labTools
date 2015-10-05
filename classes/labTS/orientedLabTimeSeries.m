@@ -78,6 +78,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         function newThis=getDataAsOTS(this,label)
             %get data as an oriented time series
+            if nargin<2 || isempty(label)
+                label=[];
+            end
             [data,label]=getOrientedData(this,label);
             data=permute(data,[1,3,2]);
             newThis=orientedLabTimeSeries(data(:,:),this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(label),this.orientation);
@@ -213,6 +216,25 @@ classdef orientedLabTimeSeries  < labTimeSeries
             end
         end
         
+        function virtualOTS=getVirtualOTS(this)
+            error('This function has not yet been implemented')
+            
+            %Method 1: distance Naive Bayes
+            D=this.computeDistanceMatrix; %Computing distance between all available markers
+            DD=this.computeDifferenceMatrix;
+            dd=nanmean(D,1); %Mean distance
+            ss=nanstd(D,[],1); %Stdev of distance
+            for i=1:length(this.getLabelPrefix) %For each marker
+                
+                totalVar=1/sum(1./ss(k,[1:k-1,k+1:end]).^2); %pooled variance from estimating position from each other marker
+                
+                xML= 1/totalVar;
+            end
+            
+            %Method 2: difference Naive Bayes
+            
+            
+        end
         %-------------------
         function fh=plot3(this,fh)
             %plots all 3 components of all variables in OTS instance
@@ -239,6 +261,40 @@ classdef orientedLabTimeSeries  < labTimeSeries
            legend(labelPref)
         end
         
+        function M=animate(this)
+            list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};
+            [b,~]=this.isaLabelPrefix(strcat('L',list));
+            list=list(b);
+            ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^L'),'UniformOutput',false)));
+            ll=this.getOrientedData(strcat('L',list));
+            rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch('^R'),'UniformOutput',false)));
+            rr=this.getOrientedData(strcat('R',list));
+            dd=this.getOrientedData;
+            figure
+            %drawnow limitrate
+            u = uicontrol('Style','slider','Position',[10 50 20 340],'Min',1,'Max',size(ll,1),'Value',1);
+            
+            view(3)
+            axis equal
+            axis([min(min(dd(:,:,1))) max(max(dd(:,:,1))) min(min(dd(:,:,2))) max(max(dd(:,:,2))) min(min(dd(:,:,3))) max(max(dd(:,:,3)))])
+            hold on
+            L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','r');
+            R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),'Marker','o','MarkerSize',10,'MarkerEdgeColor','b');
+            %set(gca,'NextPlot','replacechildren')    
+            for k = 1:size(ll,1)
+                %
+                %hold on
+                %axes(ax)
+                clearpoints(L)
+                addpoints(L,ll(k,:,1),ll(k,:,2),ll(k,:,3));
+                clearpoints(R)
+                addpoints(R,rr(k,:,1),rr(k,:,2),rr(k,:,3));
+                %hold off
+                u.Value=k;
+                M(k) = getframe(gcf);
+            end
+            hold off
+        end
         %-------------------
         %Modifier functions:
         

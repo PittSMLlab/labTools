@@ -131,20 +131,42 @@ for i=1:length(paramsToFilter)
     % mark strides bad if values for SL or alpha are larger than 3x the
     % interquartile range away from the median.
     %Criteria 1: anything outside +-3.5 interquartile ranges
-%     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+    %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
 
-%Criteria 2: anything outside +-3.5 interquartile ranges, except the first
-%5 strides of any trial.
-% inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-%    inds=inds(inds>5);
-%    bad(inds)=true;
+    %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
+    %5 strides of any trial.
+    % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+    %    inds=inds(inds>5);
+    %    bad(inds)=true;
+    
+end
+%Remove outliers according to new values of 'bad':
+[~,idxs]=out.isaParameter({'bad','good'});
+out.Data(:,idxs)=[bad,~bad];
+outlierStrides=find(bad & ~badStart);
+disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+
+%----------REMOVE STOP/START STRIDES-------------
+badStart=bad; %make a copy to compare at the end
+%Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
+%(stopping/starting trials)
+if strcmp(trialData.metaData.type,'TM')
+    aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
+    bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true;
+end
+
+%Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
+%on kids!
+if strcmp(trialData.metaData.type,'OG')
+    %To be implemented
 end
 
 %Remove outliers according to new values of 'bad':
 [~,idxs]=out.isaParameter({'bad','good'});
 out.Data(:,idxs)=[bad,~bad];
 outlierStrides=find(bad & ~badStart);
-disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])  
+
 
 %% Issue bad strides warning
 if any(bad)    

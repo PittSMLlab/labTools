@@ -28,7 +28,7 @@ function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,directio
 %   sToe
 %   fToe
 
-
+%THE FOLLOWING RELIES ON HAVING A DECENT RECONSTRUCTION OF HIP MARKERS:
 refMarker3D=.5*sum(markerData.getOrientedData({'LHIP','RHIP'}),2); %midHip
 
 %Ref axis option 1 (ideal): Body reference
@@ -65,9 +65,9 @@ end
 for j=1:length(labels) %Assign each marker data to a x3 str
     aux=markerData.getDataAsTS(markerData.addLabelSuffix(labels{j}));
     if ~isempty(aux.Data)
-        newMarkerData=aux.getSample(eventTimes); %Linear(!) interpolation
+        newMarkerData=aux.getSample(eventTimes,'closest'); %Closest point interpolation
         aux=rotatedMarkerData.getDataAsTS(rotatedMarkerData.addLabelSuffix(labels{j}));
-        relMarkerData=aux.getSample(eventTimes); %Linear(!) interpolation
+        relMarkerData=aux.getSample(eventTimes,'closest'); %Closest point interpolation
     else %Missing marker
         warning(['Marker ' labels{j} ' is missing. All references to it will return NaN.']);
         newMarkerData=nan([size(eventTimes),3]);
@@ -88,7 +88,7 @@ end
 %get angle data
 if ~isempty(angleData)
     newAngleData=angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
-    newAngleData=newAngleData.getSample(eventTimes);
+    newAngleData=newAngleData.getSample(eventTimes,'closest');
     sAngle=newAngleData(:,:,1);
     fAngle=newAngleData(:,:,2);
 else
@@ -130,7 +130,8 @@ fAnk2D=fAnk(:,:,1:2)-hipPos2D;
 % Set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
-aux=sign(diff(sAnkFwd(:,[2,5]),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2)
+
+aux=sign(diff(sAnk(:,[4,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.
 sAnkFwd=bsxfun(@times,sAnkFwd,aux);
 fAnkFwd=bsxfun(@times,fAnkFwd,aux);
 sAnk2D=bsxfun(@times,sAnk2D,aux);
@@ -141,10 +142,14 @@ fAnk2D=bsxfun(@times,fAnk2D,aux);
 %its computed slighltly different. Should not cause issues as differences
 %may only ocurr when subject is turning around, which is a bad stride
 %anyway
-sAnkFwd=sAnkRel(:,:,2);
-fAnkFwd=fAnkRel(:,:,2);
-sAnk2D=sAnkRel(:,:,1:2);
-fAnk2D=fAnkRel(:,:,1:2);
+%WARNING: THIS WAS DISABLED BECAUSE IT LEADS TO CRAPPY RESULTS WHEN HIP
+%MARKERS ARE NOT RELIABLE (NOISY). NEED TO FIX. THE PROBLEM IS
+%sAnkFwd-fAnkFwd DEPENDS ON HIP POSITION WHEN IT SHOULDNT (COMPUTING
+%DIFFERENCE OF TWO MARKER POSITIONS USING SAME REFERENCE). NOT SURE WHY.
+%sAnkFwd=sAnkRel(:,:,2);
+%fAnkFwd=fAnkRel(:,:,2);
+%sAnk2D=sAnkRel(:,:,1:2);
+%fAnk2D=fAnkRel(:,:,1:2);
 
 aux=sign(sAngle(:,1)); %Checks for sAngle(indSHS)<0
 sAngle=bsxfun(@times,sAngle,aux);

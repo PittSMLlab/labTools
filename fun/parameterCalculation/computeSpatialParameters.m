@@ -136,6 +136,18 @@ stepLengthSlow=sAnkFwd(:,SHS2)-fAnkFwd(:,SHS2); %If sAnkFwd and fAnkFwd are meas
 stepLengthFast=fAnkFwd(:,FHS)-sAnkFwd(:,FHS);
 takeOffLengthSlow=sAnkFwd(:,STO)-fAnkFwd(:,STO);
 takeOffLengthFast=fAnkFwd(:,FTO)-sAnkFwd(:,FTO);
+
+%ALTERNATIVE COMPUTATION WAY: should be equivalent for TM walking (no
+%direction is enforced) but doesn't use HIP, which was causing problems
+%previously.
+% sAnkAbs=markerData.getDataAsTS({[s 'ANKy']}).getSample(eventTimes,'closest');
+% fAnkAbs=markerData.getDataAsTS({[f 'ANKy']}).getSample(eventTimes,'closest');
+% stepLengthSlow=sAnkAbs(:,SHS2)-fAnkAbs(:,SHS2);
+% stepLengthFast=sAnkAbs(:,FHS)-fAnkAbs(:,FHS);
+% takeOffLengthSlow=sAnkAbs(:,STO)-fAnkAbs(:,STO);
+% takeOffLengthFast=fAnkAbs(:,FTO)-sAnkAbs(:,FTO);
+
+
 %step length (2D) Express w.r.t the hip -- don't save, for now.
 stepLengthSlow2D=sqrt(sum((sAnk2D(:,SHS2,:)-fAnk2D(:,SHS2,:)).^2,3));
 stepLengthFast2D=sqrt(sum((fAnk2D(:,FHS,:)-sAnk2D(:,FHS,:)).^2,3));
@@ -282,7 +294,7 @@ velocityContributionNorm2=velocityContribution./Dist;
 netContributionNorm2=netContribution./Dist;
 
 %Contributions in absolute frame
-aux=markerData.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes); %Will be Nx8x2
+aux=markerData.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
 spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
 vf=(aux(:,SHS2,1)-aux(:,FHS,1))./tf;
 vs=(aux(:,FHS,2)-aux(:,SHS,2))./ts;

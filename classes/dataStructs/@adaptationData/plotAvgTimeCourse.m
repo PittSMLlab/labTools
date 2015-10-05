@@ -178,7 +178,7 @@ for group=1:Ngroups
                 %to plot the MAX number of pts in each trial:
                 [maxPts,loc]=nanmax(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts>1.25*nanmax(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
-                    numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean
+                        numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
                     [maxPts,loc]=nanmax(numPts.(cond{c}).(['trial' num2str(t)]));
                 end
                 if maxPts==0
@@ -188,7 +188,7 @@ for group=1:Ngroups
                 %to plot the MIN number of pts in each trial:
                 [maxPts,loc]=nanmin(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts<0.75*nanmin(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
-                    numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean
+                        numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
                     [maxPts,loc]=nanmin(numPts.(cond{c}).(['trial' num2str(t)]));
                 end
                 if maxPts==0
@@ -216,7 +216,11 @@ for group=1:Ngroups
                     
                     if length(adaptDataList{group})>1
                         %errors calculated as standard error of averaged subject points
-                        subBin=nanmean(bin,2);
+                        if medianFlag==0
+                            subBin=nanmean(bin,2);
+                        else
+                            subBin=nanmedian(bin,2);
+                        end
                         if medianFlag==0
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));

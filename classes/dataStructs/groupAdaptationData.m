@@ -125,8 +125,12 @@ classdef groupAdaptationData
             for subject=1:length(this.adaptData) %Getting data for each subject in the list
                 data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
                 for i=1:length(data)
+                    try
                     data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects
-                end
+                    catch
+                        keyboard
+                    end
+                    end
             %Indexes in data correspond to: condition, stride,label,subject
             end
         end

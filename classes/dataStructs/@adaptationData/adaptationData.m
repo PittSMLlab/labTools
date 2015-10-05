@@ -470,7 +470,7 @@ classdef adaptationData
            set(gca,'ColorOrder',aux(1:length(conditionIdxs),:));
            hold on
            if length(labels)>3
-               error('adaptationData:scatterPlo','Cannot plot more than 3 parameters at a time')
+               error('adaptationData:scatterPlot','Cannot plot more than 3 parameters at a time')
            end
            markerFaceColors={'r','b',[1,.8,0],'g','y','w','c','m','k'};
            if length(labels)==3
@@ -478,8 +478,13 @@ classdef adaptationData
                for c=1:length(conditionIdxs)
                     [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
                     if nargin>5 && ~isempty(binSize) && binSize>1
-                        data2=conv2(data,ones(binSize,1)/binSize);
-                        data=data2(1:binSize:end,:);
+                        %aux2=conv2(double(~isnan(data)),ones(binSize,1),'same');
+                        %data(isnan(data(:)))=0; %Substituting NaNs
+                        %data2=conv2(data,ones(binSize,1),'same')./aux2; %Moving avg.
+                        %data=data2(1:binSize:end,:);    %Plotting only one point every bin_size, so each point plotted is independent of others
+                        for i=1:size(data,2)
+                            data(:,i)=smooth(data(:,i),binSize,'rlowess');
+                        end
                     end
                     if ~isempty(binSize) && binSize~=0
                         hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
@@ -487,7 +492,8 @@ classdef adaptationData
                     end
                     if ~isempty(last)
                             %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
+                        %h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
+                        h=plot3(data(:,1),data(:,2),data(:,3),'Color',trajectoryColor.^(c/length(conditionIdxs)),'LineWidth',1);
                         uistack(h,'bottom')
                         plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1},'Color',trajectoryColor)
                     else
@@ -631,7 +637,7 @@ classdef adaptationData
                 binSize=[];
             end
             for g=1:Ngroups
-                for i=1:length(adaptDataList(g))
+                for i=1:length(adaptDataList{g})
                     r=(i-1)/(length(adaptDataList{g})-1);
                     if nargin<6 || isempty(trajColors)
                         trajColor=[1,0,0] + r*[-1,0,1];
