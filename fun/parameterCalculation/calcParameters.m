@@ -116,7 +116,7 @@ out=cat(out,spat);
 
 %EMG:
 if ~isempty(trialData.procEMGData)
-    [emg] = computeEMGParameters(strideEvents,stridedProcEMG);
+    [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
     out=cat(out,emg);
 end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers

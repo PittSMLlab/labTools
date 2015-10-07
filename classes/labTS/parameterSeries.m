@@ -28,7 +28,7 @@ classdef parameterSeries < labTimeSeries
     end
     
     methods
-        function this=parameterSeries(data,labels,times,description)            
+        function this=parameterSeries(data,labels,times,description,types)            
             this@labTimeSeries(data,1,1,labels);
             this.hiddenTime=times;            
             if length(description)==length(labels)                
@@ -36,6 +36,9 @@ classdef parameterSeries < labTimeSeries
             else
                 error('paramtereSeries:constructor','Description input needs to be same length as labels')
             end       
+            if nargin>4 
+                this.trialTypes_=types;
+            end
         end
         
         function this=setTrialTypes(this,types)
@@ -112,7 +115,7 @@ classdef parameterSeries < labTimeSeries
                 else
                     otherDescription=other.description;
                 end 
-                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription(:); otherDescription(:)]); 
+                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription(:); otherDescription(:)],this.trialTypes); 
             else
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
@@ -132,6 +135,45 @@ classdef parameterSeries < labTimeSeries
             end
         end
         
+        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
+           %This function allows to compute new parameters from other existing parameters and have them added to the data.
+           %This is useful when trying out new parameters without having to
+           %recompute all existing parameters.
+           %INPUT:
+           %newPAramLAbel: string with the name of the new parameter
+           %funHandle: a function handle with N input variables, whose
+           %result will be used to compute the new parameter
+           %inputParameterLabels: the parameters that will replace each of
+           %the variables in the funHandle
+           %EXAMPLE:
+           %I want to define a new normalized version of the contributions,
+           %that divides contributions by avg. step time and avg. step
+           %velocity, so that the velocity contribution is now a
+           %measure of belt-speed ratio. In order to do that, I will take
+           %the velocityContributionAlt (which already exists and is
+           %velocityContribution divided by strideTime, so it is just half
+           %the difference of velocities) and then divide it by velocity sum.
+           %Velocity sum can be computed by dividing stepTimeContribution
+           %by stepTimeDifference (there are other possibilities to compute
+           %the same thing. The final equation will look like this:
+           %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
+           %This can be implemented as:
+           %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
+           
+           %Check input sanity:
+           if length(inputParameterLabels)~=nargin(funHandle)
+               error('parameterSeris:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
+           end
+           oldData=this.getDataAsVector(inputParameterLabels);
+           str='(';
+           for i=1:size(oldData,2)
+               str=[str 'oldData(:,' num2str(i) '),'];
+           end
+           str(end)=')'; %Replacing last comma with parenthesis
+           eval(['newData=funHandle' str ';']);
+           newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
+        end
+        
         function newThis=getDataAsPS(this,labels,strides)
             if nargin<2 || isempty(labels)
                 labels=this.labels;
@@ -146,8 +188,11 @@ classdef parameterSeries < labTimeSeries
             newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx));
         end
         
-        function newThis=appendData(this,newData,newLabels) %For back compat
-            other=parameterSeries(newData,newLabels,this.hiddenTime,cell(size(newLabels)));
+        function newThis=appendData(this,newData,newLabels,newDesc) %For back compat
+            if nargin<4 || isempty(newDesc)
+                newDesc=cell(size(newLabels));
+            end
+            other=parameterSeries(newData,newLabels,this.hiddenTime,newDesc,this.trialTypes);
             newThis=cat(this,other);
         end
         

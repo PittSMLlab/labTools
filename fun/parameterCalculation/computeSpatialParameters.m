@@ -70,6 +70,10 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'stepTimeContributionAlt',    'Step time contribution divided by cadence, to get velocity units instead of length units';...
     'velocityContributionAlt',    'Velocity contribution divided by cadence, to get velocity units instead of length units';...
     'netContributionAlt',          'Net contribution divided by cadence, to get velocity units instead of length units';...
+    'spatialContributionAltRatio',     'Spatial contribution divided by cadence times sum of ankle velocities during stance, so that we get dimensionless (comparable to *Norm2) ';...
+    'stepTimeContributionAltRatio',    'Step time contribution divided by cadence times sum of ankle velocities during stance';...
+    'velocityContributionAltRatio',    'Velocity contribution divided by cadence times sum of ankle velocities during stance, which should be a function of RATIO only';...
+    'netContributionAltRatio',          'Net contribution divided by cadence times sum of ankle velocities during stance';...
     'spatialContributionNorm2',    'spatialContribution/(stepLengthFast+stepLengthSlow)';...
     'stepTimeContributionNorm2',    'stepTimeContribution/(stepLengthFast+stepLengthSlow)';...
     'velocityContributionNorm2',    'velContribution/(stepLengthFast+stepLengthSlow)';...
@@ -270,7 +274,7 @@ dispFast=abs(fAnkFwd(:,SHS2)-fAnkFwd(:,FHS));
 velocitySlow=dispSlow./ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
 velocityFast=dispFast./tf;            
 avgVel=mean([velocitySlow velocityFast],2);           
-avgStepTime=mean([ts tf],2);
+avgStepTime=mean([ts tf],2); %This is half strideTimeSlow!
 
 spatialContribution=spatialFast-spatialSlow;            
 stepTimeContribution=avgVel.*difft;            
@@ -283,10 +287,17 @@ spatialContributionAlt=spatialContribution./strideTimeSlow;
 stepTimeContributionAlt=stepTimeContribution./strideTimeSlow;
 velocityContributionAlt=velocityContribution./strideTimeSlow;
 netContributionAlt=netContribution./strideTimeSlow;
+
 %spatialContributionNorm=spatialContributionAlt./equivalentSpeed;
 %stepTimeContributionNorm=stepTimeContributionAlt./equivalentSpeed;
 %velocityContributionNorm=velocityContributionAlt./equivalentSpeed;
 %netContributionNorm=netContributionAlt./equivalentSpeed;
+
+spatialContributionAltRatio=spatialContributionAlt./(velocitySlow+velocityFast);
+stepTimeContributionAltRatio=stepTimeContributionAlt./(velocitySlow+velocityFast);
+velocityContributionAltRatio=velocityContributionAlt./(velocitySlow+velocityFast);
+netContributionAltRatio=netContributionAlt./(velocitySlow+velocityFast);
+
 Dist=stepLengthFast+stepLengthSlow;
 spatialContributionNorm2=spatialContribution./Dist;
 stepTimeContributionNorm2=stepTimeContribution./Dist;

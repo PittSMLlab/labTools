@@ -1,4 +1,4 @@
-function [out] = computeEMGParameters(strideEvents,stridedProcEMG)
+function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)
 %%
 timeSHS=strideEvents.tSHS;
 timeFTO=strideEvents.tFTO;
@@ -20,10 +20,15 @@ for i=1:N
     Data=stridedProcEMG{i}.Data;
     Qual=stridedProcEMG{i}.Quality;
     for j=1:length(labs) %Muscles
+        if strcmp(labs{j}(1),s)
+            l='s';
+        else
+            l='f';
+        end
         for k=1:6 %6 phases
             counter=counter+1;
             if i==1
-            paramLabels{counter}=[labs{j} 'p' num2str(k)];
+            paramLabels{counter}=[l labs{j}(2:end) 'p' num2str(k)];
             description{counter}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc{k}];
             end
             data(i,counter)=mean(Data(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j));
@@ -36,56 +41,56 @@ for i=1:N
         counter=counter+1;
         counter0=counter;
         if i==1
-        paramLabels{counter}=[labs{j} 'max'];
+        paramLabels{counter}=[l labs{j}(2:end) 'max'];
         description{counter}=['Peak proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=max(Data(:,j));
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'min'];
+        paramLabels{counter}=[l labs{j}(2:end) 'min'];
         description{counter}=['Min proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=min(Data(:,j));
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'med'];
+        paramLabels{counter}=[l labs{j}(2:end) 'med'];
         description{counter}=['Median proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=median(Data(:,j));
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'avg'];
+        paramLabels{counter}=[l labs{j}(2:end) 'avg'];
         description{counter}=['Average (mean) proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=mean(Data(:,j));
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'var'];
+        paramLabels{counter}=[l labs{j}(2:end) 'var'];
         description{counter}=['Variance of proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=var(Data(:,j),0); %Unbiased
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'skw'];
+        paramLabels{counter}=[l labs{j}(2:end) 'skw'];
         description{counter}=['Skewness proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=skewness(Data(:,j),0); %Unbiased estimation
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'kur'];
+        paramLabels{counter}=[l labs{j}(2:end) 'kur'];
         description{counter}=['Kurtosis proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=kurtosis(Data(:,j),0); %Unbiased estimation
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'iqr'];
+        paramLabels{counter}=[l labs{j}(2:end) 'iqr'];
         description{counter}=['Inter-quartile range in proc EMG in muscle ' labs{j}];
         end
         data(i,counter)=iqr(Data(:,j));
@@ -94,14 +99,14 @@ for i=1:N
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'snr'];
+        paramLabels{counter}=[l labs{j}(2:end) 'snr'];
         description{counter}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' labs{j}];
         end
         data(i,counter)=20*log10(mean(Data(:,j).^2)/min(Data(:,j))^2);
         
         counter=counter+1;
         if i==1
-        paramLabels{counter}=[labs{j} 'bad'];
+        paramLabels{counter}=[l labs{j}(2:end) 'bad'];
         description{counter}=['Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
         end
         if ~isempty(Qual)

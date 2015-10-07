@@ -1,4 +1,4 @@
-function [newThis,baseValues,typeList]=removeBiasV2(this,conditions)
+function [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag)
 % removeBias('condition') or removeBias({'Condition1','Condition2',...})
 % removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
 % from each trial that is the same type as the condition entered. If no
@@ -8,7 +8,7 @@ function [newThis,baseValues,typeList]=removeBiasV2(this,conditions)
 %TO DO: see what happens when 0 conditions are given for a certain type
 
 conds=this.metaData.conditionName;
-if nargin>1 %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
+if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
     %convert input to standardized format
     if isa(conditions,'char')
         conditions={conditions};
@@ -17,6 +17,9 @@ if nargin>1 %Ideally, number of conditions given should be the same as the amoun
     end
     % validate condition(s)    
     cInput=conditions(this.isaCondition(conditions));
+end
+if nargin<3 || isempty(normalizeFlag)
+    normalizeFlag=0;
 end
 
 trialsInCond=this.metaData.trialsInCondition;
@@ -70,7 +73,11 @@ for itype=1:length(types)
                
             end
             [data, inds]=this.getParamInTrial(labels,allTrials);
-            newData(inds,:)=data-repmat(base,length(inds),1);
+            if normalizeFlag==0
+                newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
+            else
+                newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
+            end
             baseValues(itype,:)=base;
         end
     else

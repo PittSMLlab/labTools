@@ -89,7 +89,8 @@ classdef adaptationData
                 end
             end
         end
-        %Modifier
+        %Modifiers
+        
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
         % Removes baseline value for all parameters.
         % removeBias('condition') or removeBias({'Condition1','Condition2',...})
@@ -117,6 +118,13 @@ classdef adaptationData
             end
         end
         
+        function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
+            if nargin<2
+                conditions=[];
+            end
+            [newThis,baseValues,typeList]=removeBiasV2(this,conditions,1);
+        end
+        
         function newThis=removeBadStrides(this)
             if isa(this.data,'paramData')
                 newParamData=this.data;
@@ -126,6 +134,39 @@ classdef adaptationData
                 newParamData=newParamData.setTrialTypes(this.data.trialTypes);
             end
             newThis=adaptationData(this.metaData,this.subData,newParamData);
+        end
+        
+        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
+           %This function allows to compute new parameters from other existing parameters and have them added to the data.
+           %This is useful when trying out new parameters without having to
+           %recompute all existing parameters.
+           %INPUT:
+           %newPAramLAbel: string with the name of the new parameter
+           %funHandle: a function handle with N input variables, whose
+           %result will be used to compute the new parameter
+           %inputParameterLabels: the parameters that will replace each of
+           %the variables in the funHandle
+           %EXAMPLE:
+           %I want to define a new normalized version of the contributions,
+           %that divides contributions by avg. step time and avg. step
+           %velocity, so that the velocity contribution is now a
+           %measure of belt-speed ratio. In order to do that, I will take
+           %the velocityContributionAlt (which already exists and is
+           %velocityContribution divided by strideTime, so it is just half
+           %the difference of velocities) and then divide it by velocity sum.
+           %Velocity sum can be computed by dividing stepTimeContribution
+           %by stepTimeDifference (there are other possibilities to compute
+           %the same thing. The final equation will look like this:
+           %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
+           %This can be implemented as:
+           %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
+           newPS=this.data.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
+           this.data=newPS;
+           newThis=this;
+        end
+        
+        function newThis=replaceLR(this)
+            
         end
         
         %Other I/O functions:

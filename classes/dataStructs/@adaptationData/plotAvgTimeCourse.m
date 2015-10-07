@@ -128,7 +128,10 @@ for group=1:Ngroups
         adaptData = adaptData.removeBadStrides;
         if removeBiasFlag==1
             adaptData = adaptData.removeBias;
+        elseif removeBiasFlag==2
+            adaptData = adaptData.normalizeBias;
         end
+            
         for c=1:nConds
             if trialMarkerFlag(c)
                 trials=num2cell(adaptData.getTrialsInCond({conditions{c}}));
@@ -137,6 +140,10 @@ for group=1:Ngroups
             end
             
             for t=1:length(trials)
+                %Check
+                if ~all(adaptData.data.isaParameter(params))
+                    keyboard %This shouldnt happen
+                end
                 dataPts=adaptData.getParamInTrial(params,trials{t});
                 nPoints=size(dataPts,1);
                 if nPoints == 0
@@ -346,7 +353,7 @@ for group=1:Ngroups
                         legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
-                        color=colorOrder(g,:)./Cdiv;
+                        color=colorOrder(mod(g-1,size(colorOrder,1))+1,:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
                         %set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
@@ -414,8 +421,8 @@ for group=1:Ngroups
                 line([lineX; lineX],ylim,'color','k')
                 xticks=lineX+diff([lineX Xstart])./2;
                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
-                h=refline(0,0);
-                set(h,'color','k')
+                %h=refline(0,0);
+                %set(h,'color','k')
             end            
             hold off
         end
@@ -437,8 +444,13 @@ if nargout<2
 elseif nargout==2
     varargout{1}=avg;
     varargout{2}=indiv;
+elseif nargout==3
+    varargout{1}=figHandle;
+    varargout{2}=avg;
+    varargout{3}=indiv;
 else
     varargout{1}=figHandle;
     varargout{2}=avg;
     varargout{3}=indiv;
+    varargout{4}=ah; %axes handles
 end
