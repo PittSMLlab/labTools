@@ -22,6 +22,7 @@ if nargin<3 || isempty(normalizeFlag)
     normalizeFlag=0;
 end
 
+
 trialsInCond=this.metaData.trialsInCondition;
 % trialTypes=this.data.trialTypes;
 trialTypes=this.trialTypes; %Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible
