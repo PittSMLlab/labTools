@@ -10,6 +10,7 @@ paramLabels={};
 description={};
 phases={'DS1','EfSwing','LfSwing','DS2','EsSwing','LsSwing'};
 desc={'SHS to FTO', 'FTO to mid fast swing', 'mid fast swing to FHS', 'FHS to STO', 'STO to mid slow swing', 'mid slow swing to SHS'};
+
 %%
 N=length(stridedProcEMG);
 data=nan(N,30*16);
