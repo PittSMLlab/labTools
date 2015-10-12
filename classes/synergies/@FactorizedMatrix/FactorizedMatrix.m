@@ -16,6 +16,7 @@ classdef FactorizedMatrix
     %\sum_k u_ik v_jk w_lk will be supported, by allowing dim2Vectors to be
     %themselves a factorizedMatrix (CAN I DO THIS??)
     
+    
     properties
         %originalMatrix=zeros(3);
         dim1Vectors=zeros(3,1);
