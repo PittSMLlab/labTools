@@ -8,9 +8,10 @@ fullName=[dir fileName];
 if ~exist(dir,'dir')
     mkdir(dir)
 end
+
+%set(h,'Color','None')
 %print(h, '-painters', '-dpng', '-r900', [fullName '.png']);
 savefig(h,[fullName '.fig'],'compact') ;
-%set(h,'Renderer','opengl');
 hgexport(h, [fullName '.png'], hgexport('factorystyle'), 'Format', 'png');
 
 end

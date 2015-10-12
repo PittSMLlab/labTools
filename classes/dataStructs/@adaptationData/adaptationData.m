@@ -454,7 +454,7 @@ classdef adaptationData
         end
         
         %Display functions:
-        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions)
+        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag)
                     %Plot of the behaviour of parameters through the different conditions 
             %specify the parameter behaviour on each condition and trial
             %
@@ -480,7 +480,10 @@ classdef adaptationData
             if nargin<5 || isempty(conditions)
                 conditions=this.metaData.conditionName;
             end
-            figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag);
+            if nargin<6 || isempty(medianFlag)
+                medianFlag=[];
+            end
+            figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag);
         end
         
         function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)

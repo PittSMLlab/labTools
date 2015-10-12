@@ -17,7 +17,7 @@ classdef FactorizedMatrix
     %themselves a factorizedMatrix (CAN I DO THIS??)
     
     properties
-        originalMatrix=zeros(3);
+        %originalMatrix=zeros(3);
         dim1Vectors=zeros(3,1);
         dim2Vectors=zeros(1,3);
         name='Unnamed';
@@ -28,18 +28,22 @@ classdef FactorizedMatrix
        matrixSize %This is size(originalMatrix)
        reducedDimension %this is p
        factorizedMatrix %Product of Dim1Vectors and Dim2Vectors
-       errorMatrix %Difference between original and factorized
+       %errorMatrix %Difference between original and factorized
        paramCount %Number of parameters in the factorization
     end
     
     methods
         %Constructor
-        function this=FactorizedMatrix(original,dim1vectors,dim2vectors,factMethod,name) %Last two are optional
+        function this=FactorizedMatrix(originalSize,dim1vectors,dim2vectors,factMethod,name) %Last two are optional
             if nargin<3
                 ME=MException('FactorizedMatrix:ConstructorNotEnoughArgs','Not enough arguments');
                 throw(ME)
             end
-            this.originalMatrix=original; %Should not allow matrices that have singleton dimensions in the middle (i.e., not the first nor the last dimension), since it gives problems when checking for size and/or reconstructing the matrix.
+            if numel(originalSize)~=prod(size(originalSize))
+                ME=MException('FactorizedMatrix:ConstructorBadSizeArgument','The originalSize argument has to be a vector containing the size of the full matrix.');
+                throw(ME)
+            end
+            %this.originalMatrix=original; %Should not allow matrices that have singleton dimensions in the middle (i.e., not the first nor the last dimension), since it gives problems when checking for size and/or reconstructing the matrix.
             %Check consistency of given arguments & assign
             if size(dim1vectors(:,:),1)==size(dim2vectors(:,:),1) %Given in the expected orientation
                 this.dim1Vectors=dim1vectors;
@@ -53,7 +57,7 @@ classdef FactorizedMatrix
             end
             
             %Check if there is actually dimension reduction
-            if (numel(this.dim1Vectors)+numel(this.dim2Vectors)) >= numel(original)
+            if (numel(this.dim1Vectors)+numel(this.dim2Vectors)) >= prod(originalSize)
                 warning('The factorized matrix is not reduced from its full form (factors DoF > matrix DoF).')
             end
             
@@ -61,9 +65,13 @@ classdef FactorizedMatrix
             size1=size(this.dim1Vectors);
             size2=size(this.dim2Vectors);
             auxSize=[size1(2:end) size2(2:end)];
-            if ~isempty(original) && prod(auxSize)~=numel(original)
+            try
+            if ~isempty(originalSize) && prod(auxSize)~=prod(originalSize)
                 ME=MException('FactorizedMatrix:ConstructorInconsistentMatrix','The sizes of the factors and the provided original matrix are inconsistent.');
                 throw(ME);
+            end
+            catch
+                keyboard
             end
             
             if nargin>3 && isa(factMethod,'char')
@@ -84,7 +92,10 @@ classdef FactorizedMatrix
             origDim=min([size(this.dim1Vectors(:,:),2),size(this.dim2Vectors(:,:),2)]);
         end
         function matrixSize=get.matrixSize(this)
-            matrixSize=size(this.originalMatrix);
+            %matrixSize=size(this.originalMatrix); %Old way
+            s1=size(this.dim1Vectors);
+            s2=size(this.dim2Vectors);
+            matrixSize=[s1(2:end) s2(2:end)];
         end
         function reducedDim=get.reducedDimension(this)
             reducedDim=size(this.dim2Vectors,1);
@@ -93,55 +104,71 @@ classdef FactorizedMatrix
            factMat=this.dim1Vectors(:,:)'*this.dim2Vectors(:,:); 
            factMat=reshape(factMat,this.matrixSize);
         end
-        function errorMat=get.errorMatrix(this)
-            errorMat=this.originalMatrix-this.factorizedMatrix;
-        end
+        
         function paramCount=get.paramCount(this)
            paramCount=numel(this.dim1Vectors)+numel(this.dim2Vectors); 
         end
         
         %Other:
-        function errNorm=errorNorm(this,method)
+        function errorMat=getErrorMatrix(this,originalMatrix)
+            %error('FactorizedMatrix:errorMatrix','This is no longer a supported property of FactorizedMatrix')
+            errorMat=originalMatrix-this.factorizedMatrix;
+        end
+        
+        function errorMat=errorMatrix(this,originalMatrix)
+            warning('FactorizedMatrix:errorMatrix','This method is deprecated, use getErrorMatrix instead.')
+            errorMat=this.getErrorMatrix(originalMatrix);
+        end
+        
+        function errNorm=errorNorm(this,originalMatrix,method)
             if nargin<2
                 method='fro';
             end
-            errNorm=norm(this.errorMatrix(:,:),method);
+            eM=this.getErrorMatrix(originalMatrix);
+            errNorm=norm(eM(:,:),method);
         end
-        function percErr=percentError(this,method)
+        function percErr=percentError(this,originalMatrix,method)
+            %error('FactorizedMatrix:percentError','This is no longer a supported method of FactorizedMatrix')
             if nargin<2
                 method='fro';
             end
-            percErr=this.errorNorm(method)/norm(this.originalMatrix(:,:),method);
+            percErr=this.errorNorm(originalMatrix,method)/norm(originalMatrix(:,:),method);
         end
-        function errNormC=errorNormPerColumn(this,method)
+        function errNormC=errorNormPerColumn(this,originalMatrix,method)
             if nargin<2
                 method=2;
             end
-            errNormC=columnNorm(this.errorMatrix(:,:),method,1);
+            eM=this.errorMatrix(originalMatrix);
+            errNormC=columnNorm(eM(:,:),method,1);
         end
-        function errNormR=errorNormPerRow(this,method)
+        function errNormR=errorNormPerRow(this,originalMatrix,method)
             if nargin<2
                 method=2;
             end
-            errNormR=columnNorm(this.errorMatrix(:,:),method,2);
+            eM=this.errorMatrix(originalMatrix);
+            errNormR=columnNorm(eM(:,:),method,2);
         end
-        function errNormPerDim=errorNormPerDim(this,method,dim)
-            errNormPerDim= FactorizedMatrix.matNormPerDim(this.errorMatrix,method,dim);
+        function errNormPerDim=errorNormPerDim(this,originalMatrix,method,dim)
+            eM=this.errorMatrix(originalMatrix);
+            errNormPerDim= FactorizedMatrix.matNormPerDim(eM,method,dim);
         end
-        function percErrC=percentErrorPerColumn(this,method)
+        function percErrC=percentErrorPerColumn(this,originalMatrix,method)
+            %error('FactorizedMatrix:percentErrorPerColumn','This is no longer a supported method of FactorizedMatrix')
             if nargin<2
                 method=2;
             end
-            percErrC=this.errorNormPerColumn(method)./columnNorm(this.originalMatrix(:,:),method,1);
+            percErrC=this.errorNormPerColumn(originalMatrix,method)./columnNorm(originalMatrix(:,:),method,1);
         end
-        function percErrR=percentErrorPerRow(this,method)
+        function percErrR=percentErrorPerRow(this,originalMatrix,method)
+            %error('FactorizedMatrix:percentErrorPerRow','This is no longer a supported method of FactorizedMatrix')
             if nargin<2
                 method=2;
             end
-            percErrR=this.errorNormPerRow(method)./columnNorm(this.originalMatrix(:,:),method,2);
+            percErrR=this.errorNormPerRow(method)./columnNorm(originalMatrix(:,:),method,2);
         end
-        function percErrPerDim=percErrPerDim(this,method,dim)
-            percErrPerDim = FactorizedMatrix.matNormPerDim(this.errorMatrix,method,dim)./FactorizedMatrix.matNormPerDim(this.originalMatrix,method,dim);
+        function percErrPerDim=percErrPerDim(this,originalMatrix,method,dim)
+            %error('FactorizedMatrix:percentErrorPerDim','This is no longer a supported method of FactorizedMatrix')
+            percErrPerDim = FactorizedMatrix.matNormPerDim(this.errorMatrix,method,dim)./FactorizedMatrix.matNormPerDim(originalMatrix,method,dim);
         end
         function logL=pPCAlogL(this)
            logL=NaN; %To Do 
@@ -150,13 +177,13 @@ classdef FactorizedMatrix
         %Modifiers:
         function newThis=transpose(this)
             if length(this.matrixSize)<3
-                newThis=FactorizedMatrix(this.originalMatrix',this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name ' Transposed']);
+                newThis=FactorizedMatrix(this.matrixSize,this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name ' Transposed']);
             else
                 warning('Matrix is actually a high-dimensional (>3) tensor, cannot transpose as is. Will transpose the tensor as returned by indexing as (:,:)');
                 size1=size(this.dim1Vectors);
                 size2=size(this.dim2Vectors);
                 newMatrixSize=[size2(2:end) size1(2:end)];
-                newThis=FactorizedMatrix(reshape(this.originalMatrix(:,:)',newMatrixSize),this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name ' Transposed']);
+                newThis=FactorizedMatrix(newMatrixSize,this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name ' Transposed']);
             end
         end
         
@@ -166,7 +193,7 @@ classdef FactorizedMatrix
                 newDim1=reshape(newDim1,size(this.dim1Vectors));
                 newDim2=this.dim2Vectors(newOrder,:);
                 newDim2=reshape(newDim2,size(this.dim2Vectors));
-                newThis=FactorizedMatrix(this.originalMatrix,newDim1,newDim2,this.factMethod,this.name);
+                newThis=FactorizedMatrix(this.matrixSize,newDim1,newDim2,this.factMethod,this.name);
             else
                newThis=this;
                warning('FactorizedMatrix:sort','The newOrder vector is not of the appropriate size, ignoring.')
@@ -207,7 +234,7 @@ classdef FactorizedMatrix
                 subplot(plotHandles1(i))
                 hold on
                 bar(this.dim2Vectors(i,:),'FaceColor',colors{mod(i,length(colors))+1})
-                freezeColors %external function!
+                %freezeColors %external function!
                 hold off
                 subplot(plotHandles2(i))
                 hold on
@@ -221,10 +248,10 @@ classdef FactorizedMatrix
         end
         
         %Likelihood under ppca framework
-        function logL=ppcaLikelihood(this)
+        function logL=ppcaLikelihood(this,originalMatrix)
             coeff=this.dim2Vectors(:,:);
             scores=this.dim1Vectors(:,:);
-            data=permute(this.originalMatrix,[3,1,2]);
+            data=permute(originalMatrix,[3,1,2]);
             [logL] = ppcaLikelihood(data(:,:)',coeff,scores);
         end
         
@@ -260,7 +287,7 @@ classdef FactorizedMatrix
                     tensor1=[];
                     tensor2=[];
             end
-            newObj=FactorizedMatrix(matrix,tensor1,tensor2,method,name);
+            newObj=FactorizedMatrix(size(matrix),tensor1,tensor2,method,name);
         end
         
     end %Static methods

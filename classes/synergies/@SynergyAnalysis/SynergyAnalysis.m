@@ -3,16 +3,16 @@ classdef SynergyAnalysis
     %   Detailed explanation goes here
     
     properties
-        trainingFactorizations %cell array of length N, each containing a factorizedMatrix
-        testingFactorizations %cell array of length N, each containing a factorizedMatrix
-        muscleList
+        trainingFactorizations={}; %cell array of length N, each containing a factorizedMatrix
+        testingFactorizations={}; %cell array of length N, each containing a factorizedMatrix
+        muscleList={};
+        trainingData %Plain matrix, unnecessary?
+        testingData %Plain matrix, unnecessary?
     end
     properties(Dependent)
        trainingResiduals %cell array of matrices, unnecessary?
        testingResiduals %cell array of matrices, unnecessary?
        synergySets %cell array of SynergySet, unnecessary?
-       trainingData %Plain matrix, unnecessary?
-       testingData %Plain matrix, unnecessary?
     end
     
     methods
@@ -30,23 +30,39 @@ classdef SynergyAnalysis
             %have to be in the last dimension for the factorization to be
             %done properly with this code).
             for dim=1:size(trainingData,3) %Factorizing from 1 to Nmuscles
-                
                 %Compute synergies from training data
                 trainingFactorizations{dim}=FactorizedMatrix.factorize(trainingData,2,method,dim,[name '_trainingSet_dim' num2str(dim)]); %The second argument has to be the dimension corresponding to the muscles dim-1.
-                %reshapedData=reshape(trainingData,[size(trainingData,1)*size(trainingData,2),size(trainingData,3)]);
-                %[syns,coefs,~,~]=getSynergies(reshapedData,dim,5,'always');
-                %reshapedCoefs=reshape(coefs',[dim,size(trainingData,1),size(trainingData,2)]);
-                %trainingFactorizations{dim}=FactorizedSteppedData(trainingData,reshapedCoefs,syns,'NNMF',[name '_trainingSet_dim' num2str(dim)]);
-                
-                %Compute coefs from synergies and testing data
-                reshapedData=reshape(testingData,[size(testingData,1)*size(testingData,2),size(testingData,3)]);
-                [coefs] = SynergyAnalysis.coefExtrFromSyn(reshapedData,trainingFactorizations{dim}.dim2Vectors);
-                reshapedCoefs=reshape(coefs,[dim,size(testingData,1),size(testingData,2)]);
-                testingFactorizations{dim}=FactorizedMatrix(testingData,reshapedCoefs,trainingFactorizations{dim}.dim2Vectors,method,[name '_testingSet_dim' num2str(dim)]);
             end
             this.trainingFactorizations=trainingFactorizations;
-            this.testingFactorizations=testingFactorizations;
             this.muscleList=muscleList;
+            this.trainingData=trainingData;
+            %Compute coefs from synergies and testing data
+            if ~isempty(testingData)
+                this=factorizeNewTestingData(this,testingData,method,name);
+            end
+            
+            this.testingData=testingData;
+        end
+        
+        %Extract coefs for testingData
+        function newThis=factorizeNewTestingData(this,testingData,method,name)
+            if nargin<4 || isempty(name)
+                name='';
+            end
+           %Check that new testingData and  have compatible
+           %dimensions
+           %DOXY
+           
+           %
+           for dim=1:size(this.trainingData,3) %Factorizing from 1 to Nmuscles
+                %Compute coefs from synergies and testing data
+                reshapedData=reshape(testingData,[size(testingData,1)*size(testingData,2),size(testingData,3)]);
+                [coefs] = SynergyAnalysis.coefExtrFromSyn(reshapedData,this.trainingFactorizations{dim}.dim2Vectors,method);
+                reshapedCoefs=reshape(coefs,[dim,size(testingData,1),size(testingData,2)]);
+                testFactorizations{dim}=FactorizedMatrix(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name '_testingSet_dim' num2str(dim)]);
+            end
+            this.testingFactorizations=testFactorizations;
+            newThis=this;
         end
         
         %Misc IO
@@ -67,7 +83,7 @@ classdef SynergyAnalysis
                         disp('Cannot use NNMF with spectrally matched data since positivity constraints are not satisfied. Using uncentered PCA instead.')
                         factMethod='uncentPCA';
                     end
-                    sizes=size(this.trainingFactorizations{1}.originalMatrix);
+                    sizes=size(this.trainingData);
                     [mu,sigma,filter] = createUnstructuredParametersFromData(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)));
                     switch factMethod
                         case 'pca'
@@ -83,15 +99,15 @@ classdef SynergyAnalysis
                     switch factMethod
                         case 'nnmf'
                             Nreps=200;
-                            sizes=size(this.trainingFactorizations{1}.originalMatrix);
+                            sizes=size(this.trainingData);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricNNMFEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps);
                         case 'pca'
                             centering=true;
-                            sizes=size(this.trainingFactorizations{1}.originalMatrix);
+                            sizes=size(this.trainingData);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricPCAEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps,centering);
                         case 'uncentPCA'
                             centering=false;
-                            sizes=size(this.trainingFactorizations{1}.originalMatrix);
+                            sizes=size(this.trainingData);
                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricPCAEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps,centering);
                         otherwise
                             throw(MException('SynAnalysisRandomRec:UnrecognizedFactMethod','Unrecognized method for factorizing random data: options are pca, uncentPCA and nnmf.'))
@@ -103,28 +119,36 @@ classdef SynergyAnalysis
                                   
         dim=chooseDim(this) %TODO
         
-        function [errTrain,errTest]=assessDimensionality(this,plotFlag)
-
+        function [errTrain,errTest,fh]=assessDimensionality(this,plotFlag,fh,names)
+            if nargin <4 || isempty(names)
+                names='';
+            end
             %First: find error norm as a function of dimension for training and testing
             %data
 
             auxTrain=norm(this.trainingData(:,:),'fro');
             auxTest=norm(this.testingData(:,:),'fro');
             for i=1:this.testingFactorizations{1}.originalDimension
-
-                errTrain(i)=norm(this.trainingFactorizations{i}.errorMatrix(:,:),'fro')/auxTrain;
-                errTest(i)=norm(this.testingFactorizations{i}.errorMatrix(:,:),'fro')/auxTest;
+                eM=this.trainingFactorizations{i}.getErrorMatrix(this.trainingData);
+                errTrain(i)=norm(eM(:,:),'fro')/auxTrain;
+                eM=this.testingFactorizations{i}.getErrorMatrix(this.testingData);
+                errTest(i)=norm(eM(:,:),'fro')/auxTest;
             end
 
-            if nargin<2 || plotFlag~=0
-            figure
+            if nargin<2 || (~isempty(plotFlag) && plotFlag~=0)
+                if nargin>2
+                    figure(fh)
+                else
+                    fh=figure;
+                end
             hold on
-            plot(errTrain.^2)
-            plot(errTest.^2)
+            p=plot(errTrain.^2,'DisplayName',[names 'Training Data'],'LineWidth',2);
+            plot(errTest.^2,'--','DisplayName',[names 'Testing Data'],'LineWidth',2,'Color',get(p,'Color'))
             xlabel('Dims.')
             ylabel('Normalized reconstruction error squared')
             hold off
-            legend('Training Data','Testing Data')
+            p=get(gca,'Children');
+            legend(p);
             end
 
 
@@ -155,24 +179,16 @@ classdef SynergyAnalysis
         
         function trainRes=get.trainingResiduals(this)
             for i=1:length(this.trainingFactorizations)
-               trainRes{i}=this.trainingFactorizations{i}.errorMatrix; 
+               trainRes{i}=this.trainingFactorizations{i}.errorMatrix(this.trainingData); 
             end
         end
         
         function testRes=get.testingResiduals(this)
             for i=1:length(this.testingFactorizations)
-               testRes{i}=this.testingFactorizations{i}.errorMatrix; 
+               testRes{i}=this.testingFactorizations{i}.errorMatrix(this.testingData); 
             end
         end
-        
-        function trainData=get.trainingData(this)
-            trainData=this.trainingFactorizations{1}.originalMatrix;
-        end
-        
-        function testData=get.testingData(this)
-            testData=this.testingFactorizations{1}.originalMatrix;
-        end
-        
+
         function ss=get.synergySets(this)
             for i=1:length(this.trainingFactorizations)
                ss{i}=this.trainingFactorizations{i}.dim2Vectors; 
@@ -181,13 +197,13 @@ classdef SynergyAnalysis
         
     end
     
-    methods(Static,Access=private)
+    methods(Static)
         
-       function [dim1Vectors] = coefExtrFromSyn(data,dim2Vectors)
+       function [dim1Vectors] = coefExtrFromSyn(data,dim2Vectors,method)
             %solves the least squares problem data=syn*act; subject to the
             %non-negativity of the activations.
 
-            opts= optimset('display','off','TolFun',.0001/size(data,2)^2,'TolX',.0001);
+            opts= optimset('display','off','TolFun',1e-4/size(data,2)^2,'TolX',1e-4);
 
             poolFlag=0;
             if isempty(gcp('nocreate'))
@@ -196,10 +212,22 @@ classdef SynergyAnalysis
             end
 
             coefs=[];
-            parfor i=1:size(data,1)
-                x0=ones(size(dim2Vectors,1),1);
-                coefs(:,i) = lsqnonneg(dim2Vectors',data(i,:)',opts);
+            switch method
+                case 'nnmf'
+                    parfor i=1:size(data,1)
+                        x0=ones(size(dim2Vectors,1),1);
+                        coefs(:,i) = lsqnonneg(dim2Vectors',data(i,:)',opts);
+                    end
+                case 'pca'
+                    coefs=(data/dim2Vectors)';
+                    %Check minimum convergence (if using N dimensions):
+                    if (norm(data-coefs'*dim2Vectors,'fro')/norm(data,'fro'))>(1-size(coefs,1)/size(data,2)) %Checking for reconstruction levels to be at least random reconstruction expected values
+                        warning('SynegyAnalysis:coefExtrFromSyn','Residuals from lsq is higher than expected from random reconstructions, there is a probable issue with algorithm convergence.')
+                    end
+                otherwise
+                    error('SynergyAnalysis:coefExtrFromSyn',['Not implemented for the desired method: ' method])
             end
+            
             dim1Vectors=coefs;
             if poolFlag==1
                 delete(gcp('nocreate'))
