@@ -300,7 +300,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
             time=[0:length(refSync)-1]*1/EMGfrequency;
             plot(time,refSync)
             plot(time,sync(:,1)*gain1,'r')
-            plot(time,sync(:,2)*gain2,'g')
+            if secondFile
+                plot(time,sync(:,2)*gain2,'g')
+            end
             legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
             hold off
             subplot(2,2,3)
@@ -309,13 +311,17 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 hold on
                 plot(time(1:T),refSync(1:T))
                 plot(time(1:T),sync(1:T,1)*gain1,'r')
-                plot(time(1:T),sync(1:T,2)*gain2,'g')
+                if secondFile
+                    plot(time(1:T),sync(1:T,2)*gain2,'g')
+                end
                 hold off
                 subplot(2,2,4)
                 hold on
                 plot(time(end-T:end),refSync(end-T:end))
                 plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
-                plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+                if secondFile
+                    plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+                end
                 hold off
             end
             s=inputdlg('Please confirm that you want to proceed like this (y/n)','str');
