@@ -216,25 +216,53 @@ classdef orientedLabTimeSeries  < labTimeSeries
             end
         end
         
-        function virtualOTS=getVirtualOTS(this)
-            error('This function has not yet been implemented')
+        function virtualOTS=getVirtualOTS(this,ww,meanDiff,stdDiff)
+            %Virtual markers are computed by taking the maximum likelihood
+            %estimator given the position of all other markers and the
+            %statistics of the distance between markers (naive bayes
+            %approach were distance between markers is assumed normally
+            %distributed)
+            %INPUT:
+            %this: orientedLabTimeSeries object
+            %ww: weight given to actual data (in units of 1/mm^2) relative
+            %to variances
+            %meanDiff: LxLx3 matrix representing the mean difference vector
+            %btw all combinations of L markers in the 3 dimensions
+            %stdDiff: LxLx3 matrix representing the standard deviation of
+            %the difference vectors in the 3 dimensions. Using for
+            %weighting to find maximum likelihood position.
             
-            %Method 1: distance Naive Bayes
-            D=this.computeDistanceMatrix; %Computing distance between all available markers
-            DD=this.computeDifferenceMatrix;
-            dd=nanmean(D,1); %Mean distance
-            ss=nanstd(D,[],1); %Stdev of distance
-            for i=1:length(this.getLabelPrefix) %For each marker
-                
-                totalVar=1/sum(1./ss(k,[1:k-1,k+1:end]).^2); %pooled variance from estimating position from each other marker
-                
-                xML= 1/totalVar;
+            
+            if nargin<2 || isempty(ww)
+                ww=0; %ww represents the weight given to actual data from the marker
+            end
+            ll=this.getLabelPrefix;
+            if nargin<4 || isempty(meanDiff) || isempty(stdDiff)
+                differences=this.computeDifferenceMatrix([],[],ll,ll);
+                meanDiff=nanmean(differences,1); %Mean distance
+                %Method : difference Naive Bayes
+                stdDiff=nanstd(differences,[],1);
             end
             
-            %Method 2: difference Naive Bayes
             
+            actualData=this.getOrientedData(ll);
+            virtualData=nan(size(actualData));
             
+            for i=1:length(ll) %For each marker
+                xEstim=nan(size(differences,1),3,size(differences,2));
+                w=1./stdDiff(1,i,:,:).^2;
+                w(1,1,i,:)=ww;
+                for j=1:length(ll)
+                        xEstim(:,:,j)=bsxfun(@times,bsxfun(@plus,squeeze(actualData(:,j,:)),squeeze(meanDiff(1,i,j,:))'),squeeze(w(1,1,j,:))');
+                end
+                aux=any(~isnan(xEstim),2);
+                
+                virtualData(:,i,:)= bsxfun(@rdivide,nansum(xEstim,3),squeeze(sum(bsxfun(@times,w,aux),3)));
+            end
+            virtualOTS=orientedLabTimeSeries.getOTSfromOrientedData(virtualData,this.Time(1),this.sampPeriod,ll,this.orientation);
+
         end
+
         %-------------------
         function fh=plot3(this,fh)
             %plots all 3 components of all variables in OTS instance
@@ -416,6 +444,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
     end
     methods (Static)
+        function OTS=getOTSfromOrientedData(data,t0,Ts,labelPrefixes,orientation)
+            labels=[strcat(labelPrefixes,'x');strcat(labelPrefixes,'y');strcat(labelPrefixes,'z')];
+            data=permute(data,[1,3,2]);
+            OTS=orientedLabTimeSeries(data(:,:),t0,Ts,labels(:),orientation);
+        end
         function extendedLabels=addLabelSuffix(labels)
             %Add component suffix to each label
             %
