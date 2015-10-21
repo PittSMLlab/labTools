@@ -43,6 +43,8 @@ classdef experimentData
     methods
         %% Constructor
         function this=experimentData(meta,sub,data)
+            %inputs are metaData, subData, and rawTrialData
+            
            if nargin>0
                this.metaData=meta;
            end
@@ -98,7 +100,7 @@ classdef experimentData
         
         %% Getters for Dependent properties
         function a=get.isProcessed(this)
-            %Returns true if the trials have been processed, and false if
+            %Returns true if the trials have been processed (i.e. parameters have been calculated through ladData.process()), and false if
             %they contain only rawData.
             %   INPUTS: 
             %       this: experimentData object
@@ -115,20 +117,21 @@ classdef experimentData
         end
         
         function a=get.isStepped(this)
-
+            %returns true if data is an object of the strideData class
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1);
             a=isa(this.data{idx},'strideData');
         end
         
         function a=get.isRaw(this)
+            %returns true if data is an object of the rawLabData class
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1);
             a=isa(this.data{idx},'rawLabData');
         end
         
         function fastLeg=get.fastLeg(this)
-            %based on each trial, determine which leg is the fast leg, even
+            %based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even
             %if there is no belt data
             %
             %returns 'R' or 'L'

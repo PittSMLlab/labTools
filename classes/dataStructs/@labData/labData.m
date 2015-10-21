@@ -139,10 +139,12 @@ classdef labData
         
         %Other I/O:
         function partialMarkerData= getMarkerData(this,markerName)
+            %returns marker data for input markername
             partialMarkerData=this.getPartialData('markerData',markerName);
         end
         
         function list=getMarkerList(this)
+            %returns list of available marker names
             list=this.getLabelList('markerData');
         end
         
