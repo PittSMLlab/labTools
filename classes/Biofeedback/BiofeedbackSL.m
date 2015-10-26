@@ -273,6 +273,7 @@ classdef BiofeedbackSL
                    wash = find(strcmp(tlist(:,4),'washout'));
                    
                    figure(2)
+                   subplot(2,1,1)
                    hold on
 %                    keyboard
                    fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -281,6 +282,8 @@ classdef BiofeedbackSL
                    h = 0;
                    for z = 1:length(filename)
                        figure(2)
+                       subplot(2,1,1)
+                       hold on
                        scatter([1:length(rhits{z})]+h,rhits{z},75,color{z},'fill');
                        plot([h h+length(rhits{z})],[0.0375 0.0375],'k');%tolerance lines
                        plot([h h+length(rhits{z})],[-0.0375 -0.0375],'k');
@@ -289,21 +292,23 @@ classdef BiofeedbackSL
                        h = h+length(rhits{z});
                    end
                    figure(2)
-                   ylim([-0.25 0.25]);
+                   subplot(2,1,1)
+                   ylim([-0.15 0.15]);
                    xlim([0 h+10]);
-                   title('Step Length Error Fast Leg');
+                   title([this.subjectcode ' Step Length Error Fast Leg']);
                    xlabel('step #');
                    ylabel('Error (m)');
 
-                   figure(3)
+                   figure(2)
+                   subplot(2,1,2)
                    hold on
                    fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    
                    h = 0;
                    for z = 1:length(filename)
-                       figure(3)
-                       %         hold on
+                       figure(2)
+                       subplot(2,1,2)
                        scatter([1:length(lhits{z})]+h,lhits{z},75,color{z},'fill');
                        plot([h h+length(lhits{z})],[0.0375 0.0375],'k');%tolerance lines
                        plot([h h+length(lhits{z})],[-0.0375 -0.0375],'k');
@@ -312,13 +317,94 @@ classdef BiofeedbackSL
                        h = h+length(lhits{z});
                        %         h = h+length(lhits{z});
                    end
-                   figure(3)
-                   ylim([-0.25 0.25]);
+                   figure(2)
+                   subplot(2,1,2)
+                   ylim([-0.15 0.15]);
                    xlim([0 h+10]);
-                   title('Step Length Error Slow Leg');
+                   title([this.subjectcode ' Step Length Error Slow Leg']);
                    xlabel('step #');
                    ylabel('Error (m)');
                    
+                   
+                   
+                   for z=1:length(rhits)
+                       temp = rhits{z};
+                       temp(abs(temp) > 0.1) = [];
+                       meanrhits1(z) = mean(temp);
+                       stdrhits1(z) = std(temp);
+%                        meanrhits2(z) = mean(temp(end-2:end));
+%                        stdrhits2(z) = std(temp(end-2:end));
+                   end
+                   for z=1:length(lhits)
+                       temp = lhits{z};
+                       temp(abs(temp) > 0.1) = [];
+                       meanlhits1(z) = mean(temp);
+                       stdlhits1(z) = std(temp);
+%                        meanlhits2(z) = mean(temp(end-2:end));
+%                        stdlhits2(z) = std(temp(end-2:end));
+                   end
+                   
+                   figure(5)
+                   subplot(2,1,1)
+                   hold on
+                   fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   h = 1:2:2*length(meanrhits1);
+%                    h2 = 2:2:2*length(meanrhits2);
+                   errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);
+%                    errorbar(h2,meanrhits2,stdrhits2,'k','LineWidth',1.5);
+                   plot([0 2*length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+                   plot([0 2*length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                   %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
+                   for z = 1:length(h)
+                       figure(5)
+                       subplot(2,1,1)
+                       bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
+                       %         plot(h(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                       %         plot(h(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                   end
+%                    for z=1:length(h2)
+%                        figure(5)
+%                        bar(h2(z),meanrhits2(z),0.5,'FaceColor',color{z});%color2(z,:));
+%                        %         plot(h2(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+%                        %         plot(h2(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+%                    end
+                   ylim([-0.15 0.15]);
+                   title([this.subjectcode ' Fast Leg Errors']);
+                   ylabel('Error (m)');
+                   
+                   
+                   figure(5)
+                   subplot(2,1,2)
+                   hold on
+                   fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   h = 1:2:2*length(meanlhits1);
+%                    h2 = 2:2:2*length(meanlhits2);
+                   errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);
+%                    errorbar(h2,meanlhits2,stdlhits2,'k','LineWidth',1.5);
+                   plot([0 2*length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+                   plot([0 2*length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                   for z = 1:length(h)
+                       figure(5)
+                       subplot(2,1,2)
+                       bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
+                       %         plot(h(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                       %         plot(h(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                   end
+%                    for z=1:length(h2)
+%                        figure(5)
+%                        subplot(2,1,2)
+%                        bar(h2(z),meanlhits2(z),0.5,'FaceColor',color{z});
+%                        %         plot(h2(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+%                        %         plot(h2(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+%                    end
+                   ylim([-0.15 0.15]);
+                   title([this.subjectcode ' Slow Leg Errors'])
+                   ylabel('Error (m)');
+                   
+                   
+                   %{
                    for z=1:length(rhits)
                        temp = rhits{z};
                        temp(abs(temp) > 0.1) = [];
@@ -336,8 +422,8 @@ classdef BiofeedbackSL
                        stdlhits2(z) = std(temp(end-2:end));
                    end
                    
-                   
                    figure(5)
+                   subplot(2,1,1)
                    hold on
                    fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -350,6 +436,7 @@ classdef BiofeedbackSL
                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
                    for z = 1:length(h)
                        figure(5)
+                       subplot(2,1,1)
                        bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
                        %         plot(h(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                        %         plot(h(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
@@ -361,11 +448,12 @@ classdef BiofeedbackSL
                        %         plot(h2(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                    end
                    ylim([-0.25 0.25]);
-                   title('Fast Leg Errors')
+                   title([this.subjectcode ' Fast Leg Errors']);
                    ylabel('Error (m)');
                    
                    
-                   figure(6)
+                   figure(5)
+                   subplot(2,1,2)
                    hold on
                    fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -376,20 +464,23 @@ classdef BiofeedbackSL
                    plot([0 2*length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
                    plot([0 2*length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                    for z = 1:length(h)
-                       figure(6)
+                       figure(5)
+                       subplot(2,1,2)
                        bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
                        %         plot(h(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                        %         plot(h(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                    end
                    for z=1:length(h2)
-                       figure(6)
+                       figure(5)
+                       subplot(2,1,2)
                        bar(h2(z),meanlhits2(z),0.5,'FaceColor',color{z});
                        %         plot(h2(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                        %         plot(h2(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                    end
                    ylim([-0.25 0.25]);
-                   title('Slow Leg Errors')
+                   title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
+                   %}
                                       
                    %save rhits and lhits
                    save('Results','rhits','lhits');

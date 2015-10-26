@@ -1,4 +1,12 @@
 function results=SyncPython_forStatic(subject)
+%function to incorporate biofeedback data from Python scripts into labtools
+%objects. This is specifically for Dulce's distraction study only! this
+%function will not universally work
+%
+% Inputs are a string type that designates the subject code, i.e. "OG103"
+%
+%by Dulce Mariscal
+
 
 typeBiofeedback=0;
 load([subject 'params.mat'])
@@ -8,8 +16,9 @@ load([subject 'RAW.mat'])
 adaptData = adaptData.removeBadStrides;
 
 condition= adaptData.metaData.conditionName;
-condition=condition(find(~cellfun(@isempty,adaptData.metaData.trialsInCondition)));
+condition=condition(find(~cellfun(@isempty,adaptData.metaData.trialsInCondition)));%watches out for conditions with no trials
 
+%initializes output structure
 w=0;
 StepsR=[];
 StepsL=[];
@@ -33,7 +42,7 @@ results.GoodnexusL=[];
 
 for p=1:length(condition)
     
-    
+    %initialize variables to use
     j=[];
     GRRz=[];
     GRLz=[];
