@@ -30,6 +30,7 @@ types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
 labels=this.data.labels;
 baseValues=NaN(length(types),length(labels));
 newData=nan(size(this.data.Data));
+
 for itype=1:length(types)
     allTrials=[];
     baseTrials=[];
@@ -54,6 +55,7 @@ for itype=1:length(types)
             end
         end
     end
+
     %Remove baseline tendencies from all itype trials   
     if ~isempty(baseTrials)
         if strcmpi(types{itype},'OG')
@@ -74,8 +76,18 @@ for itype=1:length(types)
                
             end
             [data, inds]=this.getParamInTrial(labels,allTrials);
+
             if normalizeFlag==0
+                
+                %added lines to ensure that if certain parameters never
+                %have a baseline to remove the bias, they are not assigned
+                %as NaN from the bsxfun @minus. 
+                data(isnan(data))=-100000;
+                base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
                 newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
+                newData(newData<-10000)=nan;
+                base(base==0)=nan;
+%                 keyboard
             else
                 newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
             end
@@ -89,6 +101,7 @@ for itype=1:length(types)
 end
 %fix any parameters that should not have bias removal
 [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime'});
+
 if ~isempty(idxs)
     try
     newData(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
