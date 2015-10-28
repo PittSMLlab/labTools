@@ -11,6 +11,7 @@ classdef adaptationData
 %
 %adaptationData methods:
 %   removeBias - subtract off mean baseline values
+%   normalizeBias - 
 %   getParameterList - obtain an array of strings with the labels of the all parameters
 %   getParamInTrial - obtain data for a parameter in a specific trial
 %   getParamInCond - obtain data for a parameter in a specific condition
