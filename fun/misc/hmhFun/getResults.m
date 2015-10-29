@@ -121,13 +121,19 @@ for g=1:ngroups
             
             % calculate TM and OG base in same manner as calculating OG after and TM after
             OGbaseData=adaptData.getParamInCond(params,'OG base');
-            OGbase=[OGbase; nanmean(OGbaseData(1:transientNumPts,:))];
+            if ~isempty(OGbaseData)
+                OGbase=[OGbase; nanmean(OGbaseData(1:transientNumPts,:))];
+            else
+            end
 
             TMbaseData=adaptData.getParamInCond(params,'TM base');
             if isempty(TMbaseData)
                 TMbaseData=adaptData.getParamInCond(params,{'slow base','fast base'});
-            end            
-            TMbase=[TMbase; nanmean(TMbaseData(1:transientNumPts,:))];
+            end         
+            if ~isempty(TMbaseData)
+                TMbase=[TMbase; nanmean(TMbaseData(1:transientNumPts,:))];
+            else
+            end
             
             % compute catch
             tmcatchData=adaptData.getParamInCond(params,'catch');
@@ -143,11 +149,17 @@ for g=1:ngroups
             
             % compute OG post
             ogafterData=adaptData.getParamInCond(params,'OG post');
-            ogafter=[ogafter; nanmean(ogafterData(1:transientNumPts,:))];
+            if ~isempty(ogafterData)
+                ogafter=[ogafter; nanmean(ogafterData(1:transientNumPts,:))];
+            else
+            end
             
             % compute TM post
             tmafterData=adaptData.getParamInCond(params,'TM post');
-            tmafter=[tmafter; nanmean(tmafterData(1:transientNumPts,:))];            
+            if ~isempty(tmafterData)
+                tmafter=[tmafter; nanmean(tmafterData(1:transientNumPts,:))];        
+            else
+            end
         end
                 
         % compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)
