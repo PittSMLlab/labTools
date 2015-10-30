@@ -205,7 +205,11 @@ for group=1:Ngroups
             
             for p=1:length(params)                
                 
-                allValues=values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,1:maxPts);
+                if ~isnan(maxPts)%do not try to plot if maxPts is NaN, this indicates that there is no c3d for this trial
+                    allValues=values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,1:maxPts);
+                else
+                    allValues = NaN;%set plot values to NaN when there is no c3d data
+                end
 
                 % 2) average across subjuects within bins
 

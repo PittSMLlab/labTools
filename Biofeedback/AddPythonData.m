@@ -1,5 +1,6 @@
 %Script to process a python biofeedback data file and add the columns of
 %data onto the end of the subject's adaptData instance
+% 
 %  No inputs required, inputs are asked for during the execution. However,
 %  it is required that Nexus processing has already been done prior to
 %  calling this function. otherwise it will not be able to find the
@@ -14,8 +15,12 @@
 %gait (it doesn't make sense to be doing this if there is no gait).
 %
 %written 10/26/2015 WDA
-clear
-clc
+
+
+% clear
+% clc
+
+
 %select processed subject data to add biofeedback info to:
 [notname,LTpathname]=uigetfile('.mat','Select Subject File:');%you can pick any of the matlab files SUB.RAW or sub.info or sub.params etc.
 cd(LTpathname);
