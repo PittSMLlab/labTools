@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -104,7 +104,12 @@ end
 axesFontSize=10;
 labelFontSize=0;
 titleFontSize=12;
-[ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
+if nargin<13 || isempty(plotHandles) || length(plotHandles)~=length(params)
+    [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
+else
+    ah=plotHandles;
+    figHandle=gcf;
+end
 legendStr=cell(1);
 
 % Set colors order

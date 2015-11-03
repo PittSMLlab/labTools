@@ -278,9 +278,19 @@ classdef adaptationData
             end
             
             %get data
-            if removeBias==1
+            if nargin>3 && ~isempty(removeBias)
+            switch removeBias
+                case 1
                 this=this.removeBias;
+                case 2
+                this=this.normalizeBias;
+                case 0
+                    %nop
+                otherwise
+                    error('Invalid value of removeBiasFlag')
             end
+            end
+                
             trials=cell2mat(this.metaData.trialsInCondition(condNum));
             inds=cell2mat(this.data.indsInTrial(trials));
             origTrials=[];
@@ -596,9 +606,9 @@ classdef adaptationData
         
         [figHandle,allData]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) %Will deprecate, use plotGroupedSubjectsBars instead.
         
-        [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+        [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
         
-        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag)
+        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
         
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
@@ -708,7 +718,7 @@ classdef adaptationData
             
         end
         
-        [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold)
+        [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
     end %static methods
     
 end

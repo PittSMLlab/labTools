@@ -4,10 +4,10 @@ classdef SynergyAnalysis
     
     properties
         trainingFactorizations={}; %cell array of length N, each containing a factorizedMatrix
-        testingFactorizations={}; %cell array of length N, each containing a factorizedMatrix
+        testingFactorizations={}; %cell array cell arrays of length N, each containing a factorizedMatrix
         muscleList={};
-        trainingData %Plain matrix, unnecessary?
-        testingData %Plain matrix, unnecessary?
+        trainingData={}; %Plain matrix, unnecessary?
+        testingData={}; %Plain matrix, unnecessary?
     end
     properties(Dependent)
        trainingResiduals %cell array of matrices, unnecessary?
@@ -40,8 +40,6 @@ classdef SynergyAnalysis
             if ~isempty(testingData)
                 this=factorizeNewTestingData(this,testingData,method,name);
             end
-            
-            this.testingData=testingData;
         end
         
         %Extract coefs for testingData
@@ -54,14 +52,16 @@ classdef SynergyAnalysis
            %DOXY
            
            %
+           N=length(this.testingFactorizations);
            for dim=1:size(this.trainingData,3) %Factorizing from 1 to Nmuscles
                 %Compute coefs from synergies and testing data
                 reshapedData=reshape(testingData,[size(testingData,1)*size(testingData,2),size(testingData,3)]);
                 [coefs] = SynergyAnalysis.coefExtrFromSyn(reshapedData,this.trainingFactorizations{dim}.dim2Vectors,method);
                 reshapedCoefs=reshape(coefs,[dim,size(testingData,1),size(testingData,2)]);
-                testFactorizations{dim}=FactorizedMatrix(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name '_testingSet_dim' num2str(dim)]);
+                testFactorizations{dim}=FactorizedMatrix(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name '_dim' num2str(dim)]);
             end
-            this.testingFactorizations=testFactorizations;
+            this.testingFactorizations{N+1}=testFactorizations;
+            this.testingData{N+1}=testingData;
             newThis=this;
         end
         
@@ -70,8 +70,8 @@ classdef SynergyAnalysis
             if nargin<2
                 dim=this.chooseDim;
             end
-            testFactorization=this.testFactorizations{dim};
-            trainFactorization=this.testFactorizations{dim};
+            testFactorization=this.testFactorizations{1}{dim};
+            trainFactorization=this.trainFactorizations{dim};
         end
         
         %Others
@@ -184,8 +184,10 @@ classdef SynergyAnalysis
         end
         
         function testRes=get.testingResiduals(this)
-            for i=1:length(this.testingFactorizations)
-               testRes{i}=this.testingFactorizations{i}.errorMatrix(this.testingData); 
+            for j=1:length(this.testingFactorizations)
+                for i=1:length(this.testingFactorizations{1})
+                   testRes{j}{i}=this.testingFactorizations{j}{i}.errorMatrix(this.testingData); 
+                end
             end
         end
 

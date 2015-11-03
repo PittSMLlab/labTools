@@ -213,6 +213,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
         end
         
+        function newThis=abs(this)
+           newThis=this;
+           newThis.Data=abs(this.Data);
+        end
+        
         function [stdTS]=std(this,strideIdxs)
             if nargin>1 && ~isempty(strideIdxs)
                 this.Data=this.Data(:,:,strideIdxs);

@@ -51,7 +51,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             end
             if nargin<4 || isempty(removeBiasFlag) || removeBiasFlag==1
                 this=this.removeBadStrides; 
-                this=this.removeBias; %Default behaviour
+                removeBiasFlag=1; %Default
             else
                 %this=adaptData;
             end
@@ -61,7 +61,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                     %First: find if there is a condition with a
                     %similar name to the one given
                     condIdx=conditionIdxs(i);
-                    aux=this.getParamInCond(labels,conditionIdxs(i));
+                    aux=this.getParamInCond(labels,conditionIdxs(i),removeBiasFlag);
                     N=size(aux,1);
                     if ~isempty(condIdx) && ~isempty(aux)
                         data=nan(abs(numberOfStrides(j)),length(labels));

@@ -1,4 +1,6 @@
-function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
+
+warning('This function has been deprecated and will be removed, please use plotGroupedSubjectsBarsv2')
             colorScheme
             if nargin<4 || isempty(plotIndividualsFlag)
                 plotIndividualsFlag=true;
@@ -8,7 +10,7 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             end
             if ~plotIndividualsFlag
                 legendNames={};
-            end
+            end 
             
             %First: see if adaptDataList is a single subject (char), a cell
             %array of subject names (one group of subjects), or a cell array of cell arrays of
@@ -24,6 +26,15 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                 auxList{1}={adaptDataList};
             end
             Ngroups=length(auxList);
+            if nargin<12 || isempty(colors)
+                c1=bsxfun(@times,[1:Ngroups]'/Ngroups,ones(1,3));
+                c2=bsxfun(@times,[1:Ngroups]'/Ngroups,[0,.4,.7]);
+            elseif size(colors,1)>Ngroups
+                c1=colors.^2;
+                c2=colors;
+            else
+                error('colors matrix has to be N x 3 where N is larger than the number of groups in adaptDataList') 
+            end
             
             %Default number of strides to average:
             N1=3; %very early number of points
@@ -45,7 +56,13 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
             if nargin<10 || isempty(significanceThreshold)
                 significanceThreshold=[];
             end
-            [ah,figHandle]=optimizedSubPlot(length(label),2,2);
+            if nargin<11 || isempty(plotHandles) || numel(plotHandles)~=length(label)
+                [ah,figHandle]=optimizedSubPlot(length(label),2,2);
+                figure(figHandle)
+            else
+                figHandle=figure(gcf);
+                ah=plotHandles;
+            end
             
             a=load(auxList{1}{1});
             aux=fields(a);
@@ -73,12 +90,13 @@ function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeB
                     latePoints=permute(nanmean(latePoints,2),[1,4,2,3]); %Averaging over strides for each sub
                     %plot bars
                     if Ngroups==1  && isempty(significanceThreshold)%Only plotting first N1 strides AND first N2 strides if there is only one group, and no stats are being shown
-                        bar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor',[.85,.85,.85].^group)
-                        bar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,'FaceColor',[.7,.7,.7].^group)
+                        bar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,'FaceColor','None','EdgeColor',[.85,.85,.85].^group)
+                        bar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,'FaceColor',c1(group,:))
                     else
-                        h(2*(group-1)+1)=bar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,'FaceColor',[.6,.6,.6].^group);                        
+                        %c=[.9,.1,.0;1,.7,0];
+                        h(2*(group-1)+1)=bar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,'FaceColor',c1(group,:));    %,c(group,:));%                    
                     end
-                    h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',[0,.4,.7].^group);
+                    h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,'FaceColor',c2(group,:));%c(group,:).^2);%
                     %plot individual data points
                     if plotIndividualsFlag==1
                         %set(gca,'ColorOrder',cell2mat(colorConds(1:min([size(veryEarlyPoints,2),length(colorConds)]))'));

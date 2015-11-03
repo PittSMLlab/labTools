@@ -297,64 +297,78 @@ classdef labTimeSeries  < timeseries
             end
         end
         
+        function newThis=castAsOTS(this)
+            error('Unimplemented')
+            newThis=this; %Doxy
+        end
+        function newThis=castAsSTS(this,F,tWin,tOverlap)
+            %1) Check if it satisfies STS requirements
+            dataF=this.Data;
+            labelsF=this.labels;
+            t0=this.Time(1);
+            Ts=this.sampPeriod;
+            spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
+            newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
+        end
+        
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
             newThis=split(this.getDataAsTS(label),t0,t1);
             [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
         
-%         function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
-%            %eventTS needs to be a labTimeSeries with binary events as data
-%            %If eventLabel is not given, the first data column is used as
-%            %the relevant event marker. If given, eventLabel must be the
-%            %label of one of the data columns in eventTS
-%            
-%            %Check needed: is eventTS a labTimeSeries?
-%            if nargin>2
-%                 eventList=eventTS.getDataAsVector(eventLabel);
-%            else
-%                eventList=eventTS.Data(:,1);
-%            end
-%            %Check needed: is eventList binary?
-%            N=size(eventList,2); %Number of events & intervals to be found
-%            auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
-%            %
-%            if nargin<4 || isempty(timeMargin)
-%                timeMargin=0;
-%            end
-%            
-%             refIdxLst=find(auxList==1);
-%             M=length(refIdxLst)-1;
-%             auxTime=eventTS.Time;
-%             aa=auxTime(refIdxLst);
-%             initTime=aa(1:M); %Initial time of each interval identified
-%             duration=diff(aa); %Duration of each interval
-%             steppedDataArray=cell(M,N);
-%             bad=false(M,1);
-%             for i=1:M %Going over strides
-%                 t0=auxTime(refIdxLst(i));
-%                 nextT0=auxTime(refIdxLst(i+1));
-%                 lastEventIdx=refIdxLst(i);
-%                 for j=1:N-1 %Going over events
-%                    nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
-%                    t1= auxTime(nextEventIdx); %Look for next event
-%                    if ~isempty(t1) && ~isempty(t0)
-%                         steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
-%                         t0=t1;
-%                         lastEventIdx=nextEventIdx;
-%                    else
-%                        warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
-%                         if islogical(this.Data)
-%                             steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
-%                         else
-%                             steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
-%                         end
-%                         bad(i)=true;
-%                    end
-%                    
-%                 end
-%                 steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
-%             end
-%         end
+        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
+           %eventTS needs to be a labTimeSeries with binary events as data
+           %If eventLabel is not given, the first data column is used as
+           %the relevant event marker. If given, eventLabel must be the
+           %label of one of the data columns in eventTS
+           
+           %Check needed: is eventTS a labTimeSeries?
+           if nargin>2
+                eventList=eventTS.getDataAsVector(eventLabel);
+           else
+               eventList=eventTS.Data(:,1);
+           end
+           %Check needed: is eventList binary?
+           N=size(eventList,2); %Number of events & intervals to be found
+           auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
+           %
+           if nargin<4 || isempty(timeMargin)
+               timeMargin=0;
+           end
+           
+            refIdxLst=find(auxList==1);
+            M=length(refIdxLst)-1;
+            auxTime=eventTS.Time;
+            aa=auxTime(refIdxLst);
+            initTime=aa(1:M); %Initial time of each interval identified
+            duration=diff(aa); %Duration of each interval
+            steppedDataArray=cell(M,N);
+            bad=false(M,1);
+            for i=1:M %Going over strides
+                t0=auxTime(refIdxLst(i));
+                nextT0=auxTime(refIdxLst(i+1));
+                lastEventIdx=refIdxLst(i);
+                for j=1:N-1 %Going over events
+                   nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+                   t1= auxTime(nextEventIdx); %Look for next event
+                   if ~isempty(t1) && ~isempty(t0)
+                        steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
+                        t0=t1;
+                        lastEventIdx=nextEventIdx;
+                   else
+                       warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
+                        if islogical(this.Data)
+                            steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
+                        else
+                            steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
+                        end
+                        bad(i)=true;
+                   end
+                   
+                end
+                steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
+            end
+        end
         
         function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)
           %Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints
@@ -511,6 +525,7 @@ classdef labTimeSeries  < timeseries
             plotHandles=h1;  
         end
         function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
+            error('Unimplemented')
             %First attempt: align the data to the first column of events
             %provided
             for i=1:length(ee)
@@ -553,6 +568,7 @@ classdef labTimeSeries  < timeseries
                 end
             end
         end
+        
         %Other
         function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
             if nargin>1
@@ -561,6 +577,33 @@ classdef labTimeSeries  < timeseries
             [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
             Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',newLabels),')'));
             Fthis.TimeInfo.Units='Hz';
+        end
+        
+        function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)
+            if nargin<2
+                labels=[];
+            end
+            if nargin<3
+                nFFT=[];
+            end
+            if nargin<4
+                tWin=[];
+            end
+            if nargin<5
+                tOverlap=[];
+            end
+            Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
+        end
+        
+        function [Athis,originalDurations,bad,initTime]=align(this,eventTS,eventLabel,N,timeMargin)
+            if nargin<4 || isempty(N)
+                N=256;
+            end
+            if nargin<5 || isempty(timeMargin)
+                timeMargin=0;
+            end
+            [steppedDataArray,bad,initTime,~]=splitByEvents(this,eventTS,eventLabel,timeMargin);
+            [Athis,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
         end
         
         function newThis=lowPassFilter(this,fcut)

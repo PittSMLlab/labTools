@@ -262,6 +262,46 @@ classdef orientedLabTimeSeries  < labTimeSeries
             virtualOTS=orientedLabTimeSeries.getOTSfromOrientedData(virtualData,this.Time(1),this.sampPeriod,ll,this.orientation);
 
         end
+        
+        function [healthyOTS]=markerHealthCheck(this,refMarkerData)
+           %PART 1: model free check
+           %Step 1: check for velocities outside physiological range
+           
+           %Step 2: check for acc outside physilogical range
+           
+           %Step 3: check that L markers are always on the left, and R
+           %markers are always on the right.
+           
+           
+           %PART 2: model-dependent check
+           if nargin<2 || isempty(refMarkerData)
+               refMarkerData=this;
+           end
+           %Step 4: check that markers are within reasonable CI of their
+           %distance distributions
+           
+           %Step 5: find gaps & unlabeled markers
+           
+           %Step 6: return a new OTS with data removed where it seems
+           %wrong
+           
+        end
+        
+        function [newThis]=fillGaps(this,refMarkerData)
+            if nargin<2 || isempty(refMarkerData)
+               refMarkerData=this;
+            end
+            %Meant to be usedwith markerData only
+            %PART 1: model free check
+            %Use kalman filter to estimate likely position of missing
+            %markers
+            
+            %PART 2: model dependent
+            %Use prior knowledge in a Bayesian setting to fill gaps
+            
+            %PART 3: merge the two estimations through mle or something
+           
+        end
 
         %-------------------
         function fh=plot3(this,fh)
@@ -290,6 +330,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function M=animate(this)
+            %MAkes sense only for markerData
             list={'TOE','HEE','HEEL','ANK','SHANK','TIB','KNE','KNEE','THI','THIGH','HIP','GT','ASI','ASIS','PSI','PSIS'};
             [b,~]=this.isaLabelPrefix(strcat('L',list));
             list=list(b);
