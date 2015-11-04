@@ -30,13 +30,15 @@ end
 
 %% To work with only dim=1
 
-x=permute(x,[dim 1:dim-1 dim+1:length(size(x))]);
+x=permute(x,[dim 1:dim-1 dim+1:ndims(x)]);
 
-x2=[x;x(end:-1:1,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:)];
+x2=[x;flipud(x)];
 y2=interpft(x2,2*N,1);
-y=y2(1:N,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:);
+%y=y2(1:N,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:,:);
+y=y2;
+y(N+1:end,:)=[];
 
-y=depermute(y,[dim 1:dim-1 dim+1:length(size(x))]);
+y=depermute(y,[dim 1:dim-1 dim+1:ndims(x)]);
 
 end
 

@@ -422,8 +422,6 @@ classdef experimentData
             end
             [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
             alignedField.alignmentLabels=events;
-            originalTrial=originalTrial;
-            originalInitTime=originalInitTime;
         end
         
         %% Auxiliar

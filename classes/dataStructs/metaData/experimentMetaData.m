@@ -154,7 +154,7 @@ classdef experimentMetaData
            end 
         end
         
-        function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
+        function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
             %
@@ -162,6 +162,9 @@ classdef experimentMetaData
             %ConditionNames -- cell array containing a string or 
             %another cell array of strings in each of its cells. 
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
+            if nargin<3 || isempty(exactMatchesOnlyFlag)
+                exactMatchesOnlyFlag=0; %Default behavior accepts partial matches
+            end
             if isa(conditionNames,'char')
                 conditionNames={conditionNames};
             end
@@ -185,10 +188,21 @@ classdef experimentMetaData
                 j=0;
                 while isempty(condIdx) && j<length(condName)
                     j=j+1;
-                    condIdx=find(~cellfun(@isempty,strfind(allConds,condName{j})),1,'first');
+                    matches=find(strcmpi(allConds,condName{j})); %Exact matches
+                    if isempty(matches) && exactMatchesOnlyFlag==0
+                        warning(['Looking for conditions named ''' condName{j} ''' but found no exact matches. Looking for partial matches.'])
+                        matches=find(~cellfun(@isempty,strfind(allConds,condName{j})));
+                    end
+                    if length(matches)>1
+                        warning(['Looking for conditions named ''' condName{j} ''' but found multiple matches. Using ''' allConds{matches(1)}]);
+                        matches=matches(1);
+                    end
+                    condIdx=matches;
                 end
                 if ~isempty(condIdx)
                     conditionIdxs(i)=condIdx;
+                else
+                    error(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, stopping.'])
                 end
             end
         end

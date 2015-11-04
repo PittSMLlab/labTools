@@ -51,11 +51,10 @@ classdef labTimeSeries  < timeseries
                 throw(ME)
             end
             %Check for repeat labels:
-            for i=1:length(labels)
-                if sum(strcmpi(labels,labels{i}))>1
-                    ME=MException('labTimeSeries:ConstructorRepeatedLabels','Two labels provided are the same (caps don''t matter).');
+            labels2=unique(lower(labels));
+            if length(labels2)<length(labels)
+                ME=MException('labTimeSeries:ConstructorRepeatedLabels','Two labels provided are the same (caps don''t matter).');
                     throw(ME)
-                end
             end
         end
         
