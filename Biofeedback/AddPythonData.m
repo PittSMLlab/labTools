@@ -614,16 +614,16 @@ else
         if ismember('R',Pheader{selections(d)})==1
             event = ndata(selections(d),3);
             if strcmp(event,'HS')
-                eval([Pheader{selections(d)} ' = newData2(locRHSnexus-1,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locRHSindex,' num2str(selections(d)) ');']);
             else
-                eval([Pheader{selections(d)} ' = newData2(locRTOnexus-1,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locRTOindex,' num2str(selections(d)) ');']);
             end
         elseif ismember('L',Pheader{selections(d)})==1
             event = ndata(selections(d),3);
             if strcmp(event,'HS')
-                eval([Pheader{selections(d)} ' = newData2(locLHSnexus-1,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locLHSindex,' num2str(selections(d)) ');']);
             else
-                eval([Pheader{selections(d)} ' = newData2(locLTOnexus-1,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locLTOindex,' num2str(selections(d)) ');']);
             end
         else
             disp('Can''t tell whether current variable belongs to which leg...')
