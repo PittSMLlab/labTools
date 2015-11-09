@@ -201,11 +201,14 @@ classdef BiofeedbackSL
                    lhits = {0};
                    rlqr = {0};
                    llqr = {0};
-                   
+                   WB = waitbar(0,'Processing Trials...');
                    for z = 1:length(filename)
                        tempname = filename{z};
+                       waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
                        if strcmp(tempname(end-5:end-4),'V3')
                            color{z} = 'blue';
+                       elseif strcmp(tempname(end-10:end-4),'rev12V1')
+                           color{z} = 'yellow';
                        else
                            color{z} = 'red';
                        end
@@ -262,6 +265,10 @@ classdef BiofeedbackSL
                        llqr{z} = iqr(lhits{z});
                         clear RHS LHS tamp tamp2
                    end
+                   
+                   waitbar(1,WB,'Processing complete...');
+                   pause(0.5);
+                   close(WB);
                    clear z
                    
                    %load triallist to look for categories
@@ -416,15 +423,7 @@ classdef BiofeedbackSL
                        figure(5)
                        subplot(2,1,1)
                        bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
-                       %         plot(h(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                    end
-%                    for z=1:length(h2)
-%                        figure(5)
-%                        bar(h2(z),meanrhits2(z),0.5,'FaceColor',color{z});%color2(z,:));
-%                        %         plot(h2(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-%                        %         plot(h2(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-%                    end
                    ylim([-0.15 0.15]);
                    xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Fast Leg Errors']);
@@ -465,102 +464,89 @@ classdef BiofeedbackSL
                        figure(5)
                        subplot(2,1,2)
                        bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
-                       %         plot(h(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
                    end
-%                    for z=1:length(h2)
-%                        figure(5)
-%                        subplot(2,1,2)
-%                        bar(h2(z),meanlhits2(z),0.5,'FaceColor',color{z});
-%                        %         plot(h2(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-%                        %         plot(h2(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-%                    end
                    ylim([-0.15 0.15]);
                    xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
                    
                    
-                   %{
-                   for z=1:length(rhits)
-                       temp = rhits{z};
-                       temp(abs(temp) > 0.1) = [];
-                       meanrhits1(z) = mean(temp(1:3));
-                       stdrhits1(z) = std(temp(1:3));
-                       meanrhits2(z) = mean(temp(end-2:end));
-                       stdrhits2(z) = std(temp(end-2:end));
-                   end
-                   for z=1:length(lhits)
-                       temp = lhits{z};
-                       temp(abs(temp) > 0.1) = [];
-                       meanlhits1(z) = mean(temp(1:3));
-                       stdlhits1(z) = std(temp(1:3));
-                       meanlhits2(z) = mean(temp(end-2:end));
-                       stdlhits2(z) = std(temp(end-2:end));
-                   end
                    
-                   figure(5)
+                   
+                   figure(6)%plot of mean squared errors
                    subplot(2,1,1)
                    hold on
-                   fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   h = 1:2:2*length(meanrhits1);
-                   h2 = 2:2:2*length(meanrhits2);
-                   errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);
-                   errorbar(h2,meanrhits2,stdrhits2,'k','LineWidth',1.5);
-                   plot([0 2*length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                   plot([0 2*length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   
+                   %add baseline bars
+                   for b=1:2:length(base)
+                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+                   end
+                   
+                   %add adaptation bars
+                   for a=1:2:length(adapt)
+                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+                   end
+                   
+                   %add washout bars
+                   for w=1:2:length(wash)
+                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+                   end
+                   
+                   h = 1:1:length(meanrhits1);
+                   plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                    plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
                    for z = 1:length(h)
-                       figure(5)
+                       figure(6)
                        subplot(2,1,1)
-                       bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
-                       %         plot(h(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                       bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));
                    end
-                   for z=1:length(h2)
-                       figure(5)
-                       bar(h2(z),meanrhits2(z),0.5,'FaceColor',color{z});%color2(z,:));
-                       %         plot(h2(z),nanmean(rhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h2(z),nanmean(rhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                   end
-                   ylim([-0.25 0.25]);
+                   ylim([0 0.15]);
+                   xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Fast Leg Errors']);
                    ylabel('Error (m)');
                    
-                   
-                   figure(5)
+                   figure(6)
                    subplot(2,1,2)
                    hold on
-                   fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   h = 1:2:2*length(meanlhits1);
-                   h2 = 2:2:2*length(meanlhits2);
-                   errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);
-                   errorbar(h2,meanlhits2,stdlhits2,'k','LineWidth',1.5);
-                   plot([0 2*length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                   plot([0 2*length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   
+                   %add baseline bars
+                   for b=1:2:length(base)
+                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+                   end
+                   
+                   %add adaptation bars
+                   for a=1:2:length(adapt)
+                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+                   end
+                   
+                   %add washout bars
+                   for w=1:2:length(wash)
+                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+                   end
+                   
+                   h = 1:1:length(meanlhits1);
+                   plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                    for z = 1:length(h)
-                       figure(5)
+                       figure(6)
                        subplot(2,1,2)
-                       bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
-                       %         plot(h(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
+                       bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});
                    end
-                   for z=1:length(h2)
-                       figure(5)
-                       subplot(2,1,2)
-                       bar(h2(z),meanlhits2(z),0.5,'FaceColor',color{z});
-                       %         plot(h2(z),nanmean(lhits{z})+rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                       %         plot(h2(z),nanmean(lhits{z})-rlqr{z},'o','MarkerFaceColor',[0.5 0 0.5]);
-                   end
-                   ylim([-0.25 0.25]);
+                   ylim([0 0.15]);
+                   xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
-                   %}
-                                      
-                   %save rhits and lhits
-                   save('Results','rhits','lhits');
                    
                end
             end
