@@ -8,7 +8,12 @@ function [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFla
 %TO DO: see what happens when 0 conditions are given for a certain type
 
 conds=this.metaData.conditionName;
-if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
+if nargin<2 || isempty(conditions)
+    conditions=conds;
+    warning('No condition names passed to removeBiasV2, removing bias from ALL condition.')
+end
+%if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
+
     %convert input to standardized format
     if isa(conditions,'char')
         conditions={conditions};
@@ -17,11 +22,14 @@ if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should 
     end
     % validate condition(s)    
     cInput=conditions(this.isaCondition(conditions));
-end
+%end
 if nargin<3 || isempty(normalizeFlag)
     normalizeFlag=0;
 end
 
+%if length(conditions)>1
+%    error('RemoveBiasV2 cannot be called with multiple conditions because of known bug. To remove bias on multiple conditions, call on it on a loop, passing a single condition')
+%end
 
 trialsInCond=this.metaData.trialsInCondition;
 % trialTypes=this.data.trialTypes;
@@ -60,8 +68,12 @@ for itype=1:length(types)
     if ~isempty(baseTrials)
         if strcmpi(types{itype},'OG')
             %[~, inds]=this.getParamInTrial(labels,allTrials);
+            try
             newData(:,:)=removeOGbias(this,allTrials,baseTrials);
             baseValues(itype,:)=NaN; %Need to replace this with the value actually extracted from OG trials
+            catch
+                keyboard
+            end
         else
 %             base=nanmedian(this.getParamInTrial(labels,baseTrials));
             aux=(this.getParamInTrial(labels,baseTrials));

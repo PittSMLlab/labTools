@@ -98,7 +98,7 @@ end
     
 %% Compute:
 %find walking direction
-direction=sign(diff(sAnk(:,2:3,2),1,2));
+direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on the y-axis, between fTO and fHS
 
 
 hipPos3D=.5*(sHip+fHip);

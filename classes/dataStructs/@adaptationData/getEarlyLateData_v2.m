@@ -49,32 +49,23 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             else
                 Nf=exemptFirst;
             end
-            if nargin<4 || isempty(removeBiasFlag) || removeBiasFlag==1
-                this=this.removeBadStrides; 
-                removeBiasFlag=1; %Default
+            if nargin<4 || isempty(removeBiasFlag) 
+                removeBiasFlag=1; %Default, bias removal
             else
                 %this=adaptData;
             end
-            conditionIdxs=this.getConditionIdxsFromName(conds);
+            
+            this=this.removeBadStrides; %Should this be default?
+            [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+            if removeBiasFlag==1
+                this=this.removeBias;
+            end
+            data=this.data.getDataAsVector(labels);
             for j=1:length(numberOfStrides)
-                for i=1:nConds
-                    %First: find if there is a condition with a
-                    %similar name to the one given
-                    condIdx=conditionIdxs(i);
-                    aux=this.getParamInCond(labels,conditionIdxs(i),removeBiasFlag);
-                    N=size(aux,1);
-                    if ~isempty(condIdx) && ~isempty(aux)
-                        data=nan(abs(numberOfStrides(j)),length(labels));
-                        if numberOfStrides(j)<=0 %Last N strides
-                            data(1:min([N-Ne,abs(numberOfStrides(j))]),:)=aux(max([1,end-Ne+numberOfStrides(j)+1]):end-Ne,:); %Gets the last numberOfStrides(j) strides, exempting the very last Ne, and considers the possibility that there are less strides available than requested.
-                        else
-                            data(1:min([N-Nf,abs(numberOfStrides(j))]),:)=aux(Nf+1:min([Nf+numberOfStrides(j),N]),:);
-                        end
-                        dataPoints{j}(i,1:abs(numberOfStrides(j)),:)=data;
-                    else
-                        disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-                        dataPoints{j}(i,1:abs(numberOfStrides(j)),:)=NaN;
-                    end
-                end
+                %for i=1:nConds
+                %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
+                %end
+                %This line does the same as the for loop commented above:
+                dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
             end
         end

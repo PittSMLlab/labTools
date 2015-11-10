@@ -92,6 +92,8 @@ classdef adaptationData
         end
         %Modifiers
         
+        [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag)
+        
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
         % Removes baseline value for all parameters.
         % removeBias('condition') or removeBias({'Condition1','Condition2',...})
@@ -241,9 +243,9 @@ classdef adaptationData
         %See also: adaptationData.getParamInTrial
         %          adaptationData.removeBias
             
-            if nargin<4 || isempty(removeBias)
-                removeBias=false;
-            end
+%             if nargin<4 || isempty(removeBias)
+%                 removeBias=0;
+%             end
             if nargin<2 || isempty(label)
                 label=this.data.labels;
             end
@@ -273,22 +275,23 @@ classdef adaptationData
             elseif isa(condition,'double')
                 condNum=condition;
             else
-                ME=MException('AdaptData.getCondInParam','Condition has to be char, cell of char, or double');
+                ME=MException('AdaptData.getParamInCond','Condition has to be char, cell of char, or double');
                 throw(ME)
             end
             
             %get data
-            if nargin>3 && ~isempty(removeBias)
-            switch removeBias
-                case 1
-                this=this.removeBias;
-                case 2
-                this=this.normalizeBias;
-                case 0
-                    %nop
-                otherwise
-                    error('Invalid value of removeBiasFlag')
-            end
+            if nargin>3 && ~isempty(removeBias) %Default: no bias removal
+                error('Remove bias is no longer supported from within getParamInCond. Remove bias first and then call this function')
+%             switch removeBias
+%                 case 1
+%                 this=this.removeBias;
+%                 case 2
+%                 this=this.normalizeBias;
+%                 case 0
+%                     %nop
+%                 otherwise
+%                     error('Invalid value of removeBiasFlag')
+%             end
             end
                 
             trials=cell2mat(this.metaData.trialsInCondition(condNum));
@@ -388,41 +391,6 @@ classdef adaptationData
             earlyPoints=dataPoints{2};
             latePoints=dataPoints{3};
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
-            %Pablo deprecated on June 24th, 2015:
-%             conditionIdxs=this.getConditionIdxsFromName(conds);
-%             for i=1:nConds
-%                 %First: find if there is a condition with a
-%                 %similar name to the one given
-%                 condIdx=conditionIdxs(i);
-%                 aux=this.getParamInCond(labels,conditionIdxs(i));
-%                 if ~isempty(condIdx) && ~isempty(aux)
-%                     %First N1 points
-%                     try %Try to get the first strides, if there are enough
-%                         veryEarlyPoints(i,:,:)=aux(1:N1,:);
-%                     catch %In case there aren't enough strides, assign NaNs to all
-%                         veryEarlyPoints(i,:,:)=NaN;
-%                     end
-%                     
-%                     %First N2 points
-%                     try %Try to get the first strides, if there are enough
-%                         earlyPoints(i,:,:)=aux(1:N2,:);
-%                     catch %In case there aren't enough strides, assign NaNs to all
-%                         earlyPoints(i,:,:)=NaN;
-%                     end
-% 
-%                     %Last N3 points, exempting very last Ne
-%                     try                                    
-%                         latePoints(i,:,:)=aux(end-N3-Ne+1:end-Ne,:);
-%                     catch
-%                         latePoints(i,:,:)=NaN;
-%                     end
-%                 else
-%                     disp(['Condition ' conds{i} ' not found for subject ' this.subData.ID])
-%                     veryEarlyPoints(i,1:N1,:)=NaN;
-%                     earlyPoints(i,1:N2,:)=NaN;
-%                     latePoints(i,1:N3,:)=NaN;
-%                 end
-%             end
         end
         
         function [baseValues,baseTypes]=getBias(this,conditions)
@@ -592,6 +560,8 @@ classdef adaptationData
            end
            hold off     
         end
+        
+        [inds]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
         
         [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
         
