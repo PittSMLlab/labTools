@@ -380,13 +380,10 @@ classdef adaptationData
             else
                 Ne=exemptLast;
             end
-            if nargin<4 || isempty(removeBiasFlag) || removeBiasFlag==1
-                this=this.removeBadStrides; 
-                this=this.removeBias; %Default behaviour
-            else
-                %this=adaptData;
+            if nargin<4 || isempty(removeBiasFlag) 
+                removeBiasFlag=1; %Default
             end
-            [dataPoints]=getEarlyLateData_v2(this,labels,conds,0,[N1,N2,-N3],Ne,0);
+            [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,[N1,N2,-N3],Ne,0);
             veryEarlyPoints=dataPoints{1};
             earlyPoints=dataPoints{2};
             latePoints=dataPoints{3};
@@ -499,7 +496,10 @@ classdef adaptationData
            if length(labels)==3
                last=[];
                for c=1:length(conditionIdxs)
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
+                   if removeBias==1
+                       this=this.removeBias;
+                   end
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
                     if nargin>5 && ~isempty(binSize) && binSize>1
                         %aux2=conv2(double(~isnan(data)),ones(binSize,1),'same');
                         %data(isnan(data(:)))=0; %Substituting NaNs
@@ -534,7 +534,10 @@ classdef adaptationData
            elseif length(labels)==2
                last=[];
                for c=1:length(conditionIdxs)
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c),removeBias);
+                   if removeBias==1
+                       this=this.removeBias;
+                   end
+                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
                     if nargin>5 && ~isempty(binSize) && binSize>1
                         data2=conv2(data,ones(binSize,1)/binSize);
                         data=data2(1:binSize:end,:);

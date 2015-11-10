@@ -36,7 +36,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                 error('adaptationData:getEarlyLateData','Labels must be a string or a cell array containing strings.')
             end
             if nargin<5 || isempty(numberOfStrides)
-                numberOfStrides=[-5,20];
+                numberOfStrides=[5,-20]; %First 5 and last 20
             end
             dataPoints=cell(size(numberOfStrides));
             if nargin<6 || isempty(exemptLast)
@@ -57,8 +57,15 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             
             this=this.removeBadStrides; %Should this be default?
             [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
-            if removeBiasFlag==1
-                this=this.removeBias;
+            switch removeBiasFlag
+                case 1
+                    this=this.removeBias;
+                case 2
+                    this=this.normalizeBias;
+                case 0
+                    %nop
+                otherwise
+                    error('Unexpected value for removeBiasFlag')
             end
             data=this.data.getDataAsVector(labels);
             for j=1:length(numberOfStrides)
