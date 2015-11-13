@@ -253,7 +253,7 @@ if iscell(filenames)
         end
         
         if length(locRHSnexus)>length(locRindex)
-            warning(['Gaps affected RHS detection  ' condition{p} ])
+%             warning(['Gaps affected RHS detection  ' condition{p} ])
             
             while length(locRHSnexus)>length(locRindex)
                 diffLengthR=-length(locRindex)+length(locRHSnexus);
@@ -269,7 +269,7 @@ if iscell(filenames)
             end
         end
         if length(locLHSnexus)>length(locLindex)
-            warning(['Gaps affected LHS detection  ' condition{p}])
+%             warning(['Gaps affected LHS detection  ' condition{p}])
             
             while length(locLHSnexus)>length(locLindex)
                 diffLengthL=-length(locLindex)+length(locLHSnexus);
