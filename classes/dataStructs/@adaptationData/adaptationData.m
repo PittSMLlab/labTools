@@ -172,6 +172,16 @@ classdef adaptationData
             
         end
         
+        function newThis=markBadWhenMissingAny(this,labels)
+            newThis=this;
+            newThis.data=newThis.data.markBadWhenMissingAny(labels);
+        end
+        
+        function newThis=markBadWhenMissingAll(this,labels)
+            newThis=this;
+            newThis.data=newThis.data.markBadWhenMissingAll(labels);
+        end
+        
         %Other I/O functions:
         function [labelList,descriptionList]=getParameterList(this)
         %obtain an array of strings with the labels of the all parameters
@@ -428,6 +438,69 @@ classdef adaptationData
         function trialNums=getTrialsInCond(this,conditionNames)
             trialNums=this.metaData.getTrialsInCondition(conditionNames);            
         end
+        
+        %Stats testing:
+        % 1) Multiple groups
+        
+        function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+            %Post-hoc is Bonferroni corrected t-test
+            [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
+            for i=1:length(data)
+                group{i}=repmat([1:length(conds)]',1,abs(groupingStrides(i))) + (i-1)*length(conds);
+            end
+            newData=cell2mat(data); %This concatenates (cat) the data along the second dimension by default, new Data should be a 2-D array of conditionxs x strides
+            newGroups=cell2mat(group);
+            [p,anovatab,stats]=anova1(newData(:),newGroups(:),'off');
+            %Tukey-Kramer post-hoc:
+            c=multcompare(stats); %By default uses tukey-kramer / honest signficant difference
+            M=length(conds)*length(groupingStrides);
+            postHoc=nan(M);
+            postHocEstimate=nan(M);
+            postHoc(sub2ind([M,M],c(:,1),c(:,2)))=c(:,6);
+            postHocEstimate(sub2ind([M,M],c(:,1),c(:,2)))=c(:,4);
+        end
+        
+        function [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+            if isa(param,'char')
+                param={param};
+            end
+            if length(param)>1
+                for i=1:length(param)
+                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=kruskalwallis(this,param{i},conds,groupingStrides,exemptFirst,exemptLast);
+                end
+            else
+            %Post-hoc is a Bonferroni corrected Mann-Whitney-Wilcoxon U
+            %(ranked sum) test.
+            [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
+            for i=1:length(data)
+                group{i}=repmat([1:length(conds)]',1,abs(groupingStrides(i))) + (i-1)*length(conds);
+            end
+            newData=cell2mat(data); %This concatenates (cat) the data along the second dimension by default, new Data should be a 2-D array of conditionxs x strides
+            newGroups=cell2mat(group);
+            [p,anovatab,stats]=kruskalwallis(newData(:),newGroups(:),'off');
+            M=length(conds)*length(groupingStrides);
+            postHoc=nan(M);
+            postHocEstimate=nan(M);
+            %Tukey-Kramer post-hoc:
+            %c=multcompare(stats); %By default uses tukey-kramer / honest signficant difference
+            %postHoc(sub2ind([M,M],c(:,1),c(:,2)))=c(:,6);
+            %postHocEstimate(sub2ind([M,M],c(:,1),c(:,2)))=c(:,4);
+            %MWW-U post-hoc:
+            for i=1:M
+                for j=i+1:M
+                    [p,~,s]=ranksum(newData(newGroups==i),newData(newGroups==j));
+                    postHoc(i,j)=p;
+                    postHocEstimate(i,j)=s.zval;
+                end
+            end
+            end
+        end
+        %function [p,data]=twoSampleTtest()
+        %    
+        %end
+        %function [p,data]=twoSampleMWWU()
+        %    
+        %end
         
         %Display functions:
         function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag)

@@ -196,6 +196,24 @@ classdef parameterSeries < labTimeSeries
             newThis=cat(this,other);
         end
         
+        function newThis=markBadWhenMissingAny(this,labels)
+            newThis=this;
+            aux=this.getDataAsVector(labels);
+            [~,bi]=this.isaLabel('bad');
+            newThis.Data(:,bi)=this.bad | any(isnan(aux),2);
+            [~,bg]=this.isaLabel('good');
+            newThis.Data(:,bg)=~this.bad;
+        end
+        
+        function newThis=markBadWhenMissingAll(this,labels)
+            newThis=this;
+            aux=this.getDataAsVector(labels);
+            [~,bi]=this.isaLabel('bad');
+            newThis.Data(:,bi)=this.bad | all(isnan(aux),2);
+            [~,bg]=this.isaLabel('good');
+            newThis.Data(:,bg)=~this.bad;
+        end
+        
         %% Other functions that need redefining:
         function [F,f]=fourierTransform(~,~)
             error('parameterSeries:fourierTransform','You cannot do that!')
