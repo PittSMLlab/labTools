@@ -158,11 +158,20 @@ classdef labTimeSeries  < timeseries
         end
         
         function index=getIndexClosestToTimePoint(this,timePoints)
-            aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))<=(this.sampPeriod/2+eps);
-            index=nan(size(timePoints));
-            [ii,jj]=find(aux);
-            index(jj)=ii;
+            %NaN returns NaN
+            
+            %aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))<=(this.sampPeriod/2+eps);
+            %[ii,jj]=find(aux);
+            %index=nan(size(timePoints));
+            %index(jj)=ii;
+            index=round((timePoints(:)-this.Time(1))/this.sampPeriod)+1;
+            index(index<1)=1;
+            index(index>numel(this.Time))=numel(this.Time);
             index=reshape(index,size(timePoints));
+            %Check
+            %if any(abs(this.Time(index(:))-timePoints(:))>(this.sampPeriod/2-eps))
+            %    error('Non consistent indexes found')
+            %end
         end
         %-------------------
         

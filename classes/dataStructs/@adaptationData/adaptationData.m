@@ -637,7 +637,7 @@ classdef adaptationData
            hold off     
         end
         
-        [inds]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
+        [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
         
         [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
         

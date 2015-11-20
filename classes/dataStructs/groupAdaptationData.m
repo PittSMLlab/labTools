@@ -137,9 +137,9 @@ classdef groupAdaptationData
            end
         end
         
-        function inds=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)
+        function [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)
             for subject=1:length(this.adaptData) %Getting data for each subject in the list
-                inds(:,subject)=this.adaptData{subject}.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+                [inds(:,subject),names]=this.adaptData{subject}.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
             end
         end
         

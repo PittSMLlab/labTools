@@ -1,4 +1,4 @@
-function [inds]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
+function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
         %obtain the earliest and late data points for conditions
 		%allow to eliminate very late data points 
 		%Predefine values:  
@@ -43,7 +43,17 @@ function [inds]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFir
             indsAux=this.getIndsInCondition(conditionIdxs);
             for j=1:length(numberOfStrides)
                 inds{j}=nan(abs(numberOfStrides(j)),nConds);
+                pr=[];
+                switch sign(numberOfStrides(j))
+                    case -1
+                        pr='Last ';
+                    case 2
+                        pr='First ';
+                end
+                pr=[pr num2str(abs(numberOfStrides(j)))];
                 for i=1:nConds
+                    
+                    names{j}{i}=[pr ' ' conds(i)];
                     %First: find if there is a condition with a
                     %similar name to the one given
                     

@@ -119,6 +119,13 @@ if ~isempty(trialData.procEMGData)
     [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
     out=cat(out,emg);
 end
+
+%Force
+if ~isempty(trialData.GRFData)
+    [force] = computeForceParameters(strideEvents,trialData.GRFData,s);
+    out=cat(out,force);
+end
+
 %% Compute an updated bad/good flag based on computed parameters & finding outliers
 badStart=bad; %make a copy to compare at the end
 %TODO: make this process generalized so that it can filter any parameter
