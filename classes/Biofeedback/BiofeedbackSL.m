@@ -57,6 +57,7 @@ classdef BiofeedbackSL
         OGsteplength=[];
         OGspeed=[];
         datalocation=pwd;
+        data={};
         
         
     end
@@ -212,9 +213,17 @@ classdef BiofeedbackSL
                        else
                            color{z} = 'red';
                        end
-                       [header,data] = JSONtxt2cell(filename{z});
-                       [m,n] = size(data);
                        
+                       %check to see if data is already processed, it will
+                       %save time...
+%                        if length(this.data
+%                            disp('Parsing data...');
+%                        else
+                       [header,data] = JSONtxt2cell(filename{z});
+                       
+%                        end
+                       [~,n] = size(data);
+%                        keyboard
                        data2 = unique(data,'rows','stable');%remove duplicate frames
                        data2(:,1) = data2(:,1)-data2(1,1)+1;%set frame # to start at 1
                        for zz = 1:n
@@ -370,12 +379,14 @@ classdef BiofeedbackSL
                    ylabel('Error (m)');
                    
                    
-                   
+
                    for z=1:length(rhits)
                        temp = rhits{z};
                        temp(abs(temp) > 0.1) = [];
                        meanrhits1(z) = mean(temp);
                        stdrhits1(z) = std(temp);
+%                        keyboard
+                       rscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
 %                        meanrhits2(z) = mean(temp(end-2:end));
 %                        stdrhits2(z) = std(temp(end-2:end));
                    end
@@ -384,6 +395,7 @@ classdef BiofeedbackSL
                        temp(abs(temp) > 0.1) = [];
                        meanlhits1(z) = mean(temp);
                        stdlhits1(z) = std(temp);
+                       lscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
 %                        meanlhits2(z) = mean(temp(end-2:end));
 %                        stdlhits2(z) = std(temp(end-2:end));
                    end
@@ -482,19 +494,19 @@ classdef BiofeedbackSL
                    %add baseline bars
                    for b=1:2:length(base)
                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+                       text(length(train)+length(base(1:b))+0.45,max(meanrhits1.^2)+0.05*max(meanrhits1.^2),'Base');
                    end
                    
                    %add adaptation bars
                    for a=1:2:length(adapt)
                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Split');
                    end
                    
                    %add washout bars
                    for w=1:2:length(wash)
                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Wash');
                    end
                    
                    h = 1:1:length(meanrhits1);
@@ -506,7 +518,7 @@ classdef BiofeedbackSL
                        subplot(2,1,1)
                        bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));
                    end
-                   ylim([0 0.15]);
+                   ylim([0 max(meanrhits1.^2)+0.1*max(meanrhits1.^2)]);
                    xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Fast Leg Errors']);
                    ylabel('Error (m)');
@@ -520,19 +532,19 @@ classdef BiofeedbackSL
                    %add baseline bars
                    for b=1:2:length(base)
                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+                       text(length(train)+length(base(1:b))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Base');
                    end
                    
                    %add adaptation bars
                    for a=1:2:length(adapt)
                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Split');
                    end
                    
                    %add washout bars
                    for w=1:2:length(wash)
                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Wash');
                    end
                    
                    h = 1:1:length(meanlhits1);
@@ -543,10 +555,68 @@ classdef BiofeedbackSL
                        subplot(2,1,2)
                        bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});
                    end
-                   ylim([0 0.15]);
+                   ylim([0 max(meanlhits1.^2)+0.1*max(meanlhits1.^2)]);
                    xlim([0 length(meanrhits1)+0.5]);
                    title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
+                   
+                   
+                   figure(7)
+                   subplot(2,1,1)
+                   hold on
+                   fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
+                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
+                   %add baseline bars
+                   for b=1:2:length(base)
+                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base(1:b))+0.45,105,'Base');
+                   end
+                   %add adaptation bars
+                   for a=1:2:length(adapt)
+                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
+                   end
+                   %add washout bars
+                   for w=1:2:length(wash)
+                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
+                   end
+                   plot([0 length(meanrhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
+                   plot([0 length(meanrhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
+                   for z=1:length(rscore)
+                       bar(z,rscore(z)*100,0.5,'FaceColor',color{z});
+                   end
+                   ylim([0 110]);
+                   ylabel('Accuracy (%)')
+                   title([this.subjectcode ' Fast Leg Accuracy'])
+                   
+                   subplot(2,1,2)
+                   hold on
+                   fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
+                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
+                   %add baseline bars
+                   for b=1:2:length(base)
+                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base(1:b))+0.45,105,'Base');
+                   end
+                   %add adaptation bars
+                   for a=1:2:length(adapt)
+                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
+                   end
+                   %add washout bars
+                   for w=1:2:length(wash)
+                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
+                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
+                   end
+                   plot([0 length(meanlhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
+                   plot([0 length(meanlhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
+                   for z=1:length(lscore)
+                       bar(z,lscore(z)*100,0.5,'FaceColor',color{z});
+                   end
+                   ylim([0 110]);
+                   ylabel('Accuracy (%)')
+                   title([this.subjectcode ' Slow Leg Accuracy'])
                    
                end
             end
@@ -559,7 +629,7 @@ classdef BiofeedbackSL
 
             if isempty(this.triallist)%if triallist is empty, start from scratch
                 [filenames,~] = uigetfiles('*.*','Select filenames');
-            
+                this.data = cell(length(filenames),1);
                 if iscell(filenames)
                     f = figure;
                     data = cell(length(filenames),4);
@@ -597,6 +667,7 @@ classdef BiofeedbackSL
                 
             else %if triallist is already populated, just edit what is already there
                 [filenames,~] = uigetfiles('*.*','Select filenames');
+                this.data = cell(length(filenames),1);
                 if iscell(filenames)
                     f = figure;
                     data = cell(length(filenames),4);
