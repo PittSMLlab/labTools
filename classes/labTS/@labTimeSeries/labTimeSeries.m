@@ -583,7 +583,7 @@ classdef labTimeSeries  < timeseries
                 warning('labTimeSeries:fourierTransform','Ignoring second argument')
             end
             [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
-            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',newLabels),')'));
+            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',this.labels),')'));
             Fthis.TimeInfo.Units='Hz';
         end
         

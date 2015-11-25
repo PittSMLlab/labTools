@@ -215,10 +215,10 @@ classdef parameterSeries < labTimeSeries
         end
         
         %% Other functions that need redefining:
-        function [F,f]=fourierTransform(~,~)
-            error('parameterSeries:fourierTransform','You cannot do that!')
-            F=[];
-            f=[];
+        function [F]=fourierTransform(this)
+            %error('parameterSeries:fourierTransform','You cannot do that!')
+            F=fourierTransform@labTimeSeries(this);
+            F.TimeInfo.Units='strides^{-1}';
         end
         
         function newThis=resample(this) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
