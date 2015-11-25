@@ -379,7 +379,7 @@ classdef BiofeedbackSL
                    ylabel('Error (m)');
                    
                    
-
+                    keyboard
                    for z=1:length(rhits)
                        temp = rhits{z};
                        temp(abs(temp) > 0.1) = [];
