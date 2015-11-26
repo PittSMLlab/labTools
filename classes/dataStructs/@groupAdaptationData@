@@ -127,6 +127,21 @@ classdef groupAdaptationData
            end
         end
         
+        function newThis=removeBias(this)
+            newThis=this;
+            for i=1:length(this.ID)
+                newThis.adaptData{i}=this.adaptData{i}.removeBias;
+            end
+              
+        end
+        function newThis=normalizeBias(this)
+            newThis=this;
+            for i=1:length(this.ID)
+                newThis.adaptData{i}=this.adaptData{i}.normalizeBias;
+            end
+              
+        end
+        
         %I/O
         function data=getAdaptData(this,subID)
            subInd=find(ismember(subID,this.ID));
@@ -166,6 +181,14 @@ classdef groupAdaptationData
                stdData(:,i,:,:)=nanstd(data{i},[],2); 
             end
         end
+        
+        %Visualization
+        %Scatter
+        
+        %TimeCourses
+        
+        %Bars
+        [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
         
         %Stats
         %function []=anova2()
@@ -239,6 +262,12 @@ classdef groupAdaptationData
            end
         end
         
+    end
+    methods(Static)
+       % Several groups visualization
+       [figHandle,allData]=plotMultipleGroupsBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
+       
+       % Several groups stats
     end
 end
 
