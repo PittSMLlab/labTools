@@ -30,5 +30,5 @@ function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsF
             if nargin<12
                 colors=[];
             end
-            [figHandle,allData]=plotMultipleGroupsBars({this},label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
+            [figHandle,allData]=groupAdaptationData.plotMultipleGroupsBars({this},label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
 end

@@ -238,6 +238,21 @@ classdef experimentMetaData
                end
            end
         end
+        
+        function [condNames]=getConditionsThatMatch(this,name,type)
+           %Returns condition names that match certain patterns
+           
+           if nargin<2 || isempty(name) || ~isa(name,'char')
+               error('Pattern name to search for needs to be a string')
+           end
+           patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
+           if nargin>2 && ~isempty(type) && isa(type,'char')
+               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
+           else
+               typeMatches=true(size(patternMatches));
+           end
+           condNames=this.conditionName(patternMatches & typeMatches);
+        end
     end
     
 end

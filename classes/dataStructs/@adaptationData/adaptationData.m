@@ -92,7 +92,8 @@ classdef adaptationData
         end
         %Modifiers
         
-        [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag)
+        [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag) %Going to deprecate in favor of removeBiasV3's simpler code
+        [newThis,baseValues,typeList]=removeBiasV3(this,conditions,normalizeFlag)
         
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
         % Removes baseline value for all parameters.
@@ -114,11 +115,10 @@ classdef adaptationData
         %
         %EX:[newThis,baseValues,typeList]=adaptData.removeBias('TM base');
 
-            if nargin>1
-                [newThis,baseValues,typeList]=removeBiasV2(this,conditions);
-            else
-                [newThis,baseValues,typeList]=removeBiasV2(this);
+            if nargin<2
+                conditions=[];
             end
+            [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
         end
         
         function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
@@ -438,6 +438,7 @@ classdef adaptationData
         function trialNums=getTrialsInCond(this,conditionNames)
             trialNums=this.metaData.getTrialsInCondition(conditionNames);            
         end
+        
         
         %Stats testing:
         % 1) Multiple groups

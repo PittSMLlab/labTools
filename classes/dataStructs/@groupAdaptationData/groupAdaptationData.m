@@ -186,6 +186,40 @@ classdef groupAdaptationData
         %Scatter
         
         %TimeCourses
+        function varargout=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
+            if nargin<4 || isempty(binwidth)
+                binwidth=[];
+            end
+            if nargin<5
+                trialMarkerFlag=[];
+            end
+            if nargin< 6
+                indivFlag=[];
+            end
+            if nargin<7
+                indivSubs=[];
+            end
+            if nargin<8
+                colorOrder=[];
+            end
+            if nargin<9 
+                biofeedback=[];
+            end
+            if nargin<10
+                removeBiasFlag=0;%Default = noremoval;
+            end
+            if nargin<11
+                groupNames=[];
+            end
+            if nargin<12
+                medianFlag=[];
+            end
+            if nargin<13
+                plotHandles=[];
+            end
+                
+            varargout=adaptationData.plotAvgTimeCourse({this},params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles);
+        end
         
         %Bars
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
