@@ -67,12 +67,5 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                 otherwise
                     error('Unexpected value for removeBiasFlag')
             end
-            data=this.data.getDataAsVector(labels);
-            for j=1:length(numberOfStrides)
-                %for i=1:nConds
-                %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
-                %end
-                %This line does the same as the for loop commented above:
-                dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
-            end
+            dataPoints=this.getDataFromInds(inds,labels);
         end

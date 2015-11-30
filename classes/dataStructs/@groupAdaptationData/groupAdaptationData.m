@@ -159,25 +159,45 @@ classdef groupAdaptationData
         end
         
         function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
-            data=cell(size(numberOfStrides));
-            nConds=length(conds);
+            if removeBiasFlag
+                this=this.removeBias;
+            end
+            [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);  
+            [data]=getGroupedDataFromInds(this,inds,label);
+        end
+        
+        function [data]=getGroupedDataFromInds(this,inds,label)
+            data=cell(size(inds,1));
+            nConds=size(inds{1,1},2);
             nLabs=length(label);
             nSubs=length(this.ID);
+            %Initialize:
             for i=1:length(data)
-               data{i}=zeros(nConds,abs(numberOfStrides(i)),nLabs,nSubs); 
+               data{i}=zeros(nConds,size(inds{i,1},1),nLabs,nSubs);  %Conds x strideGroups x labels x subs
             end
-            for subject=1:length(this.adaptData) %Getting data for each subject in the list
-                data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
-                for i=1:length(data)
-                    data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects
+            
+%             for subject=1:length(this.adaptData) %Getting data for each subject in the list
+%                data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,0,numberOfStrides,exemptLast,exemptFirst);
+%                for i=1:length(data)
+%                    data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects
+%                end
+%             end
+            
+            %Alt: (using the inds data, so we are sure we are actually
+            %getting the same strides when calling upon any function)            
+            for j=1:length(this.adaptData) %For each sub
+                allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
+                for i=1:length(data) %For each strideGroup
+                    data{i}(:,:,:,j)=allData{i};
                 end
             end
+            
         end
         
         function [meanData,stdData]=getAvgGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
             [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast);
             for i=1:length(data)
-               meanData(:,i,:,:)=nanmean(data{i},2); 
+               meanData(:,i,:,:)=nanmean(data{i},2); %conds x strideGroups x parameters x subjects
                stdData(:,i,:,:)=nanstd(data{i},[],2); 
             end
         end
@@ -222,7 +242,7 @@ classdef groupAdaptationData
         end
         
         %Bars
-        [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
+        [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
         
         %Stats
         %function []=anova2()
@@ -233,7 +253,21 @@ classdef groupAdaptationData
         %    
         %end
         
-        function [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast)
+        function [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)
+            %Runs Friedman (non-parametric 1-way repeated measures anova
+            %equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is
+            %considered to be a block.
+            %It works by finding the indexes corresponding to conditions/strides desired, and calls on friedmanI.
+            %TODO: Should check that numberOfStrides groups are given in
+            %chronological order & that so are the conditions in condList
+            %as it expects ordered things.
+
+            if nargin<7
+                interactionFlag=[];
+            end
+            if nargin<8
+                avgFlag=[];
+            end
             N=abs(groupingStrides(1));
             M=length(conds)*length(groupingStrides);
             if any(abs(groupingStrides)~=N) %Friedman has to be balanced
@@ -241,14 +275,54 @@ classdef groupAdaptationData
                 groupingStrides=N*sign(groupingStrides);
             end
             inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
-            inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
-            [p,table,stats,postHoc,postHocEstimates,data]=friedmanI(this,label,inds);
+            inds=cell2mat(inds');
+            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order. 
+            inds=inds(:,ii);
+            inds=mat2cell(inds,N*ones(length(this.ID),1),M);
+            [p,table,stats,postHoc,postHocEstimates,data]=friedmanI(this,label,inds,interactionFlag,avgFlag);
         end
         
-        function [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds)
+        function [p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)
+            %TODO: Should check that numberOfStrides groups are given in
+            %chronological order & that so are the conditions in condList
+            %as it expects ordered things.
+
+            if nargin<7
+                interactionFlag=[];
+            end
+            if nargin<8
+                avgFlag=[];
+            end
+            N=abs(groupingStrides(1));
+            M=length(conds)*length(groupingStrides);
+            if any(abs(groupingStrides)~=N) %Friedman has to be balanced
+                warning(['Anova1-RM test currently only supports balanced designs (all groups should have the same number of strides). Will use ' num2str(N) ' strides in all conditions.'])
+                groupingStrides=N*sign(groupingStrides);
+            end
+            inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
+            inds=cell2mat(inds');
+            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order. 
+            inds=inds(:,ii);
+            inds=mat2cell(inds,N*ones(length(this.ID),1),M);
+            [p,table,stats,postHoc,postHocEstimates,data]=anova1RMI(this,label,inds,interactionFlag,avgFlag);
+        end
+        
+        function [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds,interactionFlag,avgFlag)
+            %Runs Friedman (non-parametric 1-way repeated measures anova
+            %equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is
+            %considered to be a block, and the different index groups are
+            %compared to each other.
+            
             %inds should be a cell with length = #subs and its contents a
             %NxM matrix, where M is the number of groups to be tested and N
             %the number of strides/repetitions in each group
+            %Inds here follows a slightly different specification from that
+            %returned by getGroupedInds. In order to format the output of
+            %that function to the input of this, the following lines need to
+            %be executed:
+            %N=size(inds{1},1);
+            %M=size(inds{1},2)*size(inds,1);
+            %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
             
             %Check that the size of inds is the same for all 
             %subjects (friedman needs to be balanced)
@@ -256,15 +330,27 @@ classdef groupAdaptationData
             %Check that size(inds,1)==#subs
             
             %Do Friedman
-            N=size(inds{1},1);
-            M=size(inds{1},2);
+            N=size(inds{1},1); %Number of strides per stride group
+            M=size(inds{1},2); %Number of stride groups
             P=length(this.ID); %#subs
             if isa(label,'char')
                 label={label};
             end
+            if nargin<4 || isempty(interactionFlag)
+                interactionFlag=0; %No interactions is default
+            end
+            if nargin<5 || isempty(avgFlag)
+                avgFlag=0;
+            end
+            switch interactionFlag
+                case 1
+                    model='full';
+                case 0
+                    model='linear';
+            end
             if length(label)>1 %For multiple parameters
                 for i=1:length(label)
-                    [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=this.friedmanI(label{i},inds);
+                    [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=this.friedmanI(label{i},inds,interactionFlag,avgFlag);
                 end
             else
                 allData=nan(N,P,M);                
@@ -274,6 +360,10 @@ classdef groupAdaptationData
                         allData(:,j,i)=aux(inds{j}(:,i));
                     end
                 end
+                if avgFlag==1
+                    allData=nanmean(allData,1);
+                    N=1;
+                end
                 data=reshape(allData,N*P,M); %Setting up the data in the shape required by Friedman
                 [p,table,stats]=friedman(data,N,'off'); %This fails if there are any nan in newData
                 %Post-hoc: more friedman, but on paired columns. As such it
@@ -281,6 +371,10 @@ classdef groupAdaptationData
                 %just calling on friedman with the reduced data
                 postHoc=nan(M);
                 postHocEstimates=nan(M);
+                %Post-hoc: Default is tukey-kramer
+                %mm=multcompare(stats,'Dimension',2,'Display','off','CType','bonferroni'); %Post-hoc across stride groups
+                %postHoc(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,6);
+                %postHocEstimates(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,4);
                 for i=1:M
                     for j=i+1:M
                         [postHoc(i,j),~,s]=friedman(data(:,[i,j]),N,'off');
@@ -290,7 +384,68 @@ classdef groupAdaptationData
             end
         end
         
+        function [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)
+            %One-way repeated measures anova, using each individual as a
+            %block, and testing across stride groups (e.g. early adap vs late
+            %base)
+            %Inds here follows a slightly different specification from that
+            %returned by getGroupedInds. In order to format the output of
+            %that function to the input of this, the following lines need to
+            %be executed:
+            %N=size(inds{1},1);
+            %M=size(inds{1},2)*size(inds,1);
+            %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
+            N=size(inds{1},1);%Number of strides per stride group
+            M=size(inds{1},2);%Number of strideGroups 
+            P=length(this.ID); %#subs = size(inds,2)
+            if isa(label,'char')
+                label={label};
+            end
+            if nargin<4 || isempty(interactionFlag)
+                interactionFlag=0; %No interactions is default
+            end
+            if nargin<5 || isempty(avgFlag)
+                avgFlag=0;
+            end
+            switch interactionFlag
+                case 1
+                    model='full';
+                case 0
+                    model='linear';
+            end
+            if length(label)>1 %For multiple parameters
+                for i=1:length(label)
+                    [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=anova1RMI(this,label{i},inds,interactionFlag,avgFlag);
+                end
+            else
+                allData=nan(N,P,M);                
+                for j=1:P %For each sub
+                    aux=this.adaptData{j}.data.getDataAsVector(label); %Should I be normalizing or removing bias?
+                    for i=1:M %For each strideGroup
+                        allData(:,j,i)=aux(inds{j}(:,i)); %Strides x sub x strideGroup
+                    end
+                end
+                if avgFlag==1
+                    allData=nanmean(allData,1);
+                    N=1;
+                end
+                data=reshape(allData,N*P,M); 
+                subID=repmat(this.ID,N,M);
+                strideGroup=repmat([1:M],N*P,1);
+                [p,table,stats,~]=anovan(data(:),{subID(:) strideGroup(:)},'display','off','random',[1],'varnames',{'subID','strideGroup'},'model',model);
+                postHoc=nan(M);
+                postHocEstimates=nan(M);
+                allData=data;
+                %Post-hoc: Default is tukey-kramer
+                mm=multcompare(stats,'Dimension',2,'Display','off','CType','bonferroni'); %Post-hoc across stride groups
+                postHoc(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,6);
+                postHocEstimates(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,4);
+            end
+        end
+        
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=summaryKW(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+            %Runs kruskal-wallis for each individual, and returns
+            %summarized results.
            for i=1:length(this.ID)
                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
            end
@@ -302,6 +457,20 @@ classdef groupAdaptationData
        [figHandle,allData]=plotMultipleGroupsBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
        
        % Several groups stats
+       function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
+           %Check that there are exactly two groups
+
+            for j=1:length(condition)
+                for i=1:length(numberOfStrides)
+                    for k=1:length(label)
+                        data1=groups{1}.getAvgGroupedData(label(k),condition(j),0,numberOfStrides(i),exemptFirst,exemptLast);
+                        data2=groups{2}.getAvgGroupedData(label(k),condition(j),0,numberOfStrides(i),exemptFirst,exemptLast);
+                        [~,p(j,i,k),ci,stats]=ttest(squeeze(data1),squeeze(data2));
+                    end
+                end
+            end
+       end
+        
     end
 end
 

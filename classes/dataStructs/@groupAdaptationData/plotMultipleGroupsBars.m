@@ -33,5 +33,11 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
             if ~isa(groups,'cell') || ~isa(groups{1},'groupAdaptationData')
                 error('First argument needs to be a cell array of groupAdaptationData objects')
             end
-            [figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
+            [figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors);
+            
+            %Add bars comparing groups:
+            if length(groups)>1
+            %[p]=compareTwoGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast);
+            end
+            
 end

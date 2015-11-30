@@ -643,6 +643,23 @@ classdef adaptationData
         [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
         
         [figHandle]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode);
+        
+        function dataPoints=getDataFromInds(this,inds,labels)
+            %Returns data associated to certain stride indexes (e.g.
+            %strides
+            %1, 3, 10:15, 21)
+            %Inds comes from a call to getEarlyLateIdxs:
+            %[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+            data=this.data.getDataAsVector(labels);
+            nConds=size(inds{1},2);
+            for j=1:length(inds)
+                %for i=1:nConds
+                %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
+                %end
+                %This line does the same as the for loop commented above:
+                dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
+            end
+        end
     end
     
     
