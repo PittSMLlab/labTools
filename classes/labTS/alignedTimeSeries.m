@@ -346,6 +346,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
         end
         
+        function newThis=concatenateAsTS(this)
+           newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+        end
+        
         function newThis=fftshift(this,labels)
             if nargin>1 && ~isempty(labels)
                 [~,idxs]=this.isaLabel(labels);

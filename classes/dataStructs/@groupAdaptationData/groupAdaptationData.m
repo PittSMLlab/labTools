@@ -454,7 +454,7 @@ classdef groupAdaptationData
     end
     methods(Static)
        % Several groups visualization
-       [figHandle,allData]=plotMultipleGroupsBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors);
+       [figHandle,allData]=plotMultipleGroupsBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix);
        
        % Several groups stats
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
