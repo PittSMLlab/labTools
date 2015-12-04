@@ -58,6 +58,7 @@ classdef BiofeedbackSL
         OGspeed=[];
         datalocation=pwd;
         data={};
+        dataheader={};
         
         
     end
@@ -216,12 +217,17 @@ classdef BiofeedbackSL
                        
                        %check to see if data is already processed, it will
                        %save time...
-%                        if length(this.data
-%                            disp('Parsing data...');
-%                        else
-                       [header,data] = JSONtxt2cell(filename{z});
-                       
-%                        end
+                       if length(this.data)<z
+                           disp('Parsing data...');
+                           [header,data] = JSONtxt2cell(filename{z});
+                           
+                           this.data{z} = data;
+                           this.dataheader = header;
+                           
+                       else
+                           data = cell2mat(this.data(z));
+                           header = this.dataheader;
+                       end
                        [~,n] = size(data);
 %                        keyboard
                        data2 = unique(data,'rows','stable');%remove duplicate frames
@@ -274,6 +280,8 @@ classdef BiofeedbackSL
                        llqr{z} = iqr(lhits{z});
                         clear RHS LHS tamp tamp2
                    end
+                   
+                   this.saveit();
                    
                    waitbar(1,WB,'Processing complete...');
                    pause(0.5);
@@ -379,7 +387,7 @@ classdef BiofeedbackSL
                    ylabel('Error (m)');
                    
                    
-                    keyboard
+%                     keyboard
                    for z=1:length(rhits)
                        temp = rhits{z};
                        temp(abs(temp) > 0.1) = [];
