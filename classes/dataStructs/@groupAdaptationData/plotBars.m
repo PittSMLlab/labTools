@@ -44,12 +44,12 @@ function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsF
             end
             [figHandle,allData]=groupAdaptationData.plotMultipleGroupsBars({this},label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors);
             if ~isempty(significanceThreshold)
-                [p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,condList,numberOfStrides,exemptFirst,exemptLast);
-                [pf,tablef,statsf,postHocf,postHocEstimatesf,dataf]=friedman(this,label,condList,numberOfStrides,exemptFirst,exemptLast,[],1);
-                if ~isa(postHoc,'cell')
-                    postHoc={postHoc};
-                    postHocf={postHocf};
-                end
+                %[p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,condList,numberOfStrides,exemptFirst,exemptLast);
+                %[pf,tablef,statsf,postHocf,postHocEstimatesf,dataf]=friedman(this,label,condList,numberOfStrides,exemptFirst,exemptLast);
+                %if ~isa(postHoc,'cell')
+                %    postHoc={postHoc};
+                %    postHocf={postHocf};
+                %end
                 ch=findobj(figHandle,'Type','Axes');
                 for i=1:length(ch)
                     aux=find(strcmp(label,ch(i).Title.String));
@@ -80,9 +80,10 @@ function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsF
                             end
                             if (significancePlotMatrix(k,j)==1 || significancePlotMatrix(j,k)==1)
                                 %Anova, bonferroni post-hoc:
-                                if postHoc{aux}(j,k)<significanceThreshold
-                                    plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],'k','LineWidth',2)
-                                end
+                                %if postHoc{aux}(j,k)<significanceThreshold
+                                %    plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],'k','LineWidth',2)
+                                %    text(XData(j),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*1.05,['p=' num2str(postHoc{aux}(j,k))])
+                                %end
                                 %Friedman:
                                 %if postHocf{aux}(j,k)<significanceThreshold/sum(significancePlotMatrix(:)~=0)
                                 %    plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],'r','LineWidth',1)
@@ -90,7 +91,8 @@ function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsF
                                 %Paired t-test:
                                 [~,pp]=ttest(data1,data2); %Use ttest2 to do independent 2-sample t-test
                                 if pp<significanceThreshold/sum(significancePlotMatrix(:)~=0)
-                                    plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],'g--','LineWidth',1)
+                                    plot(XData([j,k]),(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*[1,1],'k','LineWidth',2)
+                                    text(XData(k)-1.5,(yOff+yRef*(.5*j/length(XData) +k/length(XData)^2))*.95,['p=' num2str(pp)],'Color','k')
                                 end
                             end
                         end

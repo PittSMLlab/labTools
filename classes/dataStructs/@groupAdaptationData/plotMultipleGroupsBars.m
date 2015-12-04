@@ -81,7 +81,7 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                 [~,pp]=ttest2(data1,data2); %Use ttest2 to do independent 2-sample t-test
                                 if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
                                     plot(XData(j)+[0,1],yOff+yRef*[1,1],'k','LineWidth',2)
-                                    text(XData(j),yOff+yRef*1.05,['p=' num2str(pp)])
+                                    text(XData(j),yOff+yRef*.95,['p=' num2str(pp)])
                                 end
                             end
                     end

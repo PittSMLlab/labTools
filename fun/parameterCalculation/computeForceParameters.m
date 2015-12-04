@@ -1,4 +1,4 @@
-function [COPrangeF,COPrangeS,COPsym,COPsymM,handHolding] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
+function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
 % %UNTITLED4 Summary of this function goes here
 % %   Detailed explanation goes here
 % [GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
@@ -22,5 +22,9 @@ function [COPrangeF,COPrangeS,COPsym,COPsymM,handHolding] = computeForceParamete
 % %% Hand holding
 %         handHolding=sum(mean(abs(GRFDataH)))>2;
 
+data=[];
+labels={};
+description={};
+out=parameterSeries(data,labels,[],description); 
 end
 

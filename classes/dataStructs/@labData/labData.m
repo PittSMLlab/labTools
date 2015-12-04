@@ -307,6 +307,11 @@ classdef labData
             
         end
         
+        function newThis=alignAllTS(this, alignmentVector)
+            error('Unimplemented')
+            newThis=[];
+        end
+        
     end
     
     %% Protected methods:
