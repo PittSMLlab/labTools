@@ -123,7 +123,10 @@ end
 %Force
 if ~isempty(trialData.GRFData)
     [force] = computeForceParameters(strideEvents,trialData.GRFData,s);
-    out=cat(out,force);
+%     keyboard
+    if ~isempty(force.stridesTrial)
+        out=cat(out,force);
+    end
 end
 
 %% Compute an updated bad/good flag based on computed parameters & finding outliers

@@ -245,7 +245,7 @@ classdef BiofeedbackSL
                        
                        %detect HS
                        for zz = 1:length(Rz2)-1
-                           if Rz2(zz) > -25 && Rz2(zz+1) <= -25
+                           if Rz2(zz) > -10 && Rz2(zz+1) <= -10
                                RHS(zz) = 1;
                            else
                                RHS(zz) = 0;
@@ -255,7 +255,7 @@ classdef BiofeedbackSL
                        RHS = zeros(length(RHS),1);
                        RHS(trhs) = 1;
                        for zz = 1:length(Lz2)-1
-                           if Lz2(zz) > -25 && Lz2(zz+1) <= -25
+                           if Lz2(zz) > -10 && Lz2(zz+1) <= -10
                                LHS(zz) = 1;
                            else
                                LHS(zz) = 0;
