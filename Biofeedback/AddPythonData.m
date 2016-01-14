@@ -61,7 +61,7 @@ if iscell(filenames)
     columnformat = {'char','numeric',condition};
 
     t=uitable(f,'Position',[10,10,375,375],'Data',mdata,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[false false true],'CellSelectionCallback',@(src,evnt)set(src,'UserData',evnt.Indices));
-    set(t,'celleditcallback','global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind};set(t,''Data'',temp)');
+    set(t,'celleditcallback','global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind}(end);set(t,''Data'',temp)');
     set(t,'DeleteFcn','global mdata;mdata = get(t,''Data'');');
     waitfor(t)%wait until user closes the table to continue
     
