@@ -13,7 +13,7 @@ else
 end
 
 %% STEP 2: Compute COM & extract values
-if isempty(in.markerData)
+if isempty(in.markerData) || numel(in.markerData.labels)==0
     COMTS = [];
 else
     [COMTS] = COMCalculator(in.markerData);

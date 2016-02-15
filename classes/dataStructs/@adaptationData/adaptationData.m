@@ -125,7 +125,7 @@ classdef adaptationData
             if nargin<2
                 conditions=[];
             end
-            [newThis,baseValues,typeList]=removeBiasV2(this,conditions,1);
+            [newThis,baseValues,typeList]=removeBiasV3(this,conditions,1);
         end
         
         function newThis=removeBadStrides(this)
@@ -180,6 +180,23 @@ classdef adaptationData
         function newThis=markBadWhenMissingAll(this,labels)
             newThis=this;
             newThis.data=newThis.data.markBadWhenMissingAll(labels);
+        end
+        
+        function newThis=renameParams(this,oldLabels,newLabels)
+
+              [b,ii]=isaLabel(this.data,oldLabels);
+              if any(b)
+              newL=this.data.labels;
+              newL(ii(b))=newLabels(b);
+              newParam=parameterSeries(this.data.Data,newL,this.data.hiddenTime,this.data.description,this.data.trialTypes)     ;
+              newThis=this;
+              newThis.data=newParam;
+              %unique(this.data.stridesTrial)
+              %unique(newThis.data.stridesTrial)
+              else
+                  newThis=this;
+              end
+
         end
         
         %Other I/O functions:
@@ -672,7 +689,7 @@ classdef adaptationData
         
         [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
         
-        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
+        varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,alignEnd)
         
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):

@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles,alignEnd)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -88,6 +88,9 @@ end
     maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
                      %otherwise, the subject with the fewest strides in a particular trial/condition
                      %determines the number of strides plotted.
+                     %if ~isempty(alignEnd)
+                     %    maxNumPts=true;
+                     %end
 % end
 if nargin<10 || isempty(removeBiasFlag)
     removeBiasFlag=0;
@@ -95,6 +98,10 @@ end
 
 if nargin<12 || isempty(medianFlag)
     medianFlag=0;
+end
+
+if nargin<14
+    alignEnd=[];
 end
 %% Initialize plot
 
@@ -144,21 +151,27 @@ for group=1:Ngroups
                 trials={adaptData.getTrialsInCond({conditions{c}})}; %all trials in the condition are one "trial"
             end
             
-            for t=1:length(trials)
+            for t=1:length(trials) %length(trials) is always 1
                 %Check
                 if ~all(adaptData.data.isaParameter(params))
+                    error('Not all provided labels are parameters in this subject')
                     keyboard %This shouldnt happen
                 end
                 dataPts=adaptData.getParamInTrial(params,trials{t});
                 nPoints=size(dataPts,1);
+                M=2000; %this assumes that the max number of data points that could exist in a single conition or trial is M
                 if nPoints == 0
                     numPts.(cond{c}).(['trial' num2str(t)])(s)=NaN;
                 else
                     numPts.(cond{c}).(['trial' num2str(t)])(s)=nPoints;
+                    if ~isempty(alignEnd) %Aligning data to the end, too
+                        numPts.([cond{c} 'End']).(['trial' num2str(t)])(s)=alignEnd+50;
+                    end
                 end
                 for p=1:length(params)
-                    %itialize so there are no inconsistant dimensions or out of bounds errors
-                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,2000); %this assumes that the max number of data points that could exist in a single conition or trial is 2000
+                    %initialize so there are no inconsistant dimensions or out of bounds errors
+                    
+                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M); 
                     
 %                     %%VELOCITY CONTRIBUTION IS FLIPPED HERE
 %                     if strcmp(params{p},'velocityContribution')
@@ -166,6 +179,9 @@ for group=1:Ngroups
 %                     else
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
 %                     end
+                    if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                        values(group).(params{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
+                    end
                 end
             end
         end
@@ -178,6 +194,13 @@ Li=cell(1);
 avg=struct([]);
 se=struct([]);
 indiv=struct([]);
+if ~isempty(alignEnd)
+    newCond=cell(2*length(cond),1);
+   newCond(1:2:end)=cond;
+   newCond(2:2:end)=strcat(cond,'End');
+   cond=newCond;
+   nConds=length(cond);
+end
 
 for group=1:Ngroups
     Xstart=1;
@@ -416,7 +439,7 @@ for group=1:Ngroups
             Xstart=Xstart+condLength;
         end
         
-        if c==length(conditions) && group==Ngroups
+        if c==nConds && group==Ngroups
             %on last iteration of conditions loop, add title and
             %vertical lines to seperate conditions
             for p=1:length(params)
@@ -427,9 +450,21 @@ for group=1:Ngroups
                     axes(ah)
                 end
                 axis tight
-                line([lineX; lineX],ylim,'color','k')
+                if isempty(alignEnd)
+                    line([lineX; lineX],ylim,'color','k')
+                else %When plotting data aligned to end, only put a vertical line for actual condition end
+                    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
+                end
                 xticks=lineX+diff([lineX Xstart])./2;
-                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
+                %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
+                if ~isempty(alignEnd)
+                    xtl=cond;
+                    xtl(1:2:end)=strcat(xtl(1:2:end),'Early');
+                    xticks(2:2:end)=xticks(2:2:end)+25;
+                else
+                    xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
+                end
+                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
                 %h=refline(0,0);
                 %set(h,'color','k')
             end            

@@ -111,8 +111,10 @@ out=parameterSeries(data,labels,times,description);
 out=cat(out,temp);
 
 %Spatial:
+if ~isempty(trialData.markerData) && (numel(trialData.markerData.labels)~=0)
 [spat] = computeSpatialParameters(strideEvents,trialData.markerData,trialData.angleData,s);
 out=cat(out,spat);
+end
 
 %EMG:
 if ~isempty(trialData.procEMGData)
@@ -137,6 +139,7 @@ badStart=bad; %make a copy to compare at the end
 paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
 for i=1:length(paramsToFilter)
     aux=out.getDataAsVector(paramsToFilter{i});
+    if ~isempty(aux) %In case any of these parameters does not exist
     aux=aux-runAvg(aux,50); % remove effects of adaptation
     % mark strides bad if values for SL or alpha are larger than 3x the
     % interquartile range away from the median.
@@ -148,6 +151,7 @@ for i=1:length(paramsToFilter)
     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
     %    inds=inds(inds>5);
     %    bad(inds)=true;
+    end
     
 end
 %Remove outliers according to new values of 'bad':
@@ -162,7 +166,9 @@ badStart=bad; %make a copy to compare at the end
 %(stopping/starting trials)
 if strcmp(trialData.metaData.type,'TM')
     aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
-    bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true;
+    if ~isempty(aux)
+        bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
+    end
 end
 
 %Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic

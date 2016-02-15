@@ -154,7 +154,7 @@ classdef experimentMetaData
            end 
         end
         
-        function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag)
+        function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag,ignoreMissingNamesFlag)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
             %
@@ -164,6 +164,9 @@ classdef experimentMetaData
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             if nargin<3 || isempty(exactMatchesOnlyFlag)
                 exactMatchesOnlyFlag=0; %Default behavior accepts partial matches
+            end
+            if nargin<4 || isempty(ignoreMissingNamesFlag)
+                ignoreMissingNamesFlag=0; %Default behavior accepts partial matches
             end
             if isa(conditionNames,'char')
                 conditionNames={conditionNames};
@@ -202,7 +205,11 @@ classdef experimentMetaData
                 if ~isempty(condIdx)
                     conditionIdxs(i)=condIdx;
                 else
-                    error(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, stopping.'])
+                    if ~ignoreMissingNamesFlag
+                        error(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, stopping.'])
+                    else
+                        warning(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, ignoring.'])
+                    end
                 end
             end
         end
@@ -229,7 +236,7 @@ classdef experimentMetaData
             %currentName & changes them to newName
             change=false;
            %Check currentName and newName are cell arrays of same length
-           conditionIdxs=this.getConditionIdxsFromName(currentName);
+           conditionIdxs=this.getConditionIdxsFromName(currentName,[],1);
            %this.conditionName(conditionIdxs)=newName;
            for i=1:length(currentName)
                if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})

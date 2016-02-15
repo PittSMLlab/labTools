@@ -101,6 +101,32 @@ classdef groupAdaptationData
             end
         end
         
+        function [parameters,descriptions] = getAllParameters(this,subs)
+            if nargin<2 || isempty(subs)
+                subs=1:length(this.ID);
+            else
+                if isa(subs,'cell')
+                    subs=find(ismember(this.ID,subs));
+                end
+            end
+            allParams={};
+            allDesc={};
+            for s=1:length(subs)
+                [parameters,descriptions]=this.adaptData{s}.getParameterList;
+                allParams=[allParams(:); parameters];
+                allDesc=[allDesc(:); descriptions];
+            end
+            [parameters,idx]=unique(allParams);
+            descriptions=allDesc(idx);
+        end
+        
+        function labelList=getLabelsThatMatch(this,exp)
+            labelList=this.getAllParameters; 
+            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+            labelList=labelList(flags);
+        end
+        
+        
         %Modifiers
         function newThis=cat(this,other)
             newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);            
@@ -140,6 +166,13 @@ classdef groupAdaptationData
                 newThis.adaptData{i}=this.adaptData{i}.normalizeBias;
             end
               
+        end
+        
+        function newThis=renameParams(this,oldLabels,newLabels)
+           for i=1:length(this.ID)
+               this.adaptData{i}=this.adaptData{i}.renameParams(oldLabels,newLabels);
+           end
+           newThis=this;
         end
         
         %I/O
@@ -206,7 +239,7 @@ classdef groupAdaptationData
         %Scatter
         
         %TimeCourses
-        function varargout=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
+        function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
             if nargin<4 || isempty(binwidth)
                 binwidth=[];
             end
@@ -238,7 +271,8 @@ classdef groupAdaptationData
                 plotHandles=[];
             end
                 
-            varargout=adaptationData.plotAvgTimeCourse({this},params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles);
+            fh=adaptationData.plotAvgTimeCourse(this.adaptData,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles);
+            
         end
         
         %Bars

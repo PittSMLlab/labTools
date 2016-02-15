@@ -6,14 +6,18 @@ timeFHS=strideEvents.tFHS;
 timeSTO=strideEvents.tSTO;
 timeSHS2=strideEvents.tSHS2;
 eventTimes=[timeSHS timeFTO .5*(timeFTO+timeFHS) timeFHS timeSTO .5*(timeSTO+timeSHS2) timeSHS2];
+eventTimes2=nan(size(eventTimes,1),13);
+eventTimes2(:,1:2:end)=eventTimes;
+eventTimes2(:,2:2:end)=.5*(eventTimes(:,1:end-1)+eventTimes(:,2:end));
 paramLabels={};
 description={};
 phases={'DS1','EfSwing','LfSwing','DS2','EsSwing','LsSwing'};
 desc={'SHS to FTO', 'FTO to mid fast swing', 'mid fast swing to FHS', 'FHS to STO', 'STO to mid slow swing', 'mid slow swing to SHS'};
-
+phases2={'eDS1','lDS1','EfSwing1','EfSwing2','LfSwing1','LfSwing2','eDS2','lDS2','EsSwing1','EsSwing2','LsSwing1','LsSwing2'};
+desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'};
 %%
 N=length(stridedProcEMG);
-data=nan(N,30*16);
+data=nan(N,30*(16+12));
 for i=1:N
     counter=0;
     Time=stridedProcEMG{i}.Time;
@@ -34,6 +38,17 @@ for i=1:N
             end
             data(i,counter)=mean(Data(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j));
             if ~isempty(Qual) & any(Qual(Time<=eventTimes(i,k+1) & Time>=eventTimes(i,k),j)~=0) %Quality points to bad muscle
+                data(i,counter)=nan;
+            end
+        end
+        for k=1:12 %6 phases
+            counter=counter+1;
+            if i==1
+            paramLabels{counter}=[l labs{j}(2:end) 's' num2str(k)];
+            description{counter}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{k}];
+            end
+            data(i,counter)=mean(Data(Time<=eventTimes2(i,k+1) & Time>=eventTimes2(i,k),j));
+            if ~isempty(Qual) & any(Qual(Time<=eventTimes2(i,k+1) & Time>=eventTimes2(i,k),j)~=0) %Quality points to bad muscle
                 data(i,counter)=nan;
             end
         end
