@@ -176,7 +176,7 @@ classdef BiofeedbackVazE2B
                    for z = 1:length(filename)
                        tempname = filename{z};
                        waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                       if strcmp(tempname(end-5:end-4),'V2')
+                       if strcmp(tempname(end-5:end-4),'V2') || strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-5:end-4),'V5')
                            color{z} = 'blue';
                        elseif strcmp(tempname(end-10:end-4),'rev12V1')
                            color{z} = 'yellow';
@@ -249,14 +249,19 @@ classdef BiofeedbackVazE2B
                        smallest = min([length(Rgamma2(find(RHS))) length(Lgamma2(find(LHS)))]);
                        Rgamma3 = abs(Rgamma2(find(RHS)));
                        Lgamma3 = abs(Lgamma2(find(LHS)));
+%                        keyboard
                        tamp = Rgamma3(1:smallest)'-Lgamma3(1:smallest)';
+                       tamp2 = Lgamma3(1:smallest)'-Rgamma3(1:smallest)';
 %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                        
                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
-%                        tamp2(abs(tamp2)>0.15)=[];
+                       tamp2(abs(tamp2)>0.15)=[];
+                       
+%                        tamp(tamp<0) = [];
+%                        tamp2(tamp2<0) = [];
                        
                        hits{z} = tamp;
-%                        lhits{z} = tamp2;
+                       lhits{z} = tamp2;
                        
                        lqrs{z} = iqr(hits{z});
 %                        llqr{z} = iqr(lhits{z});
@@ -647,7 +652,7 @@ classdef BiofeedbackVazE2B
                     
                     for z=1:length(filenames)%autodetect if a trial was a train for evaluation
                         tname = filenames{z};
-                        if strcmp(tname(end-5:end-4),'V2')
+                        if strcmp(tname(end-5:end-4),'V2') || strcmp(tname(end-5:end-4),'V3')
                             data{z,3} = 'train';
                         else
                             data{z,3} = 'eval';
