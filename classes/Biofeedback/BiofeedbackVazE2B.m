@@ -169,14 +169,15 @@ classdef BiofeedbackVazE2B
                if iscell(filename)%if more than one file is selected for analysis
 
                    hits = {0};
-%                    lhits = {0};
+                   lhits = {0};
+                   anks = {0};
                    lqrs = {0};
                    llqr = {0};
                    WB = waitbar(0,'Processing Trials...');
                    for z = 1:length(filename)
                        tempname = filename{z};
                        waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                       if strcmp(tempname(end-5:end-4),'V2') || strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-5:end-4),'V5')
+                       if strcmp(tempname(end-5:end-4),'V2') || strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-5:end-4),'V5') || strcmp(tempname(end-10:end-9),'V3') || strcmp(tempname(end-10:end-9),'V5')
                            color{z} = 'blue';
                        elseif strcmp(tempname(end-10:end-4),'rev12V1')
                            color{z} = 'yellow';
@@ -221,6 +222,10 @@ classdef BiofeedbackVazE2B
                        Lz2 = interp1(data2(:,1),data2(:,3),frame2,'linear');
                        Rgamma2 = interp1(data2(:,1),data2(:,8),frame2,'linear');
                        Lgamma2 = interp1(data2(:,1),data2(:,9),frame2,'linear');
+                       ank = interp1(data2(:,1),data2(:,13)-data2(:,12),frame2,'linear');
+
+                       
+%                        ank = 
                        
                        %detect HS
                        for zz = 1:length(Rz2)-1
@@ -230,9 +235,22 @@ classdef BiofeedbackVazE2B
                                RHS(zz) = 0;
                            end
                        end
+                       %detect TO
+                       for zz = 1:length(Rz2)-1
+                           if Rz2(zz) < -30 && Rz2(zz+1) >= -30
+                               RTO(zz) = 1;
+                           else
+                               RTO(zz) = 0;
+                           end
+                       end
+                       
                        [~,trhs] = findpeaks(RHS,'MinPeakDistance',100);
+                       [~,trto] = findpeaks(RTO,'MinPeakDistance',100);
                        RHS = zeros(length(RHS),1);
                        RHS(trhs) = 1;
+                       RTO = zeros(length(RTO),1);
+                       RTO(trhs) = 1;
+                       
                        for zz = 1:length(Lz2)-1
                            if Lz2(zz) > -30 && Lz2(zz+1) <= -30
                                LHS(zz) = 1;
@@ -240,31 +258,94 @@ classdef BiofeedbackVazE2B
                                LHS(zz) = 0;
                            end
                        end
+                       %detect TO
+                       for zz = 1:length(Lz2)-1
+                           if Lz2(zz) < -30 && Lz2(zz+1) >= -30
+                               LTO(zz) = 1;
+                           else
+                               LTO(zz) = 0;
+                           end
+                       end
+                       
+                       
                        [~,tlhs] = findpeaks(LHS,'MinPeakDistance',100);
+                       [~,tlto] = findpeaks(LTO,'MinPeakDistance',100);
                        LHS = zeros(length(LHS),1);
                        LHS(tlhs) = 1;
+                       LTO = zeros(length(LTO),1);
+                       LTO(tlto) = 1;
+                       
+                       [~,trg3] = findpeaks(Rgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
+                       RHS = zeros(length(RHS),1);
+                       RHS(trg3)=1;
+                       [~,tlg3] = findpeaks(Lgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
+                       LHS = zeros(length(LHS),1);
+                       LHS(tlg3)=1;
+                       
+%                        figure(60)
+%                        plot(Rgamma2);
+%                        hold on
+%                        scatter(trhs,Rgamma2(trhs),'o','MarkerFaceColor','green');
+                    
 %                        keyboard
                        %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
                        %calculate errors
                        smallest = min([length(Rgamma2(find(RHS))) length(Lgamma2(find(LHS)))]);
                        Rgamma3 = abs(Rgamma2(find(RHS)));
                        Lgamma3 = abs(Lgamma2(find(LHS)));
+                       
+                       
 %                        keyboard
                        tamp = Rgamma3(1:smallest)'-Lgamma3(1:smallest)';
                        tamp2 = Lgamma3(1:smallest)'-Rgamma3(1:smallest)';
+                       tamp3 = ank(find(RHS)-100);
 %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                        
                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
                        tamp2(abs(tamp2)>0.15)=[];
                        
+%                        g = figure(60)
+%                        subplot(3,1,1)
+%                        plot(Rgamma2);
+%                        hold on
+% %                        plot(Lgamma2-Rgamma2,'r');
+%                        scatter(find(RHS),Rgamma2(find(RHS)),'o','MarkerFaceColor','green');
+%                        subplot(3,1,2)
+%                        plot(Lgamma2);
+%                        hold on
+% %                        plot(Lgamma2-Rgamma2,'r');
+%                        scatter(find(LHS),Lgamma2(find(LHS)),'o','MarkerFaceColor','green');
+%                        subplot(3,1,3)
+%                        plot(Rgamma2(find(RHS)),'r');
+%                        hold on
+%                        plot(Lgamma2(find(LHS)),'g');
+
+
+%                         g = figure(61)
+%                         subplot(2,1,1)
+%                         plot(Rgamma2);
+%                         hold on
+%                         plot(ank,'r');
+%                         scatter(find(RHS),ank(find(RHS)),'o','MarkerFaceColor','green');
+%                         scatter(find(RHS)-100,ank(find(RHS)-100),'o','MarkerFaceColor','black');
+%                         subplot(2,1,2)
+%                         plot(Lgamma2);
+%                         hold on
+%                         plot(ank,'r');
+%                         scatter(find(LTO),ank(find(LTO)),'o','MarkerFaceColor','green');
+% 
+%                         keyboard
+%                         close(g)
+                       
 %                        tamp(tamp<0) = [];
 %                        tamp2(tamp2<0) = [];
                        
-                       hits{z} = tamp;
-                       lhits{z} = tamp2;
+                       hits{z} = tamp2;
+                       lhits{z} = tamp;
+                       anks{z} = tamp3;
                        
                        lqrs{z} = iqr(hits{z});
-%                        llqr{z} = iqr(lhits{z});
+                       llqr{z} = iqr(lhits{z});
                         clear RHS LHS tamp
                    end
                    
@@ -632,6 +713,58 @@ classdef BiofeedbackVazE2B
 %                    ylim([0 110]);
 %                    ylabel('Accuracy (%)')
 %                    title([this.subjectcode ' Slow Leg Accuracy'])
+
+
+                    figure(8)
+                    hold on
+%                    keyboard
+                   fill([0 length(cell2mat(hits(train)')) length(cell2mat(hits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([length(cell2mat(hits(train)'))+length(cell2mat(hits(base)')) length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)')) length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)')) length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+
+                   %add baseline walking bars
+                   for b=1%:length(base)
+                       fill([length(cell2mat(hits(train)'))-0.5 length(cell2mat(hits(train)'))+0.5 length(cell2mat(hits(train)'))+0.5 length(cell2mat(hits(train)'))-0.5],[0.075 0.075 -0.075 -0.075],[20 20 20]./256);
+                       text(length(cell2mat(hits(train)')),0.09,'Base');
+                   end
+
+                   %add adaptation walking bars
+                   for a=1%:2:length(adapt)
+                       fill([length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))-0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))-0.5],[0.075 0.075 -0.075 -0.075],[20 20 20]./256);
+                       text(length(cell2mat(hits(train)'))+length(cell2mat(hits(base)')),0.09,'Split');
+                   end
+
+                   %add washout walking bars
+                   for w=1:length(wash)
+                       if w==1
+                           fill([length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))-0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))-0.5],[0.075 0.075 -0.075 -0.075],[20 20 20]./256);
+                           text(length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)')),0.09,'Wash');
+                       else
+                           fill([length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+length(cell2mat(hits(wash(1:w-1))'))-0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+length(cell2mat(hits(wash(1:w-1))'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+length(cell2mat(hits(wash(1:w-1))'))+0.5 length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+length(cell2mat(hits(wash(1:w-1))'))-0.5],[0.075 0.075 -0.075 -0.075],[20 20 20]./256);
+                           text(length(cell2mat(hits(train)'))+length(cell2mat(hits(base)'))+length(cell2mat(hits(adapt)'))+length(cell2mat(hits(wash(1:w-1))')),0.09,'Wash');
+                       end
+                   end
+
+
+                   h = 0;
+                   for z = 1:length(filename)
+                       figure(8)
+%                        subplot(2,1,1)
+                       hold on
+                       scatter([1:length(anks{z})]+h,anks{z},75,color{z},'fill');
+                       plot([h h+length(anks{z})],[0.01 0.01],'k');%tolerance lines
+                       plot([h h+length(anks{z})],[-0.01 -0.01],'k');
+%                        plot([h h+length(anks{z})],[nanmean(anks{z})+lqrs{z}/2 nanmean(anks{z})+lqrs{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+%                        plot([h h+length(anks{z})],[nanmean(anks{z})-lqrs{z}/2 nanmean(anks{z})-lqrs{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+                       h = h+length(anks{z});
+                   end
+                   figure(8)
+%                    subplot(2,1,1)
+                   ylim([-0.1 0.1]);
+                   xlim([0 h+10]);
+                   title([this.subjectcode ' Ankle Separation pre-step']);
+                   xlabel('step #');
+                   ylabel('Error (m)');
+                    
                    
                end
             end
