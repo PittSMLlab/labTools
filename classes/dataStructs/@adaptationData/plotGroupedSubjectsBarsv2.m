@@ -32,7 +32,7 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
             if nargin<12 || isempty(colors) || size(colors,1)<Ngroups
                 colorScheme
                 for i=1:Ngroups
-                    colors(i,:)=colorGroups{i};
+                    colors(i,:)=colorGroups{mod(i-1,length(colorGroups))+1};
                 end
             end
             if nargin<13 || isempty(medianFlag)
@@ -106,7 +106,11 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                         end
                         hold on
                         if mode==1
-                            bb(j,k)=bar(xPos,relevantMean,'BarWidth',.9/((Ngroups+1)*length(N2)),'FaceColor',colors(j,:),'FaceAlpha',(k/length(N2)),'DisplayName',strcat(gName{j},bName{k}),'EdgeColor',colors(j,:).^(k/length(N2)));
+                            try
+                                bb(j,k)=bar(xPos,relevantMean,'BarWidth',.9/((Ngroups+1)*length(N2)),'FaceColor',colors(j,:),'FaceAlpha',(k/length(N2)),'DisplayName',strcat(gName{j},bName{k}),'EdgeColor',colors(j,:).^(k/length(N2)));
+                            catch %old matlab versions don't allow for 'FaceAlpha' property on bars
+                                bb(j,k)=bar(xPos,relevantMean,'BarWidth',.9/((Ngroups+1)*length(N2)),'FaceColor',colors(j,:).^(1-((k-1)/length(N2))),'DisplayName',strcat(gName{j},bName{k}),'EdgeColor',colors(j,:),'LineWidth',2);%,'FaceAlpha',(k/length(N2)));
+                            end
                             hC=errorbar(xPos,relevantMean,relevantSte,'LineStyle','none','LineWidth',2,'Color','k');
                             set(get(get(hC,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
                         elseif mode==2
