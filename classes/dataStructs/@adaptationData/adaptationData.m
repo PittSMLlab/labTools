@@ -32,7 +32,7 @@ classdef adaptationData
     properties
         metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
         subData %cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object
-        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
+        data %cell array of parameterSeries type
     end
     
     properties (Dependent)
@@ -197,6 +197,11 @@ classdef adaptationData
                   newThis=this;
               end
 
+        end
+        
+        function newThis=medianFilter(this,N)
+            newThis=this;
+            newThis.data=this.data.medianFilter(N);
         end
         
         %Other I/O functions:
@@ -674,7 +679,11 @@ classdef adaptationData
                 %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
                 %end
                 %This line does the same as the for loop commented above:
-                dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
+                if any(isnan(inds{j}(:)))
+                    error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                else
+                    dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
+                end
             end
         end
     end
@@ -799,7 +808,7 @@ classdef adaptationData
             
         end
         
-        [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
+        [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
     end %static methods
     
 end

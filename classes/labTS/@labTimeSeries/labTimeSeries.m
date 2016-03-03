@@ -647,7 +647,8 @@ classdef labTimeSeries  < timeseries
                 %gets shifted by half a sample, which is undesirable.
             end
 
-            this.Data=medfilt1(double(this.Data),double(N),double(1));%altered 12/4/2015 "omitnan" is not a valid input to medfilt1 in 2015a
+            %this.Data=medfilt1(this.Data,N,1,'omitnan'); %altered 12/4/2015 "omitnan" is not a valid input to medfilt1 in 2015a, 'omitnan' allowed for the median to be taken among the non-NaN elemets
+            this.Data=medfilt1(double(this.Data),double(N),double(1)); %This back-compatible alternative works as if the last argument were 'includenan' (i.e. whenever there is a NaN in the window, the result is NaN)
             %Setting the samples outside the filter to NaN:
             this.Data(1:floor(N/2),:)=NaN;
             this.Data(end-floor(N/2)+1:end,:)=NaN;

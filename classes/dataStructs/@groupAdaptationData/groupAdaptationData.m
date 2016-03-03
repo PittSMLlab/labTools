@@ -160,6 +160,7 @@ classdef groupAdaptationData
             end
               
         end
+        
         function newThis=normalizeBias(this)
             newThis=this;
             for i=1:length(this.ID)
@@ -173,6 +174,44 @@ classdef groupAdaptationData
                this.adaptData{i}=this.adaptData{i}.renameParams(oldLabels,newLabels);
            end
            newThis=this;
+        end
+        
+        function newThis=medianFilter(this,N)
+            newThis=this;
+            for i=1:length(this.adaptData)
+                newThis.adaptData{i}=this.adaptData{i}.medianFilter(N);
+            end
+        end
+        
+        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
+            newThis=this;
+            for i=1:length(this.adaptData)
+               newThis.adaptData{i}=this.adaptData{i}.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
+            end
+        end
+        
+        function newThis=removeSubs(this,subList)
+           for i=1:length(subList)
+               ii=find(strcmp(subList{i},this.ID));
+               this.ID=this.ID([1:ii-1,ii+1:end]);
+               this.adaptData=this.adaptData([1:ii-1,ii+1:end]);
+           end
+           newThis=this;
+        end
+        
+        function newThis=getSubGroup(this,subList)
+            ii=nan(size(subList));
+            for i=1:length(subList)
+               j=find(strcmp(subList{i},this.ID));
+               if ~isempty(j)
+                   ii(i)=j;
+               else
+                   error('groupAdaptationData:getSubGroup',['Tried fetching subject ' subList{i} ' but found no matching IDs.'])
+               end
+           end
+           newThis=this;
+           newThis.ID=newThis.ID(ii);
+           newThis.adaptData=newThis.adaptData(ii);
         end
         
         %I/O
@@ -488,7 +527,7 @@ classdef groupAdaptationData
     end
     methods(Static)
        % Several groups visualization
-       [figHandle,allData]=plotMultipleGroupsBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix);
+       [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
        
        % Several groups stats
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
