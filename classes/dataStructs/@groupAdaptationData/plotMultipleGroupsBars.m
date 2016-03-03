@@ -27,13 +27,11 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
             if nargin<11
                 plotHandles=[];
             end
-            if nargin<12
-                colors=[];
+            if nargin<12 || isempty(colors)
+                colorScheme
+                colors=color_palette;
             end
-            if nargin<13 || isempty(significancePlotMatrixGroups)
-                M=length(groups);
-                significancePlotMatrixGroups=ones(M);
-            end
+            
             if nargin<14 || isempty(medianFlag)
                 medianFlag=0;
             end
@@ -41,8 +39,20 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                 M=length(condList)*length(numberOfStrides);
                signifPlotMatrixConds=zeros(M); 
             end
+            if isa(groups,'struct')
+                ff=fields(groups);
+                aux=cell(size(ff));
+                for i=1:length(ff)
+                   aux{i}=getfield(groups,ff{i}); 
+                end
+                groups=aux;
+            end
             if ~isa(groups,'cell') || ~isa(groups{1},'groupAdaptationData')
                 error('First argument needs to be a cell array of groupAdaptationData objects')
+            end
+            if nargin<13 || isempty(significancePlotMatrixGroups)
+                M=length(groups);
+                significancePlotMatrixGroups=ones(M);
             end
             [figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
             
@@ -63,8 +73,13 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                         XData(j,:)=b(end-j+1).XData;
                         YData(j,:)=b(end-j+1).YData;
                     end
+                    try
                     XData=reshape(XData,[length(numberOfStrides),nGroups,length(condList)]);
                     YData=reshape(YData,[length(numberOfStrides),nGroups,length(condList)]);
+                    catch %For back compatibility with bar command
+                        XData=reshape(XData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);
+                        YData=reshape(YData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);
+                    end
                     yRef=.1*(max(YData(:))-min(YData(:)));
                     %yRef=.5*std(YData(:));
                     yOff=max(YData(:));
@@ -132,12 +147,12 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                         [pp]=signrank(data1,data2); %Use signrank to paired non-param testing
                                     end
                                     if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
-                                        plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),'Color',colors(k,:),'LineWidth',2)
+                                        plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),'Color',colors(mod(k-1,length(colors))+1,:),'LineWidth',2)
                                         %text(XData(l)-1.5,yOff2-yRef*4*(k + (counter-1.5)/NN),[num2str(pp,'%1.1g')],'Color',colors(k,:))
                                         if pp>significanceThreshold/10
-                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['*'],'Color',colors(k,:))
+                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['*'],'Color',colors(mod(k-1,length(colors))+1,:))
                                         else
-                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['**'],'Color',colors(k,:))
+                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['**'],'Color',colors(mod(k-1,length(colors))+1,:))
                                         end
                                     end
                                 end
