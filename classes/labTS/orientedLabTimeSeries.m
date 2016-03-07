@@ -176,9 +176,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
                 M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
             else
-            F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs.lowPassFilter(20);
+            F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
+            F=F.lowPassFilter(20).thresholdByChannel(-100,[side 'Fz'],1);
             F=squeeze(F.getOrientedData);
-            M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs.lowPassFilter(20);
+            M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
+            M=M.lowPassFilter(20);
             M=squeeze(M.getOrientedData);
             F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
             end
@@ -206,7 +208,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
             newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
             COP=orientedLabTimeSeries(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),this.orientation);
-            COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(50);
+            COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
         end
 
         %-------------------
@@ -342,7 +344,19 @@ classdef orientedLabTimeSeries  < labTimeSeries
             %PART 3: merge the two estimations through mle or something
            
         end
+        
+        function newThis=threshold(this,th)
+            newThis=this;
+            newThis.Data(sqrt(sum(newThis.Data.^2))<th,:)=0;
+        end
 
+        function newThis=thresholdByChannel(this,th,label,moreThanFlag)
+            if nargin<4 || isempty(moreThanFlag)
+                moreThanFlag=[];
+            end
+            newThis=thresholdByChannel@labTimeSeries(this,th,label,moreThanFlag);
+            newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+        end
         %-------------------
         function fh=plot3(this,fh)
             %plots all 3 components of all variables in OTS instance

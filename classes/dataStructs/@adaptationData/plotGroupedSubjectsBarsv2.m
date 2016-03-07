@@ -96,7 +96,8 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                         relevantSte=nanstd(allData.group{j}(:,k,i,:),[],4);%/sqrt(nSubs); %Avg. across subjects. We end up with: conditionsxStrideSetxGroups
                         else
                         relevantMean=nanmedian(allData.group{j}(:,k,i,:),4); %Median  across subjects. We end up with: conditionsxStrideSetxGroups
-                        relevantSte=.5*iqr(allData.group{j}(:,k,i,:),4);%/sqrt(nSubs); %.5 times Interquartile range across subjects, normalized to sqrt(Number of subjects) to be consistent with STE
+                        %relevantSte=.5*iqr(allData.group{j}(:,k,i,:),4);%/sqrt(nSubs); %.5 times Interquartile range across subjects, normalized to sqrt(Number of subjects) to be consistent with STE
+                        relevantSte=.5*diff(prctile(allData.group{j}(:,k,i,:),[16,84],4),[],4); %Using half of the 16-84 percentile (which in a normal dist corresponds to 1 stdev)
                         end
                         xPos=(j+(k-1)*(Ngroups+1)):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
                         if N2(k)<0

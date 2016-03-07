@@ -458,6 +458,15 @@ classdef labTimeSeries  < timeseries
              this.QualityInfo.Description={'good','missing'};
         end
         
+        function newThis=thresholdByChannel(this,th,label,moreThanFlag)
+            newThis=this;
+            if nargin<4 || isempty(moreThanFlag) || moreThanFlag==0
+                newThis.Data(newThis.getDataAsVector(label)<th,:)=0;
+            elseif moreThanFlag==1
+                newThis.Data(newThis.getDataAsVector(label)>th,:)=0;
+            end
+        end
+        
         %------------------
         
         %Getters for dependent properties
