@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of binData</title>
+  <meta name="keywords" content="binData">
+  <meta name="description" content="BINDATA computes a running average">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; binData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>binData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>BINDATA computes a running average</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [xnew, xnewstd]=binData(x,binwidth) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">BINDATA computes a running average
+
+   [xnew,xnewstd]=binData(x,binwidth) averages binwidth elements of the
+   columns in x and returns the average (xnew) and standard deviations (xnewstd).
+   The returned variables have columns that are length N-(binwidth-1) where N
+   is the number of elements in a row of x.
+ 
+writen by GTO April 14th 2009</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>	SMOOTHEDMAX finds the maximum value of an N-pt running average</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xnew, xnewstd]=binData(x,binwidth)</a>
+0002 <span class="comment">%BINDATA computes a running average</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   [xnew,xnewstd]=binData(x,binwidth) averages binwidth elements of the</span>
+0005 <span class="comment">%   columns in x and returns the average (xnew) and standard deviations (xnewstd).</span>
+0006 <span class="comment">%   The returned variables have columns that are length N-(binwidth-1) where N</span>
+0007 <span class="comment">%   is the number of elements in a row of x.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%writen by GTO April 14th 2009</span>
+0010 
+0011 <span class="keyword">if</span> ~isempty(x)
+0012     <span class="keyword">if</span> binwidth==1
+0013         xnew=x;
+0014         xnewstd=zeros(size(x,1),size(x,2));
+0015     <span class="keyword">elseif</span> binwidth&gt;size(x,1)
+0016         ME=MException(<span class="string">'binData:InvalidInput'</span>,<span class="string">'binwidth is larger than x.'</span>);
+0017         throw(ME);
+0018     <span class="keyword">else</span>
+0019         bstart=1:size(x,1)-(binwidth-1);
+0020         bend=bstart+binwidth-1;
+0021         <span class="keyword">if</span> any(bend&gt;size(x,1))
+0022             bend(bend&gt;size(x,1))=size(x,1);
+0023             warning(<span class="string">'The end elements of binned data may not be averages of binwidth elements'</span>)
+0024         <span class="keyword">end</span>
+0025         
+0026         <span class="keyword">for</span> i=1:length(bstart)
+0027             t1 = bstart(i);
+0028             t2 = bend(i);
+0029             <span class="keyword">if</span> t2==t1; <span class="comment">%would this ever happen?</span>
+0030                 xnew(i,:)=NaN*zeros(1,size(x,2));
+0031                 xnewstd(i,:)=NaN*zeros(1,size(x,2));
+0032                 <span class="comment">%xnew(l,:)=x(t1,:);</span>
+0033                 <span class="comment">%xnewstd(l,:)=zeros(1,size(x,2));</span>
+0034             <span class="keyword">else</span>
+0035                 xnew(i,:) = nanmean(x(t1:t2,:));
+0036                 xnewstd(i,:) = nanstd(x(t1:t2,:));
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">else</span>
+0041     xnew=[];
+0042     xnewstd=[];
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

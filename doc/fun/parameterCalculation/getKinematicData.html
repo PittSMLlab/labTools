@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getKinematicData</title>
+  <meta name="keywords" content="getKinematicData">
+  <meta name="description" content="getKinematicData   loads marker data sampled only at time of gait events">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; getKinematicData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getKinematicData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>getKinematicData   loads marker data sampled only at time of gait events</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getKinematicData   loads marker data sampled only at time of gait events
+
+getKinematicData generates:
+
+ Three dimensional matrices in the format:
+   number of strides x 6 events (SHS thru FTO2) x 2 dimensions (x,y)
+ whith variable names:
+   sAnk2D, fAnk2D 
+
+ Two dimensional matrices in the format:
+   number of strides x 6 events (SHS thru FTO2)
+ with variable names:
+   sAnkFwd, fAnkFwd: ankle position in fore-aft direction with respect to avg hip
+   sAngle, fAngle: limb angles (angle of hip-ankle vector with respect to verticle)                         
+
+ direction: a vector with length equal to the number of strides and
+   values of 1 if walking towards the door in the lab and -1 if walking
+   towards the window.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>	%</li><li><a href="computeSpatialParametersChronos.html" class="code" title="function [out] = computeSpatialParametersChronos(strideEvents,stridedMarkerData,initEventSide)">computeSpatialParametersChronos</a>	%</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s)</a>
+0002 <span class="comment">%getKinematicData   loads marker data sampled only at time of gait events</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%getKinematicData generates:</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Three dimensional matrices in the format:</span>
+0007 <span class="comment">%   number of strides x 6 events (SHS thru FTO2) x 2 dimensions (x,y)</span>
+0008 <span class="comment">% whith variable names:</span>
+0009 <span class="comment">%   sAnk2D, fAnk2D</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Two dimensional matrices in the format:</span>
+0012 <span class="comment">%   number of strides x 6 events (SHS thru FTO2)</span>
+0013 <span class="comment">% with variable names:</span>
+0014 <span class="comment">%   sAnkFwd, fAnkFwd: ankle position in fore-aft direction with respect to avg hip</span>
+0015 <span class="comment">%   sAngle, fAngle: limb angles (angle of hip-ankle vector with respect to verticle)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% direction: a vector with length equal to the number of strides and</span>
+0018 <span class="comment">%   values of 1 if walking towards the door in the lab and -1 if walking</span>
+0019 <span class="comment">%   towards the window.</span>
+0020 
+0021 <span class="comment">% Three dimensional matrices in the format:</span>
+0022 <span class="comment">%   number of strides x 6 events (SHS thru FTO2) x 3 dimensions (x,y,z)</span>
+0023 <span class="comment">% whith variable names:</span>
+0024 <span class="comment">%   sHip</span>
+0025 <span class="comment">%   fHip</span>
+0026 <span class="comment">%   sAnk</span>
+0027 <span class="comment">%   fAnk</span>
+0028 <span class="comment">%   sToe</span>
+0029 <span class="comment">%   fToe</span>
+0030 
+0031 <span class="comment">%THE FOLLOWING RELIES ON HAVING A DECENT RECONSTRUCTION OF HIP MARKERS:</span>
+0032 refMarker3D=.5*sum(markerData.getOrientedData({<span class="string">'LHIP'</span>,<span class="string">'RHIP'</span>}),2); <span class="comment">%midHip</span>
+0033 
+0034 <span class="comment">%Ref axis option 1 (ideal): Body reference</span>
+0035 refAxis=squeeze(diff(markerData.getOrientedData({<span class="string">'LHIP'</span>,<span class="string">'RHIP'</span>}),1,2)); <span class="comment">%L to R</span>
+0036 
+0037 <span class="comment">%Ref axis option 2 (assuming the subject walks only along the y axis):</span>
+0038 refAxis=refAxis*[1,0,0]' *[1,0,0]; <span class="comment">%Projecting along x direction, this is equivalent to just determining forward/backward sign</span>
+0039 rotatedMarkerData=markerData.translate(-squeeze(refMarker3D)).alignRotate(refAxis,[0,0,1]);
+0040 
+0041 <span class="comment">%% Get relevant sample of data (using interpolation)</span>
+0042 <span class="keyword">if</span> strcmp(s,<span class="string">'L'</span>)
+0043     f=<span class="string">'R'</span>;
+0044 <span class="keyword">elseif</span> strcmp(s,<span class="string">'R'</span>)
+0045     f=<span class="string">'L'</span>;
+0046 <span class="keyword">else</span>
+0047     error();
+0048 <span class="keyword">end</span> 
+0049 orientation=markerData.orientation;
+0050 directions={orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
+0051 signs=[orientation.sideSign,orientation.foreaftSign,orientation.updownSign];
+0052 markers={<span class="string">'HIP'</span>,<span class="string">'ANK'</span>,<span class="string">'TOE'</span>};
+0053 labels={};
+0054 legs={s,f};
+0055 legs2={<span class="string">'s'</span>,<span class="string">'f'</span>};
+0056 <span class="keyword">for</span> j=1:length(markers)
+0057     <span class="keyword">for</span> leg=1:2
+0058         labels{end+1}=[legs{leg} markers{j}]; <span class="comment">%Odd are s, Even are f</span>
+0059     <span class="keyword">end</span>
+0060 <span class="keyword">end</span>
+0061 [bool,idx]=isaLabelPrefix(markerData,labels);
+0062 <span class="keyword">if</span> ~all(bool)
+0063     warning([<span class="string">'Markers are missing: '</span> cell2mat(strcat(labels(~bool),<span class="string">','</span>))])
+0064 <span class="keyword">end</span>
+0065 <span class="keyword">for</span> j=1:length(labels) <span class="comment">%Assign each marker data to a x3 str</span>
+0066     aux=markerData.getDataAsTS(markerData.addLabelSuffix(labels{j}));
+0067     <span class="keyword">if</span> ~isempty(aux.Data)
+0068         newMarkerData=aux.getSample(eventTimes,<span class="string">'closest'</span>); <span class="comment">%Closest point interpolation</span>
+0069         aux=rotatedMarkerData.getDataAsTS(rotatedMarkerData.addLabelSuffix(labels{j}));
+0070         relMarkerData=aux.getSample(eventTimes,<span class="string">'closest'</span>); <span class="comment">%Closest point interpolation</span>
+0071     <span class="keyword">else</span> <span class="comment">%Missing marker</span>
+0072         warning([<span class="string">'Marker '</span> labels{j} <span class="string">' is missing. All references to it will return NaN.'</span>]);
+0073         newMarkerData=nan([size(eventTimes),3]);
+0074         relMarkerData=nan([size(eventTimes),3]);
+0075     <span class="keyword">end</span>
+0076     
+0077     <span class="keyword">if</span> strcmp(labels{j}(1),s) <span class="comment">%s markers</span>
+0078         eval([<span class="string">'s'</span> upper(labels{j}(2)) lower(labels{j}(3:4)) <span class="string">'=newMarkerData;'</span>]);
+0079         eval([<span class="string">'s'</span> upper(labels{j}(2)) lower(labels{j}(3:4)) <span class="string">'Rel=relMarkerData;'</span>]);
+0080     <span class="keyword">elseif</span> strcmp(labels{j}(1),f)
+0081         eval([<span class="string">'f'</span> upper(labels{j}(2)) lower(labels{j}(3:4)) <span class="string">'=newMarkerData;'</span>]);
+0082         eval([<span class="string">'f'</span> upper(labels{j}(2)) lower(labels{j}(3:4)) <span class="string">'Rel=relMarkerData;'</span>]);
+0083     <span class="keyword">else</span>
+0084        error(<span class="string">'Marker labels have to begin with ''R'' or ''L'''</span>); 
+0085     <span class="keyword">end</span>
+0086 <span class="keyword">end</span> 
+0087     
+0088 <span class="comment">%get angle data</span>
+0089 <span class="keyword">if</span> ~isempty(angleData)
+0090     newAngleData=angleData.getDataAsTS({[s,<span class="string">'Limb'</span>],[f,<span class="string">'Limb'</span>]});
+0091     newAngleData=newAngleData.getSample(eventTimes,<span class="string">'closest'</span>);
+0092     sAngle=newAngleData(:,:,1);
+0093     fAngle=newAngleData(:,:,2);
+0094 <span class="keyword">else</span>
+0095     sAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
+0096     fAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
+0097 <span class="keyword">end</span>
+0098     
+0099 <span class="comment">%% Compute:</span>
+0100 <span class="comment">%find walking direction</span>
+0101 direction=sign(diff(sAnk(:,2:3,2),1,2)); <span class="comment">%Difference in ankle marker position on the y-axis, between fTO and fHS</span>
+0102 
+0103 
+0104 hipPos3D=.5*(sHip+fHip);
+0105 hipPos3DRel=.5*(sHipRel+fHipRel); <span class="comment">%Just for check, should be all zeros</span>
+0106 hipPosFwd=hipPos3D(:,:,2);<span class="comment">%Y-axis component</span>
+0107 <span class="comment">%hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);</span>
+0108 hipPos=hipPosFwd(:,1);
+0109 
+0110 <span class="comment">%rotate coordinates to be aligned wiht walking dierection</span>
+0111 <span class="comment">%sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;</span>
+0112 <span class="comment">%fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;</span>
+0113 
+0114 <span class="comment">%avgRotation = (sRotation+fRotation)./2;</span>
+0115 
+0116 <span class="comment">%rotationMatrix = [cosd(avgRotation) -sind(avgRotation) 0; sind(avgRotation) cosd(avgRotation) 0; 0 0 1];</span>
+0117 <span class="comment">%sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';</span>
+0118 <span class="comment">%fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';</span>
+0119 <span class="comment">%sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';</span>
+0120 <span class="comment">%fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';</span>
+0121 
+0122 <span class="comment">%NEED TO ROTATE</span>
+0123 
+0124 hipPos2D=hipPos3D(:,:,1:2);
+0125 <span class="comment">%Compute ankle position relative to average hip position</span>
+0126 sAnkFwd=sAnk(:,:,2)-hipPosFwd;
+0127 fAnkFwd=fAnk(:,:,2)-hipPosFwd;
+0128 sAnk2D=sAnk(:,:,1:2)-hipPos2D;
+0129 fAnk2D=fAnk(:,:,1:2)-hipPos2D;
+0130 <span class="comment">% Set all steps to have the same slope (a negative slope during stance phase is assumed)</span>
+0131 <span class="comment">%WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION</span>
+0132 <span class="comment">%DOESN'T?</span>
+0133 
+0134 aux=sign(diff(sAnk(:,[4,5],2),1,2)); <span class="comment">%Checks for: sAnk(indSHS2,2)&lt;sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.</span>
+0135 sAnkFwd=bsxfun(@times,sAnkFwd,aux);
+0136 fAnkFwd=bsxfun(@times,fAnkFwd,aux);
+0137 sAnk2D=bsxfun(@times,sAnk2D,aux);
+0138 fAnk2D=bsxfun(@times,fAnk2D,aux);
+0139 
+0140 <span class="comment">%Alternative definition: should be equivalent, since we reference to midHip</span>
+0141 <span class="comment">%when doing the rotation. Only difference may be in sign of walking, since</span>
+0142 <span class="comment">%its computed slighltly different. Should not cause issues as differences</span>
+0143 <span class="comment">%may only ocurr when subject is turning around, which is a bad stride</span>
+0144 <span class="comment">%anyway</span>
+0145 <span class="comment">%WARNING: THIS WAS DISABLED BECAUSE IT LEADS TO CRAPPY RESULTS WHEN HIP</span>
+0146 <span class="comment">%MARKERS ARE NOT RELIABLE (NOISY). NEED TO FIX. THE PROBLEM IS</span>
+0147 <span class="comment">%sAnkFwd-fAnkFwd DEPENDS ON HIP POSITION WHEN IT SHOULDNT (COMPUTING</span>
+0148 <span class="comment">%DIFFERENCE OF TWO MARKER POSITIONS USING SAME REFERENCE). NOT SURE WHY.</span>
+0149 <span class="comment">%sAnkFwd=sAnkRel(:,:,2);</span>
+0150 <span class="comment">%fAnkFwd=fAnkRel(:,:,2);</span>
+0151 <span class="comment">%sAnk2D=sAnkRel(:,:,1:2);</span>
+0152 <span class="comment">%fAnk2D=fAnkRel(:,:,1:2);</span>
+0153 
+0154 aux=sign(sAngle(:,1)); <span class="comment">%Checks for sAngle(indSHS)&lt;0</span>
+0155 sAngle=bsxfun(@times,sAngle,aux);
+0156 fAngle=bsxfun(@times,fAngle,aux);
+0157 
+0158 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcangle</title>
+  <meta name="keywords" content="calcangle">
+  <meta name="description" content="angle.m">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; calcangle.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>calcangle
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>angle.m</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function angle=calcangle(jt1, jt2, jt3) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">angle.m
+ data=angle(jt1, jt2, jt3)
+calculates angle between vectors
+pass it the 3D position of three joints - e.g. jt1=[x y z] jt2=[x y z] jt3=[x y z]
+make jt2 the vertex. Pass 2D position for 2D angle</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angle=calcangle(jt1, jt2, jt3)</a>
+0002 <span class="comment">%angle.m</span>
+0003 <span class="comment">% data=angle(jt1, jt2, jt3)</span>
+0004 <span class="comment">%calculates angle between vectors</span>
+0005 <span class="comment">%pass it the 3D position of three joints - e.g. jt1=[x y z] jt2=[x y z] jt3=[x y z]</span>
+0006 <span class="comment">%make jt2 the vertex. Pass 2D position for 2D angle</span>
+0007 
+0008 
+0009      
+0010       vector1=jt2-jt1;
+0011       vector2=jt2-jt3;
+0012       dotprod=dot(vector1,vector2,2); <span class="comment">%find dot product in 2D</span>
+0013       [rr, cc]=size(jt1);
+0014       
+0015       <span class="keyword">if</span> cc==3 <span class="comment">%3D</span>
+0016        len1=sqrt((vector1(:,1).^2)+(vector1(:,2).^2)+(vector1(:,3).^2));
+0017        len2=sqrt((vector2(:,1).^2)+(vector2(:,2).^2)+(vector2(:,3).^2));
+0018        theangle=acos(dotprod./(len1.*len2));
+0019       <span class="keyword">else</span> <span class="comment">%2D</span>
+0020        len1=sqrt((vector1(:,1).^2)+(vector1(:,2).^2));
+0021        len2=sqrt((vector2(:,1).^2)+(vector2(:,2).^2));
+0022        theangle=acos(dotprod./(len1.*len2));
+0023       <span class="keyword">end</span>;
+0024       angle=theangle*(180/pi);
+0025               
+0026       
+0027 
+0028     clear vector1 vector2 dotprod jt1 jt2 jt3 rr cc len1 len2 tempang theangle</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

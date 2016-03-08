@@ -1,0 +1,598 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of groupAdaptationData</title>
+  <meta name="keywords" content="groupAdaptationData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; groupAdaptationData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>groupAdaptationData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li><li><a href="plotBars.html" class="code" title="function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>	TODO: Should check that numberOfStrides groups are given in</li><li><a href="plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=groupAdaptationData(ID,data)</a></li><li><a href="#_sub2" class="code">function conditions = getCommonConditions(this,subs)</a></li><li><a href="#_sub3" class="code">function [parameters,descriptions] = getCommonParameters(this,subs)</a></li><li><a href="#_sub4" class="code">function [parameters,descriptions] = getAllParameters(this,subs)</a></li><li><a href="#_sub5" class="code">function labelList=getLabelsThatMatch(this,exp)</a></li><li><a href="#_sub6" class="code">function newThis=cat(this,other)</a></li><li><a href="#_sub7" class="code">function newThis=removeBadStrides(this)</a></li><li><a href="#_sub8" class="code">function newThis=markBadWhenMissingAny(this,labels)</a></li><li><a href="#_sub9" class="code">function newThis=markBadWhenMissingAll(this,labels)</a></li><li><a href="#_sub10" class="code">function newThis=removeBias(this)</a></li><li><a href="#_sub11" class="code">function newThis=normalizeBias(this)</a></li><li><a href="#_sub12" class="code">function newThis=renameParams(this,oldLabels,newLabels)</a></li><li><a href="#_sub13" class="code">function newThis=medianFilter(this,N)</a></li><li><a href="#_sub14" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a></li><li><a href="#_sub15" class="code">function newThis=removeSubs(this,subList)</a></li><li><a href="#_sub16" class="code">function newThis=getSubGroup(this,subList)</a></li><li><a href="#_sub17" class="code">function data=getAdaptData(this,subID)</a></li><li><a href="#_sub18" class="code">function [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub19" class="code">function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub20" class="code">function [data]=getGroupedDataFromInds(this,inds,label)</a></li><li><a href="#_sub21" class="code">function [meanData,stdData]=getAvgGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub22" class="code">function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)</a></li><li><a href="#_sub23" class="code">function [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)</a></li><li><a href="#_sub24" class="code">function [p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)</a></li><li><a href="#_sub25" class="code">function [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds,interactionFlag,avgFlag)</a></li><li><a href="#_sub26" class="code">function [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)</a></li><li><a href="#_sub27" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=summaryKW(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub28" class="code">function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>
+0002     <span class="comment">%groupAdaptaitonData  contains the adaptation data objects for a group</span>
+0003     <span class="comment">%of subjects</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%groupAdaptaitonData properties:</span>
+0006     <span class="comment">%   ID - cell array of strings listing subject ID's in group</span>
+0007     <span class="comment">%   adaptData - cell array of adaptationData objects</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%groupAdaptaitonData Methods:</span>
+0010     <span class="comment">%</span>
+0011     <span class="comment">%See also: experimentMetaData, subjectData, adaptationData</span>
+0012     
+0013     properties
+0014         ID <span class="comment">%cell array of strings listing subject ID's in group</span>
+0015         adaptData <span class="comment">% cell array of adaptationData objects</span>
+0016     <span class="keyword">end</span>
+0017     
+0018     properties (Dependent)
+0019         
+0020     <span class="keyword">end</span>
+0021     
+0022     methods
+0023         <span class="comment">%% Constructor</span>
+0024         <a name="_sub0" href="#_subfunctions" class="code">function this=groupAdaptationData(ID,data)</a>
+0025             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; length(ID)==length(data)
+0026                 boolFlag=false(1,length(data));
+0027                 <span class="keyword">for</span> i=1:length(data)
+0028                     boolFlag(i)=isa(data{i},<span class="string">'adaptationData'</span>);
+0029                 <span class="keyword">end</span>
+0030                 <span class="keyword">if</span> all(boolFlag)
+0031                     this.ID=ID;
+0032                     this.adaptData=data;
+0033                 <span class="keyword">end</span>
+0034             <span class="keyword">end</span>
+0035         <span class="keyword">end</span>
+0036         
+0037         <span class="comment">%% Other Functions</span>
+0038         
+0039         <a name="_sub1" href="#_subfunctions" class="code">function conditions = getCommonConditions(this,subs)</a>
+0040             <span class="keyword">if</span> nargin&lt;2 || isempty(subs)
+0041                 subs=1:length(this.ID);
+0042             <span class="keyword">else</span>
+0043                 <span class="keyword">if</span> isa(subs,<span class="string">'cell'</span>)
+0044                     subs=find(ismember(this.ID,subs));
+0045                 <span class="keyword">end</span>
+0046             <span class="keyword">end</span>
+0047             conditions=this.adaptData{subs(1)}.metaData.conditionName;
+0048             conditions=conditions(~cellfun(<span class="string">'isempty'</span>,conditions));
+0049             <span class="keyword">for</span> s=2:length(subs)
+0050                 conds=this.adaptData{subs(s)}.metaData.conditionName;
+0051                 conds=conds(~cellfun(<span class="string">'isempty'</span>,conds));
+0052                 <span class="comment">%check if current subject had conditions other than the rest</span>
+0053                 <span class="keyword">for</span> c=1:length(conds)                    
+0054                     <span class="keyword">if</span> ~ismember(lower(conds(c)),lower(conditions))
+0055                         <span class="comment">%Subs.(abrevGroup).conditions{end+1}=conditions{c};</span>
+0056                         disp([<span class="string">'Warning: '</span> this.ID{subs(s)} <span class="string">' performed '</span> conds{c} <span class="string">', but it was not perfomred by all subjects.'</span>])
+0057                     <span class="keyword">end</span>                    
+0058                 <span class="keyword">end</span>
+0059                 <span class="comment">%check if current subject didn't have a condition that the rest had</span>
+0060                 <span class="keyword">for</span> c=1:length(conditions)
+0061                     <span class="keyword">if</span> ~ismember(lower(conditions(c)),lower(conds)) &amp;&amp; ~isempty(conditions{c})
+0062                         disp([<span class="string">'Warning: '</span> this.ID{subs(s)} <span class="string">' did not perform '</span> conditions{c} <span class="string">' but '</span> strjoin(this.ID(subs(1:s-1)),<span class="string">', '</span>) <span class="string">' did.'</span>])
+0063                         conditions{c}=<span class="string">''</span>;
+0064                     <span class="keyword">end</span>
+0065                 <span class="keyword">end</span>
+0066                 <span class="comment">%refresh conditions by removing empty cells (if you remove</span>
+0067                 <span class="comment">%them above, the for loop doesn't work any more)</span>
+0068                 conditions=conditions(~cellfun(<span class="string">'isempty'</span>,conditions));
+0069             <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071         
+0072         <a name="_sub2" href="#_subfunctions" class="code">function [parameters,descriptions] = getCommonParameters(this,subs)</a>
+0073             <span class="keyword">if</span> nargin&lt;2 || isempty(subs)
+0074                 subs=1:length(this.ID);
+0075             <span class="keyword">else</span>
+0076                 <span class="keyword">if</span> isa(subs,<span class="string">'cell'</span>)
+0077                     subs=find(ismember(this.ID,subs));
+0078                 <span class="keyword">end</span>
+0079             <span class="keyword">end</span>
+0080             [parameters,descriptions]=this.adaptData{1}.getParameterList;
+0081             <span class="keyword">for</span> s=2:length(subs)
+0082                 params=this.adaptData{subs(s)}.getParameterList;
+0083                 <span class="comment">%check if current subject had parameters other than the rest</span>
+0084                 <span class="keyword">for</span> p=1:length(params)                    
+0085                     <span class="keyword">if</span> ~ismember(params(p),parameters)
+0086                         disp([<span class="string">'Warning: '</span> this.ID{subs(s)} <span class="string">' has '</span> params{p} <span class="string">', but it was not computed for all subjects.'</span>])
+0087                     <span class="keyword">end</span>                    
+0088                 <span class="keyword">end</span>
+0089                 <span class="comment">%check if current subject didn't have a parameter that the rest had</span>
+0090                 <span class="keyword">for</span> p=1:length(parameters)
+0091                     <span class="keyword">if</span> ~ismember(parameters(p),params)
+0092                         disp([<span class="string">'Warning: '</span>  parameters{p} <span class="string">'was not computed for'</span> this.ID{subs(s)} <span class="string">', but was for '</span> strjoin(this.ID(1:subs(1:s-1)),<span class="string">', '</span>) <span class="string">'.'</span>])
+0093                         parameters{p}=<span class="string">''</span>;                        
+0094                     <span class="keyword">end</span>
+0095                 <span class="keyword">end</span>
+0096                 <span class="comment">%refresh parameters by removing empty cells (if you remove</span>
+0097                 <span class="comment">%them above, the for loop doesn't work any more)</span>
+0098                 inds=find(~cellfun(<span class="string">'isempty'</span>,parameters));
+0099                 parameters=parameters(inds);
+0100                 descriptions=descriptions(inds);
+0101             <span class="keyword">end</span>
+0102         <span class="keyword">end</span>
+0103         
+0104         <a name="_sub3" href="#_subfunctions" class="code">function [parameters,descriptions] = getAllParameters(this,subs)</a>
+0105             <span class="keyword">if</span> nargin&lt;2 || isempty(subs)
+0106                 subs=1:length(this.ID);
+0107             <span class="keyword">else</span>
+0108                 <span class="keyword">if</span> isa(subs,<span class="string">'cell'</span>)
+0109                     subs=find(ismember(this.ID,subs));
+0110                 <span class="keyword">end</span>
+0111             <span class="keyword">end</span>
+0112             allParams={};
+0113             allDesc={};
+0114             <span class="keyword">for</span> s=1:length(subs)
+0115                 [parameters,descriptions]=this.adaptData{s}.getParameterList;
+0116                 allParams=[allParams(:); parameters];
+0117                 allDesc=[allDesc(:); descriptions];
+0118             <span class="keyword">end</span>
+0119             [parameters,idx]=unique(allParams);
+0120             descriptions=allDesc(idx);
+0121         <span class="keyword">end</span>
+0122         
+0123         <a name="_sub4" href="#_subfunctions" class="code">function labelList=getLabelsThatMatch(this,exp)</a>
+0124             labelList=this.getAllParameters; 
+0125             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+0126             labelList=labelList(flags);
+0127         <span class="keyword">end</span>
+0128         
+0129         
+0130         <span class="comment">%Modifiers</span>
+0131         <a name="_sub5" href="#_subfunctions" class="code">function newThis=cat(this,other)</a>
+0132             newThis=<a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>([this.ID other.ID],[this.adaptData other.adaptData]);            
+0133         <span class="keyword">end</span>
+0134         
+0135         <a name="_sub6" href="#_subfunctions" class="code">function newThis=removeBadStrides(this)</a>
+0136             newThis=this;
+0137            <span class="keyword">for</span> i=1:length(this.ID)
+0138               newThis.adaptData{i}=this.adaptData{i}.removeBadStrides;
+0139            <span class="keyword">end</span>
+0140         <span class="keyword">end</span>
+0141         
+0142         <a name="_sub7" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAny(this,labels)</a>
+0143             newThis=this;
+0144            <span class="keyword">for</span> i=1:length(this.ID)
+0145               newThis.adaptData{i}=this.adaptData{i}.markBadWhenMissingAny(labels);
+0146            <span class="keyword">end</span>
+0147         <span class="keyword">end</span>
+0148         
+0149         <a name="_sub8" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAll(this,labels)</a>
+0150             newThis=this;
+0151            <span class="keyword">for</span> i=1:length(this.ID)
+0152               newThis.adaptData{i}=this.adaptData{i}.markBadWhenMissingAll(labels);
+0153            <span class="keyword">end</span>
+0154         <span class="keyword">end</span>
+0155         
+0156         <a name="_sub9" href="#_subfunctions" class="code">function newThis=removeBias(this)</a>
+0157             newThis=this;
+0158             <span class="keyword">for</span> i=1:length(this.ID)
+0159                 newThis.adaptData{i}=this.adaptData{i}.removeBias;
+0160             <span class="keyword">end</span>
+0161               
+0162         <span class="keyword">end</span>
+0163         
+0164         <a name="_sub10" href="#_subfunctions" class="code">function newThis=normalizeBias(this)</a>
+0165             newThis=this;
+0166             <span class="keyword">for</span> i=1:length(this.ID)
+0167                 newThis.adaptData{i}=this.adaptData{i}.normalizeBias;
+0168             <span class="keyword">end</span>
+0169               
+0170         <span class="keyword">end</span>
+0171         
+0172         <a name="_sub11" href="#_subfunctions" class="code">function newThis=renameParams(this,oldLabels,newLabels)</a>
+0173            <span class="keyword">for</span> i=1:length(this.ID)
+0174                this.adaptData{i}=this.adaptData{i}.renameParams(oldLabels,newLabels);
+0175            <span class="keyword">end</span>
+0176            newThis=this;
+0177         <span class="keyword">end</span>
+0178         
+0179         <a name="_sub12" href="#_subfunctions" class="code">function newThis=medianFilter(this,N)</a>
+0180             newThis=this;
+0181             <span class="keyword">for</span> i=1:length(this.adaptData)
+0182                 newThis.adaptData{i}=this.adaptData{i}.medianFilter(N);
+0183             <span class="keyword">end</span>
+0184         <span class="keyword">end</span>
+0185         
+0186         <a name="_sub13" href="#_subfunctions" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a>
+0187             newThis=this;
+0188             <span class="keyword">for</span> i=1:length(this.adaptData)
+0189                newThis.adaptData{i}=this.adaptData{i}.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
+0190             <span class="keyword">end</span>
+0191         <span class="keyword">end</span>
+0192         
+0193         <a name="_sub14" href="#_subfunctions" class="code">function newThis=removeSubs(this,subList)</a>
+0194            <span class="keyword">for</span> i=1:length(subList)
+0195                ii=find(strcmp(subList{i},this.ID));
+0196                this.ID=this.ID([1:ii-1,ii+1:end]);
+0197                this.adaptData=this.adaptData([1:ii-1,ii+1:end]);
+0198            <span class="keyword">end</span>
+0199            newThis=this;
+0200         <span class="keyword">end</span>
+0201         
+0202         <a name="_sub15" href="#_subfunctions" class="code">function newThis=getSubGroup(this,subList)</a>
+0203             ii=nan(size(subList));
+0204             <span class="keyword">for</span> i=1:length(subList)
+0205                j=find(strcmp(subList{i},this.ID));
+0206                <span class="keyword">if</span> ~isempty(j)
+0207                    ii(i)=j;
+0208                <span class="keyword">else</span>
+0209                    error(<span class="string">'groupAdaptationData:getSubGroup'</span>,[<span class="string">'Tried fetching subject '</span> subList{i} <span class="string">' but found no matching IDs.'</span>])
+0210                <span class="keyword">end</span>
+0211            <span class="keyword">end</span>
+0212            newThis=this;
+0213            newThis.ID=newThis.ID(ii);
+0214            newThis.adaptData=newThis.adaptData(ii);
+0215         <span class="keyword">end</span>
+0216         
+0217         <span class="comment">%I/O</span>
+0218         <a name="_sub16" href="#_subfunctions" class="code">function data=getAdaptData(this,subID)</a>
+0219            subInd=find(ismember(subID,this.ID));
+0220            <span class="keyword">if</span> subInd ~= 0
+0221                data = this.adaptData{subInd};
+0222            <span class="keyword">else</span>
+0223                data =[];
+0224            <span class="keyword">end</span>
+0225         <span class="keyword">end</span>
+0226         
+0227         <a name="_sub17" href="#_subfunctions" class="code">function [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)</a>
+0228             <span class="keyword">for</span> subject=1:length(this.adaptData) <span class="comment">%Getting data for each subject in the list</span>
+0229                 [inds(:,subject),names]=this.adaptData{subject}.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+0230             <span class="keyword">end</span>
+0231         <span class="keyword">end</span>
+0232         
+0233         <a name="_sub18" href="#_subfunctions" class="code">function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)</a>
+0234             <span class="keyword">if</span> removeBiasFlag
+0235                 this=this.removeBias;
+0236             <span class="keyword">end</span>
+0237             [inds,names]=<a href="#_sub18" class="code" title="subfunction [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)">getGroupedInds</a>(this,conds,numberOfStrides,exemptFirst,exemptLast);  
+0238             [data]=<a href="#_sub20" class="code" title="subfunction [data]=getGroupedDataFromInds(this,inds,label)">getGroupedDataFromInds</a>(this,inds,label);
+0239         <span class="keyword">end</span>
+0240         
+0241         <a name="_sub19" href="#_subfunctions" class="code">function [data]=getGroupedDataFromInds(this,inds,label)</a>
+0242             data=cell(size(inds,1));
+0243             nConds=size(inds{1,1},2);
+0244             nLabs=length(label);
+0245             nSubs=length(this.ID);
+0246             <span class="comment">%Initialize:</span>
+0247             <span class="keyword">for</span> i=1:length(data)
+0248                data{i}=zeros(nConds,size(inds{i,1},1),nLabs,nSubs);  <span class="comment">%Conds x strideGroups x labels x subs</span>
+0249             <span class="keyword">end</span>
+0250             
+0251 <span class="comment">%             for subject=1:length(this.adaptData) %Getting data for each subject in the list</span>
+0252 <span class="comment">%                data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,0,numberOfStrides,exemptLast,exemptFirst);</span>
+0253 <span class="comment">%                for i=1:length(data)</span>
+0254 <span class="comment">%                    data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects</span>
+0255 <span class="comment">%                end</span>
+0256 <span class="comment">%             end</span>
+0257             
+0258             <span class="comment">%Alt: (using the inds data, so we are sure we are actually</span>
+0259             <span class="comment">%getting the same strides when calling upon any function)</span>
+0260             <span class="keyword">for</span> j=1:length(this.adaptData) <span class="comment">%For each sub</span>
+0261                 allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
+0262                 <span class="keyword">for</span> i=1:length(data) <span class="comment">%For each strideGroup</span>
+0263                     data{i}(:,:,:,j)=allData{i};
+0264                 <span class="keyword">end</span>
+0265             <span class="keyword">end</span>
+0266             
+0267         <span class="keyword">end</span>
+0268         
+0269         <a name="_sub20" href="#_subfunctions" class="code">function [meanData,stdData]=getAvgGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)</a>
+0270             [data]=<a href="#_sub19" class="code" title="subfunction [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)">getGroupedData</a>(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast);
+0271             <span class="keyword">for</span> i=1:length(data)
+0272                meanData(:,i,:,:)=nanmean(data{i},2); <span class="comment">%conds x strideGroups x parameters x subjects</span>
+0273                stdData(:,i,:,:)=nanstd(data{i},[],2); 
+0274             <span class="keyword">end</span>
+0275         <span class="keyword">end</span>
+0276         
+0277         <span class="comment">%Visualization</span>
+0278         <span class="comment">%Scatter</span>
+0279         
+0280         <span class="comment">%TimeCourses</span>
+0281         <a name="_sub21" href="#_subfunctions" class="code">function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)</a>
+0282             <span class="keyword">if</span> nargin&lt;4 || isempty(binwidth)
+0283                 binwidth=[];
+0284             <span class="keyword">end</span>
+0285             <span class="keyword">if</span> nargin&lt;5
+0286                 trialMarkerFlag=[];
+0287             <span class="keyword">end</span>
+0288             <span class="keyword">if</span> nargin&lt; 6
+0289                 indivFlag=[];
+0290             <span class="keyword">end</span>
+0291             <span class="keyword">if</span> nargin&lt;7
+0292                 indivSubs=[];
+0293             <span class="keyword">end</span>
+0294             <span class="keyword">if</span> nargin&lt;8
+0295                 colorOrder=[];
+0296             <span class="keyword">end</span>
+0297             <span class="keyword">if</span> nargin&lt;9 
+0298                 biofeedback=[];
+0299             <span class="keyword">end</span>
+0300             <span class="keyword">if</span> nargin&lt;10
+0301                 removeBiasFlag=0;<span class="comment">%Default = noremoval;</span>
+0302             <span class="keyword">end</span>
+0303             <span class="keyword">if</span> nargin&lt;11
+0304                 groupNames=[];
+0305             <span class="keyword">end</span>
+0306             <span class="keyword">if</span> nargin&lt;12
+0307                 medianFlag=[];
+0308             <span class="keyword">end</span>
+0309             <span class="keyword">if</span> nargin&lt;13
+0310                 plotHandles=[];
+0311             <span class="keyword">end</span>
+0312                 
+0313             fh=adaptationData.plotAvgTimeCourse(this.adaptData,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles);
+0314             
+0315         <span class="keyword">end</span>
+0316         
+0317         <span class="comment">%Bars</span>
+0318         [figHandle,allData]=<a href="plotBars.html" class="code" title="function [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix)">plotBars</a>(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
+0319         
+0320         <span class="comment">%Stats</span>
+0321         <span class="comment">%function []=anova2()</span>
+0322         <span class="comment">%</span>
+0323         <span class="comment">%end</span>
+0324         
+0325         <span class="comment">%function []=anova1()</span>
+0326         <span class="comment">%</span>
+0327         <span class="comment">%end</span>
+0328         
+0329         <a name="_sub22" href="#_subfunctions" class="code">function [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)</a>
+0330             <span class="comment">%Runs Friedman (non-parametric 1-way repeated measures anova</span>
+0331             <span class="comment">%equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is</span>
+0332             <span class="comment">%considered to be a block.</span>
+0333             <span class="comment">%It works by finding the indexes corresponding to conditions/strides desired, and calls on friedmanI.</span>
+0334             <span class="comment">%TODO: Should check that numberOfStrides groups are given in</span>
+0335             <span class="comment">%chronological order &amp; that so are the conditions in condList</span>
+0336             <span class="comment">%as it expects ordered things.</span>
+0337 
+0338             <span class="keyword">if</span> nargin&lt;7
+0339                 interactionFlag=[];
+0340             <span class="keyword">end</span>
+0341             <span class="keyword">if</span> nargin&lt;8
+0342                 avgFlag=[];
+0343             <span class="keyword">end</span>
+0344             N=abs(groupingStrides(1));
+0345             M=length(conds)*length(groupingStrides);
+0346             <span class="keyword">if</span> any(abs(groupingStrides)~=N) <span class="comment">%Friedman has to be balanced</span>
+0347                 warning([<span class="string">'Friedman test only supports balanced designs (all groups should have the same number of strides). Will use '</span> num2str(N) <span class="string">' strides in all conditions.'</span>])
+0348                 groupingStrides=N*sign(groupingStrides);
+0349             <span class="keyword">end</span>
+0350             inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
+0351             inds=cell2mat(inds');
+0352             [~,ii]=sort(nanmean(inds,1)); <span class="comment">%Sorting so groups are presented in appearance order.</span>
+0353             inds=inds(:,ii);
+0354             inds=mat2cell(inds,N*ones(length(this.ID),1),M);
+0355             [p,table,stats,postHoc,postHocEstimates,data]=<a href="#_sub25" class="code" title="subfunction [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds,interactionFlag,avgFlag)">friedmanI</a>(this,label,inds,interactionFlag,avgFlag);
+0356         <span class="keyword">end</span>
+0357         
+0358         <a name="_sub23" href="#_subfunctions" class="code">function [p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)</a>
+0359             <span class="comment">%TODO: Should check that numberOfStrides groups are given in</span>
+0360             <span class="comment">%chronological order &amp; that so are the conditions in condList</span>
+0361             <span class="comment">%as it expects ordered things.</span>
+0362 
+0363             <span class="keyword">if</span> nargin&lt;7
+0364                 interactionFlag=[];
+0365             <span class="keyword">end</span>
+0366             <span class="keyword">if</span> nargin&lt;8
+0367                 avgFlag=[];
+0368             <span class="keyword">end</span>
+0369             N=abs(groupingStrides(1));
+0370             M=length(conds)*length(groupingStrides);
+0371             <span class="keyword">if</span> any(abs(groupingStrides)~=N) <span class="comment">%Friedman has to be balanced</span>
+0372                 warning([<span class="string">'Anova1-RM test currently only supports balanced designs (all groups should have the same number of strides). Will use '</span> num2str(N) <span class="string">' strides in all conditions.'</span>])
+0373                 groupingStrides=N*sign(groupingStrides);
+0374             <span class="keyword">end</span>
+0375             inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
+0376             inds=cell2mat(inds');
+0377             [~,ii]=sort(nanmean(inds,1)); <span class="comment">%Sorting so groups are presented in appearance order.</span>
+0378             inds=inds(:,ii);
+0379             inds=mat2cell(inds,N*ones(length(this.ID),1),M);
+0380             [p,table,stats,postHoc,postHocEstimates,data]=<a href="#_sub26" class="code" title="subfunction [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)">anova1RMI</a>(this,label,inds,interactionFlag,avgFlag);
+0381         <span class="keyword">end</span>
+0382         
+0383         <a name="_sub24" href="#_subfunctions" class="code">function [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds,interactionFlag,avgFlag)</a>
+0384             <span class="comment">%Runs Friedman (non-parametric 1-way repeated measures anova</span>
+0385             <span class="comment">%equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is</span>
+0386             <span class="comment">%considered to be a block, and the different index groups are</span>
+0387             <span class="comment">%compared to each other.</span>
+0388             
+0389             <span class="comment">%inds should be a cell with length = #subs and its contents a</span>
+0390             <span class="comment">%NxM matrix, where M is the number of groups to be tested and N</span>
+0391             <span class="comment">%the number of strides/repetitions in each group</span>
+0392             <span class="comment">%Inds here follows a slightly different specification from that</span>
+0393             <span class="comment">%returned by getGroupedInds. In order to format the output of</span>
+0394             <span class="comment">%that function to the input of this, the following lines need to</span>
+0395             <span class="comment">%be executed:</span>
+0396             <span class="comment">%N=size(inds{1},1);</span>
+0397             <span class="comment">%M=size(inds{1},2)*size(inds,1);</span>
+0398             <span class="comment">%inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);</span>
+0399             
+0400             <span class="comment">%Check that the size of inds is the same for all</span>
+0401             <span class="comment">%subjects (friedman needs to be balanced)</span>
+0402             
+0403             <span class="comment">%Check that size(inds,1)==#subs</span>
+0404             
+0405             <span class="comment">%Do Friedman</span>
+0406             N=size(inds{1},1); <span class="comment">%Number of strides per stride group</span>
+0407             M=size(inds{1},2); <span class="comment">%Number of stride groups</span>
+0408             P=length(this.ID); <span class="comment">%#subs</span>
+0409             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0410                 label={label};
+0411             <span class="keyword">end</span>
+0412             <span class="keyword">if</span> nargin&lt;4 || isempty(interactionFlag)
+0413                 interactionFlag=0; <span class="comment">%No interactions is default</span>
+0414             <span class="keyword">end</span>
+0415             <span class="keyword">if</span> nargin&lt;5 || isempty(avgFlag)
+0416                 avgFlag=0;
+0417             <span class="keyword">end</span>
+0418             <span class="keyword">switch</span> interactionFlag
+0419                 <span class="keyword">case</span> 1
+0420                     model=<span class="string">'full'</span>;
+0421                 <span class="keyword">case</span> 0
+0422                     model=<span class="string">'linear'</span>;
+0423             <span class="keyword">end</span>
+0424             <span class="keyword">if</span> length(label)&gt;1 <span class="comment">%For multiple parameters</span>
+0425                 <span class="keyword">for</span> i=1:length(label)
+0426                     [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=this.friedmanI(label{i},inds,interactionFlag,avgFlag);
+0427                 <span class="keyword">end</span>
+0428             <span class="keyword">else</span>
+0429                 allData=nan(N,P,M);                
+0430                 <span class="keyword">for</span> j=1:P
+0431                     aux=this.adaptData{j}.data.getDataAsVector(label); <span class="comment">%Should I be normalizing or removing bias?</span>
+0432                     <span class="keyword">for</span> i=1:M
+0433                         allData(:,j,i)=aux(inds{j}(:,i));
+0434                     <span class="keyword">end</span>
+0435                 <span class="keyword">end</span>
+0436                 <span class="keyword">if</span> avgFlag==1
+0437                     allData=nanmean(allData,1);
+0438                     N=1;
+0439                 <span class="keyword">end</span>
+0440                 data=reshape(allData,N*P,M); <span class="comment">%Setting up the data in the shape required by Friedman</span>
+0441                 [p,table,stats]=<a href="#_sub23" class="code" title="subfunction [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)">friedman</a>(data,N,<span class="string">'off'</span>); <span class="comment">%This fails if there are any nan in newData</span>
+0442                 <span class="comment">%Post-hoc: more friedman, but on paired columns. As such it</span>
+0443                 <span class="comment">%may be unnecessary, since the user can have this info by</span>
+0444                 <span class="comment">%just calling on friedman with the reduced data</span>
+0445                 postHoc=nan(M);
+0446                 postHocEstimates=nan(M);
+0447                 <span class="comment">%Post-hoc: Default is tukey-kramer</span>
+0448                 <span class="comment">%mm=multcompare(stats,'Dimension',2,'Display','off','CType','bonferroni'); %Post-hoc across stride groups</span>
+0449                 <span class="comment">%postHoc(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,6);</span>
+0450                 <span class="comment">%postHocEstimates(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,4);</span>
+0451                 <span class="keyword">for</span> i=1:M
+0452                     <span class="keyword">for</span> j=i+1:M
+0453                         [postHoc(i,j),~,s]=<a href="#_sub23" class="code" title="subfunction [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)">friedman</a>(data(:,[i,j]),N,<span class="string">'off'</span>);
+0454                         postHocEstimates(i,j)=diff(s.meanranks);
+0455                     <span class="keyword">end</span>
+0456                 <span class="keyword">end</span>
+0457             <span class="keyword">end</span>
+0458         <span class="keyword">end</span>
+0459         
+0460         <a name="_sub25" href="#_subfunctions" class="code">function [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)</a>
+0461             <span class="comment">%One-way repeated measures anova, using each individual as a</span>
+0462             <span class="comment">%block, and testing across stride groups (e.g. early adap vs late</span>
+0463             <span class="comment">%base)</span>
+0464             <span class="comment">%Inds here follows a slightly different specification from that</span>
+0465             <span class="comment">%returned by getGroupedInds. In order to format the output of</span>
+0466             <span class="comment">%that function to the input of this, the following lines need to</span>
+0467             <span class="comment">%be executed:</span>
+0468             <span class="comment">%N=size(inds{1},1);</span>
+0469             <span class="comment">%M=size(inds{1},2)*size(inds,1);</span>
+0470             <span class="comment">%inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);</span>
+0471             N=size(inds{1},1);<span class="comment">%Number of strides per stride group</span>
+0472             M=size(inds{1},2);<span class="comment">%Number of strideGroups</span>
+0473             P=length(this.ID); <span class="comment">%#subs = size(inds,2)</span>
+0474             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0475                 label={label};
+0476             <span class="keyword">end</span>
+0477             <span class="keyword">if</span> nargin&lt;4 || isempty(interactionFlag)
+0478                 interactionFlag=0; <span class="comment">%No interactions is default</span>
+0479             <span class="keyword">end</span>
+0480             <span class="keyword">if</span> nargin&lt;5 || isempty(avgFlag)
+0481                 avgFlag=0;
+0482             <span class="keyword">end</span>
+0483             <span class="keyword">switch</span> interactionFlag
+0484                 <span class="keyword">case</span> 1
+0485                     model=<span class="string">'full'</span>;
+0486                 <span class="keyword">case</span> 0
+0487                     model=<span class="string">'linear'</span>;
+0488             <span class="keyword">end</span>
+0489             <span class="keyword">if</span> length(label)&gt;1 <span class="comment">%For multiple parameters</span>
+0490                 <span class="keyword">for</span> i=1:length(label)
+0491                     [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=<a href="#_sub26" class="code" title="subfunction [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)">anova1RMI</a>(this,label{i},inds,interactionFlag,avgFlag);
+0492                 <span class="keyword">end</span>
+0493             <span class="keyword">else</span>
+0494                 allData=nan(N,P,M);                
+0495                 <span class="keyword">for</span> j=1:P <span class="comment">%For each sub</span>
+0496                     aux=this.adaptData{j}.data.getDataAsVector(label); <span class="comment">%Should I be normalizing or removing bias?</span>
+0497                     <span class="keyword">for</span> i=1:M <span class="comment">%For each strideGroup</span>
+0498                         allData(:,j,i)=aux(inds{j}(:,i)); <span class="comment">%Strides x sub x strideGroup</span>
+0499                     <span class="keyword">end</span>
+0500                 <span class="keyword">end</span>
+0501                 <span class="keyword">if</span> avgFlag==1
+0502                     allData=nanmean(allData,1);
+0503                     N=1;
+0504                 <span class="keyword">end</span>
+0505                 data=reshape(allData,N*P,M); 
+0506                 subID=repmat(this.ID,N,M);
+0507                 strideGroup=repmat([1:M],N*P,1);
+0508                 [p,table,stats,~]=anovan(data(:),{subID(:) strideGroup(:)},<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'random'</span>,[1],<span class="string">'varnames'</span>,{<span class="string">'subID'</span>,<span class="string">'strideGroup'</span>},<span class="string">'model'</span>,model);
+0509                 postHoc=nan(M);
+0510                 postHocEstimates=nan(M);
+0511                 allData=data;
+0512                 <span class="comment">%Post-hoc: Default is tukey-kramer</span>
+0513                 mm=multcompare(stats,<span class="string">'Dimension'</span>,2,<span class="string">'Display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'bonferroni'</span>); <span class="comment">%Post-hoc across stride groups</span>
+0514                 postHoc(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,6);
+0515                 postHocEstimates(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,4);
+0516             <span class="keyword">end</span>
+0517         <span class="keyword">end</span>
+0518         
+0519         <a name="_sub26" href="#_subfunctions" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=summaryKW(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a>
+0520             <span class="comment">%Runs kruskal-wallis for each individual, and returns</span>
+0521             <span class="comment">%summarized results.</span>
+0522            <span class="keyword">for</span> i=1:length(this.ID)
+0523                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
+0524            <span class="keyword">end</span>
+0525         <span class="keyword">end</span>
+0526         
+0527     <span class="keyword">end</span>
+0528     methods(Static)
+0529        <span class="comment">% Several groups visualization</span>
+0530        [figHandle,allData]=<a href="plotMultipleGroupsBars.html" class="code" title="function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)">plotMultipleGroupsBars</a>(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
+0531        
+0532        <span class="comment">% Several groups stats</span>
+0533        <a name="_sub27" href="#_subfunctions" class="code">function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)</a>
+0534            <span class="comment">%Check that there are exactly two groups</span>
+0535 
+0536             <span class="keyword">for</span> j=1:length(condition)
+0537                 <span class="keyword">for</span> i=1:length(numberOfStrides)
+0538                     <span class="keyword">for</span> k=1:length(label)
+0539                         data1=groups{1}.getAvgGroupedData(label(k),condition(j),0,numberOfStrides(i),exemptFirst,exemptLast);
+0540                         data2=groups{2}.getAvgGroupedData(label(k),condition(j),0,numberOfStrides(i),exemptFirst,exemptLast);
+0541                         [~,p(j,i,k),ci,stats]=ttest(squeeze(data1),squeeze(data2));
+0542                     <span class="keyword">end</span>
+0543                 <span class="keyword">end</span>
+0544             <span class="keyword">end</span>
+0545        <span class="keyword">end</span>
+0546         
+0547     <span class="keyword">end</span>
+0548 <span class="keyword">end</span>
+0549</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

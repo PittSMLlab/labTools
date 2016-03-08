@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getStanceFromForces</title>
+  <meta name="keywords" content="getStanceFromForces">
+  <meta name="description" content="%% If Fz is sampled &gt;2000Hz, downsample to somewhere in the [1000-2000)Hz">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getStanceFromForces.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getStanceFromForces
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%% If Fz is sampled &gt;2000Hz, downsample to somewhere in the [1000-2000)Hz</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [stance] = getStanceFromForces(Fz, threshold, fsample) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">  %% If Fz is sampled &gt;2000Hz, downsample to somewhere in the [1000-2000)Hz
+  %range (for computational cost reduction, no other reason).
+  
+  M=1;
+  if fsample&gt;2000
+      M=floor(fsample/1000);
+      Fz=Fz(1:M:end);
+      fsample=fsample/M;
+  end</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getEventsFromForces.html" class="code" title="function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)">getEventsFromForces</a>	% Get stance phases</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001  <a name="_sub0" href="#_subfunctions" class="code">function [stance] = getStanceFromForces(Fz, threshold, fsample)</a>
+0002 <span class="comment">%  %% If Fz is sampled &gt;2000Hz, downsample to somewhere in the [1000-2000)Hz</span>
+0003 <span class="comment">%  %range (for computational cost reduction, no other reason).</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%  M=1;</span>
+0006 <span class="comment">%  if fsample&gt;2000</span>
+0007 <span class="comment">%      M=floor(fsample/1000);</span>
+0008 <span class="comment">%      Fz=Fz(1:M:end);</span>
+0009 <span class="comment">%      fsample=fsample/M;</span>
+0010 <span class="comment">%  end</span>
+0011  
+0012  
+0013 <span class="comment">%% Get stance from forces</span>
+0014 N=round(.01*fsample); <span class="comment">%Median filter with 10ms window, to get rid of some quantization noise</span>
+0015 <span class="keyword">if</span> mod(N,2)==0
+0016     N=N+1;
+0017 <span class="keyword">end</span>
+0018 N1=round(.005*fsample); <span class="comment">%Median filter with 5ms window, to get rid of some quantization noise</span>
+0019 <span class="keyword">if</span> mod(N1,2)==0
+0020     N1=N1+1;
+0021 <span class="keyword">end</span>
+0022 forces=medfilt1(Fz,N1);
+0023 forces=medfilt1(forces,N); 
+0024 <span class="comment">%forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly</span>
+0025 forceSign=sign(mean(Fz));
+0026 forces=forces*forceSign; <span class="comment">%Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)</span>
+0027 
+0028 stance=forces&gt;threshold;
+0029 
+0030 
+0031 <span class="comment">%% STEP N: Eliminate stance &amp; swing phases shorter than 100 ms</span>
+0032 stance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(stance,fsample,0.1); <span class="comment">%Used to be 200 ms, but that is too long for stroke subjects, who spend relatively short single stance times on their paretic leg.</span>
+0033 
+0034 <span class="comment">%% Plot some stuff to check</span>
+0035 <span class="comment">% figure</span>
+0036 <span class="comment">% hold on</span>
+0037 <span class="comment">% plot([1:length(forces)]/fsample,forces)</span>
+0038 <span class="comment">% plot(([1:length(forces)])/fsample,stance*max(forces))</span>
+0039 <span class="comment">% plot([1,length(forces)]/fsample,threshold*[1,1],'k--')</span>
+0040 <span class="comment">% plot([1:length(forces)]/fsample,Fz*forceSign)</span>
+0041 <span class="comment">% xlabel('Time (ms)')</span>
+0042 <span class="comment">% legend('Filtered forces','Detected Stance','threshold','Raw forces')</span>
+0043 <span class="comment">% hold off</span>
+0044 
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

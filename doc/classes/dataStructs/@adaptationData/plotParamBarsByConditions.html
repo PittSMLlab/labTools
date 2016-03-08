@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotParamBarsByConditions</title>
+  <meta name="keywords" content="plotParamBarsByConditions">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotParamBarsByConditions.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotParamBarsByConditions
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001         <a name="_sub0" href="#_subfunctions" class="code">function figHandle=plotParamBarsByConditions(this,label,earlyNumber,lateNumber,exemptLast,condList,significanceThreshold)</a>
+0002             
+0003             N1=3; <span class="comment">%very early number of points</span>
+0004            <span class="keyword">if</span> nargin&lt;3 || isempty(earlyNumber)
+0005                 N2=5; <span class="comment">%early number of points</span>
+0006             <span class="keyword">else</span>
+0007                 N2=earlyNumber;
+0008             <span class="keyword">end</span>
+0009             <span class="keyword">if</span> nargin&lt;4 || isempty(lateNumber)
+0010                 N3=20; <span class="comment">%late number of points</span>
+0011             <span class="keyword">else</span>
+0012                 N3=lateNumber;
+0013             <span class="keyword">end</span>
+0014             <span class="keyword">if</span> nargin&lt;5 || isempty(exemptLast)
+0015                 Ne=5;
+0016             <span class="keyword">else</span>
+0017                 Ne=exemptLast;
+0018             <span class="keyword">end</span>
+0019             
+0020             [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
+0021             
+0022             <span class="keyword">if</span> nargin&lt;6 || isempty(condList)
+0023                 conds=find(~cellfun(@isempty,this.metaData.conditionName));
+0024             <span class="keyword">else</span>
+0025                 conds=this.getConditionIdxsFromName(condList);
+0026                 conds=conds(~isnan(conds));
+0027             <span class="keyword">end</span>
+0028             nConds=length(conds);
+0029             [allVeryEarlyPoints,allEarlyPoints,allLatePoints]=getEarlyLateData<span class="keyword">...</span>
+0030                 (this,label,this.metaData.conditionName(conds),0,N2,N3,Ne);
+0031             <span class="keyword">for</span> l=1:length(label)
+0032                 earlyPoints=allEarlyPoints(:,:,l);
+0033                 veryEarlyPoints=allVeryEarlyPoints(:,:,l);
+0034                 latePoints=allLatePoints(:,:,l);
+0035 <span class="comment">%                 earlyPoints=NaN(nConds,N2);</span>
+0036 <span class="comment">%                 veryEarlyPoints=NaN(nConds,N1);</span>
+0037 <span class="comment">%                 latePoints=NaN(nConds,N3);</span>
+0038 <span class="comment">%                 for i=1:nConds</span>
+0039 <span class="comment">%                     aux=this.getParamInCond(label(l),conds(i));</span>
+0040 <span class="comment">%                     try %Try to get the first strides, if there are enough</span>
+0041 <span class="comment">%                         veryEarlyPoints(i,:)=aux(1:N1);</span>
+0042 <span class="comment">%                         earlyPoints(i,:)=aux(1:N2);</span>
+0043 <span class="comment">%                     catch %In case there aren't enough strides, assign NaNs to all</span>
+0044 <span class="comment">%                         veryEarlyPoints(i,:)=NaN;</span>
+0045 <span class="comment">%                         earlyPoints(i,:)=NaN;</span>
+0046 <span class="comment">%                     end</span>
+0047 <span class="comment">%                     %Last 20 steps, excepting the very last 5</span>
+0048 <span class="comment">%                     try</span>
+0049 <span class="comment">%                         latePoints(i,:)=aux(end-N3-Ne+1:end-Ne);</span>
+0050 <span class="comment">%                     catch</span>
+0051 <span class="comment">%                         latePoints(i,:)=NaN;</span>
+0052 <span class="comment">%                     end</span>
+0053 <span class="comment">%                 end</span>
+0054                 axes(ah(l))
+0055                 hold on
+0056                 
+0057                 bar((1:3:3*nConds)-.25,nanmean(veryEarlyPoints,2),.15,<span class="string">'FaceColor'</span>,[.8,.8,.8])
+0058                 bar((1:3:3*nConds)+.25,nanmean(earlyPoints,2),.15,<span class="string">'FaceColor'</span>,[.6,.6,.6])
+0059                 bar(2:3:3*nConds,nanmean(latePoints,2),.3,<span class="string">'FaceColor'</span>,[0,.3,.6])
+0060                 errorbar((1:3:3*nConds)-.25,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2)
+0061                 errorbar((1:3:3*nConds)+.25,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2)
+0062                 errorbar(2:3:3*nConds,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2)
+0063                 <span class="comment">%plot([1:3:3*nConds]-.25,veryEarlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])</span>
+0064                 <span class="comment">%plot([1:3:3*nConds]+.25,earlyPoints,'x','LineWidth',2,'Color',[0,.8,.3])</span>
+0065                 <span class="comment">%plot(2:3:3*nConds,latePoints,'x','LineWidth',2,'Color',[0,.6,.2])</span>
+0066                 xTickPos=(1:3:3*nConds)+.5;
+0067                 set(gca,<span class="string">'XTick'</span>,xTickPos,<span class="string">'XTickLabel'</span>,this.metaData.conditionName(conds))
+0068                 axis tight
+0069                 title([label{l},<span class="string">' ('</span>,this.subData.ID <span class="string">')'</span>])
+0070                 hold off
+0071             <span class="keyword">end</span>
+0072             legend([<span class="string">'First '</span> num2str(N1) <span class="string">' strides'</span>],[<span class="string">'First '</span> num2str(N2) <span class="string">' strides)'</span>],[<span class="string">'Last '</span> num2str(N3) <span class="string">'(-'</span> num2str(Ne) <span class="string">') strides)'</span>]);
+0073         <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

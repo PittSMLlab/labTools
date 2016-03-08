@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ShortTimeFourierTransform</title>
+  <meta name="keywords" content="ShortTimeFourierTransform">
+  <meta name="description" content="ShortTimeFourierTransform returns the fourier transform of the signal">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; ShortTimeFourierTransform.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>ShortTimeFourierTransform
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ShortTimeFourierTransform returns the fourier transform of the signal</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [STFT,F,T] = ShortTimeFourierTransform(data,Nwindow,Noverlap,Nfft,dim,fs,window) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ShortTimeFourierTransform returns the fourier transform of the signal
+applied in short time windows. This is useful to make time-freq analysis
+of non-stationary signals
+Data input needs to be a 2-D array (vectors accepted). The Fourier
+transform works along the first non-singleton dimension by default.
+All other inputs are optional. Omit with [].
+If the data length (size(data,dim)) is not a multiple of half the window size
+(Nwindow/2), the signal is padded with 0's at the end.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)">DiscreteTimeFourierTransform</a>	DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [STFT,F,T] = ShortTimeFourierTransform(data,Nwindow,Noverlap,Nfft,dim,fs,window)</a>
+0002 <span class="comment">%ShortTimeFourierTransform returns the fourier transform of the signal</span>
+0003 <span class="comment">%applied in short time windows. This is useful to make time-freq analysis</span>
+0004 <span class="comment">%of non-stationary signals</span>
+0005 <span class="comment">%Data input needs to be a 2-D array (vectors accepted). The Fourier</span>
+0006 <span class="comment">%transform works along the first non-singleton dimension by default.</span>
+0007 <span class="comment">%All other inputs are optional. Omit with [].</span>
+0008 <span class="comment">%If the data length (size(data,dim)) is not a multiple of half the window size</span>
+0009 <span class="comment">%(Nwindow/2), the signal is padded with 0's at the end.</span>
+0010 
+0011 Nfft=[]; <span class="comment">%Ignoring Nfft input. All ffts are computed with the length equal to Nwindow. This needs to be fixed to support different Nfft.</span>
+0012 
+0013 <span class="keyword">if</span> nargin&lt;6 || isempty(fs)
+0014     fs=1;
+0015 <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;5 || isempty(dim)
+0017     <span class="keyword">if</span> numel(data)==length(data) <span class="comment">%is vector</span>
+0018         <span class="keyword">if</span> size(data,1)==1
+0019             dim=2;
+0020         <span class="keyword">else</span>
+0021             dim=1;
+0022         <span class="keyword">end</span>
+0023     <span class="keyword">else</span>
+0024         dim=1;
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin&lt;2 || isempty(Nwindow)
+0028     Nwindow=2*round(size(data,dim)/16);
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> nargin&lt;4 || isempty(Nfft)
+0031     Nfft=Nwindow;
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;3 || isempty(Noverlap)
+0034     Noverlap=round(Nwindow/2);
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin&lt;7 || isempty(window)
+0037     window=ones(Nwindow,1);
+0038 <span class="keyword">end</span>
+0039 
+0040 M=ndims(data);
+0041 data=permute(data,[dim 1:dim-1 dim+1:M]); <span class="comment">%Permute dimensions to get the relevant dimension first</span>
+0042 Q=Nwindow-Noverlap;
+0043 P=ceil(size(data,1)/Q);
+0044 data(end+1:P*Q,:)=0; <span class="comment">%Padding zeros</span>
+0045 STFT=zeros(Nfft,P,size(data,2));
+0046 <span class="keyword">for</span> j=1:size(data,2) <span class="comment">%Iterate through al data columns present</span>
+0047     <span class="keyword">for</span> i=1:P <span class="comment">%Iterate through time windows of interest</span>
+0048         windowData=data((i-1)*Q+1:i*Q,j).*window;
+0049         [Fdata,fvector] = <a href="DiscreteTimeFourierTransform.html" class="code" title="function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)">DiscreteTimeFourierTransform</a>(windowData,fs); 
+0050         STFT(:,i,j)=Fdata;
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 F=fvector;
+0054 T=([0:P-1]*Q + Nwindow/2)/fs;
+0055 
+0056 <span class="keyword">end</span>
+0057</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

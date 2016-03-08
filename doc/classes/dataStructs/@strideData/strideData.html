@@ -1,0 +1,522 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of strideData</title>
+  <meta name="keywords" content="strideData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; strideData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@strideData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>strideData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="plotCell.html" class="code" title="function [plotHandles]=plotCell(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents) %Plot cellarray of stride data">plotCell</a>	CHANGES FROM PREVIOUS VERSION:</li><li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=strideData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG)</a></li><li><a href="#_sub2" class="code">function [dsLR,duration]=getDoubleSupportLR(this)</a></li><li><a href="#_sub3" class="code">function [dsRL,duration]=getDoubleSupportRL(this)</a></li><li><a href="#_sub4" class="code">function [int,dur]=getSingleStanceL(this)</a></li><li><a href="#_sub5" class="code">function [int,dur]=getSingleStanceR(this)</a></li><li><a href="#_sub6" class="code">function [int,dur]=getSwingL(this)</a></li><li><a href="#_sub7" class="code">function [int,dur]=getSwingR(this)</a></li><li><a href="#_sub8" class="code">function initEv=get.initialEvent(this)</a></li><li><a href="#_sub9" class="code">function b=get.isBad(this)</a></li><li><a href="#_sub10" class="code">function t=get.originalTrial(this)</a></li><li><a href="#_sub11" class="code">function N=getMasterSampleLength(this)</a></li><li><a href="#_sub12" class="code">function newThis=timeNormalize(this,N,newClass)</a></li><li><a href="#_sub13" class="code">function newThis=alignEvents(this,events,spacing)</a></li><li><a href="#_sub14" class="code">function [strideMat]=cell2mat(strides,field,N)</a></li><li><a href="#_sub15" class="code">function [plotHandle,offset,ampCoefs]=plotCellAvg(strides,field,N,sync_norm,ampNorm,plotHandle,side,color,offset,plotEv)</a></li><li><a href="#_sub16" class="code">function interval=getIntervalBtwEvents(this,event1,event2)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="strideData.html" class="code" title="">strideData</a> &lt; processedLabData
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005     properties (Dependent)
+0006        isBad
+0007        initialEvent
+0008        originalTrial <span class="comment">%returns string</span>
+0009     <span class="keyword">end</span>
+0010     
+0011     methods
+0012         <span class="comment">%Constructor</span>
+0013         <a name="_sub0" href="#_subfunctions" class="code">function this=strideData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG)</a>
+0014             <span class="keyword">if</span> nargin&lt;11
+0015                markerData=[];
+0016                EMGData=[];
+0017                GRFData=[];
+0018                beltSpeedSetData=[];
+0019                beltSpeedReadData=[];
+0020                accData=[];
+0021                EEGData=[];
+0022                footSwitches=[];
+0023                events=[];
+0024                procEMG=[];
+0025             <span class="keyword">end</span>
+0026             <span class="comment">%Check that metaData is a srideMetaData</span>
+0027             <span class="keyword">if</span> ~isa(metaData,<span class="string">'strideMetaData'</span>) &amp;&amp; ~isa(metaData,<span class="string">'derivedMetaData'</span>)
+0028                 ME=MException(<span class="string">'strideData:Constructor'</span>,<span class="string">'metaData is not of a strideMetaData object.'</span>);
+0029                 throw(ME)
+0030             <span class="keyword">end</span>
+0031             this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG);
+0032             <span class="comment">%Check that events are consistent or label the stride as 'bad'</span>
+0033             <span class="keyword">if</span> ~isempty(events) &amp;&amp; this.isBad
+0034                 warning(<span class="string">'strideData:Constructor'</span>,<span class="string">'Events are not consistent with a single stride.'</span>)
+0035             <span class="keyword">end</span>
+0036         <span class="keyword">end</span>
+0037         
+0038         <span class="comment">%Modifiers and partial access:</span>
+0039         fakeStride(this,initEvent) <span class="comment">%Generates a fake stride, with data from this stride, buy cutting and pasting phases in different order</span>
+0040         <a name="_sub1" href="#_subfunctions" class="code">function [dsLR,duration]=getDoubleSupportLR(this)</a>
+0041             dsLR=<a href="#_sub16" class="code" title="subfunction interval=getIntervalBtwEvents(this,event1,event2)">getIntervalBtwEvents</a>(this,<span class="string">'LHS'</span>,<span class="string">'RTO'</span>);
+0042             duration=dsLR.gaitEvents.timeRange;
+0043         <span class="keyword">end</span>
+0044         <a name="_sub2" href="#_subfunctions" class="code">function [dsRL,duration]=getDoubleSupportRL(this)</a>
+0045             dsRL=<a href="#_sub16" class="code" title="subfunction interval=getIntervalBtwEvents(this,event1,event2)">getIntervalBtwEvents</a>(this,<span class="string">'RHS'</span>,<span class="string">'LTO'</span>);
+0046             duration=dsRL.gaitEvents.timeRange;
+0047         <span class="keyword">end</span>
+0048         <a name="_sub3" href="#_subfunctions" class="code">function [int,dur]=getSingleStanceL(this)</a>
+0049             int=<a href="#_sub16" class="code" title="subfunction interval=getIntervalBtwEvents(this,event1,event2)">getIntervalBtwEvents</a>(this,<span class="string">'RTO'</span>,<span class="string">'RHS'</span>);
+0050             dur=int.gaitEvents.timeRange;
+0051         <span class="keyword">end</span>
+0052         <a name="_sub4" href="#_subfunctions" class="code">function [int,dur]=getSingleStanceR(this)</a>
+0053             int=<a href="#_sub16" class="code" title="subfunction interval=getIntervalBtwEvents(this,event1,event2)">getIntervalBtwEvents</a>(this,<span class="string">'LTO'</span>,<span class="string">'LHS'</span>);
+0054             dur=int.gaitEvents.timeRange;
+0055         <span class="keyword">end</span>
+0056         <a name="_sub5" href="#_subfunctions" class="code">function [int,dur]=getSwingL(this)</a>
+0057             [int,dur]=<a href="#_sub5" class="code" title="subfunction [int,dur]=getSingleStanceR(this)">getSingleStanceR</a>(this);
+0058         <span class="keyword">end</span>
+0059         <a name="_sub6" href="#_subfunctions" class="code">function [int,dur]=getSwingR(this)</a>
+0060             [int,dur]=<a href="#_sub4" class="code" title="subfunction [int,dur]=getSingleStanceL(this)">getSingleStanceL</a>(this);
+0061         <span class="keyword">end</span>
+0062         
+0063         <span class="comment">%Getters for dependent</span>
+0064         <a name="_sub7" href="#_subfunctions" class="code">function initEv=get.initialEvent(this)</a>
+0065             <span class="keyword">if</span> isempty(this.gaitEvents)
+0066                 initEv=[];
+0067             <span class="keyword">else</span>
+0068                 aux={<span class="string">'LHS'</span>,<span class="string">'RHS'</span>,<span class="string">'LTO'</span>,<span class="string">'RTO'</span>};
+0069                 <span class="keyword">for</span> i=1:length(aux)
+0070                     evStr=aux{i};
+0071                     event=this.gaitEvents.getDataAsVector(evStr);
+0072                     <span class="keyword">if</span> event(1)
+0073                         initEv=evStr;
+0074                         <span class="keyword">break</span>
+0075                     <span class="keyword">end</span>
+0076                 <span class="keyword">end</span>
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">end</span>
+0079         
+0080         <a name="_sub8" href="#_subfunctions" class="code">function b=get.isBad(this)</a>
+0081             evList={<span class="string">'LHS'</span>,<span class="string">'RHS'</span>,<span class="string">'LTO'</span>,<span class="string">'RTO'</span>};
+0082             <span class="keyword">for</span> i=1:length(evList)
+0083                 eval([evList{i} <span class="string">'= this.gaitEvents.getDataAsVector( evList{i} );'</span>]);
+0084             <span class="keyword">end</span>
+0085             aa=LHS+2*RTO+3*RHS+4*LTO; <span class="comment">%This should get events in the sequence 1,2,3,4,1... with 0 for non-events</span>
+0086             bb=diff(aa(aa~=0)); <span class="comment">%Keep only event samples</span>
+0087             b=any(mod(bb,4)~=1) || length(bb)&lt;3; <span class="comment">%Make sure the order of events is good</span>
+0088             
+0089             
+0090 <span class="comment">%             b=false;</span>
+0091 <span class="comment">%             aux={'LHS','RTO','RHS','LTO','LHS','RTO','RHS'};</span>
+0092 <span class="comment">%             initEv=this.initialEvent;</span>
+0093 <span class="comment">%             lastEvIdx=1;</span>
+0094 <span class="comment">%             auxIdx=find(strcmp(initEv,aux),1);</span>
+0095 <span class="comment">%             newAux=aux((auxIdx+1):(auxIdx+3));</span>
+0096 <span class="comment">%             %newAux=aux{[auxIdx+1:4,1:auxIdx-1]}; %This requires only the</span>
+0097 <span class="comment">%             %first four elements of aux.</span>
+0098 <span class="comment">%             for i=1:length(newAux)</span>
+0099 <span class="comment">%                 event=this.gaitEvents.getDataAsVector(newAux{i});</span>
+0100 <span class="comment">%                 idx=find(event==1,1);</span>
+0101 <span class="comment">%                 if ~(idx&gt;lastEvIdx)</span>
+0102 <span class="comment">%                     b=true;</span>
+0103 <span class="comment">%                     break</span>
+0104 <span class="comment">%                 else</span>
+0105 <span class="comment">%                     lastEvIdx=idx;</span>
+0106 <span class="comment">%                 end</span>
+0107 <span class="comment">%             end</span>
+0108         <span class="keyword">end</span>
+0109         
+0110         <a name="_sub9" href="#_subfunctions" class="code">function t=get.originalTrial(this)</a>
+0111             t=this.metaData.parentMetaData.name;
+0112         <span class="keyword">end</span>
+0113         
+0114         <a name="_sub10" href="#_subfunctions" class="code">function N=getMasterSampleLength(this) </a><span class="comment">%0 if not time normalized, length of ALL time series otherwise.</span>
+0115            cname=class(this);
+0116            auxLst=properties(cname);
+0117            N=0;
+0118            <span class="keyword">for</span> i=1:length(auxLst)
+0119                eval([<span class="string">'oldVal=this.'</span> auxLst{i} <span class="string">';'</span>]) <span class="comment">%Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need</span>
+0120                <span class="keyword">if</span> isa(oldVal,<span class="string">'labTimeSeries'</span>)
+0121                    <span class="keyword">if</span> oldVal.Nsamples~=N <span class="comment">%Discrepancy</span>
+0122                        <span class="keyword">if</span> N==0 <span class="comment">%First discrepancy: does not really say anything</span>
+0123                            N=oldVal.Nsamples;
+0124                        <span class="keyword">else</span> <span class="comment">%New discrepancy, it is not time normalized</span>
+0125                            N=0;
+0126                            <span class="keyword">break</span>;
+0127                        <span class="keyword">end</span>
+0128                    <span class="keyword">end</span>
+0129                <span class="keyword">end</span>
+0130            <span class="keyword">end</span>
+0131         <span class="keyword">end</span>
+0132         
+0133         <span class="comment">%Modifiers</span>
+0134         <a name="_sub11" href="#_subfunctions" class="code">function newThis=timeNormalize(this,N,newClass)</a>
+0135            newThis=[]; <span class="comment">%Just to avoid Matlab saying this is not defined</span>
+0136            cname=class(this);
+0137            <span class="keyword">if</span> nargin&lt;3
+0138                metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'strideData.timeNormalize'</span>,<span class="string">'normalizedInterval'</span>,[<span class="string">'Normalized '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData);
+0139                 eval([<span class="string">'newThis='</span> cname <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
+0140            <span class="keyword">else</span>
+0141                metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'strideData.timeNormalize'</span>,<span class="string">'normalizedInterval'</span>,[<span class="string">'Normalized  '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData); <span class="comment">%Should I call a different metaData constructor depending on newClass?</span>
+0142                 eval([<span class="string">'newThis='</span> newClass <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
+0143            <span class="keyword">end</span>
+0144            auxLst=properties(cname);
+0145            <span class="keyword">for</span> i=1:length(auxLst)
+0146                eval([<span class="string">'oldVal=this.'</span> auxLst{i} <span class="string">';'</span>]) <span class="comment">%Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need</span>
+0147                <span class="keyword">if</span> isa(oldVal,<span class="string">'labTimeSeries'</span>) &amp;&amp; ~strcmp(auxLst{i},<span class="string">'EMGData'</span>)
+0148                    newVal=oldVal.resampleN(N); <span class="comment">%Calling labTS.resample (or one of the subclass' implementation), it should keep the time interval, which for strided data should</span>
+0149                <span class="keyword">elseif</span> strcmp(auxLst{i},<span class="string">'EMGData'</span>)
+0150                    k=this.EMGData.Nsamples/this.markerData.Nsamples;
+0151                    NN=2^ceil(log2(k*N));
+0152                    newVal=oldVal.resampleN(NN);
+0153                <span class="keyword">elseif</span> ~isa(oldVal,<span class="string">'labMetaData'</span>) 
+0154                    newVal=oldVal; <span class="comment">%Not a labTS object, not splitting</span>
+0155                <span class="keyword">end</span>
+0156                <span class="keyword">try</span>
+0157                   eval([<span class="string">'newThis.'</span> auxLst{i} <span class="string">'=newVal;'</span>]) <span class="comment">%If this fails is because the property is not settable</span>
+0158                <span class="keyword">catch</span> 
+0159                   <span class="keyword">if</span> isa(oldVal,<span class="string">'labTimeSeries'</span>)
+0160                       disp([<span class="string">'Failed to set new labTS value'</span> auxLst{i}]);
+0161                   <span class="keyword">end</span>
+0162                <span class="keyword">end</span>
+0163            <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165         
+0166         <a name="_sub12" href="#_subfunctions" class="code">function newThis=alignEvents(this,events,spacing)</a>
+0167            newThis=[]; <span class="comment">%Need to do. Current problem: sampling needs to be uniform, but when we alignEvents that can no longer be the case (because event times have natural variability, its alignment implies that we'll have non-uniform sampling</span>
+0168         <span class="keyword">end</span>
+0169         
+0170     <span class="keyword">end</span>
+0171     
+0172     methods(Static)
+0173         
+0174         <a name="_sub13" href="#_subfunctions" class="code">function [strideMat]=cell2mat(strides,field,N) </a><span class="comment">%Cell array of strideData to matrix</span>
+0175             strideMat=[];
+0176            <span class="keyword">if</span> isa(strides,<span class="string">'cell'</span>) &amp;&amp; all(cellisa(strides,<span class="string">'strideData'</span>))
+0177                auxLst=properties(<span class="string">'strideData'</span>);
+0178                <span class="keyword">if</span> any(strcmp(auxLst,field))
+0179                    eval([<span class="string">'testField=strides{1}.'</span> field <span class="string">';'</span>])
+0180                    <span class="keyword">if</span> isa(testField,<span class="string">'labTimeSeries'</span>)
+0181                        M=length(strides);
+0182                        <span class="keyword">for</span> i=1:M
+0183                            eval([<span class="string">'testField=strides{i}.'</span> field <span class="string">';'</span>])
+0184                            strideMat(:,:,i)=testField.resampleN(N).getDataAsVector(testField.getLabels);
+0185                        <span class="keyword">end</span>
+0186                    <span class="keyword">elseif</span> ~isa(testField,<span class="string">'double'</span>)
+0187                        <span class="keyword">for</span> i=1:length(strides)
+0188                            eval([<span class="string">'testField=strides{i}.'</span> field <span class="string">';'</span>])
+0189                            strideMat(:,:,i)=testField;
+0190                        <span class="keyword">end</span>
+0191                    <span class="keyword">end</span>
+0192                        
+0193                <span class="keyword">else</span>
+0194                    ME=MException(<span class="string">'strideDataCell2mat:unknownField'</span>,<span class="string">'The provided fieldname is not a property of strideData objects, or is not of labTS type.'</span>);
+0195                    throw(ME);
+0196                <span class="keyword">end</span>
+0197            <span class="keyword">else</span>
+0198                ME=MException(<span class="string">'strideDataCell2mat:wrongInput'</span>,<span class="string">'Input needs to be a cell array of strideData objects.'</span>);
+0199                throw(ME);
+0200            <span class="keyword">end</span>
+0201         <span class="keyword">end</span>
+0202         
+0203         [plotHandles]=<a href="plotCell.html" class="code" title="function [plotHandles]=plotCell(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents) %Plot cellarray of stride data">plotCell</a>(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents)
+0204 <span class="comment">%         function [plotHandle,offset,ampCoefs]=plotCell(strides,field,N,sync_norm,ampNorm,plotHandle,side,color,offset,plotEv) %Plot cellarray of stride data</span>
+0205 <span class="comment">%             if nargin&lt;10</span>
+0206 <span class="comment">%                 plotEv=0;</span>
+0207 <span class="comment">%             end</span>
+0208 <span class="comment">%</span>
+0209 <span class="comment">%             subplot(plotHandle)</span>
+0210 <span class="comment">%             eval(['testField=strides{1}.' field ';'])</span>
+0211 <span class="comment">%             data=strideData.cell2mat(strides,field,N);</span>
+0212 <span class="comment">%             if numel(ampNorm)&gt;1</span>
+0213 <span class="comment">%                 ampCoefs=ampNorm; %Should check that numel==size(data,2)</span>
+0214 <span class="comment">%                 ampNorm=1;</span>
+0215 <span class="comment">%             else</span>
+0216 <span class="comment">%                 ampCoefs=[];</span>
+0217 <span class="comment">%             end</span>
+0218 <span class="comment">%             if isa(testField,'labTimeSeries')</span>
+0219 <span class="comment">%                 eval(['labels=strides{1}.' field '.getLabels;']);</span>
+0220 <span class="comment">%                 if strcmp(field,'procEMGData')</span>
+0221 <span class="comment">%                     data=data*8;</span>
+0222 <span class="comment">%                 end</span>
+0223 <span class="comment">%</span>
+0224 <span class="comment">%                 if nargin&gt;6 &amp;&amp; ~isempty(side) %Plot only selected side/labels</span>
+0225 <span class="comment">%                     indLabels=false(size(labels));</span>
+0226 <span class="comment">%                     for i=1:length(labels)</span>
+0227 <span class="comment">%                         if isa(side,'char') %Assuming it is only 'L' or 'R'</span>
+0228 <span class="comment">%                             if strcmp(labels{i}(1),side)</span>
+0229 <span class="comment">%                                 indLabels(i)=true; %Only the specified side labels</span>
+0230 <span class="comment">%                             end</span>
+0231 <span class="comment">%                         elseif isa(side,'cell') &amp;&amp; isa(side{1},'char') %List of labels</span>
+0232 <span class="comment">%                             if any(strcmp(labels{i},side))</span>
+0233 <span class="comment">%                                 indLabels(i)=true; %Only the specified side labels</span>
+0234 <span class="comment">%                             end</span>
+0235 <span class="comment">%                         else</span>
+0236 <span class="comment">%                             indLabels(i)=false; %No labels</span>
+0237 <span class="comment">%                         end</span>
+0238 <span class="comment">%                     end</span>
+0239 <span class="comment">%                 else</span>
+0240 <span class="comment">%                     indLabels=true(size(labels)); %All labels</span>
+0241 <span class="comment">%                 end</span>
+0242 <span class="comment">%</span>
+0243 <span class="comment">%                 if nargin&lt;7</span>
+0244 <span class="comment">%                     color=[.5,.5,.5];</span>
+0245 <span class="comment">%                 end</span>
+0246 <span class="comment">%                 %Do the plot:</span>
+0247 <span class="comment">%                 raw=data(:,indLabels==1,:); %Just one side muscles</span>
+0248 <span class="comment">%                 %auxMax=auxMax(:,indLabels==1,:);</span>
+0249 <span class="comment">%                 hold on</span>
+0250 <span class="comment">%                 switch sync_norm</span>
+0251 <span class="comment">%                     case 0 %Do nothing</span>
+0252 <span class="comment">%</span>
+0253 <span class="comment">%                     case 1 %Renormalize to swing/stance</span>
+0254 <span class="comment">%                         %To Do</span>
+0255 <span class="comment">%                     case 2 %Renormalize to 4 phases</span>
+0256 <span class="comment">%                         %To Do</span>
+0257 <span class="comment">%                 end</span>
+0258 <span class="comment">%                 switch ampNorm</span>
+0259 <span class="comment">%                     case 0 %Do nothing</span>
+0260 <span class="comment">%                         if nargin&gt;8 &amp;&amp; ~isempty(offset)</span>
+0261 <span class="comment">%                             mOffset=offset;</span>
+0262 <span class="comment">%                         else</span>
+0263 <span class="comment">%                             mOffset=3*max(abs(raw(:)));</span>
+0264 <span class="comment">%                         end</span>
+0265 <span class="comment">%                         ampCoefs=0;</span>
+0266 <span class="comment">%                     case 1 %Normalize amplitude to [0,1] for EACH label/component of data</span>
+0267 <span class="comment">%                         if isempty(ampCoefs)</span>
+0268 <span class="comment">%                             ampCoefs=max(max(abs(raw),[],1),[],3);</span>
+0269 <span class="comment">%                             if any(ampCoefs==zeros(size(ampCoefs)))</span>
+0270 <span class="comment">%                                 ampCoefs(ampCoefs==0)=1/100000;</span>
+0271 <span class="comment">%                             end</span>
+0272 <span class="comment">%                         end</span>
+0273 <span class="comment">%                         raw=.9*raw./repmat(ampCoefs,size(raw,1),1,size(raw,3));</span>
+0274 <span class="comment">%                         mOffset=3;</span>
+0275 <span class="comment">%                 end</span>
+0276 <span class="comment">%                 for stride=1:size(raw,3)</span>
+0277 <span class="comment">%                     %Plot</span>
+0278 <span class="comment">%                     auxMusc=mOffset*repmat([0:size(raw,2)-1],size(raw,1),1);</span>
+0279 <span class="comment">%                     hh=plot([0:N-1]/N,auxMusc+raw(:,:,stride),'Color',color);</span>
+0280 <span class="comment">%                     uistack(hh,'bottom');</span>
+0281 <span class="comment">%                     if plotEv==1</span>
+0282 <span class="comment">%                         %Add events:</span>
+0283 <span class="comment">%                         auxN=[0:N-1]/N;</span>
+0284 <span class="comment">%                         events=strides{stride}.gaitEvents.resampleN(N).getDataAsVector({'LHS','RHS','LTO','RTO'});</span>
+0285 <span class="comment">%                         plot(auxN(events(:,1)==1),auxMusc(events(:,1)==1,:)+raw(events(:,1)==1,:,stride),'sy')</span>
+0286 <span class="comment">%                         plot(auxN(events(:,2)==1),auxMusc(events(:,2)==1,:)+raw(events(:,2)==1,:,stride),'sm')</span>
+0287 <span class="comment">%                         plot(auxN(events(:,3)==1),auxMusc(events(:,3)==1,:)+raw(events(:,3)==1,:,stride),'sk')</span>
+0288 <span class="comment">%                         plot(auxN(events(:,4)==1),auxMusc(events(:,4)==1,:)+raw(events(:,4)==1,:,stride),'sg')</span>
+0289 <span class="comment">%                     end</span>
+0290 <span class="comment">%                 end</span>
+0291 <span class="comment">%                 set(gca,'YTick',mOffset*[0:size(raw,2)-1],'YTickLabel',labels(indLabels==1));</span>
+0292 <span class="comment">%                 axis([0 1 -mOffset/2 mOffset*size(raw,2)-mOffset/2])</span>
+0293 <span class="comment">%                 xlabel('% stride')</span>
+0294 <span class="comment">%                 ax1 = gca;</span>
+0295 <span class="comment">%                 %Add secondary axes for scale: (fancy, matters only if amp is not normalized)</span>
+0296 <span class="comment">%                 ax2 = axes('Position',get(ax1,'Position'),...</span>
+0297 <span class="comment">%                    'XAxisLocation','top',...</span>
+0298 <span class="comment">%                    'YAxisLocation','right',...</span>
+0299 <span class="comment">%                    'Color','none',...</span>
+0300 <span class="comment">%                    'XColor','r','YColor','r');</span>
+0301 <span class="comment">%                 linkaxes([ax1,ax2],'xy')</span>
+0302 <span class="comment">%                 auxTick=[-mOffset/2:mOffset/4:(mOffset*size(raw,2)-mOffset/2)];</span>
+0303 <span class="comment">%                 %auxTick(1:4:end)=[];</span>
+0304 <span class="comment">%                 for i=1:length(auxTick)</span>
+0305 <span class="comment">%                     if mod(i,4)==1</span>
+0306 <span class="comment">%                         auxTickLabel{i}='';</span>
+0307 <span class="comment">%                     else</span>
+0308 <span class="comment">%                         auxTickLabel{i}= (mod(i-1,4)-2)*mOffset/4;</span>
+0309 <span class="comment">%                     end</span>
+0310 <span class="comment">%                 end</span>
+0311 <span class="comment">%                 set(ax2,'YTick',auxTick,'YTickLabel',auxTickLabel);</span>
+0312 <span class="comment">%                 set(ax2,'XTick',[]);</span>
+0313 <span class="comment">%                 hold off</span>
+0314 <span class="comment">%                 offset=mOffset;</span>
+0315 <span class="comment">%             end</span>
+0316 <span class="comment">%         end</span>
+0317         
+0318         <a name="_sub14" href="#_subfunctions" class="code">function [plotHandle,offset,ampCoefs]=plotCellAvg(strides,field,N,sync_norm,ampNorm,plotHandle,side,color,offset,plotEv) </a><span class="comment">%Plot cellarray of stride data</span>
+0319             <span class="keyword">if</span> nargin&lt;10
+0320                 plotEv=0;
+0321             <span class="keyword">end</span>
+0322             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(plotHandle)
+0323                 subplot(plotHandle)
+0324             <span class="keyword">end</span>
+0325             eval([<span class="string">'testField=strides{1}.'</span> field <span class="string">';'</span>])
+0326             data=strideData.cell2mat(strides,field,N);
+0327             <span class="keyword">if</span> numel(ampNorm)&gt;1
+0328                 ampCoefs=ampNorm; <span class="comment">%Should check that numel==size(data,2)</span>
+0329                 ampNorm=1;
+0330             <span class="keyword">else</span>
+0331                 ampCoefs=[];
+0332             <span class="keyword">end</span>
+0333             <span class="keyword">if</span> isa(testField,<span class="string">'labTimeSeries'</span>)
+0334                 eval([<span class="string">'labels=strides{1}.'</span> field <span class="string">'.getLabels;'</span>]);
+0335                 <span class="keyword">if</span> strcmp(field,<span class="string">'procEMGData'</span>)
+0336                     data=data*8;
+0337                 <span class="keyword">end</span>
+0338 
+0339                 <span class="keyword">if</span> nargin&gt;6 &amp;&amp; ~isempty(side)
+0340                     indLabels=false(size(labels));
+0341                     <span class="keyword">for</span> i=1:length(labels)
+0342                         <span class="keyword">if</span> isa(side,<span class="string">'char'</span>) <span class="comment">%Assuming it is only 'L' or 'R'</span>
+0343                             <span class="keyword">if</span> strcmp(labels{i}(1),side)
+0344                                 indLabels(i)=true; <span class="comment">%Only the specified side labels</span>
+0345                             <span class="keyword">end</span>
+0346                         <span class="keyword">elseif</span> isa(side,<span class="string">'cell'</span>) &amp;&amp; isa(side{1},<span class="string">'char'</span>) <span class="comment">%List of labels</span>
+0347                             <span class="keyword">if</span> any(strcmp(labels{i},side))
+0348                                 indLabels(i)=true; <span class="comment">%Only the specified side labels</span>
+0349                             <span class="keyword">end</span>
+0350                         <span class="keyword">else</span>
+0351                             indLabels(i)=false; <span class="comment">%No labels</span>
+0352                         <span class="keyword">end</span>
+0353                     <span class="keyword">end</span>
+0354                 <span class="keyword">else</span>
+0355                     indLabels=true(size(labels)); <span class="comment">%All labels</span>
+0356                 <span class="keyword">end</span>
+0357                 <span class="keyword">if</span> nargin&lt;7
+0358                     color=[.5,.5,.5];
+0359                 <span class="keyword">end</span>
+0360                 <span class="comment">%Do the plot:</span>
+0361                 raw=data(:,indLabels==1,:); <span class="comment">%Just one side muscles</span>
+0362                 <span class="comment">%auxMax=auxMax(:,indLabels==1,:);</span>
+0363                 hold on
+0364                 <span class="keyword">switch</span> sync_norm
+0365                     <span class="keyword">case</span> 0 <span class="comment">%Do nothing</span>
+0366 
+0367                     <span class="keyword">case</span> 1 <span class="comment">%Renormalize to swing/stance</span>
+0368                         <span class="comment">%To Do</span>
+0369                     <span class="keyword">case</span> 2 <span class="comment">%Renormalize to 4 phases</span>
+0370                         <span class="comment">%To Do</span>
+0371                 <span class="keyword">end</span>
+0372                 <span class="keyword">switch</span> ampNorm
+0373                     <span class="keyword">case</span> 0 <span class="comment">%Do nothing</span>
+0374                         <span class="keyword">if</span> nargin&gt;8 &amp;&amp; ~isempty(offset)
+0375                             mOffset=offset;
+0376                         <span class="keyword">else</span>
+0377                             mOffset=2*max(abs(raw(:)));
+0378                         <span class="keyword">end</span>
+0379                         ampCoefs=0;
+0380                     <span class="keyword">case</span> 1 <span class="comment">%Normalize amplitude to [0,1] for EACH label/component of data</span>
+0381                         <span class="keyword">if</span> isempty(ampCoefs)
+0382                             ampCoefs=mean(max(abs(raw),[],1),3);
+0383                         <span class="keyword">end</span>
+0384                         raw=.9*raw./repmat(ampCoefs,size(raw,1),1,size(raw,3));
+0385                         mOffset=2;
+0386                 <span class="keyword">end</span>
+0387                     <span class="comment">%Plot</span>
+0388                     auxMusc=mOffset*repmat([0:size(raw,2)-1],size(raw,1),1);
+0389                     plot([0:N-1]/N,auxMusc+mean(raw,3),<span class="string">'Color'</span>,[.5,.5,.8].*color,<span class="string">'LineWidth'</span>,2);
+0390                     haa=plot([0:N-1]/N,auxMusc+mean(raw,3)+std(raw,[],3),<span class="string">'Color'</span>,color,<span class="string">'LineWidth'</span>,1);
+0391                     uistack(haa,<span class="string">'bottom'</span>);
+0392                     haa=plot([0:N-1]/N,auxMusc+mean(raw,3)-std(raw,[],3),<span class="string">'Color'</span>,color,<span class="string">'LineWidth'</span>,1);
+0393                     uistack(haa,<span class="string">'bottom'</span>);
+0394                 <span class="keyword">if</span> plotEv==1
+0395                    <span class="comment">%Add events</span>
+0396                    events=strideData.cell2mat(strides,<span class="string">'gaitEvents'</span>,N);
+0397                    eventLabels=strides{1}.gaitEvents.getLabels;
+0398                    idx=strcmp(eventLabels,<span class="string">'LHS'</span>);
+0399                    LHSev=round(sum([1:N]'.*mean(events(:,idx==1,:),3)));
+0400                    idx=strcmp(eventLabels,<span class="string">'RHS'</span>);
+0401                    RHSev=round(sum([1:N]'.*mean(events(:,idx==1,:),3)));
+0402                    idx=strcmp(eventLabels,<span class="string">'LTO'</span>);
+0403                    LTOev=round(sum([1:N]'.*mean(events(:,idx==1,:),3)));
+0404                    idx=strcmp(eventLabels,<span class="string">'RTO'</span>);
+0405                    RTOev=round(sum([1:N]'.*mean(events(:,idx==1,:),3)));
+0406                    plot((LHSev-1)/N,auxMusc(LHSev,:)+mean(raw(LHSev,:,:),3),<span class="string">'s'</span>,<span class="string">'Color'</span>,color);
+0407                    plot((RHSev-1)/N,auxMusc(RHSev,:)+mean(raw(RHSev,:,:),3),<span class="string">'s'</span>,<span class="string">'Color'</span>,color);
+0408                    plot((LTOev-1)/N,auxMusc(LTOev,:)+mean(raw(LTOev,:,:),3),<span class="string">'s'</span>,<span class="string">'Color'</span>,color);
+0409                    plot((RTOev-1)/N,auxMusc(RTOev,:)+mean(raw(RTOev,:,:),3),<span class="string">'s'</span>,<span class="string">'Color'</span>,color);
+0410                 <span class="keyword">end</span>
+0411                 set(gca,<span class="string">'YTick'</span>,mOffset*[0:size(raw,2)-1],<span class="string">'YTickLabel'</span>,labels(indLabels==1));
+0412                 axis([0 1 -mOffset/2 mOffset*size(raw,2)-mOffset/2])
+0413                 xlabel(<span class="string">'% stride'</span>)
+0414                 ax1 = gca;
+0415                 <span class="comment">%Add secondary axes for scale: (fancy, matters only if amp is not normalized)</span>
+0416                 ax2 = axes(<span class="string">'Position'</span>,get(ax1,<span class="string">'Position'</span>),<span class="keyword">...</span>
+0417                    <span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>,<span class="keyword">...</span>
+0418                    <span class="string">'YAxisLocation'</span>,<span class="string">'right'</span>,<span class="keyword">...</span>
+0419                    <span class="string">'Color'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0420                    <span class="string">'XColor'</span>,<span class="string">'r'</span>,<span class="string">'YColor'</span>,<span class="string">'r'</span>);
+0421                 linkaxes([ax1,ax2],<span class="string">'xy'</span>)
+0422                 auxTick=[-mOffset/2:mOffset/4:(mOffset*size(raw,2)-mOffset/2)];
+0423                 <span class="comment">%auxTick(1:4:end)=[];</span>
+0424                 <span class="keyword">for</span> i=1:length(auxTick)
+0425                     <span class="keyword">if</span> mod(i,4)==1
+0426                         auxTickLabel{i}=<span class="string">''</span>;
+0427                     <span class="keyword">else</span>
+0428                         auxTickLabel{i}= (mod(i-1,4)-2)*mOffset/4;
+0429                     <span class="keyword">end</span>
+0430                 <span class="keyword">end</span>
+0431                 set(ax2,<span class="string">'YTick'</span>,auxTick,<span class="string">'YTickLabel'</span>,auxTickLabel);
+0432                 set(ax2,<span class="string">'XTick'</span>,[]);
+0433                 hold off
+0434                 offset=mOffset;
+0435             <span class="keyword">end</span>
+0436         <span class="keyword">end</span>
+0437         
+0438         <span class="comment">%function avgStride=getCellAvg(strides,N) %Pseudo-code</span>
+0439             <span class="comment">%for i=properties</span>
+0440             <span class="comment">%   strideMat=cell2mat(strides,field,N) %If it is a labTS only</span>
+0441             <span class="comment">%   avgFieldData=mean(strideMat,3);</span>
+0442             <span class="comment">%   avgField=fieldConstructor(avgFieldTime,avgFieldData);</span>
+0443             <span class="comment">%   avgStride.field=avgField; %If it is not a labTS, make an</span>
+0444             <span class="comment">%   empty field or copy it from first stride</span>
+0445             <span class="comment">%end</span>
+0446         <span class="comment">%end</span>
+0447         
+0448         <span class="comment">%function [avgEventsTime,Labels]=plotAvgEvent</span>
+0449         <span class="comment">%end</span>
+0450     <span class="keyword">end</span>
+0451     
+0452     methods(Access=private)
+0453         <a name="_sub15" href="#_subfunctions" class="code">function interval=getIntervalBtwEvents(this,event1,event2)</a>
+0454            <span class="keyword">if</span> strcmp(this.initialEvent,event1)
+0455                 t0=this.gaitEvents.Time(1);
+0456             <span class="keyword">else</span>
+0457                 t0=this.gaitEvents.Time(find(this.gaitEvents.getDataAsVector({event1})==1,1));
+0458             <span class="keyword">end</span>
+0459             <span class="keyword">if</span> strcmp(this.initialEvent,event2)
+0460                 t1=this.gaitEvents.Time(end)+this.gaitEvents.sampPeriod;
+0461             <span class="keyword">else</span>
+0462                 t1=this.gaitEvents.Time(find(this.gaitEvents.getDataAsVector({event2})==1,1));
+0463             <span class="keyword">end</span>
+0464             <span class="keyword">if</span> t1&lt;=t0
+0465                 ME=MException(<span class="string">'strideData:GetInterval'</span>,<span class="string">'The requested interval does not exist as such on this stride.'</span>);
+0466                 throw(ME)
+0467             <span class="keyword">end</span>
+0468             interval=this.split(t0,t1); 
+0469         <span class="keyword">end</span>
+0470     <span class="keyword">end</span>
+0471     
+0472 <span class="keyword">end</span>
+0473</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

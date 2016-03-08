@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processedLabData</title>
+  <meta name="keywords" content="processedLabData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@processedLabData</a> &gt; processedLabData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@processedLabData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>processedLabData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="processedLabData.html" class="code" title="">processedLabData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData)</a></li><li><a href="#_sub2" class="code">function this=set.gaitEvents(this,events)</a></li><li><a href="#_sub3" class="code">function this=set.procEMGData(this,procEMG)</a></li><li><a href="#_sub4" class="code">function this=set.angleData(this,angleData)</a></li><li><a href="#_sub5" class="code">function this=set.adaptParams(this,adaptData)</a></li><li><a href="#_sub6" class="code">function partialProcEMGData=getProcEMGData(this,muscleName)</a></li><li><a href="#_sub7" class="code">function list=getProcEMGList(this)</a></li><li><a href="#_sub8" class="code">function partialGaitEvents=getPartialGaitEvents(this,eventName)</a></li><li><a href="#_sub9" class="code">function list=getEventList(this)</a></li><li><a href="#_sub10" class="code">function partialAngleData= getAngleData(this,angleName)</a></li><li><a href="#_sub11" class="code">function partialParamData=getParam(this,paramName)</a></li><li><a href="#_sub12" class="code">function partialParamData=getExpParam(this,paramName)</a></li><li><a href="#_sub13" class="code">function adaptParams=calcAdaptParams(this)</a></li><li><a href="#_sub14" class="code">function expParams=get.experimentalParams(this)</a></li><li><a href="#_sub15" class="code">function b=get.isSingleStride(this)</a></li><li><a href="#_sub16" class="code">function [steppedDataArray,initTime,endTime]=separateIntoStrides(this,triggerEvent)</a></li><li><a href="#_sub17" class="code">function [steppedDataArray,initTime,endTime]=separateIntoSuperStrides(this,triggerEvent)</a></li><li><a href="#_sub18" class="code">function [steppedDataArray,initTime,endTime]=separateIntoDoubleStrides(this,triggerEvent)</a></li><li><a href="#_sub19" class="code">function [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)</a></li><li><a href="#_sub20" class="code">function [numSteps,initTime,endTime,initEventSide]=getStepInfo(this,triggerEvent)</a></li><li><a href="#_sub21" class="code">function [stridedField,bad,initTime,events]=getStridedField(this,field,events)</a></li><li><a href="#_sub22" class="code">function [alignedField,originalDurations,bad,initTime,events]=getAlignedField(this,field,events,alignmentLengths)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="processedLabData.html" class="code" title="">processedLabData</a> &lt; labData
+0002     <span class="comment">%processedLabData  Extends labData to include proccessed data derived</span>
+0003     <span class="comment">%from the raw data.</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%processedLabData properties:</span>
+0006     <span class="comment">%   gaitEvents - labTS object with HS and TO events</span>
+0007     <span class="comment">%   procEMGdata - processedEMGTS object</span>
+0008     <span class="comment">%   angleData - labTS object with angles calculated from marker data</span>
+0009     <span class="comment">%   adaptParams - parameterSeries adaptation values on a strid-by-stide basis</span>
+0010     <span class="comment">%   isSingleStride - boolean flag to check length of data</span>
+0011     <span class="comment">%   experimentalParams - parameterSeries for testing new adaptation</span>
+0012     <span class="comment">%   parameters</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">%processedLabData methods:</span>
+0015     <span class="comment">%</span>
+0016     <span class="comment">%   getProcEMGData - accessor for processed EMGs</span>
+0017     <span class="comment">%   getProcEMGList - returns list of processed EMG labels</span>
+0018     <span class="comment">%   getPartialGaitEvents - accessor for specific events</span>
+0019     <span class="comment">%   getEventList - returns list of event labels</span>
+0020     <span class="comment">%   getAngleData - accessor for angle data</span>
+0021     <span class="comment">%   getParam - accessor for adaptation parameters</span>
+0022     <span class="comment">%   getExpParam - accessor for experimental adaptation parameters</span>
+0023     <span class="comment">%   calcAdaptParams - re-computes adaptation parameters</span>
+0024     <span class="comment">%</span>
+0025     <span class="comment">%   separateIntoStrides - ?</span>
+0026     <span class="comment">%   separateIntoSuperStrides - ?</span>
+0027     <span class="comment">%   separateIntoDoubleStrides - ?</span>
+0028     <span class="comment">%   getStrideInfo - ?</span>
+0029     <span class="comment">%   getStridedField - ?</span>
+0030     <span class="comment">%   getAlignedField - ?</span>
+0031     <span class="comment">%</span>
+0032     <span class="comment">%See also: labData, labTimeSeries, processedEMGTimeSeries, parameterSeries</span>
+0033     
+0034     <span class="comment">%%</span>
+0035     properties <span class="comment">%(SetAccess= private)  Cannot set to private, because labData will try to set it when using split()</span>
+0036         gaitEvents <span class="comment">%labTS</span>
+0037         procEMGData <span class="comment">%processedEMGTS</span>
+0038         angleData <span class="comment">%labTS (angles based off kinematics)</span>
+0039         adaptParams <span class="comment">%paramterSeries (parameters whcih characterize adaptation process) --&gt; must be calculated, therefore not part of constructor.</span>
+0040         <span class="comment">%EMGData, which is inherited from labData, saves the FILTERED EMG data used for processing afterwards (not the RAW, which is saved in the not-procesed labData)</span>
+0041         COPData
+0042         COMData
+0043         jointMomentsData
+0044     <span class="keyword">end</span>
+0045     
+0046     properties (Dependent)        
+0047         isSingleStride <span class="comment">%ever used?</span>
+0048         experimentalParams
+0049     <span class="keyword">end</span>
+0050     
+0051     <span class="comment">%%</span>
+0052     methods
+0053         
+0054         <span class="comment">%Constructor:</span>
+0055         <a name="_sub0" href="#_subfunctions" class="code">function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData) </a><span class="comment">%All arguments are mandatory</span>
+0056             <span class="keyword">if</span> nargin&lt;15 <span class="comment">%metaData does not get replaced!</span>
+0057                markerData=[];
+0058                EMGData=[];
+0059                GRFData=[];
+0060                beltSpeedSetData=[];
+0061                beltSpeedReadData=[];
+0062                accData=[];
+0063                EEGData=[];
+0064                footSwitches=[];
+0065                events=[];
+0066                procEMG=[];
+0067                angleData = [];
+0068                COPData=[];
+0069                COMData=[];
+0070                jointMomentsData=[];
+0071             <span class="keyword">end</span>
+0072             this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches);
+0073             this.gaitEvents=events;
+0074             this.procEMGData=procEMG;
+0075             this.angleData=angleData;
+0076             this.COPData=COPData;
+0077             this.COMData=COMData;
+0078             this.jointMomentsData=jointMomentsData;
+0079         <span class="keyword">end</span>
+0080         <span class="comment">%Setters</span>
+0081         <a name="_sub1" href="#_subfunctions" class="code">function this=set.gaitEvents(this,events)</a>
+0082             <span class="keyword">if</span> isa(events,<span class="string">'labTimeSeries'</span>) || isempty(events)
+0083                 this.gaitEvents=events;
+0084             <span class="keyword">else</span>
+0085                 ME=MException(<span class="string">'processedLabData:Constructor'</span>,<span class="string">'events parameter is not a labTimeSeries object.'</span>);
+0086                 throw(ME);
+0087             <span class="keyword">end</span>
+0088         <span class="keyword">end</span>
+0089         <a name="_sub2" href="#_subfunctions" class="code">function this=set.procEMGData(this,procEMG)</a>
+0090             <span class="keyword">if</span> isa(procEMG,<span class="string">'processedEMGTimeSeries'</span>) || isempty(procEMG)
+0091                 this.procEMGData=procEMG;
+0092             <span class="keyword">else</span>
+0093                 ME=MException(<span class="string">'processedLabData:Constructor'</span>,<span class="string">'procEMG parameter is not a processedEMGTimeSeries object.'</span>);
+0094                 throw(ME);
+0095             <span class="keyword">end</span>
+0096         <span class="keyword">end</span>
+0097         <a name="_sub3" href="#_subfunctions" class="code">function this=set.angleData(this,angleData)</a>
+0098             <span class="keyword">if</span> isa(angleData,<span class="string">'labTimeSeries'</span>) || isempty(angleData)
+0099                 this.angleData=angleData;
+0100             <span class="keyword">else</span>             
+0101                 ME=MException(<span class="string">'processedLabData:Constructor'</span>,<span class="string">'angleData parameter is not a labTimeSeries object.'</span>);
+0102                 throw(ME);
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105         <a name="_sub4" href="#_subfunctions" class="code">function this=set.adaptParams(this,adaptData)</a>
+0106             <span class="keyword">if</span> isa(adaptData,<span class="string">'parameterSeries'</span>) || isa(adaptData,<span class="string">'labTimeSeries'</span>)
+0107                 this.adaptParams=adaptData;
+0108             <span class="keyword">else</span>             
+0109                 ME=MException(<span class="string">'processedLabData:Constructor'</span>,<span class="string">'adaptParams parameter is not a parameterSeries object.'</span>);
+0110                 throw(ME);
+0111             <span class="keyword">end</span>
+0112         <span class="keyword">end</span>
+0113        
+0114         <span class="comment">%Access method for fields not defined in raw class.</span>
+0115         <a name="_sub5" href="#_subfunctions" class="code">function partialProcEMGData=getProcEMGData(this,muscleName)</a>
+0116             partialProcEMGData=this.getPartialData(<span class="string">'procEMGData'</span>,muscleName);
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub6" href="#_subfunctions" class="code">function list=getProcEMGList(this)</a>
+0120             list=this.getLabelList(<span class="string">'procEMGData'</span>);
+0121         <span class="keyword">end</span>
+0122         
+0123         <a name="_sub7" href="#_subfunctions" class="code">function partialGaitEvents=getPartialGaitEvents(this,eventName)</a>
+0124             partialGaitEvents=this.getPartialData(<span class="string">'gaitEvents'</span>,eventName);
+0125         <span class="keyword">end</span>
+0126         
+0127         <a name="_sub8" href="#_subfunctions" class="code">function list=getEventList(this)</a>
+0128             list=this.getLabelList(<span class="string">'gaitEvents'</span>);
+0129         <span class="keyword">end</span>
+0130         
+0131         <a name="_sub9" href="#_subfunctions" class="code">function partialAngleData= getAngleData(this,angleName)</a>
+0132             partialAngleData=this.getPartialData(<span class="string">'angleData'</span>,angleName);
+0133         <span class="keyword">end</span>
+0134         
+0135         <a name="_sub10" href="#_subfunctions" class="code">function partialParamData=getParam(this,paramName)</a>
+0136             partialParamData=this.getPartialData(<span class="string">'adaptParams'</span>,paramName);
+0137         <span class="keyword">end</span>
+0138         
+0139         <a name="_sub11" href="#_subfunctions" class="code">function partialParamData=getExpParam(this,paramName)</a>
+0140             partialParamData=this.getPartialData(<span class="string">'experimentalParams'</span>,paramName);
+0141         <span class="keyword">end</span>
+0142                 
+0143         <a name="_sub12" href="#_subfunctions" class="code">function adaptParams=calcAdaptParams(this)</a>
+0144              adaptParams=calcParameters(this);            
+0145         <span class="keyword">end</span>
+0146            
+0147         <span class="comment">%Getters for dependent properties:</span>
+0148         <a name="_sub13" href="#_subfunctions" class="code">function expParams=get.experimentalParams(this)</a>
+0149              expParams=calcExperimentalParams(this);
+0150         <span class="keyword">end</span>
+0151 
+0152         <a name="_sub14" href="#_subfunctions" class="code">function b=get.isSingleStride(this)</a>
+0153             b=isa(this,<span class="string">'strideData'</span>); 
+0154         <span class="keyword">end</span>
+0155         
+0156         <span class="comment">%Separate into strides!</span>
+0157         <a name="_sub15" href="#_subfunctions" class="code">function [steppedDataArray,initTime,endTime]=separateIntoStrides(this,triggerEvent) </a><span class="comment">%Splitting into single strides!</span>
+0158             <span class="comment">%triggerEvent needs to be one of the valid gaitEvent labels</span>
+0159             
+0160             [numStrides,initTime,endTime]=<a href="#_sub19" class="code" title="subfunction [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)">getStrideInfo</a>(this,triggerEvent);
+0161             steppedDataArray={};
+0162             <span class="keyword">for</span> i=1:numStrides
+0163                 steppedDataArray{i}=this.split(initTime(i),endTime(i),<span class="string">'strideData'</span>);
+0164             <span class="keyword">end</span>
+0165         <span class="keyword">end</span>
+0166         
+0167         <a name="_sub16" href="#_subfunctions" class="code">function [steppedDataArray,initTime,endTime]=separateIntoSuperStrides(this,triggerEvent) </a><span class="comment">%SuperStride= 1.5 strides, the minimum unit we need to get our parameters consistently for an individual stride cycle</span>
+0168             <span class="comment">%triggerEvent needs to be one of the valid gaitEvent labels</span>
+0169             
+0170             <span class="comment">%Determine end event (ex: if triggerEvent='LHS' then we</span>
+0171             <span class="comment">%need 'RHS')</span>
+0172             <span class="comment">%Version deprecated on Apr 2nd 2015</span>
+0173 <span class="comment">%             if strcmpi(triggerEvent(2:3),'HS')</span>
+0174 <span class="comment">%                 eventType = 'HS';</span>
+0175 <span class="comment">%             else</span>
+0176 <span class="comment">%                 eventType = 'TO';</span>
+0177 <span class="comment">%             end</span>
+0178 <span class="comment">%             if strcmpi(triggerEvent(1),'R')</span>
+0179 <span class="comment">%                 opLeg = 'L';</span>
+0180 <span class="comment">%             else</span>
+0181 <span class="comment">%                 opLeg = 'R';</span>
+0182 <span class="comment">%             end</span>
+0183 <span class="comment">%             refLegEventList=this.getPartialGaitEvents(triggerEvent);</span>
+0184 <span class="comment">%             opLegEventList=this.getPartialGaitEvents([opLeg,eventType]);</span>
+0185 <span class="comment">%             refIdxLst=find(refLegEventList==1);</span>
+0186 <span class="comment">%             opIdxLst=find(opLegEventList==1);</span>
+0187 <span class="comment">%             auxTime=this.gaitEvents.Time;</span>
+0188 <span class="comment">%             steppedDataArray={};</span>
+0189 <span class="comment">%             for i=1:length(refIdxLst)-2</span>
+0190 <span class="comment">%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(opIdxLst(find(opIdxLst(:)&gt;refIdxLst(i+1),1,'first'))),'strideData');</span>
+0191 <span class="comment">%             end</span>
+0192             <span class="keyword">if</span> strcmp(triggerEvent(1),<span class="string">'L'</span>)
+0193                 contraLeg=<span class="string">'R'</span>;
+0194             <span class="keyword">else</span> 
+0195                 contraLeg=<span class="string">'L'</span>;
+0196             <span class="keyword">end</span>
+0197             contraLateralTriggerEvent=[contraLeg triggerEvent(2:end)];
+0198             [strideIdxs,initTime,endTime]=<a href="#_sub19" class="code" title="subfunction [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)">getStrideInfo</a>(this,triggerEvent);
+0199             [CstrideIdxs,CinitTime,CendTime]=<a href="#_sub19" class="code" title="subfunction [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)">getStrideInfo</a>(this,contraLateralTriggerEvent);
+0200             steppedDataArray={};
+0201             <span class="keyword">for</span> i=strideIdxs-1
+0202                 steppedDataArray{i}=this.split(initTime(i),CendTime(find(CendTime&gt;initTime(i),1,<span class="string">'first'</span>)),<span class="string">'strideData'</span>);
+0203             <span class="keyword">end</span>
+0204         <span class="keyword">end</span>
+0205                 
+0206         <a name="_sub17" href="#_subfunctions" class="code">function [steppedDataArray,initTime,endTime]=separateIntoDoubleStrides(this,triggerEvent) </a><span class="comment">%DoubleStride= 2 full strides, the minimum unit we need to get our parameters consistently for an individual stride cycle</span>
+0207              <span class="comment">%Version deprecated on Apr 2nd 2015</span>
+0208             <span class="comment">%triggerEvent needs to be one of the valid gaitEvent labels</span>
+0209 <span class="comment">%             refLegEventList=this.getPartialGaitEvents(triggerEvent);</span>
+0210 <span class="comment">%             refIdxLst=find(refLegEventList==1);</span>
+0211 <span class="comment">%             auxTime=this.gaitEvents.Time;</span>
+0212 <span class="comment">%             steppedDataArray={};</span>
+0213 <span class="comment">%             for i=1:length(refIdxLst)-2</span>
+0214 <span class="comment">%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)&gt;refIdxLst(i+1),1,'first'))),'strideData');</span>
+0215 <span class="comment">%             end</span>
+0216             
+0217             [strideIdxs,initTime,endTime]=<a href="#_sub19" class="code" title="subfunction [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)">getStrideInfo</a>(this,triggerEvent);
+0218             steppedDataArray={};
+0219             <span class="keyword">for</span> i=strideIdxs(1:end-1)
+0220                 steppedDataArray{i}=this.split(initTime(i),endTime(i+1),<span class="string">'strideData'</span>);
+0221             <span class="keyword">end</span>
+0222         <span class="keyword">end</span>
+0223         
+0224         <a name="_sub18" href="#_subfunctions" class="code">function [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)</a>
+0225             <span class="keyword">if</span> nargin&lt;2 || isempty(triggerEvent)
+0226                 triggerEvent=[this.metaData.refLeg <span class="string">'HS'</span>]; <span class="comment">%Using refLeg's HS as default event for striding.</span>
+0227             <span class="keyword">end</span>
+0228             refLegEventList=this.getPartialGaitEvents(triggerEvent);
+0229             refIdxLst=find(refLegEventList==1);
+0230             auxTime=this.gaitEvents.Time;
+0231             initTime=auxTime(refIdxLst(1:end-1));
+0232             numStrides=length(initTime);
+0233             <span class="keyword">if</span> nargin&lt;3 || isempty(endEvent) <span class="comment">%using triggerEvent for endEvent</span>
+0234                 endTime=auxTime(refIdxLst(2:end));
+0235             <span class="keyword">else</span> <span class="comment">%End of interval depends on another event</span>
+0236                 endEventList=this.getPartialGaitEvents(endEvent);
+0237                 endIdxLst=find(endEventList==1);
+0238                 i=0;
+0239                 noEnd=true;
+0240                 <span class="keyword">while</span> i&lt;numStrides &amp;&amp; noEnd <span class="comment">%This is an infinite loop...</span>
+0241                     i=i+1;
+0242                     aux=auxTime(find(endIdxLst&gt;refIdxLst(i),1,<span class="string">'first'</span>)); 
+0243                     <span class="keyword">if</span> ~isempty(aux)
+0244                         endTime(i)=aux;
+0245                     <span class="keyword">else</span>
+0246                         endTime(i)=NaN;
+0247                     <span class="keyword">end</span>
+0248                 <span class="keyword">end</span>
+0249             <span class="keyword">end</span>
+0250         <span class="keyword">end</span>
+0251         
+0252         <a name="_sub19" href="#_subfunctions" class="code">function [numSteps,initTime,endTime,initEventSide]=getStepInfo(this,triggerEvent)</a>
+0253             <span class="keyword">if</span> nargin&lt;2 || isempty(triggerEvent)
+0254                 triggerEvent=<span class="string">'HS'</span>; <span class="comment">%Using HS as default event for striding.</span>
+0255             <span class="keyword">end</span>
+0256             
+0257             <span class="comment">%Find starting events:</span>
+0258             rEventList=this.getPartialGaitEvents([<span class="string">'R'</span> triggerEvent]);
+0259             rIdxLst=find(rEventList==1);
+0260             lEventList=this.getPartialGaitEvents([<span class="string">'L'</span> triggerEvent]);
+0261             lIdxLst=find(lEventList==1);
+0262             
+0263             auxTime=this.gaitEvents.Time;
+0264 
+0265             i=0;
+0266             noEnd=true;
+0267             firstIdx=min([rIdxLst;lIdxLst]);
+0268             numSteps=0;
+0269             initTime=[];
+0270             endTime=[];
+0271             initEventSide={};
+0272             <span class="keyword">if</span> ~isempty(firstIdx)
+0273                 initTime(1)=auxTime(firstIdx);
+0274                 <span class="keyword">if</span> any(rIdxLst==firstIdx)
+0275                     lastSideRight=true;
+0276                 <span class="keyword">else</span>
+0277                     lastSideRight=false;
+0278                 <span class="keyword">end</span>
+0279                 <span class="keyword">while</span> noEnd <span class="comment">%This is an infinite loop...</span>
+0280                     i=i+1;
+0281                     <span class="keyword">if</span> lastSideRight
+0282                             aux=find(auxTime(lIdxLst)&gt;initTime(i),1,<span class="string">'first'</span>); 
+0283                             t=auxTime(lIdxLst(aux));
+0284                             initEventSide{i}=<span class="string">'R'</span>;
+0285                     <span class="keyword">else</span>
+0286                             aux=find(auxTime(rIdxLst)&gt;initTime(i),1,<span class="string">'first'</span>); 
+0287                             t=auxTime(rIdxLst(aux));
+0288                             initEventSide{i}=<span class="string">'L'</span>;
+0289                     <span class="keyword">end</span>
+0290                     lastSideRight=~lastSideRight;
+0291                     <span class="keyword">if</span> ~isempty(aux)
+0292                         endTime(i)=t;
+0293                         initTime(i+1)=t;
+0294                     <span class="keyword">else</span>
+0295                         endTime(i)=NaN;
+0296                         noEnd=false;
+0297                     <span class="keyword">end</span>
+0298                 <span class="keyword">end</span>
+0299                 numSteps=i;
+0300             <span class="keyword">end</span>
+0301         <span class="keyword">end</span>
+0302         
+0303         <a name="_sub20" href="#_subfunctions" class="code">function [stridedField,bad,initTime,events]=getStridedField(this,field,events)</a>
+0304             <span class="keyword">if</span> isa(events,<span class="string">'char'</span>)
+0305                 events={events};
+0306             <span class="keyword">end</span>
+0307             <span class="comment">%Step 1: separate strides by the first event</span>
+0308             [numStrides,initTime,endTime]=<a href="#_sub19" class="code" title="subfunction [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)">getStrideInfo</a>(this,events{1});
+0309             M=numStrides;
+0310             N=length(events);
+0311             <span class="comment">%Step 2: for each stride, find the other events (if any)</span>
+0312             intermediateTimes=nan(M,N-1);
+0313             bad=false(M,1);
+0314             <span class="keyword">for</span> i=1:M
+0315                 <span class="keyword">for</span> j=1:N-1
+0316                     aux=find(this.gaitEvents.getDataAsVector(events{j+1}) &amp; this.gaitEvents.Time&gt;=initTime(i) &amp; this.gaitEvents.Time&lt;endTime(i));
+0317                     <span class="keyword">if</span> length(aux)==1 <span class="comment">%Found only one event, as expected</span>
+0318                         intermediateTimes(i,j) = this.gaitEvents.Time(aux);
+0319                     <span class="keyword">else</span>
+0320                         bad(i)=true;
+0321                     <span class="keyword">end</span>
+0322                 <span class="keyword">end</span>
+0323             <span class="keyword">end</span>
+0324             <span class="comment">%Step 3: slice timeseries</span>
+0325             timeBreakpoints=[initTime, intermediateTimes]';
+0326             [slicedTS,~,~]=sliceTS(this.(field),[timeBreakpoints(:); endTime(end)],0);
+0327             
+0328             <span class="comment">%Step 4: reshape &amp; set to [] the slices which didn't have</span>
+0329             <span class="comment">%proper events</span>
+0330             stridedField=reshape(slicedTS,N,M)';
+0331             
+0332         <span class="keyword">end</span>
+0333         
+0334         <a name="_sub21" href="#_subfunctions" class="code">function [alignedField,originalDurations,bad,initTime,events]=getAlignedField(this,field,events,alignmentLengths)</a>
+0335             [stridedField,bad,initTime,events]=<a href="#_sub21" class="code" title="subfunction [stridedField,bad,initTime,events]=getStridedField(this,field,events)">getStridedField</a>(this,field,events);
+0336             [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+0337         <span class="keyword">end</span>
+0338     <span class="keyword">end</span>
+0339     
+0340     
+0341 <span class="keyword">end</span>
+0342</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

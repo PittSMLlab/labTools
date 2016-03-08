@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotMultipleGroupsBars</title>
+  <meta name="keywords" content="plotMultipleGroupsBars">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; plotMultipleGroupsBars.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotMultipleGroupsBars
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrixGroups,medianFlag,signifPlotMatrixConds)</a>
+0002             <span class="keyword">if</span> nargin&lt;3 || isempty(removeBiasFlag)
+0003                warning(<span class="string">'RemoveBiasFlag argument not provided, will NOT remove bias.'</span>)  <span class="comment">%For efficiency, subjects should remove bias before hand, as it is a computationally intensive task that should be done the least number of times possible</span>
+0004                removeBiasFlag=0; 
+0005             <span class="keyword">end</span>
+0006             <span class="keyword">if</span> nargin&lt;4
+0007                 plotIndividualsFlag=[];
+0008             <span class="keyword">end</span>
+0009             <span class="keyword">if</span> nargin&lt;5
+0010                 condList=[];
+0011             <span class="keyword">end</span>
+0012             <span class="keyword">if</span> nargin&lt;6
+0013                 numberOfStrides=[];
+0014             <span class="keyword">end</span>
+0015             <span class="keyword">if</span> nargin&lt;7
+0016                 exemptFirst=[];
+0017             <span class="keyword">end</span>
+0018             <span class="keyword">if</span> nargin&lt;8
+0019                 exemptLast=[];
+0020             <span class="keyword">end</span>
+0021             <span class="keyword">if</span> nargin&lt;9
+0022                 legendNames=[];
+0023             <span class="keyword">end</span>
+0024             <span class="keyword">if</span> nargin&lt;10
+0025                 significanceThreshold=[];
+0026             <span class="keyword">end</span>
+0027             <span class="keyword">if</span> nargin&lt;11
+0028                 plotHandles=[];
+0029             <span class="keyword">end</span>
+0030             <span class="keyword">if</span> nargin&lt;12 || isempty(colors)
+0031                 colorScheme
+0032                 colors=color_palette;
+0033             <span class="keyword">end</span>
+0034             
+0035             <span class="keyword">if</span> nargin&lt;14 || isempty(medianFlag)
+0036                 medianFlag=0;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin&lt;15 || isempty(signifPlotMatrixConds)
+0039                 M=length(condList)*length(numberOfStrides);
+0040                signifPlotMatrixConds=zeros(M); 
+0041             <span class="keyword">end</span>
+0042             <span class="keyword">if</span> isa(groups,<span class="string">'struct'</span>)
+0043                 ff=fields(groups);
+0044                 aux=cell(size(ff));
+0045                 <span class="keyword">for</span> i=1:length(ff)
+0046                    aux{i}=getfield(groups,ff{i}); 
+0047                 <span class="keyword">end</span>
+0048                 groups=aux;
+0049             <span class="keyword">end</span>
+0050             <span class="keyword">if</span> ~isa(groups,<span class="string">'cell'</span>) || ~isa(groups{1},<span class="string">'groupAdaptationData'</span>)
+0051                 error(<span class="string">'First argument needs to be a cell array of groupAdaptationData objects'</span>)
+0052             <span class="keyword">end</span>
+0053             <span class="keyword">if</span> nargin&lt;13 || isempty(significancePlotMatrixGroups)
+0054                 M=length(groups);
+0055                 significancePlotMatrixGroups=ones(M);
+0056             <span class="keyword">end</span>
+0057             [figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
+0058             
+0059             <span class="comment">%Add bars comparing groups:</span>
+0060             nGroups=length(groups);
+0061             <span class="keyword">if</span> nGroups&gt;1
+0062             <span class="comment">%[p]=compareTwoGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast);</span>
+0063             <span class="keyword">if</span> ~isempty(significanceThreshold)
+0064                 ch=findobj(figHandle,<span class="string">'Type'</span>,<span class="string">'Axes'</span>);
+0065                 <span class="keyword">for</span> i=1:length(ch)
+0066                     aux=find(strcmp(label,ch(i).Title.String));
+0067                     clear XData YData
+0068                     subplot(ch(i))
+0069                     hold on
+0070                     b=findobj(ch(i),<span class="string">'Type'</span>,<span class="string">'Bar'</span>);
+0071                     <span class="keyword">if</span> ~isempty(b)
+0072                     <span class="keyword">for</span> j=1:length(b)
+0073                         XData(j,:)=b(end-j+1).XData;
+0074                         YData(j,:)=b(end-j+1).YData;
+0075                     <span class="keyword">end</span>
+0076                     <span class="keyword">try</span>
+0077                     XData=reshape(XData,[length(numberOfStrides),nGroups,length(condList)]);
+0078                     YData=reshape(YData,[length(numberOfStrides),nGroups,length(condList)]);
+0079                     <span class="keyword">catch</span> <span class="comment">%For back compatibility with bar command</span>
+0080                         XData=reshape(XData(1:2:<span class="keyword">end</span>,:),[length(numberOfStrides),nGroups,length(condList)]);
+0081                         YData=reshape(YData(1:2:<span class="keyword">end</span>,:),[length(numberOfStrides),nGroups,length(condList)]);
+0082                     <span class="keyword">end</span>
+0083                     yRef=.1*(max(YData(:))-min(YData(:)));
+0084                     <span class="comment">%yRef=.5*std(YData(:));</span>
+0085                     yOff=max(YData(:));
+0086                     yOff2=min(YData(:));
+0087                     XData=squeeze(XData(:,1,:));
+0088                     XData=XData(:);
+0089                     YData=squeeze(YData(:,1,:));
+0090                     YData=YData(:);
+0091                     
+0092                     counter=0;
+0093                     signifPlotMatrixConds=signifPlotMatrixConds==1 | signifPlotMatrixConds'==1;
+0094                     M=size(signifPlotMatrixConds,2);
+0095                     NN=sum(signifPlotMatrixConds(:)==1)/2; <span class="comment">%Total number of comparisons to be made</span>
+0096                     <span class="keyword">for</span> j=1:length(XData) <span class="comment">%For each condition</span>
+0097                         [a1,a2]=ind2sub([size(allData.group{1},2),size(allData.group{1},1)],j);
+0098                         data1=squeeze(allData.group{1}(a2,a1,aux,:));
+0099                         [b1,b2]=ind2sub([size(allData.group{2},2),size(allData.group{1},1)],j);
+0100                         data2=squeeze(allData.group{2}(b2,b1,aux,:));
+0101                             <span class="comment">%Sanity check:</span>
+0102                             <span class="keyword">if</span> medianFlag==0
+0103                                 sData=nanmean(data1);
+0104                             <span class="keyword">else</span>
+0105                                 sData=nanmedian(data1);
+0106                             <span class="keyword">end</span>
+0107                             <span class="keyword">if</span> sData~=YData(j) <span class="comment">%data2 is the data I believe is plotted in the bar positioned in x=XData(k), and should have height y=YData(k)</span>
+0108                                 <span class="comment">%Mismatch means that I am wrong, and</span>
+0109                                 <span class="comment">%therefore should not be overlaying the</span>
+0110                                 <span class="comment">%stats on the given bar plots</span>
+0111                                 error(<span class="string">'Stride group order is different than expected'</span>)
+0112                             <span class="keyword">end</span>
+0113                             
+0114                             <span class="comment">%2-sample t-test btw the first two groups:</span>
+0115                             <span class="keyword">if</span> significancePlotMatrixGroups(1,2)==1 || significancePlotMatrixGroups(2,1)==1
+0116                                 <span class="keyword">if</span> medianFlag==0
+0117                                     [~,pp]=ttest2(data1,data2); <span class="comment">%Use ttest2 to do independent 2-sample t-test</span>
+0118                                 <span class="keyword">else</span>
+0119                                     [pp]=ranksum(data1,data2); <span class="comment">%Use ranksum 2 to do independent 2-sample non-param testing</span>
+0120                                 <span class="keyword">end</span>
+0121                                 <span class="keyword">if</span> pp&lt;significanceThreshold<span class="comment">%/(length(numberOfStrides)*length(condList))</span>
+0122                                     plot(XData(j)+[0,1],yOff+yRef*[1,1],<span class="string">'m'</span>,<span class="string">'LineWidth'</span>,2)
+0123                                     <span class="comment">%text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')</span>
+0124                                     <span class="keyword">if</span> pp&gt;significanceThreshold/10
+0125                                         text(XData(j)+.25,yOff+yRef*1.4,[<span class="string">'*'</span>],<span class="string">'Color'</span>,<span class="string">'m'</span>)
+0126                                     <span class="keyword">else</span>
+0127                                         text(XData(j)+.25,yOff+yRef*1.4,[<span class="string">'**'</span>],<span class="string">'Color'</span>,<span class="string">'m'</span>)
+0128                                     <span class="keyword">end</span>
+0129                                 <span class="keyword">end</span>
+0130                             <span class="keyword">end</span>
+0131                             <span class="comment">%paired t-tests btw baseline and each other</span>
+0132                             <span class="comment">%condition for each group</span>
+0133                             
+0134                             NNN=sum(signifPlotMatrixConds(j,[j+1:end])); <span class="comment">%Comparisons for this specific condition</span>
+0135                             
+0136                             <span class="keyword">for</span> l=[j+1:M]
+0137                             <span class="keyword">if</span> signifPlotMatrixConds(j,l)==1 
+0138                                 counter=counter+1;
+0139                                 <span class="keyword">for</span> k=1:length(allData.group)
+0140                                     [a1,a2]=ind2sub([size(allData.group{k},2),size(allData.group{k},1)],l);
+0141                                     data1=squeeze(allData.group{k}(a2,a1,aux,:));
+0142                                     [b1,b2]=ind2sub([size(allData.group{k},2),size(allData.group{k},1)],j);
+0143                                     data2=squeeze(allData.group{k}(b2,b1,aux,:));
+0144                                     <span class="keyword">if</span> medianFlag==0
+0145                                         [~,pp]=ttest(data1,data2); <span class="comment">%Use ttest to do paired t-test</span>
+0146                                     <span class="keyword">else</span>
+0147                                         [pp]=signrank(data1,data2); <span class="comment">%Use signrank to paired non-param testing</span>
+0148                                     <span class="keyword">end</span>
+0149                                     <span class="keyword">if</span> pp&lt;significanceThreshold<span class="comment">%/(length(numberOfStrides)*length(condList))</span>
+0150                                         plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),<span class="string">'Color'</span>,colors(mod(k-1,length(colors))+1,:),<span class="string">'LineWidth'</span>,2)
+0151                                         <span class="comment">%text(XData(l)-1.5,yOff2-yRef*4*(k + (counter-1.5)/NN),[num2str(pp,'%1.1g')],'Color',colors(k,:))</span>
+0152                                         <span class="keyword">if</span> pp&gt;significanceThreshold/10
+0153                                             text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),[<span class="string">'*'</span>],<span class="string">'Color'</span>,colors(mod(k-1,length(colors))+1,:))
+0154                                         <span class="keyword">else</span>
+0155                                             text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),[<span class="string">'**'</span>],<span class="string">'Color'</span>,colors(mod(k-1,length(colors))+1,:))
+0156                                         <span class="keyword">end</span>
+0157                                     <span class="keyword">end</span>
+0158                                 <span class="keyword">end</span>
+0159                             <span class="keyword">end</span>
+0160                             <span class="keyword">end</span>
+0161                             
+0162                     <span class="keyword">end</span>
+0163                     <span class="keyword">end</span>
+0164                     aa=axis;
+0165                     <span class="keyword">try</span>
+0166                     axis([aa(1:2) yOff2-yRef*4*(length(allData.group)+1) yOff+2*yRef])
+0167                     <span class="keyword">catch</span>
+0168                         axis tight
+0169                     <span class="keyword">end</span>
+0170                     hold off
+0171                 <span class="keyword">end</span>
+0172             <span class="keyword">end</span>
+0173             <span class="keyword">end</span>
+0174             
+0175 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

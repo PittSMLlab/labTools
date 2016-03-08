@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of alignedTimeSeries</title>
+  <meta name="keywords" content="alignedTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; alignedTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>alignedTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels)</a></li><li><a href="#_sub2" class="code">function newThis=getPartialStridesAsATS(this,inds)</a></li><li><a href="#_sub3" class="code">function newThis=getPartialDataAsATS(this,labels)</a></li><li><a href="#_sub4" class="code">function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)</a></li><li><a href="#_sub5" class="code">function [meanTS,stds]=mean(this,strideIdxs)</a></li><li><a href="#_sub6" class="code">function newThis=abs(this)</a></li><li><a href="#_sub7" class="code">function [stdTS]=std(this,strideIdxs)</a></li><li><a href="#_sub8" class="code">function [prctileTS]=prctile(this,p,strideIdxs)</a></li><li><a href="#_sub9" class="code">function medianTS=median(this,strideIdxs)</a></li><li><a href="#_sub10" class="code">function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)</a></li><li><a href="#_sub11" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a></li><li><a href="#_sub12" class="code">function newThis=cat(this,other,dim,forceFlag)</a></li><li><a href="#_sub13" class="code">function newThis=castAsTS(this)</a></li><li><a href="#_sub14" class="code">function newThis=concatenateAsTS(this)</a></li><li><a href="#_sub15" class="code">function newThis=fftshift(this,labels)</a></li><li><a href="#_sub16" class="code">function labelList=getLabelsThatMatch(this,exp)</a></li><li><a href="#_sub17" class="code">function [histogram,newLabels]=logicalHist(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a> <span class="comment">%&lt;labTimeSeries %TODO: make this inherit from labTimeSeries, as it should</span>
+0002     <span class="comment">%alignedTimeSeries is a time-series-like object, but where it is</span>
+0003     <span class="comment">%assumed that Data stores several repetitions of some recorded set</span>
+0004     
+0005     properties
+0006         Data
+0007         Time
+0008         labels
+0009         alignmentVector=[];
+0010         alignmentLabels={};
+0011     <span class="keyword">end</span>
+0012     
+0013     methods
+0014         <a name="_sub0" href="#_subfunctions" class="code">function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels)</a>
+0015             <span class="comment">%Check:</span>
+0016             <span class="keyword">if</span> nargin&lt;6
+0017                 warning(<span class="string">'alignedTimeSeries being created without specifying alignment criteria.'</span>)
+0018                 alignmentVector=[1];
+0019                 alignmentLabels={<span class="string">'Unknown'</span>}; 
+0020             <span class="keyword">end</span>
+0021             <span class="keyword">if</span> size(Data,2)==length(labels)
+0022                 this.Data=Data;
+0023                 this.Time=t0+[0:size(Data,1)-1]*Ts;
+0024                 this.labels=labels;
+0025                 <span class="keyword">if</span> length(alignmentVector)~=length(alignmentLabels)
+0026                     error(<span class="string">'alignedTS:Constructor'</span>,<span class="string">'Alignment vector and labels sizes do not match.'</span>)
+0027                 <span class="keyword">else</span>
+0028                     this.alignmentVector=alignmentVector;
+0029                     this.alignmentLabels=alignmentLabels;
+0030                 <span class="keyword">end</span>
+0031             <span class="keyword">else</span>
+0032                 error(<span class="string">'alignedTS:Constructor'</span>,<span class="string">'Data size and label number do not match.'</span>)
+0033             <span class="keyword">end</span>
+0034         <span class="keyword">end</span>
+0035         
+0036         <a name="_sub1" href="#_subfunctions" class="code">function newThis=getPartialStridesAsATS(this,inds)</a>
+0037             newThis=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub2" href="#_subfunctions" class="code">function newThis=getPartialDataAsATS(this,labels)</a>
+0041             [boolIdx,relIdx]=this.isaLabel(labels);
+0042             newThis=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub3" href="#_subfunctions" class="code">function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)</a>
+0046             <span class="comment">% Plot individual instances (strides) of the time-series, and overlays the mean of all of them</span>
+0047             <span class="comment">% Uses one subplot for each label in the timeseries (same as</span>
+0048             <span class="comment">% labTimeSeries.plot).</span>
+0049             <span class="comment">% If events are given (alignedTimeSeries with the same time vector and number of strides),</span>
+0050             <span class="comment">% it will display the average event-time ocurrence in the plot,</span>
+0051             <span class="comment">% instead of the time in the x-axis.</span>
+0052             <span class="comment">% See also labTimeSeries.plot</span>
+0053             <span class="comment">%</span>
+0054             <span class="comment">% SYNTAX:</span>
+0055             <span class="comment">% [figHandle,plotHandles]=plot(this,figHandle,plotHandles,meanColor,events)</span>
+0056             <span class="comment">%</span>
+0057             <span class="comment">% INPUTS:</span>
+0058             <span class="comment">% this: alignedTimeSeries object to plot</span>
+0059             <span class="comment">% figHandle: handle to the figure to be used. If absent,</span>
+0060             <span class="comment">% creates a new figure.</span>
+0061             <span class="comment">% plotHandles: handles to the subplots being used. There need</span>
+0062             <span class="comment">% to be at least as many handles as labels in the data.</span>
+0063             <span class="comment">% meanColor: color to use for the plot of the mean. %FIXME</span>
+0064             <span class="comment">% events: alignedTimeSeries of events.</span>
+0065             <span class="comment">%</span>
+0066             <span class="comment">% OUTPUT:</span>
+0067             <span class="comment">% figHandle: handle to the figure used.</span>
+0068             <span class="comment">% plotHandles: handles to the subplots used.</span>
+0069             <span class="comment">%</span>
+0070                 <span class="keyword">if</span> nargin&lt;4 || isempty(meanColor)
+0071                    meanColor=[1,0,0]; 
+0072                 <span class="keyword">end</span>
+0073                 structure=this.Data;
+0074                 <span class="keyword">if</span> nargin&lt;2 || isempty(figHandle)
+0075                     figHandle=figure();
+0076                 <span class="keyword">else</span>
+0077                     figure(figHandle) <span class="comment">%Only works for one condition!</span>
+0078                 <span class="keyword">end</span>
+0079                set(figHandle,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1])
+0080                M=size(structure,2);
+0081                <span class="keyword">if</span> nargin&lt;3 || isempty(plotHandles) || length(plotHandles)&lt;size(this.Data,2)
+0082                 [b,a]=getFigStruct(M);
+0083                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .05], [.05 .05]); <span class="comment">%External function</span>
+0084                <span class="keyword">end</span>
+0085                meanStr=<a href="#_sub5" class="code" title="subfunction [meanTS,stds]=mean(this,strideIdxs)">mean</a>(structure,3);
+0086                <span class="keyword">if</span> nargin&lt;7 || isempty(plottedInds)
+0087                    plottedInds=1:size(structure,3);
+0088                    <span class="keyword">if</span> (numel(structure))&gt;1e7
+0089                            P=floor(1e7/numel(structure(:,:,1)));
+0090                            warning([<span class="string">'There are too many strides in this condition to plot ('</span> num2str(size(structure,3)) <span class="string">'). Only plotting first '</span> num2str(P) <span class="string">'.'</span>])
+0091                            plottedInds=1:P;  
+0092                            structure=structure(:,:,plottedInds);
+0093                    <span class="keyword">end</span>
+0094                <span class="keyword">end</span>
+0095                <span class="comment">%Plot percentiles (bounds)</span>
+0096                <span class="keyword">if</span> nargin&lt;5 || isempty(events)
+0097                     events=[];
+0098                     meanEvents=[];
+0099                <span class="keyword">else</span>
+0100                    <span class="keyword">if</span> isa(events,<span class="string">'alignedTimeSeries'</span>)
+0101                     [meanEvents,ss]=<a href="#_sub5" class="code" title="subfunction [meanTS,stds]=mean(this,strideIdxs)">mean</a>(events);
+0102                    <span class="keyword">else</span>
+0103                        meanEvents=events;
+0104                        ss=[];
+0105                    <span class="keyword">end</span>
+0106                     [i2,~]=find(meanEvents.Data);
+0107                <span class="keyword">end</span>
+0108                <span class="keyword">if</span> ~islogical(this.Data) &amp;&amp; nargin&gt;7 &amp;&amp; ~isempty(bounds)
+0109                    <span class="keyword">if</span> length(bounds)==2 <span class="comment">%Alt visualization: add patch</span>
+0110                        aux1=<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(this,bounds(1));
+0111                        aux2=<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(this,bounds(2));
+0112                        <span class="keyword">for</span> i=1:M
+0113                            subplot(plotHandles(i))
+0114                            hold on
+0115                            <span class="keyword">if</span> size(aux1.Time,1)==numel(aux1.Time) <span class="comment">%column vector</span>
+0116                                megaTime=[aux1.Time; aux1.Time(end:-1:1)];
+0117                            <span class="keyword">else</span> <span class="comment">%row vector</span>
+0118                                megaTime=[aux1.Time, aux1.Time(end:-1:1)];
+0119                            <span class="keyword">end</span>
+0120                            pp=patch(megaTime,[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,<span class="string">'FaceAlpha'</span>,.4,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0121                            uistack(pp,<span class="string">'bottom'</span>);
+0122                            hold off
+0123                        <span class="keyword">end</span>
+0124                    <span class="keyword">else</span>
+0125                        <span class="keyword">for</span> k=1:length(bounds)
+0126                         [figHandle,plotHandles]=<a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)">plot</a>(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
+0127                        <span class="keyword">end</span>
+0128                    <span class="keyword">end</span>
+0129                <span class="keyword">end</span>
+0130                
+0131                <span class="comment">%PLot mean trace</span>
+0132                <span class="comment">%[figHandle,plotHandles]=plot(this.mean.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data</span>
+0133                [figHandle,plotHandles]=<a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)">plot</a>(this.median.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); <span class="comment">%Plotting mean data</span>
+0134           
+0135                <span class="comment">%Plot individual traces</span>
+0136                <span class="keyword">for</span> i=1:M <span class="comment">%Go over labels</span>
+0137                    <span class="comment">%subplot(b,a,i)</span>
+0138                    subplot(plotHandles(i))
+0139                    hold on                  
+0140                    <span class="comment">%title(aux{1}.(field).labels{i})</span>
+0141                    data=squeeze(structure(:,i,:));
+0142                    N=size(data,1);
+0143                    <span class="keyword">if</span> nargin&lt;6 || isempty(individualLineStyle)
+0144                         ppp=<a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)">plot</a>([0:N-1]/N,data,<span class="string">'Color'</span>,[.7,.7,.7]);
+0145                         uistack(ppp,<span class="string">'bottom'</span>)
+0146                    <span class="keyword">elseif</span> individualLineStyle==0
+0147                        <span class="comment">%nop</span>
+0148                    <span class="keyword">else</span>
+0149                        ppp=<a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)">plot</a>([0:N-1]/N,data,individualLineStyle);
+0150                        uistack(ppp,<span class="string">'bottom'</span>)
+0151                    <span class="keyword">end</span>
+0152                    
+0153                    <span class="comment">%plot([0:N-1]/N,meanStr(:,i),'LineWidth',2,'Color',meanColor);</span>
+0154                    <span class="comment">%legend(this.labels{i})</span>
+0155                    <span class="comment">%maxM(i)=5*norm(data(:))/sqrt(length(data(:)));</span>
+0156                    meanM(i)=<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(data(:),50);
+0157                    maxM(i)=2*(<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(data(:),99)-meanM(i))+meanM(i)+eps;
+0158                    minM(i)=2*(<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(data(:),1)-meanM(i))+meanM(i);
+0159                    axis([0 1 minM(i) maxM(i)])
+0160                    hold off
+0161                <span class="keyword">end</span>
+0162      
+0163                <span class="keyword">if</span> ~isempty(events)
+0164                    <span class="keyword">for</span> i=1:length(plotHandles) <span class="comment">%For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).</span>
+0165                        eventSampPeriod=(events.Time(2)-events.Time(1));
+0166                        subplot(plotHandles(i))
+0167                        hold on
+0168                        <span class="keyword">for</span> j=1:length(ss)
+0169                         <a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)">plot</a>(events.Time(i2(j))+ss(j)*[-1,1]*eventSampPeriod,[0,0],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1);
+0170                        <span class="keyword">end</span>
+0171                        <span class="comment">%axis tight %TO DO: not use axis tight, but find proper axes limits by computing the rms value of the signal, or something like that.</span>
+0172                        hold off
+0173                    <span class="keyword">end</span>
+0174                <span class="keyword">else</span>
+0175                    <span class="keyword">for</span> i=1:length(plotHandles) <span class="comment">%For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).</span>
+0176                         subplot(plotHandles(i))
+0177                         set(gca,<span class="string">'XTick'</span>,[0,cumsum(this.alignmentVector)]/sum(this.alignmentVector),<span class="string">'XTickLabel'</span>,[this.alignmentLabels, this.alignmentLabels(1)])
+0178                         set(gca,<span class="string">'xgrid'</span>,<span class="string">'on'</span>)
+0179                    <span class="keyword">end</span>
+0180                <span class="keyword">end</span>
+0181         <span class="keyword">end</span>
+0182         
+0183         <a name="_sub4" href="#_subfunctions" class="code">function [meanTS,stds]=mean(this,strideIdxs)</a>
+0184             <span class="comment">%Computes mean and standard deviation across all the aligned timeSeries.</span>
+0185             <span class="comment">%For regular (double/complex) timeseries, mean and std are</span>
+0186             <span class="comment">%computed directly from this.Data and each is returned as a</span>
+0187             <span class="comment">%timeseries.</span>
+0188             <span class="comment">%For logical data (events), it is assumed that all the aligned</span>
+0189             <span class="comment">%timeSeries have the same number of true values and in the same order.</span>
+0190             <span class="comment">%A histogram is computed for the temporal ocurrences of this</span>
+0191             <span class="comment">%values, and a logical TS is returned with events only in the</span>
+0192             <span class="comment">%median values given by this histogram. The labels in this TS are</span>
+0193             <span class="comment">%as many as events occur in a single TS (this.Data(:,:,1)).</span>
+0194             <span class="comment">%The std is returned as a vector of size Nx1.</span>
+0195             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(strideIdxs)
+0196                 this.Data=this.Data(:,:,strideIdxs);
+0197             <span class="keyword">end</span>
+0198             <span class="keyword">if</span> ~islogical(this.Data(1))
+0199                 <span class="comment">%meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);</span>
+0200                 meanTS=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),nanmean(this.Data,3),this.labels,this.alignmentVector,this.alignmentLabels);
+0201                 stds=[];
+0202             <span class="keyword">else</span> <span class="comment">%Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.</span>
+0203                 [histogram,newLabels]=<a href="#_sub17" class="code" title="subfunction [histogram,newLabels]=logicalHist(this)">logicalHist</a>(this);
+0204                 <span class="comment">%Compute mean/median:</span>
+0205                 newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
+0206                 mH=nanmedian(histogram);
+0207                 <span class="keyword">for</span> i=1:size(histogram,2)
+0208                     newData(mH(i),i)=true;
+0209                 <span class="keyword">end</span>
+0210                 <span class="comment">%meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);</span>
+0211                 meanTS=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),newData,newLabels,this.alignmentVector,this.alignmentLabels);
+0212                 stds=nanstd(histogram);
+0213             <span class="keyword">end</span>
+0214         <span class="keyword">end</span>
+0215         
+0216         <a name="_sub5" href="#_subfunctions" class="code">function newThis=abs(this)</a>
+0217            newThis=this;
+0218            newThis.Data=<a href="#_sub6" class="code" title="subfunction newThis=abs(this)">abs</a>(this.Data);
+0219         <span class="keyword">end</span>
+0220         
+0221         <a name="_sub6" href="#_subfunctions" class="code">function [stdTS]=std(this,strideIdxs)</a>
+0222             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(strideIdxs)
+0223                 this.Data=this.Data(:,:,strideIdxs);
+0224             <span class="keyword">end</span>
+0225             <span class="keyword">if</span> ~islogical(this.Data(1))
+0226                 <span class="comment">%stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);</span>
+0227                 stdTS=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),nanstd(this.Data,[],3),this.labels,this.alignmentVector,this.alignmentLabels);
+0228             <span class="keyword">else</span> <span class="comment">%Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.</span>
+0229                 [histogram,~]=<a href="#_sub17" class="code" title="subfunction [histogram,newLabels]=logicalHist(this)">logicalHist</a>(this);
+0230                 stdTS=<a href="#_sub7" class="code" title="subfunction [stdTS]=std(this,strideIdxs)">std</a>(histogram); <span class="comment">%Not really a tS</span>
+0231             <span class="keyword">end</span>
+0232         <span class="keyword">end</span>
+0233         
+0234         <a name="_sub7" href="#_subfunctions" class="code">function [prctileTS]=prctile(this,p,strideIdxs)</a>
+0235             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(strideIdxs)
+0236                 this.Data=this.Data(:,:,strideIdxs);
+0237             <span class="keyword">end</span>
+0238             <span class="keyword">if</span> ~islogical(this.Data(1))
+0239                 <span class="comment">%prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);</span>
+0240                 prctileTS=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),this.Time(2)-this.Time(1),<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(this.Data,p,3),this.labels,this.alignmentVector,this.alignmentLabels);
+0241             <span class="keyword">else</span> <span class="comment">%Logical timeseries.</span>
+0242                 error(<span class="string">'alignedTimeSeries:prctile'</span>,<span class="string">'Prctile not yet implemented for logical alignedTimeSeries.'</span>) <span class="comment">%TODO</span>
+0243             <span class="keyword">end</span> 
+0244         <span class="keyword">end</span>
+0245         
+0246         <a name="_sub8" href="#_subfunctions" class="code">function medianTS=median(this,strideIdxs)</a>
+0247             <span class="keyword">if</span> nargin&lt;2 || isempty(strideIdxs)
+0248                 strideIdxs=[];
+0249             <span class="keyword">end</span>
+0250             [medianTS]=<a href="#_sub8" class="code" title="subfunction [prctileTS]=prctile(this,p,strideIdxs)">prctile</a>(this,50,strideIdxs);
+0251         <span class="keyword">end</span>
+0252         
+0253         <a name="_sub9" href="#_subfunctions" class="code">function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)</a>
+0254             alignedData=this.Data;
+0255             [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
+0256         <span class="keyword">end</span>
+0257         
+0258         <a name="_sub10" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a>
+0259             boolFlag=false(size(label));
+0260             labelIdx=zeros(size(label));
+0261             [bool,idx] = compareLists(label,this.labels);
+0262             <span class="keyword">for</span> j=1:length(label)
+0263                 <span class="keyword">if</span> any(idx==j)
+0264                     boolFlag(j)=true;
+0265                     labelIdx(j)=find(idx==j);
+0266                 <span class="keyword">end</span>
+0267             <span class="keyword">end</span>
+0268 
+0269 <span class="comment">%             if isa(label,'char')</span>
+0270 <span class="comment">%                 auxLabel{1}=label;</span>
+0271 <span class="comment">%             elseif isa(label,'cell')</span>
+0272 <span class="comment">%                 auxLabel=label;</span>
+0273 <span class="comment">%             end</span>
+0274 <span class="comment">%</span>
+0275 <span class="comment">%             N=length(auxLabel);</span>
+0276 <span class="comment">%             boolFlag=false(N,1);</span>
+0277 <span class="comment">%             labelIdx=zeros(N,1);</span>
+0278 <span class="comment">%             for j=1:N</span>
+0279 <span class="comment">%                 for i=1:length(this.labels)</span>
+0280 <span class="comment">%                      if strcmpi(auxLabel{j},this.labels{i})</span>
+0281 <span class="comment">%                        boolFlag(j)=true;</span>
+0282 <span class="comment">%                        labelIdx(j)=i;</span>
+0283 <span class="comment">%                        break;</span>
+0284 <span class="comment">%                      end</span>
+0285 <span class="comment">%                 end</span>
+0286 <span class="comment">%             end</span>
+0287         <span class="keyword">end</span>
+0288         
+0289         <a name="_sub11" href="#_subfunctions" class="code">function newThis=cat(this,other,dim,forceFlag)</a>
+0290             <span class="keyword">if</span> nargin&lt;4
+0291                 forceFlag=false;
+0292             <span class="keyword">end</span>
+0293             <span class="comment">%Check alignment vectors coincide &amp; alignment labels coincide</span>
+0294             <span class="keyword">if</span> any(this.alignmentVector~=other.alignmentVector)
+0295                 ME=MException(<span class="string">'ATS:cat'</span>,<span class="string">'Alignment vector mismatch'</span>);
+0296                 throw(ME);
+0297             <span class="keyword">end</span>
+0298             <span class="keyword">if</span> ~forceFlag &amp;&amp; ~all(strcmp(this.alignmentLabels,other.alignmentLabels))
+0299                 ME=MException(<span class="string">'ATS:cat'</span>,<span class="string">'Alignment labels mismatch, this check can be ignored by setting forceFlag=true'</span>);
+0300                 throw(ME);
+0301             <span class="keyword">end</span>
+0302             
+0303             <span class="keyword">if</span> dim==3
+0304             <span class="comment">%Check dimensions coincide</span>
+0305             s1=size(this.Data);
+0306             s2=size(other.Data);
+0307             <span class="keyword">if</span> any(s1(1:2)~=s2(1:2))
+0308                 ME=MException(<span class="string">'ATS:cat'</span>,<span class="string">'Data dimension mismatch.'</span>);
+0309                 throw(ME);
+0310             <span class="keyword">end</span>
+0311 
+0312             <span class="comment">%Check labels coincide (unless forced)</span>
+0313             <span class="keyword">if</span> ~forceFlag &amp;&amp; ~all(strcmp(this.labels,other.labels))
+0314                 ME=MException(<span class="string">'ATS:cat'</span>,<span class="string">'Label mismatch, this check can be ignored by setting forceFlag=true'</span>);
+0315                 throw(ME);
+0316             <span class="keyword">end</span>
+0317             
+0318             <span class="comment">%Do the cat:</span>
+0319             newThis=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),diff(this.Time(1:2)),<a href="#_sub12" class="code" title="subfunction newThis=cat(this,other,dim,forceFlag)">cat</a>(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
+0320             <span class="keyword">elseif</span> dim==2
+0321                 <span class="comment">%Check dimensions coincide</span>
+0322                 s1=size(this.Data);
+0323                 s2=size(other.Data);
+0324                 <span class="keyword">if</span> any(s1([1,3])~=s2([1,3]))
+0325                     ME=MException(<span class="string">'ATS:cat'</span>,<span class="string">'Data dimension mismatch.'</span>);
+0326                     throw(ME);
+0327                 <span class="keyword">end</span>
+0328                 <span class="comment">%Check no repeated labels</span>
+0329             
+0330                 <span class="comment">%Check alignmentVector &amp; Labels</span>
+0331             
+0332                 <span class="comment">%Do the cat</span>
+0333                 newThis=<a href="alignedTimeSeries.html" class="code" title="">alignedTimeSeries</a>(this.Time(1),diff(this.Time(1:2)),<a href="#_sub12" class="code" title="subfunction newThis=cat(this,other,dim,forceFlag)">cat</a>(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels);
+0334             <span class="keyword">else</span>
+0335                 ME=MException();
+0336                 throw(ME);
+0337             <span class="keyword">end</span>
+0338         <span class="keyword">end</span>
+0339         
+0340         <a name="_sub12" href="#_subfunctions" class="code">function newThis=castAsTS(this)</a>
+0341            <span class="comment">%Function to change the class to labTS (instead of ATS). This is a temp function, until alignedTS is changed to inherit from labTS</span>
+0342            <span class="keyword">if</span> size(this.Data,3)&gt;1
+0343                ME=MException(<span class="string">'alignedTS:castAsTS'</span>,<span class="string">'To cast as TS, there may be a single alignedTS (i.e. size(this.Data,3)==1)'</span>);
+0344                throw(ME)
+0345            <span class="keyword">end</span>
+0346            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
+0347         <span class="keyword">end</span>
+0348         
+0349         <a name="_sub13" href="#_subfunctions" class="code">function newThis=concatenateAsTS(this)</a>
+0350            newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+0351         <span class="keyword">end</span>
+0352         
+0353         <a name="_sub14" href="#_subfunctions" class="code">function newThis=fftshift(this,labels)</a>
+0354             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(labels)
+0355                 [~,idxs]=this.isaLabel(labels);
+0356             <span class="keyword">else</span>
+0357                 idxs=1:length(this.labels);
+0358             <span class="keyword">end</span>
+0359            newThis=this;
+0360            M=round(length(this.alignmentVector)/2);
+0361            N=sum(this.alignmentVector(1:M));
+0362            newThis.Data(:,idxs,:)=this.Data([N+1:size(this.Data,1),1:N],idxs,:);
+0363         <span class="keyword">end</span>
+0364         
+0365         <a name="_sub15" href="#_subfunctions" class="code">function labelList=getLabelsThatMatch(this,exp)</a>
+0366             <span class="comment">%Returns labels on this labTS that match the regular expression exp.</span>
+0367             <span class="comment">%labelList=getLabelsThatMatch(this,exp)</span>
+0368             <span class="comment">%INPUT:</span>
+0369             <span class="comment">%this: labTS object</span>
+0370             <span class="comment">%exp: any regular expression (as string).</span>
+0371             <span class="comment">%OUTPUT:</span>
+0372             <span class="comment">%labelList: cell array containing labels of this labTS that match</span>
+0373             <span class="comment">%See also regexp</span>
+0374             labelList=this.labels; 
+0375             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+0376             labelList=labelList(flags);
+0377         <span class="keyword">end</span>
+0378     <span class="keyword">end</span>
+0379     
+0380     methods(Hidden)
+0381         <a name="_sub16" href="#_subfunctions" class="code">function [histogram,newLabels]=logicalHist(this)</a>
+0382             <span class="comment">%Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the same order.</span>
+0383             
+0384             <span class="comment">%Check: this is a logical alignedTS</span>
+0385             <span class="comment">%TODO</span>
+0386             <span class="comment">%TODO: dtermine the number of expected events. Currently this</span>
+0387             <span class="comment">%is as many events as stride 1 has. May be problematic if</span>
+0388             <span class="comment">%stride one is invalid.</span>
+0389             aaux=cellfun(@(x) isempty(x),strfind(this.labels,<span class="string">'force'</span>)) &amp; cellfun(@(x) isempty(x),strfind(this.labels,<span class="string">'kin'</span>));
+0390             eventNo=mode(sum(sum(this.Data(:,aaux),1),2)); <span class="comment">%Mode of the # of events per stride, assuming this is what should happen on every stride.</span>
+0391             nStrides=size(this.Data,3);
+0392             eventType=nan(eventNo,1);
+0393             <span class="keyword">for</span> i=1:eventNo
+0394                 aux=nan(nStrides,1);
+0395                 <span class="keyword">for</span> k=1:nStrides <span class="comment">%Going over strides</span>
+0396                     eventIdx=find(sum(this.Data(:,aaux,k),2)==1,i,<span class="string">'first'</span>); <span class="comment">%Time index of first i events in stride k</span>
+0397                     <span class="keyword">if</span> length(eventIdx)==i <span class="comment">%Checking that I found i events</span>
+0398                         aux(k)=find(this.Data(eventIdx(i),aaux,k),1,<span class="string">'first'</span>);
+0399                     <span class="keyword">end</span>
+0400                 <span class="keyword">end</span>
+0401                 eventType(i)=round(nanmedian(aux)); <span class="comment">%Rounding is to break possible ties (very unlikely)</span>
+0402             <span class="keyword">end</span>
+0403             histogram=nan(nStrides,eventNo);
+0404             ii=eventType;
+0405             aux=zeros(eventNo,1);
+0406             newLabels=cell(size(ii));
+0407             <span class="keyword">for</span> i=1:length(ii)
+0408                 aux(ii(i))=aux(ii(i))+1;
+0409                 <span class="keyword">if</span> aux(ii(i))==1
+0410                     newLabels{i}=this.labels{ii(i)};
+0411                 <span class="keyword">else</span>
+0412                     newLabels{i}=[this.labels{ii(i)} num2str(aux(ii(i)))];
+0413                 <span class="keyword">end</span>
+0414             <span class="keyword">end</span>
+0415 
+0416             <span class="keyword">for</span> i=1:nStrides;
+0417                 [eventTimeIndex,eventType]=find(this.Data(:,aaux,i));
+0418                 <span class="keyword">if</span> length(eventTimeIndex)~=length(newLabels)
+0419                     warning([<span class="string">'alignedTS:logicalHist: Stride '</span> num2str(i) <span class="string">' has more or less events than expected (expecting '</span> num2str(length(newLabels)) <span class="string">', but got '</span> num2str(length(eventTimeIndex)) <span class="string">'). Discarding.'</span>]);
+0420                     histogram(i,:)=nan;
+0421                 <span class="keyword">else</span>
+0422                     <span class="comment">%FIXME: check event order by using the labels.</span>
+0423                     [eventTimeIndex,auxInds]=sort(eventTimeIndex);
+0424                     <span class="keyword">if</span> all(ii==eventType(auxInds))
+0425                         histogram(i,:)=eventTimeIndex;
+0426                     <span class="keyword">else</span>
+0427                         warning([<span class="string">'alignedTS:logicalHist: Stride '</span> num2str(i) <span class="string">' has events in different order than expected (expecting '</span> num2str(ii') <span class="string">', but got '</span> num2str(eventType(auxInds)') <span class="string">'). Discarding.'</span>]);
+0428                     <span class="keyword">end</span>
+0429                 <span class="keyword">end</span>
+0430             <span class="keyword">end</span>
+0431         <span class="keyword">end</span>
+0432     <span class="keyword">end</span>
+0433 <span class="keyword">end</span>
+0434</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

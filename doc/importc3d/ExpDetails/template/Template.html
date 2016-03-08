@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Template</title>
+  <meta name="keywords" content="Template">
+  <meta name="description" content="EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">importc3d</a> &gt; <a href="../index.html">ExpDetails</a> &gt; <a href="index.html">template</a> &gt; Template.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d/ExpDetails/template&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Template
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS
+ ex - OG study: old subjects adapted abruptly</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF WHAT STUDY THIS IS</span>
+0002 <span class="comment">% ex - OG study: old subjects adapted abruptly</span>
+0003 
+0004 <span class="comment">% The different fields of the contition info are difined here.</span>
+0005 <span class="comment">% Save this code to a different name and then run it once</span>
+0006 <span class="comment">% finished editing for changes to appear in GetInfoGUI</span>
+0007 
+0008 <span class="comment">% Define Name of group</span>
+0009 expDes.group=<span class="string">'New Group'</span>;
+0010 
+0011 <span class="comment">% Define Condition numbers (maximum number of conditions is 15 as of 4/2015)</span>
+0012 <span class="keyword">for</span> cond = 1:10 <span class="comment">%&lt;-- edit this number</span>
+0013     expDes.([<span class="string">'condition'</span> num2str(cond)])=num2str(cond);
+0014 <span class="keyword">end</span>
+0015 <span class="comment">% Define total number of conditions</span>
+0016 expDes.numofconds=<span class="string">'10'</span>; <span class="comment">%&lt;-- this should match the number above</span>
+0017 
+0018 <span class="comment">% Define trial types. These descibe the general condition of the trial. For</span>
+0019 <span class="comment">% example, if the subject is walking overground or at an incline, it would</span>
+0020 <span class="comment">% be specified here. Types should only be difined for general conditions</span>
+0021 <span class="comment">% that require a separate baseline for bias removal. Note that even though</span>
+0022 <span class="comment">% there may be a slow, fast, and medium baseline trial on the treadmill,</span>
+0023 <span class="comment">% if only the medium baseline is used to remove a bias from other treadmill</span>
+0024 <span class="comment">% trials, then these can all be grouped into a general treadmill type.</span>
+0025 
+0026 <span class="comment">%set trial types</span>
+0027 <span class="keyword">for</span> t=[1 9]
+0028     expDes.([<span class="string">'type'</span> num2str(t)])=<span class="string">'OG'</span>; <span class="comment">% for overground walking</span>
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">for</span> t=[2:8 10]
+0031     expDes.([<span class="string">'type'</span> num2str(t)])=<span class="string">'TM'</span>; <span class="comment">% for treadmill walking</span>
+0032 <span class="keyword">end</span>
+0033 <span class="comment">%note: 'IN' is typically used in the treadmill was inclined</span>
+0034 
+0035 <span class="comment">% Define condition names. These should be short but descriptive and should</span>
+0036 <span class="comment">% follow lab conventions, if possible. IMPORTANT: The condition that will</span>
+0037 <span class="comment">% be used to remove a bias from all other trials of the same type MUST</span>
+0038 <span class="comment">% be named such that one of the type strings and the string �base� are</span>
+0039 <span class="comment">% both included in the condition's name.</span>
+0040 expDes.condName1=<span class="string">'OG base'</span>;<span class="comment">%&lt;-- data from this condition will be used to remove bias from all other conditions of type OG</span>
+0041 expDes.condName2=<span class="string">'slow base'</span>;
+0042 expDes.condName3=<span class="string">'short split'</span>;
+0043 expDes.condName4=<span class="string">'fast base'</span>;
+0044 expDes.condName5=<span class="string">'TM base'</span>; <span class="comment">%&lt;-- data from this condition will be used to remove bias from all other conditions of type TM</span>
+0045 expDes.condName6=<span class="string">'adaptation'</span>;
+0046 expDes.condName7=<span class="string">'catch'</span>;
+0047 expDes.condName8=<span class="string">'re-adaptation'</span>;
+0048 expDes.condName9=<span class="string">'OG post'</span>;
+0049 expDes.condName10=<span class="string">'TM post'</span>;
+0050 
+0051 <span class="comment">% Define condition descriptions. Be as descriptive as possible. Include</span>
+0052 <span class="comment">% whatever information seems important to someone who is unfamiliar with</span>
+0053 <span class="comment">% what you did, such as the number of strides and possibly the speeds the</span>
+0054 <span class="comment">% belts were set at.</span>
+0055 expDes.description1=<span class="string">'8m walkway for 6 min'</span>;
+0056 expDes.description2=<span class="string">'150 strides at 0.5 m/s'</span>;
+0057 expDes.description3=<span class="string">'10 strides 2:1, 1 m/s and 0.5 m/s'</span>;
+0058 expDes.description4=<span class="string">'150 strides at 1 m/s'</span>;
+0059 expDes.description5=<span class="string">'150 strides at 0.75 m/s'</span>;
+0060 expDes.description6=<span class="string">'600 strides 2:1, 1 m/s and 0.5 m/s'</span>;
+0061 expDes.description7=<span class="string">'10 strides at 0.75 m/s'</span>;
+0062 expDes.description8=<span class="string">'300 strides 2:1, 1 m/s and 0.5 m/s'</span>;
+0063 expDes.description9=<span class="string">'8 m walkway for 6 min'</span>;
+0064 expDes.description10=<span class="string">'450 strides at 0.75 m/s'</span>;
+0065 
+0066 <span class="comment">% Define (expected) trial numbers for each condition. Multiple numbers can</span>
+0067 <span class="comment">% be set as '1:5', '1,2,3' or '4 5' but not '1-5'). These will most</span>
+0068 <span class="comment">% likely need edited on a per-subject basis. Numbers correspond to names of</span>
+0069 <span class="comment">% files generated by Vicon Nexus during experiment.</span>
+0070 expDes.trialnum1=<span class="string">'1:6'</span>;
+0071 expDes.trialnum2=<span class="string">'7'</span>;
+0072 expDes.trialnum3=<span class="string">'8'</span>;
+0073 expDes.trialnum4=<span class="string">'9'</span>;
+0074 expDes.trialnum5=<span class="string">'10'</span>;
+0075 expDes.trialnum6=<span class="string">'11:14'</span>;
+0076 expDes.trialnum7=<span class="string">'15'</span>;
+0077 expDes.trialnum8=<span class="string">'16 17'</span>;
+0078 expDes.trialnum9=<span class="string">'18:23'</span>;
+0079 expDes.trialnum10=<span class="string">'24:26'</span>;
+0080 
+0081 <span class="comment">%-----------------------DO NOT EDIT BELOW THIS LINE ----------------------%</span>
+0082 groupName=expDes.group;
+0083 groupName=groupName(ismember(groupName,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>]));  
+0084 path=which(<span class="string">'GetInfoGUI'</span>);
+0085 path=strrep(path,<span class="string">'GetInfoGUI.m'</span>,<span class="string">'ExpDetails'</span>);
+0086 save([path filesep groupName],<span class="string">'expDes'</span>)</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

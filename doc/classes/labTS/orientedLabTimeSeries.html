@@ -1,0 +1,658 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of orientedLabTimeSeries</title>
+  <meta name="keywords" content="orientedLabTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; orientedLabTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>orientedLabTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="orientationInfo.html" class="code" title="">orientationInfo</a>	</li><li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=orientedLabTimeSeries(data,t0,Ts,labels,orientation)</a></li><li><a href="#_sub2" class="code">function [newTS,auxLabel]=getDataAsTS(this,label)</a></li><li><a href="#_sub3" class="code">function [data,label]=getOrientedData(this,label)</a></li><li><a href="#_sub4" class="code">function newThis=getDataAsOTS(this,label)</a></li><li><a href="#_sub5" class="code">function [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)</a></li><li><a href="#_sub6" class="code">function [diffOTS]=computeDifferenceOTS(this,t0,t1,labels,labels2)</a></li><li><a href="#_sub7" class="code">function [distMatrix,labels,labels2,Time]=computeDistanceMatrix(this,t0,t1,labels,labels2)</a></li><li><a href="#_sub8" class="code">function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)</a></li><li><a href="#_sub9" class="code">function [COP]=computeCOP(this)</a></li><li><a href="#_sub10" class="code">function labelPref=getLabelPrefix(this)</a></li><li><a href="#_sub11" class="code">function [boolFlag,labelIdx]=isaLabelPrefix(this,label)</a></li><li><a href="#_sub12" class="code">function virtualOTS=getVirtualOTS(this,ww,meanDiff,stdDiff)</a></li><li><a href="#_sub13" class="code">function [healthyOTS]=markerHealthCheck(this,refMarkerData)</a></li><li><a href="#_sub14" class="code">function [newThis]=fillGaps(this,refMarkerData)</a></li><li><a href="#_sub15" class="code">function newThis=threshold(this,th)</a></li><li><a href="#_sub16" class="code">function newThis=thresholdByChannel(this,th,label,moreThanFlag)</a></li><li><a href="#_sub17" class="code">function fh=plot3(this,fh)</a></li><li><a href="#_sub18" class="code">function M=animate(this)</a></li><li><a href="#_sub19" class="code">function newThis=resampleN(this,newN,method)</a></li><li><a href="#_sub20" class="code">function newThis=split(this,t0,t1)</a></li><li><a href="#_sub21" class="code">function newThis=translate(this,vector)</a></li><li><a href="#_sub22" class="code">function newThis=rotate(this, matrix)</a></li><li><a href="#_sub23" class="code">function newThis=alignRotate(this,newX,newZ)</a></li><li><a href="#_sub24" class="code">function newThis=referenceToMarker(this,marker)</a></li><li><a href="#_sub25" class="code">function newThis=derivate(this)</a></li><li><a href="#_sub26" class="code">function newThis=lowPassFilter(this,fcut)</a></li><li><a href="#_sub27" class="code">function newThis=highPassFilter(this,fcut)</a></li><li><a href="#_sub28" class="code">function newThis=substituteNaNs(this,method)</a></li><li><a href="#_sub29" class="code">function OTS=getOTSfromOrientedData(data,t0,Ts,labelPrefixes,orientation)</a></li><li><a href="#_sub30" class="code">function extendedLabels=addLabelSuffix(labels)</a></li><li><a href="#_sub31" class="code">function labelSane=checkLabelSanity(labels)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>  &lt; labTimeSeries
+0002 <span class="comment">%</span>
+0003     <span class="comment">%%</span>
+0004     properties(SetAccess=private)
+0005         orientation <span class="comment">%orientationInfo object</span>
+0006     <span class="keyword">end</span>
+0007     <span class="comment">%properties(Dependent)</span>
+0008     <span class="comment">%    labelPrefixes</span>
+0009     <span class="comment">%    labelSuffixes</span>
+0010     <span class="comment">%end</span>
+0011 
+0012     
+0013     <span class="comment">%%</span>
+0014     methods
+0015         
+0016         <span class="comment">%Constructor:</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function this=orientedLabTimeSeries(data,t0,Ts,labels,orientation) </a><span class="comment">%Necessarily uniformly sampled</span>
+0018             <span class="keyword">if</span> nargin&lt;1
+0019                 data=[];
+0020                 t0=0;
+0021                 Ts=[];
+0022                 labels={};
+0023                 orientation=<a href="orientationInfo.html" class="code" title="">orientationInfo</a>();
+0024             <span class="keyword">end</span>
+0025                 <span class="keyword">if</span> ~orientedLabTimeSeries.checkLabelSanity(labels)
+0026                     error(<span class="string">'orientedLabTimeSeries:Constructor'</span>,<span class="string">'Provided labels do not pass the sanity check. See issued warnings.'</span>)
+0027                 <span class="keyword">end</span>
+0028                 this@labTimeSeries(data,t0,Ts,labels);
+0029                 <span class="keyword">if</span> isa(orientation,<span class="string">'orientationInfo'</span>)
+0030                     this.orientation=orientation;
+0031                 <span class="keyword">else</span>
+0032                     ME=MException(<span class="string">'orientedLabTimeSeries:Constructor'</span>,<span class="string">'Orientation parameter is not an OrientationInfo object.'</span>);
+0033                     throw(ME)
+0034                 <span class="keyword">end</span>
+0035         <span class="keyword">end</span>
+0036         
+0037         <span class="comment">%-------------------</span>
+0038         
+0039         <span class="comment">%Other I/O functions:</span>
+0040         <a name="_sub1" href="#_subfunctions" class="code">function [newTS,auxLabel]=getDataAsTS(this,label)</a>
+0041             <span class="comment">%return data as a time series</span>
+0042             <span class="comment">%</span>
+0043             [newTS,auxLabel]=<a href="#_sub2" class="code" title="subfunction [newTS,auxLabel]=getDataAsTS(this,label)">getDataAsTS</a>@labTimeSeries(this,label);
+0044         <span class="keyword">end</span>
+0045 
+0046         <a name="_sub2" href="#_subfunctions" class="code">function [data,label]=getOrientedData(this,label)</a>
+0047             <span class="comment">%Returns data as a 3D tensor, where the last dim contains the componentes x,y,z</span>
+0048             <span class="comment">%[data,label]=getOrientedData(this,label)</span>
+0049             <span class="comment">%INPUT:</span>
+0050             <span class="comment">%this = orientedLabTS object</span>
+0051             <span class="comment">%label = cell array of strings, each containing the prefix of a</span>
+0052             <span class="comment">%marker present in this TS (e.g.: label={'LHIP','RHIP'}, not</span>
+0053             <span class="comment">%{'LHIPx','RHIPx'}. If any of the provided labels do not exist</span>
+0054             <span class="comment">%AS A PREFIX, NaNs are returned in the corresponding matrix components.</span>
+0055             <span class="comment">%OUTPUT:</span>
+0056             <span class="comment">%data= matrix of dimensions TxNx3, where N is the length of label</span>
+0057             <span class="comment">%(# of requested markers), T is the number of available time</span>
+0058             <span class="comment">%samples. Each slice data(:,i,:) contains 3D position of marker</span>
+0059             <span class="comment">%i at all time samples.</span>
+0060             <span class="comment">%label=Currently returns the same label given as input.</span>
+0061             
+0062             T=size(this.Data,1);
+0063             <span class="keyword">if</span> nargin&lt;2 || isempty(label)
+0064                 label=this.getLabelPrefix; <span class="comment">%All of them</span>
+0065             <span class="keyword">elseif</span> isa(label,<span class="string">'char'</span>)
+0066                 label={label};
+0067             <span class="keyword">end</span>
+0068                 
+0069             data=nan(T,length(label)*3);
+0070             extendedLabels=this.addLabelSuffix(label);
+0071             <span class="keyword">if</span> ~orientedLabTimeSeries.checkLabelSanity(this.labels)
+0072                error(<span class="string">'Labels in this object do not pass the sanity check.'</span>) 
+0073             <span class="keyword">end</span>
+0074             [bool,~]=this.isaLabel(extendedLabels);
+0075             [data(:,bool),~]=this.getDataAsVector(extendedLabels(bool));
+0076             data=permute(reshape(data,T,3,round(length(extendedLabels)/3)),[1,3,2]);
+0077         <span class="keyword">end</span>
+0078         
+0079         <a name="_sub3" href="#_subfunctions" class="code">function newThis=getDataAsOTS(this,label)</a>
+0080             <span class="comment">%get data as an oriented time series</span>
+0081             <span class="keyword">if</span> nargin&lt;2 || isempty(label)
+0082                 label=[];
+0083             <span class="keyword">end</span>
+0084             [data,label]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this,label);
+0085             data=permute(data,[1,3,2]);
+0086             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(data(:,:),this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(label),this.orientation);
+0087         <span class="keyword">end</span>
+0088         
+0089         <a name="_sub4" href="#_subfunctions" class="code">function [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)</a>
+0090            <span class="comment">%Computes the difference vector between two markers, for the time interval [t0,t1]</span>
+0091            <span class="comment">%If labels is specified, only those markers are used</span>
+0092            <span class="comment">%If labels2 is specified, distance to those markers only is</span>
+0093            <span class="comment">%specified</span>
+0094            [data,label]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this,this.getLabelPrefix);
+0095            [T,N,M]=size(data); <span class="comment">%M=3</span>
+0096            
+0097            <span class="comment">%Inefficient way: compute the difference matrix for all times</span>
+0098            <span class="comment">%and markers, and then reduce it</span>
+0099            diffMatrix=nan(T,N,M,N);
+0100            <span class="keyword">for</span> i=1:N
+0101                diffMatrix(:,:,:,i)= bsxfun(@minus,data,data(:,i,:));
+0102            <span class="keyword">end</span>
+0103            diffMatrix=permute(diffMatrix,[1,2,4,3]);
+0104            <span class="keyword">if</span> nargin&lt;2 || isempty(t0)
+0105               t0=this.Time(1); 
+0106            <span class="keyword">end</span>
+0107            <span class="keyword">if</span> nargin&lt;3 || isempty(t1)
+0108                t1=this.Time(end);
+0109            <span class="keyword">end</span>
+0110            <span class="keyword">if</span> nargin&lt;4 || isempty(labels)
+0111                labels=this.getLabelPrefix;
+0112            <span class="keyword">end</span>
+0113            <span class="keyword">if</span> nargin&lt;5 || isempty(labels2)
+0114                labels2=this.getLabelPrefix;
+0115            <span class="keyword">end</span>
+0116            <span class="comment">%Reduce it:</span>
+0117            timeIdxs=find(this.Time&lt;=t1 &amp; this.Time&gt;=t0);
+0118            [~,labelIdxs]=<a href="#_sub11" class="code" title="subfunction [boolFlag,labelIdx]=isaLabelPrefix(this,label)">isaLabelPrefix</a>(this,labels);
+0119            [~,label2Idxs]=<a href="#_sub11" class="code" title="subfunction [boolFlag,labelIdx]=isaLabelPrefix(this,label)">isaLabelPrefix</a>(this,labels2);
+0120            diffMatrix=diffMatrix(timeIdxs,labelIdxs,label2Idxs,:);
+0121            Time=this.Time(timeIdxs);
+0122            
+0123         <span class="keyword">end</span>
+0124         
+0125         <a name="_sub5" href="#_subfunctions" class="code">function [diffOTS]=computeDifferenceOTS(this,t0,t1,labels,labels2)</a>
+0126             <span class="comment">%compute difference matrix for oriented time series</span>
+0127             <span class="keyword">if</span> nargin&lt;2 || isempty(t0)
+0128               t0=this.Time(1); 
+0129            <span class="keyword">end</span>
+0130            <span class="keyword">if</span> nargin&lt;3 || isempty(t1)
+0131                t1=this.Time(end)+eps;
+0132            <span class="keyword">end</span>
+0133            <span class="keyword">if</span> nargin&lt;4 || isempty(labels)
+0134                labels=this.getLabelPrefix;
+0135            <span class="keyword">end</span>
+0136            <span class="keyword">if</span> nargin&lt;5 || isempty(labels2)
+0137                labels2=this.getLabelPrefix;
+0138            <span class="keyword">end</span>
+0139            [diffMatrix,labels,labels2,Time]=<a href="#_sub5" class="code" title="subfunction [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)">computeDifferenceMatrix</a>(this,t0,t1,labels,labels2);
+0140            newLabels=cell(1,length(labels)*length(labels2));
+0141            <span class="keyword">for</span> i=1:length(labels2)
+0142                newLabels((i-1)*length(labels)+1:i*length(labels))=strcat(labels,[<span class="string">' - '</span> labels2{i}]);
+0143            <span class="keyword">end</span>
+0144            newLabels2=[strcat(newLabels,<span class="string">'x'</span>);strcat(newLabels,<span class="string">'y'</span>);strcat(newLabels,<span class="string">'z'</span>)];
+0145            aux=reshape(diffMatrix,size(diffMatrix,1),size(diffMatrix,2)*size(diffMatrix,3),size(diffMatrix,4));
+0146            aux=permute(aux,[1,3,2]);
+0147            diffOTS=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(aux(:,:),Time(1),this.sampPeriod,newLabels2(:),this.orientation);
+0148            
+0149         <span class="keyword">end</span>
+0150         
+0151         <a name="_sub6" href="#_subfunctions" class="code">function [distMatrix,labels,labels2,Time]=computeDistanceMatrix(this,t0,t1,labels,labels2)</a>
+0152            <span class="comment">%Computes the distance vector between two markers, for the time interval [t0,t1]</span>
+0153            <span class="comment">%If labels is specified, only those markers are used</span>
+0154            <span class="comment">%If labels2 is specified, distance to those markers only is</span>
+0155            <span class="comment">%specified</span>
+0156            <span class="keyword">if</span> nargin&lt;2 || isempty(t0)
+0157               t0=[]; 
+0158            <span class="keyword">end</span>
+0159            <span class="keyword">if</span> nargin&lt;3 || isempty(t1)
+0160                t1=[];
+0161            <span class="keyword">end</span>
+0162            <span class="keyword">if</span> nargin&lt;4 || isempty(labels)
+0163                labels=[];
+0164            <span class="keyword">end</span>
+0165            <span class="keyword">if</span> nargin&lt;5 || isempty(labels2)
+0166                labels2=[];
+0167            <span class="keyword">end</span>
+0168             [diffMatrix,labels,labels2,Time]=<a href="#_sub5" class="code" title="subfunction [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)">computeDifferenceMatrix</a>(this,t0,t1,labels,labels2);
+0169             distMatrix=sqrt(sum(diffMatrix.^2,4));
+0170         <span class="keyword">end</span>
+0171         
+0172         <a name="_sub7" href="#_subfunctions" class="code">function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)</a>
+0173             <span class="comment">%Warning: this only works if GRF data is stored here</span>
+0174             warning(<span class="string">'orientedLabTimeSeries:computeCOP'</span>,<span class="string">'This only works for GRFData that was obtained from the Bertec instrumented treadmill'</span>);
+0175             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(noFilterFlag) &amp;&amp; noFilterFlag==1
+0176                 F=squeeze(this.getDataAsOTS([side <span class="string">'F'</span>]).getOrientedData);
+0177                 M=squeeze(this.getDataAsOTS([side <span class="string">'M'</span>]).getOrientedData);
+0178             <span class="keyword">else</span>
+0179             F=this.getDataAsOTS([side <span class="string">'F'</span>]).medianFilter(5).substituteNaNs;
+0180             F=F.lowPassFilter(20).thresholdByChannel(-100,[side <span class="string">'Fz'</span>],1);
+0181             F=squeeze(F.getOrientedData);
+0182             M=this.getDataAsOTS([side <span class="string">'M'</span>]).medianFilter(5).substituteNaNs;
+0183             M=M.lowPassFilter(20);
+0184             M=squeeze(M.getOrientedData);
+0185             F(abs(F(:,3))&lt;100,:)=0; <span class="comment">%Thresholding to avoid artifacts</span>
+0186             <span class="keyword">end</span>
+0187             <span class="comment">%I believe this should work for all forceplates in the world:</span>
+0188             <span class="comment">%aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));</span>
+0189             <span class="comment">%t=-aux(:,3)./F(:,3);</span>
+0190             <span class="comment">%COP=orientedLabTimeSeries(aux+t.*F,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);</span>
+0191             <span class="comment">%This is Bertec Treadmill specific:</span>
+0192             aux(:,1)=(-15*F(:,1)-M(:,2))./F(:,3);
+0193             aux(:,2)=(15*F(:,2)+M(:,1))./F(:,3);
+0194             aux(:,3)=0;
+0195             <span class="keyword">if</span> strcmp(side,<span class="string">'R'</span>)
+0196                 aux(:,1)=aux(:,1)-977.9; <span class="comment">%Flipping and offsetting to match reference axis of L-forceplate</span>
+0197             <span class="keyword">end</span>
+0198             aux(:,2)=-aux(:,2)+1619.25; <span class="comment">%Flipping &amp; adding offset to match lab's reference axis sign</span>
+0199             aux(:,1)=aux(:,1)+25.4; <span class="comment">%Adding offset to lab's reference origin</span>
+0200             COP=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side <span class="string">'COP'</span>]),this.orientation);
+0201            
+0202         <span class="keyword">end</span>
+0203         <a name="_sub8" href="#_subfunctions" class="code">function [COP]=computeCOP(this)</a>
+0204             warning(<span class="string">'orientedLabTimeSeries:computeCOP'</span>,<span class="string">'This only works for GRFData that was obtained from the Bertec instrumented treadmill'</span>);
+0205             [COPL,FL,~]=<a href="#_sub8" class="code" title="subfunction [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)">computeHemiCOP</a>(this,<span class="string">'L'</span>,1);
+0206             [COPR,FR,~]=<a href="#_sub8" class="code" title="subfunction [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)">computeHemiCOP</a>(this,<span class="string">'R'</span>,1);
+0207             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
+0208             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
+0209             newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
+0210             COP=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([<span class="string">'COP'</span>]),this.orientation);
+0211             COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
+0212         <span class="keyword">end</span>
+0213 
+0214         <span class="comment">%-------------------</span>
+0215         
+0216         <a name="_sub9" href="#_subfunctions" class="code">function labelPref=getLabelPrefix(this)</a>
+0217             <span class="comment">%return label prefixes from this.labels</span>
+0218             <span class="comment">%works for any orientedTS instance, GRFData and markerdata</span>
+0219             <span class="comment">%</span>
+0220             <span class="comment">%example:</span>
+0221             <span class="comment">%this.labels = {'RPSISx','RPSISy',RPSISz','LPSISx','LPSISy','LPSISz',...}</span>
+0222             <span class="comment">%aux = cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);</span>
+0223             <span class="comment">%labelPref=aux(1:3:end);</span>
+0224             <span class="comment">%labelPref = {'RPSIS','LPSIS',...}</span>
+0225             
+0226             aux=cellfun(@(x) x(1:end-1),this.labels,<span class="string">'UniformOutput'</span>,false);<span class="comment">%isolate correct prefixes</span>
+0227             labelPref=aux(1:3:end);<span class="comment">%remove duplicate prefixes for each marker</span>
+0228         <span class="keyword">end</span>
+0229         
+0230         <a name="_sub10" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaLabelPrefix(this,label)</a>
+0231             <span class="comment">%checks if a label(s) is/are a valid prefix</span>
+0232             <span class="comment">%</span>
+0233             <span class="comment">%INPUT:</span>
+0234             <span class="comment">%label, can be a string or cell array of strings containing a</span>
+0235             <span class="comment">%label</span>
+0236             <span class="comment">%</span>
+0237             <span class="comment">%OUTPUT:</span>
+0238             <span class="comment">%boolFlag, a boolean vector TRUE for matches, FALSE if not</span>
+0239             <span class="comment">%labelIdx, a vector containing the indices of the TRUE labels</span>
+0240             
+0241              <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0242                 auxLabel{1}=label;
+0243             <span class="keyword">elseif</span> isa(label,<span class="string">'cell'</span>)
+0244                 auxLabel=label;
+0245             <span class="keyword">else</span>
+0246                 error(<span class="string">'labTimeSeries:isaLabel'</span>,<span class="string">'label input argument has to be a string or a cell array containing strings.'</span>)
+0247             <span class="keyword">end</span>
+0248             
+0249             N=length(auxLabel);
+0250             boolFlag=false(N,1);
+0251             labelIdx=zeros(N,1);
+0252             <span class="keyword">for</span> j=1:N
+0253                 <span class="comment">%Alternative efficient formulation:</span>
+0254                 boolFlag(j)=any(strcmp(auxLabel{j},this.getLabelPrefix));
+0255                 <span class="keyword">if</span> boolFlag(j)
+0256                     labelIdx(j)=find(strcmp(auxLabel{j},this.getLabelPrefix));
+0257                 <span class="keyword">end</span>
+0258             <span class="keyword">end</span>
+0259         <span class="keyword">end</span>
+0260         
+0261         <a name="_sub11" href="#_subfunctions" class="code">function virtualOTS=getVirtualOTS(this,ww,meanDiff,stdDiff)</a>
+0262             <span class="comment">%Virtual markers are computed by taking the maximum likelihood</span>
+0263             <span class="comment">%estimator given the position of all other markers and the</span>
+0264             <span class="comment">%statistics of the distance between markers (naive bayes</span>
+0265             <span class="comment">%approach were distance between markers is assumed normally</span>
+0266             <span class="comment">%distributed)</span>
+0267             <span class="comment">%INPUT:</span>
+0268             <span class="comment">%this: orientedLabTimeSeries object</span>
+0269             <span class="comment">%ww: weight given to actual data (in units of 1/mm^2) relative</span>
+0270             <span class="comment">%to variances</span>
+0271             <span class="comment">%meanDiff: LxLx3 matrix representing the mean difference vector</span>
+0272             <span class="comment">%btw all combinations of L markers in the 3 dimensions</span>
+0273             <span class="comment">%stdDiff: LxLx3 matrix representing the standard deviation of</span>
+0274             <span class="comment">%the difference vectors in the 3 dimensions. Using for</span>
+0275             <span class="comment">%weighting to find maximum likelihood position.</span>
+0276             
+0277             
+0278             <span class="keyword">if</span> nargin&lt;2 || isempty(ww)
+0279                 ww=0; <span class="comment">%ww represents the weight given to actual data from the marker</span>
+0280             <span class="keyword">end</span>
+0281             ll=this.getLabelPrefix;
+0282             <span class="keyword">if</span> nargin&lt;4 || isempty(meanDiff) || isempty(stdDiff)
+0283                 differences=this.computeDifferenceMatrix([],[],ll,ll);
+0284                 meanDiff=nanmean(differences,1); <span class="comment">%Mean distance</span>
+0285                 <span class="comment">%Method : difference Naive Bayes</span>
+0286                 stdDiff=nanstd(differences,[],1);
+0287             <span class="keyword">end</span>
+0288             
+0289             
+0290             actualData=this.getOrientedData(ll);
+0291             virtualData=nan(size(actualData));
+0292             
+0293             <span class="keyword">for</span> i=1:length(ll) <span class="comment">%For each marker</span>
+0294                 xEstim=nan(size(differences,1),3,size(differences,2));
+0295                 w=1./stdDiff(1,i,:,:).^2;
+0296                 w(1,1,i,:)=ww;
+0297                 <span class="keyword">for</span> j=1:length(ll)
+0298                         xEstim(:,:,j)=bsxfun(@times,bsxfun(@plus,squeeze(actualData(:,j,:)),squeeze(meanDiff(1,i,j,:))'),squeeze(w(1,1,j,:))');
+0299                 <span class="keyword">end</span>
+0300                 aux=any(~isnan(xEstim),2);
+0301                 
+0302                 virtualData(:,i,:)= bsxfun(@rdivide,nansum(xEstim,3),squeeze(sum(bsxfun(@times,w,aux),3)));
+0303             <span class="keyword">end</span>
+0304             virtualOTS=orientedLabTimeSeries.getOTSfromOrientedData(virtualData,this.Time(1),this.sampPeriod,ll,this.orientation);
+0305 
+0306         <span class="keyword">end</span>
+0307         
+0308         <a name="_sub12" href="#_subfunctions" class="code">function [healthyOTS]=markerHealthCheck(this,refMarkerData)</a>
+0309            <span class="comment">%PART 1: model free check</span>
+0310            <span class="comment">%Step 1: check for velocities outside physiological range</span>
+0311            
+0312            <span class="comment">%Step 2: check for acc outside physilogical range</span>
+0313            
+0314            <span class="comment">%Step 3: check that L markers are always on the left, and R</span>
+0315            <span class="comment">%markers are always on the right.</span>
+0316            
+0317            
+0318            <span class="comment">%PART 2: model-dependent check</span>
+0319            <span class="keyword">if</span> nargin&lt;2 || isempty(refMarkerData)
+0320                refMarkerData=this;
+0321            <span class="keyword">end</span>
+0322            <span class="comment">%Step 4: check that markers are within reasonable CI of their</span>
+0323            <span class="comment">%distance distributions</span>
+0324            
+0325            <span class="comment">%Step 5: find gaps &amp; unlabeled markers</span>
+0326            
+0327            <span class="comment">%Step 6: return a new OTS with data removed where it seems</span>
+0328            <span class="comment">%wrong</span>
+0329            
+0330         <span class="keyword">end</span>
+0331         
+0332         <a name="_sub13" href="#_subfunctions" class="code">function [newThis]=fillGaps(this,refMarkerData)</a>
+0333             <span class="keyword">if</span> nargin&lt;2 || isempty(refMarkerData)
+0334                refMarkerData=this;
+0335             <span class="keyword">end</span>
+0336             <span class="comment">%Meant to be usedwith markerData only</span>
+0337             <span class="comment">%PART 1: model free check</span>
+0338             <span class="comment">%Use kalman filter to estimate likely position of missing</span>
+0339             <span class="comment">%markers</span>
+0340             
+0341             <span class="comment">%PART 2: model dependent</span>
+0342             <span class="comment">%Use prior knowledge in a Bayesian setting to fill gaps</span>
+0343             
+0344             <span class="comment">%PART 3: merge the two estimations through mle or something</span>
+0345            
+0346         <span class="keyword">end</span>
+0347         
+0348         <a name="_sub14" href="#_subfunctions" class="code">function newThis=threshold(this,th)</a>
+0349             newThis=this;
+0350             newThis.Data(sqrt(sum(newThis.Data.^2))&lt;th,:)=0;
+0351         <span class="keyword">end</span>
+0352 
+0353         <a name="_sub15" href="#_subfunctions" class="code">function newThis=thresholdByChannel(this,th,label,moreThanFlag)</a>
+0354             <span class="keyword">if</span> nargin&lt;4 || isempty(moreThanFlag)
+0355                 moreThanFlag=[];
+0356             <span class="keyword">end</span>
+0357             newThis=<a href="#_sub16" class="code" title="subfunction newThis=thresholdByChannel(this,th,label,moreThanFlag)">thresholdByChannel</a>@labTimeSeries(this,th,label,moreThanFlag);
+0358             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newThis.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+0359         <span class="keyword">end</span>
+0360         <span class="comment">%-------------------</span>
+0361         <a name="_sub16" href="#_subfunctions" class="code">function fh=plot3(this,fh)</a>
+0362             <span class="comment">%plots all 3 components of all variables in OTS instance</span>
+0363             <span class="comment">%</span>
+0364             <span class="comment">%INPUTS:</span>
+0365             <span class="comment">%fh, figure handle. If none passed in, a new one is created</span>
+0366             <span class="comment">%OUTPUTS:</span>
+0367             <span class="comment">%fh, figure handle to figure that shows 3D plot of each data</span>
+0368             <span class="comment">%variable (e.g. marker data or GRFdata)</span>
+0369             
+0370             <span class="keyword">if</span> nargin&lt;2 || isempty(fh)
+0371                 fh=figure;<span class="comment">%return handle to a figure</span>
+0372             <span class="keyword">else</span>
+0373                 figure(fh);
+0374             <span class="keyword">end</span>
+0375            [data,labelPref]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this);
+0376            hold on
+0377            
+0378            <span class="keyword">for</span> i=1:length(labelPref)
+0379                <a href="#_sub17" class="code" title="subfunction fh=plot3(this,fh)">plot3</a>(data(:,i,1),data(:,i,2),data(:,i,3),<span class="string">'.'</span>)
+0380            <span class="keyword">end</span>
+0381            hold off
+0382            axis equal
+0383            legend(labelPref)
+0384         <span class="keyword">end</span>
+0385         
+0386         <a name="_sub17" href="#_subfunctions" class="code">function M=animate(this)</a>
+0387             <span class="comment">%MAkes sense only for markerData</span>
+0388             list={<span class="string">'TOE'</span>,<span class="string">'HEE'</span>,<span class="string">'HEEL'</span>,<span class="string">'ANK'</span>,<span class="string">'SHANK'</span>,<span class="string">'TIB'</span>,<span class="string">'KNE'</span>,<span class="string">'KNEE'</span>,<span class="string">'THI'</span>,<span class="string">'THIGH'</span>,<span class="string">'HIP'</span>,<span class="string">'GT'</span>,<span class="string">'ASI'</span>,<span class="string">'ASIS'</span>,<span class="string">'PSI'</span>,<span class="string">'PSIS'</span>};
+0389             [b,~]=this.isaLabelPrefix(strcat(<span class="string">'L'</span>,list));
+0390             list=list(b);
+0391             ll=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch(<span class="string">'^L'</span>),<span class="string">'UniformOutput'</span>,false)));
+0392             ll=this.getOrientedData(strcat(<span class="string">'L'</span>,list));
+0393             rr=this.getOrientedData(unique(cellfun(@(x) x(1:end-1),this.getLabelsThatMatch(<span class="string">'^R'</span>),<span class="string">'UniformOutput'</span>,false)));
+0394             rr=this.getOrientedData(strcat(<span class="string">'R'</span>,list));
+0395             dd=this.getOrientedData;
+0396             figure
+0397             <span class="comment">%drawnow limitrate</span>
+0398             u = uicontrol(<span class="string">'Style'</span>,<span class="string">'slider'</span>,<span class="string">'Position'</span>,[10 50 20 340],<span class="string">'Min'</span>,1,<span class="string">'Max'</span>,size(ll,1),<span class="string">'Value'</span>,1);
+0399             
+0400             view(3)
+0401             axis equal
+0402             axis([min(min(dd(:,:,1))) max(max(dd(:,:,1))) min(min(dd(:,:,2))) max(max(dd(:,:,2))) min(min(dd(:,:,3))) max(max(dd(:,:,3)))])
+0403             hold on
+0404             L=animatedline(ll(1,:,1),ll(1,:,2),ll(1,:,3),<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,10,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>);
+0405             R=animatedline(rr(1,:,1),rr(1,:,2),rr(1,:,3),<span class="string">'Marker'</span>,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,10,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'b'</span>);
+0406             <span class="comment">%set(gca,'NextPlot','replacechildren')</span>
+0407             <span class="keyword">for</span> k = 1:size(ll,1)
+0408                 <span class="comment">%</span>
+0409                 <span class="comment">%hold on</span>
+0410                 <span class="comment">%axes(ax)</span>
+0411                 clearpoints(L)
+0412                 addpoints(L,ll(k,:,1),ll(k,:,2),ll(k,:,3));
+0413                 clearpoints(R)
+0414                 addpoints(R,rr(k,:,1),rr(k,:,2),rr(k,:,3));
+0415                 <span class="comment">%hold off</span>
+0416                 u.Value=k;
+0417                 M(k) = getframe(gcf);
+0418             <span class="keyword">end</span>
+0419             hold off
+0420         <span class="keyword">end</span>
+0421         <span class="comment">%-------------------</span>
+0422         <span class="comment">%Modifier functions:</span>
+0423         
+0424         <a name="_sub18" href="#_subfunctions" class="code">function newThis=resampleN(this,newN,method)</a>
+0425             <span class="comment">%Same as resample function, but directly fixing the number of samples instead of TS</span>
+0426             
+0427             <span class="keyword">if</span> nargin&lt;3
+0428                 method=[];
+0429             <span class="keyword">end</span>
+0430             auxThis=this.resampleN@labTimeSeries(newN,method);
+0431             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+0432         <span class="keyword">end</span>
+0433         
+0434         <a name="_sub19" href="#_subfunctions" class="code">function newThis=split(this,t0,t1)</a>
+0435             <span class="comment">%returns TS from t0 to t1</span>
+0436            auxThis=this.split@labTimeSeries(t0,t1);
+0437            newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(auxThis.Data,t0,auxThis.sampPeriod,auxThis.labels,this.orientation);
+0438         <span class="keyword">end</span>
+0439         
+0440         <a name="_sub20" href="#_subfunctions" class="code">function newThis=translate(this,vector)</a>
+0441             <span class="comment">%translate OTS data by input vector (vector addition)</span>
+0442             
+0443             
+0444             <span class="comment">%Check: vector is 1x3 or Tx3</span>
+0445             [M,N]=size(vector);
+0446             <span class="keyword">if</span> N~=3 || (M~=1 &amp;&amp; M~=length(this.Time))
+0447                 error(<span class="string">'orientedLabTS:translate'</span>,<span class="string">'Translation vector has to be size 3 on second dim, and singleton or of length(time) in the first.'</span>)
+0448             <span class="keyword">end</span>
+0449             [data,~]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this);
+0450             vector=reshape(vector,M,1,3);
+0451             newData=permute(bsxfun(@plus,data,vector),[1,3,2]);
+0452             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
+0453             <span class="comment">%newThis.UserData.translation=; %ToDo: store the translation</span>
+0454             <span class="comment">%info in some structure so that it can be backtracked</span>
+0455         <span class="keyword">end</span>
+0456         
+0457         <a name="_sub21" href="#_subfunctions" class="code">function newThis=rotate(this, matrix)</a>
+0458             <span class="comment">%rotate OTS data using input rotation matrix</span>
+0459 
+0460             [data,label]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this);
+0461             M=size(matrix,1);
+0462             matrix=reshape(matrix,M,1,3,3);
+0463             newData=permute(sum(bsxfun(@times,data,matrix),3),[1,4,2,3]);
+0464             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
+0465             <span class="comment">%newThis.UserData.rotation=; %ToDo: store the rotation</span>
+0466             <span class="comment">%info in some structure so that it can be backtracked</span>
+0467         <span class="keyword">end</span>
+0468         
+0469         <a name="_sub22" href="#_subfunctions" class="code">function newThis=alignRotate(this,newX,newZ)</a>
+0470             <span class="comment">%newX and newZ need to be 1x3 or Nx3 where N=size(this.Data,1)</span>
+0471             <span class="comment">%Check:</span>
+0472             N=size(this.Data,1);
+0473             <span class="keyword">if</span> (size(newX,1)~=1 &amp;&amp; size(newX,1)~=N) || size(newX,2)~=3
+0474                 error(<span class="string">'orientedLabTS:alignRotate'</span>,<span class="string">'newX has to be 1x3 or Nx3.'</span>)
+0475             <span class="keyword">end</span>    
+0476             <span class="keyword">if</span> size(newZ,1)~=1 &amp;&amp; size(newZ,1)~=N || size(newZ,2)~=3
+0477                 error(<span class="string">'orientedLabTS:alignRotate'</span>,<span class="string">'newZ has to be 1x3 or Nx3.'</span>)
+0478             <span class="keyword">end</span>    
+0479             
+0480             <span class="comment">%In case of one being 1x3 and the other Nx3, making them both</span>
+0481             <span class="comment">%Nx3</span>
+0482             <span class="comment">%FIXME: Align z to newZ, and x to newX projected in a direction</span>
+0483             <span class="comment">%orthogonal to newZ (or check that newX is orthogonal to newZ</span>
+0484             <span class="comment">%to start with)</span>
+0485             <span class="keyword">if</span> size(newX,1)~=size(newZ,1)
+0486                 <span class="keyword">if</span> size(newX,1)==1
+0487                     newX=repmat(newX,N,1);
+0488                 <span class="keyword">else</span>
+0489                     newZ=repmat(newZ,N,1);
+0490                 <span class="keyword">end</span>
+0491             <span class="keyword">end</span>
+0492             
+0493            newX=bsxfun(@rdivide,newX,sqrt(sum(newX.^2,2)));
+0494            newZ=bsxfun(@rdivide,newZ,sqrt(sum(newZ.^2,2)));
+0495            <span class="comment">%Find rotation matrix</span>
+0496            newY=-cross(newX,newZ); <span class="comment">%orthogonal to the other two</span>
+0497            newY=bsxfun(@rdivide,newY,sqrt(sum(newY.^2,2)));
+0498            matrix1=permute(newX,[1,3,2]);
+0499            matrix2=permute(newY,[1,3,2]);
+0500            matrix3=permute(newZ,[1,3,2]);
+0501            matrix=cat(2,matrix1,matrix2);
+0502            matrix=cat(2,matrix,matrix3);
+0503            <span class="keyword">for</span> i=1:size(matrix,1)
+0504                <span class="keyword">if</span> ~any(isnan(matrix(i,:,:)))
+0505                 matrix(i,1:3,1:3)=inv(squeeze(matrix(i,:,:)));
+0506                <span class="keyword">else</span>
+0507                    matrix(i,1:3,1:3)=nan;
+0508                <span class="keyword">end</span>
+0509            <span class="keyword">end</span>
+0510            <span class="comment">%Rotate</span>
+0511            newThis=<a href="#_sub22" class="code" title="subfunction newThis=rotate(this, matrix)">rotate</a>(this, matrix);
+0512         <span class="keyword">end</span>
+0513         
+0514         <a name="_sub23" href="#_subfunctions" class="code">function newThis=referenceToMarker(this,marker)</a>
+0515             <span class="comment">%align data relative to input marker, calls</span>
+0516             <span class="comment">%orientedLabTimeSeries.translate()</span>
+0517             
+0518             <span class="comment">%Check: marker needs to be a suffix of this object.</span>
+0519             [data,~]=<a href="#_sub3" class="code" title="subfunction [data,label]=getOrientedData(this,label)">getOrientedData</a>(this,marker);
+0520             newThis=<a href="#_sub21" class="code" title="subfunction newThis=translate(this,vector)">translate</a>(this,squeeze(-1*data));
+0521         <span class="keyword">end</span>
+0522         
+0523         <a name="_sub24" href="#_subfunctions" class="code">function newThis=derivate(this)</a>
+0524             <span class="comment">%take derivative of OTS</span>
+0525             
+0526             auxThis=this.derivate@labTimeSeries;
+0527             newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+0528         <span class="keyword">end</span>
+0529         
+0530         <a name="_sub25" href="#_subfunctions" class="code">function newThis=lowPassFilter(this,fcut)</a>
+0531            newThis=<a href="#_sub26" class="code" title="subfunction newThis=lowPassFilter(this,fcut)">lowPassFilter</a>@labTimeSeries(this,fcut); 
+0532            newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newThis.Data,newThis.Time(1),newThis.sampPeriod,newThis.labels,this.orientation);
+0533         <span class="keyword">end</span>
+0534         
+0535         <a name="_sub26" href="#_subfunctions" class="code">function newThis=highPassFilter(this,fcut)</a>
+0536            newThis=<a href="#_sub27" class="code" title="subfunction newThis=highPassFilter(this,fcut)">highPassFilter</a>@labTimeSeries(this,fcut); 
+0537            newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(newThis.Data,newThis.Time(1),newthis.sampPeriod,newThis.labels,this.orientation);
+0538         <span class="keyword">end</span>
+0539         
+0540         <a name="_sub27" href="#_subfunctions" class="code">function newThis=substituteNaNs(this,method)</a>
+0541             <span class="keyword">if</span> nargin&lt;2 || isempty(method)
+0542                 method=[];
+0543             <span class="keyword">end</span>
+0544            this=<a href="#_sub28" class="code" title="subfunction newThis=substituteNaNs(this,method)">substituteNaNs</a>@labTimeSeries(this,method);
+0545            newThis=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(this.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+0546         <span class="keyword">end</span>
+0547         
+0548     <span class="keyword">end</span>
+0549     methods (Static)
+0550         <a name="_sub28" href="#_subfunctions" class="code">function OTS=getOTSfromOrientedData(data,t0,Ts,labelPrefixes,orientation)</a>
+0551             labels=[strcat(labelPrefixes,<span class="string">'x'</span>);strcat(labelPrefixes,<span class="string">'y'</span>);strcat(labelPrefixes,<span class="string">'z'</span>)];
+0552             data=permute(data,[1,3,2]);
+0553             OTS=<a href="orientedLabTimeSeries.html" class="code" title="">orientedLabTimeSeries</a>(data(:,:),t0,Ts,labels(:),orientation);
+0554         <span class="keyword">end</span>
+0555         <a name="_sub29" href="#_subfunctions" class="code">function extendedLabels=addLabelSuffix(labels)</a>
+0556             <span class="comment">%Add component suffix to each label</span>
+0557             <span class="comment">%</span>
+0558             <span class="comment">%example:</span>
+0559             <span class="comment">%labels = {'RHIP','LHIP',...}</span>
+0560             <span class="comment">%extendedLabels = addLabelSuffix(labels);</span>
+0561             <span class="comment">%extendedLabels = {'RHIPx','RHIPy','RHIPz','LHIPx','LHIPy','LHIPz',...}</span>
+0562             
+0563             <span class="keyword">if</span> ischar(labels)
+0564                 labels={labels};
+0565             <span class="keyword">end</span>
+0566             extendedLabels=cell(length(labels)*3,1);
+0567             extendedLabels(1:3:end)=strcat(labels,<span class="string">'x'</span>);
+0568             extendedLabels(2:3:end)=strcat(labels,<span class="string">'y'</span>);
+0569             extendedLabels(3:3:end)=strcat(labels,<span class="string">'z'</span>);
+0570         <span class="keyword">end</span> 
+0571         <a name="_sub30" href="#_subfunctions" class="code">function labelSane=checkLabelSanity(labels)</a>
+0572             <span class="comment">%Check to make sure that labels are in expected or workable</span>
+0573             <span class="comment">%format</span>
+0574             <span class="comment">%</span>
+0575             <span class="comment">%checks that there are multiples of 3 labels,i.e.</span>
+0576             <span class="comment">%{'RHIPx','RHIPy','RHIPz',...}</span>
+0577             <span class="comment">%</span>
+0578             <span class="comment">%checks that x,y,z are labeled in that order</span>
+0579             <span class="comment">%</span>
+0580             <span class="comment">%also checks that each group of 3 labels have the same prefix</span>
+0581             
+0582             labelSane=true;
+0583             <span class="comment">%Check: labels is a multiple of 3</span>
+0584             <span class="keyword">if</span> mod(length(labels),3)~=0
+0585                 warning(<span class="string">'Label length is not a multiple of 3, therefore they can''t correspond to 3D oriented data.'</span>)
+0586                 labelSane=false;
+0587                 <span class="keyword">return</span>
+0588             <span class="keyword">end</span>
+0589             <span class="comment">%Check: all labels end in 'x','y' or 'z'</span>
+0590             aux2=cellfun(@(x) x(end),labels,<span class="string">'UniformOutput'</span>,false); <span class="comment">%Should be 'x', 'y', 'z'</span>
+0591             <span class="keyword">if</span> any(~strcmp(aux2(1:3:end),<span class="string">'x'</span>)) || any(~strcmp(aux2(2:3:end),<span class="string">'y'</span>)) || any(~strcmp(aux2(3:3:end),<span class="string">'z'</span>))
+0592                warning(<span class="string">'Labels do not end in ''x'', ''y'', or ''z'' or in that order, as expected.'</span>) 
+0593                labelSane=false;
+0594                <span class="keyword">return</span>
+0595             <span class="keyword">end</span>
+0596             <span class="comment">%Check: and labels have the same prefix in groups of 3</span>
+0597             aux=cellfun(@(x) x(1:end-1),labels,<span class="string">'UniformOutput'</span>,false);
+0598             labelsx=aux(1:3:end);
+0599             labelsy=aux(2:3:end);
+0600             labelsz=aux(3:3:end);
+0601             <span class="keyword">if</span> any(~strcmp(labelsx,labelsy)) || any(~strcmp(labelsx,labelsz))
+0602                 labelSane=false;
+0603                 <span class="keyword">return</span>
+0604             <span class="keyword">end</span>
+0605         <span class="keyword">end</span>
+0606     <span class="keyword">end</span>
+0607 
+0608 <span class="keyword">end</span>
+0609</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

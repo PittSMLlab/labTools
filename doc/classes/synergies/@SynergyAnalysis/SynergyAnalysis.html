@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SynergyAnalysis</title>
+  <meta name="keywords" content="SynergyAnalysis">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@SynergyAnalysis</a> &gt; SynergyAnalysis.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/synergies/@SynergyAnalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SynergyAnalysis
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>	</li><li><a href="SynergyAnalysis_bak.html" class="code" title="">SynergyAnalysis_bak</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=SynergyAnalysis(testingData,trainingData,muscleList,name,method)</a></li><li><a href="#_sub2" class="code">function newThis=factorizeNewTestingData(this,testingData,method,name)</a></li><li><a href="#_sub3" class="code">function [testFactorization,trainFactorization]=getFactorization(this,dim)</a></li><li><a href="#_sub4" class="code">function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)</a></li><li><a href="#_sub5" class="code">function [errTrain,errTest,fh]=assessDimensionality(this,plotFlag,fh,names)</a></li><li><a href="#_sub6" class="code">function [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)</a></li><li><a href="#_sub7" class="code">function trainRes=get.trainingResiduals(this)</a></li><li><a href="#_sub8" class="code">function testRes=get.testingResiduals(this)</a></li><li><a href="#_sub9" class="code">function ss=get.synergySets(this)</a></li><li><a href="#_sub10" class="code">function [dim1Vectors] = coefExtrFromSyn(data,dim2Vectors,method)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SynergyAnalysis.html" class="code" title="">SynergyAnalysis</a>
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         trainingFactorizations={}; <span class="comment">%cell array of length N, each containing a factorizedMatrix</span>
+0007         testingFactorizations={}; <span class="comment">%cell array cell arrays of length N, each containing a factorizedMatrix</span>
+0008         muscleList={};
+0009         trainingData={}; <span class="comment">%Plain matrix, unnecessary?</span>
+0010         testingData={}; <span class="comment">%Plain matrix, unnecessary?</span>
+0011     <span class="keyword">end</span>
+0012     properties(Dependent)
+0013        trainingResiduals <span class="comment">%cell array of matrices, unnecessary?</span>
+0014        testingResiduals <span class="comment">%cell array of matrices, unnecessary?</span>
+0015        synergySets <span class="comment">%cell array of SynergySet, unnecessary?</span>
+0016     <span class="keyword">end</span>
+0017     
+0018     methods
+0019         <span class="comment">%Constructor</span>
+0020         <a name="_sub0" href="#_subfunctions" class="code">function this=SynergyAnalysis(testingData,trainingData,muscleList,name,method)</a>
+0021             <span class="keyword">if</span> nargin&lt;5 || isempty(method)
+0022                 method=<span class="string">'nnmf'</span>;
+0023             <span class="keyword">end</span>
+0024             <span class="keyword">if</span> nargin&lt;4 || isempty(name)
+0025                 name=<span class="string">''</span>;
+0026             <span class="keyword">end</span>
+0027             <span class="comment">%Check that size of testingData and trainingData are the same</span>
+0028             
+0029             <span class="comment">%Dim 1 is time, dim 2 are steps, dim 3 are muscles (muscles</span>
+0030             <span class="comment">%have to be in the last dimension for the factorization to be</span>
+0031             <span class="comment">%done properly with this code).</span>
+0032             <span class="keyword">for</span> dim=1:size(trainingData,3) <span class="comment">%Factorizing from 1 to Nmuscles</span>
+0033                 <span class="comment">%Compute synergies from training data</span>
+0034                 trainingFactorizations{dim}=FactorizedMatrix.factorize(trainingData,2,method,dim,[name <span class="string">'_trainingSet_dim'</span> num2str(dim)]); <span class="comment">%The second argument has to be the dimension corresponding to the muscles dim-1.</span>
+0035             <span class="keyword">end</span>
+0036             this.trainingFactorizations=trainingFactorizations;
+0037             this.muscleList=muscleList;
+0038             this.trainingData=trainingData;
+0039             <span class="comment">%Compute coefs from synergies and testing data</span>
+0040             <span class="keyword">if</span> ~isempty(testingData)
+0041                 this=<a href="#_sub2" class="code" title="subfunction newThis=factorizeNewTestingData(this,testingData,method,name)">factorizeNewTestingData</a>(this,testingData,method,name);
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044         
+0045         <span class="comment">%Extract coefs for testingData</span>
+0046         <a name="_sub1" href="#_subfunctions" class="code">function newThis=factorizeNewTestingData(this,testingData,method,name)</a>
+0047             <span class="keyword">if</span> nargin&lt;4 || isempty(name)
+0048                 name=<span class="string">''</span>;
+0049             <span class="keyword">end</span>
+0050            <span class="comment">%Check that new testingData and  have compatible</span>
+0051            <span class="comment">%dimensions</span>
+0052            <span class="comment">%DOXY</span>
+0053            
+0054            <span class="comment">%</span>
+0055            N=length(this.testingFactorizations);
+0056            <span class="keyword">for</span> dim=1:size(this.trainingData,3) <span class="comment">%Factorizing from 1 to Nmuscles</span>
+0057                 <span class="comment">%Compute coefs from synergies and testing data</span>
+0058                 reshapedData=reshape(testingData,[size(testingData,1)*size(testingData,2),size(testingData,3)]);
+0059                 [coefs] = SynergyAnalysis.coefExtrFromSyn(reshapedData,this.trainingFactorizations{dim}.dim2Vectors,method);
+0060                 reshapedCoefs=reshape(coefs,[dim,size(testingData,1),size(testingData,2)]);
+0061                 testFactorizations{dim}=FactorizedMatrix(size(testingData),reshapedCoefs,this.trainingFactorizations{dim}.dim2Vectors,method,[name <span class="string">'_dim'</span> num2str(dim)]);
+0062             <span class="keyword">end</span>
+0063             this.testingFactorizations{N+1}=testFactorizations;
+0064             this.testingData{N+1}=testingData;
+0065             newThis=this;
+0066         <span class="keyword">end</span>
+0067         
+0068         <span class="comment">%Misc IO</span>
+0069         <a name="_sub2" href="#_subfunctions" class="code">function [testFactorization,trainFactorization]=getFactorization(this,dim) </a><span class="comment">%Returns a single factorization, if dim is not given, returns the chosenDim factorization</span>
+0070             <span class="keyword">if</span> nargin&lt;2
+0071                 dim=this.chooseDim;
+0072             <span class="keyword">end</span>
+0073             testFactorization=this.testFactorizations{1}{dim};
+0074             trainFactorization=this.trainFactorizations{dim};
+0075         <span class="keyword">end</span>
+0076         
+0077         <span class="comment">%Others</span>
+0078         <a name="_sub3" href="#_subfunctions" class="code">function [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = getRandomDataReconstructionPerformance(this,randomMethod,factMethod)</a>
+0079             Nreps=10000;
+0080             <span class="keyword">switch</span> randomMethod
+0081                 <span class="keyword">case</span> <span class="string">'spectralMatch'</span>
+0082                     <span class="keyword">if</span> strcmpi(factMethod,<span class="string">'nnmf'</span>)
+0083                         disp(<span class="string">'Cannot use NNMF with spectrally matched data since positivity constraints are not satisfied. Using uncentered PCA instead.'</span>)
+0084                         factMethod=<span class="string">'uncentPCA'</span>;
+0085                     <span class="keyword">end</span>
+0086                     sizes=size(this.trainingData);
+0087                     [mu,sigma,filter] = createUnstructuredParametersFromData(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)));
+0088                     <span class="keyword">switch</span> factMethod
+0089                         <span class="keyword">case</span> <span class="string">'pca'</span>
+0090                             centering=true;
+0091                         <span class="keyword">case</span> <span class="string">'uncentPCA'</span>
+0092                             centering=false;
+0093                         <span class="keyword">otherwise</span>
+0094                             throw(MException(<span class="string">'SynAnalysisRandomRec:UnrecognizedFactMethod'</span>,<span class="string">'Unrecognized method for factorizing random data: options are pca, uncentPCA and nnmf.'</span>))
+0095                     <span class="keyword">end</span>
+0096                     [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricPCAEigDistributionsFiltered(mu,sigma,prod(sizes(1:2)),Nreps,filter,[],<span class="string">'normal'</span>,true,centering);
+0097                     
+0098                 <span class="keyword">case</span> <span class="string">'timeShift'</span>
+0099                     <span class="keyword">switch</span> factMethod
+0100                         <span class="keyword">case</span> <span class="string">'nnmf'</span>
+0101                             Nreps=200;
+0102                             sizes=size(this.trainingData);
+0103                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricNNMFEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps);
+0104                         <span class="keyword">case</span> <span class="string">'pca'</span>
+0105                             centering=true;
+0106                             sizes=size(this.trainingData);
+0107                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricPCAEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps,centering);
+0108                         <span class="keyword">case</span> <span class="string">'uncentPCA'</span>
+0109                             centering=false;
+0110                             sizes=size(this.trainingData);
+0111                             [cumEigPdf,margEigPdf,totalVarPdf,overexplanationPdf,meanPdf] = empiricPCAEigDistributionsTimeShifted(reshape(this.trainingFactorizations{1}.originalMatrix,prod(sizes(1:2)),sizes(3)),Nreps,centering);
+0112                         <span class="keyword">otherwise</span>
+0113                             throw(MException(<span class="string">'SynAnalysisRandomRec:UnrecognizedFactMethod'</span>,<span class="string">'Unrecognized method for factorizing random data: options are pca, uncentPCA and nnmf.'</span>))
+0114                     <span class="keyword">end</span>
+0115                 <span class="keyword">otherwise</span>
+0116                     throw(MException(<span class="string">'SynAnalysisRandomRec:UnrecognizedRandomMethod'</span>,<span class="string">'Unrecognized method for generating random data: options are timeShift and spectralMatch'</span>))
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">end</span>
+0119                                   
+0120         dim=chooseDim(this) <span class="comment">%TODO</span>
+0121         
+0122         <a name="_sub4" href="#_subfunctions" class="code">function [errTrain,errTest,fh]=assessDimensionality(this,plotFlag,fh,names)</a>
+0123             <span class="keyword">if</span> nargin &lt;4 || isempty(names)
+0124                 names=<span class="string">''</span>;
+0125             <span class="keyword">end</span>
+0126             <span class="comment">%First: find error norm as a function of dimension for training and testing</span>
+0127             <span class="comment">%data</span>
+0128 
+0129             auxTrain=norm(this.trainingData(:,:),<span class="string">'fro'</span>);
+0130             auxTest=norm(this.testingData(:,:),<span class="string">'fro'</span>);
+0131             <span class="keyword">for</span> i=1:this.testingFactorizations{1}.originalDimension
+0132                 eM=this.trainingFactorizations{i}.getErrorMatrix(this.trainingData);
+0133                 errTrain(i)=norm(eM(:,:),<span class="string">'fro'</span>)/auxTrain;
+0134                 eM=this.testingFactorizations{i}.getErrorMatrix(this.testingData);
+0135                 errTest(i)=norm(eM(:,:),<span class="string">'fro'</span>)/auxTest;
+0136             <span class="keyword">end</span>
+0137 
+0138             <span class="keyword">if</span> nargin&lt;2 || (~isempty(plotFlag) &amp;&amp; plotFlag~=0)
+0139                 <span class="keyword">if</span> nargin&gt;2
+0140                     figure(fh)
+0141                 <span class="keyword">else</span>
+0142                     fh=figure;
+0143                 <span class="keyword">end</span>
+0144             hold on
+0145             p=<a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(errTrain.^2,<span class="string">'DisplayName'</span>,[names <span class="string">'Training Data'</span>],<span class="string">'LineWidth'</span>,2);
+0146             <a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(errTest.^2,<span class="string">'--'</span>,<span class="string">'DisplayName'</span>,[names <span class="string">'Testing Data'</span>],<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,get(p,<span class="string">'Color'</span>))
+0147             xlabel(<span class="string">'Dims.'</span>)
+0148             ylabel(<span class="string">'Normalized reconstruction error squared'</span>)
+0149             hold off
+0150             p=get(gca,<span class="string">'Children'</span>);
+0151             legend(p);
+0152             <span class="keyword">end</span>
+0153 
+0154 
+0155         <span class="keyword">end</span>
+0156         
+0157         <span class="comment">%Display</span>
+0158         <a name="_sub5" href="#_subfunctions" class="code">function [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)</a>
+0159             <span class="comment">%Plotting the testing data only</span>
+0160            <span class="keyword">if</span> nargin&lt;5
+0161                dim=this.chooseDim;
+0162            <span class="keyword">end</span>
+0163            <span class="keyword">if</span> nargin&lt;4
+0164                colors=[];
+0165            <span class="keyword">end</span>
+0166            <span class="keyword">if</span> nargin&lt;3
+0167                plotHandles1=[];
+0168                plotHandles2=[];
+0169            <span class="keyword">end</span>
+0170            [figHandle,plotHandles1,plotHandles2]=<a href="#_sub6" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors,dim)">plot</a>(this.testingFactorizations{dim},plotHandles1,plotHandles2,colors);
+0171            <span class="keyword">for</span> i=1:length(plotHandles1)
+0172                subplot(plotHandles1(i))
+0173                set(plotHandles1(i),<span class="string">'XTick'</span>,1:this.testingFactorizations{dim}.matrixSize(end),<span class="string">'XTickLabels'</span>,this.muscleList,<span class="string">'XTickLabelRotation'</span>,90)
+0174                axis tight
+0175            <span class="keyword">end</span>
+0176         <span class="keyword">end</span>
+0177         
+0178         <span class="comment">%Getters for dependent properties</span>
+0179         
+0180         <a name="_sub6" href="#_subfunctions" class="code">function trainRes=get.trainingResiduals(this)</a>
+0181             <span class="keyword">for</span> i=1:length(this.trainingFactorizations)
+0182                trainRes{i}=this.trainingFactorizations{i}.errorMatrix(this.trainingData); 
+0183             <span class="keyword">end</span>
+0184         <span class="keyword">end</span>
+0185         
+0186         <a name="_sub7" href="#_subfunctions" class="code">function testRes=get.testingResiduals(this)</a>
+0187             <span class="keyword">for</span> j=1:length(this.testingFactorizations)
+0188                 <span class="keyword">for</span> i=1:length(this.testingFactorizations{1})
+0189                    testRes{j}{i}=this.testingFactorizations{j}{i}.errorMatrix(this.testingData); 
+0190                 <span class="keyword">end</span>
+0191             <span class="keyword">end</span>
+0192         <span class="keyword">end</span>
+0193 
+0194         <a name="_sub8" href="#_subfunctions" class="code">function ss=get.synergySets(this)</a>
+0195             <span class="keyword">for</span> i=1:length(this.trainingFactorizations)
+0196                ss{i}=this.trainingFactorizations{i}.dim2Vectors; 
+0197             <span class="keyword">end</span>
+0198         <span class="keyword">end</span>
+0199         
+0200     <span class="keyword">end</span>
+0201     
+0202     methods(Static)
+0203         
+0204        <a name="_sub9" href="#_subfunctions" class="code">function [dim1Vectors] = coefExtrFromSyn(data,dim2Vectors,method)</a>
+0205             <span class="comment">%solves the least squares problem data=syn*act; subject to the</span>
+0206             <span class="comment">%non-negativity of the activations.</span>
+0207 
+0208             opts= optimset(<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'TolFun'</span>,1e-4/size(data,2)^2,<span class="string">'TolX'</span>,1e-4);
+0209 
+0210             poolFlag=0;
+0211             <span class="keyword">if</span> isempty(gcp(<span class="string">'nocreate'</span>))
+0212                 parpool
+0213                 poolFlag=1;
+0214             <span class="keyword">end</span>
+0215 
+0216             coefs=[];
+0217             <span class="keyword">switch</span> method
+0218                 <span class="keyword">case</span> <span class="string">'nnmf'</span>
+0219                     parfor i=1:size(data,1)
+0220                         x0=ones(size(dim2Vectors,1),1);
+0221                         coefs(:,i) = lsqnonneg(dim2Vectors',data(i,:)',opts);
+0222                     <span class="keyword">end</span>
+0223                 <span class="keyword">case</span> <span class="string">'pca'</span>
+0224                     coefs=(data/dim2Vectors)';
+0225                     <span class="comment">%Check minimum convergence (if using N dimensions):</span>
+0226                     <span class="keyword">if</span> (norm(data-coefs'*dim2Vectors,<span class="string">'fro'</span>)/norm(data,<span class="string">'fro'</span>))&gt;(1-size(coefs,1)/size(data,2)) <span class="comment">%Checking for reconstruction levels to be at least random reconstruction expected values</span>
+0227                         warning(<span class="string">'SynegyAnalysis:coefExtrFromSyn'</span>,<span class="string">'Residuals from lsq is higher than expected from random reconstructions, there is a probable issue with algorithm convergence.'</span>)
+0228                     <span class="keyword">end</span>
+0229                 <span class="keyword">otherwise</span>
+0230                     error(<span class="string">'SynergyAnalysis:coefExtrFromSyn'</span>,[<span class="string">'Not implemented for the desired method: '</span> method])
+0231             <span class="keyword">end</span>
+0232             
+0233             dim1Vectors=coefs;
+0234             <span class="keyword">if</span> poolFlag==1
+0235                 delete(gcp(<span class="string">'nocreate'</span>))
+0236             <span class="keyword">end</span>
+0237        <span class="keyword">end</span>
+0238         
+0239     <span class="keyword">end</span>
+0240 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

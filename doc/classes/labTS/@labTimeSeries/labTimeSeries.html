@@ -1,0 +1,803 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of labTimeSeries</title>
+  <meta name="keywords" content="labTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">labTS</a> &gt; <a href="index.html">@labTimeSeries</a> &gt; labTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS/@labTimeSeries&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>labTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=labTimeSeries(data,t0,Ts,labels)</a></li><li><a href="#_sub2" class="code">function [data,time,auxLabel]=getDataAsVector(this,label)</a></li><li><a href="#_sub3" class="code">function [newTS,auxLabel]=getDataAsTS(this,label)</a></li><li><a href="#_sub4" class="code">function labelList=getLabels(this)</a></li><li><a href="#_sub5" class="code">function labelList=getLabelsThatMatch(this,exp)</a></li><li><a href="#_sub6" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a></li><li><a href="#_sub7" class="code">function data=getSample(this,timePoints,method)</a></li><li><a href="#_sub8" class="code">function index=getIndexClosestToTimePoint(this,timePoints)</a></li><li><a href="#_sub9" class="code">function newThis=resample(this,newTs,newT0,hiddenFlag)</a></li><li><a href="#_sub10" class="code">function newThis=resampleN(this,newN,method)</a></li><li><a href="#_sub11" class="code">function newThis=split(this,t0,t1)</a></li><li><a href="#_sub12" class="code">function newThis=castAsOTS(this)</a></li><li><a href="#_sub13" class="code">function newThis=castAsSTS(this,F,tWin,tOverlap)</a></li><li><a href="#_sub14" class="code">function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)</a></li><li><a href="#_sub15" class="code">function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)</a></li><li><a href="#_sub16" class="code">function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)</a></li><li><a href="#_sub17" class="code">function this=times(this,constant)</a></li><li><a href="#_sub18" class="code">function newThis=plus(this,other)</a></li><li><a href="#_sub19" class="code">function newThis=minus(this,other)</a></li><li><a href="#_sub20" class="code">function newThis=derivate(this)</a></li><li><a href="#_sub21" class="code">function this=fillts(this)</a></li><li><a href="#_sub22" class="code">function newThis=concatenate(this,other)</a></li><li><a href="#_sub23" class="code">function this=substituteNaNs(this,method)</a></li><li><a href="#_sub24" class="code">function newThis=thresholdByChannel(this,th,label,moreThanFlag)</a></li><li><a href="#_sub25" class="code">function fs=get.sampFreq(this)</a></li><li><a href="#_sub26" class="code">function tr=get.timeRange(this)</a></li><li><a href="#_sub27" class="code">function Nsamp=get.Nsamples(this)</a></li><li><a href="#_sub28" class="code">function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth)</a></li><li><a href="#_sub29" class="code">function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)</a></li><li><a href="#_sub30" class="code">function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)</a></li><li><a href="#_sub31" class="code">function Fthis=fourierTransform(this,M)</a></li><li><a href="#_sub32" class="code">function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)</a></li><li><a href="#_sub33" class="code">function [Athis,originalDurations,bad,initTime]=align(this,eventTS,eventLabel,N,timeMargin)</a></li><li><a href="#_sub34" class="code">function newThis=lowPassFilter(this,fcut)</a></li><li><a href="#_sub35" class="code">function newThis=highPassFilter(this,fcut)</a></li><li><a href="#_sub36" class="code">function this=medianFilter(this,N)</a></li><li><a href="#_sub37" class="code">function newThis=resampleLogical(this,newTs, newT0,newN)</a></li><li><a href="#_sub38" class="code">function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N)</a></li><li><a href="#_sub39" class="code">function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)</a></li><li><a href="#_sub40" class="code">function this=join(labTSCellArray)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>  &lt; timeseries
+0002     <span class="comment">%labTimeSeries  Extends timeseries (built-in MATLAB class) to meet</span>
+0003     <span class="comment">%               our lab's needs for storing data.</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%labTimeSeries properties:</span>
+0006     <span class="comment">%   labels - cell array of strings with labels for the columns of Data</span>
+0007     <span class="comment">%   sampPeriod - time between samples, equal to 1/sampFreq</span>
+0008     <span class="comment">%   sampFreq - sampling rate in Hz, equal to 1/sampPeriod</span>
+0009     <span class="comment">%   Nsamples - total number of samples in timeSeries</span>
+0010     <span class="comment">%   Data - matrix of data values, size is Nsamples x length(labels)</span>
+0011     <span class="comment">%   Time - time values corresponding to each sample</span>
+0012     <span class="comment">%   Length - should be same as Nsamples</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">%labTimeSeries methods:</span>
+0015     <span class="comment">%   getDataAsVector - get a vector of data for a given label</span>
+0016     <span class="comment">%   getDataAsTS - returns a new labTimeSeries with data for given label(s)</span>
+0017     <span class="comment">%   getLabels - returns list of labels</span>
+0018     <span class="comment">%   isaLabel - checks if a string is contained in label array</span>
+0019     <span class="comment">%   plot - plots data...</span>
+0020     
+0021     <span class="comment">%%</span>
+0022     properties(SetAccess=private)
+0023         labels={<span class="string">''</span>};
+0024         sampPeriod;
+0025     <span class="keyword">end</span>
+0026     properties(Dependent)
+0027         sampFreq
+0028         timeRange
+0029         Nsamples
+0030     <span class="keyword">end</span>
+0031     
+0032     <span class="comment">%%</span>
+0033     methods
+0034         
+0035         <span class="comment">%Constructor:</span>
+0036         <a name="_sub0" href="#_subfunctions" class="code">function this=labTimeSeries(data,t0,Ts,labels) </a><span class="comment">%Necessarily uniformly sampled</span>
+0037             <span class="keyword">if</span> nargin==0
+0038                 data=[];
+0039                 time=[];
+0040                 labels={};
+0041                 Ts=[];
+0042             <span class="keyword">else</span>
+0043                 time=[0:size(data,1)-1]*Ts+t0';
+0044             <span class="keyword">end</span>
+0045             this=this@timeseries(data,time);
+0046             this.sampPeriod=Ts;
+0047             <span class="keyword">if</span> (length(labels)==size(data,2)) &amp;&amp; isa(labels,<span class="string">'cell'</span>)
+0048                 this.labels=labels;
+0049             <span class="keyword">else</span>
+0050                 ME=MException(<span class="string">'labTimeSeries:ConstructorInconsistentArguments'</span>,<span class="string">'The size of the labels array is inconsistent with the data being provided.'</span>);
+0051                 throw(ME)
+0052             <span class="keyword">end</span>
+0053             <span class="comment">%Check for repeat labels:</span>
+0054             labels2=unique(lower(labels));
+0055             <span class="keyword">if</span> length(labels2)&lt;length(labels)
+0056                 ME=MException(<span class="string">'labTimeSeries:ConstructorRepeatedLabels'</span>,<span class="string">'Two labels provided are the same (caps don''t matter).'</span>);
+0057                     throw(ME)
+0058             <span class="keyword">end</span>
+0059         <span class="keyword">end</span>
+0060         
+0061         <span class="comment">%-------------------</span>
+0062         
+0063         <span class="comment">%Other I/O functions:</span>
+0064         <a name="_sub1" href="#_subfunctions" class="code">function [data,time,auxLabel]=getDataAsVector(this,label)</a>
+0065             <span class="keyword">if</span> nargin&lt;2 || isempty(label)
+0066                 label=this.labels;
+0067             <span class="keyword">end</span>
+0068             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0069                 auxLabel={label};
+0070             <span class="keyword">else</span>
+0071                 auxLabel=label;
+0072             <span class="keyword">end</span>
+0073             time=this.Time;
+0074             [boolFlag,labelIdx]=this.isaLabel(auxLabel);
+0075             <span class="keyword">for</span> i=1:length(boolFlag)
+0076                 <span class="keyword">if</span> boolFlag(i)==0
+0077                     warning([<span class="string">'Label '</span> auxLabel{i} <span class="string">' is not a labeled dataset in this timeSeries.'</span>])
+0078                 <span class="keyword">end</span>
+0079             <span class="keyword">end</span>
+0080             
+0081             data=this.Data(:,labelIdx(boolFlag==1));
+0082             auxLabel=this.labels(labelIdx(boolFlag==1));
+0083         <span class="keyword">end</span>
+0084         
+0085         <a name="_sub2" href="#_subfunctions" class="code">function [newTS,auxLabel]=getDataAsTS(this,label)</a>
+0086             [data,time,auxLabel]=<a href="#_sub2" class="code" title="subfunction [data,time,auxLabel]=getDataAsVector(this,label)">getDataAsVector</a>(this,label);
+0087             newTS=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(data,time(1),this.sampPeriod,auxLabel);
+0088         <span class="keyword">end</span>
+0089         
+0090         <a name="_sub3" href="#_subfunctions" class="code">function labelList=getLabels(this)</a>
+0091            labelList=this.labels; 
+0092         <span class="keyword">end</span>
+0093         
+0094         <a name="_sub4" href="#_subfunctions" class="code">function labelList=getLabelsThatMatch(this,exp)</a>
+0095             <span class="comment">%Returns labels on this labTS that match the regular expression exp.</span>
+0096             <span class="comment">%labelList=getLabelsThatMatch(this,exp)</span>
+0097             <span class="comment">%INPUT:</span>
+0098             <span class="comment">%this: labTS object</span>
+0099             <span class="comment">%exp: any regular expression (as string).</span>
+0100             <span class="comment">%OUTPUT:</span>
+0101             <span class="comment">%labelList: cell array containing labels of this labTS that match</span>
+0102             <span class="comment">%See also regexp</span>
+0103             labelList=this.labels; 
+0104             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+0105             labelList=labelList(flags);
+0106         <span class="keyword">end</span>
+0107         
+0108         <a name="_sub5" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a>
+0109             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0110                 auxLabel{1}=label;
+0111             <span class="keyword">elseif</span> isa(label,<span class="string">'cell'</span>)
+0112                 auxLabel=label;
+0113             <span class="keyword">else</span>
+0114                 error(<span class="string">'labTimeSeries:isaLabel'</span>,<span class="string">'label input argument has to be a string or a cell array containing strings.'</span>)
+0115             <span class="keyword">end</span>
+0116             
+0117             N=length(auxLabel);
+0118             boolFlag=false(N,1);
+0119             labelIdx=zeros(N,1);
+0120             <span class="keyword">for</span> j=1:N
+0121                 <span class="comment">%Alternative efficient formulation:</span>
+0122                 <span class="comment">%boolFlag(j)=any(strcmp(auxLabel{j},this.labels));</span>
+0123                 <span class="comment">%labelIdx(j)=find(strcmp(auxLabel{j},this.labels));</span>
+0124                 <span class="keyword">for</span> i=1:length(this.labels)
+0125                      <span class="keyword">if</span> strcmpi(auxLabel{j},this.labels{i})
+0126                        boolFlag(j)=true;
+0127                        labelIdx(j)=i;
+0128                        <span class="keyword">break</span>;
+0129                      <span class="keyword">end</span>
+0130                 <span class="keyword">end</span>
+0131             <span class="keyword">end</span>
+0132         <span class="keyword">end</span>
+0133         
+0134         <a name="_sub6" href="#_subfunctions" class="code">function data=getSample(this,timePoints,method) </a><span class="comment">%This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method.</span>
+0135             <span class="keyword">if</span> nargin&lt;3 || isempty(method)
+0136                 method=<span class="string">'linear'</span>;
+0137             <span class="keyword">end</span>
+0138             
+0139             <span class="keyword">if</span> ~isempty(timePoints)
+0140                 M=length(this.labels);
+0141                 data=nan(numel(timePoints),M);
+0142                 <span class="keyword">switch</span> method
+0143                     <span class="keyword">case</span> <span class="string">'linear'</span>
+0144                         notNaNIdxs=~isnan(timePoints) &amp; ~isinf(timePoints) &amp; timePoints&lt;this.Time(end) &amp; timePoints&gt;this.Time(1); <span class="comment">%Excluding NaNs, Infs and out-of-range times from interpolation.</span>
+0145                         [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),<span class="string">'ascend'</span>);
+0146                         newTS=<a href="#_sub9" class="code" title="subfunction newThis=resample(this,newTs,newT0,hiddenFlag)">resample</a>(this,notNaNTimes,this.Time(1),1); <span class="comment">%Using timeseres.resample which does linear interp by default</span>
+0147 
+0148                         newTS.Data(sorting,:)=newTS.Data;
+0149                         data(notNaNIdxs,:)=newTS.Data;
+0150                     <span class="keyword">case</span> <span class="string">'closest'</span>
+0151                         aux=this.getIndexClosestToTimePoint(timePoints(:));
+0152                         data(~isnan(aux),:)=this.Data(aux(~isnan(aux)),:);
+0153                 <span class="keyword">end</span>
+0154                 data=reshape(data,[size(timePoints),M]);
+0155             <span class="keyword">else</span>
+0156                 data=[];
+0157             <span class="keyword">end</span>
+0158         <span class="keyword">end</span>
+0159         
+0160         <a name="_sub7" href="#_subfunctions" class="code">function index=getIndexClosestToTimePoint(this,timePoints)</a>
+0161             <span class="comment">%NaN returns NaN</span>
+0162             
+0163             <span class="comment">%aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))&lt;=(this.sampPeriod/2+eps);</span>
+0164             <span class="comment">%[ii,jj]=find(aux);</span>
+0165             <span class="comment">%index=nan(size(timePoints));</span>
+0166             <span class="comment">%index(jj)=ii;</span>
+0167             index=round((timePoints(:)-this.Time(1))/this.sampPeriod)+1;
+0168             index(index&lt;1)=1;
+0169             index(index&gt;numel(this.Time))=numel(this.Time);
+0170             index=reshape(index,size(timePoints));
+0171             <span class="comment">%Check</span>
+0172             <span class="comment">%if any(abs(this.Time(index(:))-timePoints(:))&gt;(this.sampPeriod/2-eps))</span>
+0173             <span class="comment">%    error('Non consistent indexes found')</span>
+0174             <span class="comment">%end</span>
+0175         <span class="keyword">end</span>
+0176         <span class="comment">%-------------------</span>
+0177         
+0178         <span class="comment">%Modifier functions:</span>
+0179         <a name="_sub8" href="#_subfunctions" class="code">function newThis=resample(this,newTs,newT0,hiddenFlag)</a>
+0180             <span class="keyword">if</span> nargin&lt;3 || isempty(newT0)
+0181                 error(<span class="string">'labTS:resample'</span>,<span class="string">'Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.'</span>)
+0182             <span class="keyword">end</span>
+0183             <span class="keyword">if</span> nargin&lt;4 || hiddenFlag==0 <span class="comment">%hiddenFlag allows to do non-uniform sampling</span>
+0184                 <span class="keyword">if</span> newTs&gt;this.sampPeriod <span class="comment">%Under-sampling! be careful of aliasing</span>
+0185                     warning(<span class="string">'labTS:resample'</span>,<span class="string">'Under-sampling data, be careful of aliasing!'</span>);
+0186                 <span class="keyword">end</span>
+0187                 <span class="comment">%Commented on 4/4/2015 by Pablo. No longer think this is a</span>
+0188                 <span class="comment">%good idea. If we are explicitly trying to do uniform</span>
+0189                 <span class="comment">%resampling on the same range, should use resampleN.</span>
+0190                 <span class="comment">%Otherwise, if we try to synch two signals, and there is an</span>
+0191                 <span class="comment">%offset in initial time, this returns something else.</span>
+0192                 
+0193                 <span class="comment">%newN=ceil(this.timeRange/newTs)+1;</span>
+0194                 <span class="comment">%newThis=resampleN(this,newN);</span>
+0195                 newTime=newT0:newTs:this.Time(end);
+0196                  <span class="keyword">if</span> ~isa(this.Data(1,1),<span class="string">'logical'</span>)
+0197                         newThis=this.resample@timeseries(newTime);
+0198                         newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newThis.Data,newThis.Time(1),newTs,this.labels);
+0199                  <span class="keyword">else</span> <span class="comment">%logical timeseries</span>
+0200                        newThis=<a href="#_sub37" class="code" title="subfunction newThis=resampleLogical(this,newTs, newT0,newN)">resampleLogical</a>(this,newTs,newT0);
+0201                  <span class="keyword">end</span>
+0202                 
+0203             <span class="keyword">elseif</span> hiddenFlag==1<span class="comment">% this allows for non-uniform resampling, and returns a timeseries object.</span>
+0204                 newThis=this.resample@timeseries(newTs); <span class="comment">%Warning: Treating newTs argument as a vector containing timepoints, not a sampling period. The super-class resampling returns a super-class object.</span>
+0205             <span class="keyword">else</span>
+0206                 error(<span class="string">'labTS:resample'</span>,<span class="string">'HiddenFlag argument has to be 0 or 1'</span>);
+0207             <span class="keyword">end</span>
+0208         <span class="keyword">end</span>
+0209         
+0210         <a name="_sub9" href="#_subfunctions" class="code">function newThis=resampleN(this,newN,method)</a>
+0211             <span class="comment">%Uniform resampling of data, over the same time range. This</span>
+0212             <span class="comment">%keeps the initial time on the same value, and returns newN</span>
+0213             <span class="comment">%time-samples in the time interval of the original timeseries</span>
+0214             <span class="keyword">if</span> ~isempty(this.Data)
+0215             <span class="keyword">if</span> nargin&lt;3 || isempty(method)
+0216                  <span class="keyword">if</span> ~isa(this.Data(1,1),<span class="string">'logical'</span>)
+0217                         method=<span class="string">'interpft'</span>;
+0218                  <span class="keyword">else</span>
+0219                      method=<span class="string">'logical'</span>;
+0220                  <span class="keyword">end</span>
+0221             <span class="keyword">end</span>
+0222             modNewTs=this.timeRange/(newN);
+0223             newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
+0224             <span class="keyword">switch</span> method
+0225                 <span class="keyword">case</span> <span class="string">'interpft'</span>
+0226                     allNaNIdxs=[];
+0227                     <span class="keyword">if</span> any(isnan(this.Data(:)))
+0228                         <span class="keyword">if</span> any(all(isnan(this.Data)))
+0229                             allNaNIdxs=all(isnan(this.Data));
+0230                             warning([<span class="string">'All data is NaNs for labels '</span> strcat(this.labels{allNaNIdxs},<span class="string">' '</span>) <span class="string">', not interpolating those: returning NaNs'</span>])
+0231                         <span class="keyword">end</span>
+0232                     <span class="keyword">end</span>
+0233                     this.Data(:,allNaNIdxs)=0; <span class="comment">%Substituting 0's to allow the next line to run without problems</span>
+0234                     <span class="keyword">if</span> any(isnan(this.Data(:))) <span class="comment">%Only if there are still NaNs after the previous step, we will substitute the missing data with linearly interpolated values</span>
+0235                         warning(<span class="string">'Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs (missing values) which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.'</span>)
+0236                         this=<a href="#_sub23" class="code" title="subfunction this=substituteNaNs(this,method)">substituteNaNs</a>(this,<span class="string">'linear'</span>); <span class="comment">%Interpolate time-series that are not all NaN (this is, there are just some values missing)</span>
+0237                     <span class="keyword">end</span>
+0238                     newData=interpft1(this.Data,newN,1); <span class="comment">%Interpolation is done on a nice(r) way.</span>
+0239                     newData(:,allNaNIdxs)=nan; <span class="comment">%Replacing the previously filled data with NaNs</span>
+0240                 <span class="keyword">case</span> <span class="string">'logical'</span>
+0241                    newThis=<a href="#_sub37" class="code" title="subfunction newThis=resampleLogical(this,newTs, newT0,newN)">resampleLogical</a>(this,modNewTs,this.Time(1),newN);
+0242                    newData=newThis.Data;
+0243                 <span class="keyword">otherwise</span> <span class="comment">%Method is 'linear', 'cubic' or any of the accepted methods for interp1</span>
+0244                     newData=zeros(length(newTimeVec),size(this.Data,2));
+0245                     <span class="keyword">for</span> i=1:size(this.Data,2)
+0246                         newData(:,i)=interp1(this.Time,this.Data(:,i),newTimeVec,method,nan);
+0247                     <span class="keyword">end</span>
+0248             <span class="keyword">end</span>
+0249             t0=this.Time(1);
+0250             newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,t0,modNewTs,this.labels);
+0251             <span class="keyword">else</span> <span class="comment">%this.Data==[]</span>
+0252                 error(<span class="string">'labTimeSeries:resampleN'</span>,<span class="string">'Interpolating empty labTimeSeries,impossible.'</span>)
+0253             <span class="keyword">end</span>
+0254         <span class="keyword">end</span>
+0255         
+0256         <a name="_sub10" href="#_subfunctions" class="code">function newThis=split(this,t0,t1)</a>
+0257             
+0258             <span class="comment">%Need to test this chunk of code before enabling:</span>
+0259             <span class="comment">%if isnan(t0) || isnan(t1)</span>
+0260             <span class="comment">%    warning('labTS:split','One of the interval limits is NaN. Returning empty TS.')</span>
+0261             <span class="comment">%    newTS=[];</span>
+0262             <span class="comment">%    return</span>
+0263             <span class="comment">%end</span>
+0264             
+0265            <span class="comment">%Check t0&gt;= Time(1)</span>
+0266            <span class="comment">%Check t1&lt;= Time(end)</span>
+0267            initT=this.Time(1)-eps;
+0268            finalT=this.Time(end)+eps;
+0269            <span class="keyword">if</span> ~(t0&gt;= initT &amp;&amp; t1&lt;=finalT)
+0270                <span class="keyword">if</span> (t1&lt;initT) || (t0&gt;=finalT)
+0271                    ME=MException(<span class="string">'labTS:split'</span>,<span class="string">'Given time interval is not (even partially) contained within the time series.'</span>);
+0272                    throw(ME)
+0273                <span class="keyword">else</span>
+0274                    warning(<span class="string">'LabTS:split'</span>,[<span class="string">'Requested interval ['</span> num2str(t0) <span class="string">','</span> num2str(t1) <span class="string">'] is not completely contained in TimeSeries. Padding with NaNs.'</span>])
+0275                <span class="keyword">end</span>
+0276            <span class="keyword">end</span>
+0277            <span class="comment">%Find portion of requested interval that falls within the</span>
+0278            <span class="comment">%timeseries' time vector (if any).</span>
+0279             i1=find(this.Time&gt;=t0,1);
+0280             i2=find(this.Time&lt;t1,1,<span class="string">'last'</span>); <span class="comment">%Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)</span>
+0281             <span class="keyword">if</span> i2&lt;i1
+0282                 warning(<span class="string">'LabTS:split'</span>,[<span class="string">'Requested interval ['</span> num2str(t0) <span class="string">','</span> num2str(t1) <span class="string">'] falls completely within two samples: returning empty timeSeries.'</span>]) 
+0283             <span class="keyword">end</span>
+0284             <span class="comment">%In case the requested time interval is larger than the</span>
+0285             <span class="comment">%timeseries' actual time vector, pad with NaNs:</span>
+0286             <span class="keyword">if</span> (this.Time(1)-t0)&gt;eps <span class="comment">%Case we are requesting time-samples preceding the timeseries' start-time</span>
+0287                 ia=floor((this.Time(1)-t0)/this.sampPeriod); <span class="comment">%Extra samples to be added at the beginning</span>
+0288             <span class="keyword">else</span>
+0289                 ia=0;
+0290             <span class="keyword">end</span>
+0291             <span class="keyword">if</span> (t1-this.Time(end))&gt; eps <span class="comment">%Case we are requesting time-samples following the timeseries' end-time</span>
+0292                 ib=floor((t1-this.Time(end))/this.sampPeriod); <span class="comment">%Extra samples to be added at the end</span>
+0293             <span class="keyword">else</span>
+0294                 ib=0;
+0295             <span class="keyword">end</span>
+0296             <span class="keyword">if</span> ~islogical(this.Data(1,1))
+0297                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>([nan(ia,size(this.Data,2)) ; this.Data(i1:i2,:); nan(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
+0298             <span class="keyword">else</span>
+0299                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>([false(ia,size(this.Data,2)) ; this.Data(i1:i2,:); false(ib,size(this.Data,2))],this.Time(i1)-this.sampPeriod*ia,this.sampPeriod,this.labels);
+0300             <span class="keyword">end</span>
+0301             <span class="keyword">if</span> ~isempty(this.Quality)
+0302                 newThis.QualityInfo=this.QualityInfo;
+0303                 k=find(strcmp(this.QualityInfo.Description,<span class="string">'missing'</span>));
+0304                 newThis.Quality=[k*ones(ia,size(this.Quality,2)) ; this.Quality(i1:i2,:); k*ones(ib,size(this.Quality,2))];
+0305             <span class="keyword">end</span>
+0306         <span class="keyword">end</span>
+0307         
+0308         <a name="_sub11" href="#_subfunctions" class="code">function newThis=castAsOTS(this)</a>
+0309             error(<span class="string">'Unimplemented'</span>)
+0310             newThis=this; <span class="comment">%Doxy</span>
+0311         <span class="keyword">end</span>
+0312         <a name="_sub12" href="#_subfunctions" class="code">function newThis=castAsSTS(this,F,tWin,tOverlap)</a>
+0313             <span class="comment">%1) Check if it satisfies STS requirements</span>
+0314             dataF=this.Data;
+0315             labelsF=this.labels;
+0316             t0=this.Time(1);
+0317             Ts=this.sampPeriod;
+0318             spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
+0319             newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
+0320         <span class="keyword">end</span>
+0321         
+0322         <a name="_sub13" href="#_subfunctions" class="code">function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)</a>
+0323             newThis=<a href="#_sub11" class="code" title="subfunction newThis=split(this,t0,t1)">split</a>(this.getDataAsTS(label),t0,t1);
+0324             [data,time,auxLabel]=<a href="#_sub2" class="code" title="subfunction [data,time,auxLabel]=getDataAsVector(this,label)">getDataAsVector</a>(newThis,label);
+0325         <span class="keyword">end</span>
+0326         
+0327         <a name="_sub14" href="#_subfunctions" class="code">function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)</a>
+0328            <span class="comment">%eventTS needs to be a labTimeSeries with binary events as data</span>
+0329            <span class="comment">%If eventLabel is not given, the first data column is used as</span>
+0330            <span class="comment">%the relevant event marker. If given, eventLabel must be the</span>
+0331            <span class="comment">%label of one of the data columns in eventTS</span>
+0332            
+0333            <span class="comment">%Check needed: is eventTS a labTimeSeries?</span>
+0334            <span class="keyword">if</span> nargin&gt;2
+0335                 eventList=eventTS.getDataAsVector(eventLabel);
+0336            <span class="keyword">else</span>
+0337                eventList=eventTS.Data(:,1);
+0338            <span class="keyword">end</span>
+0339            <span class="comment">%Check needed: is eventList binary?</span>
+0340            N=size(eventList,2); <span class="comment">%Number of events &amp; intervals to be found</span>
+0341            auxList=double(eventList)*2.^[0:N-1]'; <span class="comment">%List all events in a single vector, by numbering them differently.</span>
+0342            <span class="comment">%</span>
+0343            <span class="keyword">if</span> nargin&lt;4 || isempty(timeMargin)
+0344                timeMargin=0;
+0345            <span class="keyword">end</span>
+0346            
+0347             refIdxLst=find(auxList==1);
+0348             M=length(refIdxLst)-1;
+0349             auxTime=eventTS.Time;
+0350             aa=auxTime(refIdxLst);
+0351             initTime=aa(1:M); <span class="comment">%Initial time of each interval identified</span>
+0352             duration=diff(aa); <span class="comment">%Duration of each interval</span>
+0353             steppedDataArray=cell(M,N);
+0354             bad=false(M,1);
+0355             <span class="keyword">for</span> i=1:M <span class="comment">%Going over strides</span>
+0356                 t0=auxTime(refIdxLst(i));
+0357                 nextT0=auxTime(refIdxLst(i+1));
+0358                 lastEventIdx=refIdxLst(i);
+0359                 <span class="keyword">for</span> j=1:N-1 <span class="comment">%Going over events</span>
+0360                    nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,<span class="string">'first'</span>);
+0361                    t1= auxTime(nextEventIdx); <span class="comment">%Look for next event</span>
+0362                    <span class="keyword">if</span> ~isempty(t1) &amp;&amp; ~isempty(t0)
+0363                         steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
+0364                         t0=t1;
+0365                         lastEventIdx=nextEventIdx;
+0366                    <span class="keyword">else</span>
+0367                        warning([<span class="string">'Events were not in order on stride '</span> num2str(i) <span class="string">', returning empty labTimeSeries.'</span>])
+0368                         <span class="keyword">if</span> islogical(this.Data)
+0369                             steppedDataArray{i,j}=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
+0370                         <span class="keyword">else</span>
+0371                             steppedDataArray{i,j}=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); <span class="comment">%Empty labTimeSeries</span>
+0372                         <span class="keyword">end</span>
+0373                         bad(i)=true;
+0374                    <span class="keyword">end</span>
+0375                    
+0376                 <span class="keyword">end</span>
+0377                 steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); <span class="comment">%This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).</span>
+0378             <span class="keyword">end</span>
+0379         <span class="keyword">end</span>
+0380         
+0381         <a name="_sub15" href="#_subfunctions" class="code">function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)</a>
+0382           <span class="comment">%Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints</span>
+0383           <span class="keyword">for</span> i=1:length(timeBreakpoints)-1
+0384               slicedTS{i}=this.split(timeBreakpoints(i)-timeMargin,timeBreakpoints(i+1)+timeMargin);
+0385           <span class="keyword">end</span>
+0386             initTime=timeBreakpoints(1:end-1)-timeMargin;
+0387             duration=diff(timeBreakpoints)+2*timeMargin;
+0388         <span class="keyword">end</span>
+0389         
+0390         <a name="_sub16" href="#_subfunctions" class="code">function this=times(this,constant)</a>
+0391             this.Data=this.Data*constant;
+0392         <span class="keyword">end</span>
+0393         
+0394         <a name="_sub17" href="#_subfunctions" class="code">function newThis=plus(this,other)</a>
+0395             M=size(this.Data,2);
+0396             <span class="keyword">for</span> i=1:M
+0397                 newLabels{i}=[<span class="string">'('</span> this.labels{i} <span class="string">' + '</span> other.labels{i} <span class="string">')'</span>];
+0398             <span class="keyword">end</span>
+0399             <span class="keyword">if</span> abs(this.Time(1)-other.Time(1))&lt;eps &amp;&amp; abs(this.sampPeriod-other.sampPeriod)&lt;eps &amp;&amp; length(this.labels)==length(other.labels)
+0400                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(this.Data+other.Data,this.Time(1),this.sampPeriod,this.labels);
+0401             <span class="keyword">end</span>
+0402         <span class="keyword">end</span>
+0403         
+0404         <a name="_sub18" href="#_subfunctions" class="code">function newThis=minus(this,other)</a>
+0405             M=size(this.Data,2);
+0406             <span class="keyword">for</span> i=1:M
+0407                 newLabels{i}=[<span class="string">'('</span> this.labels{i} <span class="string">' - '</span> other.labels{i} <span class="string">')'</span>];
+0408             <span class="keyword">end</span>
+0409             <span class="keyword">if</span> abs(this.Time(1)-other.Time(1))&lt;eps &amp;&amp; abs(this.sampPeriod-other.sampPeriod)&lt;eps &amp;&amp; length(this.labels)==length(other.labels)
+0410                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(this.Data-other.Data,this.Time(1),this.sampPeriod,newLabels);
+0411             <span class="keyword">end</span>
+0412         <span class="keyword">end</span>
+0413         
+0414         <a name="_sub19" href="#_subfunctions" class="code">function newThis=derivate(this)</a>
+0415             M=size(this.Data,2);
+0416             newData=[nan(1,M);.5*(this.Data(3:<span class="keyword">end</span>,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
+0417             newLabels={};
+0418             <span class="keyword">for</span> i=1:M
+0419                 newLabels{i}=[<span class="string">'d/dt '</span> this.labels{i}];
+0420             <span class="keyword">end</span>
+0421             newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,this.Time(1),this.sampPeriod,newLabels);
+0422         <span class="keyword">end</span>
+0423         
+0424         <a name="_sub20" href="#_subfunctions" class="code">function this=fillts(this) </a><span class="comment">%TODO: Deprecate</span>
+0425             warning(<span class="string">'labTS.fillts is being deprecated. Use substituteNaNs instead.'</span>)
+0426             this=<a href="#_sub23" class="code" title="subfunction this=substituteNaNs(this,method)">substituteNaNs</a>(this,<span class="string">'linear'</span>);
+0427         <span class="keyword">end</span>
+0428         
+0429         <a name="_sub21" href="#_subfunctions" class="code">function newThis=concatenate(this,other)</a>
+0430             <span class="comment">%Check if time vectors are the same</span>
+0431             <span class="keyword">if</span> all(this.Time==other.Time)
+0432                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels, other.labels]);
+0433             <span class="keyword">else</span>
+0434                 error(<span class="string">'labTimeSeries:concatenate'</span>,<span class="string">'Cannot concatenate timeseries with different Time vectors.'</span>)
+0435             <span class="keyword">end</span>
+0436         <span class="keyword">end</span>
+0437         
+0438         <a name="_sub22" href="#_subfunctions" class="code">function this=substituteNaNs(this,method)</a>
+0439             <span class="keyword">if</span> nargin&lt;2 || isempty(method)
+0440                 method=<span class="string">'linear'</span>;
+0441             <span class="keyword">end</span>
+0442             <span class="keyword">if</span> any(all(isnan(this.Data))) <span class="comment">%Returns true if any TS contained in the data is all NaN</span>
+0443                 <span class="comment">%FIXME: This throws an exception now, but it should just</span>
+0444                 <span class="comment">%return all NaN labels as all NaN and substitute missing</span>
+0445                 <span class="comment">%values in the others.</span>
+0446                 warning(<span class="string">'labTimeSeries:substituteNaNs'</span>,<span class="string">'timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference), setting to 0.'</span>)
+0447                 this.Data(:,all(isnan(this.Data)))=0;
+0448             <span class="keyword">end</span>
+0449             this.Quality=zeros(size(this.Data),<span class="string">'int8'</span>);
+0450              <span class="keyword">for</span> i=1:size(this.Data,2) <span class="comment">%Going through labels</span>
+0451                  auxIdx=~isnan(this.Data(:,i)); <span class="comment">%Finding indexes for non-NaN data under this label</span>
+0452                  <span class="comment">%Saving quality data (to mark which samples were</span>
+0453                  <span class="comment">%interpolated)</span>
+0454                  this.Quality(:,i)=~auxIdx; <span class="comment">%Matlab's timeseries stores this as int8. I would have preferred a sparse array.</span>
+0455                  this.Data(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,0); <span class="comment">%Extrapolation values are filled with 0,</span>
+0456              <span class="keyword">end</span>
+0457              this.QualityInfo.Code=[0 1];
+0458              this.QualityInfo.Description={<span class="string">'good'</span>,<span class="string">'missing'</span>};
+0459         <span class="keyword">end</span>
+0460         
+0461         <a name="_sub23" href="#_subfunctions" class="code">function newThis=thresholdByChannel(this,th,label,moreThanFlag)</a>
+0462             newThis=this;
+0463             <span class="keyword">if</span> nargin&lt;4 || isempty(moreThanFlag) || moreThanFlag==0
+0464                 newThis.Data(newThis.getDataAsVector(label)&lt;th,:)=0;
+0465             <span class="keyword">elseif</span> moreThanFlag==1
+0466                 newThis.Data(newThis.getDataAsVector(label)&gt;th,:)=0;
+0467             <span class="keyword">end</span>
+0468         <span class="keyword">end</span>
+0469         
+0470         <span class="comment">%------------------</span>
+0471         
+0472         <span class="comment">%Getters for dependent properties</span>
+0473         <a name="_sub24" href="#_subfunctions" class="code">function fs=get.sampFreq(this)</a>
+0474             fs=1/this.sampPeriod;
+0475         <span class="keyword">end</span>
+0476         
+0477         <a name="_sub25" href="#_subfunctions" class="code">function tr=get.timeRange(this)</a>
+0478             tr=(this.Nsamples)*this.sampPeriod;
+0479         <span class="keyword">end</span>
+0480         
+0481         <a name="_sub26" href="#_subfunctions" class="code">function Nsamp=get.Nsamples(this)</a>
+0482             Nsamp=this.TimeInfo.Length;
+0483         <span class="keyword">end</span>
+0484         
+0485         <span class="comment">%Display</span>
+0486         <a name="_sub27" href="#_subfunctions" class="code">function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) </a><span class="comment">%Alternative plot: all the traces go in different axes</span>
+0487             <span class="keyword">if</span> nargin&lt;2 || isempty(h)
+0488                 h=figure;
+0489             <span class="keyword">else</span>
+0490                 figure(h)
+0491             <span class="keyword">end</span>
+0492             N=length(this.labels);
+0493             <span class="keyword">if</span> nargin&lt;3 || isempty(labels)
+0494                 relData=this.Data;
+0495                 relLabels=this.labels;
+0496             <span class="keyword">else</span>
+0497                [relData,~,relLabels]=this.getDataAsVector(labels); 
+0498                N=size(relData,2);
+0499             <span class="keyword">end</span>
+0500             <span class="keyword">if</span> nargin&lt;4 || isempty(plotHandles) || length(plotHandles)&lt;length(relLabels)
+0501                 [b,a]=getFigStruct(length(relLabels));
+0502                 plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); <span class="comment">%External function</span>
+0503             <span class="keyword">end</span>
+0504             <span class="keyword">if</span> nargin&lt;7 || isempty(lineWidth)
+0505                 lineWidth=2;
+0506             <span class="keyword">end</span>
+0507             ax2=[];
+0508             h1=[];
+0509             <span class="keyword">if</span> any(~isreal(relData(:)))
+0510                 warning(<span class="string">'labTimeSeries:plot'</span>,<span class="string">'Data is complex, plotting the modulus only.'</span>)
+0511                 relData=abs(relData);
+0512             <span class="keyword">end</span>
+0513             <span class="keyword">for</span> i=1:N
+0514                 h1(i)=plotHandles(i);
+0515                 subplot(h1(i))
+0516                 hold on
+0517                 <span class="keyword">if</span> nargin&lt;6 || isempty(color)
+0518                     pp=<a href="#_sub28" class="code" title="subfunction [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) ">plot</a>(this.Time,relData(:,i),<span class="string">'LineWidth'</span>,lineWidth);
+0519                 <span class="keyword">else</span>
+0520                     pp=<a href="#_sub28" class="code" title="subfunction [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) ">plot</a>(this.Time,relData(:,i),<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'Color'</span>,color);
+0521                 <span class="keyword">end</span>
+0522                 uistack(pp,<span class="string">'top'</span>)
+0523                 ylabel(relLabels{i})
+0524                 <span class="comment">%if i==ceil(N/2)</span>
+0525                 <span class="comment">%    xlabel('Time (s)')</span>
+0526                 <span class="comment">%end</span>
+0527                 hold off
+0528                 <span class="keyword">if</span> nargin&gt;4 &amp;&amp; ~isempty(events)
+0529                     [ii,jj]=find(events.Data);
+0530                     [ii,iaux]=sort(ii);
+0531                     jj=jj(iaux);
+0532                     ax1=gca;
+0533                     <span class="comment">%ax2(i) = axes('Position',ax1.Position,...</span>
+0534                     <span class="comment">%'XAxisLocation','top',...</span>
+0535                     <span class="comment">%'YAxisLocation','right',...</span>
+0536                     <span class="comment">%'Color','none');%,'XColor','r','YColor','r');</span>
+0537                    set(ax1,<span class="string">'XTick'</span>,events.Time(ii),<span class="string">'XTickLabel'</span>,events.labels(jj))
+0538                    grid on
+0539                 <span class="keyword">end</span>
+0540             <span class="keyword">end</span>
+0541             <span class="comment">%linkaxes([h1,ax2],'x')</span>
+0542             plotHandles=h1;  
+0543         <span class="keyword">end</span>
+0544         <a name="_sub28" href="#_subfunctions" class="code">function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)</a>
+0545             error(<span class="string">'Unimplemented'</span>)
+0546             <span class="comment">%First attempt: align the data to the first column of events</span>
+0547             <span class="comment">%provided</span>
+0548             <span class="keyword">for</span> i=1:length(ee)
+0549                this.split(t1,t2).plot 
+0550             <span class="keyword">end</span>
+0551         <span class="keyword">end</span>
+0552         
+0553         <a name="_sub29" href="#_subfunctions" class="code">function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)</a>
+0554             <span class="comment">%Ideally we would plot 'L' and 'R' timeseries on top of each</span>
+0555             <span class="comment">%other, to do a bilateral comparison. Need to implement.</span>
+0556             <span class="keyword">if</span> nargin&lt;2 || isempty(h)
+0557                 h=figure;
+0558             <span class="keyword">else</span>
+0559                 figure(h)
+0560             <span class="keyword">end</span>
+0561             <span class="keyword">if</span> nargin&lt;5 || isempty(events)
+0562                 events=[];
+0563             <span class="keyword">end</span>
+0564             <span class="keyword">if</span> nargin&lt;6 || isempty(color)
+0565                 color=[];
+0566             <span class="keyword">end</span>
+0567             <span class="keyword">if</span> nargin&lt;3 || isempty(labels)
+0568                 labels=this.labels;
+0569             <span class="keyword">end</span>
+0570             suffix=unique(cellfun(@(x) x(2:end),labels,<span class="string">'UniformOutput'</span>,false));
+0571             <span class="keyword">if</span> nargin&lt;4 || isempty(plotHandles) || length(plotHandles)&lt;length(suffix)
+0572                 [b,a]=getFigStruct(length(suffix));
+0573                 plotHandles=tight_subplot(b,a,[.05 .05],[.05 .05], [.05 .05]); <span class="comment">%External function</span>
+0574             <span class="keyword">end</span>
+0575             <span class="keyword">if</span> nargin&lt;7 || isempty(lineWidth)
+0576                 lineWidth=2;
+0577             <span class="keyword">end</span>
+0578             [h,plotHandles]=<a href="#_sub28" class="code" title="subfunction [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) ">plot</a>(this,h,strcat(<span class="string">'L'</span>,suffix),plotHandles,events,color,lineWidth);
+0579             [h,plotHandles]=<a href="#_sub28" class="code" title="subfunction [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) ">plot</a>(this,h,strcat(<span class="string">'R'</span>,suffix),plotHandles,events,color,lineWidth);
+0580             <span class="keyword">for</span> i=1:length(suffix)
+0581                 subplot(plotHandles(i))
+0582                 ylabel(suffix{i})
+0583                 <span class="keyword">if</span> i==length(suffix)
+0584                 legend(<span class="string">'L'</span>,<span class="string">'R'</span>)
+0585                 <span class="keyword">end</span>
+0586             <span class="keyword">end</span>
+0587         <span class="keyword">end</span>
+0588         
+0589         <span class="comment">%Other</span>
+0590         <a name="_sub30" href="#_subfunctions" class="code">function Fthis=fourierTransform(this,M) </a><span class="comment">%Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument</span>
+0591             <span class="keyword">if</span> nargin&gt;1
+0592                 warning(<span class="string">'labTimeSeries:fourierTransform'</span>,<span class="string">'Ignoring second argument'</span>)
+0593             <span class="keyword">end</span>
+0594             [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
+0595             Fthis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(F,f(1),f(2)-f(1),strcat(strcat(<span class="string">'F('</span>,this.labels),<span class="string">')'</span>));
+0596             Fthis.TimeInfo.Units=<span class="string">'Hz'</span>;
+0597         <span class="keyword">end</span>
+0598         
+0599         <a name="_sub31" href="#_subfunctions" class="code">function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)</a>
+0600             <span class="keyword">if</span> nargin&lt;2
+0601                 labels=[];
+0602             <span class="keyword">end</span>
+0603             <span class="keyword">if</span> nargin&lt;3
+0604                 nFFT=[];
+0605             <span class="keyword">end</span>
+0606             <span class="keyword">if</span> nargin&lt;4
+0607                 tWin=[];
+0608             <span class="keyword">end</span>
+0609             <span class="keyword">if</span> nargin&lt;5
+0610                 tOverlap=[];
+0611             <span class="keyword">end</span>
+0612             Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
+0613         <span class="keyword">end</span>
+0614         
+0615         <a name="_sub32" href="#_subfunctions" class="code">function [Athis,originalDurations,bad,initTime]=align(this,eventTS,eventLabel,N,timeMargin)</a>
+0616             <span class="keyword">if</span> nargin&lt;4 || isempty(N)
+0617                 N=256;
+0618             <span class="keyword">end</span>
+0619             <span class="keyword">if</span> nargin&lt;5 || isempty(timeMargin)
+0620                 timeMargin=0;
+0621             <span class="keyword">end</span>
+0622             [steppedDataArray,bad,initTime,~]=<a href="#_sub15" class="code" title="subfunction [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)">splitByEvents</a>(this,eventTS,eventLabel,timeMargin);
+0623             [Athis,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
+0624         <span class="keyword">end</span>
+0625         
+0626         <a name="_sub33" href="#_subfunctions" class="code">function newThis=lowPassFilter(this,fcut)</a>
+0627                 Wn=fcut*2/this.sampFreq;
+0628                 Wst=min([2*Wn,Wn+.2*(1-Wn)]);
+0629                filterList{1}=fdesign.lowpass(<span class="string">'Fp,Fst,Ap,Ast'</span>,Wn,Wst,3,10); <span class="comment">%</span>
+0630                 <a href="#_sub34" class="code" title="subfunction newThis=lowPassFilter(this,fcut)">lowPassFilter</a>=design(filterList{1},<span class="string">'butter'</span>); 
+0631                 newData=filtfilthd(<a href="#_sub34" class="code" title="subfunction newThis=lowPassFilter(this,fcut)">lowPassFilter</a>,this.Data);  <span class="comment">%Ext function</span>
+0632                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,this.Time(1),this.sampPeriod,this.labels);
+0633                 <span class="keyword">if</span> ~isfield(this.UserData,<span class="string">'processingInfo'</span>)
+0634                     this.UserData.processingInfo={};
+0635                 <span class="keyword">end</span>
+0636                 newThis.UserData=this.UserData;
+0637                 newThis.UserData.processingInfo{end+1}=filterList{1};
+0638         <span class="keyword">end</span>
+0639         <a name="_sub34" href="#_subfunctions" class="code">function newThis=highPassFilter(this,fcut)</a>
+0640                 Wn=fcut*2/this.sampFreq;
+0641                 filterList{1}=fdesign.highpass(<span class="string">'Fst,Fp,Ast,Ap'</span>,Wn/2,Wn,10,3); 
+0642                 <a href="#_sub35" class="code" title="subfunction newThis=highPassFilter(this,fcut)">highPassFilter</a>=design(filterList{1},<span class="string">'butter'</span>); 
+0643                 newData=filtfilthd(<a href="#_sub35" class="code" title="subfunction newThis=highPassFilter(this,fcut)">highPassFilter</a>,this.Data); 
+0644                 newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,this.Time(1),this.sampPeriod,this.labels);
+0645                 <span class="keyword">if</span> ~isfield(this.UserData,<span class="string">'processingInfo'</span>)
+0646                     this.UserData.processingInfo={};
+0647                 <span class="keyword">end</span>
+0648                 newThis.UserData=this.UserData;
+0649                 newThis.UserData.processingInfo{end+1}=filterList{1};
+0650         <span class="keyword">end</span>
+0651         
+0652         <a name="_sub35" href="#_subfunctions" class="code">function this=medianFilter(this,N)</a>
+0653             <span class="keyword">if</span> mod(N,2)==0
+0654                 error(<span class="string">'Only odd filter orders are allowed'</span>)
+0655                 <span class="comment">%This actually works with even orders, but then the data</span>
+0656                 <span class="comment">%gets shifted by half a sample, which is undesirable.</span>
+0657             <span class="keyword">end</span>
+0658 
+0659             <span class="comment">%this.Data=medfilt1(this.Data,N,1,'omitnan'); %altered 12/4/2015 &quot;omitnan&quot; is not a valid input to medfilt1 in 2015a, 'omitnan' allowed for the median to be taken among the non-NaN elemets</span>
+0660             this.Data=medfilt1(double(this.Data),double(N),double(1)); <span class="comment">%This back-compatible alternative works as if the last argument were 'includenan' (i.e. whenever there is a NaN in the window, the result is NaN)</span>
+0661             <span class="comment">%Setting the samples outside the filter to NaN:</span>
+0662             this.Data(1:floor(N/2),:)=NaN;
+0663             this.Data(end-floor(N/2)+1:<span class="keyword">end</span>,:)=NaN;
+0664         <span class="keyword">end</span>
+0665                 
+0666     <span class="keyword">end</span>
+0667     
+0668     methods(Hidden)
+0669         <a name="_sub36" href="#_subfunctions" class="code">function newThis=resampleLogical(this,newTs, newT0,newN)</a>
+0670             newTime=[0:newN-1]*newTs+newT0;
+0671             newN=length(newTime);
+0672             newData=sparse([],[],false,newN,size(this.Data,2),newN);<span class="comment">% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.</span>
+0673            <span class="keyword">for</span> i=1:size(this.Data,2) <span class="comment">%Go over event labels</span>
+0674                oldEventTimes=this.Time(this.Data(:,i)); <span class="comment">%Find time of old events</span>
+0675                closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; <span class="comment">%Find closest index in new event</span>
+0676                newData(closestNewEventIndexes,i)=true;
+0677            <span class="keyword">end</span>
+0678            newThis=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,newT0,newTs,this.labels);
+0679         <span class="keyword">end</span>
+0680     <span class="keyword">end</span>
+0681     
+0682     methods(Static)
+0683         this=createLabTSFromTimeVector(data,time,labels); <span class="comment">%Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.</span>
+0684         
+0685         <a name="_sub37" href="#_subfunctions" class="code">function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) </a><span class="comment">%Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point</span>
+0686             <span class="comment">%To be used after splitByEvents</span>
+0687             <span class="keyword">if</span> numel(stridedTS)~=0
+0688             <span class="keyword">if</span> ~islogical(stridedTS{1}.Data)
+0689                 aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
+0690             <span class="keyword">else</span>
+0691                 aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
+0692             <span class="keyword">end</span>
+0693             Nstrides=size(stridedTS,1);
+0694             Nphases=size(stridedTS,2);
+0695             originalDurations=nan(Nstrides,Nphases);
+0696             <span class="keyword">for</span> i=1:Nstrides <span class="comment">%Going over strides</span>
+0697                 M=[0,cumsum(N)];
+0698                 <span class="keyword">for</span> j=1:Nphases <span class="comment">%Going over aligned phases</span>
+0699                     <span class="keyword">if</span> isa(stridedTS{i,j},<span class="string">'labTimeSeries'</span>)
+0700                         originalDurations(i,j)=stridedTS{i,j}.timeRange;
+0701                         <span class="keyword">if</span> ~isempty(stridedTS{i,j}.Data)
+0702                             aa=<a href="#_sub10" class="code" title="subfunction newThis=resampleN(this,newN,method)">resampleN</a>(stridedTS{i,j},N(j));
+0703                             aux(M(j)+1:M(j+1),:,i)=aa.Data;
+0704                         <span class="keyword">else</span> <span class="comment">%Separating by strides returned empty labTimeSeries, possibly because of events in disorder</span>
+0705                             <span class="keyword">if</span> islogical(stridedTS{i,j}.Data)
+0706                                 aux(M(j)+1:M(j+1),:,i)=false;
+0707                             <span class="keyword">else</span>
+0708                                 aux(M(j)+1:M(j+1),:,i)=NaN;
+0709                             <span class="keyword">end</span>
+0710                         <span class="keyword">end</span>
+0711                     <span class="keyword">else</span>
+0712                         error(<span class="string">'labTimeSeries:stridedTSToAlignedTS'</span>,[<span class="string">'First argument is not a cell array of labTimeSeries. Element i='</span> num2str(i) <span class="string">', j='</span> num2str(j)])
+0713                     <span class="keyword">end</span>
+0714                 <span class="keyword">end</span>
+0715             <span class="keyword">end</span>
+0716             alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,cell(size(N)));
+0717             <span class="keyword">else</span>
+0718                 alignedTS=alignedTimeSeries(0,1/sum(N),zeros(0,0),[],N,cell(size(N)));
+0719                 originalDurations=[];
+0720             <span class="keyword">end</span>
+0721         <span class="keyword">end</span>
+0722         
+0723         <a name="_sub38" href="#_subfunctions" class="code">function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)</a>
+0724                 <span class="keyword">if</span> nargin&lt;2
+0725                     figHandle=[];
+0726                 <span class="keyword">end</span>
+0727                 <span class="keyword">if</span> nargin&lt;3
+0728                     plotHandles=[];
+0729                 <span class="keyword">end</span>
+0730                N=2^ceil(log2(1.5/stridedTS{1}.sampPeriod));
+0731                structure=labTimeSeries.stridedTSToAlignedTS(stridedTS,N);
+0732                [figHandle,plotHandles]=<a href="#_sub28" class="code" title="subfunction [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) ">plot</a>(structure,figHandle,plotHandles); <span class="comment">%Using the alignedTimeSeries plot function</span>
+0733         <span class="keyword">end</span>
+0734         
+0735         <a name="_sub39" href="#_subfunctions" class="code">function this=join(labTSCellArray)</a>
+0736             masterSampPeriod=labTSCellArray{1}.sampPeriod;
+0737             masterLabels=labTSCellArray{1}.labels;
+0738             newData=labTSCellArray{1}.Data;
+0739            <span class="keyword">for</span> i=2:length(labTSCellArray(:))
+0740                <span class="comment">%Check sampling rate &amp; dimensions are consistent, and append</span>
+0741                <span class="comment">%at end of data</span>
+0742                <span class="keyword">if</span> all(cellfun(@strcmp,masterLabels,labTSCellArray{i}.labels)) &amp;&amp; masterSampPeriod==labTSCellArray{i}.sampPeriod
+0743                    newData=[newData;labTSCellArray{i}.Data];
+0744                <span class="keyword">else</span>
+0745                   warning([num2str(i) <span class="string">'-th element of input cell array does not have labels or sampling period consistent with other elements.'</span>]); 
+0746                <span class="keyword">end</span>
+0747                this=<a href="labTimeSeries.html" class="code" title="">labTimeSeries</a>(newData,labTSCellArray{1}.Time(1),masterSampPeriod,masterLabels);
+0748            <span class="keyword">end</span>
+0749         <span class="keyword">end</span>
+0750     <span class="keyword">end</span>
+0751     
+0752         
+0753 <span class="keyword">end</span>
+0754</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

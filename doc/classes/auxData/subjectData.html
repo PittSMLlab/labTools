@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of subjectData</title>
+  <meta name="keywords" content="subjectData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">auxData</a> &gt; subjectData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/auxData&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>subjectData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li><li><a href="subjectData.html" class="code" title="">subjectData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a></li><li><a href="#_sub2" class="code">function this=set.cognitiveScores(this,scores)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="subjectData.html" class="code" title="">subjectData</a>
+0002 <span class="comment">%subjectData  stores information about study participants</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%subjectData properties:</span>
+0005 <span class="comment">%   dateOfBirth - labDate object</span>
+0006 <span class="comment">%   sex - string, either 'male' or 'female'</span>
+0007 <span class="comment">%   dominantLeg - string, either 'L' or 'R'</span>
+0008 <span class="comment">%   dominantArm - string, either 'L' or 'R'</span>
+0009 <span class="comment">%   height - double (cm)</span>
+0010 <span class="comment">%   weight - double (kg)</span>
+0011 <span class="comment">%   age - labDate object e.g. age = expDate.year - DOB.year;</span>
+0012 <span class="comment">%   ID - string containing experimental identifier e.g. 'OG90'</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%See also: labDate, strokeSubjectData</span>
+0015     
+0016     properties (SetAccess=private)
+0017         dateOfBirth=<span class="string">''</span>;
+0018         sex=<span class="string">''</span>;
+0019         dominantLeg=<span class="string">''</span>;
+0020         dominantArm=<span class="string">''</span>;
+0021         height=[]; <span class="comment">%centimeters</span>
+0022         weight=[]; <span class="comment">%kgs</span>
+0023         age=[]; <span class="comment">%in years, at time of experiment</span>
+0024         ID=[]; <span class="comment">%experimental ID assigned</span>
+0025     <span class="keyword">end</span>
+0026     
+0027     properties <span class="comment">%other</span>
+0028         cognitiveScores
+0029     <span class="keyword">end</span>
+0030     
+0031     methods
+0032         <span class="comment">%constructor</span>
+0033         <a name="_sub0" href="#_subfunctions" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a>
+0034             <span class="keyword">if</span> nargin&gt;0 &amp;&amp; ~isempty(DOB)
+0035                 this.dateOfBirth=DOB;
+0036             <span class="keyword">end</span>
+0037             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(sex)
+0038                 this.sex=sex;
+0039             <span class="keyword">end</span>
+0040             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(dLeg)
+0041                 this.dominantLeg=dLeg;
+0042             <span class="keyword">end</span>
+0043             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(dArm)
+0044                 this.dominantArm=dArm;
+0045             <span class="keyword">end</span>
+0046             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; ~isempty(hgt)
+0047                 this.height=hgt;
+0048             <span class="keyword">end</span>
+0049             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(wgt)
+0050                 this.weight=wgt;
+0051             <span class="keyword">end</span> 
+0052             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; ~isempty(age)
+0053                 this.age=age;
+0054             <span class="keyword">end</span>
+0055             <span class="keyword">if</span> nargin&gt;7 &amp;&amp; ~isempty(ID)
+0056                 this.ID=ID;
+0057             <span class="keyword">end</span>
+0058         <span class="keyword">end</span>
+0059         
+0060         <a name="_sub1" href="#_subfunctions" class="code">function this=set.cognitiveScores(this,scores)</a>
+0061             <span class="keyword">if</span> isa(scores,<span class="string">'cognitiveData'</span>) || isempty(scores)
+0062                 this.cognitiveScores=scores;
+0063             <span class="keyword">else</span>
+0064                 ME=MException(<span class="string">'subjectData:Setter'</span>,<span class="string">'cognitiveScores parameter is not object of the cognitiveData class'</span>);
+0065                 throw(ME);
+0066             <span class="keyword">end</span>
+0067         <span class="keyword">end</span>  
+0068     <span class="keyword">end</span>
+0069     
+0070          
+0071 <span class="keyword">end</span>
+0072</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

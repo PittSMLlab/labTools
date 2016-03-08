@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of paramData</title>
+  <meta name="keywords" content="paramData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">auxData</a> &gt; paramData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/auxData&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>paramData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="paramData.html" class="code" title="">paramData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="paramData.html" class="code" title="">paramData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=paramData(data,labels,inds,types)</a></li><li><a href="#_sub2" class="code">function [data,auxLabel]=getParameter(this,label)</a></li><li><a href="#_sub3" class="code">function [boolFlag,labelIdx]=isaParameter(this,label)</a></li><li><a href="#_sub4" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a></li><li><a href="#_sub5" class="code">function newThis=appendData(this,newData,newLabels)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="paramData.html" class="code" title="">paramData</a>
+0002     <span class="comment">%This may no longer be in use...</span>
+0003     
+0004     <span class="comment">%%</span>
+0005     properties <span class="comment">%(SetAccess=private)</span>
+0006         labels={<span class="string">''</span>};
+0007         Data;       
+0008         indsInTrial={};
+0009         trialTypes={};
+0010     <span class="keyword">end</span>
+0011     properties(Dependent)
+0012         <span class="comment">%could include things here like 'learning' or 'transfer'...</span>
+0013     <span class="keyword">end</span>
+0014     
+0015     <span class="comment">%%</span>
+0016     methods
+0017         
+0018         <span class="comment">%Constructor:</span>
+0019         <a name="_sub0" href="#_subfunctions" class="code">function this=paramData(data,labels,inds,types)</a>
+0020             <span class="keyword">if</span> (length(labels)==size(data,2)) &amp;&amp; isa(labels,<span class="string">'cell'</span>)
+0021                 this.labels=labels;
+0022                 this.Data=data;
+0023             <span class="keyword">else</span>
+0024                 ME=MException(<span class="string">'paramData:ConstructorInconsistentArguments'</span>,<span class="string">'The size of the labels array is inconsistent with the data being provided.'</span>);
+0025                 throw(ME)
+0026             <span class="keyword">end</span>
+0027             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(inds,<span class="string">'cell'</span>)
+0028                 this.indsInTrial=inds;
+0029             <span class="keyword">else</span>
+0030                 ME=MException(<span class="string">'paramData:Constructor'</span>,<span class="string">'Check that trial indices are entered correctly.'</span>);
+0031                 throw(ME)
+0032             <span class="keyword">end</span>
+0033             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; isa(types,<span class="string">'cell'</span>)
+0034                 this.trialTypes=types;            
+0035             <span class="keyword">end</span>
+0036         <span class="keyword">end</span>
+0037         
+0038         <span class="comment">%-------------------</span>
+0039         
+0040         <span class="comment">%Other I/O functions:</span>
+0041         <a name="_sub1" href="#_subfunctions" class="code">function [data,auxLabel]=getParameter(this,label)</a>
+0042             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0043                 auxLabel={label};
+0044             <span class="keyword">else</span>
+0045                 auxLabel=label;
+0046             <span class="keyword">end</span>            
+0047             [boolFlag,labelIdx]=this.isaParameter(auxLabel);                      
+0048             data=this.Data(:,labelIdx(boolFlag==1));
+0049             auxLabel=this.labels(labelIdx(boolFlag==1));
+0050         <span class="keyword">end</span>        
+0051         
+0052         <a name="_sub2" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaParameter(this,label)</a>
+0053             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0054                 auxLabel{1}=label;
+0055             <span class="keyword">elseif</span> isa(label,<span class="string">'cell'</span>)
+0056                 auxLabel=label;
+0057             <span class="keyword">end</span>
+0058             [boolFlag, labelIdx]=<a href="#_sub4" class="code" title="subfunction [boolFlag,labelIdx]=isaLabel(this,label)">isaLabel</a>(this,label);
+0059              <span class="keyword">for</span> i=1:length(boolFlag)
+0060                 <span class="keyword">if</span> boolFlag(i)==0
+0061                     warning([<span class="string">'Label '</span> auxLabel{i} <span class="string">' is not a parameter in this dataset.'</span>])
+0062                 <span class="keyword">end</span>
+0063             <span class="keyword">end</span> 
+0064         <span class="keyword">end</span>          
+0065        
+0066         <a name="_sub3" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaLabel(this,label)</a>
+0067         <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0068             auxLabel{1}=label;
+0069         <span class="keyword">elseif</span> isa(label,<span class="string">'cell'</span>)
+0070             auxLabel=label;
+0071         <span class="keyword">end</span>
+0072 
+0073         N=length(auxLabel);
+0074         boolFlag=false(N,1);
+0075         labelIdx=zeros(N,1);
+0076         <span class="keyword">for</span> j=1:N
+0077             <span class="keyword">for</span> i=1:length(this.labels)
+0078                  <span class="keyword">if</span> strcmpi(auxLabel{j},this.labels{i})
+0079                    boolFlag(j)=true;
+0080                    labelIdx(j)=i;
+0081                    <span class="keyword">break</span>;
+0082                  <span class="keyword">end</span>
+0083             <span class="keyword">end</span>
+0084         <span class="keyword">end</span>
+0085         <span class="keyword">end</span>
+0086         
+0087         <span class="comment">% Modifiers:</span>
+0088         <a name="_sub4" href="#_subfunctions" class="code">function newThis=appendData(this,newData,newLabels)</a>
+0089             newThis=<a href="paramData.html" class="code" title="">paramData</a>([this.Data newData],[this.labels newLabels],this.indsInTrial,this.trialTypes);
+0090         <span class="keyword">end</span>
+0091     <span class="keyword">end</span>
+0092     
+0093     
+0094 
+0095         
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

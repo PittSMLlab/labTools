@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of stridedExperimentData</title>
+  <meta name="keywords" content="stridedExperimentData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; stridedExperimentData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>stridedExperimentData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="steppedExperimentData.html" class="code" title="">steppedExperimentData</a>	</li><li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=stridedExperimentData(meta,sub,strides)</a></li><li><a href="#_sub2" class="code">function newThis=timeNormalize(this,N)</a></li><li><a href="#_sub3" class="code">function [strides]=getStridesFromCondition(this,condition)</a></li><li><a href="#_sub4" class="code">function [figHandle,plotHandles]=plotAllStrides(this,field,conditions,plotHandles,figHandle)</a></li><li><a href="#_sub5" class="code">function [figHandle,plotHandles]=plotAllStridesBilateral(this,field,conditions,plotHandles,figHandle)</a></li><li><a href="#_sub6" class="code">function [figHandle,plotHandles]=plotAvgStride(this,field,conditions,plotHandles,figHandle)</a></li><li><a href="#_sub7" class="code">function alignedData=alignEvents(this,spacing,trial,fieldName,labelList)</a></li><li><a href="#_sub8" class="code">function newThis=discardBadStrides(this)</a></li><li><a href="#_sub9" class="code">function alignedData=getAlignedData(this,spacing,trial,fieldName,labelList)</a></li><li><a href="#_sub10" class="code">function structure=getDataAsMatrices(this,fields,conditions,N)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>
+0002     <span class="comment">%UNTITLED2 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         metaData <span class="comment">%experimentMetaData type</span>
+0007         subData <span class="comment">%subjectData type</span>
+0008         stridedTrials <span class="comment">%cell array of cell array of strideData objects</span>
+0009     <span class="keyword">end</span>
+0010     
+0011     properties(SetAccess=private) 
+0012         isTimeNormalized=false; <span class="comment">%This should be dependent, and be returned by checking that the length of all timeSeries in all strides has the same length, it is rather boring to do.</span>
+0013     <span class="keyword">end</span>
+0014     
+0015     methods
+0016         <span class="comment">%Constructor</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function this=stridedExperimentData(meta,sub,strides)</a>
+0018                 <span class="keyword">if</span> isa(meta,<span class="string">'experimentMetaData'</span>)
+0019                     this.metaData=meta;
+0020                 <span class="keyword">else</span>
+0021                     ME=MException();
+0022                     throw(ME)
+0023                 <span class="keyword">end</span>
+0024                 <span class="keyword">if</span> isa(sub,<span class="string">'subjectData'</span>)
+0025                     this.subData=sub;
+0026                 <span class="keyword">else</span>
+0027                     ME=MException();
+0028                     throw(ME)
+0029                 <span class="keyword">end</span>
+0030                 <span class="keyword">if</span> isa(strides,<span class="string">'cell'</span>) &amp;&amp; all( cellfun(<span class="string">'isempty'</span>,strides) | cellisa(strides,<span class="string">'cell'</span>))
+0031                     aux=cellisa(strides,<span class="string">'cell'</span>);
+0032                     idx=find(aux==1,1);
+0033                     <span class="keyword">if</span> all(cellisa(strides{idx},<span class="string">'strideData'</span>)) <span class="comment">%Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all</span>
+0034                         this.stridedTrials=strides;
+0035                     <span class="keyword">else</span>
+0036                         ME=MException();
+0037                         throw(ME);
+0038                     <span class="keyword">end</span>
+0039                 <span class="keyword">else</span>
+0040                     ME=MException();
+0041                     throw(ME);
+0042                 <span class="keyword">end</span>                
+0043         <span class="keyword">end</span>
+0044         
+0045         <span class="comment">%Getters for Dependent properties</span>
+0046         <span class="comment">%function a=get.isTimeNormalized(this)</span>
+0047         <span class="comment">%    a='Who knows?'; %ToDo!</span>
+0048         <span class="comment">%end</span>
+0049         
+0050         <span class="comment">%Modifiers</span>
+0051         <a name="_sub1" href="#_subfunctions" class="code">function newThis=timeNormalize(this,N)</a>
+0052            <span class="comment">%Lstrides</span>
+0053            newStrides=cell(1,length(this.stridedTrials));
+0054            <span class="keyword">for</span> trial=1:length(this.stridedTrials)
+0055                thisTrial=this.stridedTrials{trial};
+0056                newTrial=cell(1,length(thisTrial));
+0057                <span class="keyword">for</span> stride=1:length(thisTrial)
+0058                    thisStride=thisTrial{stride};
+0059                    newTrial{stride}=<a href="#_sub2" class="code" title="subfunction newThis=timeNormalize(this,N)">timeNormalize</a>(thisStride,N);
+0060                <span class="keyword">end</span>
+0061                newStrides{trial}=newTrial;
+0062            <span class="keyword">end</span>
+0063            
+0064            <span class="comment">%Construct newTrial</span>
+0065            newThis=<a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>(this.metaData,this.subData,newStrides);
+0066            newThis.isTimeNormalized=true;
+0067         <span class="keyword">end</span>
+0068         
+0069         <a name="_sub2" href="#_subfunctions" class="code">function [strides]=getStridesFromCondition(this,condition)</a>
+0070            strides={};           
+0071            <span class="keyword">for</span> trial=this.metaData.trialsInCondition{condition}
+0072                trialData=this.stridedTrials{trial};
+0073                Nsteps=length(trialData);
+0074                strides(end+1:end+Nsteps)=trialData;                           
+0075            <span class="keyword">end</span>
+0076         <span class="keyword">end</span>
+0077         
+0078         <span class="comment">%Assess results</span>
+0079         <a name="_sub3" href="#_subfunctions" class="code">function [figHandle,plotHandles]=plotAllStrides(this,field,conditions,plotHandles,figHandle)</a>
+0080             <span class="comment">%To Do: need to add gait Events markers.</span>
+0081             
+0082             <span class="comment">% Set colors</span>
+0083             poster_colors;
+0084             <span class="comment">% Set colors order</span>
+0085             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+0086             set(gcf,<span class="string">'DefaultAxesColorOrder'</span>,ColorOrder);
+0087             
+0088             <span class="keyword">for</span> cond=conditions
+0089                 <span class="keyword">if</span> nargin&lt;5 || isempty(figHandle)
+0090                     figHandle=figure(<span class="string">'Name'</span>,[<span class="string">'Subject '</span> num2str(this.subData.ID) <span class="string">' Condition '</span> num2str(cond) <span class="string">' '</span> field ]);
+0091                 <span class="keyword">else</span>
+0092                     figure(figHandle) <span class="comment">%Only works for one condition!</span>
+0093                 <span class="keyword">end</span>
+0094                set(figHandle,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1])
+0095                aux=this.getStridesFromCondition(cond);
+0096                N=2^ceil(log2(1.5/aux{1}.(field).sampPeriod));
+0097                structure=this.getDataAsMatrices(field,cond,N);
+0098                M=size(structure{cond},2);
+0099                <span class="keyword">if</span> nargin&lt;4 || isempty(plotHandles)
+0100                 [b,a]=getFigStruct(M);
+0101                 plotHandles=tight_subplot(b,a,[.02 .02],[.05 .02], [.02 .05]); <span class="comment">%External function</span>
+0102                <span class="keyword">end</span>
+0103                <span class="keyword">if</span> (numel(structure{cond}))&gt;1e6
+0104                        P=floor(1e7/numel(structure{cond}(:,:,1)));
+0105                        warning([<span class="string">'There are too many strides in this condition to plot ('</span> num2str(size(structure{cond},3)) <span class="string">'). Only plotting first '</span> num2str(P) <span class="string">'.'</span>])
+0106                        meanStr{cond}=mean(structure{cond},3);
+0107                        structure{cond}=structure{cond}(:,:,1:P);
+0108                    <span class="keyword">end</span>
+0109                <span class="keyword">for</span> i=1:M
+0110                    <span class="comment">%subplot(b,a,i)</span>
+0111                    subplot(plotHandles(i))
+0112                    hold on
+0113                    <span class="comment">%title(aux{1}.(field).labels{i})</span>
+0114                    data=squeeze(structure{cond}(:,i,:));
+0115                    plot([0:N-1]/N,data,<span class="string">'Color'</span>,[.7,.7,.7])
+0116                    plot([0:N-1]/N,meanStr{cond}(:,i),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,ColorOrder(mod(cond-1,size(ColorOrder,1))+1,:));
+0117                    legend(aux{1}.(field).labels{i})
+0118                    hold off
+0119                <span class="keyword">end</span>
+0120             <span class="keyword">end</span>
+0121             
+0122         <span class="keyword">end</span>
+0123         
+0124         <a name="_sub4" href="#_subfunctions" class="code">function [figHandle,plotHandles]=plotAllStridesBilateral(this,field,conditions,plotHandles,figHandle) </a><span class="comment">%Forces 'L' and 'R' to be plotted on top of each other %To Do</span>
+0125             [figHandle,plotHandles]=<a href="#_sub4" class="code" title="subfunction [figHandle,plotHandles]=plotAllStrides(this,field,conditions,plotHandles,figHandle)">plotAllStrides</a>(this,field,conditions,plotHandles,figHandle);
+0126         <span class="keyword">end</span>
+0127         
+0128         <a name="_sub5" href="#_subfunctions" class="code">function [figHandle,plotHandles]=plotAvgStride(this,field,conditions,plotHandles,figHandle)</a>
+0129             <span class="comment">% Set colors</span>
+0130             poster_colors;
+0131             <span class="comment">% Set colors order</span>
+0132             ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow];
+0133             set(gcf,<span class="string">'DefaultAxesColorOrder'</span>,ColorOrder);
+0134             
+0135                 <span class="keyword">if</span> nargin&lt;5 || isempty(figHandle)
+0136                     figHandle=figure(<span class="string">'Name'</span>,[<span class="string">'Subject '</span> num2str(this.subData.ID) <span class="string">' '</span> field ]);
+0137                 <span class="keyword">else</span>
+0138                     figure(figHandle) <span class="comment">%Only works for one condition!</span>
+0139                 <span class="keyword">end</span>
+0140                 set(figHandle,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1])
+0141                aux=this.getStridesFromCondition(conditions(1));
+0142                N=2^ceil(log2(size(aux{1}.(field).Data,1)));
+0143                structure=this.getDataAsMatrices(field,conditions,N);
+0144                <span class="keyword">if</span> nargin&lt;4 || isempty(plotHandles)
+0145                 M=size(structure{1},2);
+0146                 [b,a]=getFigStruct(M);
+0147                 plotHandles=tight_subplot(b,a,[.04 .02],[.05 .02], [.04 .05]);
+0148                <span class="keyword">end</span>
+0149                <span class="keyword">for</span> i=1:M
+0150                    <span class="comment">%subplot(b,a,i)</span>
+0151                    subplot(plotHandles(i))
+0152                    hold on
+0153                    legStr={};
+0154                    title(aux{1}.(field).labels{i})
+0155                    <span class="keyword">for</span> cond=conditions
+0156                    data=mean(squeeze(structure{cond}(:,i,:)),2);
+0157                    plot([0:N-1]/N,data,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,ColorOrder(mod(cond-1,size(ColorOrder,1))+1,:))
+0158                    legStr{end+1}=[<span class="string">'Condition '</span> num2str(cond)];
+0159                    <span class="keyword">end</span>
+0160                    <span class="keyword">if</span> i==M
+0161                    legend(legStr)
+0162                    <span class="keyword">end</span>
+0163                    hold off
+0164                <span class="keyword">end</span>
+0165         <span class="keyword">end</span>
+0166             
+0167         <a name="_sub6" href="#_subfunctions" class="code">function alignedData=alignEvents(this,spacing,trial,fieldName,labelList)</a>
+0168                alignedData=[]; 
+0169         <span class="keyword">end</span> <span class="comment">%This function will be deprecated, use getAlignedData instead.</span>
+0170         
+0171         <a name="_sub7" href="#_subfunctions" class="code">function newThis=discardBadStrides(this) </a><span class="comment">%No need, the discarding happens when this structure is created from a processed experiment.</span>
+0172             newThis=[];
+0173         <span class="keyword">end</span>
+0174         
+0175         <a name="_sub8" href="#_subfunctions" class="code">function alignedData=getAlignedData(this,spacing,trial,fieldName,labelList)</a>
+0176                 data=this;
+0177                 M=spacing;
+0178                 aux=[0 cumsum(M)];
+0179                 strides=data.stridedTrials{trial};
+0180                 alignedData=zeros(sum(M),length(labelList),length(strides));
+0181                     Nphases=4;
+0182                     <span class="keyword">for</span> phase=1:Nphases
+0183                         samples=zeros(length(strides),length(labelList));
+0184                         <span class="keyword">for</span> stride=1:length(strides)
+0185                             <span class="keyword">switch</span> phase
+0186                                 <span class="keyword">case</span> 1
+0187                                     thisPhase=strides{stride}.getDoubleSupportLR;
+0188                                 <span class="keyword">case</span> 2
+0189                                     thisPhase=strides{stride}.getSingleStanceL;
+0190                                 <span class="keyword">case</span> 3
+0191                                     thisPhase=strides{stride}.getDoubleSupportRL;
+0192                                 <span class="keyword">case</span> 4
+0193                                     thisPhase=strides{stride}.getSingleStanceR;
+0194                             <span class="keyword">end</span>
+0195                             alignedData(aux(phase)+1:aux(phase)+M(phase),:,stride)=thisPhase.(fieldName).resampleN(M(phase)).getDataAsVector(labelList);
+0196                         <span class="keyword">end</span>  
+0197                     <span class="keyword">end</span>
+0198         <span class="keyword">end</span>
+0199             
+0200         
+0201         <a name="_sub9" href="#_subfunctions" class="code">function structure=getDataAsMatrices(this,fields,conditions,N)</a>
+0202             <span class="keyword">for</span> cond=conditions
+0203                 strides=this.getStridesFromCondition(cond);
+0204                 <span class="keyword">if</span> isa(fields,<span class="string">'cell'</span>)
+0205                     <span class="keyword">for</span> f=1:length(fields)
+0206                         <span class="keyword">for</span> s=1:length(strides)
+0207                             aux=strideData.cell2mat(strides,fields{f},N);
+0208                         <span class="keyword">end</span>
+0209                         eval([<span class="string">'structure{cond}.'</span> fields{f} <span class="string">'=aux;'</span>]);
+0210                     <span class="keyword">end</span>
+0211                 <span class="keyword">else</span>
+0212                     aux=strideData.cell2mat(strides,fields,N);
+0213                     structure{cond}=aux;
+0214                 <span class="keyword">end</span>
+0215             <span class="keyword">end</span>
+0216         <span class="keyword">end</span>
+0217         
+0218         
+0219     <span class="keyword">end</span>
+0220     
+0221 <span class="keyword">end</span>
+0222</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

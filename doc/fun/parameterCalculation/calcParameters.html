@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcParameters</title>
+  <meta name="keywords" content="calcParameters">
+  <meta name="description" content="out = calcParameters(trialData,subData,eventClass,initEventSide)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; calcParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>calcParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>out = calcParameters(trialData,subData,eventClass,initEventSide)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function out = calcParameters(trialData,subData,eventClass,initEventSide) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">out = calcParameters(trialData,subData,eventClass,initEventSide)
+INPUT:
+trialData: processedTrialData object
+subData: subjectData object
+eventClass: string containing the prefix to an existing event class: {'force','kin',''} (Optional, defaults to '')
+initEventSide: 'L' or 'R'. Optional, defaults to trialData.metaData.refLeg
+
+To add a new parameter, it must be added to the paramLabels cell and the
+label must be the same as the variable name the data is saved to within
+the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)
+note: if adding a slow and fast version of one parameter, make sure 'Fast'
+and 'Slow' appear at the end of the respective parameter names. See
+existing parameter names as an example.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="computeEMGParameters.html" class="code" title="function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)">computeEMGParameters</a>	%</li><li><a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)">computeForceParameters</a>	%UNTITLED4 Summary of this function goes here</li><li><a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>	%</li><li><a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>	%</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = calcParameters(trialData,subData,eventClass,initEventSide)</a>
+0002 <span class="comment">%out = calcParameters(trialData,subData,eventClass,initEventSide)</span>
+0003 <span class="comment">%INPUT:</span>
+0004 <span class="comment">%trialData: processedTrialData object</span>
+0005 <span class="comment">%subData: subjectData object</span>
+0006 <span class="comment">%eventClass: string containing the prefix to an existing event class: {'force','kin',''} (Optional, defaults to '')</span>
+0007 <span class="comment">%initEventSide: 'L' or 'R'. Optional, defaults to trialData.metaData.refLeg</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%To add a new parameter, it must be added to the paramLabels cell and the</span>
+0010 <span class="comment">%label must be the same as the variable name the data is saved to within</span>
+0011 <span class="comment">%the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)</span>
+0012 <span class="comment">%note: if adding a slow and fast version of one parameter, make sure 'Fast'</span>
+0013 <span class="comment">%and 'Slow' appear at the end of the respective parameter names. See</span>
+0014 <span class="comment">%existing parameter names as an example.</span>
+0015 [file]= getSimpleFileName(trialData.metaData.rawDataFilename);
+0016 
+0017 <span class="keyword">if</span> nargin&lt;3 || isempty(eventClass)
+0018     eventClass=<span class="string">''</span>;
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">%% Separate into strides &amp; identify events on each</span>
+0022 <span class="comment">% one &quot;stride&quot; contains the events: SHS,FTO,FHS,STO,SHS2,FTO2</span>
+0023 <span class="keyword">if</span> nargin&lt;4 || isempty(initEventSide)
+0024     refLeg=trialData.metaData.refLeg;
+0025 <span class="keyword">else</span>
+0026     refLeg=initEventSide; 
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> refLeg == <span class="string">'R'</span>
+0030     s = <span class="string">'R'</span>;    f = <span class="string">'L'</span>;
+0031 <span class="keyword">elseif</span> refLeg == <span class="string">'L'</span>
+0032     s = <span class="string">'L'</span>;    f = <span class="string">'R'</span>;
+0033 <span class="keyword">else</span>
+0034     ME=MException(<span class="string">'MakeParameters:refLegError'</span>,<span class="string">'the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.'</span>);
+0035     throw(ME);
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">%Define the events that will be used for all further computations</span>
+0039 eventTypes={[s,<span class="string">'HS'</span>],[f,<span class="string">'TO'</span>],[f,<span class="string">'HS'</span>],[s,<span class="string">'TO'</span>]};
+0040 eventTypes=strcat(eventClass,eventTypes);
+0041 eventLables={<span class="string">'SHS'</span>,<span class="string">'FTO'</span>,<span class="string">'FHS'</span>,<span class="string">'STO'</span>};
+0042 triggerEvent=eventTypes{1};
+0043 
+0044 <span class="comment">%Initialize:</span>
+0045 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
+0046 <span class="keyword">if</span> numStrides==0;    
+0047     disp([<span class="string">'Warning: No strides detected in '</span>,file])
+0048     out=parameterSeries([],{},[],{}); <span class="comment">%TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty</span>
+0049     <span class="keyword">return</span>
+0050 <span class="keyword">end</span>
+0051 stridedProcEMG=cell(numStrides,1);
+0052 <span class="comment">%stridedMarkerData=cell(max(strideIdxs),1);</span>
+0053 stridedEventData=cell(numStrides,1);
+0054 
+0055 <span class="comment">%Stride:</span>
+0056 <span class="comment">%steppedDataArray=separateIntoStrides(in,triggerEvent); %This is</span>
+0057 <span class="comment">%computationally expensive to do: it calls the split function for every</span>
+0058 <span class="comment">%labTS in trialData. If we only care about some fields, we should try</span>
+0059 <span class="comment">%calling split independently for those TSs.</span>
+0060 eventTimes=nan(numStrides,length(eventTypes));
+0061 eventTimes2=nan(numStrides,length(eventTypes));
+0062 <span class="keyword">for</span> i=1:numStrides
+0063     <span class="keyword">if</span> ~isempty(trialData.procEMGData)
+0064         stridedProcEMG{i}=trialData.(<span class="string">'procEMGData'</span>).split(initTime(i),endTime(i));
+0065     <span class="keyword">end</span>
+0066     <span class="comment">%stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));</span>
+0067     stridedEventData{i}=trialData.(<span class="string">'gaitEvents'</span>).split(initTime(i),endTime(i));
+0068     <span class="keyword">for</span> j=1:length(eventTypes)
+0069         aux=stridedEventData{i}.getDataAsVector(eventTypes{j});
+0070         aux=find(aux,2,<span class="string">'first'</span>); <span class="comment">%Finding next two events of the type %HH: it is pointless to find the next two events, since find will still return a value even if it only finds one.</span>
+0071         <span class="keyword">if</span> ~isempty(aux) <span class="comment">%HH: maybe instead we should check if aux is has a length of 2</span>
+0072             eventTimes(i,j)=stridedEventData{i}.Time(aux(1));
+0073         <span class="keyword">end</span>
+0074     <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 eventTimes2=[eventTimes(2:<span class="keyword">end</span>,:);nan(1,size(eventTimes,2))]; <span class="comment">%This could be improved by trying to find if there exist any other events after the end of the last stride.</span>
+0077 <span class="keyword">for</span> j=1:length(eventTypes)
+0078     strideEvents.([<span class="string">'t'</span> upper(eventLables{j})])=eventTimes(:,j); <span class="comment">%generates a structure of tSHS, tFTO, etc</span>
+0079     strideEvents.([<span class="string">'t'</span> upper(eventLables{j}) <span class="string">'2'</span>])=eventTimes2(:,j);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">%% Compute basic parameters to save &amp; initialize parameterSeries</span>
+0083 <span class="comment">%initialize the bad/good flag</span>
+0084 extendedEventTimes=[eventTimes, eventTimes2(:,1:2)]; <span class="comment">%times of SHS, FTO, FHS, FTO, SHS2, FTO2</span>
+0085 times=nanmean(extendedEventTimes,2); <span class="comment">%This is an average of the times of SHS, FTO, FHS, FTO, SHS2, FTO2 (same as old code), IF available.</span>
+0086 strideDuration=diff(extendedEventTimes(:,[1,5]),1,2);
+0087 bad=any(isnan(extendedEventTimes),2) | any(diff(extendedEventTimes,1,2)&lt;0,2) | (strideDuration &gt;1.5*nanmedian(strideDuration)) | (strideDuration&lt;.4) | (strideDuration&gt;2.5); <span class="comment">%Checking for missing events, negative duration phases (wrong event order), too long or too short strides</span>
+0088 
+0089 <span class="comment">%initialize trial number</span>
+0090 <span class="keyword">try</span>
+0091     trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); <span class="comment">%Need to FIX, but this data is not currently available on trialMetaData</span>
+0092 <span class="keyword">catch</span>
+0093     warning(<span class="string">'calcParametersNew:gettingTrialNumber'</span>,<span class="string">'Could not determine trial number from metaData, setting to NaN.'</span>);
+0094     trial=nan;
+0095 <span class="keyword">end</span>
+0096 trial=repmat(trial,length(bad),1);
+0097 
+0098 <span class="comment">%Initialize initTime</span>
+0099 initTime=extendedEventTimes(:,1); <span class="comment">%SHS</span>
+0100 finalTime=extendedEventTimes(:,6); <span class="comment">%FTO2</span>
+0101 
+0102 <span class="comment">%Initialize parameterSeries</span>
+0103 data=[bad,~bad,trial,initTime,finalTime];
+0104 labels={<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>};
+0105 description={<span class="string">'True if events are missing, disordered or if stride time is too long or too short.'</span>, <span class="string">'Opposite of bad.'</span>,<span class="string">'Original trial number for stride'</span>,<span class="string">'Time of initial event (SHS), with respect to trial beginning.'</span>,<span class="string">'Time of final event (FTO2), with respect to trial beginning.'</span>};
+0106 out=parameterSeries(data,labels,times,description);  
+0107 
+0108 <span class="comment">%% Compute parameters</span>
+0109 <span class="comment">%Temporal:</span>
+0110 [temp] = <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>(strideEvents);
+0111 out=cat(out,temp);
+0112 
+0113 <span class="comment">%Spatial:</span>
+0114 <span class="keyword">if</span> ~isempty(trialData.markerData) &amp;&amp; (numel(trialData.markerData.labels)~=0)
+0115 [spat] = <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>(strideEvents,trialData.markerData,trialData.angleData,s);
+0116 out=cat(out,spat);
+0117 <span class="keyword">end</span>
+0118 
+0119 <span class="comment">%EMG:</span>
+0120 <span class="keyword">if</span> ~isempty(trialData.procEMGData)
+0121     [emg] = <a href="computeEMGParameters.html" class="code" title="function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)">computeEMGParameters</a>(strideEvents,stridedProcEMG,s);
+0122     out=cat(out,emg);
+0123 <span class="keyword">end</span>
+0124 
+0125 <span class="comment">%Force</span>
+0126 <span class="keyword">if</span> ~isempty(trialData.GRFData)
+0127     [force] = <a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)">computeForceParameters</a>(strideEvents,trialData.GRFData,s);
+0128 <span class="comment">%     keyboard</span>
+0129     <span class="keyword">if</span> ~isempty(force.stridesTrial)
+0130         out=cat(out,force);
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">end</span>
+0133 
+0134 <span class="comment">%% Compute an updated bad/good flag based on computed parameters &amp; finding outliers</span>
+0135 badStart=bad; <span class="comment">%make a copy to compare at the end</span>
+0136 <span class="comment">%TODO: make this process generalized so that it can filter any parameter</span>
+0137 <span class="comment">%TODO: make this into a method of parameterSeries or labTimeSeries</span>
+0138 <span class="comment">%should also consider a different method of filtering...</span>
+0139 paramsToFilter={<span class="string">'stepLengthSlow'</span>,<span class="string">'stepLengthFast'</span>,<span class="string">'alphaSlow'</span>,<span class="string">'alphaFast'</span>,<span class="string">'alphaTemp'</span>,<span class="string">'betaSlow'</span>,<span class="string">'betaFast'</span>};
+0140 <span class="keyword">for</span> i=1:length(paramsToFilter)
+0141     aux=out.getDataAsVector(paramsToFilter{i});
+0142     <span class="keyword">if</span> ~isempty(aux) <span class="comment">%In case any of these parameters does not exist</span>
+0143     aux=aux-runAvg(aux,50); <span class="comment">% remove effects of adaptation</span>
+0144     <span class="comment">% mark strides bad if values for SL or alpha are larger than 3x the</span>
+0145     <span class="comment">% interquartile range away from the median.</span>
+0146     <span class="comment">%Criteria 1: anything outside +-3.5 interquartile ranges</span>
+0147     <span class="comment">%     bad(abs(aux-nanmedian(aux))&gt;3.5*iqr(aux))=true;</span>
+0148 
+0149     <span class="comment">%Criteria 2: anything outside +-3.5 interquartile ranges, except the first</span>
+0150     <span class="comment">%5 strides of any trial.</span>
+0151     <span class="comment">% inds=find(abs(aux-nanmedian(aux))&gt;3.5*iqr(aux));</span>
+0152     <span class="comment">%    inds=inds(inds&gt;5);</span>
+0153     <span class="comment">%    bad(inds)=true;</span>
+0154     <span class="keyword">end</span>
+0155     
+0156 <span class="keyword">end</span>
+0157 <span class="comment">%Remove outliers according to new values of 'bad':</span>
+0158 [~,idxs]=out.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>});
+0159 out.Data(:,idxs)=[bad,~bad];
+0160 outlierStrides=find(bad &amp; ~badStart);
+0161 disp([<span class="string">'Removed '</span> num2str(numel(outlierStrides)) <span class="string">' outlier(s) from '</span> file <span class="string">' at stride(s) '</span> num2str(outlierStrides')])  
+0162 
+0163 <span class="comment">%----------REMOVE STOP/START STRIDES-------------</span>
+0164 badStart=bad; <span class="comment">%make a copy to compare at the end</span>
+0165 <span class="comment">%Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s</span>
+0166 <span class="comment">%(stopping/starting trials)</span>
+0167 <span class="keyword">if</span> strcmp(trialData.metaData.type,<span class="string">'TM'</span>)
+0168     aux=out.getDataAsVector({<span class="string">'singleStanceSpeedFastAbs'</span>,<span class="string">'singleStanceSpeedSlowAbs'</span>});
+0169     <span class="keyword">if</span> ~isempty(aux)
+0170         bad(abs(aux(:,1))&lt;50 &amp; abs(aux(:,2))&lt;50)=true; <span class="comment">%Moving too slow</span>
+0171     <span class="keyword">end</span>
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="comment">%Criteria 4: if on OG trials any swingRange&lt; 50mm or if equivalent speed is too small %This may be problematic</span>
+0175 <span class="comment">%on kids!</span>
+0176 <span class="keyword">if</span> strcmp(trialData.metaData.type,<span class="string">'OG'</span>)
+0177     <span class="comment">%To be implemented</span>
+0178 <span class="keyword">end</span>
+0179 
+0180 <span class="comment">%Remove outliers according to new values of 'bad':</span>
+0181 [~,idxs]=out.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>});
+0182 out.Data(:,idxs)=[bad,~bad];
+0183 outlierStrides=find(bad &amp; ~badStart);
+0184 disp([<span class="string">'Removed '</span> num2str(numel(outlierStrides)) <span class="string">' stopping/starting strides from '</span> file <span class="string">' at stride(s) '</span> num2str(outlierStrides')])  
+0185 
+0186 
+0187 <span class="comment">%% Issue bad strides warning</span>
+0188 <span class="keyword">if</span> any(bad)    
+0189     disp([<span class="string">'Warning: '</span> num2str(sum(bad)) <span class="string">' strides of '</span>,file, <span class="string">' were labeled as bad'</span>])    
+0190 <span class="keyword">end</span>
+0191 
+0192 <span class="comment">%% Use 'bad' as mask (necessary?)</span>
+0193 <span class="comment">%out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

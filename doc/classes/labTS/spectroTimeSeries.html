@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spectroTimeSeries</title>
+  <meta name="keywords" content="spectroTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; spectroTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spectroTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="spectroTimeSeries.html" class="code" title="">spectroTimeSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="spectroTimeSeries.html" class="code" title="">spectroTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this= spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap)</a></li><li><a href="#_sub2" class="code">function lp=get.labelPrefixes(this)</a></li><li><a href="#_sub3" class="code">function fr=get.frequencyRange(this)</a></li><li><a href="#_sub4" class="code">function newThis=splitFreqs(this,f0,f1)</a></li><li><a href="#_sub5" class="code">function plot(this,f0,f1)</a></li><li><a href="#_sub6" class="code">function inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)</a></li><li><a href="#_sub7" class="code">function this = getSTSfromTS(labTS,labels,nFFT,tWin,tOverlap)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="spectroTimeSeries.html" class="code" title="">spectroTimeSeries</a>&lt; labTimeSeries
+0002     
+0003     properties
+0004         winTime
+0005         overlapTime
+0006         Freqs
+0007         originalData
+0008     <span class="keyword">end</span>
+0009     properties(Dependent)
+0010         labelPrefixes
+0011         frequencyRange
+0012     <span class="keyword">end</span>
+0013     
+0014     methods
+0015        <a name="_sub0" href="#_subfunctions" class="code">function this= spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap)</a>
+0016            <span class="comment">%Check input paramaters</span>
+0017            spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
+0018             this@labTimeSeries(dataF,t0,Ts,labelsF);
+0019             this.winTime=tWin;
+0020             this.overlapTime=tOverlap;
+0021             this.Freqs=F;
+0022         <span class="keyword">end</span>
+0023         
+0024         <a name="_sub1" href="#_subfunctions" class="code">function lp=get.labelPrefixes(this)</a>
+0025             M=length(this.Freqs);
+0026             lp=this.labels(1:M:end); 
+0027             <span class="comment">%for i=1:length(lp)</span>
+0028             <span class="comment">%    lp{i}=lp{i}(1:regexp(lp{i},'_f\s*[0-9]+$')-1);</span>
+0029             <span class="comment">%end</span>
+0030             lp=regexp(lp,<span class="string">'_f\s*[0-9]+$'</span>,<span class="string">'split'</span>);
+0031             lp=cellfun(@(x) x{1},lp,<span class="string">'UniformOutput'</span>,false);
+0032         <span class="keyword">end</span>
+0033         <a name="_sub2" href="#_subfunctions" class="code">function fr=get.frequencyRange(this)</a>
+0034             fr=this.Freqs(end)-this.Freqs(1);
+0035         <span class="keyword">end</span>
+0036         
+0037         <a name="_sub3" href="#_subfunctions" class="code">function newThis=splitFreqs(this,f0,f1)</a>
+0038             <span class="comment">%newThis=this;</span>
+0039             inds=this.Freqs&gt;=f0 &amp; this.Freqs&lt;=f1;
+0040             aux=reshape(this.Data,size(this.Data,1),length(this.Freqs),length(this.labelPrefixes));
+0041             aux=aux(:,inds,:);
+0042             labs=reshape(this.labels,length(this.Freqs),length(this.labelPrefixes));
+0043             labs=labs(inds,:);
+0044             newThis=<a href="spectroTimeSeries.html" class="code" title="">spectroTimeSeries</a>(aux,labs(:),this.Time(1),this.sampPeriod,this.Freqs(inds),this.winTime,this.overlapTime);
+0045         <span class="keyword">end</span>
+0046         
+0047         <a name="_sub4" href="#_subfunctions" class="code">function plot(this,f0,f1)</a>
+0048            figure
+0049            <span class="keyword">if</span> nargin&lt;3
+0050                f0=this.Freqs(1);
+0051                f1=this.Freqs(end);
+0052            <span class="keyword">end</span>
+0053            inds=this.Freqs&gt;=f0 &amp; this.Freqs&lt;=f1;
+0054            fs=find(inds);
+0055            N=length(this.labelPrefixes);
+0056            M=length(this.Freqs);
+0057            [a,b]=getFigStruct(N);
+0058            <span class="keyword">for</span> i=1:N
+0059               subplot(a,b,i)
+0060               imagesc(this.Time,this.Freqs(inds),abs(this.Data(:,(N-1)*M+fs))')
+0061               axis tight
+0062               set(gca,<span class="string">'Ydir'</span>,<span class="string">'normal'</span>)
+0063            <span class="keyword">end</span>
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066     methods(Static)
+0067         <a name="_sub5" href="#_subfunctions" class="code">function inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)</a>
+0068             N=size(dataF,2);
+0069             M=length(labelsF);
+0070             <span class="comment">%Check M==N</span>
+0071             <span class="keyword">if</span> M~=N
+0072                 error(<span class="string">'Inconsitent data and label dimensions.'</span>)
+0073             <span class="keyword">end</span>
+0074             l=regexp(labelsF,<span class="string">'_f\s*[0-9]+$'</span>,<span class="string">'split'</span>);
+0075             l1=cellfun(@(x) x{1},l,<span class="string">'UniformOutput'</span>,false);
+0076             la=unique(l1);
+0077             M1=length(la);
+0078             N1=length(F);
+0079             lb=l1(1:N1:end);
+0080             <span class="comment">%Check M1*N1=N</span>
+0081             <span class="keyword">if</span> M1*N1~=N
+0082                 error(<span class="string">'Inconsistent sizes for frequencies and label prefixes with data.'</span>)
+0083             <span class="keyword">end</span>
+0084             <span class="comment">%Check prefixes are consistent:</span>
+0085             <span class="keyword">for</span> i=1:M1
+0086                 <span class="keyword">if</span> ~all(strcmp(lb{i},l1((i-1)*N1+1:i*N1))) <span class="comment">%Check that all the prefixes are</span>
+0087                     error(<span class="string">'Label prefixes are not as expected.'</span>)
+0088                 <span class="keyword">end</span>
+0089             <span class="keyword">end</span>
+0090             l2=cellfun(@(x) str2num(x{1}(3:end)),regexp(labelsF,<span class="string">'_f\s*[0-9]+$'</span>,<span class="string">'match'</span>));
+0091             <span class="comment">%Check suffixes are consistent:</span>
+0092             <span class="keyword">for</span> i=1:M1
+0093                 <span class="keyword">if</span> ~all([1:N1]' == l2((i-1)*N1+1:i*N1)) <span class="comment">%Check that all the prefixes are</span>
+0094                     error(<span class="string">'Label suffixes are not as expected.'</span>)
+0095                 <span class="keyword">end</span>
+0096             <span class="keyword">end</span>
+0097         <span class="keyword">end</span>
+0098        <a name="_sub6" href="#_subfunctions" class="code">function this = getSTSfromTS(labTS,labels,nFFT,tWin,tOverlap)</a>
+0099             <span class="keyword">if</span> nargin&lt;2 || isempty(labels)
+0100                 labels=labTS.labels;
+0101             <span class="keyword">end</span>
+0102             <span class="keyword">if</span> nargin&lt;3 || isempty(nFFT)
+0103                 nFFT=round(.5/labTS.sampPeriod); <span class="comment">%1Hz sampling</span>
+0104             <span class="keyword">end</span>
+0105             <span class="keyword">if</span> nargin&lt;4 || isempty(tWin)
+0106                 tWin=1; <span class="comment">%using 1 sec windows</span>
+0107             <span class="keyword">end</span>
+0108             <span class="keyword">if</span> nargin&lt;5 || isempty(tOverlap)
+0109                 tOverlap=tWin/2; <span class="comment">%50% overlap</span>
+0110             <span class="keyword">end</span>
+0111             <span class="keyword">if</span> isa(labels,<span class="string">'char'</span>)
+0112                 labels={labels};
+0113             <span class="keyword">end</span>
+0114             nWin=round(tWin/labTS.sampPeriod);
+0115             nOverlap=round(tOverlap/labTS.sampPeriod);
+0116             dataF=nan(floor((length(labTS.Time)-nOverlap)/(nWin-nOverlap)),nFFT+1,length(labels));
+0117             <span class="keyword">for</span> i=1:length(labels)
+0118                 [s,F,T,P] = spectrogram(labTS.getDataAsVector(labels{i}),nWin,nOverlap,2*(nFFT),1/labTS.sampPeriod);
+0119                 <span class="keyword">try</span>
+0120                 dataF(:,:,i)=s';
+0121                 <span class="keyword">catch</span>
+0122                     keyboard
+0123                 <span class="keyword">end</span>
+0124             <span class="keyword">end</span>
+0125             labelsF=cellfun(@(x) strcat(x,strcat({<span class="string">'_f'</span>},num2str([1:size(dataF,2)]'))),labels(:)',<span class="string">'UniformOutput'</span>,false)';
+0126             M=length(labels);
+0127             labels2={};
+0128             <span class="keyword">for</span> i=1:M
+0129                 labels2(:,i)=labelsF{i};
+0130             <span class="keyword">end</span>
+0131             this= <a href="spectroTimeSeries.html" class="code" title="">spectroTimeSeries</a>(dataF(:,:),labels2(:),T(1),T(2)-T(1),F,nWin*labTS.sampPeriod,nOverlap*labTS.sampPeriod);
+0132         <span class="keyword">end</span>
+0133     <span class="keyword">end</span>
+0134 <span class="keyword">end</span>
+0135</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

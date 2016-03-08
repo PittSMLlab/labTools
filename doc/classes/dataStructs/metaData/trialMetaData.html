@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of trialMetaData</title>
+  <meta name="keywords" content="trialMetaData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">metaData</a> &gt; trialMetaData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/metaData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>trialMetaData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="derivedMetaData.html" class="code" title="">derivedMetaData</a>	</li><li><a href="trialMetaData.html" class="code" title="">trialMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="trialMetaData.html" class="code" title="">trialMetaData</a>
+0002 <span class="comment">%trialMetaData  Information that is specifc to an individual trial</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%trialMetaData properties:</span>
+0005 <span class="comment">%   name - short description of condition (ex. 'slow base')</span>
+0006 <span class="comment">%   description - long description of condition (ex. '300 strides at 0.5 m/s')</span>
+0007 <span class="comment">%   observations - any trial-specific observations (ex: 'L heel marker fell off')</span>
+0008 <span class="comment">%   refLeg - the reference leg for parameter calculations (either 'L' or 'R')</span>
+0009 <span class="comment">%   condition - condition number</span>
+0010 <span class="comment">%   rawDataFilename - path of file where vicon (.c3d) file was stored at time of creation</span>
+0011 <span class="comment">%   type - string describing broader conditions than given in the name (ex:'OG' for overground trials)</span>
+0012 <span class="comment">%</span>
+0013     
+0014     properties
+0015         name=<span class="string">''</span>;
+0016         description=<span class="string">''</span>; <span class="comment">%describes condition</span>
+0017         observations=<span class="string">''</span>;        
+0018         refLeg=<span class="string">''</span>;
+0019         condition=[];
+0020         rawDataFilename=<span class="string">''</span>; <span class="comment">%string or cell array of strings, if there are many files</span>
+0021         type=<span class="string">''</span>;
+0022     <span class="keyword">end</span>
+0023 
+0024     
+0025     methods
+0026         <span class="comment">%Constructor</span>
+0027         <span class="comment">%trialMetaData(desc,obs,refLeg,cond,filename,type)</span>
+0028         <a name="_sub0" href="#_subfunctions" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)                  </a>
+0029             <span class="keyword">if</span> isa(name,<span class="string">'char'</span>)
+0030                 this.name=name;
+0031             <span class="keyword">end</span>
+0032             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; isa(desc,<span class="string">'char'</span>)
+0033                 this.description=desc;
+0034             <span class="keyword">end</span>
+0035             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(obs,<span class="string">'char'</span>)
+0036                 this.observations=obs;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; (isa(refLeg,<span class="string">'char'</span>)) <span class="comment">%Must be either 'L' or 'R'</span>
+0039                 <span class="keyword">if</span> strcmpi(refLeg,<span class="string">'R'</span>) || strcmpi(refLeg,<span class="string">'L'</span>)
+0040                     this.refLeg=refLeg; 
+0041                 <span class="keyword">else</span>
+0042                     ME = MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'refLeg must be either ''L'' or ''R''.'</span>);
+0043                     throw(ME);
+0044                 <span class="keyword">end</span>                
+0045             <span class="keyword">end</span>                      
+0046             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; isa(cond,<span class="string">'double'</span>);
+0047                 this.condition=cond;
+0048             <span class="keyword">end</span>
+0049             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; (isa(filename,<span class="string">'char'</span>) || (isa(filename,<span class="string">'cell'</span>)&amp;&amp; isa(filename{1},<span class="string">'char'</span>)) )
+0050                 this.rawDataFilename=filename;
+0051             <span class="keyword">end</span>
+0052             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; (isa(type,<span class="string">'char'</span>))
+0053                 <span class="keyword">if</span> strcmpi(type,<span class="string">'TM'</span>) || strcmpi(type,<span class="string">'OG'</span>)
+0054                     this.type=type;
+0055                 <span class="keyword">else</span>
+0056                     ME = MException(<span class="string">'labMetaData:Constructor'</span>,<span class="string">'type must be either ''OG'' or ''TM''.'</span>);
+0057                     throw(ME);
+0058                 <span class="keyword">end</span>
+0059             <span class="keyword">else</span>
+0060                 this.type=<span class="string">'TM'</span>;
+0061                 warning(<span class="string">'Assuming trial is conducted on the treadmill'</span>)
+0062             <span class="keyword">end</span>
+0063         <span class="keyword">end</span>
+0064         
+0065     <span class="keyword">end</span>
+0066     
+0067 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

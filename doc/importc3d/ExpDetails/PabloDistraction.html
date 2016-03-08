@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PabloDistraction</title>
+  <meta name="keywords" content="PabloDistraction">
+  <meta name="description" content="Pablo: distraction study">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">importc3d</a> &gt; <a href="index.html">ExpDetails</a> &gt; PabloDistraction.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d/ExpDetails&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>PabloDistraction
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Pablo: distraction study</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Pablo: distraction study</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Pablo: distraction study</span>
+0002 
+0003 handles.group=<span class="string">'0002: Distraction'</span>;
+0004 
+0005 <span class="comment">%condition numbers</span>
+0006 i=1;
+0007 <span class="keyword">for</span> cond = [1:7]
+0008     set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0009     i=i+1;
+0010 <span class="keyword">end</span>
+0011 set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'7'</span>)
+0012 
+0013 <span class="comment">%condition names</span>
+0014 set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0015 set(handles.condName2,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0016 set(handles.condName3,<span class="string">'string'</span>,<span class="string">'Gradual adaptation'</span>)
+0017 set(handles.condName4,<span class="string">'string'</span>,<span class="string">'Catch'</span>)
+0018 set(handles.condName5,<span class="string">'string'</span>,<span class="string">'Re-adaptation'</span>)
+0019 set(handles.condName6,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0020 set(handles.condName7,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0021 
+0022 <span class="comment">%condition descriptions</span>
+0023 set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)
+0024 set(handles.description2,<span class="string">'string'</span>,<span class="string">'300 strides 1.125m/s'</span>)
+0025 set(handles.description3,<span class="string">'string'</span>,<span class="string">'300 strides 1.125 m/s, 600 gradual until 1.5:.75, 150 split'</span>)
+0026 set(handles.description4,<span class="string">'string'</span>,<span class="string">'10 strides 1.125 m/s'</span>)
+0027 set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 at split 2:1'</span>)
+0028 set(handles.description6,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)
+0029 set(handles.description7,<span class="string">'string'</span>,<span class="string">'600 strides 1.125 m/s'</span>)
+0030 
+0031 <span class="comment">%trial numbers for each condition</span>
+0032 set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:2'</span>)
+0033 set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'3'</span>)
+0034 set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'4'</span>)
+0035 set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'5'</span>)
+0036 set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'6'</span>)
+0037 set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'7:8'</span>)
+0038 set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'9'</span>)
+0039 
+0040 <span class="comment">%set trial types</span>
+0041 <span class="keyword">for</span> t=[1 6]
+0042     set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">for</span> t=[2:5 7]
+0045     set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0046 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processedEMGTimeSeries</title>
+  <meta name="keywords" content="processedEMGTimeSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; processedEMGTimeSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>processedEMGTimeSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=processedEMGTimeSeries(data,t0,Ts,labels,processingInfo,Quality,QualInfo)</a></li><li><a href="#_sub2" class="code">function newTS=getDataAsTS(this,label)</a></li><li><a href="#_sub3" class="code">function newThis=resampleN(this,newN)</a></li><li><a href="#_sub4" class="code">function newThis=split(this,t0,t1)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>  &lt; labTimeSeries
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     <span class="comment">%%</span>
+0006     properties(SetAccess=private)
+0007         <a href="processingInfo.html" class="code" title="">processingInfo</a> <span class="comment">%processingInfo object</span>
+0008     <span class="keyword">end</span>
+0009 
+0010     
+0011     <span class="comment">%%</span>
+0012     methods
+0013         
+0014         <span class="comment">%Constructor:</span>
+0015         <a name="_sub0" href="#_subfunctions" class="code">function this=processedEMGTimeSeries(data,t0,Ts,labels,processingInfo,Quality,QualInfo) </a><span class="comment">%Necessarily uniformly sampled</span>
+0016             this@labTimeSeries(data,t0,Ts,labels);
+0017             <span class="keyword">if</span> isa(<a href="processingInfo.html" class="code" title="">processingInfo</a>,<span class="string">'processingInfo'</span>)
+0018                 this.processingInfo=<a href="processingInfo.html" class="code" title="">processingInfo</a>;
+0019             <span class="keyword">else</span>
+0020                 ME=MException(<span class="string">'processedEMGTimeSeries:Constructor'</span>,<span class="string">'processingInfo parameter is not an processingInfo object.'</span>);
+0021                 throw(ME)
+0022             <span class="keyword">end</span>
+0023             <span class="keyword">if</span> nargin&gt;5
+0024                 this.Quality=Quality;
+0025                 this.QualityInfo=QualInfo;
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">end</span>
+0028         
+0029         <span class="comment">%-------------------</span>
+0030         
+0031         <span class="comment">%Other I/O functions:</span>
+0032         <a name="_sub1" href="#_subfunctions" class="code">function newTS=getDataAsTS(this,label)</a>
+0033             [data,time,auxLabel]=getDataAsVector(this,label);
+0034             newTS=<a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>(data,time(1),this.sampPeriod,auxLabel,this.processingInfo);
+0035         <span class="keyword">end</span>
+0036 
+0037         <span class="comment">%-------------------</span>
+0038         
+0039         <span class="comment">%Modifier functions:</span>
+0040         <a name="_sub2" href="#_subfunctions" class="code">function newThis=resampleN(this,newN) </a><span class="comment">%Same as resample function, but directly fixing the number of samples instead of TS</span>
+0041             auxThis=this.resampleN@labTimeSeries(newN);
+0042             newThis=<a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo);
+0043         <span class="keyword">end</span>
+0044         
+0045         <a name="_sub3" href="#_subfunctions" class="code">function newThis=split(this,t0,t1)</a>
+0046            auxThis=this.split@labTimeSeries(t0,t1);
+0047                <span class="keyword">if</span> auxThis.Nsamples&gt;0 <span class="comment">%Empty series was returned</span>
+0048                    newThis=<a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
+0049                <span class="keyword">else</span>
+0050                    newThis=<a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
+0051                <span class="keyword">end</span>
+0052                
+0053         <span class="keyword">end</span>
+0054         
+0055     <span class="keyword">end</span>
+0056 
+0057 <span class="keyword">end</span>
+0058</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

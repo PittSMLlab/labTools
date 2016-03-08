@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of expResults</title>
+  <meta name="keywords" content="expResults">
+  <meta name="description" content="% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; expResults.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>expResults
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function results = expResults(SMatrix,groups,plotFlag,indivFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = expResults(SMatrix,groups,plotFlag,indivFlag)</a>
+0002 <span class="comment">%% THIS FUNCTION IS OLD AND HAS BEEN REPLACED BY getResults !!!</span>
+0003 
+0004 
+0005 <span class="comment">% Set colors</span>
+0006 poster_colors;
+0007 <span class="comment">% Set colors order</span>
+0008 GreyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.1 0.1 0.1;0.7 0.7 0.7;0.2 0.2 0.2;0.8 0.8 0.8;0.3 0.3 0.3;0.9 0.9 0.9];
+0009 ColorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; p_gray; p_black;p_red];
+0010 
+0011 catchNumPts = 3; <span class="comment">% catch</span>
+0012 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0013 transientNumPts = 5; <span class="comment">% OG and Washout</span>
+0014 
+0015 <span class="keyword">if</span> nargin&lt;2 || isempty(groups)
+0016     groups=fields(SMatrix);          
+0017 <span class="keyword">end</span>
+0018 ngroups=length(groups);
+0019 
+0020 results.spatialSteady.avg=[];
+0021 results.spatialSteady.sd=[];
+0022 results.stepTimeSteady.avg=[];
+0023 results.stepTimeSteady.sd=[];
+0024 results.relStepTime.avg=[];
+0025 results.relStepTime.sd=[];
+0026 results.relSpatial.avg=[];
+0027 results.relSpatial.sd=[];
+0028 results.expSpeed.avg=[];
+0029 results.expSpeed.sd=[];
+0030 results.OGafter.avg=[];
+0031 results.OGafter.sd=[];
+0032 
+0033 <span class="keyword">for</span> g=1:ngroups
+0034     <span class="comment">%get subjects in group</span>
+0035     subjects=SMatrix.(groups{g}).IDs(:,1); 
+0036   
+0037     spatialSteady=[];
+0038     stepTimeSteady=[];
+0039     velocitySteady=[];
+0040     relSpatial=[];
+0041     relStepTime=[];
+0042     ogafter=[];
+0043     expSpeed=[];
+0044         
+0045     <span class="keyword">for</span> s=1:length(subjects)
+0046         <span class="comment">%load subject</span>
+0047         load([subjects{s} <span class="string">'params.mat'</span>])
+0048                 
+0049         <span class="comment">%normalize contributions based on combined step lengths</span>
+0050         SLf=adaptData.data.getParameter(<span class="string">'stepLengthFast'</span>);
+0051         SLs=adaptData.data.getParameter(<span class="string">'stepLengthSlow'</span>);
+0052         Dist=SLf+SLs;
+0053         contLabels={<span class="string">'spatialContribution'</span>,<span class="string">'stepTimeContribution'</span>,<span class="string">'velocityContribution'</span>,<span class="string">'netContribution'</span>};
+0054         [~,dataCols]=isaParameter(adaptData.data,contLabels);
+0055         <span class="keyword">for</span> c=1:length(contLabels)
+0056             contData=adaptData.data.getParameter(contLabels(c));
+0057             contData=contData./Dist;
+0058             adaptData.data.Data(:,dataCols(c))=contData;
+0059         <span class="keyword">end</span>
+0060         
+0061         <span class="comment">%remove baseline bias</span>
+0062         adaptDataNoBias=adaptData.removeBias;
+0063                 
+0064         <span class="comment">%calculate spatial and step time contribution as a percent of velocity</span>
+0065         <span class="comment">%contribution during steady state</span>
+0066 
+0067         spatialData=adaptDataNoBias.getParamInCond(<span class="string">'spatialContribution'</span>,<span class="string">'re-adaptation'</span>);
+0068         stepTimeData=adaptDataNoBias.getParamInCond(<span class="string">'stepTimeContribution'</span>,<span class="string">'re-adaptation'</span>);
+0069         velocityData=adaptDataNoBias.getParamInCond(<span class="string">'velocityContribution'</span>,<span class="string">'re-adaptation'</span>);
+0070         
+0071         spatialSteady=[spatialSteady;nanmean(spatialData((end-5)-steadyNumPts+1:(end-5)))];
+0072         stepTimeSteady=[stepTimeSteady;nanmean(stepTimeData((end-5)-steadyNumPts+1:(end-5)))];
+0073         velocitySteady=[velocitySteady;nanmean(velocityData((end-5)-steadyNumPts+1:(end-5)))];
+0074         
+0075         relSpatial=[relSpatial; spatialSteady(end)/abs(velocitySteady(end))*100];
+0076         relStepTime=[relStepTime; stepTimeSteady(end)/abs(velocitySteady(end))*100];
+0077         
+0078         expSpeed=[expSpeed; mean(adaptData.getParamInCond(<span class="string">'equivalentSpeed'</span>,<span class="string">'TM base'</span>))];
+0079         
+0080         params={<span class="string">'spatialContribution'</span>,<span class="string">'stepTimeContribution'</span>};
+0081         <span class="comment">%calculate OG after as mean values during strides which cause a</span>
+0082         <span class="comment">%maximum deviation from zero in step length asymmetry during</span>
+0083         <span class="comment">%'transientNumPts' consecutive steps within first 10 strides</span>
+0084         stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG post'</span>);
+0085         transferData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
+0086         [newStepAsymData,~]=bin_dataV1(stepAsymData(1:10,:),transientNumPts);
+0087         [newTransferData,~]=bin_dataV1(transferData(1:10,:),transientNumPts);
+0088         [~,maxLoc]=max(abs(newStepAsymData),[],1);
+0089 <span class="comment">%             ind=sub2ind(size(newTransferData),maxLoc*ones(1,length(params)),1:length(params));</span>
+0090         ogafter=[ogafter; newTransferData(maxLoc,:)];
+0091         
+0092     <span class="keyword">end</span>       
+0093 
+0094     
+0095     nSubs=length(subjects);
+0096     
+0097     results.spatialSteady.avg(end+1,:)=nanmean(spatialSteady,1);
+0098     results.spatialSteady.sd(end+1,:)=nanstd(spatialSteady,1)./sqrt(nSubs);
+0099     results.spatialSteady.indiv.(groups{g})=spatialSteady;
+0100     
+0101     results.stepTimeSteady.avg(end+1,:)=nanmean(stepTimeSteady,1);
+0102     results.stepTimeSteady.sd(end+1,:)=nanstd(stepTimeSteady,1)./sqrt(nSubs);
+0103     results.stepTimeSteady.indiv.(groups{g})=stepTimeSteady;
+0104     
+0105     results.relSpatial.avg(end+1,:)=nanmean(relSpatial,1);
+0106     results.relSpatial.sd(end+1,:)=nanstd(relSpatial,1)./sqrt(nSubs);
+0107     results.relSpatial.indiv.(groups{g})=relSpatial;
+0108     
+0109     results.relStepTime.avg(end+1,:)=nanmean(relStepTime,1);
+0110     results.relStepTime.sd(end+1,:)=nanstd(relStepTime,1)./sqrt(nSubs);
+0111     results.relStepTime.indiv.(groups{g})=relStepTime;
+0112     
+0113     results.expSpeed.avg(end+1,:)=nanmean(expSpeed,1);
+0114     results.expSpeed.sd(end+1,:)=nanstd(expSpeed,1)./sqrt(nSubs);
+0115     results.expSpeed.indiv.(groups{g})=expSpeed;
+0116     
+0117     results.OGafter.avg(end+1,:)=nanmean(ogafter,1);
+0118     results.OGafter.sd(end+1,:)=nanstd(ogafter,1)./sqrt(nSubs);
+0119     results.OGafter.indiv.(groups{g})=ogafter;
+0120 <span class="keyword">end</span>
+0121 
+0122 <span class="comment">%plot stuff</span>
+0123 
+0124 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(plotFlag)
+0125     
+0126     figure
+0127     hold on
+0128     
+0129     <span class="keyword">for</span> b=1:ngroups
+0130         ph(b)=plot(results.stepTimeSteady.indiv.(groups{b}),results.spatialSteady.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0131     <span class="keyword">end</span>
+0132     
+0133     title(<span class="string">'Treadmill Steady State'</span>)
+0134     ylabel(<span class="string">'Spatial Contribution'</span>)
+0135     xlabel(<span class="string">'Step Time Cont'</span>)
+0136     
+0137     legend(ph,groups)
+0138     
+0139     figure
+0140     hold on
+0141     
+0142     <span class="keyword">for</span> b=1:ngroups
+0143         ph2(b)=plot(results.OGafter.indiv.(groups{b})(:,2),results.OGafter.indiv.(groups{b})(:,1),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0144     <span class="keyword">end</span>
+0145     
+0146     title(<span class="string">'OG after'</span>)
+0147     ylabel(<span class="string">'Spatial Contribution'</span>)
+0148     xlabel(<span class="string">'Step Time Cont'</span>)
+0149     
+0150     legend(ph2,groups)
+0151     
+0152     figure 
+0153     hold on
+0154     
+0155     <span class="keyword">for</span> b=1:ngroups
+0156         ph3(b)=plot(results.relStepTime.indiv.(groups{b}),results.relSpatial.indiv.(groups{b}),<span class="string">'.'</span>,<span class="string">'color'</span>,ColorOrder(b,:),<span class="string">'markerSize'</span>,20);
+0157     <span class="keyword">end</span>
+0158     
+0159     plot([0 100],[100 0],<span class="string">'k'</span>,<span class="string">'linewidth'</span>,2)
+0160     
+0161     set(gca,<span class="string">'Ylim'</span>,[0 120])
+0162     set(gca,<span class="string">'Xlim'</span>,[0 80])           
+0163     
+0164     ylabel(<span class="string">'Relative Spatial Contribution'</span>)
+0165     xlabel(<span class="string">'Relative Step Time Cont'</span>)
+0166 
+0167     legend(ph3,groups)
+0168     
+0169     figure
+0170     hold on
+0171     
+0172     <span class="keyword">for</span> b=1:ngroups
+0173         nSubs=length(SMatrix.(groups{b}).IDs(:,1));
+0174         <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(indivFlag)
+0175             bar(b,results.expSpeed.avg(b),<span class="string">'facecolor'</span>,GreyOrder(b,:));
+0176             <span class="keyword">for</span> s=1:nSubs
+0177                 plot(b,results.expSpeed.indiv.(groups{b})(s),<span class="string">'*'</span>,<span class="string">'Color'</span>,ColorOrder(s,:))
+0178             <span class="keyword">end</span>
+0179         <span class="keyword">else</span>
+0180             bar(b,results.expSpeed.avg(b),<span class="string">'facecolor'</span>,ColorOrder(b,:));
+0181         <span class="keyword">end</span>                                
+0182     <span class="keyword">end</span>
+0183     errorbar(results.expSpeed.avg,results.expSpeed.sd,<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>)
+0184     axis tight
+0185     set(gca,<span class="string">'Xtick'</span>,1:ngroups,<span class="string">'XTickLabel'</span>,groups,<span class="string">'fontSize'</span>,12,<span class="string">'Ylim'</span>,[0 1500])   
+0186     
+0187 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

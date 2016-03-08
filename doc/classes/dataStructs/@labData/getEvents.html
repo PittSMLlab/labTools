@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEvents</title>
+  <meta name="keywords" content="getEvents">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; getEvents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@labData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getEvents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function events = getEvents(trialData,angleData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function events = getEvents(trialData,angleData)</a>
+0002 
+0003 file=getSimpleFileName(trialData.metaData.rawDataFilename);
+0004 
+0005 <span class="keyword">if</span> isempty(trialData.markerData.orientation)
+0006     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0007     orientation=orientationInfo([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
+0008 <span class="keyword">else</span>
+0009     orientation=trialData.markerData.orientation;
+0010 <span class="keyword">end</span>
+0011 
+0012 <span class="keyword">if</span> ~isempty(angleData)
+0013     [kinLHS,kinRHS,kinLTO,kinRTO] = getEventsFromAngles(trialData,angleData,orientation);
+0014 <span class="keyword">else</span>
+0015     [kinLHS,kinRHS,kinLTO,kinRTO] = deal(false(10,1)); <span class="comment">%length 10 to prevent errors downstream</span>
+0016 <span class="keyword">end</span>
+0017  
+0018 
+0019 <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'OG'</span>) <span class="comment">%Overground Trial, default is to use limb angles to calculate events</span>
+0020     
+0021     [LHSevent,LHSeventKin]=deal(kinLHS); <span class="comment">%Make a redundant compy to make kinematic events deafault</span>
+0022     [RHSevent,RHSeventKin]=deal(kinRHS);
+0023     [LTOevent,LTOeventKin]=deal(kinLTO);
+0024     [RTOevent,RTOeventKin]=deal(kinRTO);
+0025     
+0026     LHSeventForce=false(length(LHSevent),1); <span class="comment">%No force events, fill with logical 0's</span>
+0027     RHSeventForce=false(length(RHSevent),1);
+0028     LTOeventForce=false(length(LTOevent),1);
+0029     RTOeventForce=false(length(RTOevent),1);
+0030     
+0031     t0=trialData.markerData.Time(1);
+0032     Ts=trialData.markerData.sampPeriod;
+0033     
+0034 <span class="comment">%     t0=trialData.GRFData.Time(1);</span>
+0035 <span class="comment">%     Ts=trialData.GRFData.sampPeriod;</span>
+0036 <span class="keyword">else</span> <span class="comment">%Treadmill trial</span>
+0037     
+0038     <span class="keyword">if</span> isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) <span class="comment">%No force data, default events calculatd from marker data (not labeled as kin events though!!)</span>
+0039         disp([<span class="string">'No ground reaction forces data in '</span> file <span class="string">'. Using marker data to compute events.'</span>])
+0040         
+0041         LtoePos=trialData.getMarkerData({[<span class="string">'LTOE'</span> orientation.foreaftAxis],[<span class="string">'LTOE'</span> orientation.updownAxis],[<span class="string">'LTOE'</span> orientation.sideAxis]});
+0042         LtoePos=[orientation.foreaftSign* LtoePos(:,1),orientation.updownSign*LtoePos(:,2),orientation.sideSign*LtoePos(:,3)];
+0043         RtoePos=trialData.getMarkerData({[<span class="string">'RTOE'</span> orientation.foreaftAxis],[<span class="string">'RTOE'</span> orientation.updownAxis],[<span class="string">'RTOE'</span> orientation.sideAxis]});
+0044         RtoePos=[orientation.foreaftSign* RtoePos(:,1),orientation.sideSign*RtoePos(:,2),orientation.updownSign*RtoePos(:,3)];
+0045         
+0046         LanklePos=trialData.getMarkerData({[<span class="string">'LANK'</span> orientation.foreaftAxis],[<span class="string">'LANK'</span> orientation.updownAxis],[<span class="string">'LANK'</span> orientation.sideAxis]});
+0047         LanklePos=[orientation.foreaftSign* LanklePos(:,1),orientation.sideSign*LanklePos(:,2),orientation.updownSign*LanklePos(:,3)];
+0048         RanklePos=trialData.getMarkerData({[<span class="string">'RANK'</span> orientation.foreaftAxis],[<span class="string">'RANK'</span> orientation.updownAxis],[<span class="string">'RANK'</span> orientation.sideAxis]});
+0049         RanklePos=[orientation.foreaftSign* RanklePos(:,1),orientation.sideSign*RanklePos(:,2),orientation.updownSign*RanklePos(:,3)];
+0050         
+0051         <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>)
+0052             LheelPos=trialData.getMarkerData({[<span class="string">'LHEE'</span> orientation.foreaftAxis],[<span class="string">'LHEE'</span> orientation.updownAxis],[<span class="string">'LHEE'</span> orientation.sideAxis]});
+0053             LheelPos=[orientation.foreaftSign* LheelPos(:,1),orientation.sideSign*LheelPos(:,2),orientation.updownSign*LheelPos(:,3)];
+0054             RheelPos=trialData.getMarkerData({[<span class="string">'RHEE'</span> orientation.foreaftAxis],[<span class="string">'RHEE'</span> orientation.updownAxis],[<span class="string">'RHEE'</span> orientation.sideAxis]});
+0055             RheelPos=[orientation.foreaftSign* RheelPos(:,1),orientation.sideSign*RheelPos(:,2),orientation.updownSign*RheelPos(:,3)];
+0056         <span class="keyword">else</span>
+0057             disp([<span class="string">'No heel markers in '</span> file <span class="string">'. Using ankle markers instead to compute events.'</span>])
+0058             LheelPos=LanklePos;
+0059             RheelPos=RanklePos;
+0060         <span class="keyword">end</span>
+0061         fs_kin=trialData.markerData.sampFreq;
+0062         [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromToeAndHeel(LtoePos,LheelPos,RtoePos,RheelPos,fs_kin); <span class="comment">%EVENTS from a mix of kinematics;</span>
+0063         
+0064         LHSeventForce=false(length(LHSevent),1); <span class="comment">%No force events, fill with logical 0's</span>
+0065         RHSeventForce=false(length(RHSevent),1);
+0066         LTOeventForce=false(length(LTOevent),1);
+0067         RTOeventForce=false(length(RTOevent),1); 
+0068         
+0069         LHSeventKin=kinLHS;
+0070         RHSeventKin=kinRHS;
+0071         LTOeventKin=kinLTO;
+0072         RTOeventKin=kinRTO;
+0073         
+0074         t0=trialData.markerData.Time(1);        
+0075         Ts=trialData.markerData.sampPeriod;
+0076         
+0077     <span class="keyword">else</span>        
+0078         upAxis=trialData.GRFData.orientation.updownAxis;
+0079         upSign=trialData.GRFData.orientation.updownSign;
+0080         FzL=upSign*trialData.getForce(<span class="string">'L'</span>,upAxis);
+0081         FzR=upSign*trialData.getForce(<span class="string">'R'</span>,upAxis);
+0082         
+0083         <span class="comment">%Sanity check: correct non-zeroed force-plates:</span>
+0084         <span class="keyword">if</span> mode(FzL)~=0
+0085             disp([<span class="string">'Warning: Left z-axis forces in '</span> file <span class="string">' have non-zero mode. Subtracting mode from force data before event detection'</span>]) 
+0086             FzL=FzL-mode(FzL);
+0087         <span class="keyword">end</span>
+0088         <span class="keyword">if</span> mode(FzR)~=0
+0089             disp([<span class="string">'Warning: Right z-axis forces in '</span> file <span class="string">' have non-zero mode. Subtracting mode from force data before event detection'</span>]) 
+0090             FzR=FzR-mode(FzR);
+0091         <span class="keyword">end</span>
+0092         
+0093         [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromForces(FzL,FzR,trialData.GRFData.sampFreq);
+0094         
+0095         LHSeventForce=LHSevent; <span class="comment">%Make a redundant copy to label as force events</span>
+0096         RHSeventForce=RHSevent;
+0097         LTOeventForce=LTOevent;
+0098         RTOeventForce=RTOevent;        
+0099         
+0100         t0=trialData.GRFData.Time(1);
+0101         Ts=trialData.GRFData.sampPeriod;
+0102         [LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin] = deal(false(trialData.GRFData.Length,1));
+0103         
+0104         
+0105         <span class="comment">% TO DO: use a method to re-sample kinematic events to be consistent</span>
+0106         <span class="comment">% with forces.</span>
+0107         CF=trialData.GRFData.sampFreq/trialData.markerData.sampFreq; <span class="comment">%correction factor</span>
+0108         LHSeventKin(round((find(kinLHS)-1)*CF+1))=true;
+0109         RHSeventKin(round((find(kinRHS)-1)*CF+1))=true;
+0110         LTOeventKin(round((find(kinLTO)-1)*CF+1))=true;
+0111         RTOeventKin(round((find(kinRTO)-1)*CF+1))=true;
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 
+0115 events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])<span class="keyword">...</span>
+0116     ,t0,Ts,{<span class="string">'LHS'</span>,<span class="string">'RHS'</span>,<span class="string">'LTO'</span>,<span class="string">'RTO'</span>,<span class="string">'forceLHS'</span>,<span class="string">'forceRHS'</span>,<span class="string">'forceLTO'</span>,<span class="string">'forceRTO'</span>,<span class="string">'kinLHS'</span>,<span class="string">'kinRHS'</span>,<span class="string">'kinLTO'</span>,<span class="string">'kinRTO'</span>});
+0117</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

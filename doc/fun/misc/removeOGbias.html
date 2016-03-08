@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of removeOGbias</title>
+  <meta name="keywords" content="removeOGbias">
+  <meta name="description" content="Over ground baseline data are ordered based on where the subject was">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; removeOGbias.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>removeOGbias
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Over ground baseline data are ordered based on where the subject was</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Over ground baseline data are ordered based on where the subject was
+located in the lab during each particular gait cycle. The data is then
+characterized spatially and a bias is removed form all overground data
+taking spatial dependancies into account.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>	writen based on bin_data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function newData = removeOGbias(adaptData,OGtrials,OGbaseTrials)</a>
+0002 <span class="comment">%Over ground baseline data are ordered based on where the subject was</span>
+0003 <span class="comment">%located in the lab during each particular gait cycle. The data is then</span>
+0004 <span class="comment">%characterized spatially and a bias is removed form all overground data</span>
+0005 <span class="comment">%taking spatial dependancies into account.</span>
+0006 
+0007 labels=adaptData.data.labels;
+0008 newData=nan(size(adaptData.data.Data));
+0009 <span class="comment">%seperate data based on walking direction</span>
+0010 baseOG1=[];
+0011 baseOG2=[];
+0012 baseData=adaptData.getParamInTrial(labels,OGbaseTrials);
+0013 baseHipVel=adaptData.getParamInTrial(<span class="string">'direction'</span>,OGbaseTrials);
+0014 baseHipPos=adaptData.getParamInTrial(<span class="string">'hipPos'</span>,OGbaseTrials);
+0015 <span class="keyword">for</span> i=1:size(baseData,1)
+0016     <span class="keyword">if</span> baseHipVel(i)&lt;0
+0017         baseOG1 = [baseOG1; i baseHipPos(i) baseData(i,:)];
+0018     <span class="keyword">else</span>
+0019         baseOG2 = [baseOG2; i baseHipPos(i) baseData(i,:)];
+0020     <span class="keyword">end</span>
+0021 <span class="keyword">end</span>
+0022 allOG1=[];
+0023 allOG2=[];
+0024 [allData,inds]=adaptData.getParamInTrial(labels,OGtrials);
+0025 allHipVel=adaptData.getParamInTrial(<span class="string">'direction'</span>,OGtrials);
+0026 allHipPos=adaptData.getParamInTrial(<span class="string">'hipPos'</span>,OGtrials);
+0027 <span class="keyword">for</span> i=1:size(allData,1)
+0028     <span class="keyword">if</span> allHipVel(i)&lt;0
+0029         allOG1 = [allOG1; i allHipPos(i) allData(i,:)];
+0030     <span class="keyword">else</span>
+0031         allOG2 = [allOG2; i allHipPos(i) allData(i,:)];
+0032     <span class="keyword">end</span>
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%Model baseline tendency and subtract from data</span>
+0036 baseOG1=sortrows(baseOG1,2); <span class="comment">%ordered based on hip pos</span>
+0037 baseOG1Fit=<a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(baseOG1,5); <span class="comment">%runnning average of 5 data points</span>
+0038 baseOG2=sortrows(baseOG2,2);
+0039 baseOG2Fit=<a href="bin_dataV1.html" class="code" title="function [xnew, xnewstd]=bin_dataV1(x,binwidth)">bin_dataV1</a>(baseOG2,5);
+0040 
+0041 <span class="keyword">for</span> i=1:size(allOG1,1)
+0042     [~, ind]=min(abs(baseOG1Fit(:,2)-allOG1(i,2)));<span class="comment">%find Fit point that is closest to data point i spatially</span>
+0043     bias=baseOG1Fit(ind,:);
+0044     allOG1(i,3:end)=allOG1(i,3:end)-bias(3:end); <span class="comment">%do not remove bias from time index or position (hence '3:end')</span>
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">for</span> i=1:size(allOG2,1)
+0047     [~, ind]=min(abs(baseOG2Fit(:,2)-allOG2(i,2)));
+0048     bias=baseOG2Fit(ind,:);
+0049     allOG2(i,3:end)=allOG2(i,3:end)-bias(3:end);
+0050 <span class="keyword">end</span>
+0051 newOG=sortrows([allOG1; allOG2],1); <span class="comment">%re-order based on time points</span>
+0052 newData(inds,:)=newOG(:,3:end); <span class="comment">%first two columns are just for book keeping, do not get saved.</span>
+0053 
+0054 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

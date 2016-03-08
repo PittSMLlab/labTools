@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of amp_estim</title>
+  <meta name="keywords" content="amp_estim">
+  <meta name="description" content="Estimation of amplitude of a given EMG signal (envelope detection).">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; amp_estim.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>amp_estim
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Estimation of amplitude of a given EMG signal (envelope detection).</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Estimation of amplitude of a given EMG signal (envelope detection).
+Following guidelines in Merletti &amp; Parker's book Elctromyography (Section
+6.4, First Edition, p. 139).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="extractMuscleActivityFromEMG.html" class="code" title="function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)">extractMuscleActivityFromEMG</a>	Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)</a>
+0002 <span class="comment">%Estimation of amplitude of a given EMG signal (envelope detection).</span>
+0003 <span class="comment">%Following guidelines in Merletti &amp; Parker's book Elctromyography (Section</span>
+0004 <span class="comment">%6.4, First Edition, p. 139).</span>
+0005 
+0006 N=size(signal,1);
+0007 
+0008 <span class="comment">%% Stage 1: whitening</span>
+0009 <span class="comment">%[emg2, filter] = whitenEMG(signal,fs);</span>
+0010 <span class="comment">%procList{1}=filter; %Whitening filter</span>
+0011 <span class="comment">%No whitening:</span>
+0012 emg2=signal;
+0013 procList{1}=[];
+0014 
+0015 <span class="comment">%% Stage 2: rectification</span>
+0016 emg3=abs(emg2).^mod_ord;
+0017 procList{2}=[<span class="string">'Rectification, order='</span> num2str(mod_ord)];
+0018 <span class="comment">%Alternative: instead of rectification and re-linearization, we could just</span>
+0019 <span class="comment">%take the hilbert transform:</span>
+0020 <span class="comment">%mod_ord=1;</span>
+0021 <span class="comment">%procList{2}='hilbert';</span>
+0022 <span class="comment">%emg3=abs(hilbert(egm2));</span>
+0023 
+0024 <span class="comment">%% Stage 4: smoothing</span>
+0025 <span class="comment">%lowPassFilter=design(fdesign.lowpass('Nb,Na,Fp,Fst',10,5,2*cutoff/fs,2*1.1*cutoff/fs));</span>
+0026 <span class="comment">%aux=lowPassFilter.convert('df2');</span>
+0027 <span class="comment">%emg4=filtfilt(aux.Numerator,aux.Denominator,emg3);</span>
+0028 <span class="comment">%emg4=lowpassfiltering(emg3, cutoff, 5, fs);</span>
+0029 Wn=2*cutoff/fs;
+0030 procList{3}=fdesign.lowpass(<span class="string">'Fp,Fst,Ap,Ast'</span>,Wn,2*Wn,3,10);
+0031 lowPassFilter=design(procList{3},<span class="string">'butter'</span>);
+0032 emg4=filtfilthd(lowPassFilter,emg3);
+0033 
+0034 <span class="comment">%Alternative smoothing: convolving with a moving window (as suggested in</span>
+0035 <span class="comment">%Merletti &amp; Parker)</span>
+0036 
+0037 <span class="comment">% M=round((72/(8 *fs^2)* median(emg3.^2)/median(diff(diff(emg3)).^2))^.2);</span>
+0038 <span class="comment">% if mod(M,2)==0</span>
+0039 <span class="comment">%     M=M+1; %making sure it is an odd number</span>
+0040 <span class="comment">% end</span>
+0041 <span class="comment">% procList{3}= ['Moving Average, rect. window, size=' num2str(M)];</span>
+0042 <span class="comment">% window=ones(M,1)/M;</span>
+0043 <span class="comment">% %window=hanning(M);</span>
+0044 <span class="comment">% fwin=fft(circshift(window,[-round(M/2),0]),N);</span>
+0045 <span class="comment">% emg4=zeros(size(signal));</span>
+0046 <span class="comment">% for i=1:size(signal,2)</span>
+0047 <span class="comment">%     emg4(:,4)=ifft(fft(emg3).*fwin,'symmetric');</span>
+0048 <span class="comment">% end</span>
+0049 
+0050 <span class="comment">%% Stage 5: relinearization</span>
+0051 amplitude=abs(emg4.^(1/mod_ord)); <span class="comment">%This effectively does nothing if mod_ord=1, unless there are negative samples;</span>
+0052 procList{2}=[<span class="string">'Relinearization, order='</span> num2str(mod_ord)];
+0053 
+0054 <span class="keyword">end</span>
+0055</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcParametersChronos</title>
+  <meta name="keywords" content="calcParametersChronos">
+  <meta name="description" content="out = calcParameters(trialData,subData,eventClass,initEventSide)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; calcParametersChronos.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>calcParametersChronos
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>out = calcParameters(trialData,subData,eventClass,initEventSide)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function out = calcParametersChronos(trialData,subData,eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">out = calcParameters(trialData,subData,eventClass,initEventSide)
+This version of calcParameters computes parameters per STEP and not per
+STRIDE, to preserve chronological order in the data matrix.
+The criteria for a parameter to be considered part of a step is:
+1) If the parameter is instantaneous (i.e. computed from data from a
+single time-point), it needs to happen in the interval (iEvent, cEvent], where
+the interval is open on the left, but closed on the right (i.e., iEvent
+does not strictly belong to the interval).
+2) If the parameter measures something across time (i.e. as the difference
+of some quantity between two points in time, such as step duration), the
+latest timepoint used has to be contained in the same interval described
+before.
+INPUT:
+trialData: processedTrialData object
+subData: subjectData object
+eventClass: string containing the prefix to an existing event class: {'force','kin',''} (Optional, defaults to '')
+
+To add a new parameter, it must be added to the paramLabels cell and the
+label must be the same as the variable name the data is saved to within
+the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)
+note: if adding a slow and fast version of one parameter, make sure 'Fast'
+and 'Slow' appear at the end of the respective parameter names. See
+existing parameter names as an example.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="computeSpatialParametersChronos.html" class="code" title="function [out] = computeSpatialParametersChronos(strideEvents,stridedMarkerData,initEventSide)">computeSpatialParametersChronos</a>	%</li><li><a href="computeTemporalParametersChronos.html" class="code" title="function [out] = computeTemporalParametersChronos(strideEvents)">computeTemporalParametersChronos</a>	%</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = calcParametersChronos(trialData,subData,eventClass)</a>
+0002 <span class="comment">%out = calcParameters(trialData,subData,eventClass,initEventSide)</span>
+0003 <span class="comment">%This version of calcParameters computes parameters per STEP and not per</span>
+0004 <span class="comment">%STRIDE, to preserve chronological order in the data matrix.</span>
+0005 <span class="comment">%The criteria for a parameter to be considered part of a step is:</span>
+0006 <span class="comment">%1) If the parameter is instantaneous (i.e. computed from data from a</span>
+0007 <span class="comment">%single time-point), it needs to happen in the interval (iEvent, cEvent], where</span>
+0008 <span class="comment">%the interval is open on the left, but closed on the right (i.e., iEvent</span>
+0009 <span class="comment">%does not strictly belong to the interval).</span>
+0010 <span class="comment">%2) If the parameter measures something across time (i.e. as the difference</span>
+0011 <span class="comment">%of some quantity between two points in time, such as step duration), the</span>
+0012 <span class="comment">%latest timepoint used has to be contained in the same interval described</span>
+0013 <span class="comment">%before.</span>
+0014 <span class="comment">%INPUT:</span>
+0015 <span class="comment">%trialData: processedTrialData object</span>
+0016 <span class="comment">%subData: subjectData object</span>
+0017 <span class="comment">%eventClass: string containing the prefix to an existing event class: {'force','kin',''} (Optional, defaults to '')</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%To add a new parameter, it must be added to the paramLabels cell and the</span>
+0020 <span class="comment">%label must be the same as the variable name the data is saved to within</span>
+0021 <span class="comment">%the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)</span>
+0022 <span class="comment">%note: if adding a slow and fast version of one parameter, make sure 'Fast'</span>
+0023 <span class="comment">%and 'Slow' appear at the end of the respective parameter names. See</span>
+0024 <span class="comment">%existing parameter names as an example.</span>
+0025 [file]= getSimpleFileName(trialData.metaData.rawDataFilename);
+0026 
+0027 <span class="keyword">if</span> nargin&lt;3 || isempty(eventClass)
+0028     eventClass=<span class="string">''</span>;
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">%% Separate into steps &amp; identify events on each</span>
+0032 
+0033 <span class="comment">%Initialize:</span>
+0034 [numSteps,initTime,endTime,initEventSide]=getStepInfo(trialData,<span class="string">'HS'</span>);
+0035 <span class="keyword">if</span> numSteps==0;    
+0036     disp([<span class="string">'Warning: No strides detected in '</span>,file])
+0037     out=parameterSeries([],{},[],{}); <span class="comment">%TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty</span>
+0038     <span class="keyword">return</span>
+0039 <span class="keyword">end</span>
+0040 steppedProcEMG=cell(numSteps,1);
+0041 <span class="comment">%stridedMarkerData=cell(max(strideIdxs),1);</span>
+0042 steppedEventData=cell(numSteps,1);
+0043 
+0044 <span class="comment">%Step:</span>
+0045 aux=nan(numSteps,1);
+0046 <span class="keyword">for</span> i=1:numSteps
+0047     <span class="keyword">if</span> ~isempty(trialData.procEMGData)
+0048         steppedProcEMG{i}=trialData.(<span class="string">'procEMGData'</span>).split(initTime(i),endTime(i));
+0049     <span class="keyword">end</span>
+0050     steppedMarkerData{i}=trialData.(<span class="string">'markerData'</span>).split(initTime(i),endTime(i));
+0051     steppedEventData{i}=trialData.(<span class="string">'gaitEvents'</span>).split(initTime(i),endTime(i));
+0052     <span class="keyword">switch</span> initEventSide{i}
+0053         <span class="keyword">case</span> <span class="string">'R'</span>
+0054             endEventSide{i}=<span class="string">'L'</span>;
+0055         <span class="keyword">case</span> <span class="string">'L'</span>
+0056             endEventSide{i}=<span class="string">'R'</span>;
+0057     <span class="keyword">end</span>
+0058     ii=find(steppedEventData{i}.getDataAsVector([endEventSide{i} <span class="string">'TO'</span>]));
+0059     <span class="keyword">if</span> ~isempty(ii)
+0060     aux(i)=steppedEventData{i}.Time(ii);
+0061     <span class="keyword">end</span>
+0062 <span class="keyword">end</span>
+0063 strideEvents.(<span class="string">'tiHS'</span>)=initTime';
+0064 strideEvents.(<span class="string">'tcHS'</span>)=endTime';
+0065 strideEvents.(<span class="string">'tcTO'</span>)=aux;
+0066 
+0067 <span class="comment">%% Compute basic parameters to save &amp; initialize parameterSeries</span>
+0068 <span class="comment">%initialize the bad/good flag</span>
+0069 bad=nan(numSteps,1);
+0070 <span class="keyword">for</span> i=1:numSteps
+0071     bad(i)=sum(steppedEventData{i}.Data(:))~=2; <span class="comment">%Number of events different from expected</span>
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">%initialize trial number</span>
+0075 <span class="keyword">try</span>
+0076     trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); <span class="comment">%Need to FIX, but this data is not currently available on trialMetaData</span>
+0077 <span class="keyword">catch</span>
+0078     warning(<span class="string">'calcParametersNew:gettingTrialNumber'</span>,<span class="string">'Could not determine trial number from metaData, setting to NaN.'</span>);
+0079     trial=nan;
+0080 <span class="keyword">end</span>
+0081 trial=repmat(trial,length(bad),1);
+0082 
+0083 <span class="comment">%Initialize initTime</span>
+0084 initTime=strideEvents.tiHS; <span class="comment">%iHS</span>
+0085 finalTime=strideEvents.tcHS; <span class="comment">%cHS</span>
+0086 times=.5*(initTime+finalTime);
+0087 
+0088 <span class="comment">%Initialize parameterSeries</span>
+0089 data=[bad,~bad,trial,initTime,finalTime];
+0090 labels={<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>};
+0091 description={<span class="string">'True if events are missing, disordered or if stride time is too long or too short.'</span>, <span class="string">'Opposite of bad.'</span>,<span class="string">'Original trial number for stride'</span>,<span class="string">'Time of initial event (SHS), with respect to trial beginning.'</span>,<span class="string">'Time of final event (FTO2), with respect to trial beginning.'</span>};
+0092 out=parameterSeries(data,labels,times,description);  
+0093 
+0094 <span class="comment">%% Compute parameters</span>
+0095 <span class="comment">%Temporal:</span>
+0096 [temp] = <a href="computeTemporalParametersChronos.html" class="code" title="function [out] = computeTemporalParametersChronos(strideEvents)">computeTemporalParametersChronos</a>(strideEvents);
+0097 out=cat(out,temp);
+0098 
+0099 <span class="comment">%Spatial:</span>
+0100 [spat] = <a href="computeSpatialParametersChronos.html" class="code" title="function [out] = computeSpatialParametersChronos(strideEvents,stridedMarkerData,initEventSide)">computeSpatialParametersChronos</a>(strideEvents,steppedMarkerData,initEventSide);
+0101 out=cat(out,spat);
+0102 
+0103 <span class="comment">%% Issue bad strides warning</span>
+0104 <span class="keyword">if</span> any(bad)    
+0105     disp([<span class="string">'Warning: '</span> num2str(sum(bad)) <span class="string">' strides of '</span>,file, <span class="string">' were labeled as bad'</span>])    
+0106 <span class="keyword">end</span>
+0107 
+0108 <span class="comment">%% Use 'bad' as mask (necessary?)</span>
+0109 <span class="comment">%out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

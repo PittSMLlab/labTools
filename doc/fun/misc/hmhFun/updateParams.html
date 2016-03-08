@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of updateParams</title>
+  <meta name="keywords" content="updateParams">
+  <meta name="description" content="UPDATEPARAMS recomputes parameters and saves new subject file(s).">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; updateParams.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>updateParams
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>UPDATEPARAMS recomputes parameters and saves new subject file(s).</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function updateParams(subjects,eventClass,ignoreMatFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UPDATEPARAMS recomputes parameters and saves new subject file(s).
+Designed for batch re-processing.
+   updateParams(Subject) recomputes the adaptation 
+   parameters and overwrites the (Subject).mat and
+   (Subject)params.mat files if Subject is a string 
+   containing a subject ID for which a .mat file
+   exists either in the current working directory
+   or in a folder named after the same subject ID.
+
+   updateParams(Subject,1) Only overwrites the 
+   (Subject)params.mat file. Only use when changes
+   to calcExperimentalData have been made.
+   
+   See also calcParameters, experimentData.recomputeParameters, experimentData.makeDataObj.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function updateParams(subjects,eventClass,ignoreMatFlag)</a>
+0002 <span class="comment">%UPDATEPARAMS recomputes parameters and saves new subject file(s).</span>
+0003 <span class="comment">%Designed for batch re-processing.</span>
+0004 <span class="comment">%   updateParams(Subject) recomputes the adaptation</span>
+0005 <span class="comment">%   parameters and overwrites the (Subject).mat and</span>
+0006 <span class="comment">%   (Subject)params.mat files if Subject is a string</span>
+0007 <span class="comment">%   containing a subject ID for which a .mat file</span>
+0008 <span class="comment">%   exists either in the current working directory</span>
+0009 <span class="comment">%   or in a folder named after the same subject ID.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   updateParams(Subject,1) Only overwrites the</span>
+0012 <span class="comment">%   (Subject)params.mat file. Only use when changes</span>
+0013 <span class="comment">%   to calcExperimentalData have been made.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   See also calcParameters, experimentData.recomputeParameters, experimentData.makeDataObj.</span>
+0016 
+0017 h=waitbar(0, <span class="string">'Updating...'</span>);
+0018 hw=findobj(h,<span class="string">'Type'</span>,<span class="string">'Patch'</span>);
+0019 set(hw,<span class="string">'EdgeColor'</span>,[0 0 1],<span class="string">'FaceColor'</span>,[0 0 1]) <span class="comment">% changes the color to green</span>
+0020 
+0021 <span class="keyword">if</span> isa(subjects,<span class="string">'char'</span>)
+0022     subjects={subjects};    
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">for</span> s=1:length(subjects)
+0026     <span class="keyword">try</span>
+0027         load([subjects{s} <span class="string">'.mat'</span>])
+0028         saveloc = [];
+0029     <span class="keyword">catch</span>
+0030         <span class="keyword">try</span>
+0031             load([subjects{s} filesep char(s) <span class="string">'.mat'</span>])
+0032             saveloc=[subjects{s} filesep];
+0033         <span class="keyword">catch</span>
+0034             ME=MException(<span class="string">'makeDataObject:loadSubject'</span>,[char(s) <span class="string">' could not be loaded, try changing your matlab path.'</span>]);
+0035             throw(ME)
+0036         <span class="keyword">end</span>
+0037     <span class="keyword">end</span>
+0038 
+0039     <span class="keyword">if</span> nargin&lt;3 || ignoreMatFlag~=1   
+0040         expData=expData.recomputeParameters(eventClass); 
+0041         save([saveloc subjects{s} <span class="string">'.mat'</span>],<span class="string">'expData'</span>); <span class="comment">%overwrites file</span>
+0042     <span class="keyword">end</span>
+0043 
+0044     expData.makeDataObj([saveloc subjects{s}]); <span class="comment">%overwrites file</span>
+0045     waitbar(s/length(subjects))
+0046 <span class="keyword">end</span>
+0047 close(h)
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

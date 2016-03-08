@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processedTrialData</title>
+  <meta name="keywords" content="processedTrialData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; processedTrialData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>processedTrialData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processedTrialData.html" class="code" title="">processedTrialData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData);</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="processedTrialData.html" class="code" title="">processedTrialData</a> &lt; processedLabData
+0002     <span class="comment">%Almost dummy class: implements processedLabData as is, just checking that</span>
+0003     <span class="comment">%metaData is of trialMetaData type.</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%See also: processedLabData</span>
+0006     
+0007     <span class="comment">%%</span>
+0008     properties (SetAccess=private)
+0009 
+0010     <span class="keyword">end</span>
+0011         
+0012     
+0013     <span class="comment">%%</span>
+0014     methods
+0015         
+0016         <span class="comment">%Constructor:</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData); </a><span class="comment">%All arguments are mandatory</span>
+0018             
+0019             <span class="keyword">if</span> nargin&lt;15 <span class="comment">%metaData does not get replaced.</span>
+0020                markerData=[];
+0021                EMGData=[];
+0022                GRFData=[];
+0023                beltSpeedSetData=[];
+0024                beltSpeedReadData=[];
+0025                accData=[];
+0026                EEGData=[];
+0027                footSwitches=[];
+0028                events=[];
+0029                procEMG=[];
+0030                angleData = [];
+0031                COPData=[];
+0032                COMData=[];
+0033                jointMomentsData=[];
+0034                
+0035             <span class="keyword">end</span>
+0036             <span class="keyword">if</span> ~isa(metaData,<span class="string">'trialMetaData'</span>) &amp;&amp; ~isa(metaData,<span class="string">'derivedMetaData'</span>) &amp;&amp; ~isempty(metaData)
+0037                 ME=MException(<span class="string">'processedTrialData:Constructor'</span>,<span class="string">'First argument is not a trialMetaData object.'</span>);
+0038                 throw(ME);
+0039             <span class="keyword">end</span>
+0040             this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData)
+0041         <span class="keyword">end</span>
+0042         
+0043 <span class="comment">%         function calcParams(this)</span>
+0044 <span class="comment">%             this.adaptParams=calcParameters(this);</span>
+0045 <span class="comment">%         end</span>
+0046        
+0047     <span class="keyword">end</span>
+0048     
+0049     
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

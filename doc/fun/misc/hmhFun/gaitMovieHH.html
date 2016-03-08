@@ -1,0 +1,275 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gaitMovieHH</title>
+  <meta name="keywords" content="gaitMovieHH">
+  <meta name="description" content="GAITMOVIE  Make .avi movie of bilateral gait">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; gaitMovieHH.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>gaitMovieHH
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>GAITMOVIE  Make .avi movie of bilateral gait</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function  gaitMovieHH(subject,trial,start,stop) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">GAITMOVIE  Make .avi movie of bilateral gait
+   Run GAITMOVIE in folder containing .2ld file(s)
+   .2ld - 3D positions for 12 markers
+   .vlt - beltspeeds
+   .txt - title, captions and footnotes
+GTO Last edited May, 16th 2013 (cleaned up commented stuff)
+
+HH edit 6/2013 - changed avifile funtion to writeVideo function
+ added bar graphs below animations to show alpha and w*t values
+
+This function plots both contributions as horizontal bars on the same plot
+but on opposite sides of vertical axis</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function drawsegment(h_axes,X1,Y1,Z1,a,color)</a></li><li><a href="#_sub2" class="code">function drawball(h_axes,X1,Y1,Z1,radius,color)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function  gaitMovieHH(subject,trial,start,stop)</a>
+0002 <span class="comment">%GAITMOVIE  Make .avi movie of bilateral gait</span>
+0003 <span class="comment">%   Run GAITMOVIE in folder containing .2ld file(s)</span>
+0004 <span class="comment">%   .2ld - 3D positions for 12 markers</span>
+0005 <span class="comment">%   .vlt - beltspeeds</span>
+0006 <span class="comment">%   .txt - title, captions and footnotes</span>
+0007 <span class="comment">%GTO Last edited May, 16th 2013 (cleaned up commented stuff)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%HH edit 6/2013 - changed avifile funtion to writeVideo function</span>
+0010 <span class="comment">% added bar graphs below animations to show alpha and w*t values</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%This function plots both contributions as horizontal bars on the same plot</span>
+0013 <span class="comment">%but on opposite sides of vertical axis</span>
+0014 <span class="comment">%</span>
+0015 
+0016 <span class="comment">%Load subject</span>
+0017 load([subject <span class="string">'.mat'</span>])
+0018 
+0019 <span class="comment">%get trial to animate</span>
+0020 trialData=expData.data{trial};
+0021 
+0022 <span class="comment">%adjust input times to samples</span>
+0023 start=round(start*trialData.markerData.sampFreq);
+0024 stop=round(stop*trialData.markerData.sampFreq);
+0025 
+0026 <span class="comment">%reduce sampling rate by factor 10</span>
+0027 f = 1.5; <span class="comment">% 15 would make the file smaller %5 was chosen for presentation movies</span>
+0028 
+0029 <span class="comment">%create object that stores movie data to .avi file</span>
+0030 videoObj = VideoWriter(subject);
+0031 videoObj.FrameRate = 100/f;
+0032 videoObj.Quality = 100;
+0033 open(videoObj);
+0034 
+0035 <span class="comment">%extract and orgaize data from .2ld file and Evants matrix</span>
+0036 
+0037 orientation=trialData.markerData.orientation;
+0038 
+0039 Marker.RMT.X = -trialData.getMarkerData([<span class="string">'RTOE'</span> orientation.foreaftAxis]);
+0040 Marker.RMT.Z = trialData.getMarkerData([<span class="string">'RTOE'</span> orientation.updownAxis]);
+0041 Marker.RMT.Y = trialData.getMarkerData([<span class="string">'RTOE'</span> orientation.sideAxis]);
+0042 Marker.RAnkle.X = -trialData.getMarkerData([<span class="string">'RANK'</span> orientation.foreaftAxis]);
+0043 Marker.RAnkle.Z = trialData.getMarkerData([<span class="string">'RANK'</span> orientation.updownAxis]);
+0044 Marker.RAnkle.Y = trialData.getMarkerData([<span class="string">'RANK'</span> orientation.sideAxis]);
+0045 Marker.RKnee.X = -trialData.getMarkerData([<span class="string">'RKNEE'</span> orientation.foreaftAxis]);
+0046 Marker.RKnee.Z = trialData.getMarkerData([<span class="string">'RKNEE'</span> orientation.updownAxis]);
+0047 Marker.RKnee.Y = trialData.getMarkerData([<span class="string">'RKNEE'</span> orientation.sideAxis]);
+0048 Marker.RHip.X = -trialData.getMarkerData([<span class="string">'RHIP'</span> orientation.foreaftAxis]);
+0049 Marker.RHip.Z = trialData.getMarkerData([<span class="string">'RHIP'</span> orientation.updownAxis]);
+0050 Marker.RHip.Y = trialData.getMarkerData([<span class="string">'RHIP'</span> orientation.sideAxis]);
+0051 Marker.RPelvis.X = -trialData.getMarkerData([<span class="string">'RASIS'</span> orientation.foreaftAxis]);
+0052 Marker.RPelvis.Z = trialData.getMarkerData([<span class="string">'RASIS'</span> orientation.updownAxis]);
+0053 Marker.RPelvis.Y = trialData.getMarkerData([<span class="string">'RASIS'</span> orientation.sideAxis]);
+0054 
+0055 Marker.LMT.X = -trialData.getMarkerData([<span class="string">'LTOE'</span> orientation.foreaftAxis]);
+0056 Marker.LMT.Z = trialData.getMarkerData([<span class="string">'LTOE'</span> orientation.updownAxis]);
+0057 Marker.LMT.Y = trialData.getMarkerData([<span class="string">'LTOE'</span> orientation.sideAxis]);
+0058 Marker.LAnkle.X = -trialData.getMarkerData([<span class="string">'LANK'</span> orientation.foreaftAxis]);
+0059 Marker.LAnkle.Z = trialData.getMarkerData([<span class="string">'LANK'</span> orientation.updownAxis]);
+0060 Marker.LAnkle.Y = trialData.getMarkerData([<span class="string">'LANK'</span> orientation.sideAxis]);
+0061 Marker.LKnee.X = -trialData.getMarkerData([<span class="string">'LKNEE'</span> orientation.foreaftAxis]);
+0062 Marker.LKnee.Z = trialData.getMarkerData([<span class="string">'LKNEE'</span> orientation.updownAxis]);
+0063 Marker.LKnee.Y = trialData.getMarkerData([<span class="string">'LKNEE'</span> orientation.sideAxis]);
+0064 Marker.LHip.X = -trialData.getMarkerData([<span class="string">'LHIP'</span> orientation.foreaftAxis]);
+0065 Marker.LHip.Z = trialData.getMarkerData([<span class="string">'LHIP'</span> orientation.updownAxis]);
+0066 Marker.LHip.Y = trialData.getMarkerData([<span class="string">'LHIP'</span> orientation.sideAxis]);
+0067 Marker.LPelvis.X = -trialData.getMarkerData([<span class="string">'LASIS'</span> orientation.foreaftAxis]);
+0068 Marker.LPelvis.Z = trialData.getMarkerData([<span class="string">'LASIS'</span> orientation.updownAxis]);
+0069 Marker.LPelvis.Y = trialData.getMarkerData([<span class="string">'LASIS'</span> orientation.sideAxis]);
+0070 
+0071 
+0072 <span class="comment">%Make animation</span>
+0073 color = [0.4 0.4 0.4];
+0074 
+0075 <span class="comment">%colors</span>
+0076 blue = [11 132 199]/255;
+0077 <span class="comment">%blue = [0 160 198]/255;</span>
+0078 orange = [255 153 0]/255;
+0079 fadeblue = [152 212 228]/255;
+0080 fadeorange = [255 210 142]/255;
+0081 grey = [.4 .4 .4];
+0082 
+0083 opengl software
+0084 
+0085 h_fig = figure;
+0086 set(h_fig,<span class="string">'Position'</span>,[933 73 339 605],<span class="keyword">...</span><span class="comment">  %HH laptop [500   50   500   600] desktop [1440 135 400 800]</span>
+0087     <span class="string">'Color'</span>,[1 1 1],<span class="keyword">...</span>
+0088     <span class="string">'Renderer'</span>,<span class="string">'OpenGL'</span>);
+0089 <span class="comment">%'DoubleBuffer','on');</span>
+0090 <span class="comment">%'Renderer','OpenGL',... %'Renderer','zbuffer',...</span>
+0091 
+0092 Xlim = [min([Marker.LAnkle.X(start:stop); Marker.RAnkle.X(start:stop)])-200 max([Marker.LMT.X(start:stop); Marker.RMT.X(start:stop)])+200];
+0093 Ylim = [min([Marker.LAnkle.Y(start:stop); Marker.RAnkle.Y(start:stop)])-200 max([Marker.LAnkle.Y(start:stop); Marker.RAnkle.Y(start:stop)])+200];
+0094 Zlim = [min([Marker.LMT.Z(start:stop); Marker.RMT.Z(start:stop)])-200 max([Marker.LPelvis.Z(start:stop); Marker.RPelvis.Z(start:stop)])+200];
+0095     
+0096 set(gca,<span class="string">'XLim'</span>,Xlim,<span class="keyword">...</span><span class="comment"> %[-100 1200] needs to change</span>
+0097     <span class="string">'YLim'</span>,Ylim,<span class="keyword">...</span>
+0098     <span class="string">'ZLim'</span>,Zlim,<span class="keyword">...</span><span class="comment"> %[-400 2000]%catch</span>
+0099     <span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0100     <span class="string">'Position'</span>,[0.13 0.11 0.775 0.815],<span class="keyword">...</span>
+0101     <span class="string">'DataAspectRatio'</span>,[1 1 1],<span class="keyword">...</span>
+0102     <span class="string">'CameraPosition'</span>,[-1213.04 -8746.45 1140.87],<span class="keyword">...</span><span class="comment"> %'CameraPosition',[0 -10000 500]</span>
+0103     <span class="string">'CameraTarget'</span>,[-780.782 -498.523 441.085],<span class="keyword">...</span><span class="comment">'CameraTarget',[0 0 1000],...  % worked [500 0 1000] old [300 0 750]</span>
+0104     <span class="string">'Projection'</span>,<span class="string">'perspective'</span>,<span class="keyword">...</span>
+0105     <span class="string">'View'</span>,[-0.646214 1.02951],<span class="keyword">...</span>
+0106     <span class="string">'NextPlot'</span>, <span class="string">'add'</span>);
+0107 
+0108 
+0109 <span class="comment">%set(h_sub1,'Position',[-0.15 0.055 1.1 1.3])</span>
+0110 <span class="comment">% desktop [0.1 0.01 0.8 1.45]</span>
+0111 <span class="comment">%LN440</span>
+0112 <span class="comment">%LN0444 [-0.025 0.055 1.1 1.3]</span>
+0113 <span class="comment">%LN0452 [-0.065 0.025 1.05 1.3]</span>
+0114 
+0115 
+0116 <span class="keyword">for</span> i = start:stop
+0117     h_person = findobj(gca,<span class="string">'Type'</span>,<span class="string">'surface'</span>);
+0118     delete(h_person)
+0119     
+0120     <span class="comment">%draw legs - thigh,shank,foot</span>
+0121     <span class="keyword">for</span> side = 1:2
+0122         <span class="keyword">if</span> side==1
+0123             s = <span class="string">'R'</span>;
+0124             colorLegs=blue;
+0125             <span class="comment">%colorLegs=[0 0 0];</span>
+0126         <span class="keyword">elseif</span> side==2
+0127             s = <span class="string">'L'</span>;
+0128             colorLegs=orange;
+0129             <span class="comment">%colorLegs=[1 1 1];</span>
+0130         <span class="keyword">end</span>
+0131         <span class="keyword">for</span> seg = 1:3
+0132             <span class="keyword">if</span> seg==1
+0133                 joint1 = <span class="string">'MT'</span>;
+0134                 joint2 = <span class="string">'Ankle'</span>;
+0135                 radius = [1 .5 .5];
+0136             <span class="keyword">elseif</span> seg==2
+0137                 joint1 = <span class="string">'Ankle'</span>;
+0138                 joint2 = <span class="string">'Knee'</span>;
+0139                 radius = [1 .25 .25];
+0140             <span class="keyword">elseif</span> seg==3
+0141                 joint1 = <span class="string">'Knee'</span>;
+0142                 joint2 = <span class="string">'Hip'</span>;
+0143                 radius = [1 .35 .35];
+0144             <span class="keyword">end</span>
+0145             X = [Marker.([s joint1]).X(i) Marker.([s joint2]).X(i)];
+0146             Y = [Marker.([s joint1]).Y(i) Marker.([s joint2]).Y(i)];
+0147             Z = [Marker.([s joint1]).Z(i) Marker.([s joint2]).Z(i)];
+0148             <a href="#_sub1" class="code" title="subfunction drawsegment(h_axes,X1,Y1,Z1,a,color)">drawsegment</a>(gca,X,Y,Z,radius,colorLegs)
+0149         <span class="keyword">end</span>
+0150         <span class="comment">%draw hip joints</span>
+0151         X = Marker.([s <span class="string">'Hip'</span>]).X(i);
+0152         Y = Marker.([s <span class="string">'Hip'</span>]).Y(i);
+0153         Z = Marker.([s <span class="string">'Hip'</span>]).Z(i);
+0154         <a href="#_sub2" class="code" title="subfunction drawball(h_axes,X1,Y1,Z1,radius,color)">drawball</a>(gca,X,Y,Z,50,color)        
+0155     <span class="keyword">end</span>
+0156     <span class="comment">%draw pelvis</span>
+0157     X = [Marker.RHip.X(i) Marker.LHip.X(i)];
+0158     Y = [Marker.RHip.Y(i) Marker.LHip.Y(i)];
+0159     Z = [Marker.RHip.Z(i) Marker.LHip.Z(i)];
+0160     <a href="#_sub1" class="code" title="subfunction drawsegment(h_axes,X1,Y1,Z1,a,color)">drawsegment</a>(gca,X,Y,Z,[1 .4 .4],color)  
+0161   
+0162     h_light = camlight(<span class="string">'headlight'</span>);
+0163     set(findobj(gca,<span class="string">'type'</span>,<span class="string">'surface'</span>),<span class="keyword">...</span>
+0164         <span class="string">'FaceLighting'</span>,<span class="string">'gouraud'</span>,<span class="keyword">...</span>
+0165         <span class="string">'AmbientStrength'</span>,.3,<span class="keyword">...</span>
+0166         <span class="string">'DiffuseStrength'</span>,.8,<span class="keyword">...</span>
+0167         <span class="string">'SpecularStrength'</span>,.8,<span class="keyword">...</span>
+0168         <span class="string">'SpecularExponent'</span>,25,<span class="keyword">...</span>
+0169         <span class="string">'BackFaceLighting'</span>,<span class="string">'reverselit'</span>)
+0170     
+0171     <span class="comment">%save image as next frame in video file</span>
+0172     
+0173     frame = getframe(h_fig);
+0174     writeVideo(videoObj,frame);
+0175     
+0176     pause(.0001) <span class="comment">%forces refresh</span>
+0177     delete(h_light)       
+0178 <span class="keyword">end</span>
+0179 
+0180 close(videoObj);
+0181 
+0182 <a name="_sub1" href="#_subfunctions" class="code">function drawsegment(h_axes,X1,Y1,Z1,a,color)</a>
+0183 <span class="comment">%draw an ellipsoid aligned to line defined by 2 points</span>
+0184 <span class="comment">%a defines relative length of the ellipsoid radii</span>
+0185 O = [X1(1) Y1(1) Z1(1)]; <span class="comment">%vector origin</span>
+0186 V = [X1(2)-X1(1) Y1(2)-Y1(1) Z1(2)-Z1(1)]; <span class="comment">%vector</span>
+0187 [theta,phi,r] = cart2sph(V(1),V(2),V(3)); <span class="comment">%theta is angle with x-axis, phi is angle with z-axis, r is length of segment</span>
+0188 <span class="comment">%build segment surface and rotate/translate</span>
+0189 [X,Y,Z] = ellipsoid(r/2,0,0,r/2,r/2*a(2)/a(1),r/2*a(3)/a(1)); <span class="comment">%build segment surface about origin</span>
+0190 h = surf(h_axes,X,Y,Z,<span class="string">'FaceColor'</span>,color,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0191 t = hgtransform(<span class="string">'Parent'</span>,h_axes);
+0192 set(h,<span class="string">'Parent'</span>,t)
+0193 Ry = makehgtform(<span class="string">'yrotate'</span>,-phi);
+0194 Rz = makehgtform(<span class="string">'zrotate'</span>,theta);
+0195 Tx = makehgtform(<span class="string">'translate'</span>,O);
+0196 set(t,<span class="string">'Matrix'</span>,Tx*Rz*Ry)
+0197 <span class="comment">%--------------------------------------------------------------------------</span>
+0198 
+0199 <span class="comment">%--------------------------------------------------------------------------</span>
+0200 <a name="_sub2" href="#_subfunctions" class="code">function drawball(h_axes,X1,Y1,Z1,radius,color)</a>
+0201 <span class="comment">%draw a ball centered at a defined point</span>
+0202 O = [X1 Y1 Z1]; <span class="comment">%vector origin</span>
+0203 <span class="comment">%build ball surface and translate</span>
+0204 [X,Y,Z] = sphere; <span class="comment">%build segment surface about origin</span>
+0205 h = surf(h_axes,X,Y,Z,<span class="string">'FaceColor'</span>,color,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0206 t = hgtransform(<span class="string">'Parent'</span>,h_axes);
+0207 set(h,<span class="string">'Parent'</span>,t)
+0208 S = makehgtform(<span class="string">'scale'</span>,radius);
+0209 Tx = makehgtform(<span class="string">'translate'</span>,O);
+0210 set(t,<span class="string">'Matrix'</span>,Tx*S)
+0211 <span class="comment">%--------------------------------------------------------------------------</span>
+0212 
+0213 
+0214 
+0215</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

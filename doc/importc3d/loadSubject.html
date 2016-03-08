@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadSubject</title>
+  <meta name="keywords" content="loadSubject">
+  <meta name="description" content="loadSubject  Load, organize, process, and save data from .c3d files as a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; loadSubject.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>loadSubject
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>loadSubject  Load, organize, process, and save data from .c3d files as a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [expData,rawExpData,adaptData]=loadSubject(info,eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">loadSubject  Load, organize, process, and save data from .c3d files as a 
+             subject's .mat file
+
+INPUT:
+'info' is the structured array output from GetInfoGUI
+'eventClass' can be a string value: '' or 'kin' or 'force'   it
+specifies the method to determine gait events. When in doubt use ''
+
+OUTPUTS:
+expData: a processed instance of the experimentData class
+rawExpData: an unprocessed instance of the experimentData class
+
+See also: <a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList] = getTrialMetaData(info)">getTrialMetaData</a>, experimentData, experimentData.process</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList] = getTrialMetaData(info)">getTrialMetaData</a>	getTrialMetaData  generates trialMetaData objects for each trial of a</li><li><a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>	loadTrials  generates rawTrialData instances for each trial</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="c3d2mat.html" class="code" title="">c3d2mat</a>	c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)</a>
+0002 <span class="comment">%loadSubject  Load, organize, process, and save data from .c3d files as a</span>
+0003 <span class="comment">%             subject's .mat file</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%INPUT:</span>
+0006 <span class="comment">%'info' is the structured array output from GetInfoGUI</span>
+0007 <span class="comment">%'eventClass' can be a string value: '' or 'kin' or 'force'   it</span>
+0008 <span class="comment">%specifies the method to determine gait events. When in doubt use ''</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%OUTPUTS:</span>
+0011 <span class="comment">%expData: a processed instance of the experimentData class</span>
+0012 <span class="comment">%rawExpData: an unprocessed instance of the experimentData class</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%See also: getTrialMetaData, experimentData, experimentData.process</span>
+0015 
+0016 <span class="keyword">if</span> nargin&lt;2 || isempty(eventClass)
+0017     eventClass=<span class="string">''</span>;<span class="comment">%default, will choose based on trial type TM or OG</span>
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="comment">%% Initialize diary to save all information displayed during loading</span>
+0021 diaryFileName=[info.save_folder filesep info.ID <span class="string">'loading.log'</span>];
+0022 diary(diaryFileName)
+0023 <span class="comment">%% Determine Experiment Date</span>
+0024 expDate = labDate(info.day,info.month,info.year);<span class="comment">%labDate is a labTools class</span>
+0025 <span class="comment">%% Experiment info</span>
+0026 
+0027 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,<span class="keyword">...</span>
+0028     info.exp_obs,info.conditionNames,info.conditionDescriptions,info.trialnums,info.numoftrials);<span class="comment">%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s</span>
+0029 <span class="comment">%Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</span>
+0030 
+0031 <span class="comment">%% Subject info</span>
+0032 
+0033 <span class="comment">% find reference leg</span>
+0034 <span class="comment">%This assumes</span>
+0035 <span class="comment">%   1) that the leg on the fast belt is the dominant leg</span>
+0036 <span class="comment">%   2) that info.domleg is either 'left' or 'right'</span>
+0037 <span class="comment">%   3) that the reference leg is the leg on the slow belt</span>
+0038 
+0039 <span class="keyword">if</span> isfield(info,<span class="string">'isStroke'</span>) &amp;&amp; info.isStroke==1 <span class="comment">%For stroke patients, reference leg is equal to affected side</span>
+0040     <span class="keyword">if</span> strcmpi(info.affectedSide,<span class="string">'right'</span>)
+0041         info.refLeg=<span class="string">'R'</span>;
+0042     <span class="keyword">elseif</span> strcmpi(info.affectedSide,<span class="string">'left'</span>)
+0043         info.refLeg = <span class="string">'L'</span>;
+0044     <span class="keyword">else</span>
+0045         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.affectedSide is either ''Left'' or ''Right''.'</span>)
+0046     <span class="keyword">end</span>
+0047 <span class="keyword">else</span> <span class="comment">%For non-stroke patients, we are assuming that the reference leg is their non-dominant leg</span>
+0048     <span class="keyword">if</span> strcmpi(info.domleg,<span class="string">'right'</span>)
+0049         info.refLeg = <span class="string">'L'</span>;
+0050     <span class="keyword">elseif</span> strcmpi(info.domleg,<span class="string">'left'</span>)
+0051         info.refLeg = <span class="string">'R'</span>;
+0052     <span class="keyword">else</span>
+0053         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.domleg is either ''Left'' or ''Right''.'</span>)
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 
+0057 DOB = labDate(info.DOBday,info.DOBmonth,info.DOByear);
+0058 
+0059 <span class="comment">%age calc</span>
+0060 age = expDate.year - DOB.year;
+0061 <span class="keyword">if</span> expDate.month &lt; DOB.month
+0062     age = age-1;
+0063 <span class="keyword">elseif</span> expDate.month == DOB.month
+0064     <span class="keyword">if</span> expDate.day &lt; DOB.day
+0065         age = age-1;
+0066     <span class="keyword">end</span>
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="keyword">if</span> ~isfield(info,<span class="string">'isStroke'</span>) || info.isStroke==0
+0070     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
+0071     info.weight,age,info.ID);
+0072 <span class="keyword">else</span>
+0073     subData=strokeSubjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
+0074     info.weight,age,info.ID,info.affectedSide); <span class="comment">%TO DO: add stroke date</span>
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">%% Trial Data</span>
+0078 
+0079 <span class="comment">% Generate meta data for each trial</span>
+0080 [trialMD,fileList,secFileList]=<a href="getTrialMetaData.html" class="code" title="function [trialMD,fileList,secFileList] = getTrialMetaData(info)">getTrialMetaData</a>(info);
+0081 
+0082 <span class="comment">% Load trials</span>
+0083 rawTrialData=<a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>(trialMD,fileList,secFileList,info);
+0084 
+0085 rawExpData=experimentData(expMD,subData,rawTrialData);
+0086 
+0087 <span class="comment">%save raw</span>
+0088 save([info.save_folder filesep info.ID <span class="string">'RAW.mat'</span>],<span class="string">'rawExpData'</span>,<span class="string">'-v7.3'</span>)
+0089 
+0090 <span class="comment">%% Process data</span>
+0091 expData=rawExpData.process(eventClass);
+0092 
+0093 <span class="comment">%Save processed</span>
+0094 save([info.save_folder filesep info.ID <span class="string">'.mat'</span>],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>)
+0095 
+0096 <span class="comment">%create adaptationData object</span>
+0097 adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
+0098 
+0099 <span class="comment">%%</span>
+0100 diary off</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

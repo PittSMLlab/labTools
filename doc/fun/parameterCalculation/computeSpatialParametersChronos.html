@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeSpatialParametersChronos</title>
+  <meta name="keywords" content="computeSpatialParametersChronos">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeSpatialParametersChronos.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeSpatialParametersChronos
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeSpatialParametersChronos(strideEvents,stridedMarkerData,initEventSide) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getKinematicData.html" class="code" title="function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s)">getKinematicData</a>	getKinematicData   loads marker data sampled only at time of gait events</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calcParametersChronos.html" class="code" title="function out = calcParametersChronos(trialData,subData,eventClass)">calcParametersChronos</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeSpatialParametersChronos(strideEvents,stridedMarkerData,initEventSide)</a>
+0002 <span class="comment">%%</span>
+0003 
+0004 timeiHS=strideEvents.tiHS;
+0005 timecTO=strideEvents.tcTO;
+0006 timecHS=strideEvents.tcHS;
+0007 eventTimes=[timeiHS timecTO timecHS];
+0008 cHS=1; iTO=2; iHS=3;  <span class="comment">%numbers correspond to column of eventTimes matrix</span>
+0009 <span class="comment">%% Labels and descriptions:</span>
+0010 aux={<span class="string">'direction'</span>,               <span class="string">'-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)'</span>;<span class="keyword">...</span>
+0011     <span class="string">'hipPos'</span>,                   <span class="string">'mid hip position at iHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)'</span>;<span class="keyword">...</span>
+0012     <span class="string">'stepLength'</span>,               <span class="string">'distance between ankle markers (relative to avg hip marker) at cHS (in mm)'</span>;<span class="keyword">...</span>
+0013     <span class="string">'alpha'</span>,                    <span class="string">'ankle placement of contra leg at cHS (realtive to avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0014     <span class="string">'beta'</span>,                     <span class="string">'ankle placement of contra leg at cTO (relative avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0015     <span class="string">'X'</span>,                        <span class="string">'ankle postion of the ipsi leg @cHS (relative to avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0016     <span class="string">'swingRange'</span>,               <span class="string">'total distance covered by ankle marker realtive to hip from cTO to cHS (in mm)'</span>;<span class="keyword">...</span>
+0017     <span class="string">'swingRangeAlt'</span>,            <span class="string">'total distance covered by ankle marker realtive to other ankle from cTO to cHS (in mm)'</span>;<span class="keyword">...</span>
+0018     <span class="string">'singleStanceSpeedAbs'</span>,     <span class="string">'Absolute speed of ipsi ankle marker during contralateral swing'</span>;<span class="keyword">...</span>
+0019     <span class="string">'singleStanceSpeed'</span>,        <span class="string">'Ankle relative to hip, during contra-lateral swing'</span>;<span class="keyword">...</span>
+0020 <span class="comment">%    'avgRotation',            'Angle that the coordinates were rotated by';...</span>
+0021     }; 
+0022 
+0023 paramLabels=aux(:,1);
+0024 description=aux(:,2);
+0025 
+0026 <span class="comment">%% Get rotated data</span>
+0027 <span class="keyword">for</span> i=1:length(stridedMarkerData)
+0028     <span class="keyword">switch</span> initEventSide{i}
+0029         <span class="keyword">case</span> <span class="string">'R'</span>
+0030             contra=<span class="string">'L'</span>;
+0031         <span class="keyword">case</span> <span class="string">'L'</span>
+0032             contra=<span class="string">'R'</span>;
+0033     <span class="keyword">end</span>
+0034     
+0035     [rotatedMarkerData,iAnkFwd,cAnkFwd,iAnk2D,cAnk2D,iAngle,cAngle,direction(i),hipPos(i)]=<a href="getKinematicData.html" class="code" title="function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s)">getKinematicData</a>(eventTimes(i,:),stridedMarkerData{i},[],initEventSide{i});
+0036 
+0037     <span class="comment">%step lengths (1D)</span>
+0038     stepLength(i)=cAnkFwd(:,iHS)-iAnkFwd(:,iHS);
+0039 
+0040     <span class="comment">%Spatial parameters - in millimeters</span>
+0041 
+0042     <span class="comment">%alpha (positive portion of interlimb angle at HS)</span>
+0043     alpha(i)=cAnkFwd(:,cHS);
+0044 
+0045     <span class="comment">%beta (negative portion of interlimb angle at TO)</span>
+0046     beta(i)=cAnkFwd(:,cTO);
+0047 
+0048     <span class="comment">%position of the ankle marker at contra lateral  HS</span>
+0049     X(i)=iAnkFwd(:,cHS);
+0050 
+0051     <span class="comment">%swing range</span>
+0052     swingRange(i)=alpha-beta;
+0053     swingRangeAlt(i)=(cAnkFwd(:,cHS)-iAnkFwd(:,cHS))-(cAnkFwd(:,cTO)-iAnkFwd(:,cTO));
+0054 
+0055 
+0056     <span class="comment">%% Speed calculations</span>
+0057     sToeAbsVel=steppedMarkerData{i}.getDataAsOTS({[initEventSide{i} <span class="string">'TOE'</span>]}).derivate;
+0058     fToeAbsVel=steppedMarkerData{i}.getDataAsOTS({[contra <span class="string">'TOE'</span>]}).derivate;
+0059     <span class="keyword">if</span> ~isnan(timecTO(i)) &amp;&amp; ~isnan(timecHS(i)) <span class="comment">%Case that the event is missing</span>
+0060         sToePartial=sToeAbsVel.split(timecTO(i),timecHS(i)).getOrientedData;
+0061         singleStanceSpeedAbs(i)=prctile(sToePartial(:,1,2),70);
+0062     <span class="keyword">end</span>
+0063 
+0064     singleStanceSpeed(i)=abs(sAnkFwd(:,cHS)-sAnkFwd(:,cTO))./(timecHS(i)-timecTO(i)); <span class="comment">%Ankle relative to hip, during ipsilateral stance</span>
+0065 
+0066 <span class="keyword">end</span>
+0067             
+0068 
+0069 <span class="comment">%% Assign parameters to data matrix</span>
+0070 data=nan(length(timeSHS),length(paramLabels));
+0071 <span class="keyword">for</span> i=1:length(paramLabels)
+0072     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">%% Create parameterSeries</span>
+0076 out=parameterSeries(data,paramLabels,[],description);        
+0077 
+0078 <span class="keyword">end</span>
+0079</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

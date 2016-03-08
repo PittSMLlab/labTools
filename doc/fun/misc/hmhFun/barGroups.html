@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of barGroups</title>
+  <meta name="keywords" content="barGroups">
+  <meta name="description" content="Make a bar plot to compare groups for a given epoch and parameter">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; barGroups.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>barGroups
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Make a bar plot to compare groups for a given epoch and parameter</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Make a bar plot to compare groups for a given epoch and parameter
+   TO DO: make function be able to accept a group array that is different
+   thand the groups in the results matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="getResults.html" class="code" title="function results = getResults(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResults</a>	define number of points to use for calculating values</li><li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)</a>
+0002 <span class="comment">%Make a bar plot to compare groups for a given epoch and parameter</span>
+0003 <span class="comment">%   TO DO: make function be able to accept a group array that is different</span>
+0004 <span class="comment">%   thand the groups in the results matrix</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;8 || isempty(mode)
+0007     mode=1;
+0008 <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;7 || isempty(colorOrder) || size(colorOrder,2)~=3    
+0010     poster_colors;
+0011     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; p_gray; p_black;[1 1 1]];         
+0012 <span class="keyword">end</span>
+0013 <span class="comment">% Set grey colors to use when individual subjects are plotted</span>
+0014 greyOrder=[0 0 0 ;1 1 1;0.5 0.5 0.5;0.2 0.2 0.2;0.9 0.9 0.9;0.1 0.1 0.1;0.8 0.8 0.8;0.3 0.3 0.3;0.7 0.7 0.7];
+0015 
+0016 ngroups=length(groups);         
+0017 numPlots=length(epochs)*length(params);
+0018 numE=length(epochs);
+0019 ah=optimizedSubPlot(numPlots,length(params),numE,<span class="string">'lr'</span>,12,10,12);
+0020 i=1;
+0021 <span class="keyword">for</span> p=1:length(params)
+0022    limy=[];
+0023    <span class="keyword">for</span> t=1:numE
+0024        axes(ah(i))
+0025        hold on
+0026        <span class="keyword">for</span> b=1:ngroups
+0027            nSubs=length(Study.(groups{b}).ID);
+0028            
+0029            <span class="comment">%attempt to abbreviate group name</span>
+0030 <span class="comment">%            adaptData=Study.(groups{b}).adaptData{1};</span>
+0031 <span class="comment">%            group=adaptData.metaData.ID;</span>
+0032 <span class="comment">%            spaces=find(group==' ');</span>
+0033 <span class="comment">%            abrevGroup=group(spaces+1);%</span>
+0034 <span class="comment">%            abrevGroups{b}=[group(1) abrevGroup];</span>
+0035                       
+0036            ind=find(strcmp(fields(Study),groups{b}));
+0037            <span class="keyword">switch</span> mode
+0038                <span class="keyword">case</span> 1
+0039                    <span class="keyword">if</span> nargin&gt;5 &amp;&amp; indivFlag
+0040                        bar(b,results.(epochs{t}).avg(b,p),<span class="string">'facecolor'</span>,greyOrder(ind,:));
+0041                        <span class="keyword">for</span> s=1:nSubs
+0042                            aux=results.(epochs{t}).indiv.(params{p});
+0043                            aux=aux(aux(:,1)==b,2);                   
+0044                            plot(b,aux(s),<span class="string">'*'</span>,<span class="string">'Color'</span>,colorOrder(s,:))                 
+0045                        <span class="keyword">end</span>
+0046                    <span class="keyword">else</span>
+0047                        bar(b,results.(epochs{t}).avg(b,p),<span class="string">'facecolor'</span>,colorOrder(ind,:));
+0048                    <span class="keyword">end</span>
+0049                <span class="keyword">case</span> 2
+0050                    <span class="comment">%nop</span>
+0051            <span class="keyword">end</span>
+0052        <span class="keyword">end</span>
+0053        <span class="keyword">switch</span> mode
+0054            <span class="keyword">case</span> 1
+0055                 errorbar(results.(epochs{t}).avg(:,p),results.(epochs{t}).se(:,p),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>)
+0056            <span class="keyword">case</span> 2
+0057                errorbar(results.(epochs{t}).avg(:,p),results.(epochs{t}).se(:,p),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>)
+0058        <span class="keyword">end</span>
+0059        set(gca,<span class="string">'Xtick'</span>,1:ngroups,<span class="string">'XTickLabel'</span>,groups,<span class="string">'fontSize'</span>,12)
+0060        axis tight
+0061        limy=[limy get(gca,<span class="string">'Ylim'</span>)];
+0062        ylabel(params{p})
+0063        title(epochs{t})
+0064        i=i+1;
+0065    <span class="keyword">end</span>
+0066    set(ah(p*numE-(numE-1):p*numE),<span class="string">'Ylim'</span>,[min(limy) max(limy)])
+0067    set(gcf,<span class="string">'Renderer'</span>,<span class="string">'painters'</span>);
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">end</span>
+0071</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

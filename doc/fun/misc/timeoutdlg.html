@@ -1,0 +1,557 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of timeoutdlg</title>
+  <meta name="keywords" content="timeoutdlg">
+  <meta name="description" content="INPUTDLG Input dialog box.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; timeoutdlg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>timeoutdlg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>INPUTDLG Input dialog box.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Answer=timeoutdlg(Prompt, Title, NumLines, DefAns, Resize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">INPUTDLG Input dialog box.
+  ANSWER = INPUTDLG(PROMPT) creates a modal dialog box that returns user
+  input for multiple prompts in the cell array ANSWER. PROMPT is a cell
+  array containing the PROMPT strings.
+
+  INPUTDLG uses UIWAIT to suspend execution until the user responds.
+
+  ANSWER = INPUTDLG(PROMPT,NAME) specifies the title for the dialog.
+
+  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES) specifies the number of lines for
+  each answer in NUMLINES. NUMLINES may be a constant value or a column
+  vector having one element per PROMPT that specifies how many lines per
+  input field. NUMLINES may also be a matrix where the first column
+  specifies how many rows for the input field and the second column
+  specifies how many columns wide the input field should be.
+
+  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES,DEFAULTANSWER) specifies the
+  default answer to display for each PROMPT. DEFAULTANSWER must contain
+  the same number of elements as PROMPT and must be a cell array of
+  strings.
+
+  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES,DEFAULTANSWER,OPTIONS) specifies
+  additional options. If OPTIONS is the string 'on', the dialog is made
+  resizable. If OPTIONS is a structure, the fields Resize, WindowStyle, and
+  Interpreter are recognized. Resize can be either 'on' or
+  'off'. WindowStyle can be either 'normal' or 'modal'. Interpreter can be
+  either 'none' or 'tex'. If Interpreter is 'tex', the prompt strings are
+  rendered using LaTeX.
+
+  Examples:
+
+  prompt={'Enter the matrix size for x^2:','Enter the colormap name:'};
+  name='Input for Peaks function';
+  numlines=1;
+  defaultanswer={'20','hsv'};
+
+  answer=inputdlg(prompt,name,numlines,defaultanswer);
+
+  options.Resize='on';
+  options.WindowStyle='normal';
+  options.Interpreter='tex';
+
+  answer=inputdlg(prompt,name,numlines,defaultanswer,options);
+
+  See also DIALOG, ERRORDLG, HELPDLG, LISTDLG, MSGBOX,
+    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function doFigureKeyPress(obj, evd)</a></li><li><a href="#_sub2" class="code">function doControlKeyPress(obj, evd)</a></li><li><a href="#_sub3" class="code">function doCallback(obj, evd)</a></li><li><a href="#_sub4" class="code">function doResize(FigHandle, evd, multicolumn)</a></li><li><a href="#_sub5" class="code">function EditWidth = setcolumnwidth(object, rows, cols)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Answer=timeoutdlg(Prompt, Title, NumLines, DefAns, Resize)</a>
+0002 <span class="comment">%INPUTDLG Input dialog box.</span>
+0003 <span class="comment">%  ANSWER = INPUTDLG(PROMPT) creates a modal dialog box that returns user</span>
+0004 <span class="comment">%  input for multiple prompts in the cell array ANSWER. PROMPT is a cell</span>
+0005 <span class="comment">%  array containing the PROMPT strings.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  INPUTDLG uses UIWAIT to suspend execution until the user responds.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  ANSWER = INPUTDLG(PROMPT,NAME) specifies the title for the dialog.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES) specifies the number of lines for</span>
+0012 <span class="comment">%  each answer in NUMLINES. NUMLINES may be a constant value or a column</span>
+0013 <span class="comment">%  vector having one element per PROMPT that specifies how many lines per</span>
+0014 <span class="comment">%  input field. NUMLINES may also be a matrix where the first column</span>
+0015 <span class="comment">%  specifies how many rows for the input field and the second column</span>
+0016 <span class="comment">%  specifies how many columns wide the input field should be.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES,DEFAULTANSWER) specifies the</span>
+0019 <span class="comment">%  default answer to display for each PROMPT. DEFAULTANSWER must contain</span>
+0020 <span class="comment">%  the same number of elements as PROMPT and must be a cell array of</span>
+0021 <span class="comment">%  strings.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%  ANSWER = INPUTDLG(PROMPT,NAME,NUMLINES,DEFAULTANSWER,OPTIONS) specifies</span>
+0024 <span class="comment">%  additional options. If OPTIONS is the string 'on', the dialog is made</span>
+0025 <span class="comment">%  resizable. If OPTIONS is a structure, the fields Resize, WindowStyle, and</span>
+0026 <span class="comment">%  Interpreter are recognized. Resize can be either 'on' or</span>
+0027 <span class="comment">%  'off'. WindowStyle can be either 'normal' or 'modal'. Interpreter can be</span>
+0028 <span class="comment">%  either 'none' or 'tex'. If Interpreter is 'tex', the prompt strings are</span>
+0029 <span class="comment">%  rendered using LaTeX.</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%  Examples:</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%  prompt={'Enter the matrix size for x^2:','Enter the colormap name:'};</span>
+0034 <span class="comment">%  name='Input for Peaks function';</span>
+0035 <span class="comment">%  numlines=1;</span>
+0036 <span class="comment">%  defaultanswer={'20','hsv'};</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">%  answer=inputdlg(prompt,name,numlines,defaultanswer);</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%  options.Resize='on';</span>
+0041 <span class="comment">%  options.WindowStyle='normal';</span>
+0042 <span class="comment">%  options.Interpreter='tex';</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">%  answer=inputdlg(prompt,name,numlines,defaultanswer,options);</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">%  See also DIALOG, ERRORDLG, HELPDLG, LISTDLG, MSGBOX,</span>
+0047 <span class="comment">%    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .</span>
+0048 
+0049 <span class="comment">%  Copyright 1994-2014 The MathWorks, Inc.</span>
+0050 
+0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+0052 <span class="comment">%%% Nargin Check %%%</span>
+0053 <span class="comment">%%%%%%%%%%%%%%%%%%%%</span>
+0054 narginchk(0,5);
+0055 nargoutchk(0,1);
+0056 
+0057 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0058 <span class="comment">%%% Handle Input Args %%%</span>
+0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0060 <span class="keyword">if</span> nargin&lt;1
+0061   Prompt=getString(message(<span class="string">'MATLAB:uistring:popupdialogs:InputDlgInput'</span>));
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> ~iscell(Prompt)
+0064   Prompt={Prompt};
+0065 <span class="keyword">end</span>
+0066 NumQuest=numel(Prompt);
+0067 
+0068 
+0069 <span class="keyword">if</span> nargin&lt;2,
+0070   Title=<span class="string">' '</span>;
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="keyword">if</span> nargin&lt;3
+0074   NumLines=1;
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="keyword">if</span> nargin&lt;4
+0078   DefAns=cell(NumQuest,1);
+0079   <span class="keyword">for</span> lp=1:NumQuest
+0080     DefAns{lp}=<span class="string">''</span>;
+0081   <span class="keyword">end</span>
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="keyword">if</span> nargin&lt;5
+0085   Resize = <span class="string">'off'</span>;
+0086 <span class="keyword">end</span>
+0087 WindowStyle=<span class="string">'modal'</span>;
+0088 Interpreter=<span class="string">'none'</span>;
+0089 
+0090 Options = struct([]); <span class="comment">%#ok</span>
+0091 <span class="keyword">if</span> nargin==5 &amp;&amp; isstruct(Resize)
+0092   Options = Resize;
+0093   Resize  = <span class="string">'off'</span>;
+0094   <span class="keyword">if</span> isfield(Options,<span class="string">'Resize'</span>),      Resize=Options.Resize;           <span class="keyword">end</span>
+0095   <span class="keyword">if</span> isfield(Options,<span class="string">'WindowStyle'</span>), WindowStyle=Options.WindowStyle; <span class="keyword">end</span>
+0096   <span class="keyword">if</span> isfield(Options,<span class="string">'Interpreter'</span>), Interpreter=Options.Interpreter; <span class="keyword">end</span>
+0097 <span class="keyword">end</span>
+0098 
+0099 [rw,cl]=size(NumLines);
+0100 OneVect = ones(NumQuest,1);
+0101 <span class="keyword">if</span> (rw == 1 &amp; cl == 2) <span class="comment">%#ok Handle []</span>
+0102   NumLines=NumLines(OneVect,:);
+0103 <span class="keyword">elseif</span> (rw == 1 &amp; cl == 1) <span class="comment">%#ok</span>
+0104   NumLines=NumLines(OneVect);
+0105 <span class="keyword">elseif</span> (rw == 1 &amp; cl == NumQuest) <span class="comment">%#ok</span>
+0106   NumLines = NumLines';
+0107 <span class="keyword">elseif</span> (rw ~= NumQuest | cl &gt; 2) <span class="comment">%#ok</span>
+0108   error(message(<span class="string">'MATLAB:inputdlg:IncorrectSize'</span>))
+0109 <span class="keyword">end</span>
+0110 
+0111 <span class="keyword">if</span> ~iscell(DefAns),
+0112   error(message(<span class="string">'MATLAB:inputdlg:InvalidDefaultAnswer'</span>));
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%</span>
+0116 <span class="comment">%%% Create InputFig %%%</span>
+0117 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%</span>
+0118 FigWidth=175;
+0119 FigHeight=100;
+0120 FigPos(3:4)=[FigWidth FigHeight];  <span class="comment">%#ok</span>
+0121 FigColor=get(0,<span class="string">'DefaultUicontrolBackgroundColor'</span>);
+0122 
+0123 InputFig=dialog(                     <span class="keyword">...</span>
+0124   <span class="string">'Visible'</span>          ,<span class="string">'off'</span>      , <span class="keyword">...</span>
+0125   <span class="string">'KeyPressFcn'</span>      ,@<a href="#_sub1" class="code" title="subfunction doFigureKeyPress(obj, evd) ">doFigureKeyPress</a>, <span class="keyword">...</span>
+0126   <span class="string">'Name'</span>             ,Title      , <span class="keyword">...</span>
+0127   <span class="string">'Pointer'</span>          ,<span class="string">'arrow'</span>    , <span class="keyword">...</span>
+0128   <span class="string">'Units'</span>            ,<span class="string">'pixels'</span>   , <span class="keyword">...</span>
+0129   <span class="string">'UserData'</span>         ,<span class="string">'Cancel'</span>   , <span class="keyword">...</span>
+0130   <span class="string">'Tag'</span>              ,Title      , <span class="keyword">...</span>
+0131   <span class="string">'HandleVisibility'</span> ,<span class="string">'callback'</span> , <span class="keyword">...</span>
+0132   <span class="string">'Color'</span>            ,FigColor   , <span class="keyword">...</span>
+0133   <span class="string">'NextPlot'</span>         ,<span class="string">'add'</span>      , <span class="keyword">...</span>
+0134   <span class="string">'WindowStyle'</span>      ,WindowStyle, <span class="keyword">...</span>
+0135   <span class="string">'Resize'</span>           ,Resize       <span class="keyword">...</span>
+0136   );
+0137 
+0138 
+0139 <span class="comment">%%%%%%%%%%%%%%%%%%%%%</span>
+0140 <span class="comment">%%% Set Positions %%%</span>
+0141 <span class="comment">%%%%%%%%%%%%%%%%%%%%%</span>
+0142 DefOffset    = 5;
+0143 DefBtnWidth  = 53;
+0144 DefBtnHeight = 23;
+0145 
+0146 TextInfo.Units              = <span class="string">'pixels'</span>   ;
+0147 TextInfo.FontSize           = get(0,<span class="string">'FactoryUicontrolFontSize'</span>);
+0148 TextInfo.FontWeight         = get(InputFig,<span class="string">'DefaultTextFontWeight'</span>);
+0149 TextInfo.HorizontalAlignment= <span class="string">'left'</span>     ;
+0150 TextInfo.HandleVisibility   = <span class="string">'callback'</span> ;
+0151 
+0152 StInfo=TextInfo;
+0153 StInfo.Style              = <span class="string">'text'</span>  ;
+0154 StInfo.BackgroundColor    = FigColor;
+0155 
+0156 
+0157 EdInfo=StInfo;
+0158 EdInfo.FontWeight      = get(InputFig,<span class="string">'DefaultUicontrolFontWeight'</span>);
+0159 EdInfo.Style           = <span class="string">'edit'</span>;
+0160 EdInfo.BackgroundColor = <span class="string">'white'</span>;
+0161 
+0162 BtnInfo=StInfo;
+0163 BtnInfo.FontWeight          = get(InputFig,<span class="string">'DefaultUicontrolFontWeight'</span>);
+0164 BtnInfo.Style               = <span class="string">'pushbutton'</span>;
+0165 BtnInfo.HorizontalAlignment = <span class="string">'center'</span>;
+0166 
+0167 <span class="comment">% Add VerticalAlignment here as it is not applicable to the above.</span>
+0168 TextInfo.VerticalAlignment  = <span class="string">'bottom'</span>;
+0169 TextInfo.Color              = get(0,<span class="string">'FactoryUicontrolForegroundColor'</span>);
+0170 
+0171 
+0172 <span class="comment">% adjust button height and width</span>
+0173 btnMargin=1.4;
+0174 ExtControl=uicontrol(InputFig   ,BtnInfo     , <span class="keyword">...</span>
+0175   <span class="string">'String'</span>   ,getString(message(<span class="string">'MATLAB:uistring:popupdialogs:Cancel'</span>))        , <span class="keyword">...</span>
+0176   <span class="string">'Visible'</span>  ,<span class="string">'off'</span>         <span class="keyword">...</span>
+0177   );
+0178 
+0179 <span class="comment">% BtnYOffset  = DefOffset;</span>
+0180 BtnExtent = get(ExtControl,<span class="string">'Extent'</span>);
+0181 BtnWidth  = max(DefBtnWidth,BtnExtent(3)+8);
+0182 BtnHeight = max(DefBtnHeight,BtnExtent(4)*btnMargin);
+0183 delete(ExtControl);
+0184 
+0185 <span class="comment">% Determine # of lines for all Prompts</span>
+0186 TxtWidth=FigWidth-2*DefOffset;
+0187 ExtControl=uicontrol(InputFig   ,StInfo     , <span class="keyword">...</span>
+0188   <span class="string">'String'</span>   ,<span class="string">''</span>         , <span class="keyword">...</span>
+0189   <span class="string">'Position'</span> ,[ DefOffset DefOffset 0.96*TxtWidth BtnHeight ] , <span class="keyword">...</span>
+0190   <span class="string">'Visible'</span>  ,<span class="string">'off'</span>        <span class="keyword">...</span>
+0191   );
+0192 
+0193 WrapQuest=cell(NumQuest,1);
+0194 QuestPos=zeros(NumQuest,4);
+0195 
+0196 <span class="keyword">for</span> ExtLp=1:NumQuest
+0197   <span class="keyword">if</span> size(NumLines,2)==2
+0198     [WrapQuest{ExtLp},QuestPos(ExtLp,1:4)]= <span class="keyword">...</span>
+0199       textwrap(ExtControl,Prompt(ExtLp),NumLines(ExtLp,2));
+0200   <span class="keyword">else</span>
+0201     [WrapQuest{ExtLp},QuestPos(ExtLp,1:4)]= <span class="keyword">...</span>
+0202       textwrap(ExtControl,Prompt(ExtLp),80);
+0203   <span class="keyword">end</span>
+0204 <span class="keyword">end</span> <span class="comment">% for ExtLp</span>
+0205 
+0206 delete(ExtControl);
+0207 QuestWidth =QuestPos(:,3);
+0208 QuestHeight=QuestPos(:,4);
+0209 <span class="keyword">if</span> ismac <span class="comment">% Change Edit box height to avoid clipping on mac.</span>
+0210     editBoxHeightScalingFactor = 1.4;
+0211 <span class="keyword">else</span> 
+0212     editBoxHeightScalingFactor = 1;
+0213 <span class="keyword">end</span>
+0214 TxtHeight=QuestHeight(1)/size(WrapQuest{1,1},1) * editBoxHeightScalingFactor;
+0215 EditHeight=TxtHeight*NumLines(:,1);
+0216 EditHeight(NumLines(:,1)==1)=EditHeight(NumLines(:,1)==1)+4;
+0217 
+0218 FigHeight=(NumQuest+2)*DefOffset    + <span class="keyword">...</span>
+0219   BtnHeight+sum(EditHeight) + <span class="keyword">...</span>
+0220   sum(QuestHeight);
+0221 
+0222 TxtXOffset=DefOffset;
+0223 
+0224 QuestYOffset=zeros(NumQuest,1);
+0225 EditYOffset=zeros(NumQuest,1);
+0226 QuestYOffset(1)=FigHeight-DefOffset-QuestHeight(1);
+0227 EditYOffset(1)=QuestYOffset(1)-EditHeight(1);
+0228 
+0229 <span class="keyword">for</span> YOffLp=2:NumQuest,
+0230   QuestYOffset(YOffLp)=EditYOffset(YOffLp-1)-QuestHeight(YOffLp)-DefOffset;
+0231   EditYOffset(YOffLp)=QuestYOffset(YOffLp)-EditHeight(YOffLp);
+0232 <span class="keyword">end</span> <span class="comment">% for YOffLp</span>
+0233 
+0234 QuestHandle=[];
+0235 EditHandle=[];
+0236 
+0237 AxesHandle=axes(<span class="string">'Parent'</span>,InputFig,<span class="string">'Position'</span>,[0 0 1 1],<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0238 
+0239 inputWidthSpecified = false;
+0240 
+0241 <span class="keyword">for</span> lp=1:NumQuest,
+0242   <span class="keyword">if</span> ~ischar(DefAns{lp}),
+0243     delete(InputFig);
+0244     error(message(<span class="string">'MATLAB:inputdlg:InvalidInput'</span>));
+0245   <span class="keyword">end</span>
+0246 
+0247   
+0248   EditHandle(lp)=uicontrol(InputFig    , <span class="keyword">...</span>
+0249     EdInfo      , <span class="keyword">...</span>
+0250     <span class="string">'Max'</span>        ,NumLines(lp,1)       , <span class="keyword">...</span>
+0251     <span class="string">'Position'</span>   ,[ TxtXOffset EditYOffset(lp) TxtWidth EditHeight(lp)], <span class="keyword">...</span>
+0252     <span class="string">'String'</span>     ,DefAns{lp}           , <span class="keyword">...</span>
+0253     <span class="string">'Tag'</span>        ,<span class="string">'Edit'</span>                 <span class="keyword">...</span>
+0254     );
+0255 
+0256   QuestHandle(lp)=text(<span class="string">'Parent'</span>     ,AxesHandle, <span class="keyword">...</span>
+0257     TextInfo     , <span class="keyword">...</span>
+0258     <span class="string">'Position'</span>   ,[ TxtXOffset QuestYOffset(lp)], <span class="keyword">...</span>
+0259     <span class="string">'String'</span>     ,WrapQuest{lp}                 , <span class="keyword">...</span>
+0260     <span class="string">'Interpreter'</span>,Interpreter                   , <span class="keyword">...</span>
+0261     <span class="string">'Tag'</span>        ,<span class="string">'Quest'</span>                         <span class="keyword">...</span>
+0262     );
+0263 
+0264   MinWidth = max(QuestWidth(:));
+0265   <span class="keyword">if</span> (size(NumLines,2) == 2)
+0266     <span class="comment">% input field width has been specified.</span>
+0267     inputWidthSpecified = true;
+0268     EditWidth = <a href="#_sub5" class="code" title="subfunction EditWidth = setcolumnwidth(object, rows, cols)">setcolumnwidth</a>(EditHandle(lp), NumLines(lp,1), NumLines(lp,2));
+0269     MinWidth = max(MinWidth, EditWidth);
+0270   <span class="keyword">end</span>
+0271   <span class="comment">% Get the extent of the text object. See g1008152</span>
+0272   questExtent = get(QuestHandle(lp), <span class="string">'Extent'</span>);
+0273   MinWidth = max(MinWidth, questExtent(3));  
+0274   FigWidth=max(FigWidth, MinWidth+2*DefOffset);
+0275 
+0276 <span class="keyword">end</span> <span class="comment">% for lp</span>
+0277 
+0278 <span class="comment">% fig width may have changed, update the edit fields if they dont have user specified widths.</span>
+0279 <span class="keyword">if</span> ~inputWidthSpecified
+0280   TxtWidth=FigWidth-2*DefOffset;
+0281   <span class="keyword">for</span> lp=1:NumQuest
+0282     set(EditHandle(lp), <span class="string">'Position'</span>, [TxtXOffset EditYOffset(lp) TxtWidth EditHeight(lp)]);
+0283   <span class="keyword">end</span>
+0284 <span class="keyword">end</span>
+0285 
+0286 FigPos=get(InputFig,<span class="string">'Position'</span>);
+0287 
+0288 FigWidth=max(FigWidth,2*(BtnWidth+DefOffset)+DefOffset);
+0289 FigPos(1)=0;
+0290 FigPos(2)=0;
+0291 FigPos(3)=FigWidth;
+0292 FigPos(4)=FigHeight;
+0293 
+0294 set(InputFig,<span class="string">'Position'</span>,getnicedialoglocation(FigPos,get(InputFig,<span class="string">'Units'</span>)));
+0295 
+0296 OKHandle=uicontrol(InputFig     ,              <span class="keyword">...</span>
+0297   BtnInfo      , <span class="keyword">...</span>
+0298   <span class="string">'Position'</span>   ,[ FigWidth-2*BtnWidth-2*DefOffset DefOffset BtnWidth BtnHeight ] , <span class="keyword">...</span>
+0299   <span class="string">'KeyPressFcn'</span>,@<a href="#_sub2" class="code" title="subfunction doControlKeyPress(obj, evd) ">doControlKeyPress</a> , <span class="keyword">...</span>
+0300   <span class="string">'String'</span>     ,getString(message(<span class="string">'MATLAB:uistring:popupdialogs:OK'</span>))        , <span class="keyword">...</span>
+0301   <span class="string">'Callback'</span>   ,@<a href="#_sub3" class="code" title="subfunction doCallback(obj, evd) ">doCallback</a> , <span class="keyword">...</span>
+0302   <span class="string">'Tag'</span>        ,<span class="string">'OK'</span>        , <span class="keyword">...</span>
+0303   <span class="string">'UserData'</span>   ,<span class="string">'OK'</span>          <span class="keyword">...</span>
+0304   );
+0305 
+0306 setdefaultbutton(InputFig, OKHandle);
+0307 
+0308 CancelHandle=uicontrol(InputFig     ,              <span class="keyword">...</span>
+0309   BtnInfo      , <span class="keyword">...</span>
+0310   <span class="string">'Position'</span>   ,[ FigWidth-BtnWidth-DefOffset DefOffset BtnWidth BtnHeight ]           , <span class="keyword">...</span>
+0311   <span class="string">'KeyPressFcn'</span>,@<a href="#_sub2" class="code" title="subfunction doControlKeyPress(obj, evd) ">doControlKeyPress</a>            , <span class="keyword">...</span>
+0312   <span class="string">'String'</span>     ,getString(message(<span class="string">'MATLAB:uistring:popupdialogs:Cancel'</span>))    , <span class="keyword">...</span>
+0313   <span class="string">'Callback'</span>   ,@<a href="#_sub3" class="code" title="subfunction doCallback(obj, evd) ">doCallback</a> , <span class="keyword">...</span>
+0314   <span class="string">'Tag'</span>        ,<span class="string">'Cancel'</span>    , <span class="keyword">...</span>
+0315   <span class="string">'UserData'</span>   ,<span class="string">'Cancel'</span>       <span class="keyword">...</span>
+0316   ); <span class="comment">%#ok</span>
+0317 
+0318 handles = guihandles(InputFig);
+0319 handles.MinFigWidth = FigWidth;
+0320 handles.FigHeight   = FigHeight;
+0321 handles.TextMargin  = 2*DefOffset;
+0322 guidata(InputFig,handles);
+0323 set(InputFig,<span class="string">'ResizeFcn'</span>, {@<a href="#_sub4" class="code" title="subfunction doResize(FigHandle, evd, multicolumn) ">doResize</a>, inputWidthSpecified});
+0324 
+0325 <span class="comment">% make sure we are on screen</span>
+0326 movegui(InputFig)
+0327 
+0328 <span class="comment">% if there is a figure out there and it's modal, we need to be modal too</span>
+0329 <span class="keyword">if</span> ~isempty(gcbf) &amp;&amp; strcmp(get(gcbf,<span class="string">'WindowStyle'</span>),<span class="string">'modal'</span>)
+0330   set(InputFig,<span class="string">'WindowStyle'</span>,<span class="string">'modal'</span>);
+0331 <span class="keyword">end</span>
+0332 
+0333 set(InputFig,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0334 drawnow;
+0335 
+0336 <span class="keyword">if</span> ~isempty(EditHandle)
+0337   uicontrol(EditHandle(1));
+0338 <span class="keyword">end</span>
+0339 
+0340 <span class="keyword">if</span> ishghandle(InputFig)
+0341   <span class="comment">% Go into uiwait if the figure handle is still valid.</span>
+0342   <span class="comment">% This is mostly the case during regular use.</span>
+0343   uiwait(InputFig,600);
+0344 <span class="keyword">end</span>
+0345 
+0346 <span class="comment">% Check handle validity again since we may be out of uiwait because the</span>
+0347 <span class="comment">% figure was deleted.</span>
+0348 <span class="keyword">if</span> ishghandle(InputFig)
+0349   Answer={};
+0350   <span class="keyword">if</span> strcmp(get(InputFig,<span class="string">'UserData'</span>),<span class="string">'OK'</span>),
+0351     Answer=cell(NumQuest,1);
+0352     <span class="keyword">for</span> lp=1:NumQuest,
+0353       Answer(lp)=get(EditHandle(lp),{<span class="string">'String'</span>});
+0354     <span class="keyword">end</span>
+0355   <span class="keyword">end</span>
+0356   delete(InputFig);
+0357 <span class="keyword">else</span>
+0358   Answer={};
+0359 <span class="keyword">end</span>
+0360 drawnow; <span class="comment">% Update the view to remove the closed figure (g1031998)</span>
+0361 
+0362 <a name="_sub1" href="#_subfunctions" class="code">function doFigureKeyPress(obj, evd) </a><span class="comment">%#ok</span>
+0363 <span class="keyword">switch</span>(evd.Key)
+0364   <span class="keyword">case</span> {<span class="string">'return'</span>,<span class="string">'space'</span>}
+0365     set(gcbf,<span class="string">'UserData'</span>,<span class="string">'OK'</span>);
+0366     uiresume(gcbf);
+0367   <span class="keyword">case</span> {<span class="string">'escape'</span>}
+0368     delete(gcbf);
+0369 <span class="keyword">end</span>
+0370 
+0371 <a name="_sub2" href="#_subfunctions" class="code">function doControlKeyPress(obj, evd) </a><span class="comment">%#ok</span>
+0372 <span class="keyword">switch</span>(evd.Key)
+0373   <span class="keyword">case</span> {<span class="string">'return'</span>}
+0374     <span class="keyword">if</span> ~strcmp(get(obj,<span class="string">'UserData'</span>),<span class="string">'Cancel'</span>)
+0375       set(gcbf,<span class="string">'UserData'</span>,<span class="string">'OK'</span>);
+0376       uiresume(gcbf);
+0377     <span class="keyword">else</span>
+0378       delete(gcbf)
+0379     <span class="keyword">end</span>
+0380   <span class="keyword">case</span> <span class="string">'escape'</span>
+0381     delete(gcbf)
+0382 <span class="keyword">end</span>
+0383 
+0384 <a name="_sub3" href="#_subfunctions" class="code">function doCallback(obj, evd) </a><span class="comment">%#ok</span>
+0385 <span class="keyword">if</span> ~strcmp(get(obj,<span class="string">'UserData'</span>),<span class="string">'Cancel'</span>)
+0386   set(gcbf,<span class="string">'UserData'</span>,<span class="string">'OK'</span>);
+0387   uiresume(gcbf);
+0388 <span class="keyword">else</span>
+0389   delete(gcbf)
+0390 <span class="keyword">end</span>
+0391 
+0392 <a name="_sub4" href="#_subfunctions" class="code">function doResize(FigHandle, evd, multicolumn) </a><span class="comment">%#ok</span>
+0393 <span class="comment">% TBD: Check difference in behavior w/ R13. May need to implement</span>
+0394 <span class="comment">% additional resize behavior/clean up.</span>
+0395 
+0396 Data=guidata(FigHandle);
+0397 
+0398 resetPos = false;
+0399 
+0400 FigPos = get(FigHandle,<span class="string">'Position'</span>);
+0401 FigWidth = FigPos(3);
+0402 FigHeight = FigPos(4);
+0403 
+0404 <span class="comment">% the current and the target sizes are considered equal</span>
+0405 <span class="comment">% if the difference is less then 1 pixel</span>
+0406 <span class="comment">% (Position property values can be doubles due to other units,</span>
+0407 <span class="comment">%  and the non integer values show up due to conversions/round offs)</span>
+0408 widthDiff = Data.MinFigWidth - FigWidth;
+0409 <span class="keyword">if</span> widthDiff &gt;= 1
+0410   FigWidth  = Data.MinFigWidth;
+0411   FigPos(3) = Data.MinFigWidth;
+0412   resetPos = true;
+0413 <span class="keyword">end</span>
+0414 
+0415 <span class="comment">% make sure edit fields use all available space if</span>
+0416 <span class="comment">% number of columns is not specified in dialog creation.</span>
+0417 <span class="keyword">if</span> ~multicolumn
+0418   <span class="keyword">for</span> lp = 1:length(Data.Edit)
+0419     EditPos = get(Data.Edit(lp),<span class="string">'Position'</span>);
+0420     EditPos(3) = FigWidth - Data.TextMargin;
+0421     set(Data.Edit(lp),<span class="string">'Position'</span>,EditPos);
+0422   <span class="keyword">end</span>
+0423 <span class="keyword">end</span>
+0424 
+0425 
+0426 <span class="comment">% the current and the target sizes are considered equal</span>
+0427 <span class="comment">% if the difference is less then 1 pixel</span>
+0428 <span class="comment">% (Position property values can be doubles due to other units,</span>
+0429 <span class="comment">%  and the non integer values show up due to conversions/round offs)</span>
+0430 heightDiff = abs(FigHeight - Data.FigHeight);
+0431 <span class="keyword">if</span> heightDiff &gt;= 1
+0432   FigPos(4) = Data.FigHeight;
+0433   resetPos = true;
+0434 <span class="keyword">end</span>
+0435 
+0436 <span class="keyword">if</span> resetPos
+0437   set(FigHandle,<span class="string">'Position'</span>,FigPos);
+0438 <span class="keyword">end</span>
+0439 
+0440 
+0441 <span class="comment">% set pixel width given the number of columns</span>
+0442 <a name="_sub5" href="#_subfunctions" class="code">function EditWidth = setcolumnwidth(object, rows, cols)</a>
+0443 <span class="comment">% Save current Units and String.</span>
+0444 old_units = get(object, <span class="string">'Units'</span>);
+0445 old_string = get(object, <span class="string">'String'</span>);
+0446 old_position = get(object, <span class="string">'Position'</span>);
+0447 
+0448 set(object, <span class="string">'Units'</span>, <span class="string">'pixels'</span>)
+0449 set(object, <span class="string">'String'</span>, char(ones(1,cols)*<span class="string">'x'</span>));
+0450 
+0451 new_extent = get(object,<span class="string">'Extent'</span>);
+0452 <span class="keyword">if</span> (rows &gt; 1)
+0453   <span class="comment">% For multiple rows, allow space for the scrollbar</span>
+0454   new_extent = new_extent + 19; <span class="comment">% Width of the scrollbar</span>
+0455 <span class="keyword">end</span>
+0456 new_position = old_position;
+0457 new_position(3) = new_extent(3) + 1;
+0458 set(object, <span class="string">'Position'</span>, new_position);
+0459 
+0460 <span class="comment">% reset string and units</span>
+0461 set(object, <span class="string">'String'</span>, old_string, <span class="string">'Units'</span>, old_units);
+0462 
+0463 EditWidth = new_extent(3);</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

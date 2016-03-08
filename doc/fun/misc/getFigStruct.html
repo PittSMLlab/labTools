@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getFigStruct</title>
+  <meta name="keywords" content="getFigStruct">
+  <meta name="description" content="UNTITLED Calculate best subfigure divide (a x b) for showing N graphs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; getFigStruct.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getFigStruct
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [a,b] = getFigStruct(N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Calculate best subfigure divide (a x b) for showing N graphs
+When you want to plot N graphs in a single figure, you first have to
+decide how the plots will be arranged in rows &amp; columns. This function
+determines the optimal number of rows and columns for a 16:9 monitor
+resolution ratio.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [a,b] = getFigStruct(N)</a>
+0002 <span class="comment">%UNTITLED Calculate best subfigure divide (a x b) for showing N graphs</span>
+0003 <span class="comment">%When you want to plot N graphs in a single figure, you first have to</span>
+0004 <span class="comment">%decide how the plots will be arranged in rows &amp; columns. This function</span>
+0005 <span class="comment">%determines the optimal number of rows and columns for a 16:9 monitor</span>
+0006 <span class="comment">%resolution ratio.</span>
+0007 
+0008 <span class="comment">%2x1</span>
+0009 <span class="comment">%2x2</span>
+0010 <span class="comment">%3x2</span>
+0011 <span class="comment">%4x2</span>
+0012 <span class="comment">%4x3</span>
+0013 <span class="comment">%5x3</span>
+0014 <span class="comment">%</span>
+0015 
+0016 a=1;
+0017 b=1;
+0018 
+0019 <span class="comment">%while (a*b)&lt;N</span>
+0020 <span class="comment">%   if (((a+1)/b-16/9)^2 &gt; (a/(b+1)-16/9)^2 )</span>
+0021 <span class="comment">%       b=b+1;</span>
+0022 <span class="comment">%   else</span>
+0023 <span class="comment">%       a=a+1;</span>
+0024 <span class="comment">%   end</span>
+0025 <span class="comment">%end</span>
+0026 
+0027 r=16/9;
+0028 <span class="comment">%Get real numbers with exact ratio r, and exact product N</span>
+0029 a0=sqrt(N*r);
+0030 b0=sqrt(N/r);
+0031 
+0032 <span class="comment">%Now, find the closest integer approximation</span>
+0033 <span class="comment">%There are three candidates: round a0 up, and b0 down, the opposite, and</span>
+0034 <span class="comment">%round both of them up. (rounding both down gives less than N as product).</span>
+0035 <span class="keyword">if</span> ceil(a0)*floor(b0)&gt;=N
+0036     <span class="keyword">if</span> ceil(b0)*floor(a0)&gt;=N
+0037         <span class="comment">%Both are options, choose the one with best ratio</span>
+0038         <span class="keyword">if</span> (ceil(a0)/(r*floor(b0))-1)^2 &lt; (floor(a0)/(r*ceil(b0))-1)^2
+0039             a=ceil(a0);
+0040             b=floor(b0);
+0041         <span class="keyword">else</span>
+0042             a=floor(a0);
+0043             b=ceil(b0);
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">else</span>
+0046         <span class="comment">%Only 1 is option, choose it</span>
+0047         a=ceil(a0);
+0048         b=floor(b0);
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">else</span>
+0051     <span class="keyword">if</span> ceil(b0)*floor(a0)&gt;=N
+0052         <span class="comment">%Only 2 is option, choose it</span>
+0053         a=floor(a0);
+0054         b=ceil(b0);
+0055     <span class="keyword">else</span>
+0056         <span class="comment">%Neither is option, go with ceil ceil</span>
+0057         a=ceil(a0);
+0058         b=ceil(b0);
+0059     <span class="keyword">end</span>
+0060 <span class="keyword">end</span>
+0061 
+0062 
+0063 <span class="keyword">end</span>
+0064</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

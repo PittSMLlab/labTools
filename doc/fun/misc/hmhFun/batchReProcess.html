@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of batchReProcess</title>
+  <meta name="keywords" content="batchReProcess">
+  <meta name="description" content="ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; batchReProcess.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>batchReProcess
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function batchReProcess(subjects,eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function batchReProcess(subjects,eventClass)</a>
+0002 <span class="comment">% ex: subjects= {'OG11','OG12','OG13','OG14','OG15','OG16','OG18'}</span>
+0003 
+0004 <span class="keyword">if</span> isa(subjects,<span class="string">'char'</span>)
+0005     subjects={subjects};    
+0006 <span class="keyword">end</span>
+0007 
+0008 <span class="keyword">for</span> s=subjects
+0009     <span class="keyword">try</span>
+0010         load([char(s),<span class="string">'RAW.mat'</span>]) <span class="comment">%could do this with not raw, but raw is faster to load</span>
+0011         saveloc = [];
+0012     <span class="keyword">catch</span>
+0013         <span class="keyword">try</span>
+0014             load([char(s) filesep char(s) <span class="string">'RAW.mat'</span>])
+0015             saveloc=[char(s) filesep];
+0016         <span class="keyword">catch</span>
+0017             ME=MException(<span class="string">'makeDataObject:loadSubject'</span>,[char(s) <span class="string">' could not be loaded, try changing your matlab path.'</span>]);
+0018             throw(ME)
+0019         <span class="keyword">end</span>
+0020     <span class="keyword">end</span>
+0021         
+0022     expData=rawExpData.process(eventClass);
+0023     save([saveloc,char(s)],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>)
+0024     expData.makeDataObj([saveloc char(s)]); <span class="comment">%overwrites file</span>
+0025     
+0026     clearvars -except eventClass
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

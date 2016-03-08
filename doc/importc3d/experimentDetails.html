@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of experimentDetails</title>
+  <meta name="keywords" content="experimentDetails">
+  <meta name="description" content="%% THIS FUNCTION IS NO LONGER IN USE. INSTEAD OF EDITING THIS CODE, ADD">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; experimentDetails.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>experimentDetails
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>%% THIS FUNCTION IS NO LONGER IN USE. INSTEAD OF EDITING THIS CODE, ADD</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function handles = experimentDetails(expDescrip,handles) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%% THIS FUNCTION IS NO LONGER IN USE. INSTEAD OF EDITING THIS CODE, ADD
+%% NEW EXPEPERIMENTS TO THE importc3d/expDetails FOLDER.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%% THIS FUNCTION IS NO LONGER IN USE. INSTEAD OF EDITING THIS CODE, ADD</span>
+0002 <span class="comment">%%% NEW EXPEPERIMENTS TO THE importc3d/expDetails FOLDER.</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function handles = experimentDetails(expDescrip,handles)</a>
+0005 <span class="comment">%Fill in Condition Info fields of GetInfoGUI based on experiment entered</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%When adding a new experiment description, follow the examples below or</span>
+0008 <span class="comment">%refer to &quot;Adding an Experiment Description&quot; in the user guide. Make sure</span>
+0009 <span class="comment">%to keep condNames values consistant with previous conventions.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%INPUTS:</span>
+0012 <span class="comment">%expDescription: string containing description chosen in GetInfoGUI</span>
+0013 <span class="comment">%handles: GUI handles from GetInfoGUI</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%OUTPUT:</span>
+0016 <span class="comment">%handles: modified handles structure with updated values for</span>
+0017 <span class="comment">%condition, condName, description, trialnum, and type fields</span>
+0018 
+0019 
+0020 <span class="keyword">switch</span> expDescrip
+0021     <span class="keyword">case</span> {<span class="string">'Old Abrupt'</span>,<span class="string">'Young Abrupt'</span>,<span class="string">'Old Abrupt Second Visit'</span>,<span class="string">'Young Abrupt Second Visit'</span>}
+0022         <span class="comment">%condition numbers</span>
+0023         <span class="keyword">for</span> cond = 1:10
+0024             set(handles.([<span class="string">'condition'</span> num2str(cond)]),<span class="string">'string'</span>,num2str(cond))
+0025         <span class="keyword">end</span>
+0026         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'10'</span>)    
+0027         
+0028         <span class="comment">%condition names</span>
+0029         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0030         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0031         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'short split'</span>)
+0032         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0033         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0034         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)
+0035         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'catch'</span>)
+0036         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0037         set(handles.condName9,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0038         set(handles.condName10,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0039         
+0040         <span class="comment">%condition descriptions</span>
+0041         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)
+0042         set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at 0.5 m/s'</span>)
+0043         set(handles.description3,<span class="string">'string'</span>,<span class="string">'10 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0044         set(handles.description4,<span class="string">'string'</span>,<span class="string">'150 strides at 1 m/s'</span>)
+0045         set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0046         set(handles.description6,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0047         set(handles.description7,<span class="string">'string'</span>,<span class="string">'10 strides at 0.75 m/s'</span>)
+0048         set(handles.description8,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0049         set(handles.description9,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0050         set(handles.description10,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0051         
+0052         <span class="comment">%trial numbers for each condition</span>
+0053         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:6'</span>)
+0054         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'7'</span>)
+0055         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0056         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'9'</span>)
+0057         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'10'</span>)
+0058         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'11:14'</span>)
+0059         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'15'</span>)
+0060         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'16 17'</span>)
+0061         set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'18:23'</span>)
+0062         set(handles.trialnum10,<span class="string">'string'</span>,<span class="string">'24:26'</span>)
+0063         
+0064         <span class="comment">%set trial types</span>
+0065         <span class="keyword">for</span> t=[1 9]
+0066             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0067         <span class="keyword">end</span>
+0068         <span class="keyword">for</span> t=[2:8 10]
+0069             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0070         <span class="keyword">end</span>        
+0071         
+0072     <span class="keyword">case</span> {<span class="string">'Old Gradual'</span>,<span class="string">'Young Gradual'</span>}
+0073         
+0074         <span class="comment">%condition numbers</span>
+0075         i=1;
+0076         <span class="keyword">for</span> cond = [1 2 4:10]
+0077             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0078             i=i+1;
+0079         <span class="keyword">end</span>
+0080         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'9'</span>)        
+0081         
+0082         <span class="comment">%condition names</span>
+0083         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0084         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'slow base'</span>)        
+0085         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0086         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0087         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)
+0088         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'catch'</span>)
+0089         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0090         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0091         set(handles.condName9,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0092         
+0093         <span class="comment">%condition descriptions</span>
+0094         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)
+0095         set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at 0.5 m/s'</span>)
+0096         set(handles.description3,<span class="string">'string'</span>,<span class="string">'150 strides at 1 m/s'</span>)
+0097         set(handles.description4,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0098         set(handles.description5,<span class="string">'string'</span>,<span class="string">'600 strides,gradual split from 1:1 at 0.75 m/s to 2:1 at 1.0m/s and 0.5 m/s'</span>)
+0099         set(handles.description6,<span class="string">'string'</span>,<span class="string">'10 strides at 0.75 m/s'</span>)
+0100         set(handles.description7,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0101         set(handles.description8,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0102         set(handles.description9,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)        
+0103         
+0104         <span class="comment">%trial numbers for each condition</span>
+0105         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:6'</span>)
+0106         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'7'</span>)
+0107         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0108         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'9'</span>)
+0109         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'10:13'</span>)
+0110         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'14'</span>)
+0111         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'15 16'</span>)
+0112         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'17:22'</span>)
+0113         set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'23:25'</span>)        
+0114        
+0115         <span class="comment">%set trial types</span>
+0116         <span class="keyword">for</span> t=[1 8]
+0117             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0118         <span class="keyword">end</span>
+0119         <span class="keyword">for</span> t=[2:7 9]
+0120             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0121         <span class="keyword">end</span> 
+0122         
+0123     <span class="keyword">case</span> {<span class="string">'Old Abrupt No Catch'</span>,<span class="string">'Young Abrupt No Catch'</span>}
+0124         <span class="comment">%condition numbers</span>
+0125         i=1;
+0126         <span class="keyword">for</span> cond = [1:6 8:10]
+0127             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0128             i=i+1;
+0129         <span class="keyword">end</span>
+0130         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'9'</span>)    
+0131         
+0132         <span class="comment">%condition names</span>
+0133         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0134         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0135         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'short split'</span>)
+0136         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0137         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0138         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)        
+0139         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0140         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0141         set(handles.condName9,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0142         
+0143         <span class="comment">%condition descriptions</span>
+0144         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)
+0145         set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at 0.5 m/s'</span>)
+0146         set(handles.description3,<span class="string">'string'</span>,<span class="string">'10 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0147         set(handles.description4,<span class="string">'string'</span>,<span class="string">'150 strides at 1 m/s'</span>)
+0148         set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0149         set(handles.description6,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0150         set(handles.description7,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0151         set(handles.description8,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0152         set(handles.description9,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0153         
+0154         <span class="comment">%trial numbers for each condition</span>
+0155         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:6'</span>)
+0156         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'7'</span>)
+0157         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0158         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'25'</span>)
+0159         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'9'</span>)
+0160         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'10:13'</span>)        
+0161         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'14 15'</span>)
+0162         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'16:21'</span>)
+0163         set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'22:24'</span>)       
+0164         
+0165         <span class="comment">%set trial types</span>
+0166         <span class="keyword">for</span> t=[1 8]
+0167             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0168         <span class="keyword">end</span>
+0169         <span class="keyword">for</span> t=[2:7 9]
+0170             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0171         <span class="keyword">end</span> 
+0172         
+0173     <span class="keyword">case</span> {<span class="string">'Old Gradual No Catch'</span>,<span class="string">'Young Gradual No Catch'</span>}
+0174         <span class="comment">%condition numbers</span>
+0175         i=1;
+0176         <span class="keyword">for</span> cond = [1 2 4:6 8:10]
+0177             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0178             i=i+1;
+0179         <span class="keyword">end</span>
+0180         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'8'</span>)    
+0181         
+0182         <span class="comment">%condition names</span>
+0183         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0184         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0185         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0186         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0187         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)        
+0188         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0189         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0190         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0191         
+0192         <span class="comment">%condition descriptions</span>
+0193         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)
+0194         set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at 0.5 m/s'</span>)
+0195         set(handles.description3,<span class="string">'string'</span>,<span class="string">'150 strides at 1 m/s'</span>)
+0196         set(handles.description4,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0197         set(handles.description5,<span class="string">'string'</span>,<span class="string">'600 strides,gradual split from 1:1 at 0.75 m/s to 2:1 at 1.0m/s and 0.5 m/s'</span>)
+0198         set(handles.description6,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, 1 m/s and 0.5 m/s'</span>)
+0199         set(handles.description7,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0200         set(handles.description8,<span class="string">'string'</span>,<span class="string">'150 strides at 0.75 m/s'</span>)
+0201         
+0202         <span class="comment">%trial numbers for each condition</span>
+0203         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:6'</span>)
+0204         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'7'</span>)
+0205         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'24'</span>)
+0206         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0207         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'9:12'</span>)        
+0208         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'13 14'</span>)
+0209         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'15:20'</span>)
+0210         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'21:23'</span>)        
+0211         
+0212         <span class="comment">%set trial types</span>
+0213         <span class="keyword">for</span> t=[1 7]
+0214             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0215         <span class="keyword">end</span>
+0216         <span class="keyword">for</span> t=[2:6 8]
+0217             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0218         <span class="keyword">end</span> 
+0219         
+0220         
+0221     <span class="keyword">case</span> {<span class="string">'Old Abrupt Self Selected'</span>,<span class="string">'Young Abrupt Self Selected'</span>}
+0222         <span class="comment">%condition numbers</span>
+0223         i=1;
+0224         <span class="keyword">for</span> cond = [1 3 5 6:11 4 2]
+0225             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0226             i=i+1;
+0227         <span class="keyword">end</span>        
+0228         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'11'</span>)    
+0229         
+0230         <span class="comment">%condition names</span>
+0231         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)        
+0232         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'short split'</span>)        
+0233         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0234         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)
+0235         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'catch'</span>)
+0236         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0237         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0238         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0239         set(handles.condName9,<span class="string">'string'</span>,<span class="string">'self selected'</span>)
+0240         set(handles.condName10,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0241         set(handles.condName11,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0242         
+0243         <span class="comment">%condition descriptions</span>
+0244         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)        
+0245         set(handles.description2,<span class="string">'string'</span>,<span class="string">'10 strides 2:1, at SS +/- 0.333*SS m/s'</span>)        
+0246         set(handles.description3,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0247         set(handles.description4,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0248         set(handles.description5,<span class="string">'string'</span>,<span class="string">'10 strides at SS'</span>)
+0249         set(handles.description6,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0250         set(handles.description7,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0251         set(handles.description8,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0252         set(handles.description9,<span class="string">'string'</span>,<span class="string">'&gt;=600 strides at self set pace'</span>)
+0253         set(handles.description10,<span class="string">'string'</span>,<span class="string">'150 strides at SS+0.333*SS m/s'</span>)
+0254         set(handles.description11,<span class="string">'string'</span>,<span class="string">'150 strides at SS-0.333*SS m/s'</span>)
+0255         
+0256         <span class="comment">%trial numbers for each condition</span>
+0257         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:6'</span>)
+0258         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'14'</span>)
+0259         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'15'</span>)
+0260         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'16:19'</span>)
+0261         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'20'</span>)
+0262         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'21 22'</span>)
+0263         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'23:27'</span>)
+0264         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'28 29 30'</span>)
+0265         set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'7:12'</span>)
+0266         set(handles.trialnum10,<span class="string">'string'</span>,<span class="string">'31'</span>)
+0267         set(handles.trialnum11,<span class="string">'string'</span>,<span class="string">'13'</span>)        
+0268         
+0269         <span class="comment">%set trial types</span>
+0270         <span class="keyword">for</span> t=[1 7]
+0271             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0272         <span class="keyword">end</span>
+0273         <span class="keyword">for</span> t=[2:6 8:11]
+0274             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0275         <span class="keyword">end</span> 
+0276         
+0277     <span class="keyword">case</span> {<span class="string">'Old Gradual Self Selected'</span>,<span class="string">'Young Gradual Self Selected'</span>}
+0278         <span class="comment">%condition numbers</span>
+0279         i=1;
+0280         <span class="keyword">for</span> cond = [1 5 6:11 2 3 4]
+0281             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0282             i=i+1;
+0283         <span class="keyword">end</span>
+0284         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'11'</span>)
+0285         
+0286         <span class="comment">%condition names</span>
+0287         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)                
+0288         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0289         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)
+0290         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'catch'</span>)
+0291         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0292         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0293         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0294         set(handles.condName8,<span class="string">'string'</span>,<span class="string">'self selected'</span>)        
+0295         set(handles.condName9,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0296         set(handles.condName10,<span class="string">'string'</span>,<span class="string">'short split'</span>)
+0297         set(handles.condName11,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0298         
+0299         <span class="comment">%condition descriptions</span>
+0300         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)        
+0301         set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0302         set(handles.description3,<span class="string">'string'</span>,<span class="string">'600 strides,gradual split from 1:1 at SS to 2:1 at at SS +/- 0.333*SS m/s'</span>)
+0303         set(handles.description4,<span class="string">'string'</span>,<span class="string">'10 strides at SS'</span>)
+0304         set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0305         set(handles.description6,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0306         set(handles.description7,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0307         set(handles.description8,<span class="string">'string'</span>,<span class="string">'&gt;=600 strides at self set pace'</span>)        
+0308         set(handles.description9,<span class="string">'string'</span>,<span class="string">'150 strides at SS-0.333*SS m/s'</span>)
+0309         set(handles.description10,<span class="string">'string'</span>,<span class="string">'10 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0310         set(handles.description11,<span class="string">'string'</span>,<span class="string">'150 strides at SS+0.333*SS m/s'</span>)
+0311         
+0312         <span class="comment">%trial numbers for each condition</span>
+0313         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:3'</span>)
+0314         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0315         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'9:12'</span>)
+0316         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'13'</span>)
+0317         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'14 15'</span>)
+0318         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'16:21'</span>)
+0319         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'22:24'</span>)
+0320         set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'4:7'</span>)
+0321         set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'12'</span>)
+0322         set(handles.trialnum10,<span class="string">'string'</span>,<span class="string">'11'</span>)
+0323         set(handles.trialnum11,<span class="string">'string'</span>,<span class="string">'25'</span>)        
+0324        
+0325         <span class="comment">%set trial types</span>
+0326         <span class="keyword">for</span> t=[1 6]
+0327             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0328         <span class="keyword">end</span>
+0329         <span class="keyword">for</span> t=[2:5 7:11]
+0330             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0331         <span class="keyword">end</span> 
+0332         
+0333     <span class="keyword">case</span> {<span class="string">'0002: Distraction'</span>}
+0334         <span class="comment">%condition numbers</span>
+0335         i=1;
+0336         <span class="keyword">for</span> cond = [1:7]
+0337             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0338             i=i+1;
+0339         <span class="keyword">end</span>        
+0340         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'7'</span>)    
+0341         
+0342         <span class="comment">%condition names</span>
+0343         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)        
+0344         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'TM base'</span>)        
+0345         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'Gradual adaptation'</span>)
+0346         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'Catch'</span>)
+0347         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'Re-adaptation'</span>)
+0348         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0349         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'TM post'</span>)        
+0350         
+0351         <span class="comment">%condition descriptions</span>
+0352         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)        
+0353         set(handles.description2,<span class="string">'string'</span>,<span class="string">'300 strides 1.125m/s'</span>)        
+0354         set(handles.description3,<span class="string">'string'</span>,<span class="string">'300 strides 1.125 m/s, 600 gradual until 1.5:.75, 150 split'</span>)
+0355         set(handles.description4,<span class="string">'string'</span>,<span class="string">'10 strides 1.125 m/s'</span>)
+0356         set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 at split 2:1'</span>)
+0357         set(handles.description6,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)
+0358         set(handles.description7,<span class="string">'string'</span>,<span class="string">'600 strides 1.125 m/s'</span>)
+0359         
+0360         <span class="comment">%trial numbers for each condition</span>
+0361         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:2'</span>)
+0362         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'3'</span>)
+0363         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'4'</span>)
+0364         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'5'</span>)
+0365         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'6'</span>)
+0366         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'7:8'</span>)
+0367         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'9'</span>)
+0368                  
+0369         <span class="comment">%set trial types</span>
+0370         <span class="keyword">for</span> t=[1 6]
+0371             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0372         <span class="keyword">end</span>
+0373         <span class="keyword">for</span> t=[2:5 7]
+0374             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0375         <span class="keyword">end</span> 
+0376         
+0377     <span class="keyword">case</span> {<span class="string">'0002: Old'</span>}
+0378         <span class="comment">%condition numbers</span>
+0379         i=1;
+0380         <span class="keyword">for</span> cond = [1:7]
+0381             set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0382             i=i+1;
+0383         <span class="keyword">end</span>        
+0384         set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'7'</span>)    
+0385         
+0386         <span class="comment">%condition names</span>
+0387         set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)        
+0388         set(handles.condName2,<span class="string">'string'</span>,<span class="string">'TM base'</span>)        
+0389         set(handles.condName3,<span class="string">'string'</span>,<span class="string">'Gradual adaptation'</span>)
+0390         set(handles.condName4,<span class="string">'string'</span>,<span class="string">'Catch (N/A)'</span>)
+0391         set(handles.condName5,<span class="string">'string'</span>,<span class="string">'Split condition'</span>)
+0392         set(handles.condName6,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0393         set(handles.condName7,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0394 
+0395         <span class="comment">%condition descriptions</span>
+0396         set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)        
+0397         set(handles.description2,<span class="string">'string'</span>,<span class="string">'300 strides 1.125m/s'</span>)        
+0398         set(handles.description3,<span class="string">'string'</span>,<span class="string">'300 strides 1.125 m/s, 600 gradual until 1.5:.75, 150 split'</span>)
+0399         set(handles.description4,<span class="string">'string'</span>,<span class="string">'N/A'</span>)
+0400         set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 at split 2:1'</span>)
+0401         set(handles.description6,<span class="string">'string'</span>,<span class="string">'8m walk for 10 min'</span>)
+0402         set(handles.description7,<span class="string">'string'</span>,<span class="string">'600 strides 1.125 m/s'</span>)
+0403         
+0404         <span class="comment">%trial numbers for each condition</span>
+0405         set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:10'</span>)
+0406         set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'11:12'</span>)
+0407         set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'13:19'</span>)
+0408         set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">''</span>)
+0409         set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'20'</span>)
+0410         set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'21:30'</span>)
+0411         set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'31:34'</span>)
+0412         
+0413         <span class="comment">%set trial types</span>
+0414         <span class="keyword">for</span> t=[1 6]
+0415             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0416         <span class="keyword">end</span>
+0417         <span class="keyword">for</span> t=[2:5 7]
+0418             set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0419         <span class="keyword">end</span>     
+0420         
+0421 <span class="keyword">end</span>
+0422 
+0423 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

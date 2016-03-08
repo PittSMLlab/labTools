@@ -1,0 +1,298 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nanJackKnife</title>
+  <meta name="keywords" content="nanJackKnife">
+  <meta name="description" content="JACKKNIFE plots jackknife errorbars around a given curve">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; nanJackKnife.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>nanJackKnife
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>JACKKNIFE plots jackknife errorbars around a given curve</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Pa,Li] = nanJackKnife(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> JACKKNIFE plots jackknife errorbars around a given curve
+
+     [Pa,Li,t] = JACKKNIFE(x,y,L,U,'r','g')
+     JACKKNIFE(x,y,se,colorMean,colorShade)
+     x= vector 1:points
+     y= each row is mean of a condition
+
+     Plots a gray Jackknife around the line displayed in black very useful for
+     funky nature style error bars which are shaded.
+
+         Pa is a patch object for more help on patch objects see below
+         Li is a line object, more help on line object is available in MATLAB
+
+     USAGE :
+              1)   [Pa,Li] = JackKnife(x,y,E)
+                    Calculates the Lower and upper errorbars as
+                    L = Y-E and U = Y+E. It then takes a default gray color
+                    as patch color, and the line color as black and plots
+                    it around the line using a patch object.
+
+              2)   [Pa,Li] = JackKnife(x,y,E,LineColor,PatchColor)
+                    Calculates the Lower and upper errorbars as
+                    L = Y-E and U = Y+E. It then takes PatchColor
+                    as patch color, and the Line Color from the LineColor
+                    variable. It then plots it around the line
+                    using a patch object.
+
+              3)   [Pa,Li] = JackKnife(x,y,L,U)
+                    User Supplied bounds are taken as L and U, It then takes
+                    a default gray color as patch color, and the line color
+                    as black and plots it around the line using a patch object.
+
+              4)   [Pa,Li] = JackKnife(x,y,L,U,LineColor,PatchColor)
+                    User Supplied bounds are taken as L and U, It then takes
+                    PatchColor as patch color, and the Line Color from the LineColor
+                    variable. It then plots it around the line using a
+                    patch object.
+      CAVEATS
+                 1) Can be Slow sometimes for length(Array) &gt; 10000,
+                 2) Needs better vectorization
+      EXAMPLE
+                         t = [-5:0.05:5];
+                         Y = sin(t);
+                         E = 0.4*rand(1,length(t));
+                         [Pa,Li] = JackKnife(t,Y,E);
+                         xlabel('time');
+                         ylabel('Amplitude');
+                         title('Using Errors alone');
+
+                         figure;
+                         L = Y - E;
+                         U = Y + E;
+                         [Pa,Li] = JackKnife(t,Y,L,U);
+                         xlabel('time');
+                         ylabel('Amplitude');
+                         title('Using Lower and Upper Confidence Intervals');
+                         hold on;
+
+                         Y1 = 2*Y;
+                         L = Y1 - 0.2;
+                         U = Y1 + 0.2;
+                         [Pa,Li] = JackKnife(t,Y1,L,U,[255 51 51]./255,[255 153 102]./255);
+                         hold on;
+                         [Pa,Li] = JackKnife(t,Y1*2,E,[51 51 153]./255,[102 153 204]./255);
+                         [Pa,Li] = JackKnife(t,Y1*2,E,'r','g');
+
+ See also ERRORBAR, PATCH, LINE
+
+
+ Version 0.001 Chandramouli Chandrasekaran (Chandt) - 13 April 2006.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Pa,Li] = nanJackKnife(varargin)</a>
+0002 <span class="comment">% JACKKNIFE plots jackknife errorbars around a given curve</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%     [Pa,Li,t] = JACKKNIFE(x,y,L,U,'r','g')</span>
+0005 <span class="comment">%     JACKKNIFE(x,y,se,colorMean,colorShade)</span>
+0006 <span class="comment">%     x= vector 1:points</span>
+0007 <span class="comment">%     y= each row is mean of a condition</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%     Plots a gray Jackknife around the line displayed in black very useful for</span>
+0010 <span class="comment">%     funky nature style error bars which are shaded.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%         Pa is a patch object for more help on patch objects see below</span>
+0013 <span class="comment">%         Li is a line object, more help on line object is available in MATLAB</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%     USAGE :</span>
+0016 <span class="comment">%              1)   [Pa,Li] = JackKnife(x,y,E)</span>
+0017 <span class="comment">%                    Calculates the Lower and upper errorbars as</span>
+0018 <span class="comment">%                    L = Y-E and U = Y+E. It then takes a default gray color</span>
+0019 <span class="comment">%                    as patch color, and the line color as black and plots</span>
+0020 <span class="comment">%                    it around the line using a patch object.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%              2)   [Pa,Li] = JackKnife(x,y,E,LineColor,PatchColor)</span>
+0023 <span class="comment">%                    Calculates the Lower and upper errorbars as</span>
+0024 <span class="comment">%                    L = Y-E and U = Y+E. It then takes PatchColor</span>
+0025 <span class="comment">%                    as patch color, and the Line Color from the LineColor</span>
+0026 <span class="comment">%                    variable. It then plots it around the line</span>
+0027 <span class="comment">%                    using a patch object.</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%              3)   [Pa,Li] = JackKnife(x,y,L,U)</span>
+0030 <span class="comment">%                    User Supplied bounds are taken as L and U, It then takes</span>
+0031 <span class="comment">%                    a default gray color as patch color, and the line color</span>
+0032 <span class="comment">%                    as black and plots it around the line using a patch object.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%              4)   [Pa,Li] = JackKnife(x,y,L,U,LineColor,PatchColor)</span>
+0035 <span class="comment">%                    User Supplied bounds are taken as L and U, It then takes</span>
+0036 <span class="comment">%                    PatchColor as patch color, and the Line Color from the LineColor</span>
+0037 <span class="comment">%                    variable. It then plots it around the line using a</span>
+0038 <span class="comment">%                    patch object.</span>
+0039 <span class="comment">%      CAVEATS</span>
+0040 <span class="comment">%                 1) Can be Slow sometimes for length(Array) &gt; 10000,</span>
+0041 <span class="comment">%                 2) Needs better vectorization</span>
+0042 <span class="comment">%      EXAMPLE</span>
+0043 <span class="comment">%                         t = [-5:0.05:5];</span>
+0044 <span class="comment">%                         Y = sin(t);</span>
+0045 <span class="comment">%                         E = 0.4*rand(1,length(t));</span>
+0046 <span class="comment">%                         [Pa,Li] = JackKnife(t,Y,E);</span>
+0047 <span class="comment">%                         xlabel('time');</span>
+0048 <span class="comment">%                         ylabel('Amplitude');</span>
+0049 <span class="comment">%                         title('Using Errors alone');</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%                         figure;</span>
+0052 <span class="comment">%                         L = Y - E;</span>
+0053 <span class="comment">%                         U = Y + E;</span>
+0054 <span class="comment">%                         [Pa,Li] = JackKnife(t,Y,L,U);</span>
+0055 <span class="comment">%                         xlabel('time');</span>
+0056 <span class="comment">%                         ylabel('Amplitude');</span>
+0057 <span class="comment">%                         title('Using Lower and Upper Confidence Intervals');</span>
+0058 <span class="comment">%                         hold on;</span>
+0059 <span class="comment">%</span>
+0060 <span class="comment">%                         Y1 = 2*Y;</span>
+0061 <span class="comment">%                         L = Y1 - 0.2;</span>
+0062 <span class="comment">%                         U = Y1 + 0.2;</span>
+0063 <span class="comment">%                         [Pa,Li] = JackKnife(t,Y1,L,U,[255 51 51]./255,[255 153 102]./255);</span>
+0064 <span class="comment">%                         hold on;</span>
+0065 <span class="comment">%                         [Pa,Li] = JackKnife(t,Y1*2,E,[51 51 153]./255,[102 153 204]./255);</span>
+0066 <span class="comment">%                         [Pa,Li] = JackKnife(t,Y1*2,E,'r','g');</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">% See also ERRORBAR, PATCH, LINE</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">%</span>
+0071 <span class="comment">% Version 0.001 Chandramouli Chandrasekaran (Chandt) - 13 April 2006.</span>
+0072 
+0073 
+0074 <span class="keyword">switch</span>(nargin)
+0075     <span class="keyword">case</span> 3,
+0076         <span class="comment">% If there are 3 inputs it means its just the errors</span>
+0077         x = varargin{1};
+0078         y = varargin{2};
+0079         E = varargin{3};
+0080         x(isnan(y))=[];
+0081         E(isnan(y))=[];
+0082         y(isnan(y))=[];
+0083         L = y - E;
+0084         U = y + E;
+0085         LineColor = <span class="string">'k'</span>;
+0086         PatchColor = [0.85 0.85 0.85];
+0087         Opacity=1;
+0088     <span class="keyword">case</span> 4,
+0089         <span class="comment">% If there are 4 inputs it means they entered the Lower and upper</span>
+0090         <span class="comment">% bounds</span>
+0091         x = varargin{1};
+0092         y = varargin{2};
+0093         L = varargin{3};
+0094         U = varargin{4};
+0095         x(isnan(y))=[];
+0096         L(isnan(y))=[];
+0097         U(isnan(y))=[];
+0098         y(isnan(y))=[];
+0099         LineColor = <span class="string">'k'</span>;
+0100         PatchColor = [0.85 0.85 0.85];
+0101         Opacity=1;
+0102     <span class="keyword">case</span> 5,
+0103         x = varargin{1};
+0104         y = varargin{2};
+0105         E = varargin{3};
+0106         x(isnan(y))=[];
+0107         E(isnan(y))=[];
+0108         y(isnan(y))=[];
+0109         L = y - E;
+0110         U = y + E;
+0111         LineColor =  varargin{4};
+0112         EdgeColor=LineColor-0.5.*abs(LineColor);
+0113         PatchColor = varargin{5};
+0114         Opacity=1;
+0115     <span class="keyword">case</span> 6,
+0116         <span class="comment">% If there are 6 inputs then</span>
+0117         x = varargin{1};
+0118         y = varargin{2};
+0119         E = varargin{3};
+0120         x(isnan(y))=[];
+0121         E(isnan(y))=[];
+0122         y(isnan(y))=[];
+0123         L = y - E;
+0124         U = y + E;
+0125         LineColor =  varargin{4};
+0126         EdgeColor=LineColor-0.5.*abs(LineColor);
+0127         PatchColor = varargin{5};
+0128         Opacity= varargin{6};
+0129     <span class="keyword">case</span> 7,
+0130         <span class="comment">% If there are 7 inputs then</span>
+0131     
+0132         x = varargin{1};
+0133         y = varargin{2};
+0134         E = varargin{3};
+0135         x(isnan(y))=[];
+0136         E(isnan(y))=[];
+0137         y(isnan(y))=[];
+0138         L = y - E;
+0139         U = y + E;
+0140         LineColor =  varargin{4};
+0141         EdgeColor = LineColor-0.5.*abs(LineColor);
+0142         PatchColor = varargin{5};
+0143         Opacity= varargin{6};
+0144         w=varargin{7}; <span class="comment">%Binary flag to make some markers white (?)</span>
+0145 <span class="comment">%         Opacity= varargin{7};</span>
+0146 <span class="keyword">end</span>
+0147 Xcoords = [x x(end:-1:1)];
+0148 Ycoords = [U L(end:-1:1)];
+0149 Pa=[];
+0150 <span class="comment">% Pa = patch(Xcoords,Ycoords,PatchColor);</span>
+0151 <span class="comment">% set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);</span>
+0152 hold on;
+0153 <span class="comment">%Li = plot(x,y,'color',LineColor,'linewidth',2);</span>
+0154 <span class="keyword">if</span> nargin&lt;7
+0155     <span class="keyword">if</span> ~all(U==L)
+0156     Pa = patch(Xcoords,Ycoords,PatchColor);
+0157     set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
+0158     <span class="keyword">end</span>
+0159     Li = plot(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0160 <span class="keyword">elseif</span> nargin&gt;=7
+0161     <span class="comment">% Pa = patch(Xcoords,Ycoords,'w');</span>
+0162 
+0163     <span class="keyword">if</span> ~all(U==L)
+0164         Pa = patch(Xcoords,Ycoords,PatchColor);
+0165         set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
+0166     <span class="keyword">end</span>
+0167     <span class="keyword">for</span> l=1:length(x)        
+0168         <span class="keyword">if</span> w(l)==0;
+0169             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0170             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);</span>
+0171         <span class="keyword">else</span>
+0172             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeCOlor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0173             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);</span>
+0174         <span class="keyword">end</span>
+0175     <span class="keyword">end</span>
+0176 <span class="keyword">end</span>
+0177 
+0178 hold on;
+0179 
+0180 
+0181 
+0182</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotGroupedSubjectsBars</title>
+  <meta name="keywords" content="plotGroupedSubjectsBars">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotGroupedSubjectsBars.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotGroupedSubjectsBars
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)</a>
+0002 
+0003 warning(<span class="string">'This function has been deprecated and will be removed, please use plotGroupedSubjectsBarsv2'</span>)
+0004             colorScheme
+0005             <span class="keyword">if</span> nargin&lt;4 || isempty(plotIndividualsFlag)
+0006                 plotIndividualsFlag=true;
+0007             <span class="keyword">end</span>
+0008             <span class="keyword">if</span> nargin&lt;9 || isempty(legendNames) || length(legendNames)&lt;length(adaptDataList)
+0009                 legendNames=adaptDataList;
+0010             <span class="keyword">end</span>
+0011             <span class="keyword">if</span> ~plotIndividualsFlag
+0012                 legendNames={};
+0013             <span class="keyword">end</span> 
+0014             
+0015             <span class="comment">%First: see if adaptDataList is a single subject (char), a cell</span>
+0016             <span class="comment">%array of subject names (one group of subjects), or a cell array of cell arrays of</span>
+0017             <span class="comment">%subjects names (several groups of subjects), and put all the</span>
+0018             <span class="comment">%cases into the same format</span>
+0019             <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0020                 <span class="keyword">if</span> isa(adaptDataList{1},<span class="string">'cell'</span>)
+0021                     auxList=adaptDataList;
+0022                 <span class="keyword">else</span>
+0023                     auxList{1}=adaptDataList;
+0024                 <span class="keyword">end</span>
+0025             <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
+0026                 auxList{1}={adaptDataList};
+0027             <span class="keyword">end</span>
+0028             Ngroups=length(auxList);
+0029             <span class="keyword">if</span> nargin&lt;12 || isempty(colors)
+0030                 c1=bsxfun(@times,[1:Ngroups]'/Ngroups,ones(1,3));
+0031                 c2=bsxfun(@times,[1:Ngroups]'/Ngroups,[0,.4,.7]);
+0032             <span class="keyword">elseif</span> size(colors,1)&gt;Ngroups
+0033                 c1=colors.^2;
+0034                 c2=colors;
+0035             <span class="keyword">else</span>
+0036                 error(<span class="string">'colors matrix has to be N x 3 where N is larger than the number of groups in adaptDataList'</span>) 
+0037             <span class="keyword">end</span>
+0038             
+0039             <span class="comment">%Default number of strides to average:</span>
+0040             N1=3; <span class="comment">%very early number of points</span>
+0041             <span class="keyword">if</span> nargin&lt;6 || isempty(earlyNumber)
+0042                 N2=5; <span class="comment">%early number of points</span>
+0043             <span class="keyword">else</span>
+0044                 N2=earlyNumber;
+0045             <span class="keyword">end</span>
+0046             <span class="keyword">if</span> nargin&lt;7 || isempty(lateNumber)
+0047                 N3=20; <span class="comment">%late number of points</span>
+0048             <span class="keyword">else</span>
+0049                 N3=lateNumber;
+0050             <span class="keyword">end</span>
+0051             <span class="keyword">if</span> nargin&lt;8 || isempty(exemptLast)
+0052                 Ne=5;
+0053             <span class="keyword">else</span>
+0054                 Ne=exemptLast;
+0055             <span class="keyword">end</span>
+0056             <span class="keyword">if</span> nargin&lt;10 || isempty(significanceThreshold)
+0057                 significanceThreshold=[];
+0058             <span class="keyword">end</span>
+0059             <span class="keyword">if</span> nargin&lt;11 || isempty(plotHandles) || numel(plotHandles)~=length(label)
+0060                 [ah,figHandle]=optimizedSubPlot(length(label),2,2);
+0061                 figure(figHandle)
+0062             <span class="keyword">else</span>
+0063                 figHandle=figure(gcf);
+0064                 ah=plotHandles;
+0065             <span class="keyword">end</span>
+0066             
+0067             a=load(auxList{1}{1});
+0068             aux=fields(a);
+0069             this=a.(aux{1});
+0070             <span class="keyword">if</span> nargin&lt;5 || isempty(condList)
+0071                 condList=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
+0072                 conds=condList;
+0073             <span class="keyword">else</span>
+0074                 conds=condList;
+0075                 <span class="keyword">for</span> i=1:length(condList)
+0076                     <span class="keyword">if</span> iscell(condList{i})
+0077                         condList{i}=condList{i}{1};
+0078                     <span class="keyword">end</span>
+0079                 <span class="keyword">end</span>
+0080             <span class="keyword">end</span>
+0081             nConds=length(conds);
+0082             allData={};
+0083             <span class="keyword">for</span> l=1:length(label)
+0084                 axes(ah(l))
+0085                 hold on
+0086                 <span class="keyword">for</span> group=1:Ngroups
+0087                     [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=adaptationData.getGroupedData(auxList{group},label(l),conds,removeBiasFlag,N2,N3,Ne);
+0088                     veryEarlyPoints=permute(nanmean(veryEarlyPoints,2),[1,4,2,3]); <span class="comment">%Averaging over strides for each sub</span>
+0089                     earlyPoints=permute(nanmean(earlyPoints,2),[1,4,2,3]); <span class="comment">%Averaging over strides for each sub</span>
+0090                     latePoints=permute(nanmean(latePoints,2),[1,4,2,3]); <span class="comment">%Averaging over strides for each sub</span>
+0091                     <span class="comment">%plot bars</span>
+0092                     <span class="keyword">if</span> Ngroups==1  &amp;&amp; isempty(significanceThreshold)<span class="comment">%Only plotting first N1 strides AND first N2 strides if there is only one group, and no stats are being shown</span>
+0093                         bar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2),.15/Ngroups,<span class="string">'FaceColor'</span>,<span class="string">'None'</span>,<span class="string">'EdgeColor'</span>,[.85,.85,.85].^group)
+0094                         bar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2),.15/Ngroups,<span class="string">'FaceColor'</span>,c1(group,:))
+0095                     <span class="keyword">else</span>
+0096                         <span class="comment">%c=[.9,.1,.0;1,.7,0];</span>
+0097                         h(2*(group-1)+1)=bar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2),.3/Ngroups,<span class="string">'FaceColor'</span>,c1(group,:));    <span class="comment">%,c(group,:));%</span>
+0098                     <span class="keyword">end</span>
+0099                     h(2*group)=bar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2),.3/Ngroups,<span class="string">'FaceColor'</span>,c2(group,:));<span class="comment">%c(group,:).^2);%</span>
+0100                     <span class="comment">%plot individual data points</span>
+0101                     <span class="keyword">if</span> plotIndividualsFlag==1
+0102                         <span class="comment">%set(gca,'ColorOrder',cell2mat(colorConds(1:min([size(veryEarlyPoints,2),length(colorConds)]))'));</span>
+0103                         <span class="keyword">if</span> Ngroups==1 &amp;&amp; isempty(significanceThreshold) <span class="comment">%Only plotting individual subject performance if there is only one group, or flag is set</span>
+0104                             plot((1:3:3*nConds)-.25+(group-1)/Ngroups,veryEarlyPoints,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2)
+0105                             plot((1:3:3*nConds)+.25+(group-1)/Ngroups,earlyPoints,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2)
+0106                             plot((2:3:3*nConds)+(group-1)/Ngroups,latePoints,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2)
+0107                         <span class="keyword">else</span>
+0108                             plot((1:3:3*nConds)+(group-1)/Ngroups,earlyPoints,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2)
+0109                             plot((2:3:3*nConds)+(group-1)/Ngroups,latePoints,<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2)
+0110                         <span class="keyword">end</span>
+0111                     <span class="keyword">end</span>
+0112                     <span class="comment">%plot stat markers for the case there is a single group</span>
+0113                     topOffset=max(earlyPoints(:));
+0114                     <span class="keyword">if</span> Ngroups==1
+0115                         <span class="keyword">if</span> ~isempty(significanceThreshold) <span class="comment">%Only works with a single group, no stats across groups, yet</span>
+0116                            topOffset=max(earlyPoints(:));
+0117                            changes=find(pChange&lt;significanceThreshold);
+0118                            <span class="keyword">for</span> j=1:length(changes)
+0119                               plot((changes(j)-1)*3+[1.1,1.9],1.2*topOffset*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2); 
+0120                            <span class="keyword">end</span>
+0121                            switches=find(pSwitch&lt;significanceThreshold);
+0122                            <span class="keyword">for</span> j=1:length(switches)
+0123                               plot((switches(j)-1)*3+[2.1,3.9],1.2*topOffset*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2); 
+0124                            <span class="keyword">end</span>
+0125                            interCond=find(pLate(1,:)&lt;significanceThreshold);
+0126                            <span class="keyword">for</span> j=1:length(interCond)
+0127                               plot([2.1,(interCond(j)-1)*3+2.1],(1.2 +.1*interCond(j))*topOffset*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2); 
+0128                            <span class="keyword">end</span>
+0129                         <span class="keyword">end</span>
+0130                     <span class="keyword">end</span>
+0131                         
+0132                     <span class="comment">%plot error bars (using standard error)</span>
+0133                     <span class="keyword">if</span> Ngroups==1 &amp;&amp; isempty(significanceThreshold) <span class="comment">%Only plotting first 3 strides AND first 5 strides if there is only one group</span>
+0134                         errorbar((1:3:3*nConds)-.25+(group-1)/Ngroups,nanmean(veryEarlyPoints,2), nanstd(veryEarlyPoints,[],2)/sqrt(size(veryEarlyPoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[1,0,0])
+0135                         errorbar((1:3:3*nConds)+.25+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[1,0,0])
+0136                     <span class="keyword">else</span>
+0137                         errorbar((1:3:3*nConds)+(group-1)/Ngroups,nanmean(earlyPoints,2), nanstd(earlyPoints,[],2)/sqrt(size(earlyPoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[1,0,0])
+0138                     <span class="keyword">end</span>
+0139                     errorbar((2:3:3*nConds)+(group-1)/Ngroups,nanmean(latePoints,2), nanstd(latePoints,[],2)/sqrt(size(latePoints,2)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[1,0,0])
+0140                     
+0141                     <span class="comment">%Save all data plotted into struct</span>
+0142                     <span class="keyword">if</span> Ngroups==1
+0143                         allData{l}.early=earlyPoints;
+0144                         allData{l}.late=latePoints;
+0145                         allData{l}.veryEarly=veryEarlyPoints;
+0146                         allData{l}.subIDs=auxList{group};
+0147                     <span class="keyword">else</span>
+0148                         allData{l}.group{group}.early=earlyPoints;
+0149                         allData{l}.group{group}.late=latePoints;
+0150                         allData{l}.group{group}.veryEarly=veryEarlyPoints;
+0151                         allData{l}.group{group}.subIDs=auxList{group};
+0152                     <span class="keyword">end</span>
+0153                     allData{l}.parameterLabel=label{l};
+0154                 <span class="keyword">end</span>
+0155                 <span class="comment">%Plot stat markers for in-between group comparisons (group</span>
+0156                 <span class="comment">%1 vs all other groups)</span>
+0157                 <span class="keyword">if</span> Ngroups&gt;1 &amp;&amp; ~isempty(significanceThreshold)
+0158                     <span class="keyword">for</span> i=2:Ngroups
+0159                             [~,pEarly(:,i-1)]=ttest2(allData{l}.group{1}.early',allData{l}.group{i}.early');
+0160                             [~,pLate(:,i-1)]=ttest2(allData{l}.group{1}.late',allData{l}.group{i}.late');
+0161                             <span class="keyword">for</span> j=1:nConds
+0162                                 <span class="keyword">if</span> pEarly(j,i-1)&lt;significanceThreshold
+0163                                     plot([3*(j-1)+1 3*(j-1)+1+(i-1)/Ngroups],(1.2 +.1*(i-1))*topOffset*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2); 
+0164                                 <span class="keyword">end</span>
+0165                                 <span class="keyword">if</span> pLate(j,i-1)&lt;significanceThreshold
+0166                                     plot([3*(j-1)+2 3*(j-1)+2+(i-1)/Ngroups],(1.2+.1*(i-1))*topOffset*[1,1],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2); 
+0167                                 <span class="keyword">end</span>
+0168                             <span class="keyword">end</span>
+0169                     <span class="keyword">end</span>
+0170                 <span class="keyword">end</span>
+0171                 xTickPos=(1:3:3*nConds)+.5;
+0172                 set(gca,<span class="string">'XTick'</span>,xTickPos,<span class="string">'XTickLabel'</span>,condList)
+0173                 <span class="keyword">if</span> removeBiasFlag==1
+0174                     title([label{l} <span class="string">' w/o Bias'</span>])
+0175                 <span class="keyword">else</span>
+0176                     title([label{l}])
+0177                 <span class="keyword">end</span>
+0178                 hold off
+0179                 
+0180             <span class="keyword">end</span>
+0181             linkaxes(ah,<span class="string">'x'</span>)
+0182             axis tight
+0183             condDes = this.metaData.conditionName;
+0184             <span class="keyword">if</span> ~isempty(legendNames) &amp;&amp; isa(legendNames{1},<span class="string">'cell'</span>) <span class="comment">%Case in which the list of subjects is of the form {{'name1','name2',...}}, so there is actually a single group. Without this fix it fails to write the legend.</span>
+0185                 legendNames=legendNames{1};
+0186             <span class="keyword">end</span>
+0187             <span class="keyword">if</span> Ngroups==1 &amp;&amp; isempty(significanceThreshold)
+0188                 legend([{[<span class="string">'Very early (first '</span> num2str(N1) <span class="string">' strides)'</span>],[<span class="string">'Early (first '</span> num2str(N2) <span class="string">' strides)'</span>],[<span class="string">'Late (last '</span> num2str(N3) <span class="string">' (-'</span> num2str(Ne) <span class="string">') strides)'</span>]}, legendNames ]);
+0189             <span class="keyword">elseif</span> Ngroups==1
+0190                 legend([{[<span class="string">'Early (first '</span> num2str(N2) <span class="string">' strides)'</span>],[<span class="string">'Late (last '</span> num2str(N3) <span class="string">' (-'</span> num2str(Ne) <span class="string">') strides)'</span>]}, legendNames ]);
+0191             <span class="keyword">else</span>
+0192                 legStr={};
+0193                 <span class="keyword">for</span> group=1:Ngroups
+0194                     load([adaptDataList{group}{1,1}])
+0195                     group2=adaptData.subData.ID;
+0196                     spaces=find(group2==<span class="string">' '</span>);
+0197                     abrevGroup=group2(spaces+1);
+0198                     group2=group2(ismember(group2,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span>]));
+0199                     abrevGroup=[group2];
+0200                     legStr=[legStr, {[<span class="string">'Early (first '</span> num2str(N2) <span class="string">'), Group '</span> abrevGroup],[<span class="string">'Late (last '</span> num2str(N3) <span class="string">' (-'</span> num2str(Ne) <span class="string">'), Group '</span> abrevGroup]}];
+0201                 <span class="keyword">end</span>
+0202                 legend(h,legStr)
+0203             <span class="keyword">end</span>
+0204 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

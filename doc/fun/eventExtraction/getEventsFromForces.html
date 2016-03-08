@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEventsFromForces</title>
+  <meta name="keywords" content="getEventsFromForces">
+  <meta name="description" content="% Get stance phases">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromForces.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getEventsFromForces
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Get stance phases</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Get stance phases</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>	First step:</li><li><a href="getStanceFromForces.html" class="code" title="function [stance] = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	%% If Fz is sampled >2000Hz, downsample to somewhere in the [1000-2000)Hz</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)</a>
+0002 
+0003 <span class="comment">%% Get stance phases</span>
+0004 th=10; <span class="comment">%Detection threshold in Newtons</span>
+0005 [stanceL] = <a href="getStanceFromForces.html" class="code" title="function [stance] = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzL, th, fsample);
+0006 [stanceR] = <a href="getStanceFromForces.html" class="code" title="function [stance] = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>(FzR, th, fsample);
+0007 <span class="comment">%[stanceL] = getStanceFromForcesAlt(FzL, [], fsample); %New method</span>
+0008 <span class="comment">%[stanceR] = getStanceFromForcesAlt(FzR, [], fsample); %New method</span>
+0009 
+0010 <span class="comment">%% Get events from stance</span>
+0011 [LHS,RHS,LTO,RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>(stanceL,stanceR);
+0012 
+0013 <span class="comment">%% Eliminate any events that ocurr prior to actual activity in the trial</span>
+0014 <span class="comment">% This section was commented out by Pablo on 2/20/2015 because it lead to</span>
+0015 <span class="comment">% the very first step not being properly detected, which can be a big</span>
+0016 <span class="comment">% problem.</span>
+0017 
+0018 <span class="comment">% Rheel=FzR;</span>
+0019 <span class="comment">% Lheel=FzL;</span>
+0020 <span class="comment">% aux=Rheel(:,1)-Rheel(1,1); %Zero initial value</span>
+0021 <span class="comment">% aux2=cumsum(aux.^2); %Cumulative energy</span>
+0022 <span class="comment">% begin_index1=find(aux2&gt;.001*aux2(end),1); %First element whose cumulative energy is at least .1% of total energy</span>
+0023 <span class="comment">% aux=Lheel(:,1)-Lheel(1,1); %Zero initial value</span>
+0024 <span class="comment">% aux2=cumsum(aux.^2); %Cumulative energy</span>
+0025 <span class="comment">% begin_index2=find(aux2&gt;.001*aux2(end),1); %First element whose cumulative energy is at least .1% of total energy</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% begin_index=max([begin_index1,begin_index2]);</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% LHS(1:begin_index)=false;</span>
+0030 <span class="comment">% RHS(1:begin_index)=false;</span>
+0031 <span class="comment">% LTO(1:begin_index)=false;</span>
+0032 <span class="comment">% RTO(1:begin_index)=false;</span>
+0033 
+0034 <span class="comment">%% Check consistency</span>
+0035 <span class="comment">%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);</span>
+0036 
+0037 
+0038 
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

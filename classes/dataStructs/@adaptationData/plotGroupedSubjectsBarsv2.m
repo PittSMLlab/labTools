@@ -1,5 +1,5 @@
 function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
-            mode=1;
+            mode=1; %1 is bars +- std, 2 is lines +- std, 3 is boxplots
             
             
             if nargin<4 || isempty(plotIndividualsFlag)
@@ -106,7 +106,7 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                             bName{k}=[' first ' num2str(abs(N2(k))) ' strides.'];
                         end
                         hold on
-                        if mode==1
+                        if mode==1 %Mean bars +- std or median bars +- half the 16-84 percentile range
                             try
                                 bb(j,k)=bar(xPos,relevantMean,'BarWidth',.9/((Ngroups+1)*length(N2)),'FaceColor',colors(j,:),'FaceAlpha',(k/length(N2)),'DisplayName',strcat(gName{j},bName{k}),'EdgeColor',colors(j,:).^(k/length(N2)));
                             catch %old matlab versions don't allow for 'FaceAlpha' property on bars
@@ -114,8 +114,10 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                             end
                             hC=errorbar(xPos,relevantMean,relevantSte,'LineStyle','none','LineWidth',2,'Color','k');
                             set(get(get(hC,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
-                        elseif mode==2
-                            errorbar(xPos,relevantMean, relevantSte,'DisplayName',strcat(gName{j},bName{k}),'LineWidth',2,'Color',colors(j,:).^(k/length(N2)))
+                        elseif mode==2 %Mean/median lines +- std or 16-84 percentile range
+                            errorbar(xPos,relevantMean, relevantSte,'DisplayName',strcat(gName{j},bName{k}),'LineWidth',2,'Color',colors(j,:).^(1-((k-1)/length(N2))))
+                        elseif mode==3 %Boxplots
+                            boxplot(squeeze(allData.group{j}(:,k,i,:))','positions',xPos,'widths',.9,'symbol','+','colors',colors(j,:).^(k/length(N2)),'boxstyle','outline');
                         end
                         if plotIndividualsFlag==1
                             indivColors=[];

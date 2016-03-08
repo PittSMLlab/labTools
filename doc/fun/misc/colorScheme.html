@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of colorScheme</title>
+  <meta name="keywords" content="colorScheme">
+  <meta name="description" content="Define color scheme">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; colorScheme.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>colorScheme
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Define color scheme</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Define color scheme
+                  1          2          3          4          5          6          7        8           9        10            11        12
+                red     fade red     green    fade green    blue     fade blue   black     gray       yellow    orange        plum      lime
+color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77]*(1/255);
+new colors
+color_palette= [255 0 0; 255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Define color scheme</span>
+0002 <span class="comment">%                  1          2          3          4          5          6          7        8           9        10            11        12</span>
+0003 <span class="comment">%                red     fade red     green    fade green    blue     fade blue   black     gray       yellow    orange        plum      lime</span>
+0004 <span class="comment">%color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77]*(1/255);</span>
+0005 <span class="comment">%new colors</span>
+0006 <span class="comment">%color_palette= [255 0 0; 255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);</span>
+0007 color_palette= [255 0 0; 255 150 150; 0 114 54; 153 255 102; 0 0 255; 44 176 207; 0 0 0; 155 155 155; 255 153 0; 255 185 0; 153 51 102; 171 218 77;255 185 0; 153 255 102; 44 176 207; 129 23 136;0 114 54;255 150 150;29 14 130 ;153 153 210 ;151 15 0; 102 126 0;255 51 102; 0 0 255; 71 38 0; 255 102 0; 171 218 77; 155 155 155;0 0 0]*(1/255);
+0008 p_red=color_palette(1,:);
+0009 p_fade_red=color_palette(2,:);
+0010 p_fade_green=color_palette(4,:);
+0011 p_blue=color_palette(5,:);
+0012 p_fade_blue=color_palette(6,:);
+0013 p_black=color_palette(18,:);
+0014 p_green=color_palette(17,:);
+0015 p_yellow=color_palette(9,:);
+0016 p_orange=color_palette(10,:);
+0017 p_plum=color_palette(11,:);
+0018 p_lime=color_palette(12,:);
+0019 p_gray=[.6,.6,.6];
+0020 
+0021 colorEvents=[0,.5,.3];
+0022 colorConds={p_fade_blue, p_green,p_gray, p_orange, p_plum, p_lime, p_red, p_blue,p_yellow,p_black};
+0023 colorGroups={[0,0,0],[.5,.5,.1],[.8,0,.5],[.6,.6,.6]};
+0024 clear p_*</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

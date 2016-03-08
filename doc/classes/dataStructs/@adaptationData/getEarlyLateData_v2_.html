@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEarlyLateData_v2_</title>
+  <meta name="keywords" content="getEarlyLateData_v2_">
+  <meta name="description" content="obtain the earliest and late data points for conditions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; getEarlyLateData_v2_.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getEarlyLateData_v2_
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>obtain the earliest and late data points for conditions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">obtain the earliest and late data points for conditions
+allow to eliminate very late data points 
+Predefine values:  
+earlyNumber=5
+veryEarlyPoints=3
+latePoints=20
+exemptLast=5
+exemptFirst=0
+
+INPUTS:
+this:experimentData object 
+labels: parameters to plot 
+conds: condition that information is needed 
+removeBiasFlag:1 to activate function to remove bias, 0 or empty to no activate function
+numberOfStrides: vector of any size, specifying how many stride
+cycles to group. Positive values are interpreted as 'first N'
+strides, while negative values are interpreted as 'last N'. Zero
+values create an empty group
+OUTPUTS:
+dataPoints: cell array with the requested data.
+
+EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)</a>
+0002         <span class="comment">%obtain the earliest and late data points for conditions</span>
+0003         <span class="comment">%allow to eliminate very late data points</span>
+0004         <span class="comment">%Predefine values:</span>
+0005         <span class="comment">%earlyNumber=5</span>
+0006         <span class="comment">%veryEarlyPoints=3</span>
+0007         <span class="comment">%latePoints=20</span>
+0008         <span class="comment">%exemptLast=5</span>
+0009         <span class="comment">%exemptFirst=0</span>
+0010         <span class="comment">%</span>
+0011         <span class="comment">%INPUTS:</span>
+0012         <span class="comment">%this:experimentData object</span>
+0013         <span class="comment">%labels: parameters to plot</span>
+0014         <span class="comment">%conds: condition that information is needed</span>
+0015         <span class="comment">%removeBiasFlag:1 to activate function to remove bias, 0 or empty to no activate function</span>
+0016         <span class="comment">%numberOfStrides: vector of any size, specifying how many stride</span>
+0017         <span class="comment">%cycles to group. Positive values are interpreted as 'first N'</span>
+0018         <span class="comment">%strides, while negative values are interpreted as 'last N'. Zero</span>
+0019         <span class="comment">%values create an empty group</span>
+0020         <span class="comment">%OUTPUTS:</span>
+0021         <span class="comment">%dataPoints: cell array with the requested data.</span>
+0022         <span class="comment">%</span>
+0023         <span class="comment">%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);</span>
+0024         
+0025             earlyPoints=[];
+0026             veryEarlyPoints=[];
+0027             latePoints=[];
+0028             N1=3;<span class="comment">%all(cellfun(@(x) isa(x,'char'),conds))</span>
+0029             <span class="keyword">if</span> isa(conds,<span class="string">'char'</span>)
+0030                 conds={conds};
+0031             <span class="keyword">elseif</span> ~isa(conds,<span class="string">'cell'</span>) || ~all(cellfun(@(x) (isa(x,<span class="string">'char'</span>) || isa(x,<span class="string">'cell'</span>)),conds))
+0032                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Conditions must be a string or a cell array containing strings.'</span>);
+0033             <span class="keyword">end</span>
+0034             nConds=length(conds);
+0035             <span class="keyword">if</span> nargin&lt;2 || ~(isa(labels,<span class="string">'char'</span>) || (isa(labels,<span class="string">'cell'</span>) &amp;&amp; all(cellfun(@(x) isa(x,<span class="string">'char'</span>),labels)) ))
+0036                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Labels must be a string or a cell array containing strings.'</span>)
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin&lt;5 || isempty(numberOfStrides)
+0039                 numberOfStrides=[-5,20];
+0040             <span class="keyword">end</span>
+0041             dataPoints=cell(size(numberOfStrides));
+0042             <span class="keyword">if</span> nargin&lt;6 || isempty(exemptLast)
+0043                 Ne=5;
+0044             <span class="keyword">else</span>
+0045                 Ne=exemptLast;
+0046             <span class="keyword">end</span>
+0047             <span class="keyword">if</span> nargin&lt;7 || isempty(exemptFirst)
+0048                 Nf=0;
+0049             <span class="keyword">else</span>
+0050                 Nf=exemptFirst;
+0051             <span class="keyword">end</span>
+0052             <span class="keyword">if</span> nargin&lt;4 || isempty(removeBiasFlag) || removeBiasFlag==1
+0053                 this=this.removeBadStrides; 
+0054                 removeBiasFlag=1; <span class="comment">%Default</span>
+0055             <span class="keyword">else</span>
+0056                 <span class="comment">%this=adaptData;</span>
+0057             <span class="keyword">end</span>
+0058             
+0059             <span class="comment">%this=this.removeBadStrides;</span>
+0060             [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+0061             this=this.removeBiasV2([],removeBiasFlag);
+0062             conditionIdxs=this.getConditionIdxsFromName(conds);
+0063             <span class="keyword">for</span> j=1:length(numberOfStrides)
+0064                 <span class="keyword">for</span> i=1:nConds
+0065                     <span class="comment">%dataPoints{j}(i,:.:)=</span>
+0066                     <span class="comment">%First: find if there is a condition with a</span>
+0067                     <span class="comment">%similar name to the one given</span>
+0068                     condIdx=conditionIdxs(i);
+0069                     aux=this.getParamInCond(labels,conditionIdxs(i),0); <span class="comment">%No bias removal, it was already done</span>
+0070                     N=size(aux,1);
+0071                     <span class="keyword">if</span> ~isempty(condIdx) &amp;&amp; ~isempty(aux)
+0072                         data=nan(abs(numberOfStrides(j)),length(labels));
+0073                         <span class="keyword">if</span> numberOfStrides(j)&lt;=0 <span class="comment">%Last N strides</span>
+0074                             data(1:min([N-Ne,abs(numberOfStrides(j))]),:)=aux(max([1,end-Ne+numberOfStrides(j)+1]):end-Ne,:); <span class="comment">%Gets the last numberOfStrides(j) strides, exempting the very last Ne, and considers the possibility that there are less strides available than requested.</span>
+0075                         <span class="keyword">else</span>
+0076                             data(1:min([N-Nf,abs(numberOfStrides(j))]),:)=aux(Nf+1:min([Nf+numberOfStrides(j),N]),:);
+0077                         <span class="keyword">end</span>
+0078                         dataPoints{j}(i,1:abs(numberOfStrides(j)),:)=data;
+0079                     <span class="keyword">else</span>
+0080                         disp([<span class="string">'Condition '</span> conds{i} <span class="string">' not found for subject '</span> this.subData.ID])
+0081                         dataPoints{j}(i,1:abs(numberOfStrides(j)),:)=NaN;
+0082                     <span class="keyword">end</span>
+0083                 <span class="keyword">end</span>
+0084             <span class="keyword">end</span>
+0085         <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

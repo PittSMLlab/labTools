@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rawEMGhealthCheck</title>
+  <meta name="keywords" content="rawEMGhealthCheck">
+  <meta name="description" content="% Compute stats">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; rawEMGhealthCheck.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>rawEMGhealthCheck
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Compute stats</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [signalStats] = rawEMGhealthCheck(rawExperimentData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Compute stats</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [signalStats] = rawEMGhealthCheck(rawExperimentData)</a>
+0002 
+0003 <span class="comment">%% Compute stats</span>
+0004 signalBW=[50,450];
+0005 
+0006 <span class="keyword">for</span> trial=1:length(rawExperimentData.data)
+0007     clear energy LFrms HFrms MFrms EMGrms SNR
+0008     <span class="keyword">if</span> ~isempty(rawExperimentData.data{trial})
+0009         <span class="comment">%Computing noise structure on the raw signal:</span>
+0010         auxTS=rawExperimentData.data{trial}.EMGData;
+0011         data=auxTS.Data;
+0012         offset=mean(data);
+0013         data=detrend(data,<span class="string">'constant'</span>);
+0014         winTime=.128; <span class="comment">%128 ms windows</span>
+0015         Nwin=round(winTime*rawExperimentData.data{trial}.EMGData.sampFreq);
+0016         Noverlap=7*Nwin/8;
+0017         Nfft=Nwin; <span class="comment">%Warning: if this ratio changes, I'm not sure how energy calculations need to change when computed from FFT</span>
+0018         fs=rawExperimentData.data{trial}.EMGData.sampFreq;
+0019         window=hann(Nwin);
+0020         <span class="comment">%window=ones(Nwin,1);</span>
+0021         <span class="keyword">for</span> ch=1:size(data,2)
+0022             [Pdata,fVector,tVector] = spectrogram(data(:,ch),window,Noverlap,Nfft,fs); 
+0023             
+0024             <span class="comment">%See spectrogram:</span>
+0025 <span class="comment">%             figure</span>
+0026 <span class="comment">%             h(1)=subplot(5,5,[2:5 7:10 12:15 17:20]);</span>
+0027 <span class="comment">%             hold on</span>
+0028 <span class="comment">%             imagesc(tVector,fVector,sqrt(abs(Pdata.^2)));</span>
+0029 <span class="comment">%             view(2)</span>
+0030 <span class="comment">%             %set(h(1),'YTickLabel',{},'XTickLabel',{});</span>
+0031 <span class="comment">%             axis tight</span>
+0032 <span class="comment">%             hold off</span>
+0033 <span class="comment">%             h(2)=subplot(5,5,[1:5:16]);</span>
+0034 <span class="comment">%             hold on</span>
+0035 <span class="comment">%             aux=abs(fft(data(:,ch),Nfft));</span>
+0036 <span class="comment">%             plot(aux(1:length(fVector)),fVector);</span>
+0037 <span class="comment">%             hold off</span>
+0038 <span class="comment">%             h(3)=subplot(5,5,[22:25]);</span>
+0039 <span class="comment">%             hold on</span>
+0040 <span class="comment">%             plot([0:size(data,1)-1]/fs,data(:,ch));</span>
+0041 <span class="comment">%             hold off</span>
+0042 <span class="comment">%             linkaxes(h([1:2]),'y')</span>
+0043 <span class="comment">%             linkaxes(h([1,3]),'x')</span>
+0044 
+0045             Pdata=sqrt(2)*Pdata/sqrt(Nfft); <span class="comment">%Normalization of fft data so that Parseval's theorem holds. Reminder: Pdata contains only positive frequency components, and DC component was removed a priori.</span>
+0046             
+0047             <span class="comment">%Separate bands and compute energy in each for every</span>
+0048             <span class="comment">%time-window</span>
+0049             U20data=Pdata(abs(fVector)&lt;20,:);                       <span class="comment">%Low-freq band: recommended filtering out</span>
+0050             U50data=Pdata(abs(fVector)&lt;50 &amp; abs(fVector)&gt;=20,:);    <span class="comment">%Mixed band: EMG lives here but so may artifacts</span>
+0051             U450data=Pdata(abs(fVector)&lt;450 &amp; abs(fVector)&gt;=50,:);  <span class="comment">%EMG band</span>
+0052             UInfdata=Pdata(abs(fVector)&gt;=450,:);                    <span class="comment">%High-freq range</span>
+0053             energy(1,:)=sum(abs(U20data).^2); 
+0054             energy(2,:)=sum(abs(U50data).^2);  
+0055             energy(3,:)=sum(abs(U450data).^2); 
+0056             energy(4,:)=sum(abs(UInfdata).^2); 
+0057             
+0058             <span class="comment">%Compute rms values and snr</span>
+0059             k=size(Pdata,1)/size(UInfdata,1); <span class="comment">%Scaling term for the HF energy, assuming that HF noise is only part of some additive white (equally present in all freqs) gaussian noise.</span>
+0060             SNR(ch,:)=10*log10(energy(3,:)./(energy(1,:)+energy(4,:)));  <span class="comment">%Estimating noise energy as two-times the LF artifacts energy (there is more energy not in the 0-20Hz band) plus HF estimation. Although both these signals will be filtered out, we have reason to believe that an equivalent amount of noise lies in the band of interest (EMG band). HF represents white noise (present in all bands) and the LF artifacts usually are not limited to the [0,20] range.</span>
+0061             avgSNR(ch)=10*log10(sum(energy(3,:))/sum(energy(1,:)+energy(4,:)));
+0062             LFrms(ch,:)=sqrt(2*energy(1,:)/Nfft);                   <span class="comment">%Movement artifacts estimation</span>
+0063             HFrms(ch,:)=sqrt(k*energy(4,:)/Nfft);                   <span class="comment">%HF noise scaled to full-band (white) noise</span>
+0064             EMGrms(ch,:)=sqrt(energy(3,:)/Nfft);                    <span class="comment">%EMG signal</span>
+0065             MFrms(ch,:)=sqrt(energy(2,:)/Nfft);                     <span class="comment">%Mixed band (artifacts+EMG)</span>
+0066             
+0067             <span class="comment">%Check sanity:</span>
+0068             origEnergy=sum(data(:,ch).^2); <span class="comment">%Original signal energy</span>
+0069             summedWindowAndBandEnergy=sum((LFrms(ch,:).^2)/2+(HFrms(ch,:).^2)/k +MFrms(ch,:).^2+EMGrms(ch,:).^2)*(Nwin-Noverlap); <span class="comment">%Summing energy in all bands and all windows (scaled down to compensate for window overlap)</span>
+0070             windowFactor=sum(window.^2)/Nwin; <span class="comment">%Because of windowing, the sum of all windows/bands is only a fraction of the original signal. If the window used were to be ones(Nwin,1) (effectively no window) then this factor would not be needed</span>
+0071             <span class="keyword">if</span> abs(summedWindowAndBandEnergy/windowFactor - origEnergy)&gt;.1*origEnergy; <span class="comment">%Checking that both quantities above match to a certain precision (10%) (because of border effects, and that the window Factor is just an approximation)</span>
+0072                 warning([<span class="string">'Total signal energy and estimated band/window decomposition energies do not match for channel '</span> num2str(ch) <span class="string">' in trial '</span> num2str(trial)])
+0073             <span class="keyword">end</span>
+0074             
+0075         <span class="keyword">end</span>
+0076         
+0077         <span class="comment">%Save computations into a structure</span>
+0078         t0=auxTS.Time(1)+winTime/2;
+0079         Ts=winTime*(Nwin-Noverlap)/Nwin;
+0080         signalStats{trial}.noiseLevelRMS=labTimeSeries(HFrms',t0,Ts,auxTS.labels); <span class="comment">% Background noise estimation on the full signal</span>
+0081         signalStats{trial}.lowFreqSignalRMS=labTimeSeries(LFrms',t0,Ts,auxTS.labels); <span class="comment">%Movement artifacts RMS values</span>
+0082         signalStats{trial}.signalRMS=labTimeSeries(EMGrms',t0,Ts,auxTS.labels); <span class="comment">%Actual signal RMS value</span>
+0083         signalStats{trial}.offset=offset; <span class="comment">%Offset</span>
+0084         signalStats{trial}.SNR=labTimeSeries(SNR',t0,Ts,auxTS.labels); <span class="comment">%Signal to background noise ratio</span>
+0085         signalStats{trial}.avgSNR=avgSNR;
+0086         
+0087         <span class="comment">%eventsTS=rawExperimentData.data{trial}.gaitEvents;</span>
+0088         <span class="comment">%stridedTS=splitByEvents(auxTS,eventsTS,'LHS'); %Get strides individually in a cell array</span>
+0089         <span class="comment">%alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!</span>
+0090         <span class="comment">%[decomposition,~,avgStride,~] =energyDecomposition(alignedTS);</span>
+0091         <span class="comment">%signalStats{trial}.avgStride=avgStride;</span>
+0092         <span class="comment">%signalStats{trial}.energyDecomp=decomposition;</span>
+0093         signalStats{trial}.rawCrossCorr=corr(rawExperimentData.data{trial}.EMGData.Data);
+0094         signalStats{trial}.rawMean=mean(rawExperimentData.data{trial}.EMGData.Data);
+0095         signalStats{trial}.rawVar=var(rawExperimentData.data{trial}.EMGData.Data);
+0096         <span class="keyword">if</span> rawExperimentData.isProcessed==1
+0097             signalStats{trial}.procMean=mean(rawExperimentData.data{trial}.procEMGData.Data);
+0098             signalStats{trial}.procVar=var(rawExperimentData.data{trial}.procEMGData.Data);
+0099             signalStats{trial}.procCrossCorr=corr(rawExperimentData.data{trial}.procEMGData.Data);
+0100         <span class="keyword">end</span>
+0101         
+0102         <span class="comment">%Do some plotting</span>
+0103 <span class="comment">%         snrStrided=splitByEvents(signalStats{trial}.SNR,eventsTS,'LHS');</span>
+0104 <span class="comment">%         snrAligned=labTimeSeries.stridedTSToAlignedTS(snrStrided,100);</span>
+0105 <span class="comment">%         %Raw data plot:</span>
+0106 <span class="comment">%         [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function</span>
+0107 <span class="comment">%         linkaxes(ph,'xy')</span>
+0108 <span class="comment">%         axis(ph(1),[0 1 -2e-4 2e-4])</span>
+0109 <span class="comment">%         set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)}) %Need to fix, so it shows reasonable numbers when re-scaled</span>
+0110 <span class="comment">%         figure(fh)</span>
+0111 <span class="comment">%         set(fh,'Name',['Raw EMG, trial ' num2str(trial)])</span>
+0112 <span class="comment">%         for i=1:size(decomposition,2)</span>
+0113 <span class="comment">%             subplot(ph(i))</span>
+0114 <span class="comment">%             hold on</span>
+0115 <span class="comment">%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')</span>
+0116 <span class="comment">%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')</span>
+0117 <span class="comment">%             plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')</span>
+0118 <span class="comment">%             text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])</span>
+0119 <span class="comment">%             text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])</span>
+0120 <span class="comment">%             hold off</span>
+0121 <span class="comment">%         end</span>
+0122 <span class="comment">%         saveFig(fh,['../fig/' rawExperimentData.subData.ID],['rawEMGTrial' num2str(trial)])</span>
+0123 <span class="comment">%         close(fh)</span>
+0124 <span class="comment">%         %Filtered plot:</span>
+0125 <span class="comment">%         this=rawExperimentData.data{trial}.EMGData;</span>
+0126 <span class="comment">%         this.Data=filterEMG(this.Data,this.sampFreq,signalBW);</span>
+0127 <span class="comment">%         stridedTS=splitByEvents(this,eventsTS,'LHS'); %Get strides individually in a cell array</span>
+0128 <span class="comment">%         alignedTS=labTimeSeries.stridedTSToAlignedTS(stridedTS,4096); %Creates an alignedTS object!</span>
+0129 <span class="comment">%         [decomposition,~,~,~] =energyDecomposition(alignedTS);</span>
+0130 <span class="comment">%         alignedTS.Data=bsxfun(@minus,alignedTS.Data,mean(alignedTS.Data,1)); %Subtracting mean along first (time) dimension</span>
+0131 <span class="comment">%         [fh,ph]=plot(alignedTS); %Using the alignedTimeSeries plot function</span>
+0132 <span class="comment">%         linkaxes(ph,'xy')</span>
+0133 <span class="comment">%         axis(ph(1),[0 1 -2e-4 2e-4])</span>
+0134 <span class="comment">%         set(ph,'YTickLabel',{num2str(-200) 0 num2str(200)})</span>
+0135 <span class="comment">%         figure(fh)</span>
+0136 <span class="comment">%         set(fh,'Name',['Filtered EMG, trial ' num2str(trial)])</span>
+0137 <span class="comment">%         for i=1:size(decomposition,2)</span>
+0138 <span class="comment">%             subplot(ph(i))</span>
+0139 <span class="comment">%             hold on</span>
+0140 <span class="comment">%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),4*mean(abs(alignedTS.Data(:,i,:)),3),'m')</span>
+0141 <span class="comment">%             plot([0:size(alignedTS.Data,1)-1]/size(alignedTS.Data,1),-4*mean(abs(alignedTS.Data(:,i,:)),3),'m')</span>
+0142 <span class="comment">%             plot([0:size(snrAligned.Data,1)-1]/size(snrAligned.Data,1),mean(snrAligned.Data(:,i,:),3)*1e-5,'k.')</span>
+0143 <span class="comment">%             text(.7,-1e-4,['Avg. RMS ' num2str(round(1e6*decomposition(2,i))) 'uV'])</span>
+0144 <span class="comment">%             text(.7,-1.5e-4,['RMS ' num2str(round(1e6*decomposition(3,i))) 'uV'])</span>
+0145 <span class="comment">%             hold off</span>
+0146 <span class="comment">%         end</span>
+0147 <span class="comment">%         saveFig(fh,['../fig/' rawExperimentData.subData.ID],['filteredEMGTrial' num2str(trial)])</span>
+0148 <span class="comment">%         close(fh)</span>
+0149         
+0150     <span class="keyword">end</span>
+0151 <span class="keyword">end</span>
+0152 
+0153 
+0154 <span class="keyword">end</span>
+0155</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

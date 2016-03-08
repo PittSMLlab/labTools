@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findLabel</title>
+  <meta name="keywords" content="findLabel">
+  <meta name="description" content="function to deal with different marker labels from vicon. For the code to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; findLabel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>findLabel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function to deal with different marker labels from vicon. For the code to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function markerLabel=findLabel(viconLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function to deal with different marker labels from vicon. For the code to
+run correctly, the label names must be as they are set in this code.
+
+DO NOT edit the markerLabel declarations, only edit the strings in the
+case statements</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>	loadTrials  generates rawTrialData instances for each trial</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function markerLabel=findLabel(viconLabel)</a>
+0002 <span class="comment">%function to deal with different marker labels from vicon. For the code to</span>
+0003 <span class="comment">%run correctly, the label names must be as they are set in this code.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%DO NOT edit the markerLabel declarations, only edit the strings in the</span>
+0006 <span class="comment">%case statements</span>
+0007 
+0008 markerLabel=viconLabel; <span class="comment">%defualt</span>
+0009 
+0010 load(<span class="string">'markerLabelKey.mat'</span>) <span class="comment">%contatins matchedLabels variable</span>
+0011 
+0012 <span class="keyword">for</span> i=1:size(matchedLabels,1);
+0013     <span class="keyword">if</span> ismember(viconLabel,matchedLabels{i,1})   
+0014         markerLabel=matchedLabels{i,2};
+0015     <span class="keyword">end</span>
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="comment">% switch viconLabel</span>
+0021 <span class="comment">%     case {'LGT','OG80_LGT','OG88_LGT'}</span>
+0022 <span class="comment">%         markerLabel='LHIP';</span>
+0023 <span class="comment">%     case {'RGT','OG80_RGT','OG88_RGT'}</span>
+0024 <span class="comment">%         markerLabel='RHIP';</span>
+0025 <span class="comment">%     case {'LANKLE','OG80_LANK','OG88_LANK'}</span>
+0026 <span class="comment">%         markerLabel='LANK';</span>
+0027 <span class="comment">%     case {'RANKLE','OG80_RANK','OG88_RANK'}</span>
+0028 <span class="comment">%         markerLabel='RANK';</span>
+0029 <span class="comment">%     case {'RHEEL','OG80_RHEEL','OG88_LHEEL'}</span>
+0030 <span class="comment">%         markerLabel='RHEE';</span>
+0031 <span class="comment">%     case {'LHEEL','OG80_LHEEL','OG88_RHEEL'}</span>
+0032 <span class="comment">%         markerLabel='LHEE';</span>
+0033 <span class="comment">%     case {'OG80_LTOE','OG88_LTOE'}</span>
+0034 <span class="comment">%         markerLabel='LTOE';</span>
+0035 <span class="comment">%     case {'OG80_RTOE','OG88_RTOE'}</span>
+0036 <span class="comment">%         markerLabel='RTOE';</span>
+0037 <span class="comment">%     case {'RKNEE','OG80_RKNE'}%,'OG88_RKNE'}</span>
+0038 <span class="comment">%         markerLabel='RKNE';</span>
+0039 <span class="comment">%     case {'LKNEE','OG80_LKNE'}%,'OG88_LKNE'}</span>
+0040 <span class="comment">%         markerLabel='LKNE';</span>
+0041 <span class="comment">%     otherwise</span>
+0042 <span class="comment">%         markerLabel=viconLabel;</span>
+0043 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

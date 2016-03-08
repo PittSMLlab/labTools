@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of changeCondName</title>
+  <meta name="keywords" content="changeCondName">
+  <meta name="description" content="Changes the condition names of a param file.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; changeCondName.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>changeCondName
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Changes the condition names of a param file.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function changeCondName(subID,oldNames,newNames) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Changes the condition names of a param file. 
+   INPTUS:
+   subID: a string (or cell array of strings) with the subject's ID (i.e. the
+   characters preceeding 'params' in the file name)
+   oldNames: a string (or cell array of strings) with the condition name(s) to be replaced
+   newNames: a string (or cell array of strings) with the condition name(s) that should replace the old ones</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function changeCondName(subID,oldNames,newNames)</a>
+0002 <span class="comment">%Changes the condition names of a param file.</span>
+0003 <span class="comment">%   INPTUS:</span>
+0004 <span class="comment">%   subID: a string (or cell array of strings) with the subject's ID (i.e. the</span>
+0005 <span class="comment">%   characters preceeding 'params' in the file name)</span>
+0006 <span class="comment">%   oldNames: a string (or cell array of strings) with the condition name(s) to be replaced</span>
+0007 <span class="comment">%   newNames: a string (or cell array of strings) with the condition name(s) that should replace the old ones</span>
+0008 
+0009 <span class="comment">%Check inputs.</span>
+0010 
+0011 <span class="keyword">if</span> isa(subID,<span class="string">'char'</span>)
+0012     subID={subID};
+0013 <span class="keyword">elseif</span> ~(isa(subID,<span class="string">'cell'</span>) &amp;&amp; isa(subID{1},<span class="string">'char'</span>))       
+0014     ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'subID needs to be a string or cell array of strings.'</span>);
+0015     throw(ME);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">if</span> isa(oldNames,<span class="string">'char'</span>)
+0019     oldNames={oldNames};
+0020 <span class="keyword">elseif</span> ~(isa(oldNames,<span class="string">'cell'</span>) &amp;&amp; isa(oldNames{1},<span class="string">'char'</span>))       
+0021    ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'oldNames needs to be a string or cell array of strings.'</span>);
+0022    throw(ME);
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> isa(newNames,<span class="string">'char'</span>)
+0026     newNames={newNames};
+0027 <span class="keyword">elseif</span> ~(isa(newNames,<span class="string">'cell'</span>) &amp;&amp; isa(newNames{1},<span class="string">'char'</span>))       
+0028    ME=MException(<span class="string">'changeCondName:inputMismatch'</span>,<span class="string">'oldNames needs to be a string or cell array of strings.'</span>);
+0029    throw(ME);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="keyword">if</span> length(oldNames) ~= length(newNames)
+0033    ME=MException(<span class="string">'changeCondName:badInput'</span>,<span class="string">'oldNames and newNames inputs must be the same length.'</span>);
+0034    throw(ME);
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">for</span> s=1:length(subID)
+0038     <span class="keyword">try</span>
+0039         load([subID{s} <span class="string">'params.mat'</span>])
+0040     <span class="keyword">catch</span>
+0041         ME=MException(<span class="string">'changeCondName:badInput'</span>,[<span class="string">'The params file for '</span> subID{s} <span class="string">' does not appear to be in your curent folder.'</span>]);
+0042         throw(ME);
+0043     <span class="keyword">end</span>
+0044     
+0045     <span class="keyword">for</span> c=1:length(oldNames)
+0046         ind=find(ismember(adaptData.metaData.conditionName,oldNames(c)));
+0047         <span class="keyword">if</span> isempty(ind)
+0048             warning([subID{s}  <span class="string">'''s file does not contain condition '''</span> oldNames{c} <span class="string">''' and was not replaced with '''</span> newNames{c} <span class="string">''''</span>])
+0049             <span class="keyword">continue</span>
+0050         <span class="keyword">else</span>
+0051             adaptData.metaData.conditionName{ind}=newNames{c};        
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">end</span>
+0054     save([subID{s} <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>,<span class="string">'-v7.3'</span>)
+0055 <span class="keyword">end</span>
+0056     
+0057</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

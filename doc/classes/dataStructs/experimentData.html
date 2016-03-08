@@ -1,0 +1,549 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of experimentData</title>
+  <meta name="keywords" content="experimentData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; experimentData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>experimentData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li><li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="experimentData.html" class="code" title="">experimentData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=experimentData(meta,sub,data)</a></li><li><a href="#_sub2" class="code">function this=set.metaData(this,meta)</a></li><li><a href="#_sub3" class="code">function this=set.subData(this,sub)</a></li><li><a href="#_sub4" class="code">function this=set.data(this,data)</a></li><li><a href="#_sub5" class="code">function a=get.isProcessed(this)</a></li><li><a href="#_sub6" class="code">function a=get.isStepped(this)</a></li><li><a href="#_sub7" class="code">function a=get.isRaw(this)</a></li><li><a href="#_sub8" class="code">function fastLeg=get.fastLeg(this)</a></li><li><a href="#_sub9" class="code">function slowLeg=getSlowLeg(this)</a></li><li><a href="#_sub10" class="code">function refLeg=getRefLeg(this)</a></li><li><a href="#_sub11" class="code">function fL=getNonRefLeg(this)</a></li><li><a href="#_sub12" class="code">function processedThis=process(this,eventClass)</a></li><li><a href="#_sub13" class="code">function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)</a></li><li><a href="#_sub14" class="code">function [h,adaptDataObject]=parameterEvolutionPlot(this,field)</a></li><li><a href="#_sub15" class="code">function [h,adaptDataObject]=parameterTimeCourse(this,field)</a></li><li><a href="#_sub16" class="code">function this=recomputeParameters(this,eventClass,initEventSide)</a></li><li><a href="#_sub17" class="code">function stridedExp=splitIntoStrides(this,refEvent)</a></li><li><a href="#_sub18" class="code">function [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)</a></li><li><a href="#_sub19" class="code">function [alignedField,originalDurations,originalTrial,originalInitTime,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)</a></li><li><a href="#_sub20" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames)</a></li><li><a href="#_sub21" class="code">function [numStrides,trials,initTimes,endTimes]=getStrideInfo(this,eventClass)</a></li><li><a href="#_sub22" class="code">function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="experimentData.html" class="code" title="">experimentData</a>
+0002     <span class="comment">%experimentData  Contains all information for a single experiment</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%experimentData properties:</span>
+0005     <span class="comment">%   metaData - experimentMetaData object</span>
+0006     <span class="comment">%   subData - subjectData object</span>
+0007     <span class="comment">%   data - cell array of labData objects or any objects which extend</span>
+0008     <span class="comment">%          labData</span>
+0009     <span class="comment">%   isRaw - returns true if data is an object of the rawLabData class</span>
+0010     <span class="comment">%   isProcessed - returns true if data is an object of the processedLabData class</span>
+0011     <span class="comment">%   isStepped - returns true if data is an object of the strideData class</span>
+0012     <span class="comment">%   fastLeg - computes which blet ('L' or 'R') was the fast belt</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">%experimentData Methods:</span>
+0015     <span class="comment">%   getSlowLeg - returns leg that was on the slow belt</span>
+0016     <span class="comment">%   getRefLeg - returns refrence leg for parameter computations</span>
+0017     <span class="comment">%   process - creates a new experimentData object with data property</span>
+0018     <span class="comment">%   being a cell of processedLabData objects</span>
+0019     <span class="comment">%   makeDataObj - creates an adaptationData object</span>
+0020     <span class="comment">%   parameterEvolutionPlot -</span>
+0021     <span class="comment">%   parameterTimeCourse -</span>
+0022     <span class="comment">%   recomputeParameters -</span>
+0023     <span class="comment">%   splitIntoStrides -</span>
+0024     <span class="comment">%   getStridedField -</span>
+0025     <span class="comment">%   getAlignedField -</span>
+0026     <span class="comment">%   getConditionIdxsFromName -</span>
+0027     <span class="comment">%</span>
+0028     <span class="comment">%See also: experimentMetaData, subjectData, labData</span>
+0029     
+0030     properties
+0031         metaData <span class="comment">% field that contains information from the experiment. Has to be an experimentMetaData object</span>
+0032         subData <span class="comment">%subjectData type</span>
+0033         data <span class="comment">%cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block</span>
+0034     <span class="keyword">end</span>
+0035     
+0036     properties (Dependent)
+0037         isRaw <span class="comment">%true if data is an object of the rawLabData class</span>
+0038         isProcessed <span class="comment">%true if data is an object of the processedLabData class</span>
+0039         isStepped <span class="comment">%or strided</span>
+0040         fastLeg
+0041     <span class="keyword">end</span>
+0042     
+0043     methods
+0044         <span class="comment">%% Constructor</span>
+0045         <a name="_sub0" href="#_subfunctions" class="code">function this=experimentData(meta,sub,data)</a>
+0046             <span class="comment">%inputs are metaData, subData, and rawTrialData</span>
+0047             
+0048            <span class="keyword">if</span> nargin&gt;0
+0049                this.metaData=meta;
+0050            <span class="keyword">end</span>
+0051            <span class="keyword">if</span> nargin&gt;1
+0052                this.subData=sub;
+0053            <span class="keyword">end</span>
+0054            <span class="keyword">if</span> nargin&gt;2 
+0055                this.data=data;
+0056            <span class="keyword">end</span>
+0057         <span class="keyword">end</span>
+0058         
+0059         <span class="comment">%% Setters for class properties</span>
+0060         <a name="_sub1" href="#_subfunctions" class="code">function this=set.metaData(this,meta)</a>
+0061             <span class="comment">%define or re-define metaData for this experiment</span>
+0062             <span class="comment">%</span>
+0063             <span class="comment">%INPUT: metaData object</span>
+0064             <span class="keyword">if</span> isa(meta,<span class="string">'experimentMetaData'</span>)
+0065                this.metaData=meta;
+0066            <span class="keyword">else</span>
+0067                ME=MException(<span class="string">'experimentData:Constructor'</span>,<span class="string">'Experiment metaData is not an experimentMetaData type object.'</span>);
+0068                throw(ME);
+0069            <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071         <a name="_sub2" href="#_subfunctions" class="code">function this=set.subData(this,sub)</a>
+0072             <span class="comment">%define or re-define subjectData</span>
+0073             <span class="comment">%</span>
+0074             <span class="comment">%INPUT: subjectData object</span>
+0075             <span class="keyword">if</span> isa(sub,<span class="string">'subjectData'</span>)
+0076                this.subData=sub;
+0077            <span class="keyword">else</span>
+0078                ME=MException(<span class="string">'experimentData:Constructor'</span>,<span class="string">'Subject data is not a subjectData type object.'</span>);
+0079                throw(ME);
+0080             <span class="keyword">end</span>
+0081         <span class="keyword">end</span>
+0082         <a name="_sub3" href="#_subfunctions" class="code">function this=set.data(this,data)</a>
+0083             <span class="comment">%define or redefine experiment data</span>
+0084             <span class="comment">%</span>
+0085             <span class="comment">%INPUT: labData object or one of its subclasses</span>
+0086             <span class="keyword">if</span> isa(data,<span class="string">'cell'</span>)  <span class="comment">% Has to be array of labData type cells.</span>
+0087                aux=find(cellfun(<span class="string">'isempty'</span>,data)~=1);
+0088                <span class="keyword">for</span> i=1:length(aux)
+0089                    <span class="keyword">if</span> ~isa(data{aux(i)},<span class="string">'labData'</span>)
+0090                        ME=MException(<span class="string">'experimentData:Constructor'</span>,<span class="string">'Data is not a cell array of labData (or one of its subclasses) objects.'</span>);
+0091                        throw(ME);
+0092                    <span class="keyword">end</span>
+0093                <span class="keyword">end</span>
+0094                this.data=data;
+0095            <span class="keyword">else</span>
+0096                ME=MException(<span class="string">'experimentData:Constructor'</span>,<span class="string">'Data is not a cell array.'</span>);
+0097                throw(ME);
+0098             <span class="keyword">end</span>
+0099         <span class="keyword">end</span>
+0100         
+0101         <span class="comment">%% Getters for Dependent properties</span>
+0102         <a name="_sub4" href="#_subfunctions" class="code">function a=get.isProcessed(this)</a>
+0103             <span class="comment">%Returns true if the trials have been processed (i.e. parameters have been calculated through ladData.process()), and false if</span>
+0104             <span class="comment">%they contain only rawData.</span>
+0105             <span class="comment">%   INPUTS:</span>
+0106             <span class="comment">%       this: experimentData object</span>
+0107             <span class="comment">%   OUTPUTS:</span>
+0108             <span class="comment">%       a: boolean</span>
+0109             aux=cellfun(<span class="string">'isempty'</span>,this.data);
+0110             idx=find(aux~=1); <span class="comment">%Not empty</span>
+0111             a=true;
+0112             <span class="keyword">for</span> i=idx
+0113                <span class="keyword">if</span> ~isa(this.data{i},<span class="string">'processedLabData'</span>)
+0114                    a=false;
+0115                <span class="keyword">end</span>
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub5" href="#_subfunctions" class="code">function a=get.isStepped(this)</a>
+0120             <span class="comment">%returns true if data is an object of the strideData class</span>
+0121             aux=cellfun(<span class="string">'isempty'</span>,this.data);
+0122             idx=find(aux~=1,1);
+0123             a=isa(this.data{idx},<span class="string">'strideData'</span>);
+0124         <span class="keyword">end</span>
+0125         
+0126         <a name="_sub6" href="#_subfunctions" class="code">function a=get.isRaw(this)</a>
+0127             <span class="comment">%returns true if data is an object of the rawLabData class</span>
+0128             aux=cellfun(<span class="string">'isempty'</span>,this.data);
+0129             idx=find(aux~=1,1);
+0130             a=isa(this.data{idx},<span class="string">'rawLabData'</span>);
+0131         <span class="keyword">end</span>
+0132         
+0133         <a name="_sub7" href="#_subfunctions" class="code">function fastLeg=get.fastLeg(this)</a>
+0134             <span class="comment">%based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even</span>
+0135             <span class="comment">%if there is no belt data</span>
+0136             <span class="comment">%</span>
+0137             <span class="comment">%returns 'R' or 'L'</span>
+0138             vR=[];
+0139             vL=[];
+0140             trials=cell2mat(this.metaData.trialsInCondition);
+0141             <span class="keyword">for</span> i=1:length(trials)
+0142                 trial=trials(i);
+0143                 <span class="keyword">if</span> ~this.isStepped
+0144                     <span class="keyword">if</span> ~isempty(this.data{trial}.beltSpeedReadData)
+0145                         <span class="comment">%Old version: Need to fix, as</span>
+0146                         <span class="comment">%we are not really populating the beltSpeedReadData</span>
+0147                         <span class="comment">%field.</span>
+0148                         vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector(<span class="string">'R'</span>));
+0149                         vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector(<span class="string">'L'</span>));
+0150                         <span class="comment">%New version:</span>
+0151                         <span class="comment">%TODO: Need to come up with an appropriate velocity</span>
+0152                         <span class="comment">%measurement if we want this function to work</span>
+0153                         <span class="comment">%properly.</span>
+0154                     <span class="keyword">end</span>
+0155                 <span class="keyword">else</span> <span class="comment">%Stepped trial</span>
+0156                     <span class="keyword">for</span> step=1:length(this.data{trial})
+0157                         <span class="keyword">if</span> ~isempty(this.data{trial}{step}.beltSpeedReadData)
+0158                             vR(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector(<span class="string">'R'</span>));
+0159                             vL(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector(<span class="string">'L'</span>));
+0160                         <span class="keyword">end</span>
+0161                     <span class="keyword">end</span>
+0162                 <span class="keyword">end</span>
+0163             <span class="keyword">end</span>
+0164             <span class="keyword">if</span> ~isempty(vR) &amp;&amp; ~isempty(vL)
+0165                 <span class="keyword">if</span> nanmean(vR)&lt;nanmean(vL)
+0166                     fastLeg=<span class="string">'L'</span>;
+0167                 <span class="keyword">elseif</span> nanmean(vR)&gt;nanmean(vL)
+0168                     fastLeg=<span class="string">'R'</span>; <span class="comment">%Defaults to this, even if there is no beltSpeedData</span>
+0169                 <span class="keyword">else</span>
+0170                     error(<span class="string">'experimentData:fastLeg'</span>,<span class="string">'Both legs are moving at the same speed'</span>);
+0171                 <span class="keyword">end</span>
+0172             <span class="keyword">else</span>
+0173                 error(<span class="string">'experimentData:fastLeg'</span>,<span class="string">'No data to compute fastest leg, try using expData.getRefLeg which reads from each trial''s metaData.'</span>);
+0174             <span class="keyword">end</span>
+0175         <span class="keyword">end</span>
+0176         
+0177         <a name="_sub8" href="#_subfunctions" class="code">function slowLeg=getSlowLeg(this)</a>
+0178             <span class="comment">%determine which leg is the slow leg, simply the opposite of</span>
+0179             <span class="comment">%the fast leg, be sure to call get.fastLeg() first</span>
+0180             <span class="comment">%</span>
+0181             <span class="comment">%returns 'R' or 'L'</span>
+0182             <span class="keyword">if</span> strcmpi(this.fastLeg,<span class="string">'L'</span>)
+0183                 slowLeg=<span class="string">'R'</span>;
+0184             <span class="keyword">elseif</span> strcmpi(this.fastLeg,<span class="string">'R'</span>)
+0185                 slowLeg=<span class="string">'L'</span>;
+0186             <span class="keyword">else</span>
+0187                 slowLeg=[];
+0188             <span class="keyword">end</span>
+0189         <span class="keyword">end</span>
+0190         
+0191         <a name="_sub9" href="#_subfunctions" class="code">function refLeg=getRefLeg(this) </a>
+0192             <span class="comment">%By majority vote over trials, returns the reference leg for</span>
+0193             <span class="comment">%the entire experiment</span>
+0194             <span class="comment">%</span>
+0195             <span class="comment">%returns 'R' or 'L'</span>
+0196             refLeg={};
+0197            <span class="keyword">for</span> i=1:length(this.data)<span class="comment">%Going over trials</span>
+0198                <span class="keyword">if</span> ~isempty(this.data{i})
+0199                refLeg{i}=this.data{i}.metaData.refLeg;
+0200                <span class="keyword">end</span>
+0201            <span class="keyword">end</span>
+0202            Rvotes=sum(strcmp(refLeg,<span class="string">'R'</span>));
+0203            Lvotes=sum(strcmp(refLeg,<span class="string">'L'</span>));
+0204            <span class="keyword">if</span> Rvotes&gt;Lvotes
+0205                refLeg=<span class="string">'R'</span>;
+0206            <span class="keyword">elseif</span> Rvotes&lt;Lvotes
+0207                refLeg=<span class="string">'L'</span>;
+0208            <span class="keyword">else</span>
+0209                error(<span class="string">'experimentData:getRefLeg'</span>,<span class="string">'Could not determine unique reference leg'</span>);
+0210            <span class="keyword">end</span>
+0211         <span class="keyword">end</span>
+0212         
+0213         <a name="_sub10" href="#_subfunctions" class="code">function fL=getNonRefLeg(this)</a>
+0214             <span class="comment">%returns the non-reference leg, 'R' or 'L'</span>
+0215             sL=this.getRefLeg;
+0216             <span class="keyword">if</span> strcmp(sL,<span class="string">'R'</span>)
+0217                 fL=<span class="string">'L'</span>;
+0218             <span class="keyword">else</span>
+0219                 fL=<span class="string">'R'</span>;
+0220             <span class="keyword">end</span>
+0221         <span class="keyword">end</span>
+0222         
+0223         <span class="comment">%% processing</span>
+0224         <a name="_sub11" href="#_subfunctions" class="code">function processedThis=process(this,eventClass)</a>
+0225             
+0226         <span class="keyword">if</span> nargin&lt;2 || isempty(eventClass)
+0227             eventClass=[];
+0228         <span class="keyword">end</span>
+0229         <span class="comment">%process  process full experiment</span>
+0230         <span class="comment">%</span>
+0231         <span class="comment">%Returns a new experimentData object with same metaData, subData and processed (trial) data.</span>
+0232         <span class="comment">%This is done by iterating through data (trials) and</span>
+0233         <span class="comment">%processing each by using labData.process</span>
+0234         <span class="comment">%ex: expData=rawExpData.process</span>
+0235         <span class="comment">%</span>
+0236         <span class="comment">%INPUTS:</span>
+0237         <span class="comment">%this: experimentData object</span>
+0238         <span class="comment">%</span>
+0239         <span class="comment">%OUTPUTS:</span>
+0240         <span class="comment">%processedThis: experimentData object with processed data</span>
+0241         <span class="comment">%</span>
+0242         <span class="comment">%See also: labData</span>
+0243             
+0244             <span class="keyword">for</span> trial=1:length(this.data)
+0245                 disp([<span class="string">'Processing trial '</span> num2str(trial) <span class="string">'...'</span>])
+0246                 <span class="keyword">if</span> ~isempty(this.data{trial})
+0247                     procData{trial}=this.data{trial}.process(this.subData,eventClass);
+0248                 <span class="keyword">else</span>
+0249                    procData{trial}=[];
+0250                 <span class="keyword">end</span>
+0251             <span class="keyword">end</span>
+0252             processedThis=<a href="experimentData.html" class="code" title="">experimentData</a>(this.metaData,this.subData,procData);
+0253         <span class="keyword">end</span>
+0254         <a name="_sub12" href="#_subfunctions" class="code">function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)</a>
+0255         <span class="comment">%MAKEDATAOBJ  creates an object of the adaptationData class.</span>
+0256         <span class="comment">%   adaptData=expData.makeDataObj(filename,experimentalFlag)</span>
+0257         <span class="comment">%</span>
+0258         <span class="comment">%INPUTS:</span>
+0259         <span class="comment">%this: experimentData object</span>
+0260         <span class="comment">%filename: string (typically subject identifier)</span>
+0261         <span class="comment">%experimentalFlag: boolean - false (or 0) prevents experimental</span>
+0262         <span class="comment">%parameter calculation and inclusion</span>
+0263         <span class="comment">%</span>
+0264         <span class="comment">%OUTPUTS:</span>
+0265         <span class="comment">%adptData: object if the adaptationData class, which is</span>
+0266         <span class="comment">%saved to present working directory if a filename is specified.</span>
+0267         <span class="comment">%</span>
+0268         <span class="comment">%   Examples:</span>
+0269         <span class="comment">%</span>
+0270         <span class="comment">%   adaptData=expData.makeDataObj('Sub01') saves adaptationData</span>
+0271         <span class="comment">%   object to Sub01params.mat</span>
+0272         <span class="comment">%</span>
+0273         <span class="comment">%   adaptData=expData.makeDataObj('',false) does not include</span>
+0274         <span class="comment">%   experimentalParams in adaptData object and does not save to file</span>
+0275         <span class="comment">%</span>
+0276         <span class="comment">%See also: adaptationData, paramData</span>
+0277             <span class="keyword">if</span> ~(this.isProcessed)
+0278                 ME=MException(<span class="string">'experimentData:makeDataObj'</span>,<span class="string">'Cannot create an adaptationData object from unprocessed data!'</span>);
+0279                 throw(ME);
+0280             <span class="keyword">end</span>
+0281             
+0282             <span class="keyword">if</span> nargin&lt;3
+0283                 experimentalFlag=[];
+0284             <span class="keyword">end</span>
+0285             <span class="keyword">if</span> nargin&lt;2
+0286                 filename=[];
+0287             <span class="keyword">end</span>
+0288             <span class="keyword">if</span> nargin&lt;4
+0289                 contraLateralFlag=[];
+0290             <span class="keyword">end</span>
+0291             adaptData=<a href="#_sub22" class="code" title="subfunction adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)">makeDataObjNew</a>(this,filename,experimentalFlag,contraLateralFlag);
+0292         <span class="keyword">end</span>
+0293      
+0294         
+0295         
+0296         <span class="comment">%% Display</span>
+0297         <span class="comment">%HH: I don't like either of these functions. They take way too long</span>
+0298         <span class="comment">%to run, and at the time being they assume that if a field isn't a</span>
+0299         <span class="comment">%label of the adaptParams property, then it must be a label of</span>
+0300         <span class="comment">%experimentalParams (which is a bad assumption becasue it could</span>
+0301         <span class="comment">%result in 5+ minutes of waiting just to find out the parameter</span>
+0302         <span class="comment">%doesn't exist.)</span>
+0303         <span class="comment">%PI, 5/26/2015: Agreed. Is there any other way to do it if someone asks for a</span>
+0304         <span class="comment">%label that does not exist? Do note that these functions are here</span>
+0305         <span class="comment">%for flexibility of the code, but the really efficient way to do it</span>
+0306         <span class="comment">%is generate an adaptData object (and save it) and use its plotting</span>
+0307         <span class="comment">%functions (which is what these do). Perhaps we could issue a</span>
+0308         <span class="comment">%warning or a disclaimer telling the user that this takes TOO long.</span>
+0309         <a name="_sub13" href="#_subfunctions" class="code">function [h,adaptDataObject]=parameterEvolutionPlot(this,field)</a>
+0310             <span class="comment">%???</span>
+0311             <span class="comment">%</span>
+0312             <span class="comment">%INPUTS:</span>
+0313             <span class="comment">%field,</span>
+0314             <span class="keyword">if</span> ~(this.isProcessed)
+0315                 ME=MException(<span class="string">'experimentData:parameterEvolutionPlot'</span>,<span class="string">'Cannot generate parameter evolution plot from unprocessed data!'</span>);
+0316                 throw(ME);
+0317             <span class="keyword">end</span>                
+0318             <span class="keyword">if</span> ~isempty(this.data{1}) &amp;&amp; (all(this.data{1}.adaptParams.isaLabel(field)))
+0319                 adaptDataObject=this.makeDataObj([],0);
+0320                 h=adaptDataObject.plotParamByConditions(field);
+0321             <span class="keyword">else</span>
+0322                 adaptDataObject=this.makeDataObj; <span class="comment">%Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams</span>
+0323                 h=adaptDataObject.plotParamByConditions(field);
+0324             <span class="keyword">end</span>
+0325         <span class="keyword">end</span>
+0326         
+0327         <a name="_sub14" href="#_subfunctions" class="code">function [h,adaptDataObject]=parameterTimeCourse(this,field)</a>
+0328             <span class="keyword">if</span> ~(this.isProcessed)
+0329                 ME=MException(<span class="string">'experimentData:parameterTimeCourse'</span>,<span class="string">'Cannot generate parameter time course plot from unprocessed data!'</span>);
+0330                 throw(ME);
+0331             <span class="keyword">end</span>
+0332             <span class="keyword">if</span> ~isempty(this.data{1}) &amp;&amp; (all(this.data{1}.adaptParams.isaLabel(field)))
+0333                 adaptDataObject=this.makeDataObj([],0);
+0334                 h=adaptDataObject.plotParamTimeCourse(field);
+0335             <span class="keyword">else</span>
+0336                 adaptDataObject=this.makeDataObj; <span class="comment">%Creating adaptationData object, to include experimentalParams (which are Dependent and need to be computed each time). Otherwise we could just access this.data{trial}.experimentalParams</span>
+0337                 h=adaptDataObject.plotParamTimeCourse(field);
+0338             <span class="keyword">end</span>
+0339         <span class="keyword">end</span>
+0340         
+0341         <span class="comment">%% Update/modify</span>
+0342         <a name="_sub15" href="#_subfunctions" class="code">function this=recomputeParameters(this,eventClass,initEventSide)</a>
+0343         <span class="comment">%RECOMPUTEPARAMETERS recomputes adaptParams for all labData</span>
+0344         <span class="comment">%objects in experimentData.data.</span>
+0345         <span class="comment">%</span>
+0346         <span class="comment">%   Example: if expData is an object of the experimentalData class,</span>
+0347         <span class="comment">%       expData=expData.recomputeParameters</span>
+0348         <span class="comment">%   will recompute expData.data{i}.adaptParams for all i where</span>
+0349         <span class="comment">%   i is a trial of the experiment</span>
+0350         <span class="comment">%</span>
+0351         <span class="comment">%   See also: parameterSeries</span>
+0352             <span class="keyword">if</span> nargin&lt;2 || isempty(eventClass)
+0353                 eventClass=[];
+0354             <span class="keyword">end</span>
+0355             <span class="keyword">if</span> nargin&lt;3 || isempty(initEventSide)
+0356                 initEventSide=[];
+0357             <span class="keyword">end</span>
+0358             trials=cell2mat(this.metaData.trialsInCondition);
+0359             <span class="keyword">for</span> t=trials
+0360                   this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide); 
+0361             <span class="keyword">end</span>
+0362         <span class="keyword">end</span>
+0363         
+0364         <a name="_sub16" href="#_subfunctions" class="code">function stridedExp=splitIntoStrides(this,refEvent)</a>
+0365         <span class="comment">%This might not be used?</span>
+0366             <span class="keyword">if</span> ~this.isStepped &amp;&amp; this.isProcessed
+0367                 <span class="keyword">for</span> trial=1:length(this.data)
+0368                     disp([<span class="string">'Splitting trial '</span> num2str(trial) <span class="string">'...'</span>])
+0369                     trialData=this.data{trial};
+0370                     <span class="keyword">if</span> ~isempty(trialData)
+0371                         <span class="keyword">if</span> nargin&lt;2 || isempty(refEvent)
+0372                             refEvent=[trialData.metaData.refLeg,<span class="string">'HS'</span>];
+0373                             <span class="comment">%Assuming that the first event of each stride should be</span>
+0374                             <span class="comment">%the heel strike of the refLeg! (check c3d2mat -</span>
+0375                             <span class="comment">%refleg should be opposite the dominant/fast leg)</span>
+0376                         <span class="keyword">end</span>
+0377                         aux=trialData.separateIntoStrides(refEvent);
+0378                         strides{trial}=aux;                        
+0379                     <span class="keyword">else</span>
+0380                         strides{trial}=[];                        
+0381                     <span class="keyword">end</span>
+0382                 <span class="keyword">end</span>
+0383                 stridedExp=<a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>(this.metaData,this.subData,strides); 
+0384             <span class="keyword">else</span>
+0385                 disp(<span class="string">'Cannot stride experiment because it is raw or already strided.'</span>);
+0386             <span class="keyword">end</span>
+0387         <span class="keyword">end</span>
+0388         
+0389         <a name="_sub17" href="#_subfunctions" class="code">function [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)</a>
+0390             <span class="keyword">if</span> nargin&lt;4 || isempty(events)
+0391                 events=[this.getSlowLeg <span class="string">'HS'</span>];
+0392             <span class="keyword">end</span>
+0393            <span class="keyword">if</span> nargin&lt;3 || isempty(conditions)
+0394                trials=cell2mat(this.metaData.trialsInCondition);
+0395            <span class="keyword">else</span>
+0396                <span class="keyword">if</span> ~isa(conditions,<span class="string">'double'</span>) <span class="comment">%If conditions are given by name, and not by index</span>
+0397                    conditions=<a href="#_sub20" class="code" title="subfunction conditionIdxs=getConditionIdxsFromName(this,conditionNames)">getConditionIdxsFromName</a>(this,conditions);
+0398                <span class="keyword">end</span>
+0399                trials=cell2mat(this.metaData.trialsInCondition(conditions));
+0400            <span class="keyword">end</span>
+0401            stridedField={};
+0402            bad=[];
+0403            originalInitTime=[];
+0404            originalTrial=[];
+0405            <span class="keyword">for</span> i=trials
+0406               <span class="comment">%[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);</span>
+0407               [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
+0408               stridedField=[stridedField; aux]; 
+0409               bad=[bad; bad1];
+0410               originalTrial=[originalTrial; i*ones(size(bad1))];
+0411               originalInitTime=[originalInitTime; initTime1];
+0412            <span class="keyword">end</span>
+0413         <span class="keyword">end</span>
+0414         
+0415         <a name="_sub18" href="#_subfunctions" class="code">function [alignedField,originalDurations,originalTrial,originalInitTime,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)</a>
+0416             <span class="keyword">if</span> nargin&lt;4 
+0417                 events=[];
+0418             <span class="keyword">end</span>
+0419             [stridedField,bad,originalTrial,originalInitTime,events]=<a href="#_sub18" class="code" title="subfunction [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)">getStridedField</a>(this,field,conditions,events);
+0420             <span class="keyword">if</span> any(bad)
+0421                 warning([<span class="string">'Some strides ['</span> num2str(find(bad(:)')) <span class="string">'] did not have all the proper events, discarding.'</span>])
+0422             <span class="keyword">end</span>
+0423             [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
+0424             alignedField.alignmentLabels=events;
+0425         <span class="keyword">end</span>
+0426         
+0427         <span class="comment">%% Auxiliar</span>
+0428         <a name="_sub19" href="#_subfunctions" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames)</a>
+0429             <span class="comment">%Looks for condition names that are similar to the ones given</span>
+0430             <span class="comment">%in conditionNames and returns the corresponding condition idx</span>
+0431             <span class="comment">%ConditionNames should be a cell array containing a string or</span>
+0432             <span class="comment">%another cell array of strings in each of its cells.</span>
+0433             <span class="comment">%E.g. conditionNames={'Base','Adap',{'Post','wash'}}</span>
+0434             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
+0435         <span class="keyword">end</span>
+0436         
+0437         <a name="_sub20" href="#_subfunctions" class="code">function [numStrides,trials,initTimes,endTimes]=getStrideInfo(this,eventClass)</a>
+0438             numStrides=0;
+0439             initTimes=[];
+0440             endTimes=[];
+0441             trials=[];
+0442             <span class="keyword">for</span> t=1:length(this.data)
+0443                 <span class="keyword">if</span> ~isempty(this.data{t})
+0444                 [numStrides_,initTimes_,endTimes_]=<a href="#_sub21" class="code" title="subfunction [numStrides,trials,initTimes,endTimes]=getStrideInfo(this,eventClass)">getStrideInfo</a>(this.data{t},eventClass);
+0445                 numStrides=numStrides+numStrides_;
+0446                 initTimes=[initTimes;initTimes_];
+0447                 endTimes=[endTimes;endTimes_];
+0448                 trials=[trials;t*ones(numStrides_,1)];
+0449                 <span class="keyword">end</span>
+0450             <span class="keyword">end</span>
+0451         <span class="keyword">end</span>
+0452     <span class="keyword">end</span>
+0453     methods (Hidden=true, Access=private)
+0454         <a name="_sub21" href="#_subfunctions" class="code">function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)</a>
+0455             <span class="comment">%This function may not be compatible with certain methods of the</span>
+0456             <span class="comment">%adaptationData class</span>
+0457 
+0458             <span class="keyword">if</span> isempty(contraLateralFlag) || contraLateralFlag==0 <span class="comment">%Normal parameters</span>
+0459                 <span class="comment">%nop</span>
+0460             <span class="keyword">else</span> <span class="comment">%Computing all parameters on a contraLateral way (this is, we compute parameters using the NON reference leg as the 'slow' one, opposite to the default computation)</span>
+0461                 <span class="keyword">if</span> strcmp(this.getRefLeg,<span class="string">'R'</span>)
+0462                     initEventSide=<span class="string">'L'</span>;
+0463                 <span class="keyword">elseif</span> strcmp(this.getRefLeg,<span class="string">'L'</span>)
+0464                     initEventSide=<span class="string">'R'</span>;
+0465                 <span class="keyword">else</span>
+0466                     ME=MException(<span class="string">'makeDataObject:ContralateralComputation'</span>,<span class="string">'Could not determine proper reference leg for this experiment.'</span>);
+0467                     throw(ME);
+0468                 <span class="keyword">end</span>
+0469                 this=<a href="#_sub16" class="code" title="subfunction this=recomputeParameters(this,eventClass,initEventSide)">recomputeParameters</a>(this,[],initEventSide); <span class="comment">%Using default event class ('', as opposed to 'force' or 'kin')</span>
+0470             <span class="keyword">end</span>
+0471 
+0472             <span class="keyword">for</span> i=1:length(this.data) <span class="comment">%Trials</span>
+0473                 <span class="keyword">if</span> ~isempty(this.data{i}) &amp;&amp; ~isempty(this.data{i}.adaptParams)
+0474                     <span class="comment">%Get data from this trial:</span>
+0475                     aux=this.data{i}.adaptParams;
+0476                     trialTypes{i}=this.data{i}.metaData.type;
+0477                     <span class="keyword">if</span> ~(nargin&gt;2 &amp;&amp; ~isempty(experimentalFlag) &amp;&amp; experimentalFlag==0)
+0478                         aux=cat(aux,this.data{i}.experimentalParams); 
+0479                     <span class="keyword">end</span>
+0480                     <span class="comment">%Concatenate with other trials:</span>
+0481                     <span class="keyword">if</span> ~isempty(aux.Data) <span class="comment">%Case in which no strides were detected for a trial, it could happen. Not concatenating those</span>
+0482                         <span class="keyword">if</span> ~exist(<span class="string">'paramData'</span>,<span class="string">'var'</span>) 
+0483                             paramData=aux;
+0484                         <span class="keyword">else</span> 
+0485                             paramData=addStrides(paramData,aux);
+0486                         <span class="keyword">end</span>
+0487                     <span class="keyword">end</span>
+0488                 <span class="keyword">end</span>
+0489             <span class="keyword">end</span>
+0490             <span class="comment">% HH: remove all bad strides completely</span>
+0491             <span class="comment">% paramData=parameterSeries(paramData.Data(paramData.bad==0,:),paramData.labels,paramData.hiddenTime(paramData.bad==0),paramData.description);</span>
+0492             paramData=paramData.setTrialTypes(trialTypes);             
+0493             adaptData=adaptationData(this.metaData,this.subData,paramData);  
+0494             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(filename)
+0495                 save([filename <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>,<span class="string">'-v7.3'</span>); <span class="comment">%HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten</span>
+0496             <span class="keyword">end</span>
+0497         <span class="keyword">end</span>
+0498     <span class="keyword">end</span>
+0499 <span class="keyword">end</span>
+0500</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

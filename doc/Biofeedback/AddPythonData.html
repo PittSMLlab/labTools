@@ -1,0 +1,739 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AddPythonData</title>
+  <meta name="keywords" content="AddPythonData">
+  <meta name="description" content="Script to process a python biofeedback data file and add the columns of">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">Biofeedback</a> &gt; AddPythonData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for Biofeedback&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>AddPythonData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Script to process a python biofeedback data file and add the columns of</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Script to process a python biofeedback data file and add the columns of
+data onto the end of the subject's adaptData instance
+ 
+  No inputs required, inputs are asked for during the execution. However,
+  it is required that Nexus processing has already been done prior to
+  calling this function. otherwise it will not be able to find the
+  labtools objects to update.
+
+  No output is returned, however a message is displayed which indicated
+  success or failure
+
+This function is intended to be universaly usefull, in other words it
+will be useful for any study collecting biofeedback in conjunction with a
+nexus gait trial. This is not designed for biofeedback trials outside of
+gait (it doesn't make sense to be doing this if there is no gait).
+
+written 10/26/2015 WDA</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Script to process a python biofeedback data file and add the columns of</span>
+0002 <span class="comment">%data onto the end of the subject's adaptData instance</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  No inputs required, inputs are asked for during the execution. However,</span>
+0005 <span class="comment">%  it is required that Nexus processing has already been done prior to</span>
+0006 <span class="comment">%  calling this function. otherwise it will not be able to find the</span>
+0007 <span class="comment">%  labtools objects to update.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  No output is returned, however a message is displayed which indicated</span>
+0010 <span class="comment">%  success or failure</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%This function is intended to be universaly usefull, in other words it</span>
+0013 <span class="comment">%will be useful for any study collecting biofeedback in conjunction with a</span>
+0014 <span class="comment">%nexus gait trial. This is not designed for biofeedback trials outside of</span>
+0015 <span class="comment">%gait (it doesn't make sense to be doing this if there is no gait).</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%written 10/26/2015 WDA</span>
+0018 
+0019 
+0020 <span class="comment">% clear</span>
+0021 <span class="comment">% clc</span>
+0022 
+0023 
+0024 <span class="comment">%select processed subject data to add biofeedback info to:</span>
+0025 [notname,LTpathname]=uigetfile(<span class="string">'.mat'</span>,<span class="string">'Select Subject File:'</span>);<span class="comment">%you can pick any of the matlab files SUB.RAW or sub.info or sub.params etc.</span>
+0026 cd(LTpathname);
+0027 <span class="comment">%enter the subject code</span>
+0028 LTfilename = inputdlg(<span class="string">'Please enter the subject code:'</span>,<span class="string">''</span>,1,{notname(1:6)});<span class="comment">%notname is a guess, make sure to check or this will crash</span>
+0029 LTfilename = LTfilename{1};
+0030 <span class="comment">%load subject files</span>
+0031 WB = waitbar(0,<span class="string">'Loading RAW file'</span>);
+0032 load([LTfilename <span class="string">'RAW.mat'</span>]);
+0033 waitbar(0.33,WB,<span class="string">'Loading main file'</span>);
+0034 load([LTfilename <span class="string">'.mat'</span>]);
+0035 waitbar(0.66,WB,<span class="string">'Loading params file'</span>);
+0036 load([LTfilename <span class="string">'params.mat'</span>]);
+0037 waitbar(1,WB,<span class="string">'Loading complete'</span>);
+0038 pause(0.25)
+0039 close(WB)
+0040 
+0041 
+0042 <span class="keyword">global</span> t;<span class="comment">%variable for uitable later on</span>
+0043 <span class="keyword">global</span> mdata;
+0044 <span class="keyword">global</span> ndata;
+0045 <span class="keyword">global</span> condition<span class="comment">%get condition names</span>
+0046 condition= adaptData.metaData.conditionName;
+0047 <span class="keyword">global</span> trialsincond
+0048 trialsincond = adaptData.metaData.trialsInCondition;
+0049 
+0050 <span class="comment">% select python file(s) to process</span>
+0051 [filenames,path] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select python files'</span>);
+0052 <span class="comment">%</span>
+0053 <span class="keyword">if</span> iscell(filenames)
+0054     <span class="comment">%construct a uitable as a makeshift GUI that will help user assign</span>
+0055     <span class="comment">%python files to nexus trials</span>
+0056     f = figure;
+0057     mdata = cell(length(filenames),3);
+0058     mdata(:,1)=filenames;
+0059     
+0060     colnames = {<span class="string">'Filename'</span>,<span class="string">'Nexus Trial #'</span>,<span class="string">'condition'</span>};
+0061     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,condition};
+0062 
+0063     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,mdata,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[false false true],<span class="string">'CellSelectionCallback'</span>,@(src,evnt)set(src,<span class="string">'UserData'</span>,evnt.Indices));
+0064     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind}(end);set(t,''Data'',temp)'</span>);
+0065     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global mdata;mdata = get(t,''Data'');'</span>);
+0066     waitfor(t)<span class="comment">%wait until user closes the table to continue</span>
+0067     
+0068 
+0069     WB = waitbar(0,[<span class="string">'Processing Trial '</span> num2str(1)]);
+0070     
+0071     strideplace = adaptData.data.stridesTrial;<span class="comment">%where to insert data from Python trials</span>
+0072 <span class="comment">%     appendm = nan(length(strideplace),1);</span>
+0073     <span class="comment">%proceed to synchronize trials</span>
+0074     <span class="keyword">for</span> z=1:length(filenames)
+0075         
+0076         waitbar((z-1)/length(filenames),WB,[<span class="string">'Loading Trial '</span> num2str(z)]);
+0077         <span class="comment">%load python file</span>
+0078         [Pheader,Pdata] = JSONtxt2cell([path{z} filenames{z}]);
+0079         
+0080         
+0081         <span class="comment">%in the end we can only patch in data to good strides, so give the</span>
+0082         <span class="comment">%user a chance to select which variables to patch in</span>
+0083         <span class="comment">%use listdlg</span>
+0084         <span class="keyword">if</span> z==1
+0085             
+0086             f = figure;
+0087             ndata = cell(length(Pheader),3);
+0088             ndata(:,1)=Pheader;
+0089             ndata(:,2)={<span class="string">'YES'</span>};<span class="comment">%presume that all of the parameters are to be added, don't force user to pick</span>
+0090             ndata(:,3)={<span class="string">'HS'</span>};
+0091             
+0092             colnames = {<span class="string">'Variable'</span>,<span class="string">'Include?'</span>,<span class="string">'Alignment'</span>};
+0093             columnformat = {<span class="string">'char'</span>,{<span class="string">'YES'</span>,<span class="string">'NO'</span>},{<span class="string">'HS'</span>,<span class="string">'TO'</span>}};
+0094             t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,ndata,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[false true true],<span class="string">'CellSelectionCallback'</span>,@(src,evnt)set(src,<span class="string">'UserData'</span>,evnt.Indices));
+0095             <span class="comment">%     set(t,'celleditcallback','global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind};set(t,''Data'',temp)');</span>
+0096             set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ndata;ndata = get(t,''Data'');'</span>);
+0097             waitfor(t)<span class="comment">%wait until user closes the table to continue</span>
+0098 <span class="comment">%             [selections,ok] = listdlg('ListString',Pheader,'PromptString','Select variables to add to adapParams:');</span>
+0099 <span class="comment">%             appendm = nan(length(strideplace),length(selections));%going to be the matrix that gets appended to adaptparams</span>
+0100 <span class="comment">%             if ok</span>
+0101 <span class="comment">% %                 selections = Pheader(selections)</span>
+0102 <span class="comment">%             else</span>
+0103 <span class="comment">%                 dbquit</span>
+0104 <span class="comment">%             end</span>
+0105         <span class="keyword">end</span>
+0106         
+0107         waitbar((z-1)/length(filenames),WB,[<span class="string">'Synchronizing Trial '</span> num2str(z)]);
+0108         <span class="comment">%get nexus data</span>
+0109         GRRz=getDataAsVector(expData.data{mdata{z,2}}.GRFData,<span class="string">'RFz'</span>);
+0110         GRLz=getDataAsVector(expData.data{mdata{z,2}}.GRFData,<span class="string">'LFz'</span>);
+0111         
+0112         <span class="comment">%TO DO, enable variable sampling frequency inputs, since some BF is</span>
+0113         <span class="comment">%collected at 120 Hz</span>
+0114         <span class="comment">%downsample from 1000 to 100Hz</span>
+0115         NexusRlowFreq=resample(GRRz,1,10);
+0116         NexusLlowFreq=resample(GRLz,1,10);
+0117         
+0118         <span class="comment">%Creating NaN matrix with the lenght of the data</span>
+0119         newData=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
+0120         newData2=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
+0121         
+0122         <span class="comment">%Making frames from Pyton start at 1</span>
+0123         Pdata(:,1)=Pdata(:,1)-Pdata(1,1)+1;
+0124         Pdata2=unique(Pdata(:,1));
+0125         
+0126         <span class="comment">%finding unique colums</span>
+0127         <span class="keyword">for</span> zz=1:length(Pdata2)
+0128             [datarows(zz),~]=find(Pdata(:,1)==Pdata2(zz),1,<span class="string">'first'</span>);
+0129         <span class="keyword">end</span>
+0130         Pdata=Pdata(datarows,:);
+0131         clear datarows
+0132         <span class="comment">%Creating a linear interpolate matrix from Pyton data</span>
+0133         newData=interp1(Pdata(:,1),Pdata(:,1:end),[Pdata(1,1):Pdata(<span class="keyword">end</span>,1)]);
+0134         
+0135         <span class="comment">%Creating a Matrix with NaN in gaps from Pyton</span>
+0136         <span class="keyword">for</span> i=1:length(Pdata)
+0137             newData2(Pdata(i,1),1:end)=Pdata(i,:);
+0138         <span class="keyword">end</span>
+0139         
+0140         indc = strfind(Pheader,<span class="string">'Rfz'</span>);<span class="comment">%figure out which column contains the Rfz data</span>
+0141         indc = find(not(cellfun(<span class="string">'isempty'</span>,indc)));
+0142         <span class="comment">%synchronize with cross correlation</span>
+0143         [acor, lag]=xcorr(NexusRlowFreq,newData(:,indc));<span class="comment">%use RFz from Pdata</span>
+0144         [~,I]=max((acor));
+0145         timeDiff=lag(I);
+0146         <span class="keyword">if</span> timeDiff&lt;0
+0147             newData=newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0148             newData2=newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0149         <span class="keyword">elseif</span> timeDiff&gt;0
+0150             newData=[zeros([timeDiff,size(Pheader,2)]);newData];
+0151             newData2=[zeros([timeDiff,size(Pheader,2)]);newData2];
+0152             
+0153         <span class="keyword">end</span>
+0154         
+0155         <span class="keyword">try</span>
+0156             [~,rhsc,~] = intersect(Pheader,<span class="string">'RHS'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
+0157             [~,lhsc,~] = intersect(Pheader,<span class="string">'LHS'</span>);
+0158             [~,rtoc,~] = intersect(Pheader,<span class="string">'RTO'</span>);
+0159             [~,ltoc,~] = intersect(Pheader,<span class="string">'LTO'</span>);
+0160         <span class="keyword">catch</span> me
+0161             disp(<span class="string">'WARNING! One or more requested events was not located in the Python file'</span>);
+0162         <span class="keyword">end</span>
+0163         
+0164         <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
+0165         <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
+0166         <span class="comment">%check Gait events</span>
+0167         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,100);
+0168         [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,lhsc),newData(:,rhsc),100);
+0169         
+0170         <span class="comment">%localication of HS==1);</span>
+0171         locLHSpyton=find(LHSpyton==1);
+0172         locRHSpyton=find(RHSpyton==1);
+0173         locRHSnexus=find(RHSnexus==1);
+0174         locLHSnexus=find(LHSnexus==1);
+0175         
+0176         
+0177         Pdata(1,rhsc) = 0;
+0178         Pdata(1,rtoc) = 0;
+0179         Pdata(1,lhsc) = 0;
+0180         Pdata(1,ltoc) = 0;
+0181         
+0182         <span class="comment">%temporary one time fix for bad TO data, detects rising edges</span>
+0183         ind = Pdata(:,rtoc)&gt;0.5;
+0184         ind = [0;diff(ind)&gt;0]&gt;0;
+0185         Pdata(:,rtoc)=+ind;
+0186         
+0187         ind = Pdata(:,ltoc)&gt;0.5;
+0188         ind = [0;diff(ind)&gt;0]&gt;0;
+0189         Pdata(:,ltoc)=+ind;
+0190         
+0191         [~,rhsc,~] = intersect(Pheader,<span class="string">'RHS'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
+0192         [~,lhsc,~] = intersect(Pheader,<span class="string">'LHS'</span>);
+0193         locRindex=find(newData2(:,rhsc)==1);
+0194         locLindex=find(newData2(:,lhsc)==1);
+0195         locR2index=find(newData2(:,rtoc)==1);
+0196         locL2index=find(newData2(:,ltoc)==1);
+0197         
+0198         <span class="keyword">if</span> length(locRindex)&lt;length(locRHSpyton)
+0199             warning(<span class="string">'Not all the HS where detected!'</span>)
+0200         <span class="keyword">end</span>
+0201         
+0202         <span class="comment">%Delete extras HS deteted by Python</span>
+0203         <span class="keyword">while</span> length(locRHSpyton)~=length(locRindex)
+0204             diffLengthR=length(locRindex)-length(locRHSpyton);
+0205             FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
+0206             IsBadR=find(FrameDiffR&lt;=-10);
+0207             <span class="keyword">if</span> isempty(IsBadR)
+0208                 <span class="keyword">break</span>
+0209             <span class="keyword">else</span>
+0210                 locRindex(IsBadR(1))=[];
+0211             <span class="keyword">end</span>
+0212         <span class="keyword">end</span>
+0213         
+0214         <span class="keyword">while</span> length(locLHSpyton)~=length(locLindex)
+0215             diffLength=length(locLindex)-length(locLHSpyton);
+0216             FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
+0217             IsBad=find(FrameDiff&lt;=-10);
+0218             <span class="keyword">if</span> isempty(IsBad)
+0219                 <span class="keyword">break</span>
+0220             <span class="keyword">else</span>
+0221                 locLindex(IsBad(1))=[];
+0222             <span class="keyword">end</span>
+0223         <span class="keyword">end</span>
+0224         
+0225         <span class="keyword">if</span> length(locRHSnexus)&lt;length(locRindex)
+0226             FrameDiffR=[];
+0227             IsBadR=[];
+0228             <span class="keyword">while</span> length(locRHSnexus)~=length(locRindex)
+0229                 diffLengthR=length(locRindex)-length(locRHSnexus);
+0230                 FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
+0231                 IsBadR=find(abs(FrameDiffR)&gt;10);
+0232                 <span class="keyword">if</span> isempty(IsBadR)
+0233                     <span class="keyword">break</span>
+0234                 <span class="keyword">else</span>
+0235                     locRindex(IsBadR(1))=[];
+0236                 <span class="keyword">end</span>
+0237             <span class="keyword">end</span>
+0238         <span class="keyword">end</span>
+0239         
+0240         <span class="keyword">if</span> length(locLHSnexus)&lt;length(locLindex)
+0241             FrameDiff=[];
+0242             IsBad=[];
+0243             <span class="keyword">while</span> length(locLindex)~=length(locLHSnexus)
+0244                 diffLength=length(locLindex)-length(locLHSnexus);
+0245                 FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
+0246                 IsBad=find(abs(FrameDiff)&gt;10);
+0247                 <span class="keyword">if</span> isempty(IsBad)
+0248                     <span class="keyword">break</span>
+0249                 <span class="keyword">else</span>
+0250                     locLindex(IsBad(1))=[];
+0251                 <span class="keyword">end</span>
+0252             <span class="keyword">end</span>
+0253         <span class="keyword">end</span>
+0254         
+0255         <span class="keyword">if</span> length(locRHSnexus)&gt;length(locRindex)
+0256 <span class="comment">%             warning(['Gaps affected RHS detection  ' condition{p} ])</span>
+0257             
+0258             <span class="keyword">while</span> length(locRHSnexus)&gt;length(locRindex)
+0259                 diffLengthR=-length(locRindex)+length(locRHSnexus);
+0260                 FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
+0261                
+0262                 IsBadR=find(FrameDiffR&lt;=-10);
+0263                 <span class="keyword">if</span> isempty(IsBadR)
+0264                     <span class="keyword">break</span>
+0265                 <span class="keyword">else</span>
+0266                     locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
+0267                     locRindex=locfakeR;
+0268                 <span class="keyword">end</span>
+0269             <span class="keyword">end</span>
+0270         <span class="keyword">end</span>
+0271         <span class="keyword">if</span> length(locLHSnexus)&gt;length(locLindex)
+0272 <span class="comment">%             warning(['Gaps affected LHS detection  ' condition{p}])</span>
+0273             
+0274             <span class="keyword">while</span> length(locLHSnexus)&gt;length(locLindex)
+0275                 diffLengthL=-length(locLindex)+length(locLHSnexus);
+0276                 FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
+0277                 IsBadL=find(FrameDiffL&lt;=-10);
+0278                 <span class="keyword">if</span> isempty(IsBadL)
+0279                     <span class="keyword">break</span>
+0280                 <span class="keyword">else</span>
+0281                     locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
+0282                     locLindex=locfakeL;
+0283                 <span class="keyword">end</span>
+0284             <span class="keyword">end</span>
+0285             
+0286         <span class="keyword">end</span>
+0287         
+0288         <span class="keyword">for</span> i=1:length(locLindex)-1
+0289             locLindex2(i,1)=locLindex(i+1);
+0290         <span class="keyword">end</span>
+0291         
+0292         GoodEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,2);<span class="comment">%which events are labeled as good?</span>
+0293 <span class="comment">%         BadEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,1);%which events are labeled as bad?</span>
+0294 <span class="comment">%         locRindex=locRindex((GoodEvents)==1,1);</span>
+0295 <span class="comment">%         locLindex=locLindex((GoodEvents)==1,1);</span>
+0296 <span class="comment">%         locLindex2=locLindex2((GoodEvents)==1,1);</span>
+0297        
+0298 <span class="comment">%         GoodRHS=newData2(locRindex,rhsc);</span>
+0299 <span class="comment">%         GoodLHS=newData2(locLindex,lhsc);</span>
+0300 <span class="comment">%         GoodLHS2=newData2(locLindex2,lhsc);</span>
+0301         
+0302 
+0303         selections = strfind(ndata(:,2),<span class="string">'YES'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
+0304         selections(cellfun(<span class="string">'isempty'</span>,selections))={0};
+0305         selections = find(cell2mat(selections));
+0306         <span class="keyword">if</span> z ==1
+0307             appendm = nan(length(strideplace),length(selections));<span class="comment">%going to be the matrix that gets appended to adaptparams</span>
+0308         <span class="keyword">end</span>
+0309             <span class="comment">%make vectors of variable to splice into adapData</span>
+0310             <span class="keyword">for</span> d = 1:length(selections)
+0311                 <span class="keyword">if</span> ismember(<span class="string">'R'</span>,Pheader{selections(d)})==1
+0312                     event = ndata(selections(d),3);
+0313                     <span class="keyword">if</span> strcmp(event,<span class="string">'HS'</span>)
+0314                         eval([Pheader{selections(d)} <span class="string">' = newData2(locRindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0315                     <span class="keyword">else</span>
+0316                         eval([Pheader{selections(d)} <span class="string">' = newData2(locR2index,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0317                     <span class="keyword">end</span>
+0318                 <span class="keyword">elseif</span> ismember(<span class="string">'L'</span>,Pheader{selections(d)})==1
+0319                     event = ndata(selections(d),3);
+0320                     <span class="keyword">if</span> strcmp(event,<span class="string">'HS'</span>)
+0321                         eval([Pheader{selections(d)} <span class="string">' = newData2(locLindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0322                     <span class="keyword">else</span>
+0323                         eval([Pheader{selections(d)} <span class="string">' = newData2(locL2index,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0324                     <span class="keyword">end</span>
+0325                 <span class="keyword">else</span>
+0326                     disp(<span class="string">'Can''t tell whether current variable belongs to which leg...'</span>)
+0327                     disp(Pheader{selections(d)});
+0328                 <span class="keyword">end</span>
+0329             <span class="keyword">end</span>
+0330         
+0331             <span class="keyword">for</span> d = 1:length(selections)
+0332                 indx = find(strideplace==mdata{z,2});
+0333                 eval([<span class="string">'appendm(indx,d) = '</span> Pheader{selections(d)} <span class="string">'(1:length(indx));'</span>]);<span class="comment">%insert data</span>
+0334             <span class="keyword">end</span>
+0335     
+0336         
+0337     <span class="keyword">end</span>
+0338     
+0339     <span class="comment">%finally, append to</span>
+0340     pData=adaptData.data;
+0341     labels=Pheader(selections);
+0342     [aux,idx]=pData.isaLabel(labels);
+0343     <span class="keyword">if</span> all(aux)
+0344         adaptData.data.Data(:,idx)=appendm;
+0345     <span class="keyword">else</span>
+0346         this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;Pheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
+0347         <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
+0348         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
+0349     <span class="keyword">end</span>
+0350     
+0351     waitbar(1,WB,<span class="string">'Synchronizing Finished'</span>);
+0352     pause(0.5);
+0353     close(WB)
+0354     
+0355     <span class="comment">%now save the adap params</span>
+0356     saveloc=[];
+0357     save([saveloc LTfilename <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>);
+0358     
+0359     
+0360 <span class="keyword">else</span>
+0361     
+0362     f = figure;
+0363     mdata = cell(1,3);
+0364     mdata{1,1}=filenames;
+0365     
+0366     colnames = {<span class="string">'Filename'</span>,<span class="string">'Nexus Trial #'</span>,<span class="string">'condition'</span>};
+0367     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,condition};
+0368 
+0369     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,mdata,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[false false true],<span class="string">'CellSelectionCallback'</span>,@(src,evnt)set(src,<span class="string">'UserData'</span>,evnt.Indices));
+0370     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind};set(t,''Data'',temp)'</span>);
+0371     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global mdata;mdata = get(t,''Data'');'</span>);
+0372     waitfor(t)<span class="comment">%wait until user closes the table to continue</span>
+0373     
+0374 <span class="comment">%     WB = waitbar(0,['Processing Trial ' num2str(1)]);</span>
+0375     
+0376     strideplace = adaptData.data.stridesTrial;<span class="comment">%where to insert data from Python trials</span>
+0377     [Pheader,Pdata] = JSONtxt2cell([path filenames]);<span class="comment">%load python data</span>
+0378 
+0379     <span class="comment">%in the end we can only patch in data to good strides, so give the</span>
+0380     <span class="comment">%user a chance to select which variables to patch in and what event to</span>
+0381     <span class="comment">%align them with:</span>
+0382     <span class="comment">%use uitable</span>
+0383     f = figure;
+0384     ndata = cell(length(Pheader),3);
+0385     ndata(:,1)=Pheader;
+0386     ndata(:,2)={<span class="string">'YES'</span>};<span class="comment">%presume that all of the parameters are to be added, don't force user to pick</span>
+0387     
+0388     colnames = {<span class="string">'Variable'</span>,<span class="string">'Include?'</span>,<span class="string">'Alignment'</span>};
+0389     columnformat = {<span class="string">'char'</span>,{<span class="string">'YES'</span>,<span class="string">'NO'</span>},{<span class="string">'HS'</span>,<span class="string">'TO'</span>}};
+0390     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,ndata,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[false true true],<span class="string">'CellSelectionCallback'</span>,@(src,evnt)set(src,<span class="string">'UserData'</span>,evnt.Indices));
+0391 <span class="comment">%     set(t,'celleditcallback','global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind};set(t,''Data'',temp)');</span>
+0392     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ndata;ndata = get(t,''Data'');'</span>);
+0393     waitfor(t)<span class="comment">%wait until user closes the table to continue</span>
+0394     
+0395     <span class="comment">%{</span>
+0396 <span class="comment">%     [selections,ok] = listdlg('ListString',Pheader,'PromptString','Select variables to add to adapParams:');</span>
+0397 <span class="comment">%     appendm = nan(length(strideplace),length(selections));%going to be the matrix that gets appended to adaptparams</span>
+0398 <span class="comment">%     if ok</span>
+0399 <span class="comment">%         %                 selections = Pheader(selections)</span>
+0400 <span class="comment">%     else</span>
+0401 <span class="comment">%         dbquit</span>
+0402 <span class="comment">%     end</span>
+0403     <span class="comment">%}</span>
+0404     
+0405     <span class="comment">%get nexus data</span>
+0406     GRRz=getDataAsVector(expData.data{mdata{1,2}}.GRFData,<span class="string">'RFz'</span>);
+0407     GRLz=getDataAsVector(expData.data{mdata{1,2}}.GRFData,<span class="string">'LFz'</span>);
+0408     
+0409     <span class="comment">%TO DO, enable variable sampling frequency inputs, since some BF is</span>
+0410     <span class="comment">%collected at 120 Hz</span>
+0411     <span class="comment">%downsample from 1000 to 100Hz</span>
+0412     NexusRlowFreq=resample(GRRz,1,10);
+0413     NexusLlowFreq=resample(GRLz,1,10);
+0414     
+0415     <span class="comment">%Creating NaN matrix with the lenght of the data</span>
+0416     newData=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
+0417     newData2=nan((((Pdata(<span class="keyword">end</span>,1)-Pdata(1,1)))+1),size(Pheader,2));
+0418     
+0419     <span class="comment">%Making frames from Pyton start at 1</span>
+0420     Pdata(:,1)=Pdata(:,1)-Pdata(1,1)+1;
+0421     Pdata2=unique(Pdata(:,1));<span class="comment">%remove duplicate frames</span>
+0422     
+0423     <span class="comment">%finding unique colums</span>
+0424     <span class="keyword">for</span> zz=1:length(Pdata2)
+0425         [datarows(zz),~]=find(Pdata(:,1)==Pdata2(zz),1,<span class="string">'first'</span>);
+0426     <span class="keyword">end</span>
+0427     Pdata=Pdata(datarows,:);
+0428     clear datarows
+0429     <span class="comment">%Creating a linear interpolate matrix from Pyton data</span>
+0430     newData=interp1(Pdata(:,1),Pdata(:,1:end),[Pdata(1,1):Pdata(<span class="keyword">end</span>,1)]);
+0431     
+0432     <span class="comment">%Creating a Matrix with NaN in gaps from Pyton</span>
+0433     <span class="keyword">for</span> i=1:length(Pdata)
+0434         newData2(Pdata(i,1),1:end)=Pdata(i,:);
+0435     <span class="keyword">end</span>
+0436     
+0437     indc = strfind(Pheader,<span class="string">'Rfz'</span>);<span class="comment">%figure out which column contains the Rfz data</span>
+0438     indc = find(not(cellfun(<span class="string">'isempty'</span>,indc)));
+0439     <span class="comment">%synchronize with cross correlation</span>
+0440     [acor, lag]=xcorr(NexusRlowFreq,newData(:,indc));<span class="comment">%use RFz from Pdata</span>
+0441     [~,I]=max((acor));
+0442     timeDiff=lag(I);
+0443     <span class="keyword">if</span> timeDiff&lt;0
+0444         newData=newData(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0445         newData2=newData2(abs(timeDiff)+1:<span class="keyword">end</span>,1:end);
+0446     <span class="keyword">elseif</span> timeDiff&gt;0
+0447         newData=[zeros([timeDiff,size(Pheader,2)]);newData];
+0448         newData2=[zeros([timeDiff,size(Pheader,2)]);newData2];
+0449         
+0450     <span class="keyword">end</span>
+0451     
+0452     figure(5)<span class="comment">%display the synchronization</span>
+0453     plot(NexusRlowFreq,<span class="string">'b'</span>)
+0454     hold on
+0455     plot(newData2(:,indc), <span class="string">'r'</span>)
+0456     
+0457     <span class="keyword">try</span>
+0458         [~,rhsc,~] = intersect(Pheader,<span class="string">'RHS'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
+0459         [~,lhsc,~] = intersect(Pheader,<span class="string">'LHS'</span>);
+0460         [~,rtoc,~] = intersect(Pheader,<span class="string">'RTO'</span>);
+0461         [~,ltoc,~] = intersect(Pheader,<span class="string">'LTO'</span>);
+0462     <span class="keyword">catch</span> me
+0463         disp(<span class="string">'WARNING! One or more requested events was not located in the Python file'</span>);
+0464     <span class="keyword">end</span>
+0465     
+0466     Pdata(1,rhsc) = 0;
+0467     Pdata(1,rtoc) = 0;
+0468     Pdata(1,lhsc) = 0;
+0469     Pdata(1,ltoc) = 0;
+0470     
+0471     <span class="comment">%temporary one time fix for bad TO data</span>
+0472     ind = Pdata(:,rtoc)&gt;0.5;
+0473     ind = [0;diff(ind)&gt;0]&gt;0;
+0474     Pdata(:,rtoc)=+ind;
+0475     
+0476     ind = Pdata(:,ltoc)&gt;0.5;
+0477     ind = [0;diff(ind)&gt;0]&gt;0;
+0478     Pdata(:,ltoc)=+ind;
+0479     
+0480     <span class="comment">%Finding HS from Nexus at 100HZ and Interpolated Pyton data, interpolate</span>
+0481     <span class="comment">%data is used to make sure that we dont take in consideration extras HS.</span>
+0482     <span class="comment">%check Gait events</span>
+0483     [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,100);
+0484     [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,lhsc),newData(:,rhsc),100);
+0485     
+0486     <span class="comment">%localication of HS==1);</span>
+0487     locLHSpyton=find(LHSpyton==1);
+0488     locRHSpyton=find(RHSpyton==1);
+0489     locRHSnexus=find(RHSnexus==1);
+0490     locLHSnexus=find(LHSnexus==1);
+0491     locRTOnexus = find(RTOnexus==1);
+0492     locLTOnexus = find(LTOnexus==1);
+0493     
+0494     <span class="keyword">try</span>
+0495         locRindex=find(newData2(:,rhsc)==1);
+0496         locLindex=find(newData2(:,lhsc)==1);
+0497         locR2index=find(newData2(:,rtoc)==1);
+0498         locL2index=find(newData2(:,ltoc)==1);
+0499     <span class="keyword">catch</span> me
+0500         disp(<span class="string">'WARNING! One or more requested events was not located in the Python file'</span>);
+0501     <span class="keyword">end</span>
+0502     
+0503     <span class="keyword">if</span> length(locRindex)&lt;length(locRHSpyton)
+0504         warning(<span class="string">'Not all the HS where detected!'</span>)
+0505     <span class="keyword">end</span>
+0506     
+0507     <span class="comment">%Delete extras HS deteted by Python</span>
+0508     <span class="keyword">while</span> length(locRHSpyton)~=length(locRindex)
+0509         diffLengthR=length(locRindex)-length(locRHSpyton);
+0510         FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
+0511         IsBadR=find(FrameDiffR&lt;=-10);
+0512         <span class="keyword">if</span> isempty(IsBadR)
+0513             <span class="keyword">break</span>
+0514         <span class="keyword">else</span>
+0515             locRindex(IsBadR(1))=[];
+0516         <span class="keyword">end</span>
+0517     <span class="keyword">end</span>
+0518     
+0519     <span class="keyword">while</span> length(locLHSpyton)~=length(locLindex)
+0520         diffLength=length(locLindex)-length(locLHSpyton);
+0521         FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
+0522         IsBad=find(FrameDiff&lt;=-10);
+0523         <span class="keyword">if</span> isempty(IsBad)
+0524             <span class="keyword">break</span>
+0525         <span class="keyword">else</span>
+0526             locLindex(IsBad(1))=[];
+0527         <span class="keyword">end</span>
+0528     <span class="keyword">end</span>
+0529     
+0530     <span class="keyword">if</span> length(locRHSnexus)&lt;length(locRindex)
+0531         FrameDiffR=[];
+0532         IsBadR=[];
+0533         <span class="keyword">while</span> length(locRHSnexus)~=length(locRindex)
+0534             diffLengthR=length(locRindex)-length(locRHSnexus);
+0535             FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
+0536             IsBadR=find(abs(FrameDiffR)&gt;10);
+0537             <span class="keyword">if</span> isempty(IsBadR)
+0538                 <span class="keyword">break</span>
+0539             <span class="keyword">else</span>
+0540                 locRindex(IsBadR(1))=[];
+0541             <span class="keyword">end</span>
+0542         <span class="keyword">end</span>
+0543     <span class="keyword">end</span>
+0544     
+0545     <span class="keyword">if</span> length(locLHSnexus)&lt;length(locLindex)
+0546         FrameDiff=[];
+0547         IsBad=[];
+0548         <span class="keyword">while</span> length(locLindex)~=length(locLHSnexus)
+0549             diffLength=length(locLindex)-length(locLHSnexus);
+0550             FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
+0551             IsBad=find(abs(FrameDiff)&gt;10);
+0552             <span class="keyword">if</span> isempty(IsBad)
+0553                 <span class="keyword">break</span>
+0554             <span class="keyword">else</span>
+0555                 locLindex(IsBad(1))=[];
+0556             <span class="keyword">end</span>
+0557         <span class="keyword">end</span>
+0558     <span class="keyword">end</span>
+0559     
+0560     <span class="keyword">if</span> length(locRHSnexus)&gt;length(locRindex)
+0561         warning([<span class="string">'Gaps affected RHS detection  '</span> condition{p} ])
+0562         
+0563         <span class="keyword">while</span> length(locRHSnexus)&gt;length(locRindex)
+0564             diffLengthR=-length(locRindex)+length(locRHSnexus);
+0565             FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
+0566             
+0567             IsBadR=find(FrameDiffR&lt;=-10);
+0568             <span class="keyword">if</span> isempty(IsBadR)
+0569                 <span class="keyword">break</span>
+0570             <span class="keyword">else</span>
+0571                 locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
+0572                 locRindex=locfakeR;
+0573             <span class="keyword">end</span>
+0574         <span class="keyword">end</span>
+0575     <span class="keyword">end</span>
+0576     <span class="keyword">if</span> length(locLHSnexus)&gt;length(locLindex)
+0577         warning([<span class="string">'Gaps affected LHS detection  '</span> condition{p}])
+0578         
+0579         <span class="keyword">while</span> length(locLHSnexus)&gt;length(locLindex)
+0580             diffLengthL=-length(locLindex)+length(locLHSnexus);
+0581             FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
+0582             IsBadL=find(FrameDiffL&lt;=-10);
+0583             <span class="keyword">if</span> isempty(IsBadL)
+0584                 <span class="keyword">break</span>
+0585             <span class="keyword">else</span>
+0586                 locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
+0587                 locLindex=locfakeL;
+0588             <span class="keyword">end</span>
+0589         <span class="keyword">end</span>
+0590         
+0591     <span class="keyword">end</span>
+0592     
+0593     <span class="keyword">for</span> i=1:length(locLindex)-1
+0594         locLindex2(i,1)=locLindex(i+1);
+0595     <span class="keyword">end</span>
+0596     
+0597     GoodEvents=expData.data{mdata{1,2}}.adaptParams.Data(:,2);<span class="comment">%which events are labeled as good?</span>
+0598     <span class="comment">%{</span>
+0599     <span class="comment">%         BadEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,1);%which events are labeled as bad?</span>
+0600     <span class="comment">%         locRindex=locRindex((GoodEvents)==1,1);</span>
+0601     <span class="comment">%         locLindex=locLindex((GoodEvents)==1,1);</span>
+0602     <span class="comment">%         locLindex2=locLindex2((GoodEvents)==1,1);</span>
+0603     
+0604     <span class="comment">%         GoodRHS=newData2(locRindex,rhsc);</span>
+0605     <span class="comment">%         GoodLHS=newData2(locLindex,lhsc);</span>
+0606     <span class="comment">%         GoodLHS2=newData2(locLindex2,lhsc);</span>
+0607     <span class="comment">%}</span>
+0608     
+0609     selections = strfind(ndata(:,2),<span class="string">'YES'</span>);<span class="comment">%find which column contains RHS as detected by Python</span>
+0610     selections(cellfun(<span class="string">'isempty'</span>,selections))={0};
+0611     selections = find(cell2mat(selections));
+0612     <span class="comment">%make vectors of variable to splice into adapData</span>
+0613     <span class="keyword">for</span> d = 1:length(selections)
+0614         <span class="keyword">if</span> ismember(<span class="string">'R'</span>,Pheader{selections(d)})==1
+0615             event = ndata(selections(d),3);
+0616             <span class="keyword">if</span> strcmp(event,<span class="string">'HS'</span>)
+0617                 eval([Pheader{selections(d)} <span class="string">' = newData2(locRHSindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0618             <span class="keyword">else</span>
+0619                 eval([Pheader{selections(d)} <span class="string">' = newData2(locRTOindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0620             <span class="keyword">end</span>
+0621         <span class="keyword">elseif</span> ismember(<span class="string">'L'</span>,Pheader{selections(d)})==1
+0622             event = ndata(selections(d),3);
+0623             <span class="keyword">if</span> strcmp(event,<span class="string">'HS'</span>)
+0624                 eval([Pheader{selections(d)} <span class="string">' = newData2(locLHSindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0625             <span class="keyword">else</span>
+0626                 eval([Pheader{selections(d)} <span class="string">' = newData2(locLTOindex,'</span> num2str(selections(d)) <span class="string">');'</span>]);
+0627             <span class="keyword">end</span>
+0628         <span class="keyword">else</span>
+0629             disp(<span class="string">'Can''t tell whether current variable belongs to which leg...'</span>)
+0630             disp(Pheader{selections(d)});
+0631         <span class="keyword">end</span>
+0632     <span class="keyword">end</span>
+0633     
+0634     
+0635     <span class="keyword">for</span> d = 1:length(selections)
+0636         indx = find(strideplace==mdata{1,2});
+0637         eval([<span class="string">'appendm(indx,d) = '</span> Pheader{selections(d)} <span class="string">'(1:length(indx));'</span>]);<span class="comment">%insert data</span>
+0638     <span class="keyword">end</span>
+0639     
+0640 
+0641     <span class="comment">%finally, append to</span>
+0642     pData=adaptData.data;
+0643     labels=Pheader(selections);
+0644     [aux,idx]=pData.isaLabel(labels);
+0645     <span class="keyword">if</span> all(aux)
+0646         adaptData.data.Data(:,idx)=appendm;
+0647     <span class="keyword">else</span>
+0648         this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;Pheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
+0649         <span class="comment">%this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);</span>
+0650         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
+0651     <span class="keyword">end</span>
+0652     
+0653     
+0654     <span class="comment">%now save the adap params</span>
+0655     saveloc=[];
+0656     save([saveloc LTfilename <span class="string">'params.mat'</span>],<span class="string">'adaptData'</span>);
+0657    
+0658 <span class="keyword">end</span>
+0659 
+0660 
+0661 
+0662 
+0663 
+0664 
+0665 
+0666 
+0667 
+0668 
+0669 
+0670 
+0671 
+0672 
+0673 
+0674 
+0675 
+0676</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

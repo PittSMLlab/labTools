@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeCOP</title>
+  <meta name="keywords" content="computeCOP">
+  <meta name="description" content="UNTITLED2 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeCOP.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeCOP
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED2 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [COP] = computeCOP(GRFDataS,GRFDataF,s,f) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED2 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [COP] = computeCOP(GRFDataS,GRFDataF,s,f)</a>
+0002 <span class="comment">%UNTITLED2 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005         LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];
+0006         RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];
+0007         eval([<span class="string">'STransformationMatrix='</span> s <span class="string">'TransformationMatrix(2:end,2:end);'</span> ])
+0008         eval([<span class="string">'FTransformationMatrix='</span> f <span class="string">'TransformationMatrix(2:end,2:end);'</span> ])
+0009         eval([<span class="string">'STransformationVec='</span> s <span class="string">'TransformationMatrix(2:end,1);'</span> ])
+0010         eval([<span class="string">'FTransformationVec='</span> f <span class="string">'TransformationMatrix(2:end,1);'</span> ])
+0011         
+0012         relGRF=GRFDataS;
+0013         COPS(:,2)=(-5*relGRF(:,2) + relGRF(:,4))./relGRF(:,3);
+0014         COPS(:,1)=(-5*relGRF(:,1) - relGRF(:,5))./relGRF(:,3);
+0015         COPS(:,3)=0;
+0016         COPS=bsxfun(@plus, STransformationMatrix*COPS', STransformationVec);
+0017         
+0018         FzS=relGRF(:,3);
+0019         relGRF=GRFDataF;
+0020         COPF(:,2)=(-5*relGRF(:,2) + relGRF(:,4))./relGRF(:,3);
+0021         COPF(:,1)=(-5*relGRF(:,1) - relGRF(:,5))./relGRF(:,3);
+0022         COPF(:,3)=0;
+0023         COPF=bsxfun(@plus, FTransformationMatrix*COPF', FTransformationVec);
+0024         FzF=relGRF(:,3);
+0025         COP=bsxfun(@rdivide,(bsxfun(@times,COPF,FzF') + bsxfun(@times,COPS,FzS')),(FzS'+FzF'));
+0026 
+0027 <span class="keyword">end</span>
+0028</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

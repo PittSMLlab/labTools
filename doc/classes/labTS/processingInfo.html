@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of processingInfo</title>
+  <meta name="keywords" content="processingInfo">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; processingInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/labTS&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>processingInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="processedEMGTimeSeries.html" class="code" title="">processedEMGTimeSeries</a>	</li><li><a href="processingInfo.html" class="code" title="">processingInfo</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=processingInfo(filterList)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="processingInfo.html" class="code" title="">processingInfo</a>
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         <span class="comment">%bandwidth; %Needs to be a 1x2 double, represents the pass-band filter used on the raw data</span>
+0007         <span class="comment">%f_cut; %Scalar, represents the cut frequency for the amplitude low-pass filter</span>
+0008         <span class="comment">%notchList; %1xn double, represents the central frequencies of the notch filters applied to the raw data</span>
+0009         filterList
+0010     <span class="keyword">end</span>
+0011     
+0012     methods
+0013         <a name="_sub0" href="#_subfunctions" class="code">function this=processingInfo(filterList)</a>
+0014             
+0015 <span class="comment">%             if numel(bw)==2</span>
+0016 <span class="comment">%                 this.bandwidth=bw;</span>
+0017 <span class="comment">%             else</span>
+0018 <span class="comment">%                 ME=MException('processingInfo:Constructor','Bandwidth is not a 1x2 double');</span>
+0019 <span class="comment">%                 throw(ME)</span>
+0020 <span class="comment">%             end</span>
+0021 <span class="comment">%             if numel(f_cut)==1</span>
+0022 <span class="comment">%                 this.f_cut=f_cut;</span>
+0023 <span class="comment">%             else</span>
+0024 <span class="comment">%                 ME=MException('processingInfo:Constructor','f_cut is not a scalar.');</span>
+0025 <span class="comment">%                 throw(ME)</span>
+0026 <span class="comment">%             end</span>
+0027 <span class="comment">%             if length(notchLst)==numel(notchLst)</span>
+0028 <span class="comment">%                 this.notchList=notchLst;</span>
+0029 <span class="comment">%             else</span>
+0030 <span class="comment">%                 ME=MException('processingInfo:Constructor','NotchList is not a 1xn double');</span>
+0031 <span class="comment">%                 throw(ME)</span>
+0032 <span class="comment">%             end</span>
+0033             <span class="keyword">if</span> ~isa(filterList,<span class="string">'cell'</span>)
+0034                 ME=MException(<span class="string">'processingInfo:Constructor'</span>,<span class="string">'Filter list is not a cell array'</span>);
+0035             <span class="keyword">end</span>
+0036             this.filterList=filterList;
+0037         <span class="keyword">end</span>
+0038     <span class="keyword">end</span>
+0039     
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

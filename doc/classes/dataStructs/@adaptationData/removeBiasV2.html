@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of removeBiasV2</title>
+  <meta name="keywords" content="removeBiasV2">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; removeBiasV2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>removeBiasV2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)</a>
+0002 error(<span class="string">'This function has been deprecated, please use removeBiasV3 instead'</span>)
+0003 <span class="comment">% removeBias('condition') or removeBias({'Condition1','Condition2',...})</span>
+0004 <span class="comment">% removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)</span>
+0005 <span class="comment">% from each trial that is the same type as the condition entered. If no</span>
+0006 <span class="comment">% condition is specified, then the condition name that contains both the</span>
+0007 <span class="comment">% type string and the string 'base' is used as the baseline condition.</span>
+0008 <span class="comment">%INPUT:</span>
+0009 <span class="comment">%this: adaptationData object</span>
+0010 <span class="comment">%conditions: list of conditions to be used as reference for bias removal,</span>
+0011 <span class="comment">%if none given, will search for conditions that contain the string 'base'</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%TO DO: see what happens when 2+ conditions of the same type are entered</span>
+0014 <span class="comment">%TO DO: see what happens when 0 conditions are given for a certain type</span>
+0015 <span class="comment">%TODO: implement a check of conditions such that only one condition per</span>
+0016 <span class="comment">%trialType is accepted</span>
+0017 
+0018 conds=this.metaData.conditionName;
+0019 <span class="keyword">if</span> nargin&lt;2 || isempty(refConditions)
+0020     warning(<span class="string">'No condition names passed to removeBiasV2, will find reference conditions by name search.'</span>)
+0021     refConditions=[];
+0022 <span class="keyword">end</span>
+0023 <span class="comment">%if nargin&gt;1 &amp;&amp; ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)</span>
+0024     <span class="comment">%convert input to standardized format</span>
+0025     <span class="keyword">if</span> isa(refConditions,<span class="string">'char'</span>)
+0026         refConditions={refConditions};
+0027     <span class="keyword">elseif</span> isa(refConditions,<span class="string">'double'</span>)
+0028         refConditions=conds(refConditions);
+0029     <span class="keyword">end</span>
+0030     <span class="comment">% validate condition(s)</span>
+0031     cInput=refConditions(this.isaCondition(refConditions));
+0032 <span class="comment">%end</span>
+0033 <span class="keyword">if</span> nargin&lt;3 || isempty(normalizeFlag)
+0034     normalizeFlag=0;
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%if length(conditions)&gt;1</span>
+0038 <span class="comment">%    error('RemoveBiasV2 cannot be called with multiple conditions because of known bug. To remove bias on multiple conditions, call on it on a loop, passing a single condition')</span>
+0039 <span class="comment">%end</span>
+0040 
+0041 trialsInCond=this.metaData.trialsInCondition;
+0042 <span class="comment">% trialTypes=this.data.trialTypes;</span>
+0043 trialTypes=this.trialTypes; <span class="comment">%Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible</span>
+0044 types=unique(trialTypes(~cellfun(@isempty,trialTypes)));
+0045 labels=this.data.labels; <span class="comment">%all labels</span>
+0046 baseValues=NaN(length(types),length(labels));
+0047 newData=nan(size(this.data.Data));
+0048 
+0049 <span class="keyword">for</span> itype=1:length(types)
+0050     allTrials=[];
+0051     <span class="comment">%%% TODO: move this segment to its own function (getTrialsInType)-----</span>
+0052     baseTrials=[];
+0053     <span class="comment">%for each type, make array of all trials in that type and an array of</span>
+0054     <span class="comment">%baseline trials.</span>
+0055     <span class="keyword">for</span> c=1:length(conds)
+0056         trials=trialsInCond{c};
+0057         <span class="keyword">if</span> all(strcmpi(trialTypes(trials),types{itype}))
+0058             allTrials=[allTrials trials];
+0059             <span class="keyword">if</span> nargin&lt;2 || isempty(refConditions)
+0060                 <span class="comment">%if no conditions were entered, this just searches all</span>
+0061                 <span class="comment">%condition names for the string 'base' and the Type string</span>
+0062                 <span class="keyword">if</span> ~isempty(strfind(lower(conds{c}),<span class="string">'base'</span>)) &amp;&amp; ~isempty(strfind(lower(conds{c}),lower(types{itype})))
+0063                     baseTrials=[baseTrials trials];
+0064                 <span class="keyword">elseif</span> ~isempty(strfind(lower(conds{c}),<span class="string">'base'</span>))
+0065                     baseTrials=[baseTrials trials];
+0066                 <span class="keyword">end</span>
+0067             <span class="keyword">else</span>
+0068                 <span class="keyword">if</span> any(ismember(cInput,conds{c}))
+0069                     baseTrials=[baseTrials trials];
+0070                 <span class="keyword">end</span>
+0071             <span class="keyword">end</span>
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074     <span class="comment">%%% ------------------------------------------------------------------</span>
+0075 
+0076     <span class="comment">%Remove baseline tendencies from all itype trials</span>
+0077     <span class="keyword">if</span> ~isempty(baseTrials)
+0078         <span class="keyword">switch</span> upper(types{itype})
+0079             <span class="keyword">case</span> <span class="string">'OG'</span>
+0080                 <span class="keyword">if</span> normalizeFlag==0
+0081                     <span class="keyword">try</span>
+0082                         newData(:,:)=removeOGbias(this,allTrials,baseTrials);
+0083                         baseValues(itype,:)=NaN; <span class="comment">%Need to replace this with the value actually extracted from OG trials</span>
+0084                     <span class="keyword">catch</span>
+0085                         error(<span class="string">'Failed to remove OG bias. Likely problem is that bias was already removed for this adaptationData object.'</span>)
+0086                     <span class="keyword">end</span>
+0087                 <span class="keyword">end</span> <span class="comment">%Nop for normalizeBias in OG trials</span>
+0088             
+0089             <span class="keyword">otherwise</span> <span class="comment">%'TM' and any other</span>
+0090                 baseInds=cell2mat(this.removeBadStrides.data.indsInTrial(baseTrials));
+0091                 <span class="comment">%Last (upto) 40 strides, excepting the very last 5 and first 10</span>
+0092                 <span class="comment">%---------------------------------------------------------</span>
+0093                 <span class="comment">%----USING LAST (UP TO) N STRIDES, EXEMPTING THE VERY LAST 5</span>
+0094                 N=40; 
+0095                 <span class="comment">%---------------------------------------------------------</span>
+0096                 baseInds=baseInds(max([11,end-N-4]):end-5);
+0097                 base=nanmean(this.data.Data(baseInds,:)); <span class="comment">%Or nanmedian?</span>
+0098                 [data, inds]=this.getParamInTrial(labels,allTrials);
+0099 
+0100                 <span class="keyword">if</span> normalizeFlag==0
+0101                     <span class="comment">%added lines to ensure that if certain parameters never</span>
+0102                     <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
+0103                     <span class="comment">%as NaN from the bsxfun @minus.</span>
+0104                     <span class="comment">%data(isnan(data))=-100000;</span>
+0105                     base(isnan(base))=0;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0106                     newData(inds,:)=bsxfun(@minus,data,base); <span class="comment">%Substracting baseline</span>
+0107                 <span class="keyword">else</span>
+0108                     base(isnan(base))=1;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0109                     newData(inds,:)=bsxfun(@rdivide,data,base); <span class="comment">%Dividing by baseline</span>
+0110                 <span class="keyword">end</span>
+0111                 newData(isnan(data))=nan;
+0112                 base(base==0)=nan;
+0113                 baseValues(itype,:)=base;
+0114         <span class="keyword">end</span>
+0115     <span class="keyword">else</span>
+0116         warning([<span class="string">'No '</span> types{itype} <span class="string">' baseline trials detected. Bias not removed from '</span> types{itype} <span class="string">' trials.'</span>])
+0117         [~, inds]=this.getParamInTrial(labels,allTrials);
+0118         newData(inds,:)=this.data.Data(inds,:);
+0119     <span class="keyword">end</span>
+0120 <span class="keyword">end</span>
+0121 <span class="comment">%fix any parameters that should not have bias removal</span>
+0122 [~,idxs]=this.data.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>,<span class="string">'direction'</span>});
+0123 
+0124 <span class="keyword">if</span> ~isempty(idxs)
+0125     newData(:,idxs(idxs&gt;0))=this.data.Data(:,idxs(idxs&gt;0));
+0126 <span class="keyword">end</span>
+0127 
+0128 <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>)
+0129     newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
+0130 <span class="keyword">else</span>
+0131     newParamData=parameterSeries(newData,labels,this.data.hiddenTime,this.data.description);
+0132 <span class="keyword">end</span>
+0133 newThis=<a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
+0134 typeList=types;
+0135 
+0136 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

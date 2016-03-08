@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of DiscreteTimeFourierTransform</title>
+  <meta name="keywords" content="DiscreteTimeFourierTransform">
+  <meta name="description" content="DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; DiscreteTimeFourierTransform.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>DiscreteTimeFourierTransform
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns
+both the spectral content (fft) and the points at which the spectrum is
+sampled.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="ShortTimeFourierTransform.html" class="code" title="function [STFT,F,T] = ShortTimeFourierTransform(data,Nwindow,Noverlap,Nfft,dim,fs,window)">ShortTimeFourierTransform</a>	ShortTimeFourierTransform returns the fourier transform of the signal</li><li><a href="idealHPF.html" class="code" title="function [filteredData] = idealHPF(data,fcut)">idealHPF</a>	Implements an idealLPF with zero lag</li><li><a href="idealLPF.html" class="code" title="function [filteredData] = idealLPF(data,fcut)">idealLPF</a>	Implements an idealLPF with zero lag</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)</a>
+0002 <span class="comment">%DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns</span>
+0003 <span class="comment">%both the spectral content (fft) and the points at which the spectrum is</span>
+0004 <span class="comment">%sampled.</span>
+0005 
+0006 Fdata=fft(data);
+0007 N=size(data,1);
+0008 <span class="keyword">if</span> mod(N,2)==0 <span class="comment">%Even case:</span>
+0009     fvector=fs/N * [-N/2:N/2-1]';
+0010 <span class="keyword">else</span> <span class="comment">%Odd case: we don't get the sample that would correspond to +-fs/2. We can inferr it?</span>
+0011     fvector=fs/N * [(-N+1)/2:(N-1)/2]';
+0012 <span class="keyword">end</span>
+0013 
+0014 Fdata=fftshift(Fdata,1);
+0015 <span class="comment">%fvector=ifftshift(fvector);</span>
+0016 
+0017 
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeSpatialParameters</title>
+  <meta name="keywords" content="computeSpatialParameters">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeSpatialParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeSpatialParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getKinematicData.html" class="code" title="function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s)">getKinematicData</a>	getKinematicData   loads marker data sampled only at time of gait events</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)</a>
+0002 <span class="comment">%%</span>
+0003 
+0004 timeSHS=strideEvents.tSHS;
+0005 timeFTO=strideEvents.tFTO;
+0006 timeFHS=strideEvents.tFHS;
+0007 timeSTO=strideEvents.tSTO;
+0008 timeSHS2=strideEvents.tSHS2;
+0009 timeFTO2=strideEvents.tFTO2;
+0010 timeFHS2=strideEvents.tFHS2;
+0011 timeSTO2=strideEvents.tSTO2;
+0012 eventTimes=[timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2 timeFHS2 timeSTO2];
+0013 SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6; FHS2=7; STO2=8; <span class="comment">%numbers correspond to column of eventTimes matrix</span>
+0014 <span class="comment">%% Labels and descriptions:</span>
+0015 aux={<span class="string">'direction'</span>,               <span class="string">'-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)'</span>;<span class="keyword">...</span>
+0016     <span class="string">'hipPos'</span>,                   <span class="string">'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)'</span>;<span class="keyword">...</span>
+0017     <span class="string">'stepLengthSlow'</span>,           <span class="string">'distance between ankle markers at SHS2 (in mm)'</span>;<span class="keyword">...</span>
+0018     <span class="string">'stepLengthFast'</span>,           <span class="string">'distance between ankle markers at FHS (in mm)'</span>;<span class="keyword">...</span>
+0019     <span class="string">'takeOffLengthSlow'</span>,        <span class="string">'sAnkle position, with respect to fAnkle at STO (in mm)'</span>;<span class="keyword">...</span>
+0020     <span class="string">'takeOffLengthFast'</span>,        <span class="string">'fAnkle position with respect to sAnkle at FTO (in mm)'</span>;<span class="keyword">...</span>
+0021     <span class="string">'alphaSlow'</span>,                <span class="string">'ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0022     <span class="string">'alphaTemp'</span>,                <span class="string">'ankle placement of slow leg at SHS (realtive to avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0023     <span class="string">'alphaFast'</span>,                <span class="string">'ankle placement of fast leg at FHS (in mm)'</span>;<span class="keyword">...</span>
+0024     <span class="string">'alphaAngSlow'</span>,             <span class="string">'slow leg angle (hip to ankle with respect to vertical) at SHS2 (in deg)'</span>;<span class="keyword">...</span>
+0025     <span class="string">'alphaAngFast'</span>,             <span class="string">'fast leg angle at FHS (in deg)'</span>;<span class="keyword">...</span>
+0026     <span class="string">'betaSlow'</span>,                 <span class="string">'ankle placement of slow leg at STO (relative avg hip marker) (in mm)'</span>;<span class="keyword">...</span>
+0027     <span class="string">'betaFast'</span>,                 <span class="string">'ankle placement of fast leg at FTO2 (in mm)'</span>;<span class="keyword">...</span>
+0028     <span class="string">'XSlow'</span>,                    <span class="string">'ankle postion of the slow leg @FHS (in mm)'</span>;<span class="keyword">...</span>
+0029     <span class="string">'XFast'</span>,                    <span class="string">'ankle position of Fast leg @SHS (in mm)'</span>;<span class="keyword">...</span>
+0030     <span class="string">'RFastPos'</span>,                 <span class="string">'Ratio of FTO/FHS'</span>;<span class="keyword">...</span>
+0031     <span class="string">'RSloWPos'</span>,                 <span class="string">'Ratio of STO/SHS'</span>;<span class="keyword">...</span>
+0032     <span class="string">'RFastPosSHS'</span>,              <span class="string">'Ratio of fank@SHS/FHS'</span>;<span class="keyword">...</span>
+0033     <span class="string">'RSlowPosFHS'</span>,              <span class="string">'Ratio of sank@FHS/SHS'</span>;<span class="keyword">...</span>
+0034     <span class="string">'betaAngSlow'</span>,              <span class="string">'slow leg angle at STO (in deg)'</span>;<span class="keyword">...</span>
+0035     <span class="string">'betaAngFast'</span>,              <span class="string">'fast leg angle at FTO (in deg)'</span>;<span class="keyword">...</span>
+0036     <span class="string">'stanceRangeSlow'</span>,          <span class="string">'alphaSlow - betaSlow (i.e. total distance covered by slow ankle relative to hip during stance) (in mm)'</span>;<span class="keyword">...</span>
+0037     <span class="string">'stanceRangeFast'</span>,          <span class="string">'alphaFast - betaFast (in mm)'</span>;<span class="keyword">...</span>
+0038     <span class="string">'stanceRangeAngSlow'</span>,       <span class="string">'|alphaAngSlow| + |betaAngSlow| (i.t total angle swept out by slow leg during stance) (in deg)'</span>;<span class="keyword">...</span>
+0039     <span class="string">'stanceRangeAngFast'</span>,       <span class="string">'|alphaAngFast| + |betaAngFast| (in deg)'</span>;<span class="keyword">...</span>
+0040     <span class="string">'swingRangeSlow'</span>,           <span class="string">'total distance covered by slow ankle marker realtive to hip from STO to SHS2 (in mm)'</span>;<span class="keyword">...</span>
+0041     <span class="string">'swingRangeFast'</span>,           <span class="string">'total distance covered by fast ankle marker realtive to hip from FTO to FHS (in mm)'</span>;<span class="keyword">...</span>
+0042     <span class="string">'omegaSlow'</span>,                <span class="string">'angle between legs at SHS2 (in deg)'</span>;<span class="keyword">...</span>
+0043     <span class="string">'omegaFast'</span>,                <span class="string">'angle between legs at FHS (in deg)'</span>;<span class="keyword">...</span>
+0044     <span class="string">'alphaRatioSlow'</span>,           <span class="string">'alphaSlow/(alphaSlow+alphaFast)'</span>;<span class="keyword">...</span>
+0045     <span class="string">'alphaRatioFast'</span>,           <span class="string">'alphaFast/(alphaSlow+alphaFast)'</span>;<span class="keyword">...</span>
+0046     <span class="string">'alphaDeltaSlow'</span>,           <span class="string">'slow leg angle at SHS2 - fast leg angle at FHS (in deg)'</span>;<span class="keyword">...</span>
+0047     <span class="string">'alphaDeltaFast'</span>,           <span class="string">'fast leg angle at FHS - slow leg angle at SHS (in deg)'</span>;<span class="keyword">...</span>
+0048     <span class="string">'stepLengthDiff'</span>,           <span class="string">'stepLengthFast-stepLengthSlow (in mm)'</span>;<span class="keyword">...</span>
+0049     <span class="string">'stepLengthDiff2D'</span>,         <span class="string">'two-dimensional version of stepLengthDiff (in mm)'</span>;<span class="keyword">...</span>
+0050     <span class="string">'stepLengthAsym'</span>,           <span class="string">'Step length difference (fast-slow), divided by sum'</span>;<span class="keyword">...</span>
+0051     <span class="string">'stepLengthAsym2D'</span>,         <span class="string">'two-dimensional step length difference (fast-slow), divided by sum'</span>;<span class="keyword">...</span>
+0052     <span class="string">'angularSpreadDiff'</span>,        <span class="string">'omegaFast-omegaSlow (in deg)'</span>;<span class="keyword">...</span>
+0053     <span class="string">'angularSpreadAsym'</span>,        <span class="string">'angular spread difference / sum'</span>;<span class="keyword">...</span>
+0054     <span class="string">'Sout'</span>,                     <span class="string">'Alpha difference (fast-slow), divided by alpha sum'</span>;<span class="keyword">...</span>
+0055     <span class="string">'Serror'</span>,                   <span class="string">'alphaRatioSlow-alphaRatioFast'</span>;<span class="keyword">...</span>
+0056     <span class="string">'SerrorOld'</span>,                <span class="string">'alphaRatioFast/alphaRatioSlow'</span>;<span class="keyword">...</span>
+0057     <span class="string">'Sgoal'</span>,                    <span class="string">'(stanceRangeAngFast-stanceRangeAngSlow)/stanceRangeAngFast'</span>;<span class="keyword">...</span>
+0058     <span class="string">'angleOfOscillationAsym'</span>,   <span class="string">'(alhpaAngFast+betaAngFast)/2-(alphaAngSlow+betaAngSlow)/2'</span>;<span class="keyword">...</span>
+0059     <span class="string">'phaseShift'</span>,               <span class="string">'parcent of stride that one angle trace is shifted with respect to the other for max correlation'</span>;<span class="keyword">...</span>
+0060     <span class="string">'phaseShiftPos'</span>,            <span class="string">'same as phaseShift, but uses ankle pos trace instead of angles'</span>;<span class="keyword">...</span>
+0061     <span class="string">'spatialContribution'</span>,      <span class="string">'DIFFERENCE of relative position of ankle markers at ipsi-lateral HS (i.e. slow ankle at SHS minus fast ankle at FHS), it ends up being = sAnk(SHS2)+sAnk(SHS)-2*fAnk(FHS)'</span>;<span class="keyword">...</span>
+0062     <span class="string">'stepTimeContribution'</span>,     <span class="string">'Average ankle speed relative to mid-hip, times step time difference'</span>;<span class="keyword">...</span>
+0063     <span class="string">'velocityContribution'</span>,     <span class="string">'Average step time times ankle speed (relative to hip) difference'</span>;<span class="keyword">...</span>
+0064     <span class="string">'netContribution'</span>,          <span class="string">'Sum of the previous three'</span>;<span class="keyword">...</span>
+0065     <span class="string">'spatialContributionP'</span>,      <span class="string">'Same as spatial contribution, in absolute (lab) reference frame (no Hip involved)'</span>;<span class="keyword">...</span>
+0066     <span class="string">'stepTimeContributionP'</span>,     <span class="string">'Same as stepTime, in absolute frame'</span>;<span class="keyword">...</span>
+0067     <span class="string">'velocityContributionP'</span>,     <span class="string">'Same as velocityContribution, in absolute frame'</span>;<span class="keyword">...</span>
+0068     <span class="string">'netContributionP'</span>,          <span class="string">'Sum of the previous three (should make it identical to netContribution, which is equal to stepLengthAsym)'</span>;<span class="keyword">...</span>
+0069     <span class="string">'spatialContributionPNorm'</span>,      <span class="string">'Same as spatial contribution, in absolute (lab) reference frame (no Hip involved)'</span>;<span class="keyword">...</span>
+0070     <span class="string">'stepTimeContributionPNorm'</span>,     <span class="string">'Same as stepTime, in absolute frame'</span>;<span class="keyword">...</span>
+0071     <span class="string">'velocityContributionPNorm'</span>,     <span class="string">'Same as velocityContribution, in absolute frame'</span>;<span class="keyword">...</span>
+0072     <span class="string">'netContributionPNorm'</span>,          <span class="string">'Sum of the previous three (should make it identical to netContribution, which is equal to stepLengthAsym)'</span>;<span class="keyword">...</span>
+0073     <span class="string">'spatialContributionAlt'</span>,     <span class="string">'Spatial contribution divided by cadence, to get velocity units instead of length units'</span>;<span class="keyword">...</span>
+0074     <span class="string">'stepTimeContributionAlt'</span>,    <span class="string">'Step time contribution divided by cadence, to get velocity units instead of length units'</span>;<span class="keyword">...</span>
+0075     <span class="string">'velocityContributionAlt'</span>,    <span class="string">'Velocity contribution divided by cadence, to get velocity units instead of length units'</span>;<span class="keyword">...</span>
+0076     <span class="string">'netContributionAlt'</span>,          <span class="string">'Net contribution divided by cadence, to get velocity units instead of length units'</span>;<span class="keyword">...</span>
+0077     <span class="string">'spatialContributionAltRatio'</span>,     <span class="string">'Spatial contribution divided by cadence times sum of ankle velocities during stance, so that we get dimensionless (comparable to *Norm2) '</span>;<span class="keyword">...</span>
+0078     <span class="string">'stepTimeContributionAltRatio'</span>,    <span class="string">'Step time contribution divided by cadence times sum of ankle velocities during stance'</span>;<span class="keyword">...</span>
+0079     <span class="string">'velocityContributionAltRatio'</span>,    <span class="string">'Velocity contribution divided by cadence times sum of ankle velocities during stance, which should be a function of RATIO only'</span>;<span class="keyword">...</span>
+0080     <span class="string">'netContributionAltRatio'</span>,          <span class="string">'Net contribution divided by cadence times sum of ankle velocities during stance'</span>;<span class="keyword">...</span>
+0081     <span class="string">'spatialContributionNorm2'</span>,    <span class="string">'spatialContribution/(stepLengthFast+stepLengthSlow)'</span>;<span class="keyword">...</span>
+0082     <span class="string">'stepTimeContributionNorm2'</span>,    <span class="string">'stepTimeContribution/(stepLengthFast+stepLengthSlow)'</span>;<span class="keyword">...</span>
+0083     <span class="string">'velocityContributionNorm2'</span>,    <span class="string">'velContribution/(stepLengthFast+stepLengthSlow)'</span>;<span class="keyword">...</span>
+0084     <span class="string">'netContributionNorm2'</span>,    <span class="string">'netContribution/(stepLengthFast+stepLengthSlow). With this normalization, netContributionNorm2 shoudl be IDENTICAL to stepLengthAsym'</span>;<span class="keyword">...</span>
+0085     <span class="string">'stepTimeIdealT'</span>,           <span class="string">'Ideal stepTimeContribution value (normalized to sum of step lengths) based on Tgoal parameter'</span>;<span class="keyword">...</span>
+0086     <span class="string">'spatialIdealT'</span>,            <span class="string">'Ideal spatialContribution value (normalized to sum of step length) equivalent to -(velocityContributionNorm2+stepTimeIdealT)'</span>;<span class="keyword">...</span>
+0087     <span class="string">'stepTimeErrorT'</span>,           <span class="string">'Difference between stepTimeContributionNorm2 and stepTimeIdealT'</span>;<span class="keyword">...</span>
+0088     <span class="string">'spatialErrorT'</span>,            <span class="string">'Difference between spatialContributionNorm2 and spatialIdealT'</span>;<span class="keyword">...</span>
+0089     <span class="string">'stepTimeIdealS'</span>,           <span class="string">'Ideal stepTimeContribution value (normalized to sum of step lengths) based on Sgoal parameter'</span>;<span class="keyword">...</span>
+0090     <span class="string">'spatialIdealS'</span>,            <span class="string">'Ideal spatialContribution value (normalized to sum of step length) equivalent to -(velocityContributionNorm2+stepTimeIdealS)'</span>;<span class="keyword">...</span>
+0091     <span class="string">'stepTimeErrorS'</span>,           <span class="string">'Difference between stepTimeContributionNorm2 and stepTimeIdealS'</span>;<span class="keyword">...</span>
+0092     <span class="string">'spatialErrorS'</span>,            <span class="string">'Difference between spatialContributionNorm2 and spatialIdealS'</span>;<span class="keyword">...</span>
+0093     <span class="string">'equivalentSpeed'</span>,          <span class="string">'Relative speed of hip to feet, '</span>;<span class="keyword">...</span>
+0094     <span class="string">'singleStanceSpeedSlowAbs'</span>,    <span class="string">'Absolute speed of slow ankle during contralateral swing'</span>;<span class="keyword">...</span>
+0095     <span class="string">'singleStanceSpeedFastAbs'</span>,    <span class="string">'Absolute speed of fast ankle during contralateral swing'</span>;<span class="keyword">...</span>
+0096     <span class="string">'stepSpeedSlow'</span>,           <span class="string">'Ankle relative to hip, from iHS to cHS'</span>;<span class="keyword">...</span>
+0097     <span class="string">'stepSpeedFast'</span>,           <span class="string">'Ankle relative to hip, from iHS to cHS'</span>;<span class="keyword">...</span>
+0098     <span class="string">'stanceSpeedSlow'</span>,          <span class="string">'Ankle relative to hip, during ipsilateral stance'</span>;<span class="keyword">...</span>
+0099     <span class="string">'stanceSpeedFast'</span>,          <span class="string">'Ankle relative to hip, during ipsilateral stance'</span>;<span class="keyword">...</span>
+0100 <span class="comment">%    'avgRotation',            'Angle that the coordinates were rotated by';...</span>
+0101     }; 
+0102 
+0103 paramLabels=aux(:,1);
+0104 description=aux(:,2);
+0105 
+0106 <span class="comment">%% Sanity check &amp; correction: look for markers at (0,0,0) and set data to NaN</span>
+0107 [dd,ll]=markerData.getOrientedData;
+0108 dd=permute(dd,[1,3,2]);
+0109 ee=all(dd==0,2);
+0110 <span class="keyword">if</span> any(ee(:))
+0111     msg=[<span class="string">'Markers were reconstructed at the origin. Setting to NaN for spatial parameter computation.'</span>];
+0112     
+0113     <span class="keyword">for</span> i=1:size(ee,3)
+0114         <span class="keyword">if</span> any(ee(:,1,i)) &amp;&amp; sum(ee(:,1,i))*markerData.sampPeriod &gt; 1
+0115             msg=[msg <span class="string">' '</span> ll{i} <span class="string">' was at origin for '</span> num2str(sum(ee(:,1,i))*markerData.sampPeriod) <span class="string">'s.'</span>];
+0116         <span class="keyword">end</span>
+0117     <span class="keyword">end</span>
+0118     warning(msg)
+0119 <span class="keyword">end</span>
+0120 
+0121 ee=repmat(ee,1,3,1);
+0122 
+0123 markerData.Data(ee)=NaN;
+0124 dd=markerData.getOrientedData;
+0125 dd=permute(dd,[1,3,2]);
+0126 ee=all(dd==0,2);
+0127 <span class="keyword">if</span> any(ee(:))
+0128     error(<span class="string">'Setting markers at the origin to NaN did not work'</span>)
+0129 <span class="keyword">end</span>
+0130 <span class="comment">%% Get rotated data</span>
+0131 [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=<a href="getKinematicData.html" class="code" title="function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s)">getKinematicData</a>(eventTimes,markerData,angleData,s);
+0132 
+0133 <span class="comment">%% Intralimb</span>
+0134 <span class="keyword">if</span> strcmp(s,<span class="string">'L'</span>)
+0135     f=<span class="string">'R'</span>;
+0136 <span class="keyword">elseif</span> strcmp(s,<span class="string">'R'</span>)
+0137     f=<span class="string">'L'</span>;
+0138 <span class="keyword">else</span>
+0139     error();
+0140 <span class="keyword">end</span> 
+0141 
+0142 <span class="comment">%step lengths (1D)</span>
+0143 stepLengthSlow=sAnkFwd(:,SHS2)-fAnkFwd(:,SHS2); <span class="comment">%If sAnkFwd and fAnkFwd are measured with respect to the same reference, this is the same as just subtracting the marker positions</span>
+0144 stepLengthFast=fAnkFwd(:,FHS)-sAnkFwd(:,FHS);
+0145 takeOffLengthSlow=sAnkFwd(:,STO)-fAnkFwd(:,STO);
+0146 takeOffLengthFast=fAnkFwd(:,FTO)-sAnkFwd(:,FTO);
+0147 
+0148 <span class="comment">%ALTERNATIVE COMPUTATION WAY: should be equivalent for TM walking (no</span>
+0149 <span class="comment">%direction is enforced) but doesn't use HIP, which was causing problems</span>
+0150 <span class="comment">%previously.</span>
+0151 <span class="comment">% sAnkAbs=markerData.getDataAsTS({[s 'ANKy']}).getSample(eventTimes,'closest');</span>
+0152 <span class="comment">% fAnkAbs=markerData.getDataAsTS({[f 'ANKy']}).getSample(eventTimes,'closest');</span>
+0153 <span class="comment">% stepLengthSlow=sAnkAbs(:,SHS2)-fAnkAbs(:,SHS2);</span>
+0154 <span class="comment">% stepLengthFast=sAnkAbs(:,FHS)-fAnkAbs(:,FHS);</span>
+0155 <span class="comment">% takeOffLengthSlow=sAnkAbs(:,STO)-fAnkAbs(:,STO);</span>
+0156 <span class="comment">% takeOffLengthFast=fAnkAbs(:,FTO)-sAnkAbs(:,FTO);</span>
+0157 
+0158 
+0159 <span class="comment">%step length (2D) Express w.r.t the hip -- don't save, for now.</span>
+0160 stepLengthSlow2D=sqrt(sum((sAnk2D(:,SHS2,:)-fAnk2D(:,SHS2,:)).^2,3));
+0161 stepLengthFast2D=sqrt(sum((fAnk2D(:,FHS,:)-sAnk2D(:,FHS,:)).^2,3));
+0162 
+0163 <span class="comment">%Spatial parameters - in millimeters</span>
+0164 
+0165 <span class="comment">%alpha (positive portion of interlimb angle at HS)</span>
+0166 alphaSlow=sAnkFwd(:,SHS2);
+0167 alphaTemp=sAnkFwd(:,SHS);
+0168 alphaFast=fAnkFwd(:,FHS);
+0169 <span class="comment">%beta (negative portion of interlimb angle at TO)</span>
+0170 betaSlow=sAnkFwd(:,STO);
+0171 betaFast=fAnkFwd(:,FTO2);
+0172 <span class="comment">%position of the ankle marker at contra lateral at HS</span>
+0173 XSlow=sAnkFwd(:,FHS);
+0174 XFast=fAnkFwd(:,SHS);
+0175 <span class="comment">%stance range (subtract since beta is a negative value)</span>
+0176 stanceRangeSlow=alphaTemp-betaSlow;
+0177 stanceRangeFast=alphaFast-betaFast;
+0178 <span class="comment">%swing range</span>
+0179 swingRangeSlow=sAnkFwd(:,SHS2)-sAnkFwd(:,STO);
+0180 swingRangeFast=fAnkFwd(:,FHS)-fAnkFwd(:,FTO);
+0181 
+0182 <span class="comment">%Ratio TO./HS</span>
+0183 RFastPos=abs(betaFast./alphaFast);
+0184 RSloWPos=abs(betaSlow./alphaTemp); 
+0185 
+0186 <span class="comment">%Ratio ankle position @HS of contralateral leg./HS</span>
+0187 RFastPosSHS=abs(XFast./alphaFast);
+0188 RSlowPosFHS=abs(XSlow./alphaTemp);
+0189 
+0190 
+0191 <span class="comment">%Spatial parameters - in degrees</span>
+0192 
+0193 <span class="comment">%alpha (positive portion of interlimb angle at HS)</span>
+0194 alphaAngSlow=sAngle(:,SHS2);
+0195 alphaAngTemp=sAngle(:,SHS);
+0196 alphaAngFast=fAngle(:,FHS);
+0197 <span class="comment">%beta (negative portion of interlimb angle at TO)</span>
+0198 betaAngSlow=sAngle(:,STO);
+0199 betaAngFast=fAngle(:,FTO2);
+0200 <span class="comment">%range (alpha+beta)</span>
+0201 stanceRangeAngSlow=alphaAngTemp-betaAngSlow;
+0202 stanceRangeAngFast=alphaAngFast-betaAngFast;
+0203 <span class="comment">%interlimb spread at HS</span>
+0204 omegaSlow=abs(sAngle(:,SHS2)-fAngle(:,SHS2));
+0205 omegaFast=abs(fAngle(:,FHS)-sAngle(:,FHS));
+0206 <span class="comment">%alpha ratios</span>
+0207 alphaRatioSlow=alphaSlow./(alphaSlow+alphaFast);
+0208 alphaRatioFast=alphaFast./(alphaSlow+alphaFast);
+0209 <span class="comment">%delta alphas</span>
+0210 alphaDeltaSlow=sAngle(:,SHS2)-fAngle(:,FHS); <span class="comment">%same as alphaAngSlow-alphaAngFast</span>
+0211 alphaDeltaFast=fAngle(:,FHS)-sAngle(:,SHS);
+0212 
+0213 <span class="comment">%% Interlimb</span>
+0214 
+0215 stepLengthDiff=stepLengthFast-stepLengthSlow;
+0216 stepLengthAsym=stepLengthDiff./(stepLengthFast+stepLengthSlow);
+0217 stepLengthDiff2D=stepLengthFast2D-stepLengthSlow2D;
+0218 stepLengthAsym2D=stepLengthDiff2D./(stepLengthFast2D+stepLengthSlow2D);
+0219 angularSpreadDiff=omegaFast-omegaSlow;
+0220 angularSpreadAsym=angularSpreadDiff./(omegaFast+omegaSlow);
+0221 Sout=(alphaFast-alphaSlow)./(alphaFast+alphaSlow);
+0222 Serror=alphaRatioSlow-alphaRatioFast;
+0223 SerrorOld=alphaRatioFast./alphaRatioSlow;
+0224 Sgoal=(stanceRangeFast-stanceRangeSlow)./(stanceRangeFast+stanceRangeSlow);
+0225 centerSlow=(alphaAngSlow+betaAngSlow)./2;
+0226 centerFast=(alphaAngFast+betaAngFast)./2;
+0227 angleOfOscillationAsym=(centerFast-centerSlow);            
+0228 
+0229 <span class="comment">%phase shift (using angles)</span>
+0230 <span class="comment">% slowlimb=sAngle(indSHS:indSHS2);</span>
+0231 <span class="comment">% fastlimb=fAngle(indSHS:indSHS2);</span>
+0232 <span class="comment">% slowlimb=slowlimb-mean(slowlimb);</span>
+0233 <span class="comment">% fastlimb=fastlimb-mean(fastlimb);</span>
+0234 <span class="comment">% % Circular correlation</span>
+0235 <span class="comment">% phaseShift=circCorr(slowlimb,fastlimb);</span>
+0236 <span class="comment">%</span>
+0237 <span class="comment">% %phase shift (using marker locations)</span>
+0238 <span class="comment">% slowlimb=sAnkPos(indSHS:indSHS2);</span>
+0239 <span class="comment">% fastlimb=fAnkPos(indSHS:indSHS2);</span>
+0240 <span class="comment">% slowlimb=slowlimb-mean(slowlimb);</span>
+0241 <span class="comment">% fastlimb=fastlimb-mean(fastlimb);</span>
+0242 <span class="comment">% % Circular correlation</span>
+0243 <span class="comment">% phaseShiftPos=circCorr(slowlimb,fastlimb);</span>
+0244 T=length(timeSHS);
+0245 phaseShift=nan(T,1);
+0246 phaseShiftPos=nan(T,1);
+0247 <span class="keyword">for</span> i=1:T
+0248     <span class="keyword">if</span> ~isnan(timeSHS(i)) &amp;&amp; ~isnan(timeSHS2(i))
+0249         <span class="keyword">if</span> ~isempty(angleData)
+0250             sLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[s,<span class="string">'Limb'</span>]});
+0251             fLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[f,<span class="string">'Limb'</span>]});
+0252             <span class="keyword">if</span> ~isempty(sLimb) &amp;&amp; ~isempty(fLimb)
+0253                 phaseShift(i)=circCorr(sLimb,fLimb);
+0254             <span class="keyword">end</span>
+0255         <span class="keyword">end</span>
+0256         Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,<span class="string">'ANK'</span>],[f,<span class="string">'ANK'</span>]});    
+0257         <span class="keyword">if</span> ~isempty(Pos)
+0258             phaseShiftPos(i)=circCorr(Pos(:,1,2),Pos(:,2,2)); <span class="comment">%Using y components only, which is equivalent to sAnkFwd</span>
+0259         <span class="keyword">end</span>
+0260     <span class="keyword">end</span>
+0261 <span class="keyword">end</span>
+0262 
+0263 
+0264 <span class="comment">%% Contribution Calculations</span>
+0265 
+0266 <span class="comment">% Compute spatial contribution (1D)</span>
+0267 spatialFast=fAnkFwd(:,FHS) - sAnkFwd(:,SHS);
+0268 spatialSlow=sAnkFwd(:,SHS2) - fAnkFwd(:,FHS);    
+0269 
+0270 <span class="comment">% Compute temporal contributions</span>
+0271 ts=(timeFHS-timeSHS); 
+0272 tf=(timeSHS2-timeFHS); 
+0273 difft=ts-tf;
+0274 
+0275 dispSlow=abs(sAnkFwd(:,FHS)-sAnkFwd(:,SHS)); <span class="comment">%FIXME: This SHOULD NOT use an abs(), if the sign is supposed to be the opposite one, just make it so. Abs() makes it murky to know what this quantity means.</span>
+0276 dispFast=abs(fAnkFwd(:,SHS2)-fAnkFwd(:,FHS));
+0277 
+0278 velocitySlow=dispSlow./ts; <span class="comment">% Velocity of foot relative to hip, should be close to actual belt speed in TM trials</span>
+0279 velocityFast=dispFast./tf;            
+0280 avgVel=mean([velocitySlow velocityFast],2);           
+0281 avgStepTime=mean([ts tf],2); <span class="comment">%This is half strideTimeSlow!</span>
+0282 
+0283 spatialContribution=spatialFast-spatialSlow;            
+0284 stepTimeContribution=avgVel.*difft;            
+0285 velocityContribution=avgStepTime.*(velocitySlow-velocityFast);            
+0286 netContribution=spatialContribution+stepTimeContribution+velocityContribution; 
+0287 
+0288 <span class="comment">%Alternative and normalized contributions</span>
+0289 strideTimeSlow=timeSHS2-timeSHS; <span class="comment">%Exactly the same definition as in computeTemporalParameters</span>
+0290 spatialContributionAlt=spatialContribution./strideTimeSlow;
+0291 stepTimeContributionAlt=stepTimeContribution./strideTimeSlow;
+0292 velocityContributionAlt=velocityContribution./strideTimeSlow;
+0293 netContributionAlt=netContribution./strideTimeSlow;
+0294 
+0295 <span class="comment">%spatialContributionNorm=spatialContributionAlt./equivalentSpeed;</span>
+0296 <span class="comment">%stepTimeContributionNorm=stepTimeContributionAlt./equivalentSpeed;</span>
+0297 <span class="comment">%velocityContributionNorm=velocityContributionAlt./equivalentSpeed;</span>
+0298 <span class="comment">%netContributionNorm=netContributionAlt./equivalentSpeed;</span>
+0299 
+0300 spatialContributionAltRatio=spatialContributionAlt./(velocitySlow+velocityFast);
+0301 stepTimeContributionAltRatio=stepTimeContributionAlt./(velocitySlow+velocityFast);
+0302 velocityContributionAltRatio=velocityContributionAlt./(velocitySlow+velocityFast);
+0303 netContributionAltRatio=netContributionAlt./(velocitySlow+velocityFast);
+0304 
+0305 Dist=stepLengthFast+stepLengthSlow;
+0306 spatialContributionNorm2=spatialContribution./Dist;
+0307 stepTimeContributionNorm2=stepTimeContribution./Dist;
+0308 velocityContributionNorm2=velocityContribution./Dist;
+0309 netContributionNorm2=netContribution./Dist;
+0310 
+0311 <span class="comment">%Contributions in absolute frame</span>
+0312 aux=markerData.getDataAsTS({[f <span class="string">'ANKy'</span>],[ s <span class="string">'ANKy'</span>]}).getSample(eventTimes,<span class="string">'closest'</span>); <span class="comment">%Will be Nx8x2</span>
+0313 spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
+0314 vf=(aux(:,SHS2,1)-aux(:,FHS,1))./tf;
+0315 vs=(aux(:,FHS,2)-aux(:,SHS,2))./ts;
+0316 stepTimeContributionP= .5*(vf + vs).*(ts-tf);
+0317 velocityContributionP= .5*(vs-vf).*(tf+ts);
+0318 netContributionP=spatialContributionP+stepTimeContributionP+velocityContributionP;
+0319 spatialContributionPNorm=spatialContributionP./Dist;
+0320 stepTimeContributionPNorm=stepTimeContributionP./Dist;
+0321 velocityContributionPNorm=velocityContributionP./Dist;
+0322 netContributionPNorm=netContributionP./Dist;
+0323 
+0324 <span class="comment">% Contribution error values</span>
+0325 
+0326 <span class="comment">%from T goal</span>
+0327 stanceTimeSlow=timeSTO-timeSHS;
+0328 stanceTimeFast=timeFTO2-timeFHS;
+0329 stepTimeIdealT=((velocitySlow+velocityFast)./2).*(stanceTimeSlow-stanceTimeFast)./Dist;
+0330 spatialIdealT=-(velocityContributionNorm2+stepTimeIdealT);
+0331 stepTimeErrorT=stepTimeIdealT-stepTimeContributionNorm2;
+0332 spatialErrorT=spatialIdealT-spatialContributionNorm2;
+0333 
+0334 <span class="comment">%From S goal</span>
+0335 rangeSlow=alphaSlow-betaSlow;
+0336 rangeFast=alphaFast-betaFast;
+0337 spatialIdealS=(2*(alphaFast+alphaSlow)./Dist).*((rangeFast-rangeSlow)./(rangeFast+rangeSlow));
+0338 stepTimeIdealS=(-velocityContributionNorm2)-spatialIdealS;
+0339 spatialErrorS=spatialIdealS-spatialContributionNorm2;
+0340 stepTimeErrorS=stepTimeIdealS-stepTimeContributionNorm2;
+0341 
+0342 
+0343 
+0344 <span class="comment">%% Speed calculations</span>
+0345 equivalentSpeed=(dispSlow+dispFast)./(ts+tf); <span class="comment">%= (ts./tf+ts)*dispSlow./ts + (tf./tf+ts)*dispFast./tf = (ts./tf+ts)*vs + (tf./tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average</span>
+0346 
+0347 <span class="comment">% sStanceIdxs=indFTO:indFHS;</span>
+0348 <span class="comment">% fStanceIdxs=indSTO:indSHS2;</span>
+0349 <span class="comment">% singleStanceSpeedSlowAbs=prctile(f_events*diff(sToe(sStanceIdxs,2)),70);</span>
+0350 <span class="comment">% singleStanceSpeedFastAbs=prctile(f_events*diff(fToe(fStanceIdxs,2)),70);</span>
+0351 T=length(timeSHS);
+0352 singleStanceSpeedSlowAbs=nan(T,1);
+0353 singleStanceSpeedFastAbs=nan(T,1);
+0354 sToeAbsVel=markerData.getDataAsOTS({[s <span class="string">'TOE'</span>]}).derivate;
+0355 fToeAbsVel=markerData.getDataAsOTS({[f <span class="string">'TOE'</span>]}).derivate;
+0356 <span class="keyword">for</span> i=1:T
+0357     <span class="keyword">if</span> ~isnan(timeFTO(i)) &amp;&amp; ~isnan(timeFHS(i)) <span class="comment">%Case that the event is missing</span>
+0358         sToePartial=sToeAbsVel.split(timeFTO(i),timeFHS(i)).getOrientedData();
+0359         singleStanceSpeedSlowAbs(i)=prctile(sToePartial(:,1,2),70);
+0360     <span class="keyword">end</span>
+0361     <span class="keyword">if</span> ~isnan(timeSTO(i)) &amp;&amp; ~isnan(timeSHS2(i))
+0362         fToePartial=fToeAbsVel.split(timeSTO(i),timeSHS2(i)).getOrientedData();
+0363         singleStanceSpeedFastAbs(i)=prctile(fToePartial(:,1,2),70);
+0364     <span class="keyword">end</span>
+0365 <span class="keyword">end</span>
+0366 
+0367 
+0368 stanceSpeedSlow=abs(sAnkFwd(:,STO)-sAnkFwd(:,SHS))./(timeSTO-timeSHS); <span class="comment">%Ankle relative to hip, during ipsilateral stance</span>
+0369 stanceSpeedFast=abs(fAnkFwd(:,FTO2)-fAnkFwd(:,FHS))./(timeFTO2-timeFHS); <span class="comment">%Ankle relative to hip, during ipsilateral stance</span>
+0370 
+0371 <span class="comment">%stepSpeed - should be the same as velocity calculation for contributions</span>
+0372 <span class="comment">%above.</span>
+0373 stepSpeedSlow=dispSlow./ts; <span class="comment">%Ankle relative to hip, from iHS to cHS</span>
+0374 stepSpeedFast=dispFast./tf; <span class="comment">%Ankle relative to hip, from iHS to cHS</span>
+0375 
+0376 
+0377 <span class="comment">%Rotate coordinates back to original so there are not</span>
+0378 <span class="comment">%disconinuities within next stride</span>
+0379 <span class="comment">% rotationMatrix = [cosd(-avgRotation) -sind(-avgRotation) 0; sind(-avgRotation) cosd(-avgRotation) 0; 0 0 1];</span>
+0380 <span class="comment">% sAnk(indSHS:indFTO2,:) = (rotationMatrix*sAnk(indSHS:indFTO2,:)')';</span>
+0381 <span class="comment">% fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';</span>
+0382 <span class="comment">% sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';</span>
+0383 <span class="comment">% fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';</span>
+0384             
+0385 
+0386 <span class="comment">%% Assign parameters to data matrix</span>
+0387 data=nan(length(timeSHS),length(paramLabels));
+0388 <span class="keyword">for</span> i=1:length(paramLabels)
+0389     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
+0390 <span class="keyword">end</span>
+0391 
+0392 <span class="comment">%% Create parameterSeries</span>
+0393 out=parameterSeries(data,paramLabels,[],description);        
+0394 
+0395 <span class="keyword">end</span>
+0396</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

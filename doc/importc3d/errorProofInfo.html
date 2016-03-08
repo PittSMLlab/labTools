@@ -1,0 +1,325 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of errorProofInfo</title>
+  <meta name="keywords" content="errorProofInfo">
+  <meta name="description" content="Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; errorProofInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>errorProofInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = errorProofInfo(handles,ignoreErrors) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.
+If entry is invalid, issues warning about which field is incorrect.
+
+Input:
+ hadles - handle structure from GetInfoGUI
+ ignoreErrors - enter true to ignore errors</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>	GETINFOGUI  Graphical user interface used to collect information regarding</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = errorProofInfo(handles,ignoreErrors)</a>
+0002 <span class="comment">%Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.</span>
+0003 <span class="comment">%If entry is invalid, issues warning about which field is incorrect.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%Input:</span>
+0006 <span class="comment">% hadles - handle structure from GetInfoGUI</span>
+0007 <span class="comment">% ignoreErrors - enter true to ignore errors</span>
+0008 
+0009 out.bad=false;
+0010 
+0011 <span class="comment">%% Get info from GUI fields</span>
+0012 
+0013 <span class="comment">% -- Experiment Info</span>
+0014 descriptionContents=cellstr(get(handles.description_edit,<span class="string">'string'</span>));
+0015 <span class="keyword">if</span> ~isempty(get(handles.description_edit,<span class="string">'Value'</span>))
+0016 out.ExpFile=descriptionContents{get(handles.description_edit,<span class="string">'Value'</span>)};
+0017 <span class="keyword">else</span>
+0018     out.ExpFile=descriptionContents{1}; <span class="comment">%Empty string</span>
+0019 <span class="keyword">end</span>
+0020     
+0021 <span class="keyword">if</span> isfield(handles,<span class="string">'group'</span>)
+0022     out.ExpDescription=handles.group;
+0023 <span class="keyword">else</span>
+0024     out.ExpDescription=out.ExpFile;
+0025 <span class="keyword">end</span>
+0026 out.experimenter = get(handles.name_edit,<span class="string">'string'</span>);
+0027 MonthContents = cellstr(get(handles.month_list,<span class="string">'String'</span>));
+0028 out.month = MonthContents{get(handles.month_list,<span class="string">'Value'</span>)};
+0029 out.day = str2double(get(handles.day_edit,<span class="string">'string'</span>));
+0030 out.year = str2double(get(handles.year_edit,<span class="string">'string'</span>));
+0031 out.exp_obs = get(handles.note_edit,<span class="string">'string'</span>);
+0032 
+0033 <span class="comment">% -- Subject Info</span>
+0034 out.ID = get(handles.subID_edit,<span class="string">'string'</span>);
+0035 DOBmonthContents = cellstr(get(handles.DOBmonth_list,<span class="string">'String'</span>));
+0036 out.DOBmonth = DOBmonthContents{get(handles.DOBmonth_list,<span class="string">'Value'</span>)};
+0037 out.DOBday = str2double(get(handles.DOBday_edit,<span class="string">'string'</span>));
+0038 out.DOByear = str2double(get(handles.DOByear_edit,<span class="string">'string'</span>));
+0039 genderContents = cellstr(get(handles.gender_list,<span class="string">'String'</span>));
+0040 out.gender = genderContents{get(handles.gender_list,<span class="string">'Value'</span>)};
+0041 domlegContents = cellstr(get(handles.domleg_list,<span class="string">'String'</span>));
+0042 out.domleg = domlegContents{get(handles.domleg_list,<span class="string">'Value'</span>)};
+0043 domhandContents = cellstr(get(handles.domhand_list,<span class="string">'String'</span>));
+0044 out.domhand = domhandContents{get(handles.domhand_list,<span class="string">'Value'</span>)};
+0045 out.height = str2double(get(handles.height_edit,<span class="string">'string'</span>));
+0046 out.weight = str2double(get(handles.weight_edit,<span class="string">'string'</span>));
+0047 out.isStroke = get(handles.strokeCheck,<span class="string">'Value'</span>);
+0048 
+0049 <span class="comment">% -- Data Info</span>
+0050 <span class="keyword">if</span> isfield(handles,<span class="string">'folder_location'</span>)
+0051     out.dir_location = handles.folder_location;
+0052 <span class="keyword">else</span>
+0053     out.dir_location = pwd;
+0054 <span class="keyword">end</span>
+0055 out.basename = get(handles.basefile,<span class="string">'string'</span>);
+0056 out.numofconds = str2double(get(handles.numofconds,<span class="string">'string'</span>));
+0057 out.kinematics = get(handles.kinematic_check,<span class="string">'Value'</span>);
+0058 out.forces = get(handles.force_check,<span class="string">'Value'</span>);
+0059 out.EMGs = get(handles.emg_check,<span class="string">'Value'</span>);
+0060 <span class="keyword">if</span> isfield(handles,<span class="string">'secfolder_location'</span>)
+0061     out.secdir_location = handles.secfolder_location;
+0062 <span class="keyword">else</span>
+0063     out.secdir_location = <span class="string">''</span>; <span class="comment">%Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).</span>
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% -- Trial Info</span>
+0067 Nconds=str2double(get(handles.numofconds,<span class="string">'string'</span>));
+0068 <span class="keyword">if</span> ~isnan(Nconds) &amp;&amp; Nconds&gt;0
+0069     <span class="keyword">for</span> c = 1:Nconds
+0070         condNum = str2double(get(handles.([<span class="string">'condition'</span>,num2str(c)]),<span class="string">'string'</span>));
+0071         out.cond(c) = condNum;
+0072         out.conditionNames{condNum}=get(handles.([<span class="string">'condName'</span>,num2str(c)]),<span class="string">'string'</span>);
+0073         out.conditionDescriptions{condNum}=get(handles.([<span class="string">'description'</span>,num2str(c)]),<span class="string">'string'</span>);
+0074         trialnums = get(handles.([<span class="string">'trialnum'</span>,num2str(c)]),<span class="string">'string'</span>);
+0075         out.trialnums{condNum} = eval([<span class="string">'['</span>,trialnums,<span class="string">']'</span>]);
+0076         <span class="comment">%need to eval for entry of numbers like '1:6' or '7 8 9'</span>
+0077         out.type{condNum} = get(handles.([<span class="string">'type'</span>,num2str(c)]),<span class="string">'string'</span>);
+0078     <span class="keyword">end</span>
+0079 <span class="keyword">else</span>
+0080     out.trialnums={0};
+0081 <span class="keyword">end</span>
+0082 
+0083 trials=cell2mat(out.trialnums);
+0084 out.numoftrials = max(trials);
+0085 
+0086 <span class="comment">% -- EMG data</span>
+0087 <span class="keyword">if</span> isfield(handles,<span class="string">'emg1_1'</span>)
+0088     <span class="keyword">for</span> i=1:16
+0089         aux1=[<span class="string">'emg1_'</span> num2str(i)];
+0090         out.EMGList1(i)={get(handles.(aux1),<span class="string">'string'</span>)};
+0091         aux2=[<span class="string">'emg2_'</span> num2str(i)];
+0092         out.EMGList2(i)={get(handles.(aux2),<span class="string">'string'</span>)};
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">% --  save location</span>
+0097 <span class="keyword">if</span> isfield(handles,<span class="string">'save_folder'</span>)
+0098     out.save_folder = handles.save_folder;
+0099 <span class="keyword">else</span>
+0100     out.save_folder = pwd;
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="comment">% -- Trial Observations</span>
+0104 <span class="keyword">if</span> isfield(handles,<span class="string">'trialObs'</span>)
+0105     out.trialObs=handles.trialObs;
+0106 <span class="keyword">end</span>
+0107 
+0108 <span class="comment">%% Check for errors</span>
+0109 
+0110 <span class="keyword">if</span> ~(nargin&gt;1 &amp;&amp; ignoreErrors)
+0111         
+0112     <span class="comment">% -- Experiment Info</span>
+0113 <span class="comment">%     if strcmp(out.ExpFile,' ')</span>
+0114 <span class="comment">%         h_error=errordlg('Please choose an experiment description','Description Error');</span>
+0115 <span class="comment">%         waitfor(h_error)</span>
+0116 <span class="comment">%         uicontrol(handles.description_edit)</span>
+0117 <span class="comment">%         out.bad=true; close(h); return</span>
+0118 <span class="comment">%     end</span>
+0119     <span class="keyword">if</span> strcmp(out.experimenter,<span class="string">' (Enter name/initials)'</span>)
+0120         h_error=errordlg(<span class="string">'Please enter the name of the person who ran the experiment'</span>,<span class="string">'Experimenter Error'</span>);
+0121         waitfor(h_error)
+0122         uicontrol(handles.name_edit)
+0123         out.bad=true; <span class="keyword">return</span>
+0124     <span class="keyword">end</span>
+0125     <span class="keyword">if</span> isnan(out.day) || out.day&lt;0 || out.day&gt;31
+0126         h_error=errordlg(<span class="string">'Please enter a day between 1 and 31'</span>,<span class="string">'Day Error'</span>);
+0127         waitfor(h_error)
+0128         uicontrol(handles.day_edit)
+0129         out.bad=true; <span class="keyword">return</span>
+0130     <span class="keyword">end</span>
+0131     <span class="keyword">if</span> isnan(out.year) || out.year&lt;2010 || out.year&gt;3000
+0132         h_error=errordlg(<span class="string">'Please enter the year when the experiment took place'</span>,<span class="string">'Year Error'</span>);
+0133         waitfor(h_error)
+0134         uicontrol(handles.year_edit)
+0135         out.bad=true; <span class="keyword">return</span>
+0136     <span class="keyword">end</span>
+0137     
+0138     <span class="comment">% -- Subject Info</span>
+0139     <span class="keyword">if</span> strcmp(out.ID,<span class="string">'Sub#'</span>)
+0140         h_error=errordlg(<span class="string">'Please enter the subject ID'</span>,<span class="string">'ID Error'</span>);
+0141         waitfor(h_error)
+0142         uicontrol(handles.subID_edit)
+0143         out.bad=true; <span class="keyword">return</span>
+0144     <span class="keyword">end</span>
+0145     <span class="keyword">if</span> isnan(out.DOBday) || out.DOBday&lt;0 || out.DOBday&gt;31
+0146         h_error=errordlg(<span class="string">'Please enter a day between 1 and 31'</span>,<span class="string">'Day Error'</span>);
+0147         waitfor(h_error)
+0148         uicontrol(handles.DOBday_edit)
+0149         out.bad=true; <span class="keyword">return</span>
+0150     <span class="keyword">end</span>
+0151     <span class="keyword">if</span> isnan(out.DOByear) || out.DOByear&lt;1900 || out.year&gt;3000 <span class="comment">%seems like an appropriate range...</span>
+0152         h_error=errordlg(<span class="string">'Please enter the year when the subject was born'</span>,<span class="string">'Year Error'</span>);
+0153         waitfor(h_error)
+0154         uicontrol(handles.DOByear_edit)
+0155         out.bad=true; <span class="keyword">return</span>
+0156     <span class="keyword">end</span>
+0157     <span class="keyword">if</span> isnan(out.height) || out.height&lt;0 || out.height&gt;230 <span class="comment">%seems like an appropriate range...</span>
+0158         h_error=errordlg(<span class="string">'Please enter the height of the subject'</span>,<span class="string">'Height Error'</span>);
+0159         waitfor(h_error)
+0160         uicontrol(handles.height_edit)
+0161         out.bad=true; <span class="keyword">return</span>
+0162     <span class="keyword">end</span>
+0163     <span class="keyword">if</span> isnan(out.weight) || out.weight&lt;0 || out.weight&gt;170 <span class="comment">%seems like an appropriate range...</span>
+0164         h_error=errordlg(<span class="string">'Please enter the weight of the subject'</span>,<span class="string">'Weight Error'</span>);
+0165         waitfor(h_error)
+0166         uicontrol(handles.weight_edit)
+0167         out.bad=true; <span class="keyword">return</span>
+0168     <span class="keyword">end</span>
+0169     <span class="keyword">if</span> strcmp(out.domhand,<span class="string">' '</span>)
+0170         h_error=errordlg(<span class="string">'Please select a dominant arm'</span>,<span class="string">'Dominant Arm Error'</span>);
+0171         waitfor(h_error)
+0172         uicontrol(handles.domhand_list)
+0173         out.bad=true; <span class="keyword">return</span>
+0174     <span class="keyword">end</span>
+0175     <span class="keyword">if</span> strcmp(out.domleg,<span class="string">' '</span>)
+0176         h_error=errordlg(<span class="string">'Please select a dominant leg'</span>,<span class="string">'Dominant Leg Error'</span>);
+0177         waitfor(h_error)
+0178         uicontrol(handles.domleg_list)
+0179         out.bad=true; <span class="keyword">return</span>
+0180     <span class="keyword">end</span>
+0181     <span class="keyword">if</span> out.isStroke==1
+0182         aux=get(handles.popupAffected,<span class="string">'String'</span>);
+0183         out.affectedValue=get(handles.popupAffected,<span class="string">'Value'</span>);
+0184         out.affectedSide=aux{out.affectedValue};
+0185     <span class="keyword">end</span>
+0186     
+0187     <span class="comment">% -- Data Info</span>
+0188     <span class="keyword">if</span> ~exist(out.dir_location,<span class="string">'dir'</span>)
+0189         h_error=errordlg(<span class="string">'Please enter a folder that exists'</span>,<span class="string">'Directory Error'</span>);
+0190         waitfor(h_error)
+0191         uicontrol(handles.c3dlocation)
+0192         out.bad=true; <span class="keyword">return</span>
+0193     <span class="keyword">end</span>
+0194     <span class="keyword">if</span> ~isempty(out.secdir_location) &amp;&amp; ~exist(out.secdir_location,<span class="string">'dir'</span>)
+0195         h_error=errordlg(<span class="string">'Please enter a folder that exists'</span>,<span class="string">'Directory Error'</span>);
+0196         waitfor(h_error)
+0197         uicontrol(handles.secfileloc)
+0198         out.bad=1;
+0199         <span class="keyword">return</span>
+0200     <span class="keyword">end</span>
+0201     
+0202     <span class="comment">% -- Trial Info</span>
+0203     <span class="keyword">for</span> t=trials
+0204         <span class="keyword">if</span> t&lt;10
+0205             filename = [out.dir_location filesep out.basename  <span class="string">'0'</span> num2str(t) <span class="string">'.c3d'</span>];
+0206         <span class="keyword">else</span>
+0207             filename = [out.dir_location filesep out.basename num2str(t) <span class="string">'.c3d'</span>];
+0208         <span class="keyword">end</span>
+0209         <span class="keyword">if</span> ~exist(filename,<span class="string">'file'</span>)
+0210             h_error=errordlg([<span class="string">'The file '</span>,filename,<span class="string">' does not exist.'</span>],<span class="string">'File Name Error'</span>);
+0211             waitfor(h_error)
+0212             uicontrol(handles.basefile)
+0213             out.bad=true; <span class="keyword">return</span>
+0214         <span class="keyword">end</span>
+0215 <span class="comment">%         %Check marker labels are good in .c3d files</span>
+0216 <span class="comment">%         H=btkReadAcquisition(filename);</span>
+0217 <span class="comment">%         markerLabels=fieldnames(btkGetMarkers(H));</span>
+0218 <span class="comment">%         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};</span>
+0219 <span class="comment">%         labelPresent=false(1,length(mustHaveLabels));</span>
+0220 <span class="comment">%         for i=1:length(markerLabels)</span>
+0221 <span class="comment">%             label=findLabel(markerLabels{i});</span>
+0222 <span class="comment">%             labelPresent=labelPresent+ismember(mustHaveLabels,label);</span>
+0223 <span class="comment">%         end</span>
+0224 <span class="comment">%         if any(~labelPresent)</span>
+0225 <span class="comment">%             missingLabels=find(~labelPresent);</span>
+0226 <span class="comment">%             str='';</span>
+0227 <span class="comment">%             for j=missingLabels</span>
+0228 <span class="comment">%                 str=[str ', ' mustHaveLabels{j}];</span>
+0229 <span class="comment">%             end</span>
+0230 <span class="comment">%             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');</span>
+0231 <span class="comment">%             waitfor(h_error)</span>
+0232 <span class="comment">%             uicontrol(handles.basefile)</span>
+0233 <span class="comment">%             out.bad=true; return</span>
+0234 <span class="comment">%         end</span>
+0235         <span class="keyword">if</span> ~isempty(out.secdir_location)
+0236             <span class="keyword">if</span> t&lt;10
+0237                 filename2 = [out.secdir_location filesep out.basename  <span class="string">'0'</span> num2str(t) <span class="string">'.c3d'</span>];
+0238             <span class="keyword">else</span>
+0239                 filename2 = [out.secdir_location filesep out.basename num2str(t) <span class="string">'.c3d'</span>];
+0240             <span class="keyword">end</span>
+0241             <span class="keyword">if</span> ~exist(filename2,<span class="string">'file'</span>)
+0242                 h_error=errordlg([<span class="string">'The file '</span>,filename2,<span class="string">' does not exist.'</span>],<span class="string">'File Name Error'</span>);
+0243                 waitfor(h_error)
+0244                 uicontrol(handles.basefile)
+0245                 out.bad=true; <span class="keyword">return</span>
+0246             <span class="keyword">end</span>
+0247         <span class="keyword">end</span>
+0248    <span class="keyword">end</span>
+0249 <span class="comment">%</span>
+0250 <span class="comment">%     % -- EMG data</span>
+0251 <span class="comment">%     if isfield(handles,'emg1_1')</span>
+0252 <span class="comment">%         allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};</span>
+0253 <span class="comment">%         %Check that all muscles are allowed</span>
+0254 <span class="comment">%</span>
+0255 <span class="comment">%         %Check for sync signals</span>
+0256 <span class="comment">%     end</span>
+0257     
+0258     <span class="comment">% --  save location</span>
+0259     <span class="keyword">if</span> ~exist(out.save_folder,<span class="string">'dir'</span>)
+0260         h_error=errordlg(<span class="string">'Please enter a save folder that exists'</span>,<span class="string">'Directory Error'</span>);
+0261         waitfor(h_error)
+0262         uicontrol(handles.saveloc_edit)
+0263         out.bad=true; 
+0264     <span class="keyword">end</span>       
+0265 <span class="keyword">end</span>
+0266 
+0267 
+0268 
+0269 
+0270 
+0271 
+0272 
+0273</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

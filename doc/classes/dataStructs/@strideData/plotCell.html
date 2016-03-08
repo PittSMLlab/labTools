@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotCell</title>
+  <meta name="keywords" content="plotCell">
+  <meta name="description" content="CHANGES FROM PREVIOUS VERSION:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@strideData</a> &gt; plotCell.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@strideData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotCell
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>CHANGES FROM PREVIOUS VERSION:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [plotHandles]=plotCell(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents) %Plot cellarray of stride data </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">CHANGES FROM PREVIOUS VERSION:
+Different subplots for every element of the field (e.g. each muscle)
+No longer supports sync_norm in here. sync_norm needs to be implemented as
+a class function, that returns strided &amp; synchronized data from strided &amp;
+non-sync'd data.
+offset parameter no longer plays a role
+Length parameter is now calculated to be automatically the smaller power
+of two that is still larger than all strides (N is no longer needed.)
+No longer outputting ampCoefs or offset.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="strideData.html" class="code" title="">strideData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [plotHandles]=plotCell(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents) </a><span class="comment">%Plot cellarray of stride data</span>
+0002 <span class="comment">%CHANGES FROM PREVIOUS VERSION:</span>
+0003 <span class="comment">%Different subplots for every element of the field (e.g. each muscle)</span>
+0004 <span class="comment">%No longer supports sync_norm in here. sync_norm needs to be implemented as</span>
+0005 <span class="comment">%a class function, that returns strided &amp; synchronized data from strided &amp;</span>
+0006 <span class="comment">%non-sync'd data.</span>
+0007 <span class="comment">%offset parameter no longer plays a role</span>
+0008 <span class="comment">%Length parameter is now calculated to be automatically the smaller power</span>
+0009 <span class="comment">%of two that is still larger than all strides (N is no longer needed.)</span>
+0010 <span class="comment">%No longer outputting ampCoefs or offset.</span>
+0011 
+0012 <span class="comment">%Get a sample field:</span>
+0013 eval([<span class="string">'justTheField{1}=strides{1}.'</span> field <span class="string">';'</span>]);
+0014 <span class="keyword">if</span> nargin&lt;7 || isempty(plotEvents)
+0015     plotEvents=false;
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;6 || isempty(color)
+0018     color=[.7,.7,.7];
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">%% First determine how many things are to be plotted &amp; get the data.</span>
+0022 
+0023 <span class="comment">%Find the requested data:3 options. If reqElements is a cell, the length of the cell. If it is empty or not given, then all</span>
+0024 <span class="comment">%the elements, finally if reqElement is 'L' or 'R', just the element labels</span>
+0025 <span class="comment">%that start with that.</span>
+0026 <span class="keyword">if</span> nargin&lt;5 || isempty(reqElements) <span class="comment">%No requested elements, plotting all.</span>
+0027     relIdx=1:size(justTheField{1}.Data,2);
+0028     relLabels=justTheField{1}.labels;
+0029 <span class="keyword">elseif</span> isa(reqElements,<span class="string">'cell'</span>) &amp;&amp; isa(reqElements{1},<span class="string">'char'</span>) <span class="comment">%List of requested labels given/</span>
+0030     <span class="keyword">for</span> i=1:length(reqElements)
+0031         [flag(i),labelIdx(i)]=justTheField{1}.isaLabel(reqElements{i});
+0032     <span class="keyword">end</span>
+0033     relIdx=labelIdx(flag==1); <span class="comment">%In case some labels don't exist</span>
+0034     relLabels=reqElements(flag==1);
+0035 <span class="keyword">elseif</span> isa(reqElements,<span class="string">'char'</span>) &amp;&amp; length(reqElements)==1 <span class="comment">%Either 'L' or 'R', plotting single side.</span>
+0036     labels=justTheField{1}.labels;
+0037     relIdx=[];
+0038     relLabels={};
+0039     <span class="keyword">for</span> i=1:length(labels)
+0040         <span class="keyword">if</span> strcmp(labels{i}(1),reqElements)
+0041             relIdx(end+1)=i;
+0042             relLabels{end+1}=labels{i};
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 Nplots=length(relIdx);
+0047 
+0048 <span class="comment">%Find length of all strides, and get data corresponding to the relevant</span>
+0049 <span class="comment">%labels.</span>
+0050 <span class="keyword">for</span> stride=1:length(strides)
+0051    eval([<span class="string">'relData{stride}=strides{stride}.'</span> field <span class="string">'.getDataAsTS(relLabels);'</span>]);
+0052    <span class="keyword">if</span> plotEvents
+0053         events{stride}=strides{stride}.gaitEvents.getDataAsTS({<span class="string">'RHS'</span>,<span class="string">'LHS'</span>,<span class="string">'RTO'</span>,<span class="string">'LTO'</span>});
+0054    <span class="keyword">end</span>
+0055    strideLength(stride)=size(relData{stride}.Data,1);
+0056 <span class="keyword">end</span>
+0057 N=2^ceil(log2(max(strideLength)));
+0058 
+0059 <span class="comment">%Time normalize and put everything in a matrix</span>
+0060 <span class="keyword">for</span> stride=1:length(strides)
+0061    allDataAsMatrix(:,:,stride)=relData{stride}.resampleN(N).getDataAsVector(relLabels);
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">%% Second, check if the plotHandles given (if any) are enough for those plots, otherwise get adequate plotHandles</span>
+0065 <span class="keyword">if</span> nargin&lt;4 || length(plotHandles)~=Nplots
+0066     <span class="keyword">if</span> Nplots&gt;16
+0067         b=4;
+0068         a=ceil(Nplots/b);
+0069     <span class="keyword">else</span>
+0070         b=2;
+0071         a=ceil(Nplots/b);
+0072     <span class="keyword">end</span>
+0073     <span class="keyword">for</span> i=1:Nplots
+0074         plotHandles(i)=subplot(a,b,i);
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077 
+0078 <span class="comment">%% Third, do the plots &amp; link axes in x. Also plot avg.</span>
+0079 <span class="keyword">for</span> i=1:Nplots
+0080    subplot(plotHandles(i))
+0081    hold on
+0082    plot(repmat([0:N-1]'/N,1,length(strides)),squeeze(allDataAsMatrix(:,i,:)),<span class="string">'Color'</span>,color);
+0083    <span class="keyword">if</span> plotEvents
+0084        <span class="comment">%To Do</span>
+0085    <span class="keyword">end</span>
+0086    plot([0:N-1]'/N,mean(allDataAsMatrix(:,i,:),3),<span class="string">'k--'</span>);
+0087    ylabel(relLabels{i})
+0088    xlabel(<span class="string">'Stride (%)'</span>)
+0089    hold off
+0090    <span class="keyword">if</span> ampNorm
+0091        axis tight
+0092    <span class="keyword">else</span>
+0093        axis([0 1 min(allDataAsMatrix(:)) max(allDataAsMatrix(:))])
+0094    <span class="keyword">end</span>
+0095 <span class="keyword">end</span>
+0096 linkaxes(plotHandles,<span class="string">'x'</span>)</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getStanceFromToeAndHeel</title>
+  <meta name="keywords" content="getStanceFromToeAndHeel">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getStanceFromToeAndHeel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getStanceFromToeAndHeel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getEventsFromToeAndHeel.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample)">getEventsFromToeAndHeel</a>	% Get stance phases</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [stance] = getStance(ankKin, toeKin, fsample)</a></li><li><a href="#_sub2" class="code">function [stance] = getStance2(Rheel, Rtoe, fsample)</a></li><li><a href="#_sub3" class="code">function [stance] = getStance3(ankKin, toeKin, fsample)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)</a>
+0002 
+0003 [stance3] = <a href="#_sub3" class="code" title="subfunction [stance] = getStance3(ankKin, toeKin, fsample)">getStance3</a>(ankKin, toeKin, fsample); <span class="comment">%Acceleration thresholding</span>
+0004 <span class="comment">%[stance2] = getStance2(ankKin, toeKin, fsample); %Hough + thresholding</span>
+0005 [stance1] = <a href="#_sub1" class="code" title="subfunction [stance] = getStance(ankKin, toeKin, fsample)">getStance</a>(ankKin, toeKin, fsample); <span class="comment">%Velocity thresholding</span>
+0006 <span class="comment">%stance1=stance2;</span>
+0007 <span class="comment">%stance3=stance2;</span>
+0008 
+0009 <span class="comment">%stance =  (stance1 &amp; stance2) | (stance1 &amp; stance3) | (stance3 &amp; stance2);</span>
+0010 stance = stance1;
+0011 stance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(stance,fsample,0.2); <span class="comment">%Not allowing stance phases of less than 200ms</span>
+0012 
+0013 <span class="comment">%IDEA: instead of using pure (classical) logic, use fuzzy logic, with a</span>
+0014 <span class="comment">%smoothing kernel, so that all samples in a neighboorhood get a say on the</span>
+0015 <span class="comment">%value of a particular sample.</span>
+0016 <span class="comment">%This might be particularly helpful to get rid of quantization noise</span>
+0017 <span class="comment">%(kernel with support of 3 samples: the central one, and one to each side),</span>
+0018 <span class="comment">%and also with some other types of noise (NOT SURE: it might make it more</span>
+0019 <span class="comment">%sensible to big errors in only one of the estimations)</span>
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="comment">%% Method 1: try to find full stance points and threshold relative speed to that</span>
+0023 <a name="_sub1" href="#_subfunctions" class="code">function [stance] = getStance(ankKin, toeKin, fsample)</a>
+0024 <span class="comment">%This function returns an estimation of which samples of a given kinematic</span>
+0025 <span class="comment">%trajectory for ankle and toe markers correspond to the stance phase</span>
+0026 <span class="comment">%In order to do so, it estimates the phase in which the ankle and toe</span>
+0027 <span class="comment">%markers are not moving with respect to each other (full stance) and</span>
+0028 <span class="comment">%calculates foot speed. By comparing this speed with toe and ankle speed,</span>
+0029 <span class="comment">%it is possible to assert whether the ankle or toe are in contact with the</span>
+0030 <span class="comment">%ground</span>
+0031 
+0032 <span class="comment">%% STEP 1: calculate speed</span>
+0033 
+0034 <span class="comment">%va(:,1)=derive(ankKin(:,1),fsample);</span>
+0035 <span class="comment">% va(:,2)=derive(ankKin(:,2),fsample);</span>
+0036 <span class="comment">% vt(:,1)=derive(toeKin(:,1),fsample);</span>
+0037 <span class="comment">% vt(:,2)=derive(toeKin(:,2),fsample);</span>
+0038 va=fsample*diff(ankKin);
+0039 va(end+1,:)=va(<span class="keyword">end</span>,:);
+0040 vt=fsample*diff(toeKin);
+0041 vt(end+1,:)=vt(<span class="keyword">end</span>,:);
+0042 fcut=.5*10/fsample;
+0043 va(isnan(va))=10000;
+0044 vt(isnan(vt))=10000;
+0045 vaf=idealLPF(va,fcut);
+0046 vtf=idealLPF(vt,fcut);
+0047 
+0048 
+0049 <span class="comment">%% STEP 2: get core stance (full feet on ground) speed</span>
+0050 relV=vaf-vtf; <span class="comment">%Relative speed in m/s</span>
+0051 modRelV=sqrt(sum(relV.^2,2)); <span class="comment">%Module of relative speed</span>
+0052 coreStance=(modRelV&lt;150); <span class="comment">%Find time indexes that are candidates for core stance</span>
+0053 coreStance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(coreStance,fsample,0.05);
+0054 
+0055 stanceSpeed=mode(10*round(va(coreStance,:)/10)); <span class="comment">%Most common stance speed, rounded to closest cm/s</span>
+0056 
+0057 
+0058 <span class="comment">%% STEP 3: By thresholding difference with ground speed, get toe and ank stance candidates (sine qua non condition)</span>
+0059 ankV=va-ones(size(va,1),1)*stanceSpeed; <span class="comment">%Relative speed to stance</span>
+0060 toeV=vt-ones(size(vt,1),1)*stanceSpeed; <span class="comment">%Relative speed to stance</span>
+0061 
+0062 modAnkV=sqrt(sum(ankV.^2,2));
+0063 modToeV=sqrt(sum(toeV.^2,2));
+0064 
+0065 <span class="comment">%% STEP 4: Get stance from the ank stance OR toe stance</span>
+0066 velThreshA=.8*median(modAnkV); <span class="comment">%500 is a good value</span>
+0067 velThreshA=500;
+0068 velThreshT=.8*median(modToeV); <span class="comment">%250 is a good value</span>
+0069 velThreshT=250;
+0070 ankStance=modAnkV&lt;velThreshA;
+0071 toeStance=modToeV&lt;velThreshT;
+0072 
+0073 stance  = ankStance | toeStance;
+0074 
+0075 
+0076 
+0077 <span class="comment">%% STEP N: Eliminate stance &amp; swing phases shorter than 200 ms</span>
+0078 stance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(stance,fsample,0.2);
+0079 <span class="comment">%</span>
+0080 <span class="comment">% figure</span>
+0081 <span class="comment">% hold on</span>
+0082 <span class="comment">% %plot(aa)</span>
+0083 <span class="comment">% %plot(at)</span>
+0084 <span class="comment">% plot(modAnkV,'m')</span>
+0085 <span class="comment">% %plot(modAnkAf,'b')</span>
+0086 <span class="comment">% plot(modToeV,'r')</span>
+0087 <span class="comment">% %plot(modToeAf,'k')</span>
+0088 <span class="comment">% plot(mean(modAnkV)*double(stance),'g')</span>
+0089 <span class="comment">% hold off</span>
+0090 
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">%% Method 2: find full stance points and threshold relative distance</span>
+0094 <a name="_sub2" href="#_subfunctions" class="code">function [stance] = getStance2(Rheel, Rtoe, fsample)</a>
+0095 <span class="comment">%Get stance from plane floor + thresholding</span>
+0096 <span class="comment">%getEvents Extracts heel-strike/toe-off events from the relative position</span>
+0097 <span class="comment">%of the heel marker to the hip marker</span>
+0098 
+0099 <span class="comment">%INPUTS:</span>
+0100 <span class="comment">%Lheel,Rheel,Lhip,Rhip: 3xN matrices with 3D marker location</span>
+0101 <span class="comment">%fsample: sampling frequency</span>
+0102 
+0103 
+0104 <span class="comment">% Find floor plane</span>
+0105 backwards=false; <span class="comment">%This should go, stance detection should not be direction-dependent</span>
+0106 thetas=[-90:.2:-70,70:.2:89.8];
+0107 rho_res=.5;
+0108 <span class="keyword">for</span> j=1:2
+0109     flag=false;
+0110     <span class="comment">%Contact start &amp; end detection</span>
+0111 clear raux aux aux2  RHO THETA H A th r m n
+0112     <span class="keyword">switch</span> j
+0113         <span class="keyword">case</span> 1
+0114             relevantKin=medfilt1(Rheel); <span class="comment">%Non-strict Filtering to kill far outliers</span>
+0115             tol=4; <span class="comment">%Threshold to surely catalogue a point as 'on floor'</span>
+0116             tol2=8; <span class="comment">%Minimum distance to catalogue as 'toe-off' or 'heel-strike'</span>
+0117             N=3;
+0118             N2=1;
+0119         <span class="keyword">case</span> 2
+0120             relevantKin=medfilt1(Rtoe);
+0121             tol=4;
+0122             tol2=10;
+0123             N=15;
+0124             N2=1;
+0125     <span class="keyword">end</span>
+0126     
+0127     relevantKin(abs(relevantKin(:,1)-median(relevantKin(:,1)))&gt;5*std(relevantKin(:,1)),1)=0;
+0128     relevantKin(abs(relevantKin(:,2)-median(relevantKin(:,2)))&gt;5*std(relevantKin(:,2)),2)=0;
+0129     raux=round(relevantKin);
+0130     
+0131     <span class="comment">%In y: limit values to a 500mm range</span>
+0132     <span class="comment">%In x: limit values to a 2000mm range</span>
+0133     <span class="comment">%Throw everything outside those limits</span>
+0134     
+0135 
+0136 <span class="comment">%A=zeros(max(raux(:,1)-min(raux(:,1))+1),(max(raux(:,2)-min(raux(:,2))+1)));</span>
+0137 <span class="comment">%for i=1:length(raux(:,1))</span>
+0138 <span class="comment">%A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)=A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)+1;</span>
+0139 <span class="comment">%end</span>
+0140 A=sparse(raux(:,1)-min(raux(:,1))+1,raux(:,2)-min(raux(:,2))+1,1);
+0141 <span class="comment">%size(A)</span>
+0142 <span class="keyword">try</span>
+0143     [H, THETA, RHO] = hough(full(A)',<span class="string">'RhoResolution'</span>,rho_res,<span class="string">'Theta'</span>,thetas);
+0144 <span class="keyword">catch</span>
+0145     disp(<span class="string">'Caught exception when computing Hough transform'</span>);
+0146 <span class="keyword">end</span>
+0147 [~,ind] = max(H(:));
+0148 [m,n] = ind2sub(size(H),ind);
+0149 th=-THETA(n)/90 *pi/2;
+0150 r=RHO(m);
+0151 dist2Floor=(relevantKin(:,1)-min(relevantKin(:,1))+1)*cos(th)-(relevantKin(:,2)-min(relevantKin(:,2))+1)*sin(th)-r+1; <span class="comment">%First guess at floor</span>
+0152 
+0153 <span class="comment">%Find all points on a distance less than 1mm to the line (there ought to be</span>
+0154 <span class="comment">%some on every step, on normal walk)</span>
+0155 
+0156 aux1=relevantKin(:,1)*sin(th)+relevantKin(:,2)*cos(th);<span class="comment">%projection over the floor</span>
+0157 stance=(abs(dist2Floor)&lt;tol)&amp;([0;diff(aux1)]&lt;0); <span class="comment">%Points on the floor for sure</span>
+0158 
+0159 <span class="keyword">if</span> sum(stance)&lt;3
+0160     <span class="comment">%Probable backwards trial</span>
+0161     disp(<span class="string">'Warning: probable backwards trial'</span>)
+0162     flag=true;
+0163     stance=(abs(dist2Floor)&lt;tol)&amp;([0;diff(aux1)]&gt;0); <span class="comment">%Points on the floor for sure</span>
+0164 <span class="keyword">end</span>
+0165 CoM_x=mean(relevantKin(stance,1));
+0166 CoM_y=mean(relevantKin(stance,2));
+0167 M=pca(relevantKin(stance,1:2));
+0168 <span class="keyword">try</span>
+0169     dist2Floor=(relevantKin(:,1)-CoM_x)*M(1,2)+(relevantKin(:,2)-CoM_y)*M(2,2); <span class="comment">%Corrected guess at floor</span>
+0170 <span class="keyword">catch</span>
+0171     disp(<span class="string">'Caught exception when computing distance to floor.'</span>);
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="keyword">if</span> (~backwards)&amp;&amp;(~flag)
+0175     swing=([0;diff(aux1)]&gt;0); <span class="comment">%Elments surely off the floor</span>
+0176 <span class="keyword">else</span>
+0177     swing=([0;diff(aux1)]&lt;0);
+0178 <span class="keyword">end</span>
+0179 <span class="comment">%Eliminate spurious</span>
+0180 swing=conv(double(swing),ones(2*N+1,1),<span class="string">'same'</span>)==2*N+1; <span class="comment">%Erode aux2 %Elements that have at least one off the floor element on the 'off the floor' side</span>
+0181 swing=conv(double(swing),ones(2*N+1,1),<span class="string">'same'</span>)&gt;=1; <span class="comment">%Dilate aux2 %Elements that have at least one off the floor elements N elements to each side</span>
+0182 
+0183 <span class="comment">%%</span>
+0184 change=true;
+0185 <span class="keyword">while</span> change
+0186     stance3=conv(double(stance),ones(3,1),<span class="string">'same'</span>)&gt;=1; <span class="comment">%Dilate aux</span>
+0187     stance4=stance3&amp;~swing; <span class="comment">%Make sure it doesn't reach the 'off the floor' threshold</span>
+0188     thresh=max([3*median(abs(dist2Floor(stance))),tol2]); <span class="comment">%I think the median is too big for any consecutive steps</span>
+0189     stance5=(abs(dist2Floor)&lt;thresh);
+0190     stance4=stance4&amp;stance5; <span class="comment">%Erase new element if its twice above the median (or at least 5mm)</span>
+0191     <span class="keyword">if</span> any(stance4~=stance)
+0192         stance=stance4;
+0193         CoM_x=mean(relevantKin(stance,1));
+0194         CoM_y=mean(relevantKin(stance,2));
+0195         M=pca(relevantKin(stance,1:2));
+0196         <span class="keyword">try</span>
+0197         dist2Floor=(relevantKin(:,1)-CoM_x)*M(1,2)+(relevantKin(:,2)-CoM_y)*M(2,2); <span class="comment">%Corrected guess at floor</span>
+0198         <span class="keyword">catch</span>
+0199             disp(<span class="string">'Caught exception when computing distance to floor.'</span>);
+0200         <span class="keyword">end</span>
+0201     <span class="keyword">else</span>
+0202         change=false;
+0203         stance=conv(double(stance4),ones(2*N2+1,1),<span class="string">'same'</span>)==2*N2+1; <span class="comment">%Erode aux, leaves a N2 element distance</span>
+0204     <span class="keyword">end</span>
+0205 <span class="keyword">end</span>
+0206 
+0207 <span class="comment">%Assign corresponding stance</span>
+0208 <span class="keyword">switch</span> j 
+0209     <span class="keyword">case</span> 1
+0210         stanceAnk=stance;
+0211     <span class="keyword">case</span> 2
+0212         stanceToe=stance;
+0213 <span class="keyword">end</span>
+0214 
+0215 <span class="keyword">end</span>
+0216 
+0217 <span class="comment">% Stance is when either toe or ank is in the floor</span>
+0218 stance = stanceAnk | stanceToe;
+0219 
+0220 <span class="comment">%Delete short stance phases</span>
+0221 stance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(stance,fsample,0.25);
+0222 <span class="keyword">end</span>
+0223 
+0224 <span class="comment">%% Method 3: get stance from marker acceleration (during stance, acc=0)</span>
+0225 
+0226 <a name="_sub3" href="#_subfunctions" class="code">function [stance] = getStance3(ankKin, toeKin, fsample)</a>
+0227 <span class="comment">%Get stance from acceleration</span>
+0228 
+0229 <span class="comment">%% STEP 1: low pass filter &amp; calculate speed</span>
+0230 
+0231 <span class="comment">%Get vels:</span>
+0232 <span class="comment">% va(:,1)=derive(ankKin(:,1),fsample); %fore-aft axis</span>
+0233 <span class="comment">% va(:,2)=derive(ankKin(:,2),fsample); %up-down axis</span>
+0234 <span class="comment">% vt(:,1)=derive(toeKin(:,1),fsample);</span>
+0235 <span class="comment">% vt(:,2)=derive(toeKin(:,2),fsample);</span>
+0236 <span class="comment">% %Get acc:</span>
+0237 <span class="comment">% aa(:,1)=derive(va(:,1),fsample);</span>
+0238 <span class="comment">% aa(:,2)=derive(va(:,2),fsample);</span>
+0239 <span class="comment">% at(:,1)=derive(vt(:,1),fsample);</span>
+0240 <span class="comment">% at(:,2)=derive(vt(:,2),fsample);</span>
+0241 aa=fsample^2*diff(diff(ankKin));
+0242 aa=[aa(1,:);aa;aa(<span class="keyword">end</span>,:)];
+0243 at=fsample^2*diff(diff(toeKin));
+0244 at=[at(1,:);at;at(<span class="keyword">end</span>,:)];
+0245 aa(isnan(aa))=100000;
+0246 at(isnan(at))=100000;
+0247 
+0248 <span class="comment">%% STEP 3: By thresholding difference with ground speed, get toe and ank stance candidates (sine qua non condition)</span>
+0249 fcut=.5*30/fsample;
+0250 aaf(:,1)=idealLPF(aa(:,1),fcut);
+0251 aaf(:,2)=idealLPF(aa(:,2),fcut);
+0252 atf(:,1)=idealLPF(at(:,1),fcut);
+0253 atf(:,2)=idealLPF(at(:,2),fcut);
+0254 modAnkA=sqrt(sum(aaf.^2,2));
+0255 modToeA=sqrt(sum(atf.^2,2));
+0256 
+0257 <span class="comment">%filter=hann(50);</span>
+0258 <span class="comment">%modAnkAf=conv(modAnkA,filter,'same')/sum(filter);</span>
+0259 <span class="comment">%modToeAf=conv(modToeA,filter,'same')/sum(filter);</span>
+0260 <span class="comment">%toeThresh=.1*mean(modToeA(10:end-10));</span>
+0261 <span class="comment">%ankThresh=.1*mean(modAnkA(10:end-10));</span>
+0262 toeThresh=5000;<span class="comment">%m/s^2</span>
+0263 ankThresh=5000;<span class="comment">%m/s^2</span>
+0264 
+0265 
+0266 <span class="comment">%% STEP 4: Get stance from the ank stance OR toe stance</span>
+0267 ankStance=modAnkA&lt;ankThresh;
+0268 toeStance=modToeA&lt;toeThresh;
+0269 
+0270 <span class="comment">%ankStance = deleteShortPhases(ankStance,fsample,0.25);</span>
+0271 <span class="comment">%toeStance = deleteShortPhases(toeStance,fsample,0.25);</span>
+0272 stance  = ankStance | toeStance;
+0273 
+0274 
+0275 
+0276 <span class="comment">%% STEP N: Eliminate stance &amp; swing phases shorter than 200 ms</span>
+0277 stance = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(stance,fsample,0.2);
+0278 
+0279 
+0280 <span class="comment">% figure</span>
+0281 <span class="comment">% hold on</span>
+0282 <span class="comment">% %plot(aa)</span>
+0283 <span class="comment">% %plot(at)</span>
+0284 <span class="comment">% plot(modAnkA,'m')</span>
+0285 <span class="comment">% %plot(modAnkAf,'b')</span>
+0286 <span class="comment">% plot(modToeA,'r')</span>
+0287 <span class="comment">% %plot(modToeAf,'k')</span>
+0288 <span class="comment">% plot(.5*max(modAnkA)*double(stance),'g')</span>
+0289 <span class="comment">% hold off</span>
+0290 
+0291 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

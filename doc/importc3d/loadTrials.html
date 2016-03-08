@@ -1,0 +1,622 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadTrials</title>
+  <meta name="keywords" content="loadTrials">
+  <meta name="description" content="loadTrials  generates rawTrialData instances for each trial">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; loadTrials.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>loadTrials
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>loadTrials  generates rawTrialData instances for each trial</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function trials=loadTrials(trialMD,fileList,secFileList,info) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">loadTrials  generates rawTrialData instances for each trial
+
+INPUTS:
+trialMD: cell array of trailMetaData objects where the cell index corresponds
+to the trial number
+fileList: list of .c3d files containing kinematic and force data for a given experiment
+secFileList: list of files containing EMG data for a given experiment
+info: structured array output from GetInfoGUI
+
+OUTPUT:
+trials: cell array of rawTrialData objects where the cell index corresponds
+to the trial number
+
+See also: rawTrialData</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>	</li><li><a href="findLabel.html" class="code" title="function markerLabel=findLabel(viconLabel)">findLabel</a>	function to deal with different marker labels from vicon. For the code to</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function trials=loadTrials(trialMD,fileList,secFileList,info)</a>
+0002 <span class="comment">%loadTrials  generates rawTrialData instances for each trial</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%INPUTS:</span>
+0005 <span class="comment">%trialMD: cell array of trailMetaData objects where the cell index corresponds</span>
+0006 <span class="comment">%to the trial number</span>
+0007 <span class="comment">%fileList: list of .c3d files containing kinematic and force data for a given experiment</span>
+0008 <span class="comment">%secFileList: list of files containing EMG data for a given experiment</span>
+0009 <span class="comment">%info: structured array output from GetInfoGUI</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%OUTPUT:</span>
+0012 <span class="comment">%trials: cell array of rawTrialData objects where the cell index corresponds</span>
+0013 <span class="comment">%to the trial number</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%See also: rawTrialData</span>
+0016 
+0017 <span class="comment">%orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)</span>
+0018 orientation=orientationInfo([0,0,0],<span class="string">'y'</span>,<span class="string">'x'</span>,<span class="string">'z'</span>,1,1,1); <span class="comment">%check signs! For use in biomechanics calculations</span>
+0019 
+0020 <span class="comment">%Create list of expected/accepted muscles:</span>
+0021 orderedMuscleList={<span class="string">'PER'</span>,<span class="string">'TA'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'LG'</span>,<span class="string">'RF'</span>,<span class="string">'VM'</span>,<span class="string">'VL'</span>,<span class="string">'BF'</span>,<span class="string">'SEMB'</span>,<span class="string">'SEMT'</span>,<span class="string">'ADM'</span>,<span class="string">'GLU'</span>,<span class="string">'TFL'</span>,<span class="string">'ILP'</span>,<span class="string">'SAR'</span>,<span class="string">'HIP'</span>}; <span class="comment">%This is the desired order</span>
+0022 orderedEMGList={};
+0023 <span class="keyword">for</span> j=1:length(orderedMuscleList)
+0024     orderedEMGList{end+1}=[<span class="string">'R'</span> orderedMuscleList{j}];
+0025     orderedEMGList{end+1}=[<span class="string">'L'</span> orderedMuscleList{j}];
+0026 <span class="keyword">end</span>
+0027         
+0028 <span class="keyword">for</span> t=cell2mat(info.trialnums) <span class="comment">%loop through each trial</span>
+0029     <span class="comment">%Import data from c3d, uses external toolbox BTK</span>
+0030     H=btkReadAcquisition([fileList{t} <span class="string">'.c3d'</span>]);
+0031     [analogs,analogsInfo]=btkGetAnalogs(H);
+0032     secondFile=false;
+0033     <span class="keyword">if</span> ~isempty(secFileList{t})
+0034         H2=btkReadAcquisition([secFileList{t} <span class="string">'.c3d'</span>]);
+0035         [analogs2,analogsInfo2]=btkGetAnalogs(H2);
+0036         secondFile=true;
+0037     <span class="keyword">end</span>    
+0038     
+0039     <span class="comment">%% GRFData</span>
+0040     <span class="keyword">if</span> info.forces <span class="comment">%check to see if there are GRF forces in the trial</span>
+0041         showWarning = false;<span class="comment">%must define or else error is thrown when otherwise case is skipped</span>
+0042         relData=[];
+0043         forceLabels ={};
+0044         units={};
+0045         fieldList=fields(analogs);
+0046         <span class="keyword">for</span> j=1:length(fieldList);<span class="comment">%parse analog channels by force, moment, cop</span>
+0047             <span class="comment">%if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only</span>
+0048             <span class="keyword">if</span> strcmp(fieldList{j}(1),<span class="string">'F'</span>) || strcmp(fieldList{j}(1),<span class="string">'M'</span>) || ~isempty(strfind(fieldList{j},<span class="string">'Force'</span>)) || ~isempty(strfind(fieldList{j},<span class="string">'Moment'</span>))
+0049                 <span class="keyword">if</span> ~strcmpi(<span class="string">'x'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'y'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'z'</span>,fieldList{j}(end-1))
+0050                     warning([<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel '</span> fieldList{j}])
+0051                 <span class="keyword">else</span>
+0052                 <span class="keyword">switch</span> fieldList{j}(end)<span class="comment">%parse devices</span>
+0053                     <span class="keyword">case</span> <span class="string">'1'</span> <span class="comment">%Forces/moments ending in '1' area assumed to be of left treadmill belt</span>
+0054                         forceLabels{end+1} = [<span class="string">'L'</span>,fieldList{j}(end-2:end-1)];
+0055                         units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0056                         relData=[relData,analogs.(fieldList{j})];
+0057                     <span class="keyword">case</span> <span class="string">'2'</span> <span class="comment">%Forces/moments ending in '2' area assumed to be of right treadmill belt</span>
+0058                         forceLabels{end+1} = [<span class="string">'R'</span>,fieldList{j}(end-2:end-1)];
+0059                         units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0060                         relData=[relData,analogs.(fieldList{j})];
+0061                     <span class="keyword">case</span> <span class="string">'4'</span><span class="comment">%Forces/moments ending in '4' area assumed to be of handrail</span>
+0062                         forceLabels{end+1} = [<span class="string">'H'</span>,fieldList{j}(end-2:end-1)];
+0063                         units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0064                         relData=[relData,analogs.(fieldList{j})];
+0065                     <span class="keyword">otherwise</span>
+0066                         showWarning=true;<span class="comment">%%HH moved warning outside loop on 6/3/2015 to reduce command window output</span>
+0067                 <span class="keyword">end</span>
+0068                 analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0069                 <span class="keyword">end</span>
+0070             <span class="keyword">end</span>
+0071         <span class="keyword">end</span>    
+0072         <span class="keyword">if</span> showWarning
+0073             warning([<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Found force/moment data in trial '</span> num2str(t) <span class="string">' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'</span>])
+0074         <span class="keyword">end</span>
+0075         
+0076         <span class="comment">%Sanity check: offset calibration, make sure that force values from</span>
+0077         <span class="comment">%analog pins have zero mode, correct scale units etc.</span>
+0078         <span class="keyword">try</span>
+0079             map=[1:6,8:13,46:51]; <span class="comment">%Forces and moments to the corresponding pin in</span>
+0080             list={<span class="string">'LFx'</span>,<span class="string">'LFy'</span>,<span class="string">'LFz'</span>,<span class="string">'LMx'</span>,<span class="string">'LMy'</span>,<span class="string">'LMz'</span>,<span class="string">'RFx'</span>,<span class="string">'RFy'</span>,<span class="string">'RFz'</span>,<span class="string">'RMx'</span>,<span class="string">'RMy'</span>,<span class="string">'RMz'</span>,<span class="string">'HFx'</span>,<span class="string">'HFy'</span>,<span class="string">'HFz'</span>,<span class="string">'HMx'</span>,<span class="string">'HMy'</span>,<span class="string">'HMz'</span>};
+0081             offset=nan(size(list));
+0082             gain=nan(size(list));
+0083             trueOffset=nan(size(list));
+0084             differenceInForceUnits=nan(size(list));
+0085             m=nan(size(list));
+0086             tol=10; <span class="comment">%N or N.m</span>
+0087             <span class="keyword">for</span> j=1:length(list)
+0088                 k=find(strcmp(forceLabels,list{j}));
+0089                 <span class="keyword">if</span> ~isempty(k)
+0090                     aux=fields(analogs);
+0091                     iii=find(cellfun(@(x) ~isempty(x),regexp(aux,[<span class="string">'Pin_'</span> num2str(map(k)) <span class="string">'$'</span>])));
+0092                     raw=analogs.(aux{iii});
+0093                     proc=relData(:,k);
+0094                     <span class="comment">%figure; plot(raw,proc,'.')</span>
+0095                     rel=find(proc~=0);
+0096                     <span class="keyword">if</span> ~isempty(rel)
+0097                         m(j)=4*prctile(abs(proc(rel)),1); <span class="comment">%This can be used for thresholding</span>
+0098                         coef=polyfit(raw(rel),proc(rel),1);
+0099                         gain(j)=coef(1); <span class="comment">%This could be rounded to keep only 2 significant figures, which is the more likely value</span>
+0100                         offset(j)=-coef(2)/coef(1); 
+0101                         C=[-1:.001:1];
+0102                         Hh=hist(raw,C);
+0103                         trueOffset(j)=C(Hh==max(Hh));
+0104                         differenceInForceUnits(j)=gain(j)*(trueOffset(j)-offset(j));
+0105                     <span class="keyword">end</span>
+0106                     <span class="keyword">switch</span> list{j}(2)
+0107                         <span class="keyword">case</span> <span class="string">'F'</span> <span class="comment">%Forces</span>
+0108                             ttol=tol;
+0109                             units=<span class="string">'N'</span>;
+0110                         <span class="keyword">case</span> <span class="string">'M'</span> <span class="comment">%Moments</span>
+0111                             ttol=tol*1000; <span class="comment">%moments are in N.mm</span>
+0112                             units=<span class="string">'N.mm'</span>;
+0113                         <span class="keyword">otherwise</span>
+0114                             error(<span class="string">''</span>);
+0115                     <span class="keyword">end</span>
+0116                     <span class="keyword">if</span> differenceInForceUnits(j)&gt;ttol
+0117                         figure
+0118                         hold on
+0119                         plot(raw(rel),proc(rel),<span class="string">'.'</span>)
+0120                         plot([-.01 .01],([-.01 .01]+offset(j))*gain(j))
+0121                         hold off
+0122                         a=questdlg([<span class="string">'When loading '</span> list{j} <span class="string">' there appears to be a non-zero mode (offset). Calculated offset is '</span> num2str(differenceInForceUnits(j)) <span class="string">' '</span> units <span class="string">'. Please confirm that you want to subtract this offset.'</span>]);
+0123                         <span class="keyword">switch</span> a
+0124                             <span class="keyword">case</span> <span class="string">'Yes'</span>
+0125                                 relData(:,k)=gain(j)*(raw -trueOffset(j));
+0126                                 relData(abs(relData(:,k))&lt;4*ttol,k)=0; <span class="comment">%Thresholding using the tolerance, should never be less than 2*ttol</span>
+0127                             <span class="keyword">case</span> <span class="string">'No'</span>
+0128                                 <span class="comment">%nop</span>
+0129                             <span class="keyword">otherwise</span>
+0130                                 error(<span class="string">''</span>);
+0131                         <span class="keyword">end</span>
+0132                     <span class="keyword">end</span>
+0133                 <span class="keyword">end</span>
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">catch</span> ME
+0136            warning(<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Could not perform offset check. Proceeding with data as is.'</span>) 
+0137         <span class="keyword">end</span>
+0138         
+0139         <span class="comment">%Create labTimeSeries (data,t0,Ts,labels,orientation)</span>
+0140         <span class="keyword">if</span> size(relData,2)&lt;12 <span class="comment">%we don't have at least 3 forces and 3 moments per belt</span>
+0141             warning(<span class="string">'loadTrials:GRFs'</span>,[<span class="string">'Did not find all GRFs for the two belts in trial '</span> num2str(t)])
+0142         <span class="keyword">end</span>
+0143         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
+0144         GRFData.DataInfo.Units=units;
+0145     <span class="keyword">else</span>
+0146         GRFData=[];
+0147     <span class="keyword">end</span>
+0148     clear relData*
+0149     
+0150     <span class="comment">%% EMGData (from 2 files!) &amp; Acceleration data</span>
+0151     <span class="keyword">if</span> info.EMGs
+0152         <span class="comment">%Primary file (PC)</span>
+0153         relData=[];
+0154         relDataTemp=[];
+0155         fieldList=fields(analogs);
+0156         idxList=[];
+0157         <span class="keyword">for</span> j=1:length(fieldList);
+0158             <span class="keyword">if</span>  ~isempty(strfind(fieldList{j},<span class="string">'EMG'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0159                 relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0160                 idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end));
+0161                 analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0162             <span class="keyword">end</span>
+0163         <span class="keyword">end</span>
+0164         emptyChannels1=cellfun(@(x) isempty(x),info.EMGList1);
+0165         EMGList1=info.EMGList1(~emptyChannels1);
+0166         relData(:,idxList)=relDataTemp; <span class="comment">%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does</span>
+0167         relData=relData(:,~emptyChannels1);
+0168         EMGList=EMGList1;
+0169         
+0170         <span class="comment">%Secondary file (PC)</span>
+0171         relDataTemp2=[];
+0172         idxList2=[];
+0173         <span class="keyword">if</span> secondFile
+0174             fieldList=fields(analogs2);
+0175             <span class="keyword">for</span> j=1:length(fieldList);
+0176                 <span class="keyword">if</span>  ~isempty(strfind(fieldList{j},<span class="string">'EMG'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0177                     relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+0178                     idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end));
+0179                     analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0180                 <span class="keyword">end</span>
+0181             <span class="keyword">end</span>
+0182             emptyChannels2=cellfun(@(x) isempty(x),info.EMGList2);
+0183             EMGList2=info.EMGList2(~emptyChannels2); <span class="comment">%Just using the names for the channels that were actually in the file</span>
+0184             relData2(:,idxList2)=relDataTemp2; <span class="comment">%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does</span>
+0185             relData2=relData2(:,~emptyChannels2);
+0186             EMGList=[EMGList1,EMGList2];
+0187         <span class="keyword">end</span>
+0188         
+0189         <span class="comment">%Check if names match with expectation, otherwise query user</span>
+0190         <span class="keyword">for</span> k=1:length(EMGList)
+0191             <span class="keyword">while</span> sum(strcmpi(orderedEMGList,EMGList{k}))==0 &amp;&amp; ~strcmpi(EMGList{k}(1:4),<span class="string">'sync'</span>)
+0192                 aux= inputdlg([<span class="string">'Did not recognize muscle name, please re-enter name for channel '</span> num2str(k) <span class="string">' (was '</span> EMGList{k} <span class="string">'). Acceptable values are '</span> cell2mat(strcat(orderedEMGList,<span class="string">', '</span>)) <span class="string">' or ''sync''.'</span>],<span class="string">'s'</span>);
+0193                 <span class="keyword">if</span> k&lt;=length(EMGList1)
+0194                     info.EMGList1{idxList(k)}=aux{1}; <span class="comment">%This is to keep the same message from being prompeted for each trial processed.</span>
+0195                 <span class="keyword">else</span>
+0196                     info.EMGList2{idxList2(k-length(EMGList1))}=aux{1};
+0197                 <span class="keyword">end</span>
+0198                 EMGList{k}=aux{1};
+0199             <span class="keyword">end</span>
+0200         <span class="keyword">end</span>
+0201         
+0202         <span class="comment">%For some reasing the naming convention for analog pins is not kept</span>
+0203         <span class="comment">%across Nexus versions:</span>
+0204         fieldNames=fields(analogs);
+0205 
+0206        refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,<span class="string">'Pin3'</span>)) | ~isempty(strfind(x,<span class="string">'Pin_3'</span>)),fieldNames)});
+0207         
+0208         <span class="comment">%Check for frequencies between the two PCs</span>
+0209         <span class="keyword">if</span> secondFile
+0210             <span class="keyword">if</span> abs(analogsInfo.frequency-analogsInfo2.frequency)&gt;eps
+0211                 warning(<span class="string">'Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.'</span>)
+0212                 <span class="comment">%Assuming that the sampling rates are multiples of one another</span>
+0213                 <span class="keyword">if</span> analogsInfo.frequency&gt;analogsInfo2.frequency 
+0214                     <span class="comment">%First set is the up-sampled one, reducing</span>
+0215                     P=analogsInfo.frequency/analogsInfo2.frequency;
+0216                     R=round(P);
+0217                     relData=relData(1:R:<span class="keyword">end</span>,:);
+0218                     refSync=refSync(1:R:end);
+0219                     EMGfrequency=analogsInfo2.frequency;
+0220                 <span class="keyword">else</span>
+0221                     P=round(analogsInfo2.frequency/analogsInfo.frequency);
+0222                     R=round(P);
+0223                     relData2=relData2(1:R:<span class="keyword">end</span>,:);
+0224                     EMGfrequency=analogsInfo.frequency;
+0225                 <span class="keyword">end</span>
+0226                 <span class="keyword">if</span> abs(R-P)&gt;1e-7
+0227                     error(<span class="string">'loadTrials:unmatchedSamplingRatesForEMG'</span>,<span class="string">'The different EMG files are sampled at different rates and they are not multiple of one another'</span>)
+0228                 <span class="keyword">end</span>
+0229             <span class="keyword">end</span>
+0230         <span class="keyword">else</span>
+0231             EMGfrequency=analogsInfo.frequency;
+0232         <span class="keyword">end</span>
+0233         
+0234         <span class="comment">%Only keeping matrices of same size to one another:</span>
+0235         <span class="keyword">if</span> secondFile
+0236             [auxData, auxData2] = truncateToSameLength(relData,relData2);
+0237             allData=[auxData,auxData2];
+0238             clear auxData*
+0239         <span class="keyword">else</span>
+0240             allData=relData;
+0241         <span class="keyword">end</span>
+0242         
+0243         <span class="comment">%Pre-process:</span>
+0244         refAux=medfilt1(refSync,20);
+0245         refAux=medfilt1(diff(refAux),10);
+0246         clear auxData*
+0247         syncIdx=strncmpi(EMGList,<span class="string">'Sync'</span>,4); <span class="comment">%Compare first 4 chars in string list</span>
+0248         sync=allData(:,syncIdx);
+0249         <span class="keyword">if</span> ~isempty(sync) <span class="comment">%Only proceeding with synchronization if there are sync signals</span>
+0250         N=size(sync,1);
+0251         aux=medfilt1(sync,20,[],1);
+0252         aux=medfilt1(diff(aux),10,[],1);
+0253         <span class="keyword">if</span> secondFile
+0254             [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
+0255             newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); <span class="comment">%Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.</span>
+0256         <span class="keyword">end</span>
+0257         [~,timeScaleFactorA,lagInSamplesA,~] = matchSignals(refAux,aux(:,1));
+0258         newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
+0259         <span class="keyword">if</span> secondFile
+0260             newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
+0261         <span class="keyword">end</span>
+0262         
+0263         <span class="comment">%Only keeping matrices of same size to one another:</span>
+0264         <span class="keyword">if</span> secondFile
+0265             [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+0266             clear newRelData*
+0267             allData=[auxData,auxData2];
+0268             clear auxData*
+0269         <span class="keyword">else</span>
+0270             allData=newRelData;
+0271         <span class="keyword">end</span>
+0272         
+0273         <span class="comment">%Finding gains through least-squares on high-pass filtered synch</span>
+0274         <span class="comment">%signals (why using HPF for gains and not for synch?)</span>
+0275         refSync=idealHPF(refSync,0);
+0276         [allData,refSync]=truncateToSameLength(allData,refSync);
+0277         syncIdx=strncmpi(EMGList,<span class="string">'Sync'</span>,4); <span class="comment">%Compare first 4 chars in string list</span>
+0278         sync=idealHPF(allData(:,syncIdx),0);
+0279         gain1=refSync'/sync(:,1)';
+0280         E1=sum((refSync(max([lagInSamplesA+1,1]):end)-sync(max([lagInSamplesA+1,1]):<span class="keyword">end</span>,1)*gain1).^2)/sum(refSync.^2); <span class="comment">%Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.</span>
+0281         <span class="keyword">if</span> secondFile
+0282             gain2=refSync'/sync(:,2)';
+0283             E2=sum((refSync(max([lagInSamplesA+1+lagInSamples,1]):end)-sync(max([lagInSamplesA+1+lagInSamples,1]):<span class="keyword">end</span>,2)*gain2).^2)/sum(refSync.^2);
+0284         <span class="keyword">else</span>
+0285             E2=0;
+0286             gain2=NaN;
+0287             timeScaleFactor=NaN;
+0288             lagInSamples=NaN;
+0289         <span class="keyword">end</span>
+0290 
+0291         <span class="comment">%Analytic measure of alignment problems</span>
+0292         disp([<span class="string">'Sync complete: mismatch signal energy (as %) was '</span> num2str(E1,3) <span class="string">' and '</span> num2str(E2,3) <span class="string">'.'</span>])
+0293         disp([<span class="string">'Sync parameters were: gains= '</span> num2str(gain1,4) <span class="string">', '</span> num2str(gain2,4) <span class="string">'; delays= '</span> num2str(lagInSamplesA/EMGfrequency,3) <span class="string">'s, '</span> num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) <span class="string">'s; sampling mismatch= '</span> num2str(1-timeScaleFactor,5)]);
+0294         <span class="keyword">if</span> E1&gt;.01 || E2&gt;.01 <span class="comment">%Signal difference has at least 1% of original signal energy</span>
+0295             warning([<span class="string">'Time alignment doesnt seem to have worked: signal mismatch is too high in trial '</span> num2str(t) <span class="string">'.'</span>])
+0296             h=figure;
+0297             subplot(2,2,[1:2])
+0298             hold on
+0299             title([<span class="string">'Trial '</span> num2str(t) <span class="string">' Synchronization'</span>])
+0300             time=[0:length(refSync)-1]*1/EMGfrequency;
+0301             plot(time,refSync)
+0302             plot(time,sync(:,1)*gain1,<span class="string">'r'</span>)
+0303             <span class="keyword">if</span> secondFile
+0304                 plot(time,sync(:,2)*gain2,<span class="string">'g'</span>)
+0305             <span class="keyword">end</span>
+0306             legend(<span class="string">'refSync'</span>,[<span class="string">'sync1, delay='</span> num2str(lagInSamplesA/EMGfrequency,3) <span class="string">'s'</span>],[<span class="string">'sync2, delay='</span> num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  <span class="string">'s'</span>])
+0307             hold off
+0308             subplot(2,2,3)
+0309             T=round(3*EMGfrequency); <span class="comment">%To plot just 3 secs at the beginning and at the end</span>
+0310             <span class="keyword">if</span> T&lt;length(refSync)
+0311                 hold on
+0312                 plot(time(1:T),refSync(1:T))
+0313                 plot(time(1:T),sync(1:T,1)*gain1,<span class="string">'r'</span>)
+0314                 <span class="keyword">if</span> secondFile
+0315                     plot(time(1:T),sync(1:T,2)*gain2,<span class="string">'g'</span>)
+0316                 <span class="keyword">end</span>
+0317                 hold off
+0318                 subplot(2,2,4)
+0319                 hold on
+0320                 plot(time(end-T:end),refSync(end-T:end))
+0321                 plot(time(end-T:end),sync(end-T:<span class="keyword">end</span>,1)*gain1,<span class="string">'r'</span>)
+0322                 <span class="keyword">if</span> secondFile
+0323                     plot(time(end-T:end),sync(end-T:<span class="keyword">end</span>,2)*gain2,<span class="string">'g'</span>)
+0324                 <span class="keyword">end</span>
+0325                 hold off
+0326             <span class="keyword">end</span>
+0327             s=inputdlg(<span class="string">'Please confirm that you want to proceed like this (y/n)'</span>,<span class="string">'str'</span>);
+0328             <span class="keyword">switch</span> s{1}
+0329                 <span class="keyword">case</span> {<span class="string">'y'</span>,<span class="string">'Y'</span>,<span class="string">'yes'</span>}
+0330                      disp([<span class="string">'Using signals in a possibly unsynchronized way!.'</span>])
+0331                      close(h)
+0332                 <span class="keyword">case</span> {<span class="string">'n'</span>,<span class="string">'N'</span>,<span class="string">'no'</span>}
+0333                     error(<span class="string">'loadTrials:EMGCouldNotBeSynched'</span>,<span class="string">'Could not synchronize EMG data, stopping data loading.'</span>)
+0334             <span class="keyword">end</span>
+0335         <span class="keyword">end</span>
+0336         
+0337         <span class="comment">%Plot to CONFIRM VISUALLY if alignment worked:</span>
+0338         h=figure;
+0339         subplot(2,2,[1:2])
+0340         hold on
+0341         title([<span class="string">'Trial '</span> num2str(t) <span class="string">' Synchronization'</span>])
+0342         time=[0:length(refSync)-1]*1/EMGfrequency;
+0343         plot(time,refSync)
+0344         plot(time,sync(:,1)*gain1,<span class="string">'r'</span>)
+0345         <span class="keyword">if</span> secondFile
+0346             plot(time,sync(:,2)*gain2,<span class="string">'g'</span>)
+0347             legend(<span class="string">'refSync'</span>,[<span class="string">'sync1, delay='</span> num2str(lagInSamplesA/EMGfrequency,3) <span class="string">'s'</span>],[<span class="string">'sync2, delay='</span> num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  <span class="string">'s'</span>])
+0348         <span class="keyword">else</span>           
+0349             legend(<span class="string">'refSync'</span>,[<span class="string">'sync1, delay='</span> num2str(lagInSamplesA/EMGfrequency,3) <span class="string">'s'</span>])
+0350         <span class="keyword">end</span>
+0351         hold off
+0352         subplot(2,2,3)
+0353         T=round(3*EMGfrequency); <span class="comment">%To plot just 3 secs at the beginning and at the end</span>
+0354         <span class="keyword">if</span> T&lt;length(refSync)
+0355         hold on
+0356          plot(time(1:T),refSync(1:T))
+0357         plot(time(1:T),sync(1:T,1)*gain1,<span class="string">'r'</span>)
+0358         <span class="keyword">if</span> secondFile
+0359         plot(time(1:T),sync(1:T,2)*gain2,<span class="string">'g'</span>)
+0360         <span class="keyword">end</span>
+0361         <span class="comment">%legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])</span>
+0362         hold off
+0363         subplot(2,2,4)
+0364         hold on
+0365         plot(time(end-T:end),refSync(end-T:end))
+0366         plot(time(end-T:end),sync(end-T:<span class="keyword">end</span>,1)*gain1,<span class="string">'r'</span>)
+0367         <span class="keyword">if</span> secondFile
+0368         plot(time(end-T:end),sync(end-T:<span class="keyword">end</span>,2)*gain2,<span class="string">'g'</span>)
+0369         <span class="keyword">end</span>
+0370         <span class="comment">%legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])</span>
+0371         hold off
+0372         <span class="keyword">end</span>
+0373         saveFig(h,<span class="string">'./'</span>,[<span class="string">'Trial '</span> num2str(t) <span class="string">' Synchronization'</span>])
+0374 <span class="comment">%         uiwait(h)</span>
+0375         <span class="keyword">else</span>
+0376             warning(<span class="string">'No sync signals were present, using data as-is.'</span>)
+0377         <span class="keyword">end</span>
+0378         
+0379         
+0380         <span class="comment">%Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order</span>
+0381         orderedIndexes=zeros(length(orderedEMGList),1);
+0382         <span class="keyword">for</span> j=1:length(orderedEMGList)
+0383             <span class="keyword">for</span> k=1:length(EMGList)
+0384                 <span class="keyword">if</span> strcmpi(orderedEMGList{j},EMGList{k})
+0385                     orderedIndexes(j)=k;
+0386                     <span class="keyword">break</span>;
+0387                 <span class="keyword">end</span>
+0388             <span class="keyword">end</span>
+0389         <span class="keyword">end</span>
+0390         orderedIndexes=orderedIndexes(orderedIndexes~=0); <span class="comment">%Avoiding missing muscles</span>
+0391         aux=zeros(length(EMGList),1);
+0392         aux(orderedIndexes)=1;
+0393         <span class="keyword">if</span> any(aux==0) &amp;&amp; ~all(strcmpi(EMGList(aux==0),<span class="string">'sync'</span>))
+0394             warning([<span class="string">'loadTrials: Not all of the provided muscles are in the ordered list, ignoring '</span> EMGList{aux==0}])
+0395         <span class="keyword">end</span>
+0396         allData(allData==0)=NaN; <span class="comment">%Eliminating samples that are exactly 0: these are unavailable samples</span>
+0397         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); <span class="comment">%Throw away the synch signal</span>
+0398         clear allData* relData* auxData*
+0399         
+0400         <span class="comment">%% AccData (from 2 files too!)</span>
+0401         <span class="comment">%Primary file</span>
+0402         relData=[];
+0403         idxList=[];
+0404         fieldList=fields(analogs);
+0405         <span class="keyword">for</span> j=1:length(fieldList);
+0406             <span class="keyword">if</span> ~isempty(strfind(fieldList{j},<span class="string">'ACC'</span>))  <span class="comment">%Getting fields that start with 'ACC' only</span>
+0407                 idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4:end));
+0408                 <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+3)
+0409                     <span class="keyword">case</span> <span class="string">'X'</span>
+0410                         aux=1;
+0411                     <span class="keyword">case</span> <span class="string">'Y'</span>
+0412                         aux=2;
+0413                     <span class="keyword">case</span> <span class="string">'Z'</span>
+0414                         aux=3;
+0415                 <span class="keyword">end</span>
+0416                 eval([<span class="string">'relData(:,idxList(j),aux)=analogs.'</span> fieldList{j} <span class="string">';'</span>]);
+0417                 analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0418             <span class="keyword">end</span>
+0419         <span class="keyword">end</span>
+0420         relData=permute(relData(:,~emptyChannels1,:),[1,3,2]);
+0421         relData=relData(:,:);
+0422         <span class="keyword">if</span> EMGfrequency~=analogsInfo.frequency <span class="comment">%The frequency was changed when downsampling EMG data</span>
+0423             P=analogsInfo.frequency/EMGfrequency;
+0424             R=round(P);
+0425             relData=relData(1:R:<span class="keyword">end</span>,:);
+0426         <span class="keyword">end</span>
+0427         <span class="comment">%Fixing time alignment</span>
+0428         <span class="keyword">if</span> ~isempty(sync)
+0429             relData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
+0430         <span class="keyword">end</span>
+0431         
+0432         
+0433         <span class="comment">%Secondary file</span>
+0434         relData2=[];
+0435         idxList2=[];
+0436         <span class="keyword">if</span> secondFile
+0437             fieldList=fields(analogs2);
+0438             <span class="keyword">for</span> j=1:length(fieldList);
+0439                 <span class="keyword">if</span> ~isempty(strfind(fieldList{j},<span class="string">'ACC'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0440                     idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+4:end));
+0441                     <span class="keyword">switch</span> fieldList{j}(strfind(fieldList{j},<span class="string">'ACC'</span>)+3)
+0442                         <span class="keyword">case</span> <span class="string">'X'</span>
+0443                             aux=1;
+0444                         <span class="keyword">case</span> <span class="string">'Y'</span>
+0445                             aux=2;
+0446                         <span class="keyword">case</span> <span class="string">'Z'</span>
+0447                             aux=3;
+0448                     <span class="keyword">end</span>
+0449                     eval([<span class="string">'relData2(:,idxList2(j),aux)=analogs2.'</span> fieldList{j} <span class="string">';'</span>]);
+0450                     analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0451                 <span class="keyword">end</span>
+0452             <span class="keyword">end</span>
+0453             relData2=permute(relData2(:,~emptyChannels2,:),[1,3,2]);
+0454             relData2=relData2(:,:);
+0455             <span class="keyword">if</span> EMGfrequency~=analogsInfo2.frequency <span class="comment">%The frequency was changed when downsampling EMG data</span>
+0456                 P=analogsInfo2.frequency/EMGfrequency;
+0457                 R=round(P);
+0458                 relData2=relData2(1:R:<span class="keyword">end</span>,:);
+0459             <span class="keyword">end</span>
+0460             <span class="comment">%Fixing time alignment</span>
+0461             <span class="keyword">if</span> ~isempty(sync)
+0462                     relData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); <span class="comment">%Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.</span>
+0463                     relData2 = resampleShiftAndScale(relData2,1,lagInSamplesA,1);
+0464                     [auxData, auxData2] = truncateToSameLength(relData,relData2);
+0465                     clear relData*
+0466                     allData=[auxData,auxData2];
+0467                     clear auxData* 
+0468             <span class="keyword">else</span>
+0469                     allData=[relData,relData2]; <span class="comment">%No synch, two files</span>
+0470             <span class="keyword">end</span>
+0471         <span class="keyword">else</span>
+0472             allData=relData;
+0473         <span class="keyword">end</span>
+0474         
+0475         <span class="comment">%Throwing away empty fields (same that were thrown on EMG data)</span>
+0476         
+0477         <span class="comment">% Assign names:</span>
+0478         ACCList={};
+0479         <span class="keyword">for</span> j=1:length(EMGList)
+0480             ACCList{end+1}=[EMGList{j} <span class="string">'x'</span>];
+0481             ACCList{end+1}=[EMGList{j} <span class="string">'y'</span>];
+0482             ACCList{end+1}=[EMGList{j} <span class="string">'z'</span>];
+0483         <span class="keyword">end</span>
+0484         
+0485         accData=orientedLabTimeSeries(allData(1:13:<span class="keyword">end</span>,:),0,13/EMGfrequency,ACCList,orientation); <span class="comment">%Downsampling to ~150Hz, which is much closer to the original 148Hz sampling rate (where does this get upsampled? why?)</span>
+0486         <span class="comment">% orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.</span>
+0487         clear allData* relData* auxData*
+0488     <span class="keyword">else</span>
+0489         EMGData=[];
+0490         accData=[];
+0491     <span class="keyword">end</span>
+0492     
+0493     <span class="comment">%% MarkerData</span>
+0494     clear analogs* <span class="comment">%Save memory space, no longer need analog data, it was already loaded</span>
+0495     <span class="keyword">if</span> info.kinematics <span class="comment">%check to see if there is kinematic data</span>
+0496         [markers,markerInfo]=btkGetMarkers(H);
+0497         relData=[];
+0498         fieldList=fields(markers);
+0499         markerList={};
+0500         
+0501         <span class="comment">%Check marker labels are good in .c3d files</span>
+0502         mustHaveLabels={<span class="string">'LHIP'</span>,<span class="string">'RHIP'</span>,<span class="string">'LANK'</span>,<span class="string">'RANK'</span>,<span class="string">'RHEE'</span>,<span class="string">'LHEE'</span>,<span class="string">'LTOE'</span>,<span class="string">'RTOE'</span>,<span class="string">'RKNE'</span>,<span class="string">'LKNE'</span>};<span class="comment">%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really</span>
+0503         labelPresent=false(1,length(mustHaveLabels));
+0504         <span class="keyword">for</span> i=1:length(fieldList)
+0505             newFieldList{i}=<a href="findLabel.html" class="code" title="function markerLabel=findLabel(viconLabel)">findLabel</a>(fieldList{i});
+0506             labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
+0507         <span class="keyword">end</span>
+0508         
+0509 <span class="comment">%         %if any of the must-have labels are not present, terminate script</span>
+0510 <span class="comment">%         %and throw warning.</span>
+0511 <span class="comment">%         if any(~labelPresent)</span>
+0512 <span class="comment">%             missingLabels=find(~labelPresent);</span>
+0513 <span class="comment">%             str=' ';</span>
+0514 <span class="comment">%             for j=missingLabels</span>
+0515 <span class="comment">%                 str=[str ', ' mustHaveLabels{j}];</span>
+0516 <span class="comment">%             end</span>
+0517 <span class="comment">%             ME=MException('loadTrials:markerDataError',['Marker data does not contain:' str '. Edit ''findLabel'' code to fix.']);</span>
+0518 <span class="comment">%             throw(ME)</span>
+0519 <span class="comment">%         end</span>
+0520         
+0521         <span class="comment">%atlernatively,</span>
+0522         <span class="keyword">if</span> any(~labelPresent)
+0523             missingLabels=find(~labelPresent);
+0524             potentialMatches=newFieldList(~ismember(newFieldList,mustHaveLabels));
+0525             <span class="keyword">for</span> j=missingLabels
+0526                 <span class="comment">%generate menu</span>
+0527                 choice = menu([{[<span class="string">'WARNING: the marker label '</span> mustHaveLabels{j}]},{<span class="string">' was not found, but is necessary for'</span>},<span class="keyword">...</span>
+0528                     {<span class="string">'future calculations.Please indicate which'</span>},{[<span class="string">' marker corresponds to the '</span> mustHaveLabels{j} <span class="string">' label:'</span>]}] ,potentialMatches);
+0529                 <span class="keyword">if</span> choice==0
+0530                     ME=MException(<span class="string">'loadTrials:markerDataError'</span>,<span class="string">'Operation terminated by user while finding names of necessary labels.'</span>);
+0531                     throw(ME)
+0532                 <span class="keyword">else</span>
+0533                     <span class="comment">%set the label corresponding to choice as one of the must-have labels</span>
+0534                     <a href="addMarkerPair.html" class="code" title="function addMarkerPair(correctLabel,altLabel)">addMarkerPair</a>(mustHaveLabels{j},potentialMatches{choice})
+0535                 <span class="keyword">end</span>
+0536             <span class="keyword">end</span>
+0537         <span class="keyword">end</span>
+0538         
+0539         <span class="keyword">for</span> j=1:length(fieldList);
+0540             <span class="keyword">if</span> length(fieldList{j})&gt;2 &amp;&amp; ~strcmp(fieldList{j}(1:2),<span class="string">'C_'</span>)  <span class="comment">%Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)</span>
+0541                 relData=[relData,markers.(fieldList{j})];
+0542                 markerLabel=<a href="findLabel.html" class="code" title="function markerLabel=findLabel(viconLabel)">findLabel</a>(fieldList{j});<span class="comment">%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)</span>
+0543                 markerList{end+1}=[markerLabel <span class="string">'x'</span>];
+0544                 markerList{end+1}=[markerLabel <span class="string">'y'</span>];
+0545                 markerList{end+1}=[markerLabel <span class="string">'z'</span>];
+0546             <span class="keyword">end</span>
+0547             markers=rmfield(markers,fieldList{j}); <span class="comment">%Save memory</span>
+0548         <span class="keyword">end</span>         
+0549         relData(relData==0)=NaN; <span class="comment">%This forces missing labels to be labeled as NaN</span>
+0550         markerData=orientedLabTimeSeries(relData,0,1/markerInfo.frequency,markerList,orientation);
+0551         clear relData
+0552         markerData.DataInfo.Units=markerInfo.units.ALLMARKERS;
+0553     <span class="keyword">else</span>
+0554         markerData=[];
+0555     <span class="keyword">end</span>
+0556     
+0557     <span class="comment">%% Construct trialData</span>
+0558     
+0559     <span class="comment">%rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)</span>
+0560     trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);<span class="comment">%organize trial data into organized object of class rawTrialData</span>
+0561     
+0562 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

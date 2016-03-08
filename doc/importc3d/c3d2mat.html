@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of c3d2mat</title>
+  <meta name="keywords" content="c3d2mat">
+  <meta name="description" content="c3d2mat -- The main script for parsing .c3d files into a subject .mat file.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; c3d2mat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>c3d2mat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">c3d2mat -- The main script for parsing .c3d files into a subject .mat file.
+
+This script collects information regarding the experiment conducted,
+transforms the data from .c3d format into labTools objects,
+and then processes that data to give HS and TO events, limb angles,
+adaptation parameters, and processed EMG data (if EMG data are present)
+
+See also: <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>, <a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>	GETINFOGUI  Graphical user interface used to collect information regarding</li><li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%This script collects information regarding the experiment conducted,</span>
+0004 <span class="comment">%transforms the data from .c3d format into labTools objects,</span>
+0005 <span class="comment">%and then processes that data to give HS and TO events, limb angles,</span>
+0006 <span class="comment">%adaptation parameters, and processed EMG data (if EMG data are present)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%See also: GetInfoGUI, loadSubject</span>
+0009 
+0010 <span class="comment">% Begin by running the GetInfoGUI, this will collect subject data,</span>
+0011 <span class="comment">% experiment data and notes, as well as trial conditions.</span>
+0012 info = <a href="GetInfoGUI.html" class="code" title="function varargout = GetInfoGUI(varargin)">GetInfoGUI</a>;
+0013 
+0014 <span class="comment">%Ask which event class to use</span>
+0015 eventClass={<span class="string">''</span>,<span class="string">'kin'</span>,<span class="string">'force'</span>};<span class="comment">%possible methods to determine gait events, 'kin' for over ground, 'force' for treadmill. '' is use trial type or default</span>
+0016 answer=menu(<span class="string">'Which events should be used to compute parameters?'</span>,<span class="string">'default (use kinematics for TM trials, forces otherwise)'</span>,<span class="string">'strictly from kinematics'</span>,<span class="string">'strictly from forces'</span>);
+0017 <span class="keyword">if</span> answer==0
+0018     answer=1;
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">%Do the actual loading</span>
+0022 <span class="keyword">if</span> ~isempty(info)
+0023     [expData,rawExpData,adaptData]=<a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>(info,eventClass{answer});
+0024 <span class="keyword">end</span>
+0025 
+0026 clear answer eventClass</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

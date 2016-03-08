@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of experimentMetaData</title>
+  <meta name="keywords" content="experimentMetaData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">metaData</a> &gt; experimentMetaData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/metaData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>experimentMetaData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</a></li><li><a href="#_sub2" class="code">function this=set.ID(this,ID)</a></li><li><a href="#_sub3" class="code">function this=set.date(this,date)</a></li><li><a href="#_sub4" class="code">function this=set.experimenter(this,experimenter)</a></li><li><a href="#_sub5" class="code">function this=set.observations(this,obs)</a></li><li><a href="#_sub6" class="code">function this=set.conditionName(this,conds)</a></li><li><a href="#_sub7" class="code">function this=set.conditionDescription(this,desc)</a></li><li><a href="#_sub8" class="code">function this=set.trialsInCondition(this,trialLst)</a></li><li><a href="#_sub9" class="code">function this=set.Ntrials(this,Ntrials)</a></li><li><a href="#_sub10" class="code">function condLst=getCondLstPerTrial(this)</a></li><li><a href="#_sub11" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag,ignoreMissingNamesFlag)</a></li><li><a href="#_sub12" class="code">function trialNums=getTrialsInCondition(this,conditionNames)</a></li><li><a href="#_sub13" class="code">function [this,change]=replaceConditionNames(this,currentName,newName)</a></li><li><a href="#_sub14" class="code">function [condNames]=getConditionsThatMatch(this,name,type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="experimentMetaData.html" class="code" title="">experimentMetaData</a>
+0002 <span class="comment">%experimentMetaData   Information describing the experiment as a whole.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%experimentMetaData Properties:</span>
+0005 <span class="comment">%   ID - string containing the subject ID e.g. 'OG90' or 'CGN05'</span>
+0006 <span class="comment">%   date - labDate object containing the date of the experiment</span>
+0007 <span class="comment">%   experimenter - string, initials/name of person(s) who ran the experiment</span>
+0008 <span class="comment">%   observations - string with overall study observations (observations for individual</span>
+0009 <span class="comment">%   trials are stored in trailMetaData class objects)</span>
+0010 <span class="comment">%   conditionName - cell array of strings containing labels given to each condition of the experiment</span>
+0011 <span class="comment">%   conditionDescription - cell array of strings containing a detailed description of each condition.</span>
+0012 <span class="comment">%   (Contains information such as belt speeds, number of steps, belt ratio, etc.)</span>
+0013 <span class="comment">%   trailsInCondition - cell array of numbers (type double?) matching condition number to</span>
+0014 <span class="comment">%   trial numbers -- trial numbers must match up with c3d file names</span>
+0015 <span class="comment">%   Ntrials - total number of trials</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%experimentMetaData Methods:</span>
+0018 <span class="comment">%   getCondLstPerTrial - returns list of condition numbers for each trial</span>
+0019 <span class="comment">%   getConditionIdxsFromName - returns the condition number for conditions with a</span>
+0020 <span class="comment">%   similar name to the string(s) entered.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%See also: labDate</span>
+0023     
+0024     properties
+0025         ID;
+0026         date=labDate.default; <span class="comment">%labDate object</span>
+0027         experimenter=<span class="string">''</span>;        
+0028         observations=<span class="string">''</span>;
+0029         conditionName={};
+0030         conditionDescription={};
+0031         trialsInCondition={};
+0032         Ntrials=[];        
+0033     <span class="keyword">end</span>   
+0034    
+0035     
+0036     methods
+0037         <span class="comment">%Constructor</span>
+0038         <a name="_sub0" href="#_subfunctions" class="code">function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</a>
+0039             this.ID=ID;           
+0040             <span class="keyword">if</span> nargin&gt;1
+0041                 this.date=date;
+0042             <span class="keyword">end</span>
+0043             <span class="keyword">if</span> nargin&gt;2
+0044                 this.experimenter=experimenter;
+0045             <span class="keyword">end</span>            
+0046             <span class="keyword">if</span> nargin&gt;3
+0047                 this.observations=obs;
+0048             <span class="keyword">end</span>      
+0049             <span class="keyword">if</span> nargin&gt;4
+0050                 <span class="keyword">if</span> length(unique(conds))&lt;length(conds)
+0051                     error(<span class="string">'ExperimentMetaData:Constructor'</span>,<span class="string">'There are repeated condition names, which is not allowed'</span>)
+0052                 <span class="keyword">elseif</span> sum(cellfun(@(x) ~isempty(strfind(x,<span class="string">'TM base'</span>)),conds))&gt;1 || sum(cellfun(@(x) ~isempty(strfind(x,<span class="string">'OG base'</span>)),conds))&gt;1
+0053                     error(<span class="string">'ExperimentMetaData:Constructor'</span>,<span class="string">'More than one condition name contains the string ''TM base'' or ''OG base'' which is not allowed.'</span>)
+0054                 <span class="keyword">else</span>
+0055                     this.conditionName=conds;
+0056                 <span class="keyword">end</span>
+0057             <span class="keyword">end</span>
+0058             <span class="keyword">if</span> nargin&gt;5 
+0059                 this.conditionDescription=desc;
+0060             <span class="keyword">end</span>            
+0061             <span class="keyword">if</span> nargin&gt;6                
+0062                 this.trialsInCondition=trialLst;
+0063             <span class="keyword">end</span>
+0064             <span class="keyword">if</span> nargin&gt;7
+0065                 this.Ntrials=Ntrials; 
+0066             <span class="keyword">end</span>            
+0067         <span class="keyword">end</span>
+0068         
+0069         <span class="comment">%% Setters</span>
+0070         <a name="_sub1" href="#_subfunctions" class="code">function this=set.ID(this,ID)</a>
+0071             <span class="keyword">if</span> isa(ID,<span class="string">'char'</span>) <span class="comment">%&amp;&amp; nargin&gt;0</span>
+0072                 this.ID=ID; <span class="comment">%Mandatory field, needs to be string</span>
+0073             <span class="keyword">elseif</span> isempty(ID) <span class="comment">%|| nargin==0</span>
+0074                 this.ID=<span class="string">''</span>;
+0075                 <span class="comment">%disp('Warning: creating emtpy ID field.')</span>
+0076             <span class="keyword">else</span>
+0077                 ME=MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'ID is not a string.'</span>);
+0078                 throw(ME);
+0079             <span class="keyword">end</span> 
+0080         <span class="keyword">end</span>        
+0081         <a name="_sub2" href="#_subfunctions" class="code">function this=set.date(this,date)</a>
+0082             <span class="keyword">if</span> isa(date,<span class="string">'labDate'</span>)
+0083                 this.date=date;
+0084             <span class="keyword">else</span>
+0085                 ME=MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'date is not labDate object.'</span>);
+0086                 throw(ME);
+0087             <span class="keyword">end</span>                           
+0088         <span class="keyword">end</span>
+0089         <a name="_sub3" href="#_subfunctions" class="code">function this=set.experimenter(this,experimenter)</a>
+0090             <span class="keyword">if</span> isa(experimenter,<span class="string">'char'</span>);
+0091                 this.experimenter=experimenter;
+0092             <span class="keyword">else</span>
+0093                 ME=MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'experimenter is not a string.'</span>);
+0094                 throw(ME);
+0095             <span class="keyword">end</span>
+0096         <span class="keyword">end</span>
+0097         <a name="_sub4" href="#_subfunctions" class="code">function this=set.observations(this,obs)</a>
+0098             <span class="keyword">if</span> isa(obs,<span class="string">'char'</span>)
+0099                 this.observations=obs;
+0100             <span class="keyword">else</span>
+0101                 ME=MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'observations is not a string.'</span>);
+0102                 throw(ME);
+0103             <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105         <a name="_sub5" href="#_subfunctions" class="code">function this=set.conditionName(this,conds)</a>
+0106             <span class="keyword">if</span> ~isempty(conds) &amp;&amp; isa(conds,<span class="string">'cell'</span>)
+0107                this.conditionName=conds; 
+0108             <span class="keyword">end</span>
+0109         <span class="keyword">end</span>
+0110         <a name="_sub6" href="#_subfunctions" class="code">function this=set.conditionDescription(this,desc)</a>
+0111             <span class="keyword">if</span> ~isempty(desc) &amp;&amp; isa(desc,<span class="string">'cell'</span>)
+0112                this.conditionDescription=desc; 
+0113             <span class="keyword">end</span>
+0114         <span class="keyword">end</span>
+0115         <a name="_sub7" href="#_subfunctions" class="code">function this=set.trialsInCondition(this,trialLst)</a>
+0116             <span class="comment">%Must be cell of doubles</span>
+0117             <span class="keyword">if</span> ~isempty(trialLst) &amp;&amp; isa(trialLst,<span class="string">'cell'</span>)
+0118             <span class="comment">%Check that no trial is repeated</span>
+0119                 aux=cell2mat(trialLst);
+0120                 aux2=unique(aux);
+0121                 <span class="keyword">for</span> i=1:length(aux2)
+0122                    a=find(aux==aux2(i)); 
+0123                    <span class="keyword">if</span> numel(a)&gt;1
+0124                        ME=MException(<span class="string">'experimentMetaData:Constructor'</span>,[<span class="string">'Trial '</span> num2str(aux2(i)) <span class="string">' is listed as part of more than one condition.'</span>]);
+0125                        throw(ME)
+0126                    <span class="keyword">end</span>
+0127                 <span class="keyword">end</span>
+0128                 this.trialsInCondition=trialLst;
+0129             <span class="keyword">end</span>
+0130         <span class="keyword">end</span>
+0131         <a name="_sub8" href="#_subfunctions" class="code">function this=set.Ntrials(this,Ntrials)</a>
+0132             <span class="keyword">if</span> isa(Ntrials,<span class="string">'double'</span>)
+0133                 this.Ntrials=Ntrials;
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">end</span>
+0136         
+0137         <span class="comment">%% Other methods</span>
+0138         <a name="_sub9" href="#_subfunctions" class="code">function condLst=getCondLstPerTrial(this)</a>
+0139            <span class="comment">%Returns a vector with length equal to the</span>
+0140            <span class="comment">%number of trials in the experiment and with values equal to the</span>
+0141            <span class="comment">%condition number for each trial.</span>
+0142            <span class="keyword">for</span> i=1:this.Ntrials
+0143                <span class="keyword">for</span> cond=1:length(this.trialsInCondition)
+0144                     k=find(i==this.trialsInCondition{cond},1);
+0145                     <span class="keyword">if</span> ~isempty(k)
+0146                         <span class="keyword">break</span>;
+0147                     <span class="keyword">end</span>
+0148                <span class="keyword">end</span>
+0149                <span class="keyword">if</span> isempty(k)
+0150                    condLst(i)=NaN;
+0151                <span class="keyword">else</span>
+0152                    condLst(i)=cond;
+0153                <span class="keyword">end</span>
+0154            <span class="keyword">end</span> 
+0155         <span class="keyword">end</span>
+0156         
+0157         <a name="_sub10" href="#_subfunctions" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag,ignoreMissingNamesFlag)</a>
+0158             <span class="comment">%Looks for condition names that are similar to the ones given</span>
+0159             <span class="comment">%in conditionNames and returns the corresponding condition idx</span>
+0160             <span class="comment">%</span>
+0161             <span class="comment">%Inputs:</span>
+0162             <span class="comment">%ConditionNames -- cell array containing a string or</span>
+0163             <span class="comment">%another cell array of strings in each of its cells.</span>
+0164             <span class="comment">%E.g. conditionNames={'Base','Adap',{'Post','wash'}}</span>
+0165             <span class="keyword">if</span> nargin&lt;3 || isempty(exactMatchesOnlyFlag)
+0166                 exactMatchesOnlyFlag=0; <span class="comment">%Default behavior accepts partial matches</span>
+0167             <span class="keyword">end</span>
+0168             <span class="keyword">if</span> nargin&lt;4 || isempty(ignoreMissingNamesFlag)
+0169                 ignoreMissingNamesFlag=0; <span class="comment">%Default behavior accepts partial matches</span>
+0170             <span class="keyword">end</span>
+0171             <span class="keyword">if</span> isa(conditionNames,<span class="string">'char'</span>)
+0172                 conditionNames={conditionNames};
+0173             <span class="keyword">end</span>
+0174             nConds=length(conditionNames); 
+0175             conditionIdxs=NaN(nConds,1);
+0176             <span class="keyword">for</span> i=1:nConds
+0177                 <span class="comment">%First: find if there is a condition with a</span>
+0178                 <span class="comment">%similar name to the one given</span>
+0179                 clear condName
+0180                 <span class="keyword">if</span> iscell(conditionNames{i})
+0181                     <span class="keyword">for</span> j=1:length(conditionNames{i})
+0182                         condName{j}=lower(conditionNames{i}{j});
+0183                     <span class="keyword">end</span>
+0184                 <span class="keyword">else</span>
+0185                     condName{1}=lower(conditionNames{i}); <span class="comment">%Lower case</span>
+0186                 <span class="keyword">end</span>
+0187                 aux=this.conditionName;
+0188                 aux(cellfun(@isempty,aux))={<span class="string">''</span>};
+0189                 allConds=lower(aux);
+0190                 condIdx=[];
+0191                 j=0;
+0192                 <span class="keyword">while</span> isempty(condIdx) &amp;&amp; j&lt;length(condName)
+0193                     j=j+1;
+0194                     matches=find(strcmpi(allConds,condName{j})); <span class="comment">%Exact matches</span>
+0195                     <span class="keyword">if</span> isempty(matches) &amp;&amp; exactMatchesOnlyFlag==0
+0196                         warning([<span class="string">'Looking for conditions named '''</span> condName{j} <span class="string">''' but found no exact matches. Looking for partial matches.'</span>])
+0197                         matches=find(~cellfun(@isempty,strfind(allConds,condName{j})));
+0198                     <span class="keyword">end</span>
+0199                     <span class="keyword">if</span> length(matches)&gt;1
+0200                         warning([<span class="string">'Looking for conditions named '''</span> condName{j} <span class="string">''' but found multiple matches. Using '''</span> allConds{matches(1)}]);
+0201                         matches=matches(1);
+0202                     <span class="keyword">end</span>
+0203                     condIdx=matches;
+0204                 <span class="keyword">end</span>
+0205                 <span class="keyword">if</span> ~isempty(condIdx)
+0206                     conditionIdxs(i)=condIdx;
+0207                 <span class="keyword">else</span>
+0208                     <span class="keyword">if</span> ~ignoreMissingNamesFlag
+0209                         error([<span class="string">'Looking for conditions named '''</span> cell2mat(strcat(condName,<span class="string">','</span>)) <span class="string">'''but found no matches, stopping.'</span>])
+0210                     <span class="keyword">else</span>
+0211                         warning([<span class="string">'Looking for conditions named '''</span> cell2mat(strcat(condName,<span class="string">','</span>)) <span class="string">'''but found no matches, ignoring.'</span>])
+0212                     <span class="keyword">end</span>
+0213                 <span class="keyword">end</span>
+0214             <span class="keyword">end</span>
+0215         <span class="keyword">end</span>
+0216         
+0217         <a name="_sub11" href="#_subfunctions" class="code">function trialNums=getTrialsInCondition(this,conditionNames)</a>
+0218             <span class="comment">%Return trial numbers in each condition</span>
+0219             <span class="comment">%</span>
+0220             <span class="comment">%Inputs:</span>
+0221             <span class="comment">%conditionNames -- cell containing string(s)</span>
+0222             <span class="comment">%E.g. conditionNames={'Base','Adap',{'Post','wash'}}</span>
+0223             <span class="comment">%</span>
+0224             <span class="comment">%output:</span>
+0225             <span class="comment">%trialNums -- a matrix of trial numbers in a condition</span>
+0226             <span class="comment">%</span>
+0227             <span class="comment">%example:</span>
+0228             <span class="comment">%trialNums = getTrialsInCondition({'Base'})</span>
+0229             <span class="comment">%trialNums = [1 2 3]</span>
+0230             conditionIdx=this.getConditionIdxsFromName(conditionNames);
+0231             trialNums=cell2mat(this.trialsInCondition(conditionIdx));
+0232         <span class="keyword">end</span>
+0233         
+0234         <a name="_sub12" href="#_subfunctions" class="code">function [this,change]=replaceConditionNames(this,currentName,newName)</a>
+0235             <span class="comment">%Looks for conditions whose name match the options in</span>
+0236             <span class="comment">%currentName &amp; changes them to newName</span>
+0237             change=false;
+0238            <span class="comment">%Check currentName and newName are cell arrays of same length</span>
+0239            conditionIdxs=this.getConditionIdxsFromName(currentName,[],1);
+0240            <span class="comment">%this.conditionName(conditionIdxs)=newName;</span>
+0241            <span class="keyword">for</span> i=1:length(currentName)
+0242                <span class="keyword">if</span> ~isnan(conditionIdxs(i)) &amp;&amp; ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})
+0243                     this.conditionName{conditionIdxs(i)}=newName{i};
+0244                     change=true;
+0245                <span class="keyword">end</span>
+0246            <span class="keyword">end</span>
+0247         <span class="keyword">end</span>
+0248         
+0249         <a name="_sub13" href="#_subfunctions" class="code">function [condNames]=getConditionsThatMatch(this,name,type)</a>
+0250            <span class="comment">%Returns condition names that match certain patterns</span>
+0251            
+0252            <span class="keyword">if</span> nargin&lt;2 || isempty(name) || ~isa(name,<span class="string">'char'</span>)
+0253                error(<span class="string">'Pattern name to search for needs to be a string'</span>)
+0254            <span class="keyword">end</span>
+0255            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
+0256            <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(type) &amp;&amp; isa(type,<span class="string">'char'</span>)
+0257                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
+0258            <span class="keyword">else</span>
+0259                typeMatches=true(size(patternMatches));
+0260            <span class="keyword">end</span>
+0261            condNames=this.conditionName(patternMatches &amp; typeMatches);
+0262         <span class="keyword">end</span>
+0263     <span class="keyword">end</span>
+0264     
+0265 <span class="keyword">end</span>
+0266</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

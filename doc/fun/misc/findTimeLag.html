@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findTimeLag</title>
+  <meta name="keywords" content="findTimeLag">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; findTimeLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>findTimeLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal,sampFreq,winSize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="estimateDopplerShift.html" class="code" title="function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)">estimateDopplerShift</a>	Signals need to have a relative delay <<M on any arbitrarily chosen window of time:</li><li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal,sampFreq,winSize)</a>
+0002 <span class="keyword">if</span> nargin&lt;4 || isempty(winSize)
+0003     warning(<span class="string">'Window size (max possible lag time) not given. Defaulting to 10 secs.'</span>)
+0004     winSize=10;
+0005 <span class="keyword">end</span>
+0006 <span class="keyword">if</span> nargin&lt;3 || isempty(sampFreq)
+0007     warning(<span class="string">'Sampling frequency not given. Defaulting to 1 Hz.'</span>)
+0008     sampFreq=1;
+0009 <span class="keyword">end</span>
+0010 
+0011 <span class="comment">%% Original way:</span>
+0012 <span class="comment">% [acor,lag] = xcorr(referenceSignal,secondarySignal,round(winSize*sampFreq),'none');</span>
+0013 <span class="comment">% [~,I1] = max(abs(acor));</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% corrCoef=acor(I1);</span>
+0016 <span class="comment">% lagInSamples=lag(I1);</span>
+0017 
+0018 
+0019 <span class="comment">%% Alternative way:</span>
+0020 <span class="comment">%Pad zeros to shortest signal:</span>
+0021 M=max([length(referenceSignal) length(secondarySignal)]);
+0022 referenceSignal(end+1:M)=0;
+0023 secondarySignal(end+1:M)=0;
+0024 
+0025 <span class="comment">%Find max lag</span>
+0026 F1=fft(referenceSignal);
+0027 F2=fft(fftshift(secondarySignal));
+0028 F=F1.*conj(F2);
+0029 P=ifft(F);
+0030 aux=0:.01:length(P)-1;
+0031 P2=interp1(0:length(P)-1,P,aux,<span class="string">'spline'</span>); <span class="comment">%For sub-sample resolution</span>
+0032 [~,t]=max(abs(P2));
+0033 lagInSamples=aux(t)-floor(M/2); <span class="comment">%The -floor(M/2) term accounts for the fftshift</span>
+0034 corrCoef=P2(t);
+0035 
+0036 
+0037 <span class="comment">%% All:</span>
+0038 timeDiff = lagInSamples/sampFreq; <span class="comment">%Positive time diff means that the second signal started recording after the reference signal</span>
+0039 <span class="keyword">if</span> abs(lagInSamples)&gt;=round(winSize*sampFreq) <span class="comment">%Match found at edge of interval, means no match</span>
+0040     lagInSamples=NaN;
+0041     timeDiff=NaN;
+0042     corrCoef=0;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

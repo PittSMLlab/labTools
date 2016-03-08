@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of subplotSize</title>
+  <meta name="keywords" content="subplotSize">
+  <meta name="description" content="SUBPLOTSIZE Find the optimal dimensions of a subplot figure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; subplotSize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>subplotSize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SUBPLOTSIZE Find the optimal dimensions of a subplot figure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [rows,cols]=subplotSize(n_plots,relRows,relCols) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SUBPLOTSIZE Find the optimal dimensions of a subplot figure
+   [rows,cols] = SUBPLOTSIZE(n_plots) returns the number of rows and
+   columns that would optimally fit the given number of plots into a
+   single figure
+
+   [rows,cols] = SUBPLOTSIZE(n_plots,relRows,relCols) finds the optimal
+   subplot dimensions that most closely has a relRows:relCols ratio
+
+   Example: If n_plots = 23
+     then [r,c] = subplotSize(n_plots) reutrns r = 5 c = 5
+     and [r,c] = subplotSize(n_plots,2,1) returns r = 6 c = 4
+
+   See also subplot <a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="optimizedSubPlot.html" class="code" title="function [axesHandles,figHandle]=optimizedSubPlot(Nplots,rowAspect,colAspect,order,axesFontSize,labelFontSize,titleFontSize)">optimizedSubPlot</a>	OPTIMIZEDSUBPLOT generates a full-screen figure of empty subplots that</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rows,cols]=subplotSize(n_plots,relRows,relCols)</a>
+0002 <span class="comment">%SUBPLOTSIZE Find the optimal dimensions of a subplot figure</span>
+0003 <span class="comment">%   [rows,cols] = SUBPLOTSIZE(n_plots) returns the number of rows and</span>
+0004 <span class="comment">%   columns that would optimally fit the given number of plots into a</span>
+0005 <span class="comment">%   single figure</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   [rows,cols] = SUBPLOTSIZE(n_plots,relRows,relCols) finds the optimal</span>
+0008 <span class="comment">%   subplot dimensions that most closely has a relRows:relCols ratio</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Example: If n_plots = 23</span>
+0011 <span class="comment">%     then [r,c] = subplotSize(n_plots) reutrns r = 5 c = 5</span>
+0012 <span class="comment">%     and [r,c] = subplotSize(n_plots,2,1) returns r = 6 c = 4</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   See also subplot optimizedSubPlot</span>
+0015 
+0016 <span class="comment">%   Copyright 2014 HMRL.</span>
+0017 
+0018 <span class="keyword">if</span> nargin&gt;0 &amp;&amp; nargin&lt;3
+0019     relRows=1;
+0020     relCols=1;
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="comment">% widthRatio = relCols/(relCols+relRows);</span>
+0024 <span class="comment">% heightRatio= relRows/(relCols+relRows);</span>
+0025 ratio=relCols/relRows;
+0026 
+0027 ceilsqrt=ceil(sqrt(n_plots));
+0028 
+0029 delta=ceilsqrt*(ratio-1)/(1+ratio);
+0030 
+0031 rows=round(ceilsqrt-delta);
+0032 cols=round(ceilsqrt+delta);
+0033 
+0034 diff=rows*cols-n_plots;
+0035 
+0036 <span class="keyword">while</span> diff&lt;0
+0037     <span class="keyword">if</span> (rows/cols)&gt;(relRows/relCols)
+0038         cols=cols+1;
+0039     <span class="keyword">else</span>
+0040         rows=rows+1;
+0041     <span class="keyword">end</span>
+0042     diff=rows*cols-n_plots;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">if</span> relCols&gt;relRows
+0046     <span class="keyword">if</span> diff&gt;=cols
+0047         rows=rows-1;
+0048     <span class="keyword">elseif</span> diff&gt;=rows
+0049         cols=cols-1;
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">else</span>
+0052     <span class="keyword">if</span> diff&gt;=rows
+0053         cols=cols-1;
+0054     <span class="keyword">elseif</span> diff&gt;=cols
+0055         rows=rows-1;
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">end</span>
+0060 
+0061</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

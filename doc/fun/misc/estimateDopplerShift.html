@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimateDopplerShift</title>
+  <meta name="keywords" content="estimateDopplerShift">
+  <meta name="description" content="Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; estimateDopplerShift.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>estimateDopplerShift
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:
+this could be fixed by time-aligning previously, assuming that the doppler
+shift is &lt;&lt; M during the time signal length
+MAximum detectable relative shift is ~ 1/M
+It is also recommended that signals be high-pass filtered, as it gives
+better results</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="findTimeLag.html" class="code" title="function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal,sampFreq,winSize)">findTimeLag</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)</a>
+0002 <span class="comment">%Signals need to have a relative delay &lt;&lt;M on any arbitrarily chosen window of time:</span>
+0003 <span class="comment">%this could be fixed by time-aligning previously, assuming that the doppler</span>
+0004 <span class="comment">%shift is &lt;&lt; M during the time signal length</span>
+0005 <span class="comment">%MAximum detectable relative shift is ~ 1/M</span>
+0006 <span class="comment">%It is also recommended that signals be high-pass filtered, as it gives</span>
+0007 <span class="comment">%better results</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;3
+0010     k=sqrt(length(signal2))/4; <span class="comment">%Approx number of windows that is optimal for the estimation</span>
+0011     <span class="keyword">if</span> k&gt;128
+0012         k=128;
+0013     <span class="keyword">end</span>
+0014     M=ceil(length(signal2)/k);
+0015 <span class="keyword">end</span>
+0016 
+0017 N=ceil(max([length(signal2) length(signal1)])/M);
+0018 signal1=signal1-mean(signal1);
+0019 signal2=signal2-mean(signal2);
+0020 signal1(end+1:N*M)=0;
+0021 signal2(end+1:N*M)=0; <span class="comment">%Padding zeros to have a number of samples that is multiple of the window size (M)</span>
+0022 signal1=signal1-mean(signal1);
+0023 
+0024 E1=sum(signal1.^2);
+0025 E2=sum(signal2.^2);
+0026 
+0027 <span class="comment">%% Two step approach: identify outliers, and fit a line. Repeat identifying outliers through the residuals to the line fit, until convergence.</span>
+0028 firstStep=true;
+0029 differences=true;
+0030 <span class="keyword">while</span> differences
+0031     
+0032     clear s x t lineFit
+0033     <span class="keyword">for</span> i=1:N
+0034         aux2=signal2((i-1)*M+1:i*M); <span class="comment">%Getting a portion of signal2</span>
+0035         aux1=signal1((i-1)*M+1:i*M);
+0036         [~,~,t(i)]=<a href="findTimeLag.html" class="code" title="function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal,sampFreq,winSize)">findTimeLag</a>(aux1,aux2,1,Inf);
+0037 <span class="comment">%         F1=fft(aux1);</span>
+0038 <span class="comment">%         F2=fft(aux2);</span>
+0039 <span class="comment">%         F=F1.*conj(F2);</span>
+0040 <span class="comment">%         P=ifft(F);</span>
+0041 <span class="comment">%         [s(i),t(i)]=max(abs(P));</span>
+0042 <span class="comment">%     %     [acor,lag]=xcorr(aux1,aux2,'unbiased');</span>
+0043 <span class="comment">%     %     [~,ii]=max(abs(acor));</span>
+0044 <span class="comment">%     %     t(i)=lag(ii);</span>
+0045         x(i)=M/2 + (i-1)*M;
+0046         
+0047 <span class="comment">%         if 5*N*sqrt(sum(aux1.^2)*sum(aux2.^2))&lt;sqrt(E1*E2) %Reject intervals of the signal with too little activity compared to overall</span>
+0048 <span class="comment">%             t(i)=NaN;</span>
+0049 <span class="comment">%         end</span>
+0050     <span class="keyword">end</span>
+0051     auxI=~isnan(t);
+0052     properX=x(auxI);
+0053     properT=t(auxI);
+0054     <span class="keyword">if</span> firstStep
+0055         lineFit=polyfit(properX,properT,1);
+0056         firstStep=false;
+0057         iiOld=[];
+0058     <span class="keyword">else</span>
+0059         auxX=x(ii);
+0060         auxT=t(ii);
+0061         lineFit=polyfit(auxX(auxI(ii)),auxT(auxI(ii)),1);
+0062         iiOld=ii;
+0063     <span class="keyword">end</span>
+0064     residuals=abs(t-x*lineFit(1) - lineFit(2));
+0065     pp=prctile(residuals,[50]);
+0066     <span class="keyword">if</span> pp(1)&lt;.5
+0067         pp(1)=.5; <span class="comment">%Because of quantization, we would expect to see at least .5 samples errors even on the best of fits</span>
+0068     <span class="keyword">end</span>
+0069     ii=find(residuals&lt;pp(1) &amp; auxI); <span class="comment">%Rejecting outliers</span>
+0070     
+0071         <span class="keyword">if</span> length(ii)&gt;0 &amp;&amp; (length(iiOld)~=length(ii) || any(ii~=iiOld))
+0072             differences=true;
+0073         <span class="keyword">else</span>
+0074             differences=false;
+0075         <span class="keyword">end</span>
+0076 
+0077 <span class="keyword">end</span>
+0078 <span class="comment">% figure(1)</span>
+0079 <span class="comment">% plot(x,t,'.')</span>
+0080 <span class="comment">% hold on</span>
+0081 <span class="comment">% plot(x(ii),t(ii),'g.')</span>
+0082 <span class="comment">% plot(x,x*lineFit(1)+lineFit(2),'r')</span>
+0083 <span class="comment">% hold off</span>
+0084 <span class="comment">% legend('Rejected samples','Used samples','Line fit')</span>
+0085 relativeShift=lineFit(1);
+0086 initTimeDelay=lineFit(2); <span class="comment">%In samples</span>
+0087 <span class="keyword">end</span>
+0088</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

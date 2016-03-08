@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of highpassfiltering2</title>
+  <meta name="keywords" content="highpassfiltering2">
+  <meta name="description" content="lowpassfilter function">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; highpassfiltering2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>highpassfiltering2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>lowpassfilter function</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function data1 = highpassfiltering2(datafile, cutoff, complexity, fs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">lowpassfilter function
+SMM 02/2004</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data1 = highpassfiltering2(datafile, cutoff, complexity, fs)</a>
+0002 
+0003 <span class="comment">%lowpassfilter function</span>
+0004 <span class="comment">%SMM 02/2004</span>
+0005 
+0006 <span class="comment">%pass the 'lowpassfilter' function:  1) a data array for filtering,</span>
+0007                                     <span class="comment">%2) the freqency you want removed, and</span>
+0008                                     <span class="comment">%3) the sampling frequency</span>
+0009 <span class="comment">%'lowpassfilter' function returns the data array that has been filtered with a</span>
+0010 <span class="comment">%lowpass Butterworth filter, with the specified complexity and cutoff frequency</span>
+0011 
+0012 
+0013 dataAux=[datafile;datafile(end:-1:1,:)]; <span class="comment">%Mirroring to avoid edge effects</span>
+0014 
+0015 [b,a]=butter(complexity, (cutoff/(.5*fs)),<span class="string">'high'</span>);   <span class="comment">%get highpass filter vectors</span>
+0016 h = filter(b,a,[1;zeros(size(dataAux,1)-1,1)]); <span class="comment">%Get impulse response</span>
+0017 
+0018 data2 = fft(dataAux) .* abs(fft(h*ones(1,size(datafile,2)))).^2;
+0019 
+0020 data=ifft(data2);
+0021 data1=data(1:size(datafile,1),:);
+0022 
+0023 
+0024 <span class="comment">%Filter characteristics</span>
+0025 <span class="comment">% figure</span>
+0026 <span class="comment">% plot(abs(fft(h)))</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of steppedExperimentData</title>
+  <meta name="keywords" content="steppedExperimentData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">dataStructs</a> &gt; steppedExperimentData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>steppedExperimentData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=stridedExperimentData(meta,sub,Lstrides,Rstrides)</a></li><li><a href="#_sub2" class="code">function a=get.isTimeNormalized(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="stridedExperimentData.html" class="code" title="">stridedExperimentData</a>
+0002     <span class="comment">%UNTITLED2 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         metaData <span class="comment">%experimentMetaData type</span>
+0007         subData <span class="comment">%subjectData type</span>
+0008         LstridedTrials
+0009         RstridedTrials <span class="comment">%cell array of cell array of strideData objects</span>
+0010     <span class="keyword">end</span>
+0011     
+0012     properties (Dependent)
+0013         isTimeNormalized <span class="comment">%true if all elements in data share the same timeVector (equal sampling, not just range)</span>
+0014     <span class="keyword">end</span>
+0015     
+0016     methods
+0017         <span class="comment">%Constructor</span>
+0018         <a name="_sub0" href="#_subfunctions" class="code">function this=stridedExperimentData(meta,sub,Lstrides,Rstrides)</a>
+0019                 <span class="keyword">if</span> isa(metaData,<span class="string">'experimentMetaData'</span>)
+0020                     this.metaData=meta;
+0021                 <span class="keyword">else</span>
+0022                     ME=MException();
+0023                     throw(ME)
+0024                 <span class="keyword">end</span>
+0025                 <span class="keyword">if</span> isa(sub,<span class="string">'subjectData'</span>)
+0026                     this.subData=sub;
+0027                 <span class="keyword">else</span>
+0028                     ME=MException();
+0029                     throw(ME)
+0030                 <span class="keyword">end</span>
+0031                 <span class="keyword">if</span> isa(Lstrides,<span class="string">'cell'</span>) &amp;&amp; all( cellfun(<span class="string">'isempty'</span>,Lstrides) | cellisa(Lstrides,<span class="string">'cell'</span>))
+0032                     aux=cellisa(Lstrides,<span class="string">'cell'</span>);
+0033                     idx=find(aux==1,1);
+0034                     <span class="keyword">if</span> all(cellisa(Lstrides{idx},<span class="string">'strideData'</span>)) <span class="comment">%Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all</span>
+0035                         this.LstridedData=Lstrides;
+0036                     <span class="keyword">else</span>
+0037                         ME=MException();
+0038                         throw(ME);
+0039                     <span class="keyword">end</span>
+0040                 <span class="keyword">else</span>
+0041                     ME=MException();
+0042                     throw(ME);
+0043                 <span class="keyword">end</span>
+0044                 <span class="keyword">if</span> isa(Rstrides,<span class="string">'cell'</span>) &amp;&amp; all( cellfun(<span class="string">'isempty'</span>,Rstrides) | cellisa(Rstrides,<span class="string">'cell'</span>))
+0045                     aux=cellisa(Rstrides,<span class="string">'cell'</span>);
+0046                     idx=find(aux==1,1);
+0047                     <span class="keyword">if</span> all(cellisa(Rstrides{idx},<span class="string">'strideData'</span>)) <span class="comment">%Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all</span>
+0048                         this.RstridedData=Rstrides;
+0049                     <span class="keyword">else</span>
+0050                         ME=MException();
+0051                         throw(ME);
+0052                     <span class="keyword">end</span>
+0053                 <span class="keyword">else</span>
+0054                     ME=MException();
+0055                     throw(ME);
+0056                 <span class="keyword">end</span>
+0057         <span class="keyword">end</span>
+0058         
+0059         <span class="comment">%Getters for Dependent properties</span>
+0060         <a name="_sub1" href="#_subfunctions" class="code">function a=get.isTimeNormalized(this)</a>
+0061             a=0; <span class="comment">%ToDo!</span>
+0062         <span class="keyword">end</span>
+0063         
+0064     <span class="keyword">end</span>
+0065     
+0066 <span class="keyword">end</span>
+0067</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

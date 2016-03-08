@@ -1,0 +1,391 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of COPCalculator</title>
+  <meta name="keywords" content="COPCalculator">
+  <meta name="description" content="% Filter the GRFs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">biomechAnalysis</a> &gt; COPCalculator.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/biomechAnalysis&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>COPCalculator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Filter the GRFs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [COPTS] = COPCalculator(GRFData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Filter the GRFs</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="TorqueCalculator.html" class="code" title="function [ AllMomentsTS,COPTS,COMTS ] = TorqueCalculator(rawTrialData, weight)">TorqueCalculator</a>	TorqueCalculator This function calculates the torques at each of the</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [COPTS] = COPCalculator(GRFData)</a>
+0002 
+0003 <span class="comment">%% Filter the GRFs</span>
+0004 or=GRFData.orientation;
+0005 GRFData=GRFData.medianFilter(3);
+0006 GRFData=GRFData.lowPassFilter(25);
+0007 
+0008 
+0009 
+0010 <span class="comment">%% Define the force data</span>
+0011 <span class="comment">%---------------------------------------------------------</span>
+0012 <span class="comment">%PABLO, new code:</span>
+0013 labs={<span class="string">'LFx'</span>,<span class="string">'LFy'</span>,<span class="string">'LFz'</span>,<span class="string">'LMx'</span>,<span class="string">'LMy'</span>,<span class="string">'LMz'</span>,<span class="string">'RFx'</span>,<span class="string">'RFy'</span>,<span class="string">'RFz'</span>,<span class="string">'RMx'</span>,<span class="string">'RMy'</span>,<span class="string">'RMz'</span>};
+0014 aux=GRFData.getDataAsVector(labs);
+0015 <span class="keyword">for</span> i=1:length(labs)
+0016     eval([labs{i} <span class="string">'=aux(:,i);'</span>]);
+0017 <span class="keyword">end</span>
+0018 clear aux
+0019 <span class="comment">%---------------------------------------------------</span>
+0020 <span class="comment">%PABLO, commented out:</span>
+0021 <span class="comment">% if strcmp(in.GRFData.labels{1,1},'LFx')==1</span>
+0022 <span class="comment">%     LFx=in.GRFData.Data(:,1);</span>
+0023 <span class="comment">%     LFy=in.GRFData.Data(:,2);</span>
+0024 <span class="comment">%     LFz=in.GRFData.Data(:,3);</span>
+0025 <span class="comment">%     LMx=in.GRFData.Data(:,4);</span>
+0026 <span class="comment">%     LMy=in.GRFData.Data(:,5);</span>
+0027 <span class="comment">%     LMz=in.GRFData.Data(:,6);</span>
+0028 <span class="comment">%     RFx=in.GRFData.Data(:,7);</span>
+0029 <span class="comment">%     RFy=in.GRFData.Data(:,8);</span>
+0030 <span class="comment">%     RFz=in.GRFData.Data(:,9);</span>
+0031 <span class="comment">%     RMx=in.GRFData.Data(:,10);</span>
+0032 <span class="comment">%     RMy=in.GRFData.Data(:,11);</span>
+0033 <span class="comment">%     RMz=in.GRFData.Data(:,12);</span>
+0034 <span class="comment">% elseif strcmp(in.GRFData.labels{1,1},'RFx')==1</span>
+0035 <span class="comment">%     LFx=in.GRFData.Data(:,7);</span>
+0036 <span class="comment">%     LFy=in.GRFData.Data(:,8);</span>
+0037 <span class="comment">%     LFz=in.GRFData.Data(:,9);</span>
+0038 <span class="comment">%     LMx=in.GRFData.Data(:,10);</span>
+0039 <span class="comment">%     LMy=in.GRFData.Data(:,11);</span>
+0040 <span class="comment">%     LMz=in.GRFData.Data(:,12);</span>
+0041 <span class="comment">%     RFx=in.GRFData.Data(:,1);</span>
+0042 <span class="comment">%     RFy=in.GRFData.Data(:,2);</span>
+0043 <span class="comment">%     RFz=in.GRFData.Data(:,3);</span>
+0044 <span class="comment">%     RMx=in.GRFData.Data(:,4);</span>
+0045 <span class="comment">%     RMy=in.GRFData.Data(:,5);</span>
+0046 <span class="comment">%     RMz=in.GRFData.Data(:,6);</span>
+0047 <span class="comment">% end</span>
+0048 <span class="comment">%-------------------------------------------------</span>
+0049 
+0050 <span class="comment">%---------------------------------</span>
+0051 <span class="comment">%PABLO, commented out (I don't think the events should be needed for any of these computations):</span>
+0052 
+0053 <span class="comment">% TheEvents=events.Data;</span>
+0054 <span class="comment">% SHS=find(TheEvents(:,1)==1);</span>
+0055 <span class="comment">% FHS=find(TheEvents(:,2)==1);</span>
+0056 <span class="comment">% STO=find(TheEvents(:,3)==1);</span>
+0057 <span class="comment">% FTO=find(TheEvents(:,4)==1);</span>
+0058 <span class="comment">% Cuts out all events before the first SHS so that it is always the first</span>
+0059 <span class="comment">% event</span>
+0060 <span class="comment">% while FHS(1)&lt;SHS(1)</span>
+0061 <span class="comment">%     FHS(1)=[];</span>
+0062 <span class="comment">% end</span>
+0063 <span class="comment">% while STO(1)&lt;SHS(1)</span>
+0064 <span class="comment">%     STO(1)=[];</span>
+0065 <span class="comment">% end</span>
+0066 <span class="comment">% while FTO(1)&lt;SHS(1)</span>
+0067 <span class="comment">%     FTO(1)=[];</span>
+0068 <span class="comment">% end</span>
+0069 <span class="comment">% -----------------------------------</span>
+0070 
+0071 <span class="comment">% Define the Calibration Matrices that were experimentally calculated based</span>
+0072 <span class="comment">%on Dr. Collins' method</span>
+0073 LeftCalibrationMatrix=[0.977443018179296,0.0265878123782286,0.00727178625926090,-4.01453477495388e-06,6.40955506816272e-06,-6.37851553161149e-06;-0.0268315126953482,1.00295568287710,-0.000701042994051120,-1.14416377324098e-06,-1.32448870901600e-05,1.30878158412852e-05;0.212020149923397,-0.0599681540847165,0.936220974404682,-3.35889204404071e-07,-4.22088717230903e-05,0.000198374222897077;87.9775199583949,-82.7205462087585,-31.2294587953683,0.968979166120067,-0.0310407162599708,0.103337032656768;56.2959837326107,-18.7996561497853,4.75495955638203,-0.000983104515514435,0.955214717752167,0.0582797232696294;23.3601483862054,-18.3109163366889,-1.34627847663656,-0.00190791038185259,-0.00108948397982946,0.999613747815472];
+0074 RightCalibrationMatrix=[1.03281907786820,0.0256265922835897,-0.00660442602474871,-3.01056674606954e-06,-2.31116205395644e-05,4.91854505069932e-06;-0.0195416552881650,0.998677907839746,-0.0127518171776215,3.81267049815018e-06,-2.69134385473006e-05,1.66884053275253e-05;0.0314488158391576,-0.185105961633033,0.888218372383029,-1.37726138481357e-05,-8.76750841846458e-05,6.89770726674376e-05;160.545873625969,-151.874973474082,-71.5811766262873,0.941945649494691,-0.0793439412178859,0.150522165903692;37.0330639923679,43.4298820739839,34.9546221913499,-0.00251366842359346,0.967371637874083,0.00298515313557242;-44.0833555096415,-21.8181696241636,8.11732968729231,0.00423294702847277,0.0369328291807189,0.995967448976484];
+0075 <span class="comment">% Apply the calibration matrices to the force and moment data</span>
+0076 OldLeftForces=[LFx';LFy';LFz';LMx';LMy';LMz'];
+0077 OldRightForces=[RFx';RFy';RFz';RMx';RMy';RMz'];
+0078 NewLeftForces=LeftCalibrationMatrix*OldLeftForces;
+0079 NewRightForces=RightCalibrationMatrix*OldRightForces;
+0080 GRFxL=-1*NewLeftForces(1,:);
+0081 GRFyL=-1*NewLeftForces(2,:);
+0082 GRFzL=-1*NewLeftForces(3,:);
+0083 GRMxL=-1*NewLeftForces(4,:);
+0084 GRMyL=-1*NewLeftForces(5,:);
+0085 GRFxR=-1*NewRightForces(1,:);
+0086 GRFyR=-1*NewRightForces(2,:);
+0087 GRFzR=-1*NewRightForces(3,:);
+0088 GRMxR=-1*NewRightForces(4,:);
+0089 GRMyR=-1*NewRightForces(5,:);
+0090 
+0091 
+0092 <span class="comment">% Set all moment and some force data equal to zero when the foot is not</span>
+0093 <span class="comment">% on the force plate. Small fluctuations in the data here cause the</span>
+0094 <span class="comment">% moment data to increase rapidly.</span>
+0095 
+0096 <span class="comment">%---------------------------------------------</span>
+0097 <span class="comment">%PABLO: Commented out. We need to come up with a more robust way to force</span>
+0098 <span class="comment">%data to 0 during swing. May be threshold the forces</span>
+0099 
+0100 <span class="comment">% if DomLeg==1</span>
+0101 <span class="comment">%     for e=1:length(SHS)-2</span>
+0102 <span class="comment">%         stride_start=STO(e);</span>
+0103 <span class="comment">%         stride_end=SHS(e+1);</span>
+0104 <span class="comment">%         GRMxL(stride_end:stride_start)=0;</span>
+0105 <span class="comment">%         GRMyL(stride_end:stride_start)=0;</span>
+0106 <span class="comment">%         GRFxL(stride_end:stride_start)=0;</span>
+0107 <span class="comment">%         GRFyL(stride_end:stride_start)=0;</span>
+0108 <span class="comment">%         GRFzL(stride_end:stride_start)=0;</span>
+0109 <span class="comment">%     end</span>
+0110 <span class="comment">%     for u=1:length(FHS)-2</span>
+0111 <span class="comment">%         stride_start=FTO(u);</span>
+0112 <span class="comment">%         stride_end=FHS(u);</span>
+0113 <span class="comment">%         GRMxR(stride_end:stride_start)=0;</span>
+0114 <span class="comment">%         GRMyR(stride_end:stride_start)=0;</span>
+0115 <span class="comment">%         GRFxR(stride_end:stride_start)=0;</span>
+0116 <span class="comment">%         GRFyR(stride_end:stride_start)=0;</span>
+0117 <span class="comment">%         GRFzR(stride_end:stride_start)=0;</span>
+0118 <span class="comment">%     end</span>
+0119 <span class="comment">% elseif DomLeg==0</span>
+0120 <span class="comment">%     for e=1:length(SHS)-2</span>
+0121 <span class="comment">%         stride_start=STO(e);</span>
+0122 <span class="comment">%         stride_end=SHS(e+1);</span>
+0123 <span class="comment">%         GRMxR(stride_end:stride_start)=0;</span>
+0124 <span class="comment">%         GRMyR(stride_end:stride_start)=0;</span>
+0125 <span class="comment">%         GRFxR(stride_end:stride_start)=0;</span>
+0126 <span class="comment">%         GRFyR(stride_end:stride_start)=0;</span>
+0127 <span class="comment">%         GRFzR(stride_end:stride_start)=0;</span>
+0128 <span class="comment">%     end</span>
+0129 <span class="comment">%     for u=1:length(FHS)-2</span>
+0130 <span class="comment">%         stride_start=FTO(u);</span>
+0131 <span class="comment">%         stride_end=FHS(u);</span>
+0132 <span class="comment">%         GRMxL(stride_end:stride_start)=0;</span>
+0133 <span class="comment">%         GRMyL(stride_end:stride_start)=0;</span>
+0134 <span class="comment">%         GRFxL(stride_end:stride_start)=0;</span>
+0135 <span class="comment">%         GRFyL(stride_end:stride_start)=0;</span>
+0136 <span class="comment">%         GRFzL(stride_end:stride_start)=0;</span>
+0137 <span class="comment">%     end</span>
+0138 <span class="comment">% end</span>
+0139 <span class="comment">%-----------------------------------------------------</span>
+0140 
+0141 
+0142 <span class="comment">% Apply filters to the Force data collected. Data collected prior to</span>
+0143 <span class="comment">% Summer 2014 is very noisy due to the lack of a true ground and needs</span>
+0144 <span class="comment">% a heavy duty filter. Should not drastically affect other data.</span>
+0145 FiltDesign=fdesign.lowpass(<span class="string">'N,F3db'</span>,6,25/1000);
+0146 TheDesign=design(FiltDesign,<span class="string">'butter'</span>);
+0147 GRFxL = filtfilthd(TheDesign,GRFxL');
+0148 GRFyL = filtfilthd(TheDesign,GRFyL');
+0149 GRFzL = filtfilthd(TheDesign,GRFzL');
+0150 GRFxR = filtfilthd(TheDesign,GRFxR');
+0151 GRFyR = filtfilthd(TheDesign,GRFyR');
+0152 GRFzR = filtfilthd(TheDesign,GRFzR');
+0153 <span class="comment">% Apply a filter to the moment data collected as well.</span>
+0154 [Bmom, Amom]=butter(4,10/(1000/2));
+0155 GRMxL=filtfilt(Bmom, Amom, GRMxL)';
+0156 GRMyL=filtfilt(Bmom, Amom, GRMyL)';
+0157 GRMxR=filtfilt(Bmom, Amom, GRMxR)';
+0158 GRMyR=filtfilt(Bmom, Amom, GRMyR)';
+0159 
+0160 
+0161 <span class="comment">% Set all moment and some force data equal to zero when the foot is not</span>
+0162 <span class="comment">% on the force plate. The filter can cause there to be non-zero data</span>
+0163 <span class="comment">% when the foot is not on the forceplate.</span>
+0164 
+0165 <span class="comment">%-------------------------------------------</span>
+0166 <span class="comment">%PABLO: Commented out. Once again, need a more robust way to do this.</span>
+0167 
+0168 <span class="comment">% if DomLeg==1</span>
+0169 <span class="comment">%     for e=1:length(SHS)-2</span>
+0170 <span class="comment">%         stride_start=STO(e);</span>
+0171 <span class="comment">%         stride_end=SHS(e+1);</span>
+0172 <span class="comment">%         GRMxL(stride_end:stride_start)=0;</span>
+0173 <span class="comment">%         GRMyL(stride_end:stride_start)=0;</span>
+0174 <span class="comment">%         GRFxL(stride_end:stride_start)=0;</span>
+0175 <span class="comment">%         GRFyL(stride_end:stride_start)=0;</span>
+0176 <span class="comment">%         GRFzL(stride_end:stride_start)=0;</span>
+0177 <span class="comment">%     end</span>
+0178 <span class="comment">%     for u=1:length(FHS)-2</span>
+0179 <span class="comment">%         stride_start=FTO(u);</span>
+0180 <span class="comment">%         stride_end=FHS(u);</span>
+0181 <span class="comment">%         GRMxR(stride_end:stride_start)=0;</span>
+0182 <span class="comment">%         GRMyR(stride_end:stride_start)=0;</span>
+0183 <span class="comment">%         GRFxR(stride_end:stride_start)=0;</span>
+0184 <span class="comment">%         GRFyR(stride_end:stride_start)=0;</span>
+0185 <span class="comment">%         GRFzR(stride_end:stride_start)=0;</span>
+0186 <span class="comment">%     end</span>
+0187 <span class="comment">% elseif DomLeg==0</span>
+0188 <span class="comment">%     for e=1:length(SHS)-2</span>
+0189 <span class="comment">%         stride_start=STO(e);</span>
+0190 <span class="comment">%         stride_end=SHS(e+1);</span>
+0191 <span class="comment">%         GRMxR(stride_end:stride_start)=0;</span>
+0192 <span class="comment">%         GRMyR(stride_end:stride_start)=0;</span>
+0193 <span class="comment">%         GRFxR(stride_end:stride_start)=0;</span>
+0194 <span class="comment">%         GRFyR(stride_end:stride_start)=0;</span>
+0195 <span class="comment">%         GRFzR(stride_end:stride_start)=0;</span>
+0196 <span class="comment">%     end</span>
+0197 <span class="comment">%     for u=1:length(FHS)-2</span>
+0198 <span class="comment">%         stride_start=FTO(u);</span>
+0199 <span class="comment">%         stride_end=FHS(u);</span>
+0200 <span class="comment">%         GRMxL(stride_end:stride_start)=0;</span>
+0201 <span class="comment">%         GRMyL(stride_end:stride_start)=0;</span>
+0202 <span class="comment">%         GRFxL(stride_end:stride_start)=0;</span>
+0203 <span class="comment">%         GRFyL(stride_end:stride_start)=0;</span>
+0204 <span class="comment">%         GRFzL(stride_end:stride_start)=0;</span>
+0205 <span class="comment">%     end</span>
+0206 <span class="comment">% end</span>
+0207 <span class="comment">%-----------------------------------------------------</span>
+0208 
+0209 <span class="comment">% Calculate the center of pressure for the data.</span>
+0210 COPxL=[(((-.005.*GRFxL-GRMyL./1000)./GRFzL))]*1000;<span class="comment">%millimeters</span>
+0211 COPyL=[(((-.005.*GRFyL+GRMxL./1000)./GRFzL))]*1000;
+0212 COPxR=[(((-.005.*-1.*GRFxR+GRMyR./1000)./GRFzR))]*1000;
+0213 COPyR=[(((-.005.*GRFyR+GRMxR./1000)./GRFzR))]*1000;
+0214 <span class="comment">% Transform the center of pressure data from the local treadmill</span>
+0215 <span class="comment">% coordinate system to the global vicon coordinate system.</span>
+0216 LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];
+0217 RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];
+0218 <span class="keyword">for</span> i=1:length(COPxR)
+0219     LeftCOP=[1;COPxL(i);COPyL(i);0];
+0220     RightCOP=[1;COPxR(i);COPyR(i);0];
+0221     NewLeftCOP=LTransformationMatrix*LeftCOP;
+0222     NewRightCOP=RTransformationMatrix*RightCOP;
+0223     NewCOPxL(i)=NewLeftCOP(2);
+0224     NewCOPyL(i)=NewLeftCOP(3);
+0225     NewCOPxR(i)=NewRightCOP(2);
+0226     NewCOPyR(i)=NewRightCOP(3);
+0227 <span class="keyword">end</span>
+0228 <span class="comment">% Filter the center of pressure data. This is difficult because the</span>
+0229 <span class="comment">% nans cause the filters to do strange things. Therefore they are set</span>
+0230 <span class="comment">% to the average of the previous five data points, then a filter is</span>
+0231 <span class="comment">% applied and then the NaN's are placed back into the center of</span>
+0232 <span class="comment">% pressure data.</span>
+0233 
+0234 <span class="comment">%------------------------------------------------</span>
+0235 <span class="comment">% PABLO Commented OUT</span>
+0236 <span class="comment">% xL=isnan(NewCOPxL);</span>
+0237 <span class="comment">% xR=isnan(NewCOPxR);</span>
+0238 <span class="comment">% yL=isnan(NewCOPyL);</span>
+0239 <span class="comment">% yR=isnan(NewCOPyR);</span>
+0240 <span class="comment">% for i=1:length(xL)-25</span>
+0241 <span class="comment">%     % Setting the NaN's to the mean of the data</span>
+0242 <span class="comment">%     if xL(i)==1</span>
+0243 <span class="comment">%         if xL(i+25)==1</span>
+0244 <span class="comment">%             NewCOPxL(i)=mean(NewCOPxL(i-6:i-1));</span>
+0245 <span class="comment">%         else</span>
+0246 <span class="comment">%             NewCOPxL(i)=NewCOPxL(i+25);</span>
+0247 <span class="comment">%         end</span>
+0248 <span class="comment">%     end</span>
+0249 <span class="comment">%     if xR(i)==1</span>
+0250 <span class="comment">%         if xR(i+25)==1</span>
+0251 <span class="comment">%             NewCOPxR(i)=mean(NewCOPxR(i-6:i-1));</span>
+0252 <span class="comment">%         else</span>
+0253 <span class="comment">%             NewCOPxR(i)=NewCOPxR(i+25);</span>
+0254 <span class="comment">%         end</span>
+0255 <span class="comment">%     end</span>
+0256 <span class="comment">%     if yL(i)==1</span>
+0257 <span class="comment">%         if yL(i+25)==1</span>
+0258 <span class="comment">%             NewCOPyL(i)=mean(NewCOPyL(i-6:i-1));</span>
+0259 <span class="comment">%         else</span>
+0260 <span class="comment">%             NewCOPyL(i)=NewCOPyL(i+25);</span>
+0261 <span class="comment">%         end</span>
+0262 <span class="comment">%     end</span>
+0263 <span class="comment">%     if yR(i)==1</span>
+0264 <span class="comment">%         if yR(i+25)</span>
+0265 <span class="comment">%             NewCOPyR(i)=mean(NewCOPyR(i-6:i-1));</span>
+0266 <span class="comment">%         else</span>
+0267 <span class="comment">%             NewCOPyR(i)=NewCOPyR(i+25);</span>
+0268 <span class="comment">%         end</span>
+0269 <span class="comment">%     end</span>
+0270 <span class="comment">% end</span>
+0271 <span class="comment">%---------------------------------------------</span>
+0272 <span class="comment">% PABLO, new code to substitute NaNs, by doing a linear interpolation:</span>
+0273 ll={<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
+0274 <span class="keyword">for</span> i=1:length(ll)
+0275     eval([<span class="string">'aux='</span> ll{i} <span class="string">';'</span>]);
+0276     badInds(i,:)=isnan(aux);
+0277     goodInds=~badInds(i,:);
+0278     <span class="keyword">if</span> any(goodInds) <span class="comment">%% HH temproary fix.</span>
+0279         aux=interp1(find(~badInds(i,:)),aux(~badInds(i,:)),1:length(aux),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0280         eval([ll{i} <span class="string">'=aux;'</span>]);
+0281     <span class="keyword">end</span>    
+0282 <span class="keyword">end</span>
+0283 <span class="comment">%---------------------------------------------</span>
+0284 
+0285 
+0286 <span class="comment">% Get rid of large outliers to the data</span>
+0287 <span class="comment">% for i=2:length(NewCOPxL)</span>
+0288 <span class="comment">%     if abs(NewCOPxL(i)-NewCOPxL(i-1))&gt;25000</span>
+0289 <span class="comment">%         NewCOPxL(i)=NewCOPxL(i-1);</span>
+0290 <span class="comment">%     end</span>
+0291 <span class="comment">%     if abs(NewCOPxR(i)-NewCOPxR(i-1))&gt;25000</span>
+0292 <span class="comment">%         NewCOPxR(i)=NewCOPxR(i-1);</span>
+0293 <span class="comment">%     end</span>
+0294 <span class="comment">%     if abs(NewCOPyL(i)-NewCOPyL(i-1))&gt;25000</span>
+0295 <span class="comment">%         NewCOPyL(i)=NewCOPyL(i-1);</span>
+0296 <span class="comment">%     end</span>
+0297 <span class="comment">%     if abs(NewCOPyR(i)-NewCOPyR(i-1))&gt;25000</span>
+0298 <span class="comment">%         NewCOPyR(i)=NewCOPyR(i-1);</span>
+0299 <span class="comment">%     end</span>
+0300 <span class="comment">% end</span>
+0301 
+0302 [Bcop,Acop]=butter(1,3/100/2);
+0303 [Bcopy,Acopy]=butter(1,3/100/2);
+0304 NewCOPxL=filtfilt(Bcop,Acop,NewCOPxL);
+0305 NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);
+0306 NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);
+0307 NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);
+0308 
+0309 <span class="comment">%Replace the NaNs that were previously removed:</span>
+0310 <span class="comment">%---------------------------------</span>
+0311 <span class="comment">% PABLO, new code to replace NaNs, by doing a linear interpolation:</span>
+0312 ll={<span class="string">'NewCOPxL'</span>,<span class="string">'NewCOPxR'</span>,<span class="string">'NewCOPyL'</span>,<span class="string">'NewCOPyR'</span>};
+0313 <span class="keyword">for</span> i=1:length(ll)
+0314     eval([<span class="string">'aux='</span> ll{i} <span class="string">';'</span>]);
+0315     aux(badInds(i,:))=NaN;
+0316     eval([ll{i} <span class="string">'=aux;'</span>]);
+0317 <span class="keyword">end</span>
+0318 <span class="comment">%-----------------------------------</span>
+0319 <span class="comment">%Pablo: commented out</span>
+0320 <span class="comment">% for i=1:length(NewCOPxL)</span>
+0321 <span class="comment">%     if xL(i)==1</span>
+0322 <span class="comment">%         NewCOPxL(i)=NaN;</span>
+0323 <span class="comment">%     end</span>
+0324 <span class="comment">%     if xR(i)==1</span>
+0325 <span class="comment">%         NewCOPxR(i)=NaN;</span>
+0326 <span class="comment">%     end</span>
+0327 <span class="comment">%     if yR(i)==1</span>
+0328 <span class="comment">%         NewCOPyR(i)=NaN;</span>
+0329 <span class="comment">%     end</span>
+0330 <span class="comment">%     if yL(i)==1</span>
+0331 <span class="comment">%         NewCOPyL(i)=NaN;</span>
+0332 <span class="comment">%     end</span>
+0333 <span class="comment">% end</span>
+0334 <span class="comment">%----------------------------------</span>
+0335 
+0336 <span class="comment">% keyboard</span>
+0337 COPData=[NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' NewCOPyR' zeros(size(NewCOPxR))' GRFxL GRFyL GRFzL GRFxR GRFyR GRFzR GRMxL GRMyL zeros(size(GRMyL)) GRMxR GRMyR zeros(size(GRMyL))];
+0338 
+0339 <span class="comment">%Pablo: creating orientedLabTS</span>
+0340 COPTS=orientedLabTimeSeries(COPData,GRFData.Time(1),GRFData.sampPeriod,{<span class="string">'LCOPx'</span>,<span class="string">'LCOPy'</span>,<span class="string">'LCOPz'</span>,<span class="string">'RCOPx'</span>,<span class="string">'RCOPy'</span>,<span class="string">'RCOPz'</span>, <span class="string">'LGRFx'</span>,<span class="string">'LGRFy'</span>,<span class="string">'LGRFz'</span>,<span class="string">'RGRFx'</span>,<span class="string">'RGRFy'</span>,<span class="string">'RGRFz'</span>,<span class="string">'LGRMx'</span>,<span class="string">'LGRMy'</span>,<span class="string">'LGRMz'</span>,<span class="string">'RGRMx'</span>,<span class="string">'RGRMy'</span>,<span class="string">'RGRMz'</span>},or);
+0341 
+0342 
+0343 <span class="keyword">end</span>
+0344</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

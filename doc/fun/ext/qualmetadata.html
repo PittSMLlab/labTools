@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of qualmetadata</title>
+  <meta name="keywords" content="qualmetadata">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">ext</a> &gt; qualmetadata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>qualmetadata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="qualmetadata.html" class="code" title="">qualmetadata</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="qualmetadata.html" class="code" title="">qualmetadata</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function A = getData(h, data)</a></li><li><a href="#_sub2" class="code">function [out,new_metadata] = setData(h, newval)</a></li><li><a href="#_sub3" class="code">function outmetadata = qualitymerge(in1, in2)</a></li><li><a href="#_sub4" class="code">function this = loadobj(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef (CaseInsensitiveProperties = true, TruncatedProperties = true) <a href="qualmetadata.html" class="code" title="">qualmetadata</a>
+0002 <span class="comment">% No help found for tsdata.qualmetadata.</span>
+0003 
+0004 <span class="comment">% Copyright 2005-2011 The MathWorks, Inc.</span>
+0005 
+0006     properties
+0007         Code;
+0008         Description;
+0009         UserData;
+0010     <span class="keyword">end</span>
+0011 
+0012     properties (Hidden = true, GetAccess = protected, SetAccess = protected)
+0013         Version = 10.1;
+0014     <span class="keyword">end</span>
+0015     
+0016     methods
+0017         
+0018         <a name="_sub0" href="#_subfunctions" class="code">function A = getData(h, data) </a><span class="comment">%#ok&lt;MANU&gt;</span>
+0019             <span class="comment">%GETDATA Extracts quality data from quality</span>
+0020             
+0021             <span class="comment">%   GETDATA is used to extract data from the quality ValueArray. It checks</span>
+0022             <span class="comment">%   that the stored quality codes match the conversion table specified in</span>
+0023             <span class="comment">%   the qualmetadata object.</span>
+0024             <span class="comment">%</span>
+0025             <span class="comment">%   Copyright 2005-2009 The MathWorks, Inc.</span>
+0026             
+0027             <span class="comment">% Cast quality codes back to doubles</span>
+0028             <span class="comment">%data = double(data);</span>
+0029             
+0030             <span class="keyword">if</span> isempty(data) <span class="comment">% Don't return any 0xn type arrays, which look strange in displays</span>
+0031                 A = [];
+0032             <span class="keyword">else</span>
+0033                 A = data;
+0034             <span class="keyword">end</span>
+0035         <span class="keyword">end</span>
+0036         
+0037         <a name="_sub1" href="#_subfunctions" class="code">function [out,new_metadata] = setData(h, newval)</a>
+0038             <span class="comment">%SETDATA Assigns data into quality ValueArray</span>
+0039             <span class="comment">%</span>
+0040             <span class="comment">%   SETDATA is used to assign data into the quality ValueArray. It checks</span>
+0041             <span class="comment">%   that the stored quality codes match the conversion table specified in</span>
+0042             <span class="comment">%   the qualmetadata object and converts to int8 values prior to storage.</span>
+0043             
+0044             <span class="comment">%   Copyright 2005-2009 The MathWorks, Inc.</span>
+0045             
+0046             <span class="comment">% Sets data to the ValueArray data property if the &quot;data&quot; property</span>
+0047             
+0048             <span class="comment">% Quality data can be either a vector or an array with the same size</span>
+0049             <span class="comment">% as the data</span>
+0050             
+0051             <span class="comment">% Cast quality codes to integers and check that this does not corrupt the</span>
+0052             <span class="comment">% data</span>
+0053             oldval = newval;
+0054             <span class="keyword">if</span> any(isnan(newval(:)))
+0055                 error(message(<span class="string">'MATLAB:tsdata:qualmetadata:setData:allint'</span>))
+0056             <span class="keyword">end</span>
+0057             newval = int8(real(newval));
+0058             <span class="keyword">if</span> ~isempty(newval) &amp;&amp; any(abs(double(oldval(:))-double(newval(:)))&gt;eps(255))
+0059                 error(message(<span class="string">'MATLAB:tsdata:qualmetadata:setData:integerCodes'</span>))
+0060             <span class="keyword">end</span>
+0061             
+0062             <span class="comment">% workaround: UDD bug causing segV on non-Windows platforms</span>
+0063             <span class="keyword">if</span> ~isempty(newval)
+0064                 out = newval;
+0065             <span class="keyword">else</span>
+0066                 out = [];
+0067             <span class="keyword">end</span>
+0068             
+0069             new_metadata = h;
+0070         <span class="keyword">end</span>
+0071         
+0072         <a name="_sub2" href="#_subfunctions" class="code">function outmetadata = qualitymerge(in1, in2)</a>
+0073             <span class="comment">%QUALITYMERGE  Merges qualmetadata in overloaded arithmetic and</span>
+0074             <span class="comment">%concatenation. If quality tables are nested, function returns the</span>
+0075             <span class="comment">%description with more info</span>
+0076             
+0077             <span class="comment">%   Copyright 2005-2009 The MathWorks, Inc.</span>
+0078             
+0079             
+0080             <span class="comment">% Is in1 subset of in2?</span>
+0081             [~,I] = ismember(in1.Code,in2.Code);
+0082             I = I(find(I)); <span class="comment">%#ok&lt;*FNDSB&gt;</span>
+0083             <span class="keyword">if</span> length(I)==length(in1.Code) &amp;&amp; ~isempty(in1.Code) &amp;&amp;  <span class="keyword">...</span>
+0084                     isequal(in1.Description,in2.Description(I))
+0085                 outmetadata = in2;
+0086                 <span class="keyword">return</span>
+0087             <span class="keyword">end</span>
+0088             
+0089             <span class="comment">% Is in1 subset of in2?</span>
+0090             [~,I] = ismember(in2.Code,in1.Code);
+0091             I = I(find(I));
+0092             <span class="keyword">if</span> length(I)==length(in2.Code) &amp;&amp; ~isempty(in2.Code) &amp;&amp; <span class="keyword">...</span>
+0093                     isequal(in2.Description,in1.Description(I))
+0094                 outmetadata = in1;
+0095                 <span class="keyword">return</span>
+0096             <span class="keyword">end</span>
+0097             
+0098             <span class="comment">% otherwise, return an empty one</span>
+0099             outmetadata = tsdata.qualmetadata;
+0100         <span class="keyword">end</span>
+0101     <span class="keyword">end</span>
+0102     methods (Static = true)
+0103         <a name="_sub3" href="#_subfunctions" class="code">function this = loadobj(obj)</a>
+0104             <span class="keyword">if</span> isstruct(obj)
+0105                 this = tsdata.qualmetadata;
+0106                 <span class="keyword">if</span> isfield(obj,<span class="string">'Code'</span>)
+0107                     this.Code = obj.Code;
+0108                 <span class="keyword">end</span>
+0109                 <span class="keyword">if</span> isfield(obj,<span class="string">'Description'</span>)
+0110                     this.Description = obj.Description;
+0111                 <span class="keyword">end</span>
+0112                 <span class="keyword">if</span> isfield(obj,<span class="string">'UserData'</span>)
+0113                     this.UserData = obj.UserData;
+0114                 <span class="keyword">end</span>
+0115             <span class="keyword">elseif</span> isa(obj,<span class="string">'tsdata.qualmetadata'</span>)
+0116                 this = obj;
+0117             <span class="keyword">else</span>
+0118                 error(message(<span class="string">'MATLAB:tsdata:qualmetadata:loadobj:invloadqualmetadata'</span>));
+0119             <span class="keyword">end</span>
+0120         <span class="keyword">end</span>
+0121     <span class="keyword">end</span>
+0122 <span class="keyword">end</span>
+0123 
+0124 
+0125</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

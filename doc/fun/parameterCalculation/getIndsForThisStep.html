@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getIndsForThisStep</title>
+  <meta name="keywords" content="getIndsForThisStep">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; getIndsForThisStep.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getIndsForThisStep
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,indFHS2,indSTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2] = getIndsForThisStep(events,eventsTime,step) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,indFHS2,indSTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2] = getIndsForThisStep(events,eventsTime,step)</a>
+0002 
+0003 SHS=events(:,1);
+0004 FHS=events(:,2);
+0005 STO=events(:,3);
+0006 FTO=events(:,4);
+0007 inds=find(SHS); 
+0008 
+0009     indSHS=inds(step);
+0010     timeSHS=eventsTime(indSHS);
+0011     indFTO=find((eventsTime&gt;timeSHS)&amp;FTO,1);
+0012     timeFTO=eventsTime(indFTO);
+0013     indFHS=find((eventsTime&gt;timeFTO)&amp;FHS,1);
+0014     timeFHS=eventsTime(indFHS);
+0015     indSTO=find((eventsTime&gt;timeFHS)&amp;STO,1);
+0016     timeSTO=eventsTime(indSTO);
+0017     indSHS2=inds(step+1);
+0018     timeSHS2=eventsTime(indSHS2);
+0019     <span class="keyword">if</span> ~isempty(timeSHS2)
+0020         indFTO2=find((eventsTime&gt;timeSHS2)&amp;FTO,1);
+0021         timeFTO2=eventsTime(indFTO2);
+0022         <span class="keyword">if</span> ~isempty(timeFTO2)
+0023             indFHS2=find((eventsTime&gt;timeFTO2)&amp;FHS,1);
+0024             timeFHS2=eventsTime(indFHS2);
+0025             <span class="keyword">if</span> ~isempty(timeFHS2)
+0026                 indSTO2=find((eventsTime&gt;timeFHS2)&amp;STO,1);
+0027                 timeSTO2=eventsTime(indSTO2);
+0028             <span class="keyword">else</span>
+0029                 indSTO2=[];
+0030                 timeSTO2=[];
+0031             <span class="keyword">end</span>
+0032         <span class="keyword">else</span>
+0033             indFHS2=[];
+0034             timeFHS2=[];
+0035             indSTO2=[];
+0036             timeSTO2=[];
+0037         <span class="keyword">end</span>
+0038     <span class="keyword">else</span>
+0039         indFTO2=[];
+0040         timeFTO2=[];
+0041         indFHS2=[];
+0042         timeFHS2=[];
+0043         indSTO2=[];
+0044         timeSTO2=[];
+0045     <span class="keyword">end</span>
+0046 
+0047 <span class="keyword">end</span>
+0048</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

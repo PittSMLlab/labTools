@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CalcStrides2SS</title>
+  <meta name="keywords" content="CalcStrides2SS">
+  <meta name="description" content="this version was my first attempt to plot the readaptation stuff,">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; CalcStrides2SS.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>CalcStrides2SS
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>this version was my first attempt to plot the readaptation stuff,</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> this version was my first attempt to plot the readaptation stuff,
+ AND DO SO WITHOUT CROPPING THE DATA
+adaptDataList must be cell array of 'param.mat' file names
+params is cell array of parameters to plot. List with commas to
+plot on separate graphs or with semicolons to plot on same graph.
+conditions is cell array of conditions to plot
+binwidth is the number of data points to average in time
+indivFlag - set to true to plot individual subject time courses
+indivSubs - must be a cell array of 'param.mat' file names that is
+a subset of those in the adaptDataList. Plots specific subjects
+instead of all subjects.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="getResultsSMART.html" class="code" title="function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)">getResultsSMART</a>	define number of points to use for calculating values</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)</a>
+0002 <span class="comment">% this version was my first attempt to plot the readaptation stuff,</span>
+0003 <span class="comment">% AND DO SO WITHOUT CROPPING THE DATA</span>
+0004 <span class="comment">%adaptDataList must be cell array of 'param.mat' file names</span>
+0005 <span class="comment">%params is cell array of parameters to plot. List with commas to</span>
+0006 <span class="comment">%plot on separate graphs or with semicolons to plot on same graph.</span>
+0007 <span class="comment">%conditions is cell array of conditions to plot</span>
+0008 <span class="comment">%binwidth is the number of data points to average in time</span>
+0009 <span class="comment">%indivFlag - set to true to plot individual subject time courses</span>
+0010 <span class="comment">%indivSubs - must be a cell array of 'param.mat' file names that is</span>
+0011 <span class="comment">%a subset of those in the adaptDataList. Plots specific subjects</span>
+0012 <span class="comment">%instead of all subjects.</span>
+0013 
+0014 
+0015 <span class="comment">% %%%How to calculate strides to ss</span>
+0016 <span class="keyword">if</span> isempty(plotFlag)~=0 || plotFlag==1
+0017     figure
+0018 <span class="keyword">end</span>
+0019 
+0020 idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
+0021 idxNET = find(strcmp(params, <span class="string">'netContributionNorm2'</span>));
+0022 
+0023 <span class="comment">%Smooth the data:</span>
+0024 allValuesALL=bin_dataV1(allValues,20); SmoothType=<span class="string">'Whole, BW=20, first not before raw min'</span>;
+0025 ss=SSraw;
+0026 
+0027 <span class="keyword">for</span> var=1:length(params)
+0028     
+0029     <span class="comment">%Here I am using the final steady state that subjects reached to</span>
+0030     <span class="comment">%shift the net</span>
+0031 <span class="comment">%     if var==idxVELO</span>
+0032         whereIS=find(allValues(:,var)==nanmin(allValues(1:20,var)),1, <span class="string">'first'</span>);<span class="comment">%use the non-smoothed data to shift the curves</span>
+0033 <span class="comment">%     else</span>
+0034 <span class="comment">%         whereIS=find(allValues(:,var)==nanmin(allValues(1:end-10,var)),1, 'first');%use the non-smoothed data to shift the curves</span>
+0035 <span class="comment">%     end</span>
+0036     
+0037     minmin=allValues(whereIS,var);
+0038     
+0039     <span class="keyword">if</span> var==idxNET || var==idxVELO
+0040         shifter=SSraw(idxVELO)-SSraw(idxNET);
+0041         <span class="comment">%difference between the velocity and net SS</span>
+0042         allValuesALL(:,var)=allValuesALL(:,var)+abs(shifter);
+0043         ss(var)=SSraw(var)+abs(shifter);
+0044     <span class="keyword">end</span>
+0045     
+0046     t=find(allValuesALL(:,var)&gt;=ss(var)*.632);
+0047     <span class="keyword">if</span> isempty(t)==1
+0048         Stride2SS(1, var)=NaN;
+0049     <span class="keyword">else</span> <span class="comment">%this prevents a stride from being identified before the min value in the timecourse</span>
+0050         first_t=t(1);
+0051         knot=2;
+0052         <span class="keyword">while</span> first_t&lt;=whereIS <span class="comment">%5</span>
+0053             first_t=t(knot);
+0054             knot=knot+1;
+0055         <span class="keyword">end</span>
+0056         
+0057         Stride2SS(1, var)=first_t;
+0058     <span class="keyword">end</span>
+0059 
+0060     <span class="comment">%optional plotting to see where the Tau is being identified</span>
+0061     <span class="keyword">if</span> plotFlag
+0062         subplot(1, length(params), var)
+0063         plot([allValuesALL(:, var)], <span class="string">'b.-'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
+0064         
+0065         plot(whereIS:whereIS+9, allValuesALL(whereIS:whereIS+9, var), <span class="string">'c.'</span>, <span class="string">'MarkerSize'</span>, 25);hold on
+0066         plot(first_t, allValuesALL(first_t, var) , <span class="string">'.r'</span>, <span class="string">'MarkerSize'</span>, 25); hold on
+0067         line([0 900], [ss(var) ss(var)],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1)
+0068         line([0 900], [ss(var)*.632 ss(var)*.632],<span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1, <span class="string">'LineStyle'</span>,<span class="string">':'</span>)
+0069         line([0 900], [0 0])
+0070         
+0071         <span class="keyword">if</span> subID
+0072             title([subID <span class="string">': Stride to SS = '</span> num2str(first_t)]);
+0073         <span class="keyword">else</span>
+0074         title([<span class="string">'Stride to SS = '</span> num2str(first_t)]);
+0075         <span class="keyword">end</span>
+0076         
+0077         ylabel([params(var)])
+0078         xlabel([<span class="string">'Strides ('</span> SmoothType <span class="string">')'</span>])
+0079         axis tight
+0080         hold on
+0081     <span class="keyword">end</span>
+0082 <span class="keyword">end</span>
+0083 
+0084 <span class="comment">%display('everything is awesome')</span>
+0085 
+0086 <span class="keyword">end</span>
+0087</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

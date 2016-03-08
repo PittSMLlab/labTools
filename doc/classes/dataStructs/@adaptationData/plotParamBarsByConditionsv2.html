@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotParamBarsByConditionsv2</title>
+  <meta name="keywords" content="plotParamBarsByConditionsv2">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotParamBarsByConditionsv2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotParamBarsByConditionsv2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function figHandle=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001         <a name="_sub0" href="#_subfunctions" class="code">function figHandle=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode)</a>
+0002 
+0003            <span class="keyword">if</span> nargin&lt;3 || isempty(number)
+0004                 n=[5,20]; <span class="comment">%early number of points</span>
+0005            <span class="keyword">else</span>
+0006                 n=number;
+0007            <span class="keyword">end</span>
+0008             <span class="keyword">if</span> nargin&lt;4 || isempty(exemptLast)
+0009                 Ne=5;
+0010             <span class="keyword">else</span>
+0011                 Ne=exemptLast;
+0012             <span class="keyword">end</span>
+0013             <span class="keyword">if</span> nargin&lt;5 || isempty(exemptFirst)
+0014                 Nf=0;
+0015             <span class="keyword">else</span>
+0016                 Nf=exemptLast;
+0017             <span class="keyword">end</span>
+0018             
+0019             [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
+0020             
+0021             <span class="keyword">if</span> nargin&lt;6 || isempty(condList)
+0022                 conds=find(~cellfun(@isempty,this.metaData.conditionName));
+0023             <span class="keyword">else</span>
+0024                 conds=this.getConditionIdxsFromName(condList);
+0025                 conds=conds(~isnan(conds));
+0026             <span class="keyword">end</span>
+0027             nConds=length(conds);
+0028             [dataPoints]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateData_v2</a>(this,label,this.metaData.conditionName(conds),0,n,Ne,Nf);
+0029             legStr=cell(size(n));
+0030             <span class="keyword">for</span> l=1:length(label)
+0031                 dd=nan(length(conds),length(dataPoints));
+0032                 ee=nan(length(conds),length(dataPoints));
+0033                 <span class="keyword">for</span> j=1:length(dataPoints)
+0034                     dd(:,j)=nanmean(dataPoints{j}(:,:,l),2); <span class="comment">%Mean for each condition, along dim=2</span>
+0035                     ee(:,j)=nanstd(dataPoints{j}(:,:,l),[],2)/sqrt(size(dataPoints{j},2));
+0036                     xx(:,j)=[j:(length(dataPoints)+1):(numel(dd)+length(conds))]';
+0037                     <span class="keyword">if</span> n(j)&lt;0
+0038                         legStr{j}=[<span class="string">'Last '</span> num2str(-n(j)) <span class="string">' strides'</span>];
+0039                     <span class="keyword">else</span>
+0040                         legStr{j}=[<span class="string">'First '</span> num2str(n(j)) <span class="string">' strides'</span>];
+0041                     <span class="keyword">end</span>
+0042                 <span class="keyword">end</span>
+0043 
+0044                 axes(ah(l))
+0045                 hold on
+0046                 <span class="keyword">if</span> nargin&lt;7 ||isempty(mode)
+0047                     mode=1;
+0048                 <span class="keyword">end</span>
+0049                 <span class="keyword">switch</span> mode
+0050                     <span class="keyword">case</span> 1
+0051                         hBar=bar(dd);
+0052                         drawnow <span class="comment">%This is needed, otherwise hBar.XOffset is ill-defined on the next line</span>
+0053                         xb = bsxfun(@plus, hBar(1).XData, [hBar.XOffset]');
+0054                         errorbar(xb',dd,ee,<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2)
+0055                         xTickPos=mean(xb,1);
+0056                     <span class="keyword">otherwise</span>
+0057                         <span class="keyword">if</span> length(n)&gt;1
+0058                         dd=[dd'; nan(length(conds),2)'];
+0059                         ee=[ee'; nan(length(conds),2)'];
+0060                         <span class="keyword">end</span>
+0061                         errorbar(dd(:),ee(:),<span class="string">'LineWidth'</span>,2)
+0062                         xTickPos=[1:size(dd,1):numel(dd)] +(length(dataPoints)-1)/2;
+0063                         legStr2=this.subData.ID;
+0064                 <span class="keyword">end</span>
+0065                     
+0066                 
+0067                 set(gca,<span class="string">'XTick'</span>,xTickPos,<span class="string">'XTickLabel'</span>,this.metaData.conditionName(conds))
+0068                 axis tight
+0069                 title([label{l},<span class="string">' ('</span>,this.subData.ID <span class="string">')'</span>])
+0070                 hold off
+0071             <span class="keyword">end</span>
+0072             <span class="keyword">switch</span> mode
+0073                 <span class="keyword">case</span> 1
+0074                     legend(legStr);
+0075                 <span class="keyword">case</span> 2
+0076                     legend(legStr2)
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

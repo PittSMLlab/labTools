@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot</title>
+  <meta name="keywords" content="plot">
+  <meta name="description" content="PLOT Implementation of the plot method for SynergySetCollections">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@SynergySetCollection</a> &gt; plot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/synergies/@SynergySetCollection&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOT Implementation of the plot method for SynergySetCollections</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle] = plot(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOT Implementation of the plot method for SynergySetCollections</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SynergySetCollection.html" class="code" title="">SynergySetCollection</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle] = plot(this)</a>
+0002 <span class="comment">%PLOT Implementation of the plot method for SynergySetCollections</span>
+0003 
+0004 <span class="comment">%clusteredSynergySetCollections override this plotting function!</span>
+0005 
+0006 
+0007 figHandle=figure(<span class="string">'Name'</span>,[<span class="string">'Plot of '</span> this.name <span class="string">' Collection'</span>]);
+0008 hold on
+0009 <span class="comment">%IF collection is 1D, plot each set in the collection as a row of a 2D</span>
+0010 <span class="comment">%array of plots</span>
+0011 <span class="keyword">if</span> numel(this.content)==length(this.content)
+0012     N=numel(this.content);
+0013     M=size(this.content{1}.content,1);
+0014     h1=zeros(M,N);
+0015     h2=zeros(M,N);
+0016     <span class="keyword">for</span> i=1:N
+0017         <span class="keyword">for</span> j=1:M
+0018             h1(j,i)=subplot(3*N,M,[3*M*(i-1)+j, 3*M*(i-1)+j+M]);
+0019             h2(j,i)=subplot(3*N,M,[3*M*(i-1)+j+2*M]);
+0020         <span class="keyword">end</span>
+0021     <span class="keyword">end</span>
+0022     <span class="keyword">for</span> i=1:N
+0023         this.content{i}.plot(h1(:,i));
+0024         subplot(h1(1,i))
+0025         ylabel(this.indexLabels{1}{i})
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 hold off
+0029 <span class="comment">%If collection is 2D, issue an error, suggesting the collection is</span>
+0030 <span class="comment">%clustered and plotted then.</span>
+0031 
+0032 <span class="keyword">end</span>
+0033</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

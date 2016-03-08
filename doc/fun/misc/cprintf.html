@@ -1,0 +1,748 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cprintf</title>
+  <meta name="keywords" content="cprintf">
+  <meta name="description" content="CPRINTF displays styled formatted text in the Command Window">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; cprintf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cprintf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CPRINTF displays styled formatted text in the Command Window</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function count = cprintf(style,format,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CPRINTF displays styled formatted text in the Command Window
+
+ Syntax:
+    count = cprintf(style,format,...)
+
+ Description:
+    CPRINTF processes the specified text using the exact same FORMAT
+    arguments accepted by the built-in SPRINTF and FPRINTF functions.
+
+    CPRINTF then displays the text in the Command Window using the
+    specified STYLE argument. The accepted styles are those used for
+    Matlab's syntax highlighting (see: File / Preferences / Colors / 
+    M-file Syntax Highlighting Colors), and also user-defined colors.
+
+    The possible pre-defined STYLE names are:
+
+       'Text'                 - default: black
+       'Keywords'             - default: blue
+       'Comments'             - default: green
+       'Strings'              - default: purple
+       'UnterminatedStrings'  - default: dark red
+       'SystemCommands'       - default: orange
+       'Errors'               - default: light red
+       'Hyperlinks'           - default: underlined blue
+
+       'Black','Cyan','Magenta','Blue','Green','Red','Yellow','White'
+
+    STYLE beginning with '-' or '_' will be underlined. For example:
+          '-Blue' is underlined blue, like 'Hyperlinks';
+          '_Comments' is underlined green etc.
+
+    STYLE beginning with '*' will be bold (R2011b+ only). For example:
+          '*Blue' is bold blue;
+          '*Comments' is bold green etc.
+    Note: Matlab does not currently support both bold and underline,
+          only one of them can be used in a single cprintf command. But of
+          course bold and underline can be mixed by using separate commands.
+
+    STYLE also accepts a regular Matlab RGB vector, that can be underlined
+    and bolded: -[0,1,1] means underlined cyan, '*[1,0,0]' is bold red.
+
+    STYLE is case-insensitive and accepts unique partial strings just
+    like handle property names.
+
+    CPRINTF by itself, without any input parameters, displays a demo
+
+ Example:
+    cprintf;   % displays the demo
+    cprintf('text',   'regular black text');
+    cprintf('hyper',  'followed %s','by');
+    cprintf('key',    '%d colored', 4);
+    cprintf('-comment','&amp; underlined');
+    cprintf('err',    'elements\n');
+    cprintf('cyan',   'cyan');
+    cprintf('_green', 'underlined green');
+    cprintf(-[1,0,1], 'underlined magenta');
+    cprintf([1,0.5,0],'and multi-\nline orange\n');
+    cprintf('*blue',  'and *bold* (R2011b+ only)\n');
+    cprintf('string');  % same as fprintf('string') and cprintf('text','string')
+
+ Bugs and suggestions:
+    Please send to Yair Altman (altmany at gmail dot com)
+
+ Warning:
+    This code heavily relies on undocumented and unsupported Matlab
+    functionality. It works on Matlab 7+, but use at your own risk!
+
+    A technical description of the implementation can be found at:
+    &lt;a href=&quot;http://undocumentedmatlab.com/blog/cprintf/&quot;&gt;http://UndocumentedMatlab.com/blog/cprintf/&lt;/a&gt;
+
+ Limitations:
+    1. In R2011a and earlier, a single space char is inserted at the
+       beginning of each CPRINTF text segment (this is ok in R2011b+).
+
+    2. In R2011a and earlier, consecutive differently-colored multi-line
+       CPRINTFs sometimes display incorrectly on the bottom line.
+       As far as I could tell this is due to a Matlab bug. Examples:
+         &gt;&gt; cprintf('-str','under\nline'); cprintf('err','red\n'); % hidden 'red', unhidden '_'
+         &gt;&gt; cprintf('str','regu\nlar'); cprintf('err','red\n'); % underline red (not purple) 'lar'
+
+    3. Sometimes, non newline ('\n')-terminated segments display unstyled
+       (black) when the command prompt chevron ('&gt;&gt;') regains focus on the
+       continuation of that line (I can't pinpoint when this happens). 
+       To fix this, simply newline-terminate all command-prompt messages.
+
+    4. In R2011b and later, the above errors appear to be fixed. However,
+       the last character of an underlined segment is not underlined for
+       some unknown reason (add an extra space character to make it look better)
+
+    5. In old Matlab versions (e.g., Matlab 7.1 R14), multi-line styles
+       only affect the first line. Single-line styles work as expected.
+       R14 also appends a single space after underlined segments.
+
+    6. Bold style is only supported on R2011b+, and cannot also be underlined.
+
+ Change log:
+    2015-06-24: Fixed a few discoloration issues (some other issues still remain)
+    2015-03-20: Fix: if command window isn't defined yet (startup) use standard fprintf as suggested by John Marozas
+    2012-08-09: Graceful degradation support for deployed (compiled) and non-desktop applications; minor bug fixes
+    2012-08-06: Fixes for R2012b; added bold style; accept RGB string (non-numeric) style
+    2011-11-27: Fixes for R2011b
+    2011-08-29: Fix by Danilo (FEX comment) for non-default text colors
+    2011-03-04: Performance improvement
+    2010-06-27: Fix for R2010a/b; fixed edge case reported by Sharron; CPRINTF with no args runs the demo
+    2009-09-28: Fixed edge-case problem reported by Swagat K
+    2009-05-28: corrected nargout behavior suggested by Andreas G�
+    2009-05-13: First version posted on &lt;a href=&quot;http://www.mathworks.com/matlabcentral/fileexchange/authors/27420&quot;&gt;MathWorks File Exchange&lt;/a&gt;
+
+ See also:
+    sprintf, fprintf</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)</a></li><li><a href="#_sub2" class="code">function styleName = getColorStyle(rgb)</a></li><li><a href="#_sub3" class="code">function delta = getUrlsFix(docElement)</a></li><li><a href="#_sub4" class="code">function fixHyperlink(docElement)</a></li><li><a href="#_sub5" class="code">function setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion)</a></li><li><a href="#_sub6" class="code">function dumpElement(docElements)</a></li><li><a href="#_sub7" class="code">function cells = m2c(data)</a></li><li><a href="#_sub8" class="code">function showDemo(majorVersion,minorVersion)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function count = cprintf(style,format,varargin)</a>
+0002 <span class="comment">% CPRINTF displays styled formatted text in the Command Window</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Syntax:</span>
+0005 <span class="comment">%    count = cprintf(style,format,...)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Description:</span>
+0008 <span class="comment">%    CPRINTF processes the specified text using the exact same FORMAT</span>
+0009 <span class="comment">%    arguments accepted by the built-in SPRINTF and FPRINTF functions.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%    CPRINTF then displays the text in the Command Window using the</span>
+0012 <span class="comment">%    specified STYLE argument. The accepted styles are those used for</span>
+0013 <span class="comment">%    Matlab's syntax highlighting (see: File / Preferences / Colors /</span>
+0014 <span class="comment">%    M-file Syntax Highlighting Colors), and also user-defined colors.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%    The possible pre-defined STYLE names are:</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%       'Text'                 - default: black</span>
+0019 <span class="comment">%       'Keywords'             - default: blue</span>
+0020 <span class="comment">%       'Comments'             - default: green</span>
+0021 <span class="comment">%       'Strings'              - default: purple</span>
+0022 <span class="comment">%       'UnterminatedStrings'  - default: dark red</span>
+0023 <span class="comment">%       'SystemCommands'       - default: orange</span>
+0024 <span class="comment">%       'Errors'               - default: light red</span>
+0025 <span class="comment">%       'Hyperlinks'           - default: underlined blue</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%       'Black','Cyan','Magenta','Blue','Green','Red','Yellow','White'</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%    STYLE beginning with '-' or '_' will be underlined. For example:</span>
+0030 <span class="comment">%          '-Blue' is underlined blue, like 'Hyperlinks';</span>
+0031 <span class="comment">%          '_Comments' is underlined green etc.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%    STYLE beginning with '*' will be bold (R2011b+ only). For example:</span>
+0034 <span class="comment">%          '*Blue' is bold blue;</span>
+0035 <span class="comment">%          '*Comments' is bold green etc.</span>
+0036 <span class="comment">%    Note: Matlab does not currently support both bold and underline,</span>
+0037 <span class="comment">%          only one of them can be used in a single cprintf command. But of</span>
+0038 <span class="comment">%          course bold and underline can be mixed by using separate commands.</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%    STYLE also accepts a regular Matlab RGB vector, that can be underlined</span>
+0041 <span class="comment">%    and bolded: -[0,1,1] means underlined cyan, '*[1,0,0]' is bold red.</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">%    STYLE is case-insensitive and accepts unique partial strings just</span>
+0044 <span class="comment">%    like handle property names.</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">%    CPRINTF by itself, without any input parameters, displays a demo</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">% Example:</span>
+0049 <span class="comment">%    cprintf;   % displays the demo</span>
+0050 <span class="comment">%    cprintf('text',   'regular black text');</span>
+0051 <span class="comment">%    cprintf('hyper',  'followed %s','by');</span>
+0052 <span class="comment">%    cprintf('key',    '%d colored', 4);</span>
+0053 <span class="comment">%    cprintf('-comment','&amp; underlined');</span>
+0054 <span class="comment">%    cprintf('err',    'elements\n');</span>
+0055 <span class="comment">%    cprintf('cyan',   'cyan');</span>
+0056 <span class="comment">%    cprintf('_green', 'underlined green');</span>
+0057 <span class="comment">%    cprintf(-[1,0,1], 'underlined magenta');</span>
+0058 <span class="comment">%    cprintf([1,0.5,0],'and multi-\nline orange\n');</span>
+0059 <span class="comment">%    cprintf('*blue',  'and *bold* (R2011b+ only)\n');</span>
+0060 <span class="comment">%    cprintf('string');  % same as fprintf('string') and cprintf('text','string')</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">% Bugs and suggestions:</span>
+0063 <span class="comment">%    Please send to Yair Altman (altmany at gmail dot com)</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% Warning:</span>
+0066 <span class="comment">%    This code heavily relies on undocumented and unsupported Matlab</span>
+0067 <span class="comment">%    functionality. It works on Matlab 7+, but use at your own risk!</span>
+0068 <span class="comment">%</span>
+0069 <span class="comment">%    A technical description of the implementation can be found at:</span>
+0070 <span class="comment">%    &lt;a href=&quot;http://undocumentedmatlab.com/blog/cprintf/&quot;&gt;http://UndocumentedMatlab.com/blog/cprintf/&lt;/a&gt;</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">% Limitations:</span>
+0073 <span class="comment">%    1. In R2011a and earlier, a single space char is inserted at the</span>
+0074 <span class="comment">%       beginning of each CPRINTF text segment (this is ok in R2011b+).</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">%    2. In R2011a and earlier, consecutive differently-colored multi-line</span>
+0077 <span class="comment">%       CPRINTFs sometimes display incorrectly on the bottom line.</span>
+0078 <span class="comment">%       As far as I could tell this is due to a Matlab bug. Examples:</span>
+0079 <span class="comment">%         &gt;&gt; cprintf('-str','under\nline'); cprintf('err','red\n'); % hidden 'red', unhidden '_'</span>
+0080 <span class="comment">%         &gt;&gt; cprintf('str','regu\nlar'); cprintf('err','red\n'); % underline red (not purple) 'lar'</span>
+0081 <span class="comment">%</span>
+0082 <span class="comment">%    3. Sometimes, non newline ('\n')-terminated segments display unstyled</span>
+0083 <span class="comment">%       (black) when the command prompt chevron ('&gt;&gt;') regains focus on the</span>
+0084 <span class="comment">%       continuation of that line (I can't pinpoint when this happens).</span>
+0085 <span class="comment">%       To fix this, simply newline-terminate all command-prompt messages.</span>
+0086 <span class="comment">%</span>
+0087 <span class="comment">%    4. In R2011b and later, the above errors appear to be fixed. However,</span>
+0088 <span class="comment">%       the last character of an underlined segment is not underlined for</span>
+0089 <span class="comment">%       some unknown reason (add an extra space character to make it look better)</span>
+0090 <span class="comment">%</span>
+0091 <span class="comment">%    5. In old Matlab versions (e.g., Matlab 7.1 R14), multi-line styles</span>
+0092 <span class="comment">%       only affect the first line. Single-line styles work as expected.</span>
+0093 <span class="comment">%       R14 also appends a single space after underlined segments.</span>
+0094 <span class="comment">%</span>
+0095 <span class="comment">%    6. Bold style is only supported on R2011b+, and cannot also be underlined.</span>
+0096 <span class="comment">%</span>
+0097 <span class="comment">% Change log:</span>
+0098 <span class="comment">%    2015-06-24: Fixed a few discoloration issues (some other issues still remain)</span>
+0099 <span class="comment">%    2015-03-20: Fix: if command window isn't defined yet (startup) use standard fprintf as suggested by John Marozas</span>
+0100 <span class="comment">%    2012-08-09: Graceful degradation support for deployed (compiled) and non-desktop applications; minor bug fixes</span>
+0101 <span class="comment">%    2012-08-06: Fixes for R2012b; added bold style; accept RGB string (non-numeric) style</span>
+0102 <span class="comment">%    2011-11-27: Fixes for R2011b</span>
+0103 <span class="comment">%    2011-08-29: Fix by Danilo (FEX comment) for non-default text colors</span>
+0104 <span class="comment">%    2011-03-04: Performance improvement</span>
+0105 <span class="comment">%    2010-06-27: Fix for R2010a/b; fixed edge case reported by Sharron; CPRINTF with no args runs the demo</span>
+0106 <span class="comment">%    2009-09-28: Fixed edge-case problem reported by Swagat K</span>
+0107 <span class="comment">%    2009-05-28: corrected nargout behavior suggested by Andreas G�</span>
+0108 <span class="comment">%    2009-05-13: First version posted on &lt;a href=&quot;http://www.mathworks.com/matlabcentral/fileexchange/authors/27420&quot;&gt;MathWorks File Exchange&lt;/a&gt;</span>
+0109 <span class="comment">%</span>
+0110 <span class="comment">% See also:</span>
+0111 <span class="comment">%    sprintf, fprintf</span>
+0112 
+0113 <span class="comment">% License to use and modify this code is granted freely to all interested, as long as the original author is</span>
+0114 <span class="comment">% referenced and attributed as such. The original author maintains the right to be solely associated with this work.</span>
+0115 
+0116 <span class="comment">% Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com</span>
+0117 <span class="comment">% $Revision: 1.10 $  $Date: 2015/06/24 01:29:18 $</span>
+0118 
+0119   <span class="keyword">persistent</span> majorVersion minorVersion
+0120   <span class="keyword">if</span> isempty(majorVersion)
+0121       <span class="comment">%v = version; if str2double(v(1:3)) &lt;= 7.1</span>
+0122       <span class="comment">%majorVersion = str2double(regexprep(version,'^(\d+).*','$1'));</span>
+0123       <span class="comment">%minorVersion = str2double(regexprep(version,'^\d+\.(\d+).*','$1'));</span>
+0124       <span class="comment">%[a,b,c,d,versionIdStrs]=regexp(version,'^(\d+)\.(\d+).*');  %#ok unused</span>
+0125       v = sscanf(version, <span class="string">'%d.'</span>, 2);
+0126       majorVersion = v(1); <span class="comment">%str2double(versionIdStrs{1}{1});</span>
+0127       minorVersion = v(2); <span class="comment">%str2double(versionIdStrs{1}{2});</span>
+0128   <span class="keyword">end</span>
+0129 
+0130   <span class="comment">% The following is for debug use only:</span>
+0131   <span class="comment">%global docElement txt el</span>
+0132   <span class="keyword">if</span> ~exist(<span class="string">'el'</span>,<span class="string">'var'</span>) || isempty(el),  el=handle([]);  <span class="keyword">end</span>  <span class="comment">%#ok mlint short-circuit error (&quot;used before defined&quot;)</span>
+0133   <span class="keyword">if</span> nargin&lt;1, <a href="#_sub8" class="code" title="subfunction showDemo(majorVersion,minorVersion)">showDemo</a>(majorVersion,minorVersion); <span class="keyword">return</span>;  <span class="keyword">end</span>
+0134   <span class="keyword">if</span> isempty(style),  <span class="keyword">return</span>;  <span class="keyword">end</span>
+0135   <span class="keyword">if</span> all(ishandle(style)) &amp;&amp; length(style)~=3
+0136       <a href="#_sub6" class="code" title="subfunction dumpElement(docElements)">dumpElement</a>(style);
+0137       <span class="keyword">return</span>;
+0138   <span class="keyword">end</span>
+0139 
+0140   <span class="comment">% Process the text string</span>
+0141   <span class="keyword">if</span> nargin&lt;2, format = style; style=<span class="string">'text'</span>;  <span class="keyword">end</span>
+0142   <span class="comment">%error(nargchk(2, inf, nargin, 'struct'));</span>
+0143   <span class="comment">%str = sprintf(format,varargin{:});</span>
+0144 
+0145   <span class="comment">% In compiled mode</span>
+0146   <span class="keyword">try</span> useDesktop = usejava(<span class="string">'desktop'</span>); <span class="keyword">catch</span>, useDesktop = false; <span class="keyword">end</span>
+0147   <span class="keyword">if</span> isdeployed | ~useDesktop <span class="comment">%#ok&lt;OR2&gt; - for Matlab 6 compatibility</span>
+0148       <span class="comment">% do not display any formatting - use simple fprintf()</span>
+0149       <span class="comment">% See: http://undocumentedmatlab.com/blog/bold-color-text-in-the-command-window/#comment-103035</span>
+0150       <span class="comment">% Also see: https://mail.google.com/mail/u/0/?ui=2&amp;shva=1#all/1390a26e7ef4aa4d</span>
+0151       <span class="comment">% Also see: https://mail.google.com/mail/u/0/?ui=2&amp;shva=1#all/13a6ed3223333b21</span>
+0152       count1 = fprintf(format,varargin{:});
+0153   <span class="keyword">else</span>
+0154       <span class="comment">% Else (Matlab desktop mode)</span>
+0155       <span class="comment">% Get the normalized style name and underlining flag</span>
+0156       [underlineFlag, boldFlag, style, debugFlag] = <a href="#_sub1" class="code" title="subfunction [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)">processStyleInfo</a>(style);
+0157 
+0158       <span class="comment">% Set hyperlinking, if so requested</span>
+0159       <span class="keyword">if</span> underlineFlag
+0160           format = [<span class="string">'&lt;a href=&quot;&quot;&gt;'</span> format <span class="string">'&lt;/a&gt;'</span>];
+0161 
+0162           <span class="comment">% Matlab 7.1 R14 (possibly a few newer versions as well?)</span>
+0163           <span class="comment">% have a bug in rendering consecutive hyperlinks</span>
+0164           <span class="comment">% This is fixed by appending a single non-linked space</span>
+0165           <span class="keyword">if</span> majorVersion &lt; 7 || (majorVersion==7 &amp;&amp; minorVersion &lt;= 1)
+0166               format(end+1) = <span class="string">' '</span>;
+0167           <span class="keyword">end</span>
+0168       <span class="keyword">end</span>
+0169 
+0170       <span class="comment">% Set bold, if requested and supported (R2011b+)</span>
+0171       <span class="keyword">if</span> boldFlag
+0172           <span class="keyword">if</span> (majorVersion &gt; 7 || minorVersion &gt;= 13)
+0173               format = [<span class="string">'&lt;strong&gt;'</span> format <span class="string">'&lt;/strong&gt;'</span>];
+0174           <span class="keyword">else</span>
+0175               boldFlag = 0;
+0176           <span class="keyword">end</span>
+0177       <span class="keyword">end</span>
+0178 
+0179       <span class="comment">% Get the current CW position</span>
+0180       cmdWinDoc = com.mathworks.mde.cmdwin.CmdWinDocument.getInstance;
+0181       lastPos = cmdWinDoc.getLength;
+0182 
+0183       <span class="comment">% If not beginning of line</span>
+0184       bolFlag = 0;  <span class="comment">%#ok</span>
+0185       <span class="comment">%if docElement.getEndOffset - docElement.getStartOffset &gt; 1</span>
+0186           <span class="comment">% Display a hyperlink element in order to force element separation</span>
+0187           <span class="comment">% (otherwise adjacent elements on the same line will be merged)</span>
+0188           <span class="keyword">if</span> majorVersion&lt;7 || (majorVersion==7 &amp;&amp; minorVersion&lt;13)
+0189               <span class="keyword">if</span> ~underlineFlag
+0190                   fprintf(<span class="string">'&lt;a href=&quot;&quot;&gt; &lt;/a&gt;'</span>);  <span class="comment">%fprintf('&lt;a href=&quot;&quot;&gt; &lt;/a&gt;\b');</span>
+0191               <span class="keyword">elseif</span> format(end)~=10  <span class="comment">% if no newline at end</span>
+0192                   fprintf(<span class="string">' '</span>);  <span class="comment">%fprintf(' \b');</span>
+0193               <span class="keyword">end</span>
+0194           <span class="keyword">end</span>
+0195           <span class="comment">%drawnow;</span>
+0196           bolFlag = 1;
+0197       <span class="comment">%end</span>
+0198 
+0199       <span class="comment">% Get a handle to the Command Window component</span>
+0200       mde = com.mathworks.mde.desk.MLDesktop.getInstance;
+0201       cw = mde.getClient(<span class="string">'Command Window'</span>);
+0202 
+0203       <span class="comment">% Fix: if command window isn't defined yet (startup), use standard fprintf()</span>
+0204       <span class="keyword">if</span> (isempty(cw))
+0205          count1 = fprintf(format,varargin{:});
+0206          <span class="keyword">if</span> nargout
+0207              count = count1;
+0208          <span class="keyword">end</span>
+0209          <span class="keyword">return</span>;
+0210       <span class="keyword">end</span>
+0211       
+0212       xCmdWndView = cw.getComponent(0).getViewport.getComponent(0);
+0213 
+0214       <span class="comment">% Store the CW background color as a special color pref</span>
+0215       <span class="comment">% This way, if the CW bg color changes (via File/Preferences),</span>
+0216       <span class="comment">% it will also affect existing rendered strs</span>
+0217       com.mathworks.services.Prefs.setColorPref(<span class="string">'CW_BG_Color'</span>,xCmdWndView.getBackground);
+0218 
+0219       <span class="comment">% Display the text in the Command Window</span>
+0220       <span class="comment">% Note: fprintf(2,...) is required in order to add formatting tokens, which</span>
+0221       <span class="comment">% ^^^^  can then be updated below (no such tokens when outputting to stdout)</span>
+0222       count1 = fprintf(2,format,varargin{:});
+0223 
+0224       <span class="comment">% Repaint the command window</span>
+0225       <span class="comment">%awtinvoke(cmdWinDoc,'remove',lastPos,1);   % TODO: find out how to remove the extra '_'</span>
+0226       drawnow;  <span class="comment">% this is necessary for the following to work properly (refer to Evgeny Pr in FEX comment 16/1/2011)</span>
+0227       xCmdWndView.repaint;
+0228       <span class="comment">%hListeners = cmdWinDoc.getDocumentListeners; for idx=1:numel(hListeners), try hListeners(idx).repaint; catch, end, end</span>
+0229 
+0230       docElement = cmdWinDoc.getParagraphElement(lastPos+1);
+0231       <span class="keyword">if</span> majorVersion&lt;7 || (majorVersion==7 &amp;&amp; minorVersion&lt;13)
+0232           <span class="keyword">if</span> bolFlag &amp;&amp; ~underlineFlag
+0233               <span class="comment">% Set the leading hyperlink space character ('_') to the bg color, effectively hiding it</span>
+0234               <span class="comment">% Note: old Matlab versions have a bug in hyperlinks that need to be accounted for...</span>
+0235               <span class="comment">%disp(' '); dumpElement(docElement)</span>
+0236               <a href="#_sub5" class="code" title="subfunction setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion)">setElementStyle</a>(docElement,<span class="string">'CW_BG_Color'</span>,1+underlineFlag,majorVersion,minorVersion); <span class="comment">%+getUrlsFix(docElement));</span>
+0237               <span class="comment">%disp(' '); dumpElement(docElement)</span>
+0238               el(end+1) = handle(docElement);  <span class="comment">% #ok used in debug only</span>
+0239           <span class="keyword">end</span>
+0240 
+0241           <span class="comment">% Fix a problem with some hidden hyperlinks becoming unhidden...</span>
+0242           <a href="#_sub4" class="code" title="subfunction fixHyperlink(docElement)">fixHyperlink</a>(docElement);
+0243           <span class="comment">%dumpElement(docElement);</span>
+0244       <span class="keyword">end</span>
+0245 
+0246       <span class="comment">% Get the Document Element(s) corresponding to the latest fprintf operation</span>
+0247       <span class="keyword">while</span> docElement.getStartOffset &lt; cmdWinDoc.getLength
+0248           <span class="comment">% Set the element style according to the current style</span>
+0249           <span class="keyword">if</span> debugFlag, <a href="#_sub6" class="code" title="subfunction dumpElement(docElements)">dumpElement</a>(docElement); <span class="keyword">end</span>
+0250           specialFlag = underlineFlag | boldFlag;
+0251           <a href="#_sub5" class="code" title="subfunction setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion)">setElementStyle</a>(docElement,style,specialFlag,majorVersion,minorVersion);
+0252           <span class="keyword">if</span> debugFlag, <a href="#_sub6" class="code" title="subfunction dumpElement(docElements)">dumpElement</a>(docElement); <span class="keyword">end</span>
+0253           docElement2 = cmdWinDoc.getParagraphElement(docElement.getEndOffset+1);
+0254           <span class="keyword">if</span> isequal(docElement,docElement2),  <span class="keyword">break</span>;  <span class="keyword">end</span>
+0255           docElement = docElement2;
+0256       <span class="keyword">end</span>
+0257       <span class="keyword">if</span> debugFlag, <a href="#_sub6" class="code" title="subfunction dumpElement(docElements)">dumpElement</a>(docElement); <span class="keyword">end</span>
+0258 
+0259       <span class="comment">% Force a Command-Window repaint</span>
+0260       <span class="comment">% Note: this is important in case the rendered str was not '\n'-terminated</span>
+0261       xCmdWndView.repaint;
+0262 
+0263       <span class="comment">% The following is for debug use only:</span>
+0264       el(end+1) = handle(docElement);  <span class="comment">%#ok used in debug only</span>
+0265       <span class="comment">%elementStart  = docElement.getStartOffset;</span>
+0266       <span class="comment">%elementLength = docElement.getEndOffset - elementStart;</span>
+0267       <span class="comment">%txt = cmdWinDoc.getText(elementStart,elementLength);</span>
+0268   <span class="keyword">end</span>
+0269 
+0270   <span class="keyword">if</span> nargout
+0271       count = count1;
+0272   <span class="keyword">end</span>
+0273   <span class="keyword">return</span>;  <span class="comment">% debug breakpoint</span>
+0274 
+0275 <span class="comment">% Process the requested style information</span>
+0276 <a name="_sub1" href="#_subfunctions" class="code">function [underlineFlag,boldFlag,style,debugFlag] = processStyleInfo(style)</a>
+0277   underlineFlag = 0;
+0278   boldFlag = 0;
+0279   debugFlag = 0;
+0280 
+0281   <span class="comment">% First, strip out the underline/bold markers</span>
+0282   <span class="keyword">if</span> ischar(style)
+0283       <span class="comment">% Styles containing '-' or '_' should be underlined (using a no-target hyperlink hack)</span>
+0284       <span class="comment">%if style(1)=='-'</span>
+0285       underlineIdx = (style==<span class="string">'-'</span>) | (style==<span class="string">'_'</span>);
+0286       <span class="keyword">if</span> any(underlineIdx)
+0287           underlineFlag = 1;
+0288           <span class="comment">%style = style(2:end);</span>
+0289           style = style(~underlineIdx);
+0290       <span class="keyword">end</span>
+0291 
+0292       <span class="comment">% Check for bold style (only if not underlined)</span>
+0293       boldIdx = (style==<span class="string">'*'</span>);
+0294       <span class="keyword">if</span> any(boldIdx)
+0295           boldFlag = 1;
+0296           style = style(~boldIdx);
+0297       <span class="keyword">end</span>
+0298       <span class="keyword">if</span> underlineFlag &amp;&amp; boldFlag
+0299           warning(<span class="string">'YMA:cprintf:BoldUnderline'</span>,<span class="string">'Matlab does not support both bold &amp; underline'</span>)
+0300       <span class="keyword">end</span>
+0301 
+0302       <span class="comment">% Check for debug mode (style contains '!')</span>
+0303       debugIdx = (style==<span class="string">'!'</span>);
+0304       <span class="keyword">if</span> any(debugIdx)
+0305           debugFlag = 1;
+0306           style = style(~debugIdx);
+0307       <span class="keyword">end</span>
+0308 
+0309       <span class="comment">% Check if the remaining style sting is a numeric vector</span>
+0310       <span class="comment">%styleNum = str2num(style); %#ok&lt;ST2NM&gt;  % not good because style='text' is evaled!</span>
+0311       <span class="comment">%if ~isempty(styleNum)</span>
+0312       <span class="keyword">if</span> any(style==<span class="string">' '</span> | style==<span class="string">','</span> | style==<span class="string">';'</span>)
+0313           style = str2num(style); <span class="comment">%#ok&lt;ST2NM&gt;</span>
+0314       <span class="keyword">end</span>
+0315   <span class="keyword">end</span>
+0316 
+0317   <span class="comment">% Style = valid matlab RGB vector</span>
+0318   <span class="keyword">if</span> isnumeric(style) &amp;&amp; length(style)==3 &amp;&amp; all(style&lt;=1) &amp;&amp; all(abs(style)&gt;=0)
+0319       <span class="keyword">if</span> any(style&lt;0)
+0320           underlineFlag = 1;
+0321           style = abs(style);
+0322       <span class="keyword">end</span>
+0323       style = <a href="#_sub2" class="code" title="subfunction styleName = getColorStyle(rgb)">getColorStyle</a>(style);
+0324 
+0325   <span class="keyword">elseif</span> ~ischar(style)
+0326       error(<span class="string">'YMA:cprintf:InvalidStyle'</span>,<span class="string">'Invalid style - see help section for a list of valid style values'</span>)
+0327 
+0328   <span class="comment">% Style name</span>
+0329   <span class="keyword">else</span>
+0330       <span class="comment">% Try case-insensitive partial/full match with the accepted style names</span>
+0331       matlabStyles = {<span class="string">'Text'</span>,<span class="string">'Keywords'</span>,<span class="string">'Comments'</span>,<span class="string">'Strings'</span>,<span class="string">'UnterminatedStrings'</span>,<span class="string">'SystemCommands'</span>,<span class="string">'Errors'</span>};
+0332       validStyles  = [matlabStyles, <span class="keyword">...</span>
+0333                       <span class="string">'Black'</span>,<span class="string">'Cyan'</span>,<span class="string">'Magenta'</span>,<span class="string">'Blue'</span>,<span class="string">'Green'</span>,<span class="string">'Red'</span>,<span class="string">'Yellow'</span>,<span class="string">'White'</span>, <span class="keyword">...</span>
+0334                       <span class="string">'Hyperlinks'</span>];
+0335       matches = find(strncmpi(style,validStyles,length(style)));
+0336 
+0337       <span class="comment">% No match - error</span>
+0338       <span class="keyword">if</span> isempty(matches)
+0339           error(<span class="string">'YMA:cprintf:InvalidStyle'</span>,<span class="string">'Invalid style - see help section for a list of valid style values'</span>)
+0340 
+0341       <span class="comment">% Too many matches (ambiguous) - error</span>
+0342       <span class="keyword">elseif</span> length(matches) &gt; 1
+0343           error(<span class="string">'YMA:cprintf:AmbigStyle'</span>,<span class="string">'Ambiguous style name - supply extra characters for uniqueness'</span>)
+0344 
+0345       <span class="comment">% Regular text</span>
+0346       <span class="keyword">elseif</span> matches == 1
+0347           style = <span class="string">'ColorsText'</span>;  <span class="comment">% fixed by Danilo, 29/8/2011</span>
+0348 
+0349       <span class="comment">% Highlight preference style name</span>
+0350       <span class="keyword">elseif</span> matches &lt;= length(matlabStyles)
+0351           style = [<span class="string">'Colors_M_'</span> validStyles{matches}];
+0352 
+0353       <span class="comment">% Color name</span>
+0354       <span class="keyword">elseif</span> matches &lt; length(validStyles)
+0355           colors = [0,0,0; 0,1,1; 1,0,1; 0,0,1; 0,1,0; 1,0,0; 1,1,0; 1,1,1];
+0356           requestedColor = colors(matches-length(matlabStyles),:);
+0357           style = <a href="#_sub2" class="code" title="subfunction styleName = getColorStyle(rgb)">getColorStyle</a>(requestedColor);
+0358 
+0359       <span class="comment">% Hyperlink</span>
+0360       <span class="keyword">else</span>
+0361           style = <span class="string">'Colors_HTML_HTMLLinks'</span>;  <span class="comment">% CWLink</span>
+0362           underlineFlag = 1;
+0363       <span class="keyword">end</span>
+0364   <span class="keyword">end</span>
+0365 
+0366 <span class="comment">% Convert a Matlab RGB vector into a known style name (e.g., '[255,37,0]')</span>
+0367 <a name="_sub2" href="#_subfunctions" class="code">function styleName = getColorStyle(rgb)</a>
+0368   intColor = int32(rgb*255);
+0369   javaColor = java.awt.Color(intColor(1), intColor(2), intColor(3));
+0370   styleName = sprintf(<span class="string">'[%d,%d,%d]'</span>,intColor);
+0371   com.mathworks.services.Prefs.setColorPref(styleName,javaColor);
+0372 
+0373 <span class="comment">% Fix a bug in some Matlab versions, where the number of URL segments</span>
+0374 <span class="comment">% is larger than the number of style segments in a doc element</span>
+0375 <a name="_sub3" href="#_subfunctions" class="code">function delta = getUrlsFix(docElement)  </a><span class="comment">%#ok currently unused</span>
+0376   tokens = docElement.getAttribute(<span class="string">'SyntaxTokens'</span>);
+0377   links  = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
+0378   <span class="keyword">if</span> length(links) &gt; length(tokens(1))
+0379       delta = length(links) &gt; length(tokens(1));
+0380   <span class="keyword">else</span>
+0381       delta = 0;
+0382   <span class="keyword">end</span>
+0383 
+0384 <span class="comment">% fprintf(2,str) causes all previous '_'s in the line to become red - fix this</span>
+0385 <a name="_sub4" href="#_subfunctions" class="code">function fixHyperlink(docElement)</a>
+0386   <span class="keyword">try</span>
+0387       tokens = docElement.getAttribute(<span class="string">'SyntaxTokens'</span>);
+0388       urls   = docElement.getAttribute(<span class="string">'HtmlLink'</span>);
+0389       urls   = urls(2);
+0390       links  = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
+0391       offsets = tokens(1);
+0392       styles  = tokens(2);
+0393       doc = docElement.getDocument;
+0394 
+0395       <span class="comment">% Loop over all segments in this docElement</span>
+0396       <span class="keyword">for</span> idx = 1 : length(offsets)-1
+0397           <span class="comment">% If this is a hyperlink with no URL target and starts with ' ' and is collored as an error (red)...</span>
+0398           <span class="keyword">if</span> strcmp(styles(idx).char,<span class="string">'Colors_M_Errors'</span>)
+0399               character = char(doc.getText(offsets(idx)+docElement.getStartOffset,1));
+0400               <span class="keyword">if</span> strcmp(character,<span class="string">' '</span>)
+0401                   <span class="keyword">if</span> isempty(urls(idx)) &amp;&amp; links(idx)==0
+0402                       <span class="comment">% Revert the style color to the CW background color (i.e., hide it!)</span>
+0403                       styles(idx) = java.lang.String(<span class="string">'CW_BG_Color'</span>);
+0404                   <span class="keyword">end</span>
+0405               <span class="keyword">end</span>
+0406           <span class="keyword">end</span>
+0407       <span class="keyword">end</span>
+0408   <span class="keyword">catch</span>
+0409       <span class="comment">% never mind...</span>
+0410   <span class="keyword">end</span>
+0411 
+0412 <span class="comment">% Set an element to a particular style (color)</span>
+0413 <a name="_sub5" href="#_subfunctions" class="code">function setElementStyle(docElement,style,specialFlag, majorVersion,minorVersion)</a>
+0414   <span class="comment">%global tokens links urls urlTargets  % for debug only</span>
+0415   <span class="keyword">global</span> oldStyles
+0416   <span class="keyword">if</span> nargin&lt;3,  specialFlag=0;  <span class="keyword">end</span>
+0417   <span class="comment">% Set the last Element token to the requested style:</span>
+0418   <span class="comment">% Colors:</span>
+0419   tokens = docElement.getAttribute(<span class="string">'SyntaxTokens'</span>);
+0420   <span class="keyword">try</span>
+0421       styles = tokens(2);
+0422       oldStyles{end+1} = cell(styles);
+0423 
+0424       <span class="comment">% Correct edge case problem</span>
+0425       extraInd = double(majorVersion&gt;7 || (majorVersion==7 &amp;&amp; minorVersion&gt;=13));  <span class="comment">% =0 for R2011a-, =1 for R2011b+</span>
+0426       <span class="comment">%{</span>
+0427       <span class="keyword">if</span> ~strcmp(<span class="string">'CWLink'</span>,char(styles(end-hyperlinkFlag))) &amp;&amp; <span class="keyword">...</span>
+0428           strcmp(<span class="string">'CWLink'</span>,char(styles(end-hyperlinkFlag-1)))
+0429          extraInd = 0;<span class="comment">%1;</span>
+0430       <span class="keyword">end</span>
+0431       hyperlinkFlag = ~isempty(strmatch(<span class="string">'CWLink'</span>,tokens(2)));
+0432       hyperlinkFlag = 0 + any(cellfun(@(c)(~isempty(c)&amp;&amp;strcmp(c,<span class="string">'CWLink'</span>)),cell(tokens(2))));
+0433       <span class="comment">%}</span>
+0434 
+0435       jStyle = java.lang.String(style);
+0436       <span class="keyword">if</span> numel(styles)==4 &amp;&amp; isempty(char(styles(2)))
+0437           <span class="comment">% Attempt to fix discoloration issues - NOT SURE THAT THIS IS OK! - 24/6/2015</span>
+0438           styles(1) = jStyle;
+0439       <span class="keyword">end</span>
+0440       styles(end-extraInd) = java.lang.String(<span class="string">''</span>);
+0441       styles(end-extraInd-specialFlag) = jStyle;  <span class="comment">% #ok apparently unused but in reality used by Java</span>
+0442       <span class="keyword">if</span> extraInd
+0443           styles(end-specialFlag) = jStyle;
+0444       <span class="keyword">end</span>
+0445 
+0446       oldStyles{end} = [oldStyles{end} cell(styles)];
+0447   <span class="keyword">catch</span>
+0448       <span class="comment">% never mind for now</span>
+0449   <span class="keyword">end</span>
+0450   
+0451   <span class="comment">% Underlines (hyperlinks):</span>
+0452   <span class="comment">%{</span>
+0453   links = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
+0454   <span class="keyword">if</span> isempty(links)
+0455       <span class="comment">%docElement.addAttribute('LinkStartTokens',repmat(int32(-1),length(tokens(2)),1));</span>
+0456   <span class="keyword">else</span>
+0457       <span class="comment">%TODO: remove hyperlink by setting the value to -1</span>
+0458   <span class="keyword">end</span>
+0459   <span class="comment">%}</span>
+0460 
+0461   <span class="comment">% Correct empty URLs to be un-hyperlinkable (only underlined)</span>
+0462   urls = docElement.getAttribute(<span class="string">'HtmlLink'</span>);
+0463   <span class="keyword">if</span> ~isempty(urls)
+0464       urlTargets = urls(2);
+0465       <span class="keyword">for</span> urlIdx = 1 : length(urlTargets)
+0466           <span class="keyword">try</span>
+0467               <span class="keyword">if</span> urlTargets(urlIdx).length &lt; 1
+0468                   urlTargets(urlIdx) = [];  <span class="comment">% '' =&gt; []</span>
+0469               <span class="keyword">end</span>
+0470           <span class="keyword">catch</span>
+0471               <span class="comment">% never mind...</span>
+0472               a=1;  <span class="comment">%#ok used for debug breakpoint...</span>
+0473           <span class="keyword">end</span>
+0474       <span class="keyword">end</span>
+0475   <span class="keyword">end</span>
+0476   
+0477   <span class="comment">% Bold: (currently unused because we cannot modify this immutable int32 numeric array)</span>
+0478   <span class="comment">%{</span>
+0479   <span class="keyword">try</span>
+0480       <span class="comment">%hasBold = docElement.isDefined('BoldStartTokens');</span>
+0481       bolds = docElement.getAttribute(<span class="string">'BoldStartTokens'</span>);
+0482       <span class="keyword">if</span> ~isempty(bolds)
+0483           <span class="comment">%docElement.addAttribute('BoldStartTokens',repmat(int32(1),length(bolds),1));</span>
+0484       <span class="keyword">end</span>
+0485   <span class="keyword">catch</span>
+0486       <span class="comment">% never mind - ignore...</span>
+0487       a=1;  <span class="comment">%#ok used for debug breakpoint...</span>
+0488   <span class="keyword">end</span>
+0489   <span class="comment">%}</span>
+0490   
+0491   <span class="keyword">return</span>;  <span class="comment">% debug breakpoint</span>
+0492 
+0493 <span class="comment">% Display information about element(s)</span>
+0494 <a name="_sub6" href="#_subfunctions" class="code">function dumpElement(docElements)</a>
+0495   <span class="comment">%return;</span>
+0496   disp(<span class="string">' '</span>);
+0497   numElements = length(docElements);
+0498   cmdWinDoc = docElements(1).getDocument;
+0499   <span class="keyword">for</span> elementIdx = 1 : numElements
+0500       <span class="keyword">if</span> numElements &gt; 1,  fprintf(<span class="string">'Element #%d:\n'</span>,elementIdx);  <span class="keyword">end</span>
+0501       docElement = docElements(elementIdx);
+0502       <span class="keyword">if</span> ~isjava(docElement),  docElement = docElement.java;  <span class="keyword">end</span>
+0503       <span class="comment">%docElement.dump(java.lang.System.out,1)</span>
+0504       disp(docElement)
+0505       tokens = docElement.getAttribute(<span class="string">'SyntaxTokens'</span>);
+0506       <span class="keyword">if</span> isempty(tokens),  <span class="keyword">continue</span>;  <span class="keyword">end</span>
+0507       links = docElement.getAttribute(<span class="string">'LinkStartTokens'</span>);
+0508       urls  = docElement.getAttribute(<span class="string">'HtmlLink'</span>);
+0509       <span class="keyword">try</span> bolds = docElement.getAttribute(<span class="string">'BoldStartTokens'</span>); <span class="keyword">catch</span>, bolds = []; <span class="keyword">end</span>
+0510       txt = {};
+0511       tokenLengths = tokens(1);
+0512       <span class="keyword">for</span> tokenIdx = 1 : length(tokenLengths)-1
+0513           tokenLength = diff(tokenLengths(tokenIdx+[0,1]));
+0514           <span class="keyword">if</span> (tokenLength &lt; 0)
+0515               tokenLength = docElement.getEndOffset - docElement.getStartOffset - tokenLengths(tokenIdx);
+0516           <span class="keyword">end</span>
+0517           txt{tokenIdx} = cmdWinDoc.getText(docElement.getStartOffset+tokenLengths(tokenIdx),tokenLength).char;  <span class="comment">%#ok</span>
+0518       <span class="keyword">end</span>
+0519       lastTokenStartOffset = docElement.getStartOffset + tokenLengths(end);
+0520       <span class="keyword">try</span>
+0521           txt{end+1} = cmdWinDoc.getText(lastTokenStartOffset, docElement.getEndOffset-lastTokenStartOffset).char; <span class="comment">%#ok</span>
+0522       <span class="keyword">catch</span>
+0523           txt{end+1} = <span class="string">''</span>; <span class="comment">%#ok&lt;AGROW&gt;</span>
+0524       <span class="keyword">end</span>
+0525       <span class="comment">%cmdWinDoc.uiinspect</span>
+0526       <span class="comment">%docElement.uiinspect</span>
+0527       txt = strrep(txt',sprintf(<span class="string">'\n'</span>),<span class="string">'\n'</span>);
+0528       <span class="keyword">try</span>
+0529           data = [cell(tokens(2)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(tokens(1)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(links) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(urls(1)) cell(urls(2)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(bolds) txt];
+0530           <span class="keyword">if</span> elementIdx==1
+0531               disp(<span class="string">'    SyntaxTokens(2,1) - LinkStartTokens - HtmlLink(1,2) - BoldStartTokens - txt'</span>);
+0532               disp(<span class="string">'    =============================================================================='</span>);
+0533           <span class="keyword">end</span>
+0534       <span class="keyword">catch</span>
+0535           <span class="keyword">try</span>
+0536               data = [cell(tokens(2)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(tokens(1)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(links) txt];
+0537           <span class="keyword">catch</span>
+0538               disp([cell(tokens(2)) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(tokens(1)) txt]);
+0539               <span class="keyword">try</span>
+0540                   data = [<a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(links) <a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(urls(1)) cell(urls(2))];
+0541               <span class="keyword">catch</span>
+0542                   <span class="comment">% Mtlab 7.1 only has urls(1)...</span>
+0543                   data = [<a href="#_sub7" class="code" title="subfunction cells = m2c(data)">m2c</a>(links) cell(urls)];
+0544               <span class="keyword">end</span>
+0545           <span class="keyword">end</span>
+0546       <span class="keyword">end</span>
+0547       disp(data)
+0548   <span class="keyword">end</span>
+0549 
+0550 <span class="comment">% Utility function to convert matrix =&gt; cell</span>
+0551 <a name="_sub7" href="#_subfunctions" class="code">function cells = m2c(data)</a>
+0552   <span class="comment">%datasize = size(data);  cells = mat2cell(data,ones(1,datasize(1)),ones(1,datasize(2)));</span>
+0553   cells = num2cell(data);
+0554 
+0555 <span class="comment">% Display the help and demo</span>
+0556 <a name="_sub8" href="#_subfunctions" class="code">function showDemo(majorVersion,minorVersion)</a>
+0557   fprintf(<span class="string">'cprintf displays formatted text in the Command Window.\n\n'</span>);
+0558   fprintf(<span class="string">'Syntax: count = cprintf(style,format,...);  click &lt;a href=&quot;matlab:help cprintf&quot;&gt;here&lt;/a&gt; for details.\n\n'</span>);
+0559   url = <span class="string">'http://UndocumentedMatlab.com/blog/cprintf/'</span>;
+0560   fprintf([<span class="string">'Technical description: &lt;a href=&quot;'</span> url <span class="string">'&quot;&gt;'</span> url <span class="string">'&lt;/a&gt;\n\n'</span>]);
+0561   fprintf(<span class="string">'Demo:\n\n'</span>);
+0562   boldFlag = majorVersion&gt;7 || (majorVersion==7 &amp;&amp; minorVersion&gt;=13);
+0563   s = [<span class="string">'cprintf(''text'',    ''regular black text'');'</span> 10 <span class="keyword">...</span>
+0564        <span class="string">'cprintf(''hyper'',   ''followed %s'',''by'');'</span> 10 <span class="keyword">...</span>
+0565        <span class="string">'cprintf(''key'',     ''%d colored'','</span> num2str(4+boldFlag) <span class="string">');'</span> 10 <span class="keyword">...</span>
+0566        <span class="string">'cprintf(''-comment'',''&amp; underlined'');'</span> 10 <span class="keyword">...</span>
+0567        <span class="string">'cprintf(''err'',     ''elements:\n'');'</span> 10 <span class="keyword">...</span>
+0568        <span class="string">'cprintf(''cyan'',    ''cyan'');'</span> 10 <span class="keyword">...</span>
+0569        <span class="string">'cprintf(''_green'',  ''underlined green'');'</span> 10 <span class="keyword">...</span>
+0570        <span class="string">'cprintf(-[1,0,1],  ''underlined magenta'');'</span> 10 <span class="keyword">...</span>
+0571        <span class="string">'cprintf([1,0.5,0], ''and multi-\nline orange\n'');'</span> 10];
+0572    <span class="keyword">if</span> boldFlag
+0573        <span class="comment">% In R2011b+ the internal bug that causes the need for an extra space</span>
+0574        <span class="comment">% is apparently fixed, so we must insert the sparator spaces manually...</span>
+0575        <span class="comment">% On the other hand, 2011b enables *bold* format</span>
+0576        s = [s <span class="string">'cprintf(''*blue'',   ''and *bold* (R2011b+ only)\n'');'</span> 10];
+0577        s = strrep(s, <span class="string">''')'</span>,<span class="string">' '')'</span>);
+0578        s = strrep(s, <span class="string">''',5)'</span>,<span class="string">' '',5)'</span>);
+0579        s = strrep(s, <span class="string">'\n '</span>,<span class="string">'\n'</span>);
+0580    <span class="keyword">end</span>
+0581    disp(s);
+0582    eval(s);
+0583 
+0584 
+0585 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0586 <span class="comment">% - Fix: Remove leading space char (hidden underline '_')</span>
+0587 <span class="comment">% - Fix: Find workaround for multi-line quirks/limitations</span>
+0588 <span class="comment">% - Fix: Non-\n-terminated segments are displayed as black</span>
+0589 <span class="comment">% - Fix: Check whether the hyperlink fix for 7.1 is also needed on 7.2 etc.</span>
+0590 <span class="comment">% - Enh: Add font support</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

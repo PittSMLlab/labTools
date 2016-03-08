@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeTemporalParameters</title>
+  <meta name="keywords" content="computeTemporalParameters">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeTemporalParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeTemporalParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeTemporalParameters(strideEvents) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeTemporalParameters(strideEvents)</a>
+0002 <span class="comment">%%</span>
+0003 timeSHS=strideEvents.tSHS;
+0004 timeFTO=strideEvents.tFTO;
+0005 timeFHS=strideEvents.tFHS;
+0006 timeSTO=strideEvents.tSTO;
+0007 timeSHS2=strideEvents.tSHS2;
+0008 timeFTO2=strideEvents.tFTO2;
+0009 <span class="comment">%% Labels and descriptions:</span>
+0010 aux={<span class="string">'swingTimeSlow'</span>,            <span class="string">'time from STO to SHS2 (in s)'</span>;<span class="keyword">...</span>
+0011     <span class="string">'swingTimeFast'</span>,            <span class="string">'time from FTO to FHS (in s)'</span>;<span class="keyword">...</span>
+0012     <span class="string">'stanceTimeSlow'</span>,           <span class="string">'time from SHS to STO (in s)'</span>;<span class="keyword">...</span>
+0013     <span class="string">'stanceTimeFast'</span>,           <span class="string">'time from FHS to FTO2 (in s)'</span>;<span class="keyword">...</span><span class="comment"> %Fixed description on 7/15/15</span>
+0014     <span class="string">'doubleSupportSlow'</span>,        <span class="string">'time from FHS to STO (in s)'</span>;<span class="keyword">...</span>
+0015     <span class="string">'doubleSupportFast'</span>,        <span class="string">'time from SHS2 to FTO2 (in s)'</span>;<span class="keyword">...</span><span class="comment"> %Fixed description on 7/15/15</span>
+0016     <span class="string">'doubleSupportTemp'</span>,        <span class="string">'time from SHS to FTO (in s)'</span>;<span class="keyword">...</span>
+0017     <span class="string">'stepTimeSlow'</span>,             <span class="string">'time from FHS to SHS2 (in s)'</span>;<span class="keyword">...</span>
+0018     <span class="string">'stepTimeFast'</span>,             <span class="string">'time from SHS to FHS (in s)'</span>;<span class="keyword">...</span>
+0019     <span class="string">'toeOffSlow'</span>,               <span class="string">'time from STO to FTO2 (in s)'</span>;<span class="keyword">...</span>
+0020     <span class="string">'toeOffFast'</span>,               <span class="string">'time from FTO to STO (in s)'</span>;<span class="keyword">...</span>
+0021     <span class="string">'strideTimeSlow'</span>,           <span class="string">'time from SHS to SHS2 (in s)'</span>;<span class="keyword">...</span>
+0022     <span class="string">'strideTimeFast'</span>,           <span class="string">'time from FTO to FTO2 (in s)'</span>;<span class="keyword">...</span>
+0023     <span class="string">'cadenceSlow'</span>,              <span class="string">'1/strideTimeSlow (in Hz)'</span>;<span class="keyword">...</span>
+0024     <span class="string">'cadenceFast'</span>,              <span class="string">'1/strideTimeFast (in Hz)'</span>;<span class="keyword">...</span>
+0025     <span class="string">'stepCadenceSlow'</span>,          <span class="string">'1/stepTimeSlow (in Hz)'</span>;<span class="keyword">...</span>
+0026     <span class="string">'stepCadenceFast'</span>,          <span class="string">'1/stepTimeFast (in Hz)'</span>;<span class="keyword">...</span>
+0027     <span class="string">'doubleSupportPctSlow'</span>,     <span class="string">'(doubleSupportSlow/strideTimeSlow)*100'</span>;<span class="keyword">...</span>
+0028     <span class="string">'doubleSupportPctFast'</span>,     <span class="string">'(doubleSupportFast/strideTimeFast)*100'</span>;<span class="keyword">...</span>
+0029     <span class="string">'doubleSupportDiff'</span>,        <span class="string">'doubleSupportSlow-doubleSupportFast (in s)'</span>;<span class="keyword">...</span><span class="comment">    </span>
+0030     <span class="string">'stepTimeDiff'</span>,             <span class="string">'stepTimeFast-stepTimeSlow (in s)'</span>;<span class="keyword">...</span>
+0031     <span class="string">'stanceTimeDiff'</span>,           <span class="string">'stanceTimeSlow-stanceTimeFast (in s)'</span>;<span class="keyword">...</span>
+0032     <span class="string">'swingTimeDiff'</span>,            <span class="string">'swingTimeFast-swingTimeSlow (in s)'</span>;<span class="keyword">...</span>
+0033     <span class="string">'doubleSupportAsym'</span>,        <span class="string">'(doubleSupportPctFast-doubleSupportPctSlow)/(doubleSupportPctFast+doubleSupportPctSlow)'</span>;<span class="keyword">...</span>
+0034     <span class="string">'Tout'</span>,                     <span class="string">'stepTimeDiff/strideTimeSlow'</span>;<span class="keyword">...</span>
+0035     <span class="string">'Tgoal'</span>,                    <span class="string">'stanceTimeDiff/strideTimeSlow'</span>;<span class="keyword">...</span>
+0036     <span class="string">'TgoalSW'</span>,                  <span class="string">'swingTimeDiff/strideTimeSlow (should be same as Tgoal)'</span>};
+0037 
+0038 paramLabels=aux(:,1);
+0039 description=aux(:,2);
+0040 
+0041 <span class="comment">%% Compute:</span>
+0042        
+0043         <span class="comment">%%% intralimb</span>
+0044         
+0045         <span class="comment">%swing times</span>
+0046         swingTimeSlow=timeSHS2-timeSTO;
+0047         swingTimeFast=timeFHS-timeFTO;
+0048         <span class="comment">%stance times</span>
+0049         stanceTimeSlow=timeSTO-timeSHS;
+0050         stanceTimeFast=timeFTO2-timeFHS;
+0051         <span class="comment">%double support times</span>
+0052         doubleSupportSlow=timeSTO-timeFHS;
+0053         doubleSupportTemp=timeFTO-timeSHS;
+0054         doubleSupportFast=timeFTO2-timeSHS2; <span class="comment">%PAblo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.</span>
+0055         <span class="comment">%step times (time between heel strikes)</span>
+0056         stepTimeSlow=timeSHS2-timeFHS;
+0057         stepTimeFast=timeFHS-timeSHS;
+0058         <span class="comment">%time betwenn toe offs</span>
+0059         toeOffSlow=timeFTO2-timeSTO;
+0060         toeOffFast=timeSTO-timeFTO;
+0061         <span class="comment">%stride times</span>
+0062         strideTimeSlow=timeSHS2-timeSHS;
+0063         strideTimeFast=timeFTO2-timeFTO;
+0064         <span class="comment">%cadence (stride cycles per s)</span>
+0065         cadenceSlow=1./strideTimeSlow;
+0066         cadenceFast=1./strideTimeFast;
+0067         <span class="comment">%step cadence (steps per s)</span>
+0068         stepCadenceSlow=1./stepTimeSlow;
+0069         stepCadenceFast=1./stepTimeFast;
+0070         <span class="comment">%double support percent</span>
+0071         doubleSupportPctSlow=doubleSupportSlow./strideTimeSlow*100;
+0072         doubleSupportPctFast=doubleSupportFast./strideTimeFast*100;
+0073         
+0074         <span class="comment">%%% interlimb</span>
+0075         <span class="comment">%note: the decision on Fast-Slow vs Slow-Fast was made based on how</span>
+0076         <span class="comment">%the parameter looks when plotted.</span>
+0077         doubleSupportDiff=doubleSupportSlow-doubleSupportFast;
+0078         stepTimeDiff=stepTimeFast-stepTimeSlow;
+0079         stanceTimeDiff=stanceTimeSlow-stanceTimeFast;
+0080         swingTimeDiff=swingTimeFast-swingTimeSlow;
+0081         doubleSupportAsym=(doubleSupportPctFast-doubleSupportPctSlow)./(doubleSupportPctFast+doubleSupportPctSlow);
+0082         Tout=(stepTimeDiff)./strideTimeSlow;
+0083         Tgoal=(stanceTimeDiff)./strideTimeSlow;
+0084         TgoalSW=(swingTimeDiff)./strideTimeSlow;
+0085 
+0086 <span class="comment">%% Assign parameters to data matrix</span>
+0087 data=nan(length(timeSHS),length(paramLabels));
+0088 <span class="keyword">for</span> i=1:length(paramLabels)
+0089     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">%% Create parameterSeries</span>
+0093 out=parameterSeries(data,paramLabels,[],description);        
+0094 
+0095 <span class="keyword">end</span>
+0096</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

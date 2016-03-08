@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEventsFromAngles</title>
+  <meta name="keywords" content="getEventsFromAngles">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromAngles.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getEventsFromAngles
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function HS = FindKinHS(start,stop,ankdata,n)</a></li><li><a href="#_sub2" class="code">function TO = FindKinTO(start,stop,ankdata,n)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation)</a>
+0002 
+0003 pad = 25; <span class="comment">%this is the minimum number of samples two events can be apart</span>
+0004 nsamples = trialData.markerData.Length;
+0005 [LHSevent,RHSevent,LTOevent,RTOevent]=deal(false(nsamples,1));
+0006 
+0007 <span class="comment">%Get angle traces</span>
+0008 rdata = angleData.getDataAsVector({<span class="string">'RLimb'</span>});
+0009 ldata = angleData.getDataAsVector({<span class="string">'LLimb'</span>});
+0010 
+0011 <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'OG'</span>)
+0012     <span class="comment">%Get fore-aft hip positions</span>
+0013     newMarkerData = trialData.markerData.getDataAsVector({[<span class="string">'RHIP'</span> orientation.foreaftAxis],[<span class="string">'LHIP'</span> orientation.foreaftAxis]});
+0014     rhip=newMarkerData(:,1);
+0015     lhip=newMarkerData(:,2);
+0016     
+0017     avghip = (rhip+lhip)./2;
+0018     
+0019     <span class="comment">%Get hip velocity</span>
+0020     HipVel = diff(avghip);
+0021     
+0022     <span class="comment">%Clean up velocities to remove artifacts of marker drop-outs</span>
+0023     HipVel(abs(HipVel)&gt;50) = 0;
+0024     
+0025     <span class="comment">%Use hip velocity to determine when subject is walking</span>
+0026     midHipVel = nanmedian(abs(HipVel));
+0027     walking = abs(HipVel)&gt;0.5*midHipVel;
+0028     <span class="comment">% Eliminate walking or turn around phases shorter than 0.25 seconds</span>
+0029     [walking] = <a href="deleteShortPhases.html" class="code" title="function [stance] = deleteShortPhases(stance,fsample,minDuration)">deleteShortPhases</a>(walking,trialData.markerData.sampFreq,0.25);
+0030     
+0031     <span class="comment">% split walking into individual bouts</span>
+0032     walkingSamples = find(walking);
+0033     
+0034     <span class="keyword">if</span> ~isempty(walkingSamples)
+0035         StartStop = [walkingSamples(1) walkingSamples(diff(walkingSamples)~=1)'<span class="keyword">...</span>
+0036             walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
+0037         StartStop = sort(StartStop);
+0038     <span class="keyword">else</span>
+0039         warning(<span class="string">'Subject was not walking during one of the overground trials'</span>);
+0040         <span class="keyword">return</span>
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">else</span>
+0043     StartStop= [1 length(rdata)];
+0044 <span class="keyword">end</span>
+0045 
+0046 RightTO = [];
+0047 RightHS = [];
+0048 LeftHS = [];
+0049 LeftTO = [];
+0050 
+0051 <span class="keyword">for</span> i = 1:2:(length(StartStop))
+0052     
+0053     <span class="comment">%find HS/TO for right leg</span>
+0054     <span class="comment">%Finds local minimums and maximums.</span>
+0055     start = StartStop(i);
+0056     stop = StartStop(i+1);
+0057     
+0058     <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'OG'</span>) &amp;&amp; median(HipVel(start:stop))&gt;0 <span class="comment">% in our lab, walking towards door</span>
+0059         <span class="comment">% Reverse angles for walking towards lab door (this is to make angle</span>
+0060         <span class="comment">% maximums HS and minimums TO, as they are when on treadmill)</span>
+0061         rdata(start:stop) = -rdata(start:stop);
+0062         ldata(start:stop) = -ldata(start:stop);
+0063     <span class="keyword">end</span>
+0064     
+0065     startHS = start;
+0066     startTO  = start;
+0067     
+0068     <span class="comment">%Find all maximum (HS)</span>
+0069     <span class="keyword">while</span> (startHS&lt;stop)
+0070         RHS = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start,stop,ankdata,n)">FindKinHS</a>(startHS,stop,rdata,pad);
+0071         RightHS = [RightHS RHS];
+0072         startHS = RHS+1;
+0073     <span class="keyword">end</span>
+0074     
+0075     <span class="comment">%Find all minimum (TO)</span>
+0076     <span class="keyword">while</span> (startTO&lt;stop)
+0077         RTO = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start,stop,ankdata,n)">FindKinTO</a>(startTO,stop,rdata,pad);
+0078         RightTO = [RightTO RTO];
+0079         startTO = RTO+1;
+0080     <span class="keyword">end</span>
+0081     
+0082     RightTO(RightTO == start | RightTO == stop) = [];
+0083     RightHS(RightHS == start | RightHS == stop) = [];
+0084     
+0085     <span class="comment">%% find HS/TO for left leg</span>
+0086     startHS = start;
+0087     startTO  = start;
+0088     
+0089     <span class="comment">%find all maximum (HS)</span>
+0090     <span class="keyword">while</span> (startHS&lt;stop)
+0091         LHS = <a href="#_sub1" class="code" title="subfunction HS = FindKinHS(start,stop,ankdata,n)">FindKinHS</a>(startHS,stop,ldata,pad);
+0092         LeftHS = [LeftHS LHS];
+0093         startHS = LHS+pad;
+0094     <span class="keyword">end</span>
+0095     
+0096     <span class="comment">%find all minimum (TO)</span>
+0097     <span class="keyword">while</span> (startTO&lt;stop)
+0098         LTO = <a href="#_sub2" class="code" title="subfunction TO = FindKinTO(start,stop,ankdata,n)">FindKinTO</a>(startTO,stop,ldata,pad);
+0099         LeftTO = [LeftTO LTO];
+0100         startTO = LTO+pad;
+0101     <span class="keyword">end</span>
+0102     
+0103     LeftTO(LeftTO == start | LeftTO == stop)=[];
+0104     LeftHS(LeftHS == start | LeftHS == stop)=[];
+0105 <span class="keyword">end</span>
+0106 
+0107 <span class="comment">% Remove any events due to marker dropouts</span>
+0108 RightTO(rdata(RightTO)==0)=[];
+0109 RightHS(rdata(RightHS)==0)=[];
+0110 LeftTO(rdata(LeftTO)==0)=[];
+0111 LeftHS(rdata(LeftHS)==0)=[];
+0112 
+0113 <span class="comment">% Remove any events that don't make sense</span>
+0114 RightTO(rdata(RightTO)&gt;5 | abs(rdata(RightTO))&gt;40)=[];
+0115 RightHS(rdata(RightHS)&lt;0 | abs(rdata(RightHS))&gt;40)=[];
+0116 LeftTO(ldata(LeftTO)&gt;5 | abs(ldata(LeftTO))&gt;40)=[];
+0117 LeftHS(ldata(LeftHS)&lt;0 | abs(ldata(LeftHS))&gt;40)=[];
+0118 
+0119 LHSevent(LeftHS)=true;
+0120 RTOevent(RightTO)=true;
+0121 RHSevent(RightHS)=true;
+0122 LTOevent(LeftTO)=true;
+0123 
+0124 
+0125 <span class="comment">%[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);</span>
+0126 
+0127 <span class="comment">%These functions are similar to the built-in 'findpeaks' matlab function.</span>
+0128 
+0129 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0130 <a name="_sub1" href="#_subfunctions" class="code">function HS = FindKinHS(start,stop,ankdata,n)</a>
+0131 <span class="comment">% find max of limb angle trace</span>
+0132 
+0133 <span class="keyword">for</span> i = start:stop
+0134     <span class="keyword">if</span> i == 1
+0135         a = 1;
+0136     <span class="keyword">elseif</span> (i-n) &lt; 1
+0137         a = 1:i-1;
+0138     <span class="keyword">else</span>
+0139         a = i-n:i-1;
+0140     <span class="keyword">end</span>
+0141     <span class="keyword">if</span> i == stop
+0142         b = stop;
+0143     <span class="keyword">elseif</span> (i+n) &gt; stop
+0144         b = i+1:stop;
+0145     <span class="keyword">else</span>
+0146         b = i+1:i+n;
+0147     <span class="keyword">end</span>
+0148     <span class="keyword">if</span> all(ankdata(i)&gt;=ankdata(a)) &amp;&amp; all(ankdata(i)&gt;=ankdata(b)) <span class="comment">%HH added &quot;=&quot; for the very rare case where the two max/min are the same value.</span>
+0149         <span class="keyword">break</span>;
+0150     <span class="keyword">end</span>
+0151 <span class="keyword">end</span>
+0152 HS = i;
+0153 
+0154 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0155 <a name="_sub2" href="#_subfunctions" class="code">function TO = FindKinTO(start,stop,ankdata,n)</a>
+0156 <span class="comment">% find mmin of limb angle trace</span>
+0157 
+0158 <span class="keyword">for</span> i = start:stop
+0159     <span class="keyword">if</span> i == 1
+0160         a = 1;
+0161     <span class="keyword">elseif</span> (i-n) &lt; 1
+0162         a = 1:i-1;
+0163     <span class="keyword">else</span>
+0164         a = i-n:i-1;
+0165     <span class="keyword">end</span>
+0166     <span class="keyword">if</span> i == stop
+0167         b = stop;
+0168     <span class="keyword">elseif</span> (i+n) &gt; stop
+0169         b = i+1:stop;
+0170     <span class="keyword">else</span>
+0171         b = i+1:i+n;
+0172     <span class="keyword">end</span>
+0173     <span class="keyword">if</span> all(ankdata(i)&lt;= ankdata(a)) &amp;&amp; all(ankdata(i)&lt;=ankdata(b))
+0174         <span class="keyword">break</span>;
+0175     <span class="keyword">end</span>
+0176 <span class="keyword">end</span>
+0177 TO = i;
+0178 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

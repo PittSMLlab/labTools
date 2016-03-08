@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SynergySet</title>
+  <meta name="keywords" content="SynergySet">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@SynergySet</a> &gt; SynergySet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/synergies/@SynergySet&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SynergySet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SynergySet.html" class="code" title="">SynergySet</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function s=SynergySet(content,muscleList,varargin)</a></li><li><a href="#_sub2" class="code">function dim=getDim(this)</a></li><li><a href="#_sub3" class="code">function Nelements=getElements(this)</a></li><li><a href="#_sub4" class="code">function content=getPartialContent(this,indexes)</a></li><li><a href="#_sub5" class="code">function s=getSingleSynergy(this,index)</a></li><li><a href="#_sub6" class="code">function this=set.name(this,name)</a></li><li><a href="#_sub7" class="code">function handle=plot(this,varargin)</a></li><li><a href="#_sub8" class="code">function display(this)</a></li><li><a href="#_sub9" class="code">function dist=distance(this)</a></li><li><a href="#_sub10" class="code">function distM=distanceMatrix(this)</a></li><li><a href="#_sub11" class="code">function newThis=varimax(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SynergySet.html" class="code" title="">SynergySet</a>
+0002     <span class="comment">%SynergySet Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(SetAccess = private, GetAccess = public)
+0006         muscleList={};
+0007         content=[];
+0008     <span class="keyword">end</span>
+0009     properties <span class="comment">%Public</span>
+0010         name=[<span class="string">'Unnamed'</span>]; <span class="comment">%Optional, string</span>
+0011         <span class="comment">%metaData</span>
+0012         <span class="comment">%uniqueID</span>
+0013     <span class="keyword">end</span>
+0014     properties(Constant)
+0015         colors={[0,.4,1]; [0,1,1]; [0,1,0]; [1,1,0]; [1,.2,0]; [1,0,1]; [.5,.5,.5]; [1,.5,0]; [0,.6,0]; [0,.5,1]};
+0016     <span class="keyword">end</span>
+0017     
+0018     methods
+0019         <span class="comment">%Constructor:</span>
+0020         <a name="_sub0" href="#_subfunctions" class="code">function s=SynergySet(content,muscleList,varargin)</a>
+0021             dim=size(content,2);
+0022             <span class="keyword">if</span> length(muscleList)~=dim
+0023                 <span class="comment">%ERROR</span>
+0024                 <span class="keyword">return</span>
+0025             <span class="keyword">else</span>
+0026                 <span class="comment">%s.dim=dim;</span>
+0027                 <span class="comment">%s.Nelements=Nelements;</span>
+0028                 s.content=content;
+0029                 s.muscleList=muscleList;
+0030             <span class="keyword">end</span>  
+0031             <span class="keyword">if</span> nargin&gt;2
+0032                 <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
+0033                     s.name=varargin{1}; <span class="comment">%Needs to be a string</span>
+0034                 <span class="keyword">end</span>
+0035             <span class="keyword">end</span>
+0036         <span class="keyword">end</span>
+0037         <span class="comment">%Gets &amp; sets:</span>
+0038         <a name="_sub1" href="#_subfunctions" class="code">function dim=getDim(this)</a>
+0039            dim= size(this.content,2);
+0040         <span class="keyword">end</span>
+0041         <a name="_sub2" href="#_subfunctions" class="code">function Nelements=getElements(this)</a>
+0042             Nelements=size(this.content,1);
+0043         <span class="keyword">end</span>
+0044         <a name="_sub3" href="#_subfunctions" class="code">function content=getPartialContent(this,indexes)</a>
+0045             content=this.content(indexes,:);
+0046         <span class="keyword">end</span>
+0047         <a name="_sub4" href="#_subfunctions" class="code">function s=getSingleSynergy(this,index)</a>
+0048             s = Synergy(this.content(index,:),this.muscleList);
+0049         <span class="keyword">end</span>
+0050         content=getContentAsCollection(this)
+0051         <a name="_sub5" href="#_subfunctions" class="code">function this=set.name(this,name)</a>
+0052             <span class="keyword">if</span> isa(name,<span class="string">'char'</span>)
+0053                 this.name=name;
+0054             <span class="keyword">else</span>
+0055                 disp(<span class="string">'Error: name is not string'</span>)
+0056             <span class="keyword">end</span>
+0057         <span class="keyword">end</span>
+0058         
+0059         <span class="comment">%Output:</span>
+0060         <a name="_sub6" href="#_subfunctions" class="code">function handle=plot(this,varargin) </a><span class="comment">%First argument: plot handles, second argument: colors for plots</span>
+0061             <span class="keyword">if</span> length(varargin)&lt;1 || length(varargin{1})&lt;this.getElements <span class="comment">%Handle size incorrect, assuming no handles were given</span>
+0062                 handle=figure;
+0063                 <span class="keyword">for</span> i=1:this.getElements
+0064                     subHandles(i)=subplot(1,this.getElements,i);
+0065                 <span class="keyword">end</span>
+0066             <span class="keyword">else</span>
+0067                 subHandles=varargin{1};
+0068                 handle=gcf;
+0069             <span class="keyword">end</span>
+0070             <span class="keyword">for</span> i=1:this.getElements
+0071                 subplot(subHandles(i))
+0072                 hold on
+0073                 bar(this.content(i,:))
+0074                 <span class="comment">%set(gca,'XTick',[1:this.getDim],'XTickLabel',this.muscleList)</span>
+0075                 xticklabel_rotate90_cell([1:this.getDim],this.muscleList,<span class="string">'FontSize'</span>,6,<span class="string">'Color'</span>,[0 0 0]);
+0076                 <span class="keyword">if</span> length(varargin)&lt;2
+0077                     colormap(this.colors{mod(i,10)+1}); <span class="comment">%Fixed colors</span>
+0078                 <span class="keyword">else</span>
+0079                     colormap(varargin{2}{1+mod(i-1,length(varargin{2}))}); <span class="comment">%Color passed by caller</span>
+0080                 <span class="keyword">end</span>
+0081                 freezeColors
+0082                 axis([.5 this.getDim+.5 -1 1])
+0083                 hold off
+0084             <span class="keyword">end</span>
+0085         <span class="keyword">end</span>
+0086         <a name="_sub7" href="#_subfunctions" class="code">function display(this)</a>
+0087            disp(<span class="string">'---'</span>)
+0088            disp([<span class="string">'SynergySet '</span> this.name])
+0089            content=this.content
+0090            labels=this.muscleList
+0091            disp(<span class="string">'---'</span>)
+0092         <span class="keyword">end</span>
+0093         
+0094         <span class="comment">%Other (misc):</span>
+0095         <a name="_sub8" href="#_subfunctions" class="code">function dist=distance(this)</a>
+0096             <span class="comment">%Returns a distance vector for a SynergySet, in the same format</span>
+0097             <span class="comment">%as pdist</span>
+0098             dist=pdist(this.content,<span class="string">'cosine'</span>);
+0099             dist=acosd(1-dist);
+0100         <span class="keyword">end</span>
+0101         <a name="_sub9" href="#_subfunctions" class="code">function distM=distanceMatrix(this)</a>
+0102             <span class="comment">%Returns the same as distance, but structured as a matrix such that R(i,j)=R(j,i)= distance between element i and j of the set</span>
+0103             dist=this.distance;
+0104             distM=squareform(dist);
+0105         <span class="keyword">end</span>
+0106         <span class="comment">%Modifiers</span>
+0107         <a name="_sub10" href="#_subfunctions" class="code">function newThis=varimax(this)</a>
+0108            <span class="keyword">if</span> size(this.content,1)&gt;1
+0109            newContent=rotatefactors(this.content',<span class="string">'Method'</span>,<span class="string">'varimax'</span>);
+0110            <span class="keyword">for</span> j=1:size(newContent,2) <span class="comment">%Flipping synergies that are mostly negative, for aesthethic purposes strictly.</span>
+0111                [~,idx]=max(abs(newContent(:,j)));
+0112                <span class="keyword">if</span> newContent(idx,j)&lt;0
+0113                    newContent(:,j)=-newContent(:,j);
+0114                <span class="keyword">end</span>
+0115            <span class="keyword">end</span>
+0116            newThis=<a href="SynergySet.html" class="code" title="">SynergySet</a>(newContent',this.muscleList,[this.name <span class="string">' Varimax Rotated'</span>]);
+0117            <span class="keyword">else</span>
+0118                newThis=this;
+0119            <span class="keyword">end</span>
+0120         <span class="keyword">end</span>
+0121     <span class="keyword">end</span>
+0122     
+0123 <span class="keyword">end</span>
+0124</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

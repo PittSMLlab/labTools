@@ -1,0 +1,844 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PlotParamsGUI</title>
+  <meta name="keywords" content="PlotParamsGUI">
+  <meta name="description" content="PLOTPARAMSGUI comments go here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">eventReview</a> &gt; PlotParamsGUI.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for eventReview&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>PlotParamsGUI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>PLOTPARAMSGUI comments go here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = PlotParamsGUI(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PLOTPARAMSGUI comments go here
+
+ See also:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="disableFields.html" class="code" title="function handles = disableFields(handles,varargin)">disableFields</a>	</li><li><a href="enableFields.html" class="code" title="function handles = enableFields(handles,varargin)">enableFields</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function PlotParamsGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = PlotParamsGUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function groupList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function subjectList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function parameterList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function conditionList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function binEdit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function indivSubs_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function samePlotCheck_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function conditionSubList_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function regExpBox_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function maxPerturbCheck_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function earlyNumPts_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub15" class="code">function lateNumPts_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub16" class="code">function exptLastNumPts_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub17" class="code">function removeBiasCheck_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub18" class="code">function biofeedback_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub19" class="code">function printCodeCheck_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub20" class="code">function saveTool_ClickedCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub21" class="code">function openTool_ClickedCallback(hObject, eventdata, handles)</a></li><li><a href="#_sub22" class="code">function plotButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub23" class="code">function colorMenu_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub24" class="code">function saveColorsButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub25" class="code">function color1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub26" class="code">function color2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub27" class="code">function color3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub28" class="code">function color4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub29" class="code">function color5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub30" class="code">function color6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub31" class="code">function color7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub32" class="code">function color8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub33" class="code">function color9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub34" class="code">function color10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub35" class="code">function color11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub36" class="code">function color12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub37" class="code">function color13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub38" class="code">function color14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub39" class="code">function color15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub40" class="code">function color16_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub41" class="code">function color17_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub42" class="code">function handles = colorButtonCallback(hObject,handles)</a></li><li><a href="#_sub43" class="code">function conditionList_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub44" class="code">function parameterList_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub45" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub46" class="code">function binEdit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub47" class="code">function subjectList_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub48" class="code">function conditionSubList_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub49" class="code">function regExpBox_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub50" class="code">function earlyNumPts_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub51" class="code">function lateNumPts_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub52" class="code">function exptLastNumPts_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub53" class="code">function colorMenu_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub54" class="code">function regExpBox_ButtonDownFcn(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = PlotParamsGUI(varargin)</a>
+0002 <span class="comment">% PLOTPARAMSGUI comments go here</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also:</span>
+0005 
+0006 <span class="comment">% Last Modified by GUIDE v2.5 22-Jun-2015 13:56:18</span>
+0007 
+0008 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0009 gui_Singleton = 1;
+0010 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0011     <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0012     <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction PlotParamsGUI_OpeningFcn(hObject, eventdata, handles, varargin)">PlotParamsGUI_OpeningFcn</a>, <span class="keyword">...</span>
+0013     <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = PlotParamsGUI_OutputFcn(hObject, eventdata, handles)">PlotParamsGUI_OutputFcn</a>, <span class="keyword">...</span>
+0014     <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0015     <span class="string">'gui_Callback'</span>,   []);
+0016 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0017     gui_State.gui_Callback = str2func(varargin{1});
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">if</span> nargout
+0021     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0022 <span class="keyword">else</span>
+0023     gui_mainfcn(gui_State, varargin{:});
+0024 <span class="keyword">end</span>
+0025 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%% --- Executes just before PlotParamsGUI is made visible.</span>
+0029 
+0030 <a name="_sub1" href="#_subfunctions" class="code">function PlotParamsGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0031 
+0032 <span class="comment">% Choose default command line output for PlotParamsGUI</span>
+0033 handles.output = hObject;
+0034 
+0035 <span class="comment">%Position GUI window in the bottom, center of the screen</span>
+0036 scrsz = get(0,<span class="string">'ScreenSize'</span>);
+0037 set(gcf,<span class="string">'Units'</span>,<span class="string">'pixels'</span>);
+0038 guiPos = get(gcf,<span class="string">'Position'</span>); <span class="comment">% left, bottom, width, height</span>
+0039 width=min([guiPos(3) scrsz(3)]);
+0040 height=min([guiPos(4) scrsz(4)]);
+0041 set(hObject, <span class="string">'Position'</span>, [(scrsz(3)-width)/2 45 width height]);
+0042 
+0043 <span class="comment">%set color strings</span>
+0044 <span class="keyword">for</span> i=1:17
+0045     clr=get(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'BackgroundColor'</span>);
+0046     set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'ForeGroundColor'</span>,contrastColor(clr));
+0047     set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'string'</span>,[<span class="string">'['</span> num2str(clr.*255) <span class="string">']'</span>]);
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">%initialize drop down list with different color orders</span>
+0051 path=which(<span class="string">'PlotParamsGUI'</span>);
+0052 path=strrep(path,<span class="string">'PlotParamsGUI.m'</span>,<span class="string">'Plotting Colors'</span>);
+0053 W=what(path);
+0054 colorOrders=cellstr(W.mat);
+0055 <span class="keyword">for</span> i=1:length(colorOrders)
+0056     fileExt=find(colorOrders{i}==<span class="string">'.'</span>);
+0057     colorOrders{i}=colorOrders{i}(1:fileExt-1);
+0058 <span class="keyword">end</span>
+0059 set(handles.colorMenu,<span class="string">'String'</span>,[<span class="string">' '</span>;colorOrders])
+0060 
+0061 <span class="comment">% Update handles structure</span>
+0062 guidata(hObject, handles);
+0063 <span class="comment">% UIWAIT makes PlotParamsGUI wait for user response (see UIRESUME)</span>
+0064 <span class="comment">% uiwait(handles.figure1);</span>
+0065 <span class="keyword">end</span>
+0066 
+0067 <a name="_sub2" href="#_subfunctions" class="code">function varargout = PlotParamsGUI_OutputFcn(hObject, eventdata, handles)</a>
+0068 <span class="comment">%Outputs from this function are returned to the command line.</span>
+0069 
+0070 <span class="comment">% Get default command line output from handles structure</span>
+0071 varargout{1} = handles.output;
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="comment">%% --------------------------Selecting Plot Type:----------------------------------</span>
+0075 
+0076 <span class="comment">% --- Executes when selected object is changed in plotTypePanel.</span>
+0077 <a name="_sub3" href="#_subfunctions" class="code">function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)</a>
+0078 <span class="comment">% hObject    handle to the selected object in plotTypePanel</span>
+0079 <span class="comment">% eventdata  structure with the following fields (see UIBUTTONGROUP)</span>
+0080 <span class="comment">%    EventName: string 'SelectionChanged' (read only)</span>
+0081 <span class="comment">%    OldValue: handle of the previously selected object or empty if none was selected</span>
+0082 <span class="comment">%    NewValue: handle of the currently selected object</span>
+0083 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0084 
+0085 <span class="comment">%first, disable everything</span>
+0086 handles = <a href="disableFields.html" class="code" title="function handles = disableFields(handles,varargin)">disableFields</a>(handles,<span class="string">'groupList'</span>,<span class="string">'subjectList'</span>,<span class="string">'parameterList'</span>,<span class="keyword">...</span>
+0087     <span class="string">'conditionList'</span>,<span class="string">'plotButton'</span>,<span class="string">'binEdit'</span>,<span class="string">'conditionSubList'</span>,<span class="string">'indivSubs'</span>,<span class="keyword">...</span>
+0088     <span class="string">'samePlotCheck'</span>,<span class="string">'regExpBox'</span>,<span class="string">'maxPerturbCheck'</span>,<span class="string">'earlyNumPts'</span>,<span class="string">'lateNumPts'</span>,<span class="keyword">...</span>
+0089     <span class="string">'exptLastNumPts'</span>,<span class="string">'removeBiasCheck'</span>,<span class="string">'printCodeCheck'</span>,<span class="string">'colorMenu'</span>,<span class="string">'saveColorsButton'</span>,<span class="string">'biofeedback'</span>);
+0090 
+0091 <span class="keyword">for</span> i=1:17
+0092     set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%Then, enable things based on plot type</span>
+0096 <span class="keyword">switch</span> get(eventdata.NewValue,<span class="string">'Tag'</span>)
+0097     <span class="keyword">case</span> <span class="string">'timeCourseButton'</span>
+0098         handles.plotType=1;
+0099         handles = <a href="enableFields.html" class="code" title="function handles = enableFields(handles,varargin)">enableFields</a>(handles,<span class="string">'groupList'</span>,<span class="string">'subjectList'</span>,<span class="string">'parameterList'</span>,<span class="keyword">...</span>
+0100             <span class="string">'regExpBox'</span>,<span class="string">'samePlotCheck'</span>,<span class="string">'conditionList'</span>,<span class="string">'conditionSubList'</span>,<span class="keyword">...</span>
+0101             <span class="string">'indivSubs'</span>,<span class="string">'binEdit'</span>,<span class="string">'printCodeCheck'</span>,<span class="string">'colorMenu'</span>,<span class="string">'saveColorsButton'</span>,<span class="string">'biofeedback'</span>,<span class="string">'removeBiasCheck'</span>);
+0102         <span class="keyword">for</span> i=1:17
+0103             set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0104         <span class="keyword">end</span>
+0105         set(handles.parameterList,<span class="string">'max'</span>,10)
+0106         set(handles.conditionText,<span class="string">'String'</span>,<span class="string">'Conditions'</span>)
+0107     <span class="keyword">case</span> <span class="string">'earlyLateBarButton'</span>
+0108         handles.plotType=2;
+0109         handles = <a href="enableFields.html" class="code" title="function handles = enableFields(handles,varargin)">enableFields</a>(handles,<span class="string">'groupList'</span>,<span class="string">'subjectList'</span>,<span class="string">'parameterList'</span>,<span class="keyword">...</span>
+0110             <span class="string">'regExpBox'</span>,<span class="string">'conditionList'</span>,<span class="string">'indivSubs'</span>,<span class="string">'earlyNumPts'</span>,<span class="string">'lateNumPts'</span>,<span class="keyword">...</span>
+0111             <span class="string">'exptLastNumPts'</span>,<span class="string">'removeBiasCheck'</span>,<span class="string">'printCodeCheck'</span>);
+0112         set(handles.parameterList,<span class="string">'max'</span>,10)
+0113         set(handles.conditionText,<span class="string">'String'</span>,<span class="string">'Conditions'</span>)
+0114     <span class="keyword">case</span> <span class="string">'scatterButton'</span>
+0115         handles.plotType=3;
+0116         handles = <a href="enableFields.html" class="code" title="function handles = enableFields(handles,varargin)">enableFields</a>(handles,<span class="string">'groupList'</span>,<span class="string">'subjectList'</span>,<span class="string">'parameterList'</span>,<span class="keyword">...</span>
+0117             <span class="string">'regExpBox'</span>,<span class="string">'conditionList'</span>,<span class="string">'binEdit'</span>);
+0118         set(handles.parameterList,<span class="string">'max'</span>,3)
+0119     <span class="keyword">case</span> <span class="string">'epochBarButton'</span>
+0120         results=getResults(handles.Study,{<span class="string">'good'</span>},handles.groups(1));
+0121         handles.plotType=4;
+0122         handles = <a href="enableFields.html" class="code" title="function handles = enableFields(handles,varargin)">enableFields</a>(handles,<span class="string">'groupList'</span>,<span class="string">'parameterList'</span>,<span class="string">'regExpBox'</span>,<span class="keyword">...</span>
+0123             <span class="string">'conditionList'</span>,<span class="string">'maxPerturbCheck'</span>,<span class="string">'indivSubs'</span>,<span class="string">'printCodeCheck'</span>,<span class="keyword">...</span>
+0124             <span class="string">'colorMenu'</span>,<span class="string">'saveColorsButton'</span>);
+0125         <span class="keyword">for</span> i=1:17
+0126             set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0127         <span class="keyword">end</span>
+0128         set(handles.parameterList,<span class="string">'max'</span>,10)
+0129         set(handles.conditionText,<span class="string">'String'</span>,<span class="string">'Epochs'</span>)
+0130         set(handles.conditionList,<span class="string">'String'</span>,fields(results));
+0131 <span class="keyword">end</span>
+0132 set(handles.plotButton,<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0133 guidata(hObject, handles);
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="comment">%% ---------------- Selecting Groups/Subjects to Plot ----------------- %%</span>
+0137 
+0138 <a name="_sub4" href="#_subfunctions" class="code">function groupList_Callback(hObject, eventdata, handles)</a>
+0139 <span class="comment">%when a group is selected, the parameter list and condition lists are</span>
+0140 <span class="comment">%populated with options based on common conditions/parameters that all subs</span>
+0141 <span class="comment">%in all groups selected contain</span>
+0142 
+0143 
+0144 <span class="keyword">if</span> ~isempty(get(hObject,<span class="string">'Value'</span>)) <span class="comment">%if at least one group is selected</span>
+0145         
+0146     <span class="comment">% contents=cellstr(get(hObject,'String')); &lt;-- this returns groups with html formatting. Not good!</span>
+0147     contents=fields(handles.Study);
+0148     groups=contents(get(hObject,<span class="string">'Value'</span>));
+0149     
+0150     <span class="comment">%create groupAdaptationData with all subjects</span>
+0151     allGroups=handles.Study.(groups{1});
+0152     <span class="keyword">for</span> i=2:length(groups)
+0153         allGroups=cat(allGroups,handles.Study.(groups{i}));
+0154     <span class="keyword">end</span>
+0155 
+0156     <span class="comment">% %populate condition listbox (All possible conditions)</span>
+0157     <span class="comment">%     conditions={};</span>
+0158     <span class="comment">%     for g=1:length(groups)</span>
+0159     <span class="comment">%     conditions=[conditions handles.Study.(groups{g}).getCommonConditions];</span>
+0160     <span class="comment">%     end</span>
+0161     <span class="comment">%     conds=unique(conditions,'stable');</span>
+0162     <span class="comment">%     set(handles.conditionList,'string',conds')</span>
+0163 
+0164     
+0165     <span class="keyword">if</span> strcmpi(get(handles.conditionText,<span class="string">'string'</span>),<span class="string">'conditions'</span>) <span class="comment">%only if conditionList is filled with conditions (and not epochs)</span>
+0166         <span class="comment">%get current state of condition/parameter lists</span>
+0167         conditionContents=get(handles.conditionList,<span class="string">'String'</span>);
+0168         selectedConds=conditionContents(get(handles.conditionList,<span class="string">'Value'</span>));
+0169         conditionSubContents=get(handles.conditionSubList,<span class="string">'String'</span>);
+0170         selectedSubConds=conditionSubContents(get(handles.conditionSubList,<span class="string">'Value'</span>));
+0171         
+0172         conditions=allGroups.getCommonConditions;
+0173         set(handles.conditionList,<span class="string">'string'</span>,conditions')
+0174         
+0175         <span class="comment">%re-select conditions/parameters previously selected</span>
+0176         condInds=find(ismember(conditions,selectedConds));
+0177         set(handles.conditionList,<span class="string">'Value'</span>,condInds)
+0178         subConds=conditions(condInds);
+0179         set(handles.conditionSubList,<span class="string">'String'</span>,subConds)
+0180         subInds=find(ismember(subConds,selectedSubConds));
+0181         set(handles.conditionSubList,<span class="string">'Value'</span>,subInds);
+0182     <span class="keyword">end</span>
+0183     
+0184     parameterContents=get(handles.parameterList,<span class="string">'String'</span>);
+0185     selectedParams=parameterContents(get(handles.parameterList,<span class="string">'Value'</span>));
+0186     
+0187     [parameters,handles.descriptions]=allGroups.getCommonParameters;    
+0188     set(handles.parameterList,<span class="string">'string'</span>,parameters)
+0189     
+0190     paramInds=find(ismember(parameters,selectedParams));
+0191     set(handles.parameterList,<span class="string">'Value'</span>,paramInds);
+0192     
+0193     guidata(hObject, handles);
+0194 <span class="keyword">else</span>        
+0195     <span class="keyword">if</span> strcmp(get(handles.subjectList,<span class="string">'enable'</span>),<span class="string">'on'</span>)
+0196         <a href="#_sub5" class="code" title="subfunction subjectList_Callback(hObject, eventdata, handles)">subjectList_Callback</a>(handles.subjectList,eventdata,handles)
+0197     <span class="keyword">end</span>
+0198 <span class="keyword">end</span>
+0199 
+0200 <span class="keyword">end</span>
+0201 
+0202 <span class="comment">% --- Executes on selection change in subjectList.</span>
+0203 <a name="_sub5" href="#_subfunctions" class="code">function subjectList_Callback(hObject, eventdata, handles)</a>
+0204 
+0205 <span class="keyword">if</span> isempty(get(handles.groupList,<span class="string">'Value'</span>))
+0206     <span class="keyword">if</span> ~isempty(get(hObject,<span class="string">'Value'</span>)) <span class="comment">%only enter if no groups are selected but at least one subjects is</span>
+0207         
+0208         <span class="comment">%get current state of condition lists</span>
+0209         conditionContents=get(handles.conditionList,<span class="string">'String'</span>);
+0210         selectedConds=conditionContents(get(handles.conditionList,<span class="string">'Value'</span>));
+0211         conditionSubContents=get(handles.conditionSubList,<span class="string">'String'</span>);
+0212         selectedSubConds=conditionSubContents(get(handles.conditionSubList,<span class="string">'Value'</span>));
+0213         parameterContents=get(handles.parameterList,<span class="string">'String'</span>);
+0214         selectedParams=parameterContents(get(handles.parameterList,<span class="string">'Value'</span>));
+0215         
+0216         selectedSubs=handles.subjects(get(hObject,<span class="string">'Value'</span>));
+0217         groups=fields(handles.Study);
+0218         
+0219         <span class="comment">%determine which groups subjects belong to</span>
+0220         boolFlag=false(1,length(groups));
+0221         <span class="keyword">for</span> g=1:length(groups)
+0222             <span class="keyword">for</span> s=1:length(selectedSubs)
+0223                 <span class="keyword">if</span> ismember(selectedSubs{s},handles.Study.(groups{g}).ID)
+0224                     boolFlag(g)=true;
+0225                 <span class="keyword">end</span>
+0226             <span class="keyword">end</span>
+0227         <span class="keyword">end</span>
+0228         groups=groups(boolFlag);
+0229         
+0230         allGroups=handles.Study.(groups{1});
+0231         <span class="keyword">for</span> i=2:length(groups)
+0232             allGroups=cat(allGroups,handles.Study.(groups{i}));
+0233         <span class="keyword">end</span>
+0234         conditions=allGroups.getCommonConditions(selectedSubs);
+0235         [parameters,handles.descriptions]=allGroups.getCommonParameters(selectedSubs);
+0236         set(handles.conditionList,<span class="string">'string'</span>,conditions')
+0237         set(handles.parameterList,<span class="string">'string'</span>,parameters)
+0238         
+0239         <span class="comment">%re-select conditions previously selected</span>
+0240         condInds=find(ismember(conditions,selectedConds));
+0241         set(handles.conditionList,<span class="string">'Value'</span>,condInds)
+0242         subConds=conditions(condInds);
+0243         set(handles.conditionSubList,<span class="string">'String'</span>,subConds)
+0244         subInds=find(ismember(subConds,selectedSubConds));
+0245         set(handles.conditionSubList,<span class="string">'Value'</span>,subInds);
+0246         paramInds=find(ismember(parameters,selectedParams));
+0247         set(handles.parameterList,<span class="string">'Value'</span>,paramInds);
+0248     <span class="keyword">else</span>
+0249         <span class="comment">%reset condition/parameter values</span>
+0250         set(handles.conditionList,<span class="string">'Value'</span>,[])
+0251         set(handles.conditionList,<span class="string">'String'</span>,<span class="string">''</span>)
+0252         set(handles.conditionSubList,<span class="string">'Value'</span>,[])
+0253         set(handles.conditionSubList,<span class="string">'String'</span>,<span class="string">''</span>)
+0254         set(handles.parameterList,<span class="string">'Value'</span>,[])
+0255         set(handles.parameterList,<span class="string">'String'</span>,<span class="string">''</span>)
+0256     <span class="keyword">end</span>
+0257 <span class="keyword">end</span>
+0258 
+0259 guidata(hObject, handles);
+0260 <span class="keyword">end</span>
+0261 
+0262 <span class="comment">%% ------------  Other options for plotting ---------------- %%</span>
+0263 
+0264 <span class="comment">% --- Executes on selection change in parameterList.</span>
+0265 <a name="_sub6" href="#_subfunctions" class="code">function parameterList_Callback(hObject, eventdata, handles)</a>
+0266 
+0267 
+0268 values=get(hObject,<span class="string">'Value'</span>);
+0269 
+0270 <span class="keyword">if</span> strcmp(get(handles.figure1,<span class="string">'SelectionType'</span>),<span class="string">'open'</span>)
+0271     description=handles.descriptions{values}; <span class="comment">% display window with parameter description</span>
+0272     msgbox(description,<span class="string">'Description'</span>);
+0273 <span class="keyword">end</span>
+0274 
+0275 <span class="comment">%restrict the number of selected parameters to be less than or equal to</span>
+0276 <span class="comment">%'max' property of the list</span>
+0277 values=get(hObject,<span class="string">'Value'</span>);
+0278 newVals=values(~ismember(values,handles.paramVals));
+0279 handles.paramVals=values(ismember(values,handles.paramVals));
+0280 maxNum=get(hObject,<span class="string">'max'</span>);
+0281 <span class="keyword">if</span> length(values)&gt;maxNum
+0282     allVals=[handles.paramVals newVals];
+0283     handles.paramVals=allVals(end-(maxNum-1):end);
+0284 <span class="keyword">else</span>
+0285     handles.paramVals=[handles.paramVals newVals];
+0286 <span class="keyword">end</span>
+0287 set(hObject,<span class="string">'Value'</span>,handles.paramVals)
+0288 
+0289 guidata(hObject, handles);
+0290 <span class="keyword">end</span>
+0291 
+0292 <span class="comment">% --- Executes on selection change in conditionList.</span>
+0293 <a name="_sub7" href="#_subfunctions" class="code">function conditionList_Callback(hObject, eventdata, handles)</a>
+0294 
+0295 <span class="comment">%add selected conditions to list for plotting individual trials (only for time course)</span>
+0296 <span class="keyword">if</span> handles.plotType==1
+0297     conditionSubContents=get(handles.conditionSubList,<span class="string">'String'</span>);
+0298     selectedSubConds=conditionSubContents(get(handles.conditionSubList,<span class="string">'Value'</span>));
+0299 
+0300     set(handles.conditionSubList,<span class="string">'Value'</span>,[])
+0301     contents = cellstr(get(hObject,<span class="string">'String'</span>));
+0302     set(handles.conditionSubList,<span class="string">'string'</span>,contents(get(hObject,<span class="string">'Value'</span>)))
+0303 
+0304     <span class="comment">%re-select conditions previously selected</span>
+0305     inds=find(ismember(contents(get(hObject,<span class="string">'Value'</span>)),selectedSubConds));
+0306     set(handles.conditionSubList,<span class="string">'Value'</span>,inds)
+0307 <span class="keyword">end</span>
+0308 <span class="keyword">end</span>
+0309 
+0310 <a name="_sub8" href="#_subfunctions" class="code">function binEdit_Callback(hObject, eventdata, handles)</a>
+0311 <span class="comment">% Hints: get(hObject,'String') returns contents of binEdit as text</span>
+0312 <span class="comment">%        str2double(get(hObject,'String')) returns contents of binEdit as a double</span>
+0313 <span class="keyword">end</span>
+0314 
+0315 
+0316 <span class="comment">% --- Executes on button press in indivSubs.</span>
+0317 <a name="_sub9" href="#_subfunctions" class="code">function indivSubs_Callback(hObject, eventdata, handles)</a>
+0318 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of indivSubs</span>
+0319 <span class="keyword">end</span>
+0320 
+0321 <span class="comment">% --- Executes on button press in samePlotCheck.</span>
+0322 <a name="_sub10" href="#_subfunctions" class="code">function samePlotCheck_Callback(hObject, eventdata, handles)</a>
+0323 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of samePlotCheck</span>
+0324 <span class="keyword">end</span>
+0325 
+0326 
+0327 <span class="comment">% --- Executes on selection change in conditionSubList.</span>
+0328 <a name="_sub11" href="#_subfunctions" class="code">function conditionSubList_Callback(hObject, eventdata, handles)</a>
+0329 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns conditionSubList contents as cell array</span>
+0330 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from conditionSubList</span>
+0331 <span class="keyword">end</span>
+0332 
+0333 <a name="_sub12" href="#_subfunctions" class="code">function regExpBox_Callback(hObject, eventdata, handles)</a>
+0334 <span class="comment">% Hints: get(hObject,'String') returns contents of regExpBox as text</span>
+0335 <span class="comment">%        str2double(get(hObject,'String')) returns contents of regExpBox as a double</span>
+0336 
+0337 expression=get(hObject,<span class="string">'String'</span>);
+0338 <span class="comment">%Get labels that match:</span>
+0339 paramList=cellstr(get(handles.parameterList,<span class="string">'String'</span>));
+0340 aux=regexp(paramList,expression);
+0341 bool=cellfun(@(x) ~isempty(x),aux);
+0342 inds=find(bool);
+0343 set(handles.parameterList,<span class="string">'Value'</span>,inds(1:min([end get(handles.parameterList,<span class="string">'max'</span>)])));
+0344 <span class="keyword">end</span>
+0345 
+0346 
+0347 <span class="comment">% --- Executes on button press in maxPerturbCheck.</span>
+0348 <a name="_sub13" href="#_subfunctions" class="code">function maxPerturbCheck_Callback(hObject, eventdata, handles)</a>
+0349 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of maxPerturbCheck</span>
+0350 <span class="keyword">end</span>
+0351 
+0352 
+0353 <a name="_sub14" href="#_subfunctions" class="code">function earlyNumPts_Callback(hObject, eventdata, handles)</a>
+0354 <span class="comment">% Hints: get(hObject,'String') returns contents of earlyNumPts as text</span>
+0355 <span class="comment">%        str2double(get(hObject,'String')) returns contents of earlyNumPts as a double</span>
+0356 <span class="keyword">end</span>
+0357 
+0358 <a name="_sub15" href="#_subfunctions" class="code">function lateNumPts_Callback(hObject, eventdata, handles)</a>
+0359 <span class="comment">% Hints: get(hObject,'String') returns contents of lateNumPts as text</span>
+0360 <span class="comment">%        str2double(get(hObject,'String')) returns contents of lateNumPts as a double</span>
+0361 <span class="keyword">end</span>
+0362 
+0363 
+0364 <a name="_sub16" href="#_subfunctions" class="code">function exptLastNumPts_Callback(hObject, eventdata, handles)</a>
+0365 <span class="comment">% Hints: get(hObject,'String') returns contents of exptLastNumPts as text</span>
+0366 <span class="comment">%        str2double(get(hObject,'String')) returns contents of exptLastNumPts as a double</span>
+0367 <span class="keyword">end</span>
+0368 
+0369 <span class="comment">% --- Executes on button press in removeBiasCheck.</span>
+0370 <a name="_sub17" href="#_subfunctions" class="code">function removeBiasCheck_Callback(hObject, eventdata, handles)</a>
+0371 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of removeBiasCheck</span>
+0372 <span class="keyword">end</span>
+0373 
+0374 <span class="comment">% --- Executes on button press in biofeedback.</span>
+0375 <a name="_sub18" href="#_subfunctions" class="code">function biofeedback_Callback(hObject, eventdata, handles)</a>
+0376 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of biofeedback</span>
+0377 <span class="keyword">end</span>
+0378 
+0379 <span class="comment">% --- Executes on button press in printCodeCheck.</span>
+0380 <a name="_sub19" href="#_subfunctions" class="code">function printCodeCheck_Callback(hObject, eventdata, handles)</a>
+0381 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of printCodeCheck</span>
+0382 <span class="keyword">end</span>
+0383 
+0384 <span class="comment">%% ----------------- Open/Save button in toolstrip --------------------- %%</span>
+0385 <a name="_sub20" href="#_subfunctions" class="code">function saveTool_ClickedCallback(hObject, eventdata, handles)</a>
+0386 
+0387 <span class="keyword">end</span>
+0388 
+0389 <a name="_sub21" href="#_subfunctions" class="code">function openTool_ClickedCallback(hObject, eventdata, handles)</a>
+0390 
+0391 [handles.filename,handles.dir]=uigetfile(<span class="string">'*.mat'</span>,<span class="string">'Choose study file'</span>); <span class="comment">%opens browse window</span>
+0392 
+0393 <span class="keyword">if</span> handles.filename~=0
+0394     
+0395     h=msgbox(<span class="string">'Opening...'</span>,<span class="string">''</span>);
+0396     child = get(h,<span class="string">'children'</span>);
+0397     delete(child(1)); <span class="comment">%delete OK button</span>
+0398     drawnow
+0399     aux=load([handles.dir handles.filename]); <span class="comment">%.mat file can only contain 1 variable: structure with groupAdaptationData objects</span>
+0400     
+0401     close(h)
+0402     
+0403     fieldNames=fields(aux);
+0404     handles.varName=fieldNames{1};
+0405     handles.Study=aux.(fieldNames{1});     
+0406     <span class="comment">%Inititalize handle fields</span>
+0407     handles.paramVals=[];
+0408     handles.groups=fields(handles.Study);   
+0409 
+0410     <span class="comment">%Populate subject list</span>
+0411     g=handles.groups;
+0412     subs={};
+0413     handles.subjects={};
+0414     <span class="keyword">for</span> i=1:length(g)
+0415         auxSubs=handles.Study.(g{i}).ID;
+0416         handles.subjects=[handles.subjects auxSubs];
+0417         <span class="keyword">if</span> mod(i,2)==1
+0418             <span class="keyword">for</span> s=1:length(auxSubs)
+0419                 auxSubs{s}= [<span class="string">'&lt;html&gt;&lt;b&gt;'</span> auxSubs{s} <span class="string">'&lt;/b&gt;&lt;/html&gt;'</span>]; <span class="comment">%html tags allow for formating font</span>
+0420             <span class="keyword">end</span>
+0421         <span class="keyword">end</span>
+0422         subs=[subs; auxSubs'];
+0423     <span class="keyword">end</span>
+0424     set(handles.subjectList,<span class="string">'String'</span>,subs)
+0425 
+0426 
+0427     <span class="comment">%populate group list</span>
+0428     <span class="keyword">for</span> i=1:2:length(g)
+0429         g{i}=[<span class="string">'&lt;html&gt;&lt;b&gt;'</span> g{i} <span class="string">'&lt;/b&gt;&lt;/html&gt;'</span>];
+0430     <span class="keyword">end</span>
+0431     set(handles.groupList,<span class="string">'String'</span>,g);
+0432 <span class="keyword">end</span>
+0433 guidata(hObject, handles);
+0434 <span class="keyword">end</span>
+0435 
+0436 <span class="comment">%% -------------------- Do the actual plotting ------------------------%%</span>
+0437 
+0438 <a name="_sub22" href="#_subfunctions" class="code">function plotButton_Callback(hObject, eventdata, handles)</a>
+0439 <span class="comment">% groupContents=cellstr(get(handles.groupList,'String'));</span>
+0440 
+0441 <span class="comment">%get color order</span>
+0442 colorOrder=zeros(17,3);
+0443 <span class="keyword">for</span> i=1:17
+0444     colorOrder(i,:)=get(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'BackgroundColor'</span>);
+0445 <span class="keyword">end</span>
+0446 
+0447 groupContents=fields(handles.Study);
+0448 adaptDataList={};
+0449 indivSubList={};<span class="comment">%cell(1,length(get(handles.subjectList,'Value')));</span>
+0450 indivSubStr=<span class="string">'[]'</span>;
+0451 <span class="keyword">if</span> ~isempty(get(handles.groupList,<span class="string">'Value'</span>))    
+0452     groups=groupContents(get(handles.groupList,<span class="string">'Value'</span>));
+0453     <span class="keyword">for</span> g=1:length(groups)
+0454         <span class="comment">%adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17</span>
+0455         adaptDataList{g}= handles.Study.(groups{g}).adaptData;
+0456     <span class="keyword">end</span>
+0457     adaptDataStr=[<span class="string">'{'</span> strjoin(strcat([handles.varName <span class="string">'.'</span>],groups,<span class="string">'.adaptData'</span>)',<span class="string">','</span>) <span class="string">'}'</span>];
+0458     <span class="keyword">if</span> ~isempty(get(handles.subjectList,<span class="string">'Value'</span>))
+0459         indivSubList=cell(1,length(get(handles.groupList,<span class="string">'Value'</span>)));
+0460         indivSubStr=adaptDataStr;
+0461         <span class="comment">%need to segregate individual subjects by group</span>
+0462         indivSubs=handles.subjects(get(handles.subjectList,<span class="string">'Value'</span>));
+0463         <span class="keyword">for</span> g=1:length(groups)
+0464             [isAinB,locAinB]=ismember(indivSubs,handles.Study.(groups{g}).ID);
+0465             <span class="keyword">for</span> s=1:length(indivSubs)                
+0466                 <span class="keyword">if</span> isAinB(s)                    
+0467                     indivSubList{g}{end+1}=handles.Study.(groups{g}).adaptData{locAinB(s)};
+0468                 <span class="keyword">end</span>                
+0469             <span class="keyword">end</span>
+0470             indivSubStr=strrep(indivSubStr,[groups{g} <span class="string">'.adaptData'</span>],[groups{g} <span class="string">'.adaptData{'</span> num2str(locAinB(isAinB)) <span class="string">'}'</span>]);
+0471         <span class="keyword">end</span>
+0472     <span class="keyword">end</span>
+0473 <span class="keyword">else</span>    
+0474     <span class="keyword">if</span> ~isempty(get(handles.subjectList,<span class="string">'Value'</span>))
+0475         indivSubs=handles.subjects(get(handles.subjectList,<span class="string">'Value'</span>));
+0476         <span class="keyword">for</span> s=1:length(indivSubs)
+0477             <span class="comment">%adaptDataList{end+1}={[indivSubs{s} 'params.mat']};</span>
+0478             groups=fields(handles.Study);
+0479             <span class="keyword">for</span> g=1:numel(groups)
+0480                 [isAinB,locAinB]=ismember(indivSubs{s},handles.Study.(groups{g}).ID);
+0481                 <span class="keyword">if</span> isAinB
+0482                     adaptDataList{end+1}=handles.Study.(groups{g}).adaptData(locAinB);
+0483                 <span class="keyword">end</span>
+0484             <span class="keyword">end</span>
+0485         <span class="keyword">end</span>
+0486     <span class="keyword">end</span>
+0487 <span class="keyword">end</span>
+0488 
+0489 paramContents=cellstr(get(handles.parameterList,<span class="string">'String'</span>));
+0490 params=paramContents(get(handles.parameterList,<span class="string">'Value'</span>))';
+0491 <span class="keyword">if</span> get(handles.samePlotCheck,<span class="string">'Value'</span>)
+0492     params=params';
+0493 <span class="keyword">end</span>
+0494 <span class="keyword">if</span> get(handles.samePlotCheck,<span class="string">'Value'</span>)
+0495     paramStr=[<span class="string">'{'</span> strjoin(strcat(<span class="string">''''</span>,params,<span class="string">''''</span>)',<span class="string">';'</span>) <span class="string">'}'</span>];
+0496 <span class="keyword">else</span>
+0497     paramStr=[<span class="string">'{'</span> strjoin(strcat(<span class="string">''''</span>,params,<span class="string">''''</span>),<span class="string">','</span>) <span class="string">'}'</span>];
+0498 <span class="keyword">end</span>
+0499 
+0500 condContents=cellstr(get(handles.conditionList,<span class="string">'String'</span>));
+0501 conds=condContents(get(handles.conditionList,<span class="string">'Value'</span>));
+0502 condStr=[<span class="string">'{'</span> strjoin(strcat(<span class="string">''''</span>,conds,<span class="string">''''</span>)',<span class="string">','</span>) <span class="string">'}'</span>];
+0503 
+0504 indivSubFlag=get(handles.indivSubs,<span class="string">'Value'</span>);
+0505 biofeedbackFlag=get(handles.biofeedback,<span class="string">'Value'</span>);
+0506 removeBias=get(handles.removeBiasCheck,<span class="string">'Value'</span>);
+0507 
+0508 <span class="keyword">switch</span> handles.plotType
+0509     <span class="keyword">case</span> 1 <span class="comment">%time course</span>
+0510         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,<span class="string">'Value'</span>)));
+0511         binwidth=str2double(get(handles.binEdit,<span class="string">'string'</span>));
+0512         adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups);
+0513         <span class="comment">%to print code previous line to command window:</span>
+0514         <span class="keyword">if</span> get(handles.printCodeCheck,<span class="string">'value'</span>)
+0515             disp([<span class="string">'load('''</span> handles.dir handles.filename <span class="string">''')'</span>])
+0516             disp([<span class="string">'adaptDataList = '</span> adaptDataStr <span class="string">';'</span>])
+0517             disp([<span class="string">'params = '</span> paramStr <span class="string">';'</span>])
+0518             disp([<span class="string">'conds = '</span> condStr <span class="string">';'</span>])
+0519             disp([<span class="string">'binWidth = '</span> num2str(binwidth) <span class="string">';'</span>])
+0520             disp([<span class="string">'trialMarkerFlag = ['</span> num2str(trialMarkerFlag') <span class="string">'];'</span>])
+0521             disp([<span class="string">'indivSubFlag = '</span> num2str(indivSubFlag) <span class="string">';'</span>])
+0522             disp([<span class="string">'IndivSubList = '</span> indivSubStr <span class="string">';'</span>])   
+0523             disp([<span class="string">'removeBias = '</span> removeBias <span class="string">';'</span>])
+0524             disp([<span class="string">'groups = '</span> groups <span class="string">';'</span>])
+0525             disp([<span class="string">'adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,'</span> num2str(biofeedbackFlag) <span class="string">')'</span>,<span class="string">'removeBias'</span>,<span class="string">'groups'</span>])
+0526         <span class="keyword">end</span>
+0527     <span class="keyword">case</span> 2 <span class="comment">% early/late bars</span>
+0528         removeBiasFlag=1;
+0529         earlyNumber=[];
+0530         lateNumber=[];
+0531         exemptLast=[];
+0532         legendNames=[];
+0533         significanceThreshold=0.01;
+0534         adaptationData.plotGroupedSubjectsBars(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+0535     <span class="keyword">case</span> 3 <span class="comment">% scatter plot</span>
+0536         binSize=str2double(get(handles.binEdit,<span class="string">'string'</span>));
+0537         removeBias=1;
+0538         adaptationData.groupedScatterPlot(adaptDataList,params,conds,binSize,[],[])
+0539     <span class="keyword">case</span> 4 <span class="comment">%epoch bars</span>
+0540         results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,<span class="string">'value'</span>));
+0541         barGroups(handles.Study,results,groups,params,conds,indivSubFlag,colorOrder);
+0542         <span class="keyword">if</span> get(handles.printCodeCheck,<span class="string">'value'</span>)
+0543             disp([<span class="string">'load('''</span> handles.dir handles.filename <span class="string">''')'</span>])
+0544             disp([<span class="string">'groups = {'</span> strjoin(strcat(<span class="string">''''</span>,groups,<span class="string">''''</span>)',<span class="string">','</span>) <span class="string">'};'</span>])
+0545             disp([<span class="string">'params = '</span> paramStr <span class="string">';'</span>])
+0546             disp([<span class="string">'results = getResults('</span> handles.varName <span class="string">',params,groups,'</span> num2str(get(handles.maxPerturbCheck,<span class="string">'value'</span>)) <span class="string">');'</span>])
+0547             disp([<span class="string">'epochs = '</span> condStr <span class="string">';'</span>])            
+0548             disp([<span class="string">'indivSubFlag = '</span> num2str(indivSubFlag) <span class="string">';'</span>])                 
+0549             disp([<span class="string">'barGroups('</span> handles.varName <span class="string">',results,groups,params,epochs,indivSubFlag)'</span>])
+0550         <span class="keyword">end</span>
+0551 <span class="keyword">end</span>
+0552 <span class="keyword">end</span>
+0553 
+0554 
+0555 <span class="comment">%% ------------------ Color order selection ---------------------------- %%</span>
+0556 
+0557 <span class="comment">% --- Executes on selection change in colorMenu.</span>
+0558 <a name="_sub23" href="#_subfunctions" class="code">function colorMenu_Callback(hObject, eventdata, handles)</a>
+0559 <span class="comment">% hObject    handle to colorMenu (see GCBO)</span>
+0560 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0561 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0562 
+0563 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns colorMenu contents as cell array</span>
+0564 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from colorMenu</span>
+0565 
+0566 <span class="comment">%initialize drop down list with different color orders</span>
+0567 path=which(<span class="string">'PlotParamsGUI'</span>);
+0568 path=strrep(path,<span class="string">'PlotParamsGUI.m'</span>,<span class="string">'Plotting Colors'</span>);
+0569 contents=cellstr(get(hObject,<span class="string">'String'</span>));
+0570 colorFile=contents{get(hObject,<span class="string">'Value'</span>)};
+0571 
+0572 <span class="keyword">if</span> exist([path filesep colorFile <span class="string">'.mat'</span>],<span class="string">'file'</span>)&gt;0
+0573     a=load([path filesep colorFile]);
+0574     aux=fields(a);
+0575     colorOrder=a.(aux{1});
+0576     
+0577     <span class="keyword">if</span> size(colorOrder,2)==3 &amp;&amp; max(max(colorOrder))&lt;=1 &amp;&amp; min(min(colorOrder))&gt;=0
+0578         <span class="keyword">for</span> i=1:min([17 size(colorOrder,1)])
+0579             clr=colorOrder(i,:);
+0580             set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'String'</span>,[<span class="string">'['</span> num2str(round(clr.*255)) <span class="string">']'</span>]);
+0581             set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'BackgroundColor'</span>,clr);
+0582             set(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'ForeGroundColor'</span>,contrastColor(clr));
+0583         <span class="keyword">end</span>
+0584     <span class="keyword">end</span>
+0585 <span class="keyword">end</span>
+0586 
+0587 <span class="keyword">end</span>
+0588 
+0589 <span class="comment">% --- Executes on button press in saveColorsButton.</span>
+0590 <a name="_sub24" href="#_subfunctions" class="code">function saveColorsButton_Callback(hObject, eventdata, handles)</a>
+0591 <span class="comment">% hObject    handle to saveColorsButton (see GCBO)</span>
+0592 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0593 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0594 colorOrder=nan(17,3);
+0595 <span class="keyword">for</span> i=1:17
+0596     colorOrder(i,:)=get(handles.([<span class="string">'color'</span> num2str(i)]),<span class="string">'backgroundColor'</span>);
+0597 <span class="keyword">end</span>
+0598 answer = inputdlg(<span class="string">'Eneter name of new color order: '</span>,<span class="string">'File Name Input'</span>);
+0599 path=which(<span class="string">'PlotParamsGUI'</span>);
+0600 path=strrep(path,<span class="string">'PlotParamsGUI.m'</span>,<span class="string">'Plotting Colors'</span>);
+0601 save([path filesep char(answer)],<span class="string">'colorOrder'</span>)
+0602 
+0603 W=what(path);
+0604 colorOrders=cellstr(W.mat);
+0605 <span class="keyword">for</span> i=1:length(colorOrders)
+0606     fileExt=find(colorOrders{i}==<span class="string">'.'</span>);
+0607     colorOrders{i}=colorOrders{i}(1:fileExt-1);
+0608 <span class="keyword">end</span>
+0609 set(handles.colorMenu,<span class="string">'String'</span>,[<span class="string">' '</span>;colorOrders])
+0610 <span class="keyword">end</span>
+0611 
+0612 <span class="comment">%% --------------------- Color Buttons --------------------------------%%</span>
+0613 
+0614 <a name="_sub25" href="#_subfunctions" class="code">function color1_Callback(hObject, eventdata, handles)</a>
+0615 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0616 guidata(hObject, handles);
+0617 <span class="keyword">end</span>
+0618 
+0619 <a name="_sub26" href="#_subfunctions" class="code">function color2_Callback(hObject, eventdata, handles)</a>
+0620 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0621 guidata(hObject, handles);
+0622 <span class="keyword">end</span>
+0623 
+0624 <a name="_sub27" href="#_subfunctions" class="code">function color3_Callback(hObject, eventdata, handles)</a>
+0625 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0626 guidata(hObject, handles);
+0627 <span class="keyword">end</span>
+0628 
+0629 <a name="_sub28" href="#_subfunctions" class="code">function color4_Callback(hObject, eventdata, handles)</a>
+0630 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0631 guidata(hObject, handles);
+0632 <span class="keyword">end</span>
+0633 
+0634 <a name="_sub29" href="#_subfunctions" class="code">function color5_Callback(hObject, eventdata, handles)</a>
+0635 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0636 guidata(hObject, handles);
+0637 <span class="keyword">end</span>
+0638 
+0639 <a name="_sub30" href="#_subfunctions" class="code">function color6_Callback(hObject, eventdata, handles)</a>
+0640 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0641 guidata(hObject, handles);
+0642 <span class="keyword">end</span>
+0643 
+0644 <a name="_sub31" href="#_subfunctions" class="code">function color7_Callback(hObject, eventdata, handles)</a>
+0645 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0646 guidata(hObject, handles);
+0647 <span class="keyword">end</span>
+0648 
+0649 <a name="_sub32" href="#_subfunctions" class="code">function color8_Callback(hObject, eventdata, handles)</a>
+0650 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0651 guidata(hObject, handles);
+0652 <span class="keyword">end</span>
+0653 
+0654 <a name="_sub33" href="#_subfunctions" class="code">function color9_Callback(hObject, eventdata, handles)</a>
+0655 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0656 guidata(hObject, handles);
+0657 <span class="keyword">end</span>
+0658 
+0659 <a name="_sub34" href="#_subfunctions" class="code">function color10_Callback(hObject, eventdata, handles)</a>
+0660 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0661 guidata(hObject, handles);
+0662 <span class="keyword">end</span>
+0663 
+0664 <a name="_sub35" href="#_subfunctions" class="code">function color11_Callback(hObject, eventdata, handles)</a>
+0665 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0666 guidata(hObject, handles);
+0667 <span class="keyword">end</span>
+0668 
+0669 <a name="_sub36" href="#_subfunctions" class="code">function color12_Callback(hObject, eventdata, handles)</a>
+0670 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0671 guidata(hObject, handles);
+0672 <span class="keyword">end</span>
+0673 
+0674 <a name="_sub37" href="#_subfunctions" class="code">function color13_Callback(hObject, eventdata, handles)</a>
+0675 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0676 guidata(hObject, handles);
+0677 <span class="keyword">end</span>
+0678 
+0679 <a name="_sub38" href="#_subfunctions" class="code">function color14_Callback(hObject, eventdata, handles)</a>
+0680 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0681 guidata(hObject, handles);
+0682 <span class="keyword">end</span>
+0683 
+0684 <a name="_sub39" href="#_subfunctions" class="code">function color15_Callback(hObject, eventdata, handles)</a>
+0685 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0686 guidata(hObject, handles);
+0687 <span class="keyword">end</span>
+0688 
+0689 <a name="_sub40" href="#_subfunctions" class="code">function color16_Callback(hObject, eventdata, handles)</a>
+0690 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0691 guidata(hObject, handles);
+0692 <span class="keyword">end</span>
+0693 
+0694 <a name="_sub41" href="#_subfunctions" class="code">function color17_Callback(hObject, eventdata, handles)</a>
+0695 handles = <a href="#_sub42" class="code" title="subfunction handles = colorButtonCallback(hObject,handles)">colorButtonCallback</a>(hObject,handles);
+0696 guidata(hObject, handles);
+0697 <span class="keyword">end</span>
+0698 
+0699 <a name="_sub42" href="#_subfunctions" class="code">function handles = colorButtonCallback(hObject,handles)</a>
+0700 <span class="comment">%open up color selection tool</span>
+0701 clr=uisetcolor(get(hObject,<span class="string">'BackgroundColor'</span>),<span class="string">'Set Color'</span>);
+0702 rgb=round(clr.*255);
+0703 <span class="comment">%change background,foreground, and string of button</span>
+0704 set(hObject,<span class="string">'BackgroundColor'</span>,clr)
+0705 set(hObject,<span class="string">'ForegroundColor'</span>,contrastColor(clr))
+0706 set(hObject,<span class="string">'String'</span>,[<span class="string">'['</span> num2str(rgb) <span class="string">']'</span>]);
+0707 <span class="comment">%update color order?</span>
+0708 <span class="keyword">end</span>
+0709 
+0710 <span class="comment">%% ------------- CREATE FUNCTIONS - DO NOT EDIT ------------------------%%</span>
+0711 
+0712 <span class="comment">% hObject    handle to exptLastNumPts (see GCBO)</span>
+0713 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0714 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0715 
+0716 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0717 <span class="comment">%       See ISPC and COMPUTER.</span>
+0718 
+0719 <a name="_sub43" href="#_subfunctions" class="code">function conditionList_CreateFcn(hObject, eventdata, handles)</a>
+0720 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0721     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0722 <span class="keyword">end</span>
+0723 <span class="keyword">end</span>
+0724 
+0725 <a name="_sub44" href="#_subfunctions" class="code">function parameterList_CreateFcn(hObject, eventdata, handles)</a>
+0726 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0727     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0728 <span class="keyword">end</span>
+0729 <span class="keyword">end</span>
+0730 
+0731 <a name="_sub45" href="#_subfunctions" class="code">function groupList_CreateFcn(hObject, eventdata, handles)</a>
+0732 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0733     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0734 <span class="keyword">end</span>
+0735 <span class="keyword">end</span>
+0736 
+0737 <a name="_sub46" href="#_subfunctions" class="code">function binEdit_CreateFcn(hObject, eventdata, handles)</a>
+0738 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0739     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0740 <span class="keyword">end</span>
+0741 <span class="keyword">end</span>
+0742 
+0743 <a name="_sub47" href="#_subfunctions" class="code">function subjectList_CreateFcn(hObject, eventdata, handles)</a>
+0744 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0745     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0746 <span class="keyword">end</span>
+0747 <span class="keyword">end</span>
+0748 
+0749 <a name="_sub48" href="#_subfunctions" class="code">function conditionSubList_CreateFcn(hObject, eventdata, handles)</a>
+0750 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0751     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0752 <span class="keyword">end</span>
+0753 <span class="keyword">end</span>
+0754 
+0755 <a name="_sub49" href="#_subfunctions" class="code">function regExpBox_CreateFcn(hObject, eventdata, handles)</a>
+0756 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0757     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0758 <span class="keyword">end</span>
+0759 <span class="keyword">end</span>
+0760 
+0761 <a name="_sub50" href="#_subfunctions" class="code">function earlyNumPts_CreateFcn(hObject, eventdata, handles)</a>
+0762 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0763     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0764 <span class="keyword">end</span>
+0765 <span class="keyword">end</span>
+0766 
+0767 <a name="_sub51" href="#_subfunctions" class="code">function lateNumPts_CreateFcn(hObject, eventdata, handles)</a>
+0768 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0769     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0770 <span class="keyword">end</span>
+0771 <span class="keyword">end</span>
+0772 
+0773 <a name="_sub52" href="#_subfunctions" class="code">function exptLastNumPts_CreateFcn(hObject, eventdata, handles)</a>
+0774 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0775     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0776 <span class="keyword">end</span>
+0777 <span class="keyword">end</span>
+0778 
+0779 <a name="_sub53" href="#_subfunctions" class="code">function colorMenu_CreateFcn(hObject, eventdata, handles)</a>
+0780 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0781     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0782 <span class="keyword">end</span>
+0783 <span class="keyword">end</span>
+0784 
+0785 <span class="comment">% --- If Enable == 'on', executes on mouse press in 5 pixel border.</span>
+0786 <span class="comment">% --- Otherwise, executes on mouse press in 5 pixel border or over regExpBox.</span>
+0787 <a name="_sub54" href="#_subfunctions" class="code">function regExpBox_ButtonDownFcn(hObject, eventdata, handles)</a>
+0788 <span class="comment">% hObject    handle to regExpBox (see GCBO)</span>
+0789 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0790 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0791 <span class="keyword">end</span>
+0792 
+0793</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

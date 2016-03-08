@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Synergy</title>
+  <meta name="keywords" content="Synergy">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@Synergy</a> &gt; Synergy.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/synergies/@Synergy&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>Synergy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Synergy.html" class="code" title="">Synergy</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="Synergy.html" class="code" title="">Synergy</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function s = Synergy(content,muscleList,varargin)</a></li><li><a href="#_sub2" class="code">function handle=plot(this,varargin)</a></li><li><a href="#_sub3" class="code">function display(this)</a></li><li><a href="#_sub4" class="code">function dim=getDim(this)</a></li><li><a href="#_sub5" class="code">function dist=distance(this,otherSynergy)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Synergy.html" class="code" title="">Synergy</a>
+0002     <span class="comment">%Synergy Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(SetAccess = private, GetAccess = public)
+0006         content=[]; <span class="comment">%Real positive vector</span>
+0007         muscleList={}; <span class="comment">%Cell array of strings</span>
+0008     <span class="keyword">end</span>
+0009     properties
+0010         name=[<span class="string">'Unnamed'</span>];
+0011         <span class="comment">%metadata %subject number, condition, etc?</span>
+0012         <span class="comment">%uniqueID %A unique number identificator, just in case?</span>
+0013     <span class="keyword">end</span>
+0014     
+0015     methods
+0016         <span class="comment">%Constructor:</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function s = Synergy(content,muscleList,varargin) </a><span class="comment">%Creator</span>
+0018             <span class="keyword">if</span> length(content)==numel(content) <span class="comment">%Check that content is 1-D</span>
+0019                 <span class="keyword">if</span> length(content)==length(muscleList)
+0020                     <span class="keyword">if</span> size(content,1)==1
+0021                         s.content = content;
+0022                     <span class="keyword">else</span>
+0023                         s.content=content.';
+0024                     <span class="keyword">end</span>
+0025                     s.muscleList=muscleList;
+0026                     <span class="keyword">if</span> nargin&gt;2
+0027                         <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
+0028                             s.name=varargin{1};
+0029                         <span class="keyword">end</span>
+0030                     <span class="keyword">end</span>
+0031                 <span class="keyword">else</span>
+0032                     disp(<span class="string">'ERROR: Attempting to create Synergy object with different number of elements and element names.'</span>)
+0033                     <span class="keyword">return</span>
+0034                 <span class="keyword">end</span>
+0035             <span class="keyword">else</span>
+0036                 disp(<span class="string">'ERROR: Attempting to create Synergy object with an array for content. You probably want to try to create a SynergySet.'</span>)
+0037                 <span class="keyword">return</span>
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">end</span>
+0040         
+0041         <span class="comment">%Output:</span>
+0042         <a name="_sub1" href="#_subfunctions" class="code">function handle=plot(this,varargin) </a><span class="comment">%barGraph of synergy with appropriate labeling</span>
+0043             <span class="keyword">if</span> length(varargin)&lt;1
+0044                 handle=figure;
+0045             <span class="keyword">else</span>
+0046                 handle=varargin{1};
+0047                 figure(handle);
+0048             <span class="keyword">end</span>
+0049             handle=figure;
+0050             hold on
+0051             bar(this.content)
+0052             set(gca,<span class="string">'XTick'</span>,[1:this.getDim],<span class="string">'XTickLabel'</span>,this.muscleList)
+0053             <span class="keyword">if</span> length(varargin)&lt;2
+0054                 colormap([0,0,1]); <span class="comment">%Blue bars</span>
+0055             <span class="keyword">else</span>
+0056                 colormap(varargin{2}); <span class="comment">%Color passed by caller</span>
+0057             <span class="keyword">end</span>
+0058             hold off
+0059         <span class="keyword">end</span>
+0060         <a name="_sub2" href="#_subfunctions" class="code">function display(this)</a>
+0061             disp(<span class="string">'---'</span>)
+0062             disp([<span class="string">'Synergy '</span> this.name])
+0063            content=this.content
+0064            labels=this.muscleList
+0065            disp(<span class="string">'---'</span>)
+0066         <span class="keyword">end</span>
+0067         
+0068         <span class="comment">%Gets and sets:</span>
+0069         <a name="_sub3" href="#_subfunctions" class="code">function dim=getDim(this) </a><span class="comment">%Returns dimensions of the synergy</span>
+0070             dim=length(this.content);
+0071         <span class="keyword">end</span>
+0072         
+0073         <span class="comment">%Other (misc):</span>
+0074         <a name="_sub4" href="#_subfunctions" class="code">function dist=distance(this,otherSynergy)</a>
+0075             auxSet=SynergySet([this.content;otherSynergy.content],this.muscleList);
+0076             dist=<a href="#_sub5" class="code" title="subfunction dist=distance(this,otherSynergy)">distance</a>(auxSet);
+0077         <span class="keyword">end</span>
+0078     <span class="keyword">end</span>
+0079     
+0080 <span class="keyword">end</span>
+0081</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

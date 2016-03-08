@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotGroupedSubjectsBarsv2</title>
+  <meta name="keywords" content="plotGroupedSubjectsBarsv2">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotGroupedSubjectsBarsv2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotGroupedSubjectsBarsv2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)</a>
+0002             mode=3; <span class="comment">%1 is bars +- std, 2 is lines +- std, 3 is boxplots</span>
+0003             
+0004             
+0005             <span class="keyword">if</span> nargin&lt;4 || isempty(plotIndividualsFlag)
+0006                 plotIndividualsFlag=true;
+0007             <span class="keyword">end</span>
+0008             <span class="keyword">if</span> nargin&lt;9 
+0009                 legendNames={};
+0010             <span class="keyword">end</span>
+0011             <span class="comment">%if ~plotIndividualsFlag</span>
+0012             <span class="comment">%    legendNames={};</span>
+0013             <span class="comment">%end</span>
+0014             <span class="keyword">if</span> nargin&lt;3 || isempty(removeBiasFlag)
+0015                 removeBiasFlag=1;
+0016             <span class="keyword">end</span>
+0017             <span class="keyword">if</span> nargin&lt;5 || isempty(condList)
+0018                condList=[]; 
+0019             <span class="keyword">end</span>
+0020             
+0021             <span class="comment">%First: see if adaptDataList is a single groupAdaptData object</span>
+0022             <span class="comment">%or a cell-array of it</span>
+0023             <span class="keyword">if</span> isa(adaptDataList,<span class="string">'groupAdaptationData'</span>)
+0024                 auxList={adaptDataList};
+0025             <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'cell'</span>) &amp;&amp; ~isa(adaptDataList{1},<span class="string">'groupAdaptationData'</span>)
+0026                 error();
+0027             <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0028                auxList=adaptDataList; 
+0029             <span class="keyword">end</span>
+0030                 
+0031             Ngroups=length(auxList);
+0032             <span class="keyword">if</span> nargin&lt;12 || isempty(colors) || size(colors,1)&lt;Ngroups
+0033                 colorScheme
+0034                 <span class="keyword">for</span> i=1:Ngroups
+0035                     colors(i,:)=colorGroups{mod(i-1,length(colorGroups))+1};
+0036                 <span class="keyword">end</span>
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin&lt;13 || isempty(medianFlag)
+0039                 medianFlag=0;
+0040             <span class="keyword">end</span>
+0041             
+0042             <span class="comment">%Default number of strides to average:</span>
+0043             <span class="keyword">if</span> nargin&lt;6 || isempty(numberOfStrides)
+0044                 N2=[5,-20];
+0045             <span class="keyword">else</span>
+0046                 N2=numberOfStrides;
+0047             <span class="keyword">end</span>
+0048             <span class="keyword">if</span> nargin&lt;7 || isempty(exemptFirst)
+0049                 Nf=0; 
+0050             <span class="keyword">else</span>
+0051                 Nf=exemptFirst;
+0052             <span class="keyword">end</span>
+0053             <span class="keyword">if</span> nargin&lt;8 || isempty(exemptLast)
+0054                 Ne=5;
+0055             <span class="keyword">else</span>
+0056                 Ne=exemptLast;
+0057             <span class="keyword">end</span>
+0058             <span class="keyword">if</span> nargin&lt;10 || isempty(significanceThreshold)
+0059                 significanceThreshold=[];
+0060             <span class="keyword">end</span>
+0061             
+0062             
+0063             nConds=length(condList);
+0064             nLabs=length(label);
+0065             <span class="comment">%Get data:</span>
+0066             <span class="keyword">for</span> i=1:Ngroups
+0067                 data=auxList{i}.getGroupedData(label,condList,removeBiasFlag,N2,Nf,Ne); <span class="comment">%(1:nConds,1:abs(numberOfStrides(i)),1:nLabs,subject)</span>
+0068                 nSubs=length(auxList{i}.ID);
+0069                 allData.group{i}=nan(nConds,length(data),nLabs,nSubs);
+0070                 <span class="keyword">for</span> j=1:length(data)
+0071                     allData.group{i}(1:nConds,j,1:nLabs,1:nSubs)=nanmean(data{j},2); <span class="comment">%Averaging across strides; cell across groups, conds x strideGroups x parameters x subs</span>
+0072                 <span class="keyword">end</span>
+0073             <span class="keyword">end</span>
+0074             
+0075             <span class="comment">%Do plot:</span>
+0076             <span class="keyword">if</span> nargin&lt;11 || isempty(plotHandles) || numel(plotHandles)~=length(label)
+0077                 [ah,figHandle]=optimizedSubPlot(length(label),2,2);
+0078                 figure(figHandle)
+0079             <span class="keyword">else</span>
+0080                 figHandle=figure(gcf);
+0081                 ah=plotHandles;
+0082             <span class="keyword">end</span>
+0083             
+0084             <span class="keyword">for</span> i=1:length(ah) <span class="comment">%For each paramter</span>
+0085                 subplot(ah(i))
+0086                 <span class="keyword">for</span> j=1:Ngroups <span class="comment">%For each group</span>
+0087                     nSubs=size(allData.group{j},4);
+0088                     <span class="keyword">if</span> isempty(legendNames)
+0089                         gName{j}=[<span class="string">'Group '</span> num2str(j) <span class="string">'(n='</span> num2str(nSubs) <span class="string">')'</span>];
+0090                     <span class="keyword">else</span>
+0091                         gName{j}=legendNames{j};
+0092                     <span class="keyword">end</span>
+0093                     <span class="keyword">for</span> k=1:length(N2) <span class="comment">%For each set of strides to be plotted (e.g first 20, last 50, ...)</span>
+0094                         <span class="keyword">if</span> medianFlag==0
+0095                         relevantMean=nanmean(allData.group{j}(:,k,i,:),4); <span class="comment">%Avg. across subjects. We end up with: conditionsxStrideSetxGroups</span>
+0096                         relevantSte=nanstd(allData.group{j}(:,k,i,:),[],4);<span class="comment">%/sqrt(nSubs); %Avg. across subjects. We end up with: conditionsxStrideSetxGroups</span>
+0097                         <span class="keyword">else</span>
+0098                         relevantMean=nanmedian(allData.group{j}(:,k,i,:),4); <span class="comment">%Median  across subjects. We end up with: conditionsxStrideSetxGroups</span>
+0099                         <span class="comment">%relevantSte=.5*iqr(allData.group{j}(:,k,i,:),4);%/sqrt(nSubs); %.5 times Interquartile range across subjects, normalized to sqrt(Number of subjects) to be consistent with STE</span>
+0100                         relevantSte=.5*diff(prctile(allData.group{j}(:,k,i,:),[16,84],4),[],4); <span class="comment">%Using half of the 16-84 percentile (which in a normal dist corresponds to 1 stdev)</span>
+0101                         <span class="keyword">end</span>
+0102                         xPos=(j+(k-1)*(Ngroups+1)):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
+0103                         <span class="keyword">if</span> N2(k)&lt;0
+0104                         bName{k}=[<span class="string">' last '</span> num2str(abs(N2(k))) <span class="string">' strides.'</span>];
+0105                         <span class="keyword">else</span>
+0106                             bName{k}=[<span class="string">' first '</span> num2str(abs(N2(k))) <span class="string">' strides.'</span>];
+0107                         <span class="keyword">end</span>
+0108                         hold on
+0109                         <span class="keyword">if</span> mode==1 <span class="comment">%Mean bars +- std or median bars +- half the 16-84 percentile range</span>
+0110                             <span class="keyword">try</span>
+0111                                 bb(j,k)=bar(xPos,relevantMean,<span class="string">'BarWidth'</span>,.9/((Ngroups+1)*length(N2)),<span class="string">'FaceColor'</span>,colors(j,:),<span class="string">'FaceAlpha'</span>,(k/length(N2)),<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'EdgeColor'</span>,colors(j,:).^(k/length(N2)));
+0112                             <span class="keyword">catch</span> <span class="comment">%old matlab versions don't allow for 'FaceAlpha' property on bars</span>
+0113                                 bb(j,k)=bar(xPos,relevantMean,<span class="string">'BarWidth'</span>,.9/((Ngroups+1)*length(N2)),<span class="string">'FaceColor'</span>,colors(j,:).^(1-((k-1)/length(N2))),<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'EdgeColor'</span>,colors(j,:),<span class="string">'LineWidth'</span>,2);<span class="comment">%,'FaceAlpha',(k/length(N2)));</span>
+0114                             <span class="keyword">end</span>
+0115                             hC=errorbar(xPos,relevantMean,relevantSte,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>);
+0116                             set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
+0117                         <span class="keyword">elseif</span> mode==2 <span class="comment">%Mean/median lines +- std or 16-84 percentile range</span>
+0118                             errorbar(xPos,relevantMean, relevantSte,<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,colors(j,:).^(k/length(N2)))
+0119                         <span class="keyword">elseif</span> mode==3 <span class="comment">%Boxplots</span>
+0120                             boxplot(squeeze(allData.group{j}(:,k,i,:)))
+0121                         <span class="keyword">end</span>
+0122                         <span class="keyword">if</span> plotIndividualsFlag==1
+0123                             indivColors=[];
+0124                            hC=plot(xPos-.1,reshape(allData.group{j}(:,k,i,:),nConds,nSubs),<span class="string">'r.'</span>);
+0125                            <span class="comment">%Exclude from legend:</span>
+0126                            hCGroup = hggroup; <span class="comment">%Create group</span>
+0127                            set(hC,<span class="string">'Parent'</span>,hCGroup)<span class="comment">%Grouping all lines plotted</span>
+0128                            set(get(get(hCGroup,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>); 
+0129                         <span class="keyword">end</span>
+0130                         hold off
+0131                     <span class="keyword">end</span>
+0132                     
+0133                 <span class="keyword">end</span>
+0134 <span class="comment">%                 xPos=((length(N2)*Ngroups+1)/2):length(N2)*Ngroups:nConds*length(N2)*Ngroups;</span>
+0135 <span class="comment">%                 xPos=((Ngroups+1)/2):(Ngroups+1):nConds*length(N2)*(Ngroups+1);</span>
+0136 <span class="comment">%                 tickList=cell(length(N2),length(condList));</span>
+0137 <span class="comment">%                 for k=1:length(N2)</span>
+0138 <span class="comment">%                     tickList(k,:)=strcat(['Set ' num2str(k) ' '],condList);</span>
+0139 <span class="comment">%                 end</span>
+0140 <span class="comment">%                 tickList=tickList(:);</span>
+0141                 xPos=((length(N2)*(Ngroups+1))/2):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
+0142                 tickList=condList;
+0143                 set(gca,<span class="string">'XTick'</span>,xPos,<span class="string">'XTickLabel'</span>,tickList);
+0144                 <span class="keyword">if</span> i==length(ah)
+0145                     legend(gca,<span class="string">'show'</span>)
+0146                     <span class="comment">%legend(bb(:,k),gName)</span>
+0147                 <span class="keyword">end</span>
+0148                 <span class="keyword">if</span> removeBiasFlag==1
+0149                 title([label{i} <span class="string">' w/o bias'</span>])
+0150                 <span class="keyword">else</span>
+0151                     title(label{i})
+0152                 <span class="keyword">end</span>
+0153                 aa=axis;
+0154                 <span class="keyword">for</span> j=2:2:nConds
+0155                    hC=patch(xPos(j) +[-1,1,1,-1]*(length(N2)*(Ngroups+1))/2,[aa(3) aa(3) aa(4) aa(4)],[.8,.8,.8],<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,.6); 
+0156                    set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
+0157                    uistack(hC,<span class="string">'bottom'</span>)
+0158                 <span class="keyword">end</span>
+0159                 axis(aa)
+0160             <span class="keyword">end</span>
+0161             
+0162             
+0163             
+0164             
+0165  
+0166 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

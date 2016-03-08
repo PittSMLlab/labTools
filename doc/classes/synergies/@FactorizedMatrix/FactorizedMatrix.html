@@ -1,0 +1,356 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FactorizedMatrix</title>
+  <meta name="keywords" content="FactorizedMatrix">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">synergies</a> &gt; <a href="index.html">@FactorizedMatrix</a> &gt; FactorizedMatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/synergies/@FactorizedMatrix&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>FactorizedMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="FactorizedMatrix.bak.html" class="code" title="">FactorizedMatrix.bak</a>	</li><li><a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>	</li><li><a href="FactorizedMatrix_v2.html" class="code" title="">FactorizedMatrix_v2</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=FactorizedMatrix(originalSize,dim1vectors,dim2vectors,factMethod,name)</a></li><li><a href="#_sub2" class="code">function origDim=get.originalDimension(this)</a></li><li><a href="#_sub3" class="code">function matrixSize=get.matrixSize(this)</a></li><li><a href="#_sub4" class="code">function reducedDim=get.reducedDimension(this)</a></li><li><a href="#_sub5" class="code">function factMat=get.factorizedMatrix(this)</a></li><li><a href="#_sub6" class="code">function paramCount=get.paramCount(this)</a></li><li><a href="#_sub7" class="code">function errorMat=getErrorMatrix(this,originalMatrix)</a></li><li><a href="#_sub8" class="code">function errorMat=errorMatrix(this,originalMatrix)</a></li><li><a href="#_sub9" class="code">function errNorm=errorNorm(this,originalMatrix,method)</a></li><li><a href="#_sub10" class="code">function percErr=percentError(this,originalMatrix,method)</a></li><li><a href="#_sub11" class="code">function errNormC=errorNormPerColumn(this,originalMatrix,method)</a></li><li><a href="#_sub12" class="code">function errNormR=errorNormPerRow(this,originalMatrix,method)</a></li><li><a href="#_sub13" class="code">function errNormPerDim=errorNormPerDim(this,originalMatrix,method,dim)</a></li><li><a href="#_sub14" class="code">function percErrC=percentErrorPerColumn(this,originalMatrix,method)</a></li><li><a href="#_sub15" class="code">function percErrR=percentErrorPerRow(this,originalMatrix,method)</a></li><li><a href="#_sub16" class="code">function percErrPerDim=percErrPerDim(this,originalMatrix,method,dim)</a></li><li><a href="#_sub17" class="code">function logL=pPCAlogL(this)</a></li><li><a href="#_sub18" class="code">function newThis=transpose(this)</a></li><li><a href="#_sub19" class="code">function newThis=sort(this,newOrder)</a></li><li><a href="#_sub20" class="code">function [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)</a></li><li><a href="#_sub21" class="code">function logL=ppcaLikelihood(this,originalMatrix)</a></li><li><a href="#_sub22" class="code">function newObj=factorize(matrix,dimInd,method,newDim,name)</a></li><li><a href="#_sub23" class="code">function mnpd= matNormPerDim(mat,method,dim)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>
+0002     <span class="comment">%FactorizedMatrix Represents the factorization of a matrix H (MxN) as: H_ij=</span>
+0003     <span class="comment">%\sum_k u_ki v_kj, where the index k is in [1:p], with p&lt;M and p&lt;N.</span>
+0004     <span class="comment">%Factorization can only be exact if rank(H)&lt;=p.</span>
+0005     <span class="comment">%Notice that both vector sets u_ki and v_kj are indexed such that the</span>
+0006     <span class="comment">%first dimension/index corresponds to the reduced dimension and the</span>
+0007     <span class="comment">%second one to the represented dimension. u_ki is stores as dim1Vectors</span>
+0008     <span class="comment">%and v_kj is stores as dim2Vectors. The factorized matrix can be</span>
+0009     <span class="comment">%reconstructed</span>
+0010     
+0011     <span class="comment">%Technically, this is programmed in a way that it also supports tensor</span>
+0012     <span class="comment">%(dim&gt;2) factorizations of the form: H_ijl = \sum_k u_ik v_kjl, where H</span>
+0013     <span class="comment">%is of dim A, u are column vectors, and v are A-1 dimension tensors</span>
+0014     
+0015     <span class="comment">%In the future factorization of 3 or more elements such as: H_ijl =</span>
+0016     <span class="comment">%\sum_k u_ik v_jk w_lk will be supported, by allowing dim2Vectors to be</span>
+0017     <span class="comment">%themselves a factorizedMatrix (CAN I DO THIS??)</span>
+0018     
+0019     
+0020     properties
+0021         <span class="comment">%originalMatrix=zeros(3);</span>
+0022         dim1Vectors=zeros(3,1);
+0023         dim2Vectors=zeros(1,3);
+0024         name=<span class="string">'Unnamed'</span>;
+0025         factorizationMethod=<span class="string">'Unknown'</span>;
+0026     <span class="keyword">end</span>
+0027     properties(Dependent=true)
+0028        originalDimension <span class="comment">%This is the lesser of M and N</span>
+0029        matrixSize <span class="comment">%This is size(originalMatrix)</span>
+0030        reducedDimension <span class="comment">%this is p</span>
+0031        factorizedMatrix <span class="comment">%Product of Dim1Vectors and Dim2Vectors</span>
+0032        <span class="comment">%errorMatrix %Difference between original and factorized</span>
+0033        paramCount <span class="comment">%Number of parameters in the factorization</span>
+0034     <span class="keyword">end</span>
+0035     
+0036     methods
+0037         <span class="comment">%Constructor</span>
+0038         <a name="_sub0" href="#_subfunctions" class="code">function this=FactorizedMatrix(originalSize,dim1vectors,dim2vectors,factMethod,name) </a><span class="comment">%Last two are optional</span>
+0039             <span class="keyword">if</span> nargin&lt;3
+0040                 ME=MException(<span class="string">'FactorizedMatrix:ConstructorNotEnoughArgs'</span>,<span class="string">'Not enough arguments'</span>);
+0041                 throw(ME)
+0042             <span class="keyword">end</span>
+0043             <span class="keyword">if</span> numel(originalSize)~=prod(size(originalSize))
+0044                 ME=MException(<span class="string">'FactorizedMatrix:ConstructorBadSizeArgument'</span>,<span class="string">'The originalSize argument has to be a vector containing the size of the full matrix.'</span>);
+0045                 throw(ME)
+0046             <span class="keyword">end</span>
+0047             <span class="comment">%this.originalMatrix=original; %Should not allow matrices that have singleton dimensions in the middle (i.e., not the first nor the last dimension), since it gives problems when checking for size and/or reconstructing the matrix.</span>
+0048             <span class="comment">%Check consistency of given arguments &amp; assign</span>
+0049             <span class="keyword">if</span> size(dim1vectors(:,:),1)==size(dim2vectors(:,:),1) <span class="comment">%Given in the expected orientation</span>
+0050                 this.dim1Vectors=dim1vectors;
+0051                 this.dim2Vectors=dim2vectors;
+0052             <span class="keyword">elseif</span> size(dim1vectors,2)==size(dim2vectors(:,:),1) <span class="comment">%Given transposed, which implies dim1Vectors is a 2D matrix</span>
+0053                 this.dim1Vectors=dim1vectors';
+0054                 this.dim2Vectors=dim2vectors;
+0055             <span class="keyword">else</span> <span class="comment">%Inconsistent sizes</span>
+0056                 ME=MException(<span class="string">'FactorizedMatrix:ConstructorInconsistentFactors'</span>,<span class="string">'The sizes of the factors are inconsistent.'</span>);
+0057                 throw(ME);
+0058             <span class="keyword">end</span>
+0059             
+0060             <span class="comment">%Check if there is actually dimension reduction</span>
+0061             <span class="keyword">if</span> (numel(this.dim1Vectors)+numel(this.dim2Vectors)) &gt;= prod(originalSize)
+0062                 warning(<span class="string">'The factorized matrix is not reduced from its full form (factors DoF &gt; matrix DoF).'</span>)
+0063             <span class="keyword">end</span>
+0064             
+0065             <span class="comment">%Check consistency with originalMatrix size</span>
+0066             size1=size(this.dim1Vectors);
+0067             size2=size(this.dim2Vectors);
+0068             auxSize=[size1(2:end) size2(2:end)];
+0069             <span class="keyword">try</span>
+0070             <span class="keyword">if</span> ~isempty(originalSize) &amp;&amp; prod(auxSize)~=prod(originalSize)
+0071                 ME=MException(<span class="string">'FactorizedMatrix:ConstructorInconsistentMatrix'</span>,<span class="string">'The sizes of the factors and the provided original matrix are inconsistent.'</span>);
+0072                 throw(ME);
+0073             <span class="keyword">end</span>
+0074             <span class="keyword">catch</span>
+0075                 keyboard
+0076             <span class="keyword">end</span>
+0077             
+0078             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; isa(factMethod,<span class="string">'char'</span>)
+0079                 this.factorizationMethod=factMethod;
+0080             <span class="keyword">else</span>
+0081                 disp(<span class="string">'FactorizedMatrix Constructor: factorization method not given or is not a string. Ignoring.'</span>)
+0082             <span class="keyword">end</span>
+0083             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; isa(name,<span class="string">'char'</span>)
+0084                 this.name=name;
+0085             <span class="keyword">else</span>
+0086                 disp(<span class="string">'FactorizedMatrix Constructor: name not given or is not a string. Ignoring.'</span>) 
+0087             <span class="keyword">end</span>
+0088                 
+0089         <span class="keyword">end</span>
+0090         
+0091         <span class="comment">%Getters for dependent</span>
+0092         <a name="_sub1" href="#_subfunctions" class="code">function origDim=get.originalDimension(this)</a>
+0093             origDim=min([size(this.dim1Vectors(:,:),2),size(this.dim2Vectors(:,:),2)]);
+0094         <span class="keyword">end</span>
+0095         <a name="_sub2" href="#_subfunctions" class="code">function matrixSize=get.matrixSize(this)</a>
+0096             <span class="comment">%matrixSize=size(this.originalMatrix); %Old way</span>
+0097             s1=size(this.dim1Vectors);
+0098             s2=size(this.dim2Vectors);
+0099             matrixSize=[s1(2:end) s2(2:end)];
+0100         <span class="keyword">end</span>
+0101         <a name="_sub3" href="#_subfunctions" class="code">function reducedDim=get.reducedDimension(this)</a>
+0102             reducedDim=size(this.dim2Vectors,1);
+0103         <span class="keyword">end</span>
+0104         <a name="_sub4" href="#_subfunctions" class="code">function factMat=get.factorizedMatrix(this)</a>
+0105            factMat=this.dim1Vectors(:,:)'*this.dim2Vectors(:,:); 
+0106            factMat=reshape(factMat,this.matrixSize);
+0107         <span class="keyword">end</span>
+0108         
+0109         <a name="_sub5" href="#_subfunctions" class="code">function paramCount=get.paramCount(this)</a>
+0110            paramCount=numel(this.dim1Vectors)+numel(this.dim2Vectors); 
+0111         <span class="keyword">end</span>
+0112         
+0113         <span class="comment">%Other:</span>
+0114         <a name="_sub6" href="#_subfunctions" class="code">function errorMat=getErrorMatrix(this,originalMatrix)</a>
+0115             <span class="comment">%error('FactorizedMatrix:errorMatrix','This is no longer a supported property of FactorizedMatrix')</span>
+0116             errorMat=originalMatrix-this.factorizedMatrix;
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub7" href="#_subfunctions" class="code">function errorMat=errorMatrix(this,originalMatrix)</a>
+0120             warning(<span class="string">'FactorizedMatrix:errorMatrix'</span>,<span class="string">'This method is deprecated, use getErrorMatrix instead.'</span>)
+0121             errorMat=this.getErrorMatrix(originalMatrix);
+0122         <span class="keyword">end</span>
+0123         
+0124         <a name="_sub8" href="#_subfunctions" class="code">function errNorm=errorNorm(this,originalMatrix,method)</a>
+0125             <span class="keyword">if</span> nargin&lt;2
+0126                 method=<span class="string">'fro'</span>;
+0127             <span class="keyword">end</span>
+0128             eM=this.getErrorMatrix(originalMatrix);
+0129             errNorm=norm(eM(:,:),method);
+0130         <span class="keyword">end</span>
+0131         <a name="_sub9" href="#_subfunctions" class="code">function percErr=percentError(this,originalMatrix,method)</a>
+0132             <span class="comment">%error('FactorizedMatrix:percentError','This is no longer a supported method of FactorizedMatrix')</span>
+0133             <span class="keyword">if</span> nargin&lt;2
+0134                 method=<span class="string">'fro'</span>;
+0135             <span class="keyword">end</span>
+0136             percErr=this.errorNorm(originalMatrix,method)/norm(originalMatrix(:,:),method);
+0137         <span class="keyword">end</span>
+0138         <a name="_sub10" href="#_subfunctions" class="code">function errNormC=errorNormPerColumn(this,originalMatrix,method)</a>
+0139             <span class="keyword">if</span> nargin&lt;2
+0140                 method=2;
+0141             <span class="keyword">end</span>
+0142             eM=this.errorMatrix(originalMatrix);
+0143             errNormC=columnNorm(eM(:,:),method,1);
+0144         <span class="keyword">end</span>
+0145         <a name="_sub11" href="#_subfunctions" class="code">function errNormR=errorNormPerRow(this,originalMatrix,method)</a>
+0146             <span class="keyword">if</span> nargin&lt;2
+0147                 method=2;
+0148             <span class="keyword">end</span>
+0149             eM=this.errorMatrix(originalMatrix);
+0150             errNormR=columnNorm(eM(:,:),method,2);
+0151         <span class="keyword">end</span>
+0152         <a name="_sub12" href="#_subfunctions" class="code">function errNormPerDim=errorNormPerDim(this,originalMatrix,method,dim)</a>
+0153             eM=this.errorMatrix(originalMatrix);
+0154             errNormPerDim= FactorizedMatrix.matNormPerDim(eM,method,dim);
+0155         <span class="keyword">end</span>
+0156         <a name="_sub13" href="#_subfunctions" class="code">function percErrC=percentErrorPerColumn(this,originalMatrix,method)</a>
+0157             <span class="comment">%error('FactorizedMatrix:percentErrorPerColumn','This is no longer a supported method of FactorizedMatrix')</span>
+0158             <span class="keyword">if</span> nargin&lt;2
+0159                 method=2;
+0160             <span class="keyword">end</span>
+0161             percErrC=this.errorNormPerColumn(originalMatrix,method)./columnNorm(originalMatrix(:,:),method,1);
+0162         <span class="keyword">end</span>
+0163         <a name="_sub14" href="#_subfunctions" class="code">function percErrR=percentErrorPerRow(this,originalMatrix,method)</a>
+0164             <span class="comment">%error('FactorizedMatrix:percentErrorPerRow','This is no longer a supported method of FactorizedMatrix')</span>
+0165             <span class="keyword">if</span> nargin&lt;2
+0166                 method=2;
+0167             <span class="keyword">end</span>
+0168             percErrR=this.errorNormPerRow(method)./columnNorm(originalMatrix(:,:),method,2);
+0169         <span class="keyword">end</span>
+0170         <a name="_sub15" href="#_subfunctions" class="code">function percErrPerDim=percErrPerDim(this,originalMatrix,method,dim)</a>
+0171             <span class="comment">%error('FactorizedMatrix:percentErrorPerDim','This is no longer a supported method of FactorizedMatrix')</span>
+0172             <a href="#_sub16" class="code" title="subfunction percErrPerDim=percErrPerDim(this,originalMatrix,method,dim)">percErrPerDim</a> = FactorizedMatrix.matNormPerDim(this.errorMatrix,method,dim)./FactorizedMatrix.matNormPerDim(originalMatrix,method,dim);
+0173         <span class="keyword">end</span>
+0174         <a name="_sub16" href="#_subfunctions" class="code">function logL=pPCAlogL(this)</a>
+0175            logL=NaN; <span class="comment">%To Do</span>
+0176         <span class="keyword">end</span>
+0177         
+0178         <span class="comment">%Modifiers:</span>
+0179         <a name="_sub17" href="#_subfunctions" class="code">function newThis=transpose(this)</a>
+0180             <span class="keyword">if</span> length(this.matrixSize)&lt;3
+0181                 newThis=<a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(this.matrixSize,this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name <span class="string">' Transposed'</span>]);
+0182             <span class="keyword">else</span>
+0183                 warning(<span class="string">'Matrix is actually a high-dimensional (&gt;3) tensor, cannot transpose as is. Will transpose the tensor as returned by indexing as (:,:)'</span>);
+0184                 size1=size(this.dim1Vectors);
+0185                 size2=size(this.dim2Vectors);
+0186                 newMatrixSize=[size2(2:end) size1(2:end)];
+0187                 newThis=<a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(newMatrixSize,this.dim2Vectors,this.dim1Vectors,this.factorizationMethod,[this.name <span class="string">' Transposed'</span>]);
+0188             <span class="keyword">end</span>
+0189         <span class="keyword">end</span>
+0190         
+0191         <a name="_sub18" href="#_subfunctions" class="code">function newThis=sort(this,newOrder)</a>
+0192             <span class="keyword">if</span> numel(newOrder)==this.reducedDimension
+0193                 newDim1=this.dim1Vectors(newOrder,:);
+0194                 newDim1=reshape(newDim1,size(this.dim1Vectors));
+0195                 newDim2=this.dim2Vectors(newOrder,:);
+0196                 newDim2=reshape(newDim2,size(this.dim2Vectors));
+0197                 newThis=<a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(this.matrixSize,newDim1,newDim2,this.factMethod,this.name);
+0198             <span class="keyword">else</span>
+0199                newThis=this;
+0200                warning(<span class="string">'FactorizedMatrix:sort'</span>,<span class="string">'The newOrder vector is not of the appropriate size, ignoring.'</span>)
+0201             <span class="keyword">end</span>
+0202         <span class="keyword">end</span>
+0203         
+0204         <span class="comment">%Display</span>
+0205         <a name="_sub19" href="#_subfunctions" class="code">function [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)</a>
+0206             <span class="comment">%If dim1Vectors is of dim==3, assuming that second dimension</span>
+0207             <span class="comment">%are repetitions of whatever the first dimension represents</span>
+0208             <span class="comment">%If dim1Vectors is of dim&gt;3, don't know what to do, not</span>
+0209             <span class="comment">%plotting</span>
+0210             <span class="comment">%If dim2Vectors is of dim&gt;2 don't know what to do, not plotting</span>
+0211             <span class="comment">%------------</span>
+0212             N=this.reducedDimension;
+0213             <span class="keyword">if</span> nargin&lt;3 || isempty(plotHandles1) || isempty(plotHandles2) <span class="comment">%No handles</span>
+0214                 figHandle=figure();
+0215                 <span class="keyword">for</span> i=1:N
+0216                     plotHandles1(i)=subplot(3,N,[i N+i]);
+0217                     plotHandles2(i)=subplot(3,N,2*N+i);
+0218                 <span class="keyword">end</span>
+0219             <span class="keyword">else</span>
+0220                 <span class="keyword">if</span> (length(plotHandles1)==this.reducedDimension) &amp;&amp; (length(plotHandles2)==this.reducedDimension)
+0221                     figHandle=gcf;
+0222                 <span class="keyword">else</span> <span class="comment">%Non consistent handles, ignoring</span>
+0223                     figHandle=figure();
+0224                     <span class="keyword">for</span> i=1:N
+0225                         plotHandles1(i)=subplot(3,N,[i N+i]);
+0226                         plotHandles2(i)=subplot(3,N,2*N+i);
+0227                     <span class="keyword">end</span>
+0228                 <span class="keyword">end</span>
+0229             <span class="keyword">end</span>
+0230             <span class="keyword">if</span> nargin&lt;4 || isempty(colors)
+0231                 colors={[0,.4,1],[0,1,1],[0,1,0],[1,1,0],[1,.2,0],[1,0,1],[.5,.5,.5],[0,.6,0],[0,.5,1]};
+0232             <span class="keyword">end</span>
+0233             <span class="comment">%------------</span>
+0234             <span class="keyword">for</span> i=1:N
+0235                 subplot(plotHandles1(i))
+0236                 hold on
+0237                 bar(this.dim2Vectors(i,:),<span class="string">'FaceColor'</span>,colors{mod(i,length(colors))+1})
+0238                 <span class="comment">%freezeColors %external function!</span>
+0239                 hold off
+0240                 subplot(plotHandles2(i))
+0241                 hold on
+0242                 <span class="keyword">for</span> j=1:size(this.dim1Vectors,3)
+0243                     <a href="#_sub20" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)">plot</a>(this.dim1Vectors(i,:,j),<span class="string">'Color'</span>,colors{mod(i,length(colors))+1})
+0244                 <span class="keyword">end</span>
+0245                 <a href="#_sub20" class="code" title="subfunction [figHandle,plotHandles1,plotHandles2]=plot(this,plotHandles1,plotHandles2,colors)">plot</a>(mean(this.dim1Vectors(i,:,:),3),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[.5,.5,.8].*colors{mod(i,length(colors))+1})
+0246                 hold off
+0247             <span class="keyword">end</span>
+0248             
+0249         <span class="keyword">end</span>
+0250         
+0251         <span class="comment">%Likelihood under ppca framework</span>
+0252         <a name="_sub20" href="#_subfunctions" class="code">function logL=ppcaLikelihood(this,originalMatrix)</a>
+0253             coeff=this.dim2Vectors(:,:);
+0254             scores=this.dim1Vectors(:,:);
+0255             data=permute(originalMatrix,[3,1,2]);
+0256             [logL] = <a href="#_sub21" class="code" title="subfunction logL=ppcaLikelihood(this,originalMatrix)">ppcaLikelihood</a>(data(:,:)',coeff,scores);
+0257         <span class="keyword">end</span>
+0258         
+0259     <span class="keyword">end</span> <span class="comment">%Normal methods</span>
+0260     
+0261     
+0262     methods(Static)
+0263         <span class="comment">%Generate factorizations:</span>
+0264         <a name="_sub21" href="#_subfunctions" class="code">function newObj=factorize(matrix,dimInd,method,newDim,name) </a>
+0265             <span class="keyword">if</span> nargin&lt;5
+0266                 name=<span class="string">''</span>;
+0267             <span class="keyword">end</span>
+0268             <span class="comment">%DimInd should be strictly less than the dim of matrix (i.e.</span>
+0269             <span class="comment">%dimInd &lt; ndims(matrix)</span>
+0270             <span class="keyword">if</span> dimInd&gt;=ndims(matrix)
+0271                 error(<span class="string">'FactorizedMatrix:factorize'</span>,<span class="string">'dimInd input argument has to be strictly less than the dimensions of the matrix, as it establishes the last dimension that will be part of the first factorized tensor, and there has to be at least one extra dimension for the second tensor.'</span>)
+0272             <span class="keyword">end</span>
+0273             matSize=size(matrix);
+0274             aux=reshape(matrix,[prod(matSize(1:dimInd)), prod(matSize(dimInd+1:end))]);
+0275             
+0276             <span class="keyword">switch</span> method
+0277                 <span class="keyword">case</span> <span class="string">'nnmf'</span>
+0278                     [tensor1,tensor2]=myNNMF(aux,newDim,5,<span class="string">'always'</span>); <span class="comment">%Parallel processing &amp; multiple replicates.</span>
+0279                     <span class="comment">%[tensor1,tensor2]=nnmf(aux,newDim);</span>
+0280                     tensor1=reshape(tensor1',[newDim matSize(1:dimInd) ]);
+0281                     tensor2=reshape(tensor2,[newDim matSize(dimInd+1:end)]);
+0282                 <span class="keyword">case</span> <span class="string">'pca'</span>
+0283                     [tensor2,tensor1]=pca(aux,<span class="string">'Centered'</span>,<span class="string">'off'</span>,<span class="string">'NumComponents'</span>,newDim);
+0284                     tensor1=reshape(tensor1',[newDim matSize(1:dimInd) ]);
+0285                     tensor2=reshape(tensor2',[newDim matSize(dimInd+1:end)]);
+0286                 <span class="keyword">case</span> <span class="string">'ica'</span>
+0287                     <span class="comment">%To Do</span>
+0288                     tensor1=[];
+0289                     tensor2=[];
+0290             <span class="keyword">end</span>
+0291             newObj=<a href="FactorizedMatrix.html" class="code" title="">FactorizedMatrix</a>(size(matrix),tensor1,tensor2,method,name);
+0292         <span class="keyword">end</span>
+0293         
+0294     <span class="keyword">end</span> <span class="comment">%Static methods</span>
+0295     
+0296     methods (Static, Access=private)
+0297         <a name="_sub22" href="#_subfunctions" class="code">function mnpd= matNormPerDim(mat,method,dim)</a>
+0298             aux=permute(mat,[dim, 1:dim-1 ,dim+1:ndims(mat)]);
+0299             aux=aux(:,:);
+0300             mnpd=columnNorm(aux,method,2);
+0301             <span class="comment">%s=size(mat);</span>
+0302             <span class="comment">%mnpd=reshape(mnpd,s([1:dim-1 ,dim+1:ndims(mat)]));</span>
+0303         <span class="keyword">end</span>
+0304     <span class="keyword">end</span>
+0305     
+0306 <span class="keyword">end</span> <span class="comment">%classdef</span>
+0307</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

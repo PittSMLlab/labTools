@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of labDate</title>
+  <meta name="keywords" content="labDate">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">auxData</a> &gt; labDate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/auxData&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>labDate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="labDate.html" class="code" title="">labDate</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="labDate.html" class="code" title="">labDate</a>	</li><li><a href="strokeSubjectData.html" class="code" title="">strokeSubjectData</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=labDate(dd,mm,year)</a></li><li><a href="#_sub2" class="code">function this=set.day(this,dd)</a></li><li><a href="#_sub3" class="code">function this=set.year(this,year)</a></li><li><a href="#_sub4" class="code">function str=monthString(a)</a></li><li><a href="#_sub5" class="code">function id=genIDFromClock()</a></li><li><a href="#_sub6" class="code">function d=getCurrent()</a></li><li><a href="#_sub7" class="code">function d=default()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="labDate.html" class="code" title="">labDate</a>
+0002     <span class="comment">%labDate   stores a single date as day, month, year</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">%labDate properties:</span>
+0005     <span class="comment">%   day - number</span>
+0006     <span class="comment">%   month - number (1-12)</span>
+0007     <span class="comment">%   year - four digit number</span>
+0008     <span class="comment">%</span>
+0009     <span class="comment">%labDate Methods:</span>
+0010     <span class="comment">%   monthString - outputs month as a 3-letter string</span>
+0011     <span class="comment">%   genIDFromClock</span>
+0012     <span class="comment">%   getCurrent</span>
+0013     <span class="comment">%   default - generates default date (Jan 1, 1900)</span>
+0014     
+0015     properties
+0016         day; <span class="comment">%a day (ex: 27)</span>
+0017         month; <span class="comment">%a month (ex: 4)</span>
+0018         year;<span class="comment">% a year (ex: 2015)</span>
+0019     <span class="keyword">end</span>
+0020     
+0021     methods
+0022 
+0023         <a name="_sub0" href="#_subfunctions" class="code">function this=labDate(dd,mm,year)</a>
+0024             <span class="comment">%Constructor</span>
+0025             <span class="comment">%</span>
+0026             <span class="comment">%inputs: dd, mm, yyyy</span>
+0027             <span class="comment">%</span>
+0028             <span class="comment">%dd must be 2 digit double</span>
+0029             <span class="comment">%</span>
+0030             <span class="comment">%mm can be either 2 digit double, or 3 char string e.g.</span>
+0031             <span class="comment">%'jan' or 'dec'</span>
+0032             <span class="comment">%</span>
+0033             <span class="comment">%yyyy must be 4 digit double</span>
+0034             
+0035             this.day=dd;
+0036             <span class="keyword">if</span> isa(mm,<span class="string">'char'</span>) &amp;&amp; length(mm)==3
+0037                 <span class="keyword">switch</span> lower(mm)
+0038                     <span class="keyword">case</span> {<span class="string">'jan'</span>,<span class="string">'ene'</span>}
+0039                         this.month=1;
+0040                     <span class="keyword">case</span> {<span class="string">'feb'</span>}
+0041                         this.month=2;
+0042                     <span class="keyword">case</span> {<span class="string">'mar'</span>}
+0043                         this.month=3;
+0044                     <span class="keyword">case</span> {<span class="string">'apr'</span>,<span class="string">'abr'</span>}
+0045                         this.month=4;
+0046                     <span class="keyword">case</span> {<span class="string">'may'</span>}
+0047                         this.month=5;
+0048                     <span class="keyword">case</span> {<span class="string">'jun'</span>}
+0049                         this.month=6;
+0050                     <span class="keyword">case</span> {<span class="string">'jul'</span>}
+0051                         this.month=7;
+0052                     <span class="keyword">case</span> {<span class="string">'aug'</span>,<span class="string">'ago'</span>}
+0053                         this.month=8;
+0054                     <span class="keyword">case</span> {<span class="string">'sep'</span>,<span class="string">'set'</span>}
+0055                         this.month=9;
+0056                     <span class="keyword">case</span> {<span class="string">'oct'</span>}
+0057                         this.month=10;
+0058                     <span class="keyword">case</span> {<span class="string">'nov'</span>}
+0059                         this.month=11;
+0060                     <span class="keyword">case</span> {<span class="string">'dec'</span>,<span class="string">'dic'</span>}
+0061                         this.month=12;
+0062                     <span class="keyword">otherwise</span>
+0063                         ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Unrecognized month string.'</span>);
+0064                         throw(ME);
+0065                 <span class="keyword">end</span>
+0066            <span class="keyword">elseif</span> isa(mm,<span class="string">'double'</span>) &amp;&amp; mm&lt;=12
+0067                this.month=mm;
+0068            <span class="keyword">else</span>
+0069                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Month parameter is not a 3-letter string or a valid numerical value.'</span>);
+0070                 throw(ME);
+0071            <span class="keyword">end</span> 
+0072             this.year=year;
+0073         <span class="keyword">end</span>
+0074         
+0075         <span class="comment">%Setters</span>
+0076         <a name="_sub1" href="#_subfunctions" class="code">function this=set.day(this,dd)</a>
+0077             <span class="keyword">if</span> dd&lt;32 &amp;&amp; dd&gt;0 &amp;&amp; rem(dd,1)==0
+0078                 this.day=dd;
+0079             <span class="keyword">else</span>
+0080                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Day parameter is not an integer in the [1,31] range.'</span>);
+0081                 throw(ME);
+0082             <span class="keyword">end</span>
+0083         <span class="keyword">end</span>        
+0084         
+0085         <span class="comment">% HH: no setter for month because it was mis-behaving</span>
+0086 <span class="comment">%         function this=set.month(this,mm)</span>
+0087 <span class="comment">%</span>
+0088 <span class="comment">%         end</span>
+0089         <a name="_sub2" href="#_subfunctions" class="code">function this=set.year(this,year)</a>
+0090             <span class="keyword">if</span> rem(year,1)==0
+0091                 this.year=year;
+0092             <span class="keyword">else</span>
+0093                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Year parameter is not an integer.'</span>);
+0094                 throw(ME);
+0095            <span class="keyword">end</span> 
+0096         <span class="keyword">end</span>
+0097     <span class="keyword">end</span> 
+0098     
+0099     
+0100     <span class="comment">%Suggested method: find number of years/months/days that separate two</span>
+0101     <span class="comment">%dates. The method could be called like</span>
+0102     <span class="comment">%[days,months,years]=labDate1.timeSince(labDate2)</span>
+0103     
+0104     methods(Static)
+0105         
+0106         <a name="_sub3" href="#_subfunctions" class="code">function str=monthString(a)</a>
+0107         <span class="comment">% monthString  turns numeric month value into a string</span>
+0108         <span class="comment">%   str=monthString(a) outputs a three-character string for an</span>
+0109         <span class="comment">%   integer between 1 and 12 (inclusive).</span>
+0110         <span class="comment">%   example:</span>
+0111         <span class="comment">%       monthString(1) returns 'jan'.</span>
+0112             <span class="keyword">switch</span> a
+0113                 <span class="keyword">case</span> 1
+0114                     str=<span class="string">'jan'</span>;
+0115                 <span class="keyword">case</span> 2
+0116                     str=<span class="string">'feb'</span>;
+0117                 <span class="keyword">case</span> 3
+0118                     str=<span class="string">'mar'</span>;
+0119                 <span class="keyword">case</span> 4
+0120                     str=<span class="string">'apr'</span>;
+0121                 <span class="keyword">case</span> 5
+0122                     str=<span class="string">'may'</span>;
+0123                 <span class="keyword">case</span> 6
+0124                     str=<span class="string">'jun'</span>;
+0125                 <span class="keyword">case</span> 7
+0126                     str=<span class="string">'jul'</span>;
+0127                 <span class="keyword">case</span> 8
+0128                     str=<span class="string">'aug'</span>;
+0129                 <span class="keyword">case</span> 9
+0130                     str=<span class="string">'sep'</span>;
+0131                 <span class="keyword">case</span> 10
+0132                     str=<span class="string">'oct'</span>;
+0133                 <span class="keyword">case</span> 11
+0134                     str=<span class="string">'nov'</span>;
+0135                 <span class="keyword">case</span> 12
+0136                     str=<span class="string">'dec'</span>;
+0137                 <span class="keyword">otherwise</span>
+0138                     str=<span class="string">''</span>;
+0139             <span class="keyword">end</span>
+0140         <span class="keyword">end</span>
+0141         
+0142         <a name="_sub4" href="#_subfunctions" class="code">function id=genIDFromClock()</a>
+0143             <span class="comment">%get the current time and convert it to date ID: yyyymmddhhmmss</span>
+0144             <span class="comment">%</span>
+0145             <span class="comment">%example:</span>
+0146             <span class="comment">%id = genIDFromClock()</span>
+0147             <span class="comment">%id = 20150821111631</span>
+0148            aux=clock;
+0149            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
+0150         <span class="keyword">end</span>
+0151         
+0152         <a name="_sub5" href="#_subfunctions" class="code">function d=getCurrent()</a>
+0153             <span class="comment">%create labDate instance d as the current time and date</span>
+0154             <span class="comment">%</span>
+0155             <span class="comment">%example:</span>
+0156             <span class="comment">%d = getCurrent()</span>
+0157             <span class="comment">%             d =</span>
+0158             <span class="comment">%labDate with properties:</span>
+0159             <span class="comment">%day: 21</span>
+0160             <span class="comment">%month: 8</span>
+0161             <span class="comment">%year: 2015</span>
+0162             aux=clock;
+0163             d=<a href="labDate.html" class="code" title="">labDate</a>(aux(3),labDate.monthString(aux(2)),aux(1));
+0164         <span class="keyword">end</span>
+0165         
+0166         <a name="_sub6" href="#_subfunctions" class="code">function d=default()</a>
+0167             <span class="comment">%set date to 1 Jan 1900</span>
+0168             d=<a href="labDate.html" class="code" title="">labDate</a>(1,<span class="string">'jan'</span>,1900);
+0169         <span class="keyword">end</span>
+0170     <span class="keyword">end</span>
+0171     
+0172 <span class="keyword">end</span>
+0173</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

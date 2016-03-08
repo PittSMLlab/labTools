@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeEMGParameters</title>
+  <meta name="keywords" content="computeEMGParameters">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeEMGParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeEMGParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)</a>
+0002 <span class="comment">%%</span>
+0003 timeSHS=strideEvents.tSHS;
+0004 timeFTO=strideEvents.tFTO;
+0005 timeFHS=strideEvents.tFHS;
+0006 timeSTO=strideEvents.tSTO;
+0007 timeSHS2=strideEvents.tSHS2;
+0008 eventTimes=[timeSHS timeFTO .5*(timeFTO+timeFHS) timeFHS timeSTO .5*(timeSTO+timeSHS2) timeSHS2];
+0009 eventTimes2=nan(size(eventTimes,1),13);
+0010 eventTimes2(:,1:2:end)=eventTimes;
+0011 eventTimes2(:,2:2:end)=.5*(eventTimes(:,1:end-1)+eventTimes(:,2:end));
+0012 paramLabels={};
+0013 description={};
+0014 phases={<span class="string">'DS1'</span>,<span class="string">'EfSwing'</span>,<span class="string">'LfSwing'</span>,<span class="string">'DS2'</span>,<span class="string">'EsSwing'</span>,<span class="string">'LsSwing'</span>};
+0015 desc={<span class="string">'SHS to FTO'</span>, <span class="string">'FTO to mid fast swing'</span>, <span class="string">'mid fast swing to FHS'</span>, <span class="string">'FHS to STO'</span>, <span class="string">'STO to mid slow swing'</span>, <span class="string">'mid slow swing to SHS'</span>};
+0016 phases2={<span class="string">'eDS1'</span>,<span class="string">'lDS1'</span>,<span class="string">'EfSwing1'</span>,<span class="string">'EfSwing2'</span>,<span class="string">'LfSwing1'</span>,<span class="string">'LfSwing2'</span>,<span class="string">'eDS2'</span>,<span class="string">'lDS2'</span>,<span class="string">'EsSwing1'</span>,<span class="string">'EsSwing2'</span>,<span class="string">'LsSwing1'</span>,<span class="string">'LsSwing2'</span>};
+0017 desc2={<span class="string">'SHS to mid DS1'</span>,<span class="string">'mid DS1 to FTO'</span>, <span class="string">'FTO to 1/4 fast swing'</span>,<span class="string">'1/4 to mid fast swing'</span>, <span class="string">'mid fast swing to 3/4'</span>,<span class="string">'3/4 fast swing to FHS'</span>, <span class="string">'FHS to mid DS2'</span>, <span class="string">'mid DS2 to STO'</span>, <span class="string">'STO to 1/4 slow swing'</span>,<span class="string">'1/4  to mid slow swing'</span>,<span class="string">'mid slow swing to 3/4'</span>,<span class="string">'3/4 slow swing to SHS'</span>};
+0018 <span class="comment">%%</span>
+0019 N=length(stridedProcEMG);
+0020 data=nan(N,30*(16+12));
+0021 <span class="keyword">for</span> i=1:N
+0022     counter=0;
+0023     Time=stridedProcEMG{i}.Time;
+0024     labs=stridedProcEMG{i}.labels;
+0025     Data=stridedProcEMG{i}.Data;
+0026     Qual=stridedProcEMG{i}.Quality;
+0027     <span class="keyword">for</span> j=1:length(labs) <span class="comment">%Muscles</span>
+0028         <span class="keyword">if</span> strcmp(labs{j}(1),s)
+0029             l=<span class="string">'s'</span>;
+0030         <span class="keyword">else</span>
+0031             l=<span class="string">'f'</span>;
+0032         <span class="keyword">end</span>
+0033         <span class="keyword">for</span> k=1:6 <span class="comment">%6 phases</span>
+0034             counter=counter+1;
+0035             <span class="keyword">if</span> i==1
+0036             paramLabels{counter}=[l labs{j}(2:end) <span class="string">'p'</span> num2str(k)];
+0037             description{counter}=[<span class="string">'Average of proc EMG data in muscle '</span> labs{j} <span class="string">' from '</span> desc{k}];
+0038             <span class="keyword">end</span>
+0039             data(i,counter)=mean(Data(Time&lt;=eventTimes(i,k+1) &amp; Time&gt;=eventTimes(i,k),j));
+0040             <span class="keyword">if</span> ~isempty(Qual) &amp; any(Qual(Time&lt;=eventTimes(i,k+1) &amp; Time&gt;=eventTimes(i,k),j)~=0) <span class="comment">%Quality points to bad muscle</span>
+0041                 data(i,counter)=nan;
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044         <span class="keyword">for</span> k=1:12 <span class="comment">%6 phases</span>
+0045             counter=counter+1;
+0046             <span class="keyword">if</span> i==1
+0047             paramLabels{counter}=[l labs{j}(2:end) <span class="string">'s'</span> num2str(k)];
+0048             description{counter}=[<span class="string">'Average of proc EMG data in muscle '</span> labs{j} <span class="string">' from '</span> desc2{k}];
+0049             <span class="keyword">end</span>
+0050             data(i,counter)=mean(Data(Time&lt;=eventTimes2(i,k+1) &amp; Time&gt;=eventTimes2(i,k),j));
+0051             <span class="keyword">if</span> ~isempty(Qual) &amp; any(Qual(Time&lt;=eventTimes2(i,k+1) &amp; Time&gt;=eventTimes2(i,k),j)~=0) <span class="comment">%Quality points to bad muscle</span>
+0052                 data(i,counter)=nan;
+0053             <span class="keyword">end</span>
+0054         <span class="keyword">end</span>
+0055         
+0056         <span class="comment">%Other metrics: max, min, gait cycle avg., SNR</span>
+0057         counter=counter+1;
+0058         counter0=counter;
+0059         <span class="keyword">if</span> i==1
+0060         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'max'</span>];
+0061         description{counter}=[<span class="string">'Peak proc EMG in muscle '</span> labs{j}];
+0062         <span class="keyword">end</span>
+0063         data(i,counter)=max(Data(:,j));
+0064         
+0065         counter=counter+1;
+0066         <span class="keyword">if</span> i==1
+0067         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'min'</span>];
+0068         description{counter}=[<span class="string">'Min proc EMG in muscle '</span> labs{j}];
+0069         <span class="keyword">end</span>
+0070         data(i,counter)=min(Data(:,j));
+0071         
+0072         counter=counter+1;
+0073         <span class="keyword">if</span> i==1
+0074         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'med'</span>];
+0075         description{counter}=[<span class="string">'Median proc EMG in muscle '</span> labs{j}];
+0076         <span class="keyword">end</span>
+0077         data(i,counter)=median(Data(:,j));
+0078         
+0079         counter=counter+1;
+0080         <span class="keyword">if</span> i==1
+0081         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'avg'</span>];
+0082         description{counter}=[<span class="string">'Average (mean) proc EMG in muscle '</span> labs{j}];
+0083         <span class="keyword">end</span>
+0084         data(i,counter)=mean(Data(:,j));
+0085         
+0086         counter=counter+1;
+0087         <span class="keyword">if</span> i==1
+0088         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'var'</span>];
+0089         description{counter}=[<span class="string">'Variance of proc EMG in muscle '</span> labs{j}];
+0090         <span class="keyword">end</span>
+0091         data(i,counter)=var(Data(:,j),0); <span class="comment">%Unbiased</span>
+0092         
+0093         counter=counter+1;
+0094         <span class="keyword">if</span> i==1
+0095         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'skw'</span>];
+0096         description{counter}=[<span class="string">'Skewness proc EMG in muscle '</span> labs{j}];
+0097         <span class="keyword">end</span>
+0098         data(i,counter)=skewness(Data(:,j),0); <span class="comment">%Unbiased estimation</span>
+0099         
+0100         counter=counter+1;
+0101         <span class="keyword">if</span> i==1
+0102         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'kur'</span>];
+0103         description{counter}=[<span class="string">'Kurtosis proc EMG in muscle '</span> labs{j}];
+0104         <span class="keyword">end</span>
+0105         data(i,counter)=kurtosis(Data(:,j),0); <span class="comment">%Unbiased estimation</span>
+0106         
+0107         counter=counter+1;
+0108         <span class="keyword">if</span> i==1
+0109         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'iqr'</span>];
+0110         description{counter}=[<span class="string">'Inter-quartile range in proc EMG in muscle '</span> labs{j}];
+0111         <span class="keyword">end</span>
+0112         data(i,counter)=iqr(Data(:,j));
+0113         
+0114         
+0115         
+0116         counter=counter+1;
+0117         <span class="keyword">if</span> i==1
+0118         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'snr'</span>];
+0119         description{counter}=[<span class="string">'Energy of proc EMG divided by base noise energy (in dB) for muscle '</span> labs{j}];
+0120         <span class="keyword">end</span>
+0121         data(i,counter)=20*log10(mean(Data(:,j).^2)/min(Data(:,j))^2);
+0122         
+0123         counter=counter+1;
+0124         <span class="keyword">if</span> i==1
+0125         paramLabels{counter}=[l labs{j}(2:end) <span class="string">'bad'</span>];
+0126         description{counter}=[<span class="string">'Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle '</span> labs{j}];
+0127         <span class="keyword">end</span>
+0128         <span class="keyword">if</span> ~isempty(Qual)
+0129         data(i,counter)=sum(unique(Qual(:,j))); <span class="comment">%Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.</span>
+0130         <span class="keyword">else</span>
+0131             data(i,counter)=0;
+0132         <span class="keyword">end</span>
+0133     <span class="keyword">end</span>
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="comment">%% Create parameterSeries</span>
+0137 out=parameterSeries(data(:,1:length(paramLabels)),paramLabels,[],description);        
+0138 
+0139 <span class="keyword">end</span>
+0140</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

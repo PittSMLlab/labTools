@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of deleteShortPhases</title>
+  <meta name="keywords" content="deleteShortPhases">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; deleteShortPhases.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>deleteShortPhases
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [stance] = deleteShortPhases(stance,fsample,minDuration) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getEventsFromAngles.html" class="code" title="function [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromAngles(trialData,angleData,orientation)">getEventsFromAngles</a>	</li><li><a href="getStanceFromForces.html" class="code" title="function [stance] = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	%% If Fz is sampled >2000Hz, downsample to somewhere in the [1000-2000)Hz</li><li><a href="getStanceFromForcesAlt.html" class="code" title="function [stance] = getStanceFromForcesAlt(Fz, lowThreshold, fsample)">getStanceFromForcesAlt</a>	Get stance from acceleration</li><li><a href="getStanceFromSwitches.html" class="code" title="function [stance] = getStanceFromSwitches(ft_sw, fsample)">getStanceFromSwitches</a>	Get stance from acceleration</li><li><a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [stance] = deleteShortPhases(stance,fsample,minDuration)</a>
+0002 
+0003 N=ceil(minDuration*fsample);
+0004 stance1=stance;
+0005 <span class="comment">%%Dilate stance, and erode</span>
+0006 <span class="comment">%dilStance=conv(double(stance),ones(N,1),'same')&gt;0;</span>
+0007 <span class="comment">%eroStance=conv(double(dilStance),ones(N,1),'same')&gt;=N;</span>
+0008 
+0009 <span class="comment">%Dilate swing, and erode</span>
+0010 <span class="comment">%dilSwing=conv(double(~eroStance),ones(N,1),'same')&gt;0;</span>
+0011 <span class="comment">%eroSwing=conv(double(dilSwing),ones(N,1),'same')&gt;=N;</span>
+0012 
+0013 <span class="comment">%stance=~eroSwing;</span>
+0014 
+0015 
+0016 <span class="comment">%Idea: first get rid of isolated stance/swing samples, then get rid of</span>
+0017 <span class="comment">%groups of two, so on and so forth until we got rid of all groups of N-1 or</span>
+0018 <span class="comment">%smaller size</span>
+0019 
+0020 <span class="comment">%Simple implementation:</span>
+0021 <span class="comment">% Commented out by Pablo on 25/II/2015 because of more efficient</span>
+0022 <span class="comment">% implementation</span>
+0023 <span class="comment">%tic</span>
+0024 <span class="keyword">if</span> ~isempty(stance)
+0025    <span class="keyword">for</span> i=1:N <span class="comment">%Slowly dilating/eroding stance phases, until there is no possiblity for</span>
+0026        stance=conv(double(stance),ones(2*i+1,1),<span class="string">'same'</span>)&gt;i; <span class="comment">%At least half+1 of the samples in the window are stance</span>
+0027    <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 <span class="comment">% toc</span>
+0030 <span class="comment">% tic</span>
+0031 <span class="comment">% stance2=gpuArray(stance);</span>
+0032 <span class="comment">% if ~isempty(stance)</span>
+0033 <span class="comment">%    for i=1:N %Slowly dilating/eroding stance phases, until there is no possiblity for</span>
+0034 <span class="comment">%        aux=gpuArray(ones(2*i+1,1));</span>
+0035 <span class="comment">%        stance2=conv(double(stance2),aux,'same')&gt;i; %At least half+1 of the samples in the window are stance</span>
+0036 <span class="comment">%    end</span>
+0037 <span class="comment">% end</span>
+0038 <span class="comment">% stance2=gather(stance);</span>
+0039 <span class="comment">% toc</span>
+0040 
+0041 
+0042 <span class="comment">%Equivalent efficient implementation: (it is actually NOT efficient, for</span>
+0043 <span class="comment">%some reason the conv is much faster, I guess it has to do with the fact</span>
+0044 <span class="comment">%that one of the vectors is much smaller than the other)</span>
+0045 <span class="comment">% stance2=stance1;</span>
+0046 <span class="comment">% if ~isempty(stance2)</span>
+0047 <span class="comment">%     for i=1:N</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">%         %stance2=ifft(fft(double(stance2)).*(fft(ones(2*i+1,1),length(stance))),'symmetric')&gt;(i+.5); %FIXME: need to consider border-effects</span>
+0050 <span class="comment">%         aaa=double(stance2);</span>
+0051 <span class="comment">%         aux=effconvn(aaa,ones(2*i+1,1),'same');</span>
+0052 <span class="comment">%         stance2=real(aux)&gt;(i+.5); %The +.5 is needed to cover for rounding errors that come from the fft-implemented convolution</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">%     end</span>
+0055 <span class="comment">%         aaa=double(stance1);</span>
+0056 <span class="comment">%         aux=effconvn(aaa,ones(2*N+1,1),'same');</span>
+0057 <span class="comment">%         stance3=real(aux)&gt;(i+.5); %The +.5 is needed to cover for rounding errors that come from the fft-implemented convolution</span>
+0058 <span class="comment">% end</span>
+0059 <span class="comment">%If we wanted to compare the simple and efficient implementations:</span>
+0060 <span class="comment">% if any(stance~=stance2)</span>
+0061 <span class="comment">%     ME=MException('deleteShortPhases:efficientImplementation','Results from the classical and the efficient implementation do not match');</span>
+0062 <span class="comment">%     throw(ME);</span>
+0063 <span class="comment">% end</span>
+0064 
+0065 <span class="keyword">end</span>
+0066</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

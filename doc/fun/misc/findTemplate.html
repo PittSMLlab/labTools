@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findTemplate</title>
+  <meta name="keywords" content="findTemplate">
+  <meta name="description" content="findTemplate implements a simple cross-correlation search to find for">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; findTemplate.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>findTemplate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>findTemplate implements a simple cross-correlation search to find for</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">findTemplate implements a simple cross-correlation search to find for
+occurrences (or near-occurrences) of a given template signal within a
+longer signal (dataseries).
+p returns the probability of a match for each sample given by a fitted
+beta distribution to the data. This value can be used to look for
+statistically significant matches
+k returns the scaling of the data to the template.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [c,k,a,p] = findTemplate(template,dataseries,whitenFlag)</a>
+0002 <span class="comment">%findTemplate implements a simple cross-correlation search to find for</span>
+0003 <span class="comment">%occurrences (or near-occurrences) of a given template signal within a</span>
+0004 <span class="comment">%longer signal (dataseries).</span>
+0005 <span class="comment">%p returns the probability of a match for each sample given by a fitted</span>
+0006 <span class="comment">%beta distribution to the data. This value can be used to look for</span>
+0007 <span class="comment">%statistically significant matches</span>
+0008 <span class="comment">%k returns the scaling of the data to the template.</span>
+0009 
+0010 N=length(dataseries);
+0011 M=length(template);
+0012 template=detrend(template,<span class="string">'constant'</span>);
+0013 
+0014 <span class="comment">%Remove NaN</span>
+0015     dataseries(isnan(dataseries))=0;
+0016 
+0017 <span class="comment">%% Compute energy ratios (to be used if matches are found):</span>
+0018 fft1=fft(dataseries);
+0019 fft2=fft(template,N);
+0020 fft3=fft(ones(M,1),N);
+0021 k=ifft(fft1.*conj(fft2))/norm(template)^2;
+0022 
+0023 <span class="comment">%% Whitening (improves detection under the assumption of independent samples)</span>
+0024 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(whitenFlag)
+0025     <span class="keyword">if</span> whitenFlag==1
+0026         fftAux=fft1;
+0027         dataseries=ifft(fftAux./abs(fftAux),<span class="string">'symmetric'</span>);
+0028         <span class="comment">%template=ifft(fft(template,N)./abs(fftAux));</span>
+0029         <span class="comment">%template=template(1:M);</span>
+0030         clear fftAux
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">%% Determine auto-correlation matrix of noise</span>
+0035 <span class="comment">%The optimal matched filter should take the form: h=pinv(MM)*s</span>
+0036 <span class="comment">%where s is the signal we are looking for, and MM the auto-correlation</span>
+0037 <span class="comment">%matrix of the noise (undesired signal). If the noise is white, MM=eye(M)</span>
+0038 MM=eye(M); <span class="comment">%White noise assumption</span>
+0039 <span class="comment">%If we try to empirically determine the auto-correlation matrix (assuming most of the signal is noise):</span>
+0040 <span class="comment">%aux=ifft(fft(dataseries).*conj(fft(dataseries))); %Auto-correlation</span>
+0041 <span class="comment">%aux=aux(1:M)/aux(1);</span>
+0042 <span class="comment">%MM=toeplitz(aux);</span>
+0043 
+0044 <span class="comment">%% Define the filter</span>
+0045 filter=pinv(MM)*template;
+0046 filter=filter/norm(filter);
+0047 clear MM
+0048 
+0049 <span class="comment">%% Do the filtering</span>
+0050 <span class="comment">%Proper and inefficient way:</span>
+0051 <span class="comment">% p2=zeros(N-M+1,1);</span>
+0052 <span class="comment">% k2=zeros(N-M+1,1);</span>
+0053 <span class="comment">% for i=1:N-M+1</span>
+0054 <span class="comment">%    subTS=dataseries(i:i+M-1);</span>
+0055 <span class="comment">%    subTS=detrend(subTS,'constant');</span>
+0056 <span class="comment">%    k=norm(subTS);</span>
+0057 <span class="comment">%    subTS=subTS./k;</span>
+0058 <span class="comment">%    aux2=subTS'*template/norm(template);</span>
+0059 <span class="comment">%    p2(i)=aux2;</span>
+0060 <span class="comment">%    k2(i)=k/norm(template);</span>
+0061 <span class="comment">% end</span>
+0062 
+0063 <span class="comment">%Try an efficient way:</span>
+0064     fft2=fft(filter,N);
+0065     fft2(1)=0;
+0066     fft1=fft(dataseries);
+0067     p3=ifft(fft1.*conj(fft2),<span class="string">'symmetric'</span>); <span class="comment">%Compute the inner product of template with a window of dataseries, all at once! (efficient xcorr)</span>
+0068     normTerm2=ifft(fft(dataseries.^2).*conj(fft3),<span class="string">'symmetric'</span>); <span class="comment">%Not detrended version</span>
+0069     normTerm2=normTerm2 - 1/M * ifft(fft1.*conj(fft3)).^2; <span class="comment">%Here we remove the effect of the moving average (trend)</span>
+0070     normTerm2(normTerm2&lt;=0)=eps; <span class="comment">%Here we force all values to be positive. Non-positive values may happen because of rounding errors.</span>
+0071     c=p3./(sqrt(normTerm2)*norm(filter));
+0072     
+0073     <span class="keyword">if</span> any(imag(c)~=0) | any(isnan(c))
+0074         error(<span class="string">'findTemplate:complexResults'</span>,<span class="string">'Computed cosine values were complex.'</span>)
+0075     <span class="keyword">end</span>
+0076     <span class="keyword">if</span> any(abs(c)&gt;1)
+0077         error(<span class="string">'findTemplate:numericalIssues'</span>,<span class="string">'Computed cosine values were outside the [-1,1] range'</span>)
+0078     <span class="keyword">end</span>
+0079 
+0080 <span class="comment">%% Estimation of a parameter (beta distribution):</span>
+0081 <span class="comment">%From data:</span>
+0082 <span class="comment">%sigma2=var((1+p3)/2);</span>
+0083 <span class="comment">%a=.5*(1/(4*sigma2)-1); %Finding the best-fitting beta distribution given the variance. In theory, if all samples in the signal are iid, a=(M-1)/2;</span>
+0084 H=1/mean(2./(1+c));
+0085 a=(H-1)/(2*H-1); <span class="comment">%Another estimation of the distribution parameter that is less susceptible to heavy tails (which may occurr if there are many copies of the template hidden in the data).</span>
+0086 
+0087 <span class="comment">%If whitened:</span>
+0088 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(whitenFlag)
+0089     <span class="keyword">if</span> whitenFlag==1
+0090     <span class="comment">%In theory, if samples are independent:</span>
+0091     a=(M-1)/2;
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%% Compute probabilities of observing each value:</span>
+0096 <span class="comment">%p=betacdf((1+c)/2,a,a);</span>
+0097 p=[];
+0098 <span class="comment">% figure</span>
+0099 <span class="comment">% subplot(2,1,1)</span>
+0100 <span class="comment">% hist(c)</span>
+0101 <span class="comment">% subplot(2,1,2)</span>
+0102 <span class="comment">% hist(p)</span>
+0103 <span class="comment">%% Make a nice plot to compare histograms.</span>
+0104 <span class="comment">% figure</span>
+0105 <span class="comment">% [count,x]=hist(p2,100);</span>
+0106 <span class="comment">% hold on</span>
+0107 <span class="comment">% plot(x,cumsum(count)/(N-M+1))</span>
+0108 <span class="comment">% p=betacdf([0:.01:1],a,a);</span>
+0109 <span class="comment">% plot(2*[0:.01:1]-1,p,'r')</span>
+0110 <span class="comment">% hold off</span>
+0111 
+0112 
+0113 <span class="comment">%p=2*abs(betacdf((output+1)/2,(M-1)/300,(M-1)/300)-.5); %This is a way of</span>
+0114 <span class="comment">%computing the probability of seen that value from the expected random</span>
+0115 <span class="comment">%probability (beta) if we assume that all samples in the dataseries are</span>
+0116 <span class="comment">%independent (which is probably not the case, since our signal was</span>
+0117 <span class="comment">%filtered, and we are probably over-sampling it greatly).</span>
+0118 
+0119 
+0120 <span class="keyword">end</span>
+0121</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

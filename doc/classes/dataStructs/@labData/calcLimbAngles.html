@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcLimbAngles</title>
+  <meta name="keywords" content="calcLimbAngles">
+  <meta name="description" content="calcLimbAngles  Calculates angles using marker data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; calcLimbAngles.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@labData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>calcLimbAngles
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>calcLimbAngles  Calculates angles using marker data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function angleData = calcLimbAngles(trialData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calcLimbAngles  Calculates angles using marker data   
+   angleData=clacLimbAngles(trailData) returns a labTimeSeries object
+   containg angles computed from marker data given an object of the
+   labData class. As of 4/27/2015, only the limb angles are calculated
+   (angle between verticle line through hip and vector connecting hip 
+   marker to ankle marker)
+
+Created 5/14/2014 by HMH</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angleData = calcLimbAngles(trialData)</a>
+0002 <span class="comment">% calcLimbAngles  Calculates angles using marker data</span>
+0003 <span class="comment">%   angleData=clacLimbAngles(trailData) returns a labTimeSeries object</span>
+0004 <span class="comment">%   containg angles computed from marker data given an object of the</span>
+0005 <span class="comment">%   labData class. As of 4/27/2015, only the limb angles are calculated</span>
+0006 <span class="comment">%   (angle between verticle line through hip and vector connecting hip</span>
+0007 <span class="comment">%   marker to ankle marker)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%Created 5/14/2014 by HMH</span>
+0010 
+0011 [file] = getSimpleFileName(trialData.metaData.rawDataFilename); <span class="comment">%for error printout purposes</span>
+0012 
+0013 <span class="comment">%get orientation</span>
+0014 <span class="keyword">if</span> isempty(trialData.markerData.orientation)
+0015     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0016     orientation=orientationInfo([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
+0017 <span class="keyword">else</span>
+0018     orientation=trialData.markerData.orientation;
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">% get hip position in fore-aft and up-down axes</span>
+0022 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RHIPx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LHIPx'</span>)
+0023     LhipPos2D=trialData.getMarkerData({[<span class="string">'LHIP'</span> orientation.foreaftAxis],[<span class="string">'LHIP'</span> orientation.updownAxis]});
+0024     LhipPos2D=[orientation.foreaftSign* LhipPos2D(:,1),orientation.updownSign*LhipPos2D(:,2)];
+0025     RhipPos2D=trialData.getMarkerData({[<span class="string">'RHIP'</span> orientation.foreaftAxis],[<span class="string">'RHIP'</span> orientation.updownAxis]});
+0026     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
+0027 <span class="keyword">else</span>
+0028     warning([<span class="string">'There are missing hip markers in '</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0029     angleData=[];
+0030     <span class="keyword">return</span>
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% get ankle position in fore-aft and up-down axes</span>
+0034 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RANKx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LANKx'</span>)
+0035     LankPos2D=trialData.getMarkerData({[<span class="string">'LANK'</span> orientation.foreaftAxis],[<span class="string">'LANK'</span> orientation.updownAxis]});
+0036     LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
+0037     RankPos2D=trialData.getMarkerData({[<span class="string">'RANK'</span> orientation.foreaftAxis],[<span class="string">'RANK'</span> orientation.updownAxis]});
+0038     RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
+0039 <span class="keyword">else</span>    
+0040     warning([<span class="string">'There are missing ankle markers in'</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0041     angleData=[];
+0042     <span class="keyword">return</span>
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">% calculate limb angles</span>
+0046 RLimbAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;
+0047 LLimbAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
+0048 
+0049 <span class="comment">% time info needed for labtimeseries object</span>
+0050 t0=trialData.markerData.Time(1);
+0051 Ts=trialData.markerData.sampPeriod;
+0052 
+0053 angleData = labTimeSeries([RLimbAngle LLimbAngle],t0,Ts,{<span class="string">'RLimb'</span>,<span class="string">'LLimb'</span>});</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

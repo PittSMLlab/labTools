@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEventsFromToeAndHeel</title>
+  <meta name="keywords" content="getEventsFromToeAndHeel">
+  <meta name="description" content="% Get stance phases">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getEventsFromToeAndHeel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getEventsFromToeAndHeel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Get stance phases</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Get stance phases</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>	First step:</li><li><a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHS,RHS,LTO,RTO] = getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample)</a>
+0002 
+0003 <span class="comment">%% Get stance phases</span>
+0004 [stanceL] = <a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Lheel, Ltoe, fsample); <span class="comment">%Lheel and Ltoe need to be</span>
+0005 [stanceR] = <a href="getStanceFromToeAndHeel.html" class="code" title="function [ stance] = getStanceFromToeAndHeel(ankKin, toeKin, fsample)">getStanceFromToeAndHeel</a>(Rheel, Rtoe, fsample);
+0006 
+0007 <span class="comment">%% Get events from stance</span>
+0008 [LHS,RHS,LTO,RTO] = <a href="getEventsFromStance.html" class="code" title="function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)">getEventsFromStance</a>(stanceL,stanceR);
+0009 badInds=any(isnan(Lheel'))|any(isnan(Ltoe'))|any(isnan(Rheel'))|any(isnan(Rtoe'));
+0010 LHS(badInds)=false;
+0011 RHS(badInds)=false;
+0012 LTO(badInds)=false;
+0013 RTO(badInds)=false;
+0014 
+0015 <span class="comment">%% Eliminate any events that ocurr prior to actual activity in the trial</span>
+0016 aux=Rheel(:,1)-Rheel(1,1); <span class="comment">%Zero initial value</span>
+0017 aux2=cumsum(aux.^2); <span class="comment">%Cumulative energy</span>
+0018 begin_index1=find(aux2&gt;.001*aux2(end),1); <span class="comment">%First element whose cumulative energy is at least .1% of total energy</span>
+0019 aux=Lheel(:,1)-Lheel(1,1); <span class="comment">%Zero initial value</span>
+0020 aux2=cumsum(aux.^2); <span class="comment">%Cumulative energy</span>
+0021 begin_index2=find(aux2&gt;.001*aux2(end),1); <span class="comment">%First element whose cumulative energy is at least .1% of total energy</span>
+0022 
+0023 begin_index=max([begin_index1,begin_index2]);
+0024 
+0025 LHS(1:begin_index)=false;
+0026 RHS(1:begin_index)=false;
+0027 LTO(1:begin_index)=false;
+0028 RTO(1:begin_index)=false;
+0029 
+0030 <span class="comment">%% Check consistency</span>
+0031 <span class="comment">%[consistent] = checkEventConsistency(LHS,RHS,LTO,RTO);</span>
+0032 
+0033 
+0034 
+0035 <span class="keyword">end</span>
+0036</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

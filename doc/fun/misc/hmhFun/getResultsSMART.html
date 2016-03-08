@@ -1,0 +1,451 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getResultsSMART</title>
+  <meta name="keywords" content="getResultsSMART">
+  <meta name="description" content="define number of points to use for calculating values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getResultsSMART.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getResultsSMART
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>define number of points to use for calculating values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> define number of points to use for calculating values</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>	this version was my first attempt to plot the readaptation stuff,</li><li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li><li><a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>	SMOOTHEDMAX finds the maximum value of an N-pt running average</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getResultsSMART(SMatrix,params,groups,maxPerturb,plotFlag,indivFlag)</a>
+0002 
+0003 <span class="comment">% define number of points to use for calculating values</span>
+0004 catchNumPts = 3; <span class="comment">%catch</span>
+0005 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0006 transientNumPts = 5; <span class="comment">%OG and Washout</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0009     groups=fields(SMatrix);  <span class="comment">%default</span>
+0010 <span class="keyword">end</span>
+0011 ngroups=length(groups);
+0012 
+0013 
+0014 <span class="comment">% Initialize values to calculate</span>
+0015 results.OGbase.avg=[];
+0016 results.OGbase.se=[];
+0017 
+0018 results.TMbase.avg=[];  
+0019 results.TMbase.se=[];
+0020 
+0021 results.AvgAdaptBeforeCatch.avg=[];
+0022 results.AvgAdaptBeforeCatch.se=[];
+0023 
+0024 results.AvgAdaptAll.avg=[];
+0025 results.AvgAdaptAll.se=[];
+0026 
+0027 results.ErrorsOut.avg=[];
+0028 results.ErrorsOut.se=[];
+0029 
+0030 results.TMsteadyBeforeCatch.avg=[];
+0031 results.TMsteadyBeforeCatch.se=[];
+0032 
+0033 results.catch.avg=[];
+0034 results.catch.se=[];
+0035 
+0036 results.TMsteady.avg=[];
+0037 results.TMsteady.se=[];
+0038 
+0039 results.OGafter.avg=[];
+0040 results.OGafter.se=[];
+0041 
+0042 results.TMafter.avg=[];
+0043 results.TMafter.se=[];
+0044 
+0045 results.Transfer.avg=[];
+0046 results.Transfer.se=[];
+0047 
+0048 results.Washout.avg=[];
+0049 results.Washout.se=[];
+0050 
+0051 results.Transfer2.avg=[];
+0052 results.Transfer2.se=[];
+0053 
+0054 results.Washout2.avg=[];
+0055 results.Washout2.se=[];
+0056 
+0057 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ From CJS</span>
+0058 results.Strides2SS.avg=[];
+0059 results.Strides2SS.se=[];
+0060 
+0061 results.PerForget.avg=[];
+0062 results.PerForget.se=[];
+0063 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0064 
+0065 
+0066 <span class="keyword">for</span> g=1:ngroups
+0067     
+0068     <span class="comment">% get subjects in group</span>
+0069     subjects=SMatrix.(groups{g}).ID;
+0070     
+0071     OGbase=[];
+0072     TMbase=[];
+0073     avgAdaptBC=[];
+0074     avgAdaptAll=[];
+0075     errorsOut=[];    
+0076     tmsteadyBC=[];
+0077     tmCatch=[];
+0078     tmsteady=[];    
+0079     ogafter=[];
+0080     tmafter=[];
+0081     transfer=[];
+0082     washout=[];
+0083     transfer2=[];
+0084     washout2=[];
+0085             <span class="comment">%~~~~~~~~~~~</span>
+0086     perforget=[];
+0087     Strides2SS=[];
+0088     <span class="comment">%~~~~~~~~~~~</span>
+0089     
+0090     <span class="keyword">for</span> s=1:length(subjects)
+0091         <span class="comment">% load subject</span>
+0092         adaptData=SMatrix.(groups{g}).adaptData{s};      
+0093         
+0094         <span class="comment">% remove baseline bias</span>
+0095         adaptData=adaptData.removeBadStrides;
+0096         adaptData=adaptData.removeBias;        
+0097         
+0098          <span class="keyword">if</span> nargin&gt;3 &amp;&amp; maxPerturb==1             
+0099                        
+0100             <span class="comment">% compute TM and OG base in same manner as calculating OG after and TM after</span>
+0101             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG base'</span>);
+0102             OGbaseData=adaptData.getParamInCond(params,<span class="string">'OG base'</span>);
+0103             OGbase=[OGbase; <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(OGbaseData(1:10,:),transientNumPts,stepAsymData(1:10))];
+0104 
+0105             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'TM base'</span>);
+0106             TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
+0107             <span class="keyword">if</span> isempty(TMbaseData)
+0108                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0109                 TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0110             <span class="keyword">end</span>
+0111             TMbase=[TMbase; <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(TMbaseData(1:10,:),transientNumPts,stepAsymData(1:10))];
+0112 
+0113             <span class="comment">% compute catch as mean value during strides which caused a</span>
+0114             <span class="comment">% maximum deviation from zero during 'catchNumPts' consecutive</span>
+0115             <span class="comment">% strides</span>
+0116             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'catch'</span>);
+0117             tmcatchData=adaptData.getParamInCond(params,<span class="string">'catch'</span>);
+0118             tmCatch=[tmCatch; <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(tmcatchData,transientNumPts,stepAsymData)];
+0119             
+0120             <span class="comment">% compute OG after as mean values during strides which cause a</span>
+0121             <span class="comment">% maximum deviation from zero in STEP LENGTH ASYMMETRY during</span>
+0122             <span class="comment">% 'transientNumPts' consecutive strides within first 10 strides</span>
+0123             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG post'</span>);
+0124             ogafterData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
+0125             ogafter=[ogafter; <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(ogafterData(1:10,:),transientNumPts,stepAsymData(1:10))];
+0126             
+0127             <span class="comment">% compute TM after-effects same as OG after-effect</span>
+0128             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'TM post'</span>);
+0129             tmafterData=adaptData.getParamInCond(params,<span class="string">'TM post'</span>);            
+0130             tmafter=[tmafter; <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(tmafterData(1:10,:),transientNumPts,stepAsymData(1:10))];
+0131             
+0132          <span class="keyword">else</span>
+0133             
+0134             <span class="comment">%% If there are overground trials</span>
+0135             <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'OG base'</span>), adaptData.metaData.conditionName))==0
+0136             <span class="comment">% calculate TM and OG base in same manner as calculating OG after and TM after</span>
+0137             OGbaseData=adaptData.getParamInCond(params,<span class="string">'OG base'</span>);
+0138             OGbase=[OGbase; nanmean(OGbaseData(1:transientNumPts,:))];
+0139             <span class="keyword">end</span>
+0140             
+0141             <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==0
+0142             ogafterData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
+0143             ogafter=[ogafter; nanmean(ogafterData(1:transientNumPts,:))];
+0144             <span class="keyword">end</span>
+0145             
+0146             <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'TM base'</span>), adaptData.metaData.conditionName))==0
+0147             TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
+0148             <span class="keyword">else</span>
+0149             
+0150                 TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0151             <span class="keyword">end</span>            
+0152             TMbase=[TMbase; nanmean(TMbaseData(1:transientNumPts,:))];
+0153             
+0154             <span class="comment">%% If there is a catch</span>
+0155             <span class="comment">% compute catch</span>
+0156             
+0157             <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), adaptData.metaData.conditionName))==0
+0158             tmcatchData=adaptData.getParamInCond(params,<span class="string">'catch'</span>);
+0159             <span class="keyword">if</span> isempty(tmcatchData)
+0160                 newtmcatchData=NaN(1,length(params));
+0161             <span class="keyword">elseif</span> size(tmcatchData,1)&lt;3
+0162                 newtmcatchData=nanmean(tmcatchData);
+0163             <span class="keyword">else</span>
+0164                 newtmcatchData=nanmean(tmcatchData(1:catchNumPts,:));
+0165                 <span class="comment">%newtmcatchData=nanmean(tmcatchData);</span>
+0166             <span class="keyword">end</span>
+0167             tmCatch=[tmCatch; newtmcatchData];  
+0168             <span class="keyword">end</span>
+0169             
+0170             <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'TM post'</span>), adaptData.metaData.conditionName))==0
+0171             <span class="comment">% compute TM post</span>
+0172             tmafterData=adaptData.getParamInCond(params,<span class="string">'TM post'</span>);
+0173             tmafter=[tmafter; nanmean(tmafterData(1:transientNumPts,:))];
+0174                 <span class="keyword">end</span>
+0175          <span class="keyword">end</span>
+0176                
+0177         <span class="comment">%% If there is a catch</span>
+0178         <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), adaptData.metaData.conditionName))==0
+0179         <span class="comment">% compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)</span>
+0180         adapt1Data=adaptData.getParamInCond(params,<span class="string">'adaptation'</span>);
+0181         tmsteadyBC=[tmsteadyBC; nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:))];
+0182         
+0183         <span class="comment">% compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)</span>
+0184         
+0185         <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), adaptData.metaData.conditionName))==0
+0186             adapt2Data=adaptData.getParamInCond(params,<span class="string">'re-adaptation'</span>);
+0187             <span class="keyword">if</span> isempty(adapt2Data)
+0188                 adapt2Data=adaptData.getParamInCond(params,<span class="string">'readaptation'</span>);    
+0189             <span class="keyword">end</span>
+0190             tmsteady=[tmsteady; nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:))];
+0191         <span class="keyword">end</span>
+0192 
+0193         <span class="comment">% compute average adaptation value before the catch</span>
+0194         avgAdaptBC=[avgAdaptBC; nanmean(adapt1Data)];
+0195         
+0196         <span class="comment">% compute average adaptation of all adaptation walking (both</span>
+0197         <span class="comment">% before and after catch)</span>
+0198         adaptAllData=adaptData.getParamInCond(params,{<span class="string">'adaptation'</span>,<span class="string">'re-adaptation'</span>});
+0199         avgAdaptAll=[avgAdaptAll; nanmean(adaptAllData)];
+0200         <span class="keyword">else</span>
+0201             <span class="comment">% compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)</span>
+0202         adapt2Data=adaptData.getParamInCond(params,<span class="string">'adaptation'</span>);
+0203         tmsteady=[tmsteady; nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:))];
+0204         <span class="keyword">end</span>
+0205         
+0206 
+0207     <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0208         <span class="comment">%Compute the %Forgetting, added 07/2015 CJS</span>
+0209         test=adaptData.metaData.conditionName;
+0210         test(cellfun(@isempty,test))={<span class="string">''</span>};
+0211         epoch=find(ismember(test, <span class="string">'adaptation'</span>)==1);
+0212         wantedtrials=adaptData.metaData.trialsInCondition{epoch};
+0213         forgetB1Data=adaptData.getParamInTrial(params,wantedtrials(1));
+0214         forgetB2Data=adaptData.getParamInTrial(params,wantedtrials(2));
+0215         forgetB3Data=adaptData.getParamInTrial(params,wantedtrials(3));
+0216         forgetB4Data=adaptData.getParamInTrial(params,wantedtrials(4));
+0217         
+0218         idxNET = find(strcmp(params, <span class="string">'netContributionNorm2'</span>));
+0219         idxVELO = find(strcmp(params, <span class="string">'velocityContributionNorm2'</span>));
+0220         idxGOOD = find(strcmp(params, <span class="string">'good'</span>));
+0221         <span class="keyword">if</span> isempty(idxNET)==0
+0222             minvalues=zeros(1, length(params));
+0223             minValue(idxNET)=abs(tmsteady(s, idxVELO)-tmsteady(s, idxNET)); <span class="comment">%to be consistent to the rate of adaptation so I shift the net by SSvelo-SSnet</span>
+0224             forgetB1Data=forgetB1Data+(repmat(minValue,length(forgetB1Data),1));
+0225             forgetB2Data=forgetB2Data+(repmat(minValue,length(forgetB2Data),1));
+0226             forgetB3Data=forgetB3Data+(repmat(minValue,length(forgetB3Data),1));
+0227             forgetB4Data=forgetB4Data+(repmat(minValue,length(forgetB4Data),1));
+0228         <span class="keyword">end</span>
+0229 <span class="comment">%         per=[(nanmean(forgetB1Data(end-29:end-10,:))-nanmean(forgetB2Data(4:8,:)))./nanmean(forgetB1Data(end-29:end-10,:));...</span>
+0230 <span class="comment">%             (nanmean(forgetB2Data(end-29:end-10,:))-nanmean(forgetB3Data(4:8,:)))./nanmean(forgetB2Data(end-29:end-10,:));...</span>
+0231 <span class="comment">%             (nanmean(forgetB3Data(end-29:end-10,:))-nanmean(forgetB4Data(4:8,:)))./nanmean(forgetB3Data(end-29:end-10,:))];</span>
+0232         
+0233         per=[(nanmean(forgetB1Data(end-29:end-10,:))-nanmean(forgetB2Data(1:5,:)))./nanmean(forgetB1Data(end-29:end-10,:));<span class="keyword">...</span>
+0234             (nanmean(forgetB2Data(end-29:end-10,:))-nanmean(forgetB3Data(1:5,:)))./nanmean(forgetB2Data(end-29:end-10,:));<span class="keyword">...</span>
+0235             (nanmean(forgetB3Data(end-29:end-10,:))-nanmean(forgetB4Data(1:5,:)))./nanmean(forgetB3Data(end-29:end-10,:))];
+0236         
+0237         perforget=[perforget; (100*(nanmean(per)))];
+0238         
+0239         <span class="keyword">if</span> isempty(idxGOOD)==0
+0240             perforget=tmsteady;
+0241         <span class="keyword">end</span>
+0242         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0243                  <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0244     <span class="comment">%Compute the Strides2SS, added 07/2015 CJS</span>
+0245 
+0246     <span class="keyword">if</span> isempty(idxNET)==0
+0247         Strides2SS=[Strides2SS; <a href="CalcStrides2SS.html" class="code" title="function [Stride2SS]=CalcStrides2SS(allValues,SSraw, params, plotFlag, subID)">CalcStrides2SS</a>(adaptAllData,tmsteady(s,:), params, 0, adaptData.subData.ID)];
+0248     <span class="keyword">else</span>
+0249         Strides2SS=[Strides2SS; NaN.*ones(1, length(params))];
+0250     <span class="keyword">end</span>
+0251     
+0252     <span class="keyword">if</span> isempty(idxGOOD)==0
+0253         Strides2SS=tmsteady;
+0254     <span class="keyword">end</span>
+0255     <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0256         <span class="comment">% Calculate Errors outside of baseline during adaptation</span>
+0257         mu=nanmean(TMbaseData);
+0258         sigma=nanstd(TMbaseData);
+0259         upper=mu+2.*sigma;
+0260         lower=mu-2.*sigma;
+0261         <span class="keyword">for</span> i=1:length(params)
+0262             outside(i)=sum(adapt1Data(:,i)&gt;upper(i) | adapt1Data(:,i)&lt;lower(i));
+0263         <span class="keyword">end</span>
+0264         errorsOut=[errorsOut; 100.*(outside./size(adapt1Data,1))];       
+0265     <span class="keyword">end</span>   
+0266     
+0267     <span class="comment">%calculate relative after-effects</span>
+0268 <span class="comment">%% If there is OG walking</span>
+0269 <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==0
+0270 <span class="comment">%     transfer=[transfer; 100*(ogafter./(tmcatch(:,3)*ones(1,3)))];</span>
+0271     idx = find(strcmp(params, <span class="string">'stepLengthAsym'</span>));
+0272     <span class="keyword">if</span> ~isempty(idx)
+0273         transfer=[transfer; 100*(ogafter./(tmCatch(:,idx)*ones(1,length(params))))];
+0274     <span class="keyword">else</span>
+0275         transfer=[transfer; 100*(ogafter./tmCatch)];
+0276     <span class="keyword">end</span>
+0277     transfer2=[transfer2; 100*(ogafter./tmsteady)];
+0278 <span class="keyword">end</span>
+0279     
+0280     washout=[washout; 100-(100*(tmafter./tmCatch))];
+0281     washout2=[washout2; 100-(100*(tmafter./tmsteady))];
+0282     
+0283     nSubs=length(subjects);
+0284     
+0285     results.OGbase.avg(end+1,:)=nanmean(OGbase,1);
+0286     results.OGbase.se(end+1,:)=nanstd(OGbase,1)./sqrt(nSubs);
+0287         
+0288     results.TMbase.avg(end+1,:)=nanmean(TMbase,1);
+0289     results.TMbase.se(end+1,:)=nanstd(TMbase,1);
+0290     
+0291     results.AvgAdaptBeforeCatch.avg(end+1,:)=nanmean(avgAdaptBC,1);
+0292     results.AvgAdaptBeforeCatch.se(end+1,:)=nanstd(avgAdaptBC,1)./sqrt(nSubs);
+0293     
+0294     results.AvgAdaptAll.avg(end+1,:)=nanmean(avgAdaptAll,1);
+0295     results.AvgAdaptAll.se(end+1,:)=nanstd(avgAdaptAll,1)./sqrt(nSubs);
+0296     
+0297     results.ErrorsOut.avg(end+1,:)=nanmean(errorsOut,1);
+0298     results.ErrorsOut.se(end+1,:)=nanstd(errorsOut,1)./sqrt(nSubs);      
+0299     
+0300     results.TMsteadyBeforeCatch.avg(end+1,:)=nanmean(tmsteadyBC,1);
+0301     results.TMsteadyBeforeCatch.se(end+1,:)=nanstd(tmsteadyBC,1)./sqrt(nSubs);
+0302        
+0303     results.catch.avg(end+1,:)=nanmean(tmCatch,1);
+0304     results.catch.se(end+1,:)=nanstd(tmCatch,1)./sqrt(nSubs);
+0305         
+0306     results.TMsteady.avg(end+1,:)=nanmean(tmsteady,1);
+0307     results.TMsteady.se(end+1,:)=nanstd(tmsteady,1)./sqrt(nSubs);
+0308     
+0309     results.OGafter.avg(end+1,:)=nanmean(ogafter,1);
+0310     results.OGafter.se(end+1,:)=nanstd(ogafter,1)./sqrt(nSubs);
+0311         
+0312     results.TMafter.avg(end+1,:)=nanmean(tmafter,1);
+0313     results.TMafter.se(end+1,:)=nanstd(tmafter,1)./sqrt(nSubs);
+0314          
+0315     results.Transfer.avg(end+1,:)=nanmean(transfer,1);
+0316     results.Transfer.se(end+1,:)=nanstd(transfer,1)./sqrt(nSubs);
+0317         
+0318     results.Washout.avg(end+1,:)=nanmean(washout,1);
+0319     results.Washout.se(end+1,:)=nanstd(washout,1)./sqrt(nSubs);
+0320        
+0321     results.Transfer2.avg(end+1,:)=nanmean(transfer2,1);
+0322     results.Transfer2.se(end+1,:)=nanstd(transfer2,1)./sqrt(nSubs);
+0323         
+0324     results.Washout2.avg(end+1,:)=nanmean(washout2,1);
+0325     results.Washout2.se(end+1,:)=nanstd(washout2,1)./sqrt(nSubs);
+0326     
+0327         results.PerForget.avg(end+1,:)=nanmean(perforget,1);
+0328     results.PerForget.se(end+1,:)=nanstd(perforget,1)./sqrt(nSubs); 
+0329     
+0330     results.Strides2SS.avg(end+1,:)=nanmean(Strides2SS,1);
+0331     results.Strides2SS.se(end+1,:)=nanstd(Strides2SS,1)./sqrt(nSubs); 
+0332     
+0333     <span class="keyword">if</span> g==1 <span class="comment">%This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS</span>
+0334         <span class="keyword">for</span> p=1:length(params)        
+0335             results.OGbase.indiv.(params{p})=[g*ones(nSubs,1) OGbase(:,p)];
+0336             results.TMbase.indiv.(params{p})=[g*ones(nSubs,1) TMbase(:,p)];
+0337             results.AvgAdaptBeforeCatch.indiv.(params{p})=[g*ones(nSubs,1) avgAdaptBC(:,p)];
+0338             results.AvgAdaptAll.indiv.(params{p})=[g*ones(nSubs,1) avgAdaptAll(:,p)];
+0339             results.ErrorsOut.indiv.(params{p})=[g*ones(nSubs,1) errorsOut(:,p)];
+0340             results.TMsteadyBeforeCatch.indiv.(params{p})=[g*ones(nSubs,1) tmsteadyBC(:,p)];
+0341             results.catch.indiv.(params{p})=[g*ones(nSubs,1) tmCatch(:,p)];
+0342             results.TMsteady.indiv.(params{p})=[g*ones(nSubs,1) tmsteady(:,p)];
+0343             results.OGafter.indiv.(params{p})=[g*ones(nSubs,1) ogafter(:,p)];
+0344             results.TMafter.indiv.(params{p})=[g*ones(nSubs,1) tmafter(:,p)];
+0345             results.Transfer.indiv.(params{p})=[g*ones(nSubs,1) transfer(:,p)];
+0346             results.Washout.indiv.(params{p})=[g*ones(nSubs,1) washout(:,p)];
+0347             results.Transfer2.indiv.(params{p})=[g*ones(nSubs,1) transfer2(:,p)];
+0348             results.Washout2.indiv.(params{p})=[g*ones(nSubs,1) washout2(:,p)];
+0349 results.Strides2SS.indiv.(params{p})=[g*ones(nSubs,1) Strides2SS(:,p)];
+0350             results.PerForget.indiv.(params{p})=[g*ones(nSubs,1) perforget(:,p)];
+0351                      
+0352         <span class="keyword">end</span>
+0353     <span class="keyword">else</span>        
+0354         <span class="keyword">for</span> p=1:length(params)     
+0355             results.OGbase.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) OGbase(:,p)];
+0356             results.TMbase.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) TMbase(:,p)];
+0357             results.AvgAdaptBeforeCatch.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) avgAdaptBC(:,p)];
+0358             results.AvgAdaptAll.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) avgAdaptAll(:,p)];
+0359             results.ErrorsOut.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) errorsOut(:,p)];
+0360             results.TMsteadyBeforeCatch.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmsteadyBC(:,p)];
+0361             results.catch.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmCatch(:,p)];
+0362             results.TMsteady.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmsteady(:,p)];
+0363             results.OGafter.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) ogafter(:,p)];
+0364             results.TMafter.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmafter(:,p)];
+0365             results.Transfer.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) transfer(:,p)];
+0366             results.Washout.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) washout(:,p)];
+0367             results.Transfer2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) transfer2(:,p)];
+0368             results.Washout2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) washout2(:,p)];
+0369 results.Strides2SS.indiv.(params{p})=[g*ones(nSubs,1) Strides2SS(:,p)];
+0370             results.PerForget.indiv.(params{p})=[g*ones(nSubs,1) perforget(:,p)];
+0371 
+0372         <span class="keyword">end</span>
+0373     <span class="keyword">end</span>
+0374 <span class="keyword">end</span>
+0375 
+0376 <span class="comment">%plot stuff</span>
+0377 <span class="keyword">if</span> nargin&gt;4 &amp;&amp; plotFlag
+0378     
+0379     <span class="comment">% FIRST: plot baseline values against catch and transfer</span>
+0380     epochs={<span class="string">'TMsteady'</span>,<span class="string">'catch'</span>,<span class="string">'OGafter'</span>,<span class="string">'TMafter'</span>};
+0381     <span class="keyword">if</span> nargin&gt;5 <span class="comment">%I imagine there has to be a better way to do this...</span>
+0382         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs,indivFlag)
+0383     <span class="keyword">else</span>
+0384         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs)
+0385     <span class="keyword">end</span>
+0386     
+0387 <span class="comment">%     % SECOND: plot average adaptation values?</span>
+0388 <span class="comment">%     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};</span>
+0389 <span class="comment">%     if nargin&gt;5</span>
+0390 <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)</span>
+0391 <span class="comment">%     else</span>
+0392 <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs)</span>
+0393 <span class="comment">%     end</span>
+0394 
+0395 <span class="comment">%     % SECOND: plot average adaptation values?</span>
+0396 <span class="comment">%     epochs={'AvgAdaptAll','TMsteady','catch','Transfer'};</span>
+0397 <span class="comment">%     if nargin&gt;5</span>
+0398 <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)</span>
+0399 <span class="comment">%     else</span>
+0400 <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs)</span>
+0401 <span class="comment">%     end</span>
+0402 <span class="keyword">end</span>
+0403 
+0404</pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

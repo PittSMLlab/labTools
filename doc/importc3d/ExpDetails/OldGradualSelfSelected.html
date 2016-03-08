@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of OldGradualSelfSelected</title>
+  <meta name="keywords" content="OldGradualSelfSelected">
+  <meta name="description" content="OG study: old subjects adapted abruptly at self-selected speed">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">importc3d</a> &gt; <a href="index.html">ExpDetails</a> &gt; OldGradualSelfSelected.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d/ExpDetails&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>OldGradualSelfSelected
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>OG study: old subjects adapted abruptly at self-selected speed</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">OG study: old subjects adapted abruptly at self-selected speed</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%OG study: old subjects adapted abruptly at self-selected speed</span>
+0002 
+0003 handles.group=<span class="string">'Old Gradual Self Selected'</span>;
+0004 
+0005 <span class="comment">%condition numbers</span>
+0006 i=1;
+0007 <span class="keyword">for</span> cond = [1 5 6:11 2 3 4]
+0008     set(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>,num2str(cond))
+0009     i=i+1;
+0010 <span class="keyword">end</span>
+0011 set(handles.numofconds,<span class="string">'string'</span>,<span class="string">'11'</span>)
+0012 
+0013 <span class="comment">%condition names</span>
+0014 set(handles.condName1,<span class="string">'string'</span>,<span class="string">'OG base'</span>)
+0015 set(handles.condName2,<span class="string">'string'</span>,<span class="string">'TM base'</span>)
+0016 set(handles.condName3,<span class="string">'string'</span>,<span class="string">'adaptation'</span>)
+0017 set(handles.condName4,<span class="string">'string'</span>,<span class="string">'catch'</span>)
+0018 set(handles.condName5,<span class="string">'string'</span>,<span class="string">'re-adaptation'</span>)
+0019 set(handles.condName6,<span class="string">'string'</span>,<span class="string">'OG post'</span>)
+0020 set(handles.condName7,<span class="string">'string'</span>,<span class="string">'TM post'</span>)
+0021 set(handles.condName8,<span class="string">'string'</span>,<span class="string">'self selected'</span>)
+0022 set(handles.condName9,<span class="string">'string'</span>,<span class="string">'slow base'</span>)
+0023 set(handles.condName10,<span class="string">'string'</span>,<span class="string">'short split'</span>)
+0024 set(handles.condName11,<span class="string">'string'</span>,<span class="string">'fast base'</span>)
+0025 
+0026 <span class="comment">%condition descriptions</span>
+0027 set(handles.description1,<span class="string">'string'</span>,<span class="string">'8m walkway for 6 min'</span>)
+0028 set(handles.description2,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0029 set(handles.description3,<span class="string">'string'</span>,<span class="string">'600 strides,gradual split from 1:1 at SS to 2:1 at at SS +/- 0.333*SS m/s'</span>)
+0030 set(handles.description4,<span class="string">'string'</span>,<span class="string">'10 strides at SS'</span>)
+0031 set(handles.description5,<span class="string">'string'</span>,<span class="string">'150 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0032 set(handles.description6,<span class="string">'string'</span>,<span class="string">'8 m walkway for 6 min'</span>)
+0033 set(handles.description7,<span class="string">'string'</span>,<span class="string">'150 strides at SS'</span>)
+0034 set(handles.description8,<span class="string">'string'</span>,<span class="string">'&gt;=600 strides at self set pace'</span>)
+0035 set(handles.description9,<span class="string">'string'</span>,<span class="string">'150 strides at SS-0.333*SS m/s'</span>)
+0036 set(handles.description10,<span class="string">'string'</span>,<span class="string">'10 strides 2:1, at SS +/- 0.333*SS m/s'</span>)
+0037 set(handles.description11,<span class="string">'string'</span>,<span class="string">'150 strides at SS+0.333*SS m/s'</span>)
+0038 
+0039 <span class="comment">%trial numbers for each condition</span>
+0040 set(handles.trialnum1,<span class="string">'string'</span>,<span class="string">'1:3'</span>)
+0041 set(handles.trialnum2,<span class="string">'string'</span>,<span class="string">'8'</span>)
+0042 set(handles.trialnum3,<span class="string">'string'</span>,<span class="string">'9:12'</span>)
+0043 set(handles.trialnum4,<span class="string">'string'</span>,<span class="string">'13'</span>)
+0044 set(handles.trialnum5,<span class="string">'string'</span>,<span class="string">'14 15'</span>)
+0045 set(handles.trialnum6,<span class="string">'string'</span>,<span class="string">'16:21'</span>)
+0046 set(handles.trialnum7,<span class="string">'string'</span>,<span class="string">'22:24'</span>)
+0047 set(handles.trialnum8,<span class="string">'string'</span>,<span class="string">'4:7'</span>)
+0048 set(handles.trialnum9,<span class="string">'string'</span>,<span class="string">'12'</span>)
+0049 set(handles.trialnum10,<span class="string">'string'</span>,<span class="string">'11'</span>)
+0050 set(handles.trialnum11,<span class="string">'string'</span>,<span class="string">'25'</span>)
+0051 
+0052 <span class="comment">%set trial types</span>
+0053 <span class="keyword">for</span> t=[1 6]
+0054     set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'OG'</span>)
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">for</span> t=[2:5 7:11]
+0057     set(handles.([<span class="string">'type'</span> num2str(t)]),<span class="string">'string'</span>,<span class="string">'TM'</span>)
+0058 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

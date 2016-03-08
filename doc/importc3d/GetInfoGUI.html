@@ -1,0 +1,1286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of GetInfoGUI</title>
+  <meta name="keywords" content="GetInfoGUI">
+  <meta name="description" content="GETINFOGUI  Graphical user interface used to collect information regarding">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; GetInfoGUI.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>GetInfoGUI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>GETINFOGUI  Graphical user interface used to collect information regarding</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = GetInfoGUI(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETINFOGUI  Graphical user interface used to collect information regarding
+             a single experiment conducted in the HMRL. Refer to help text
+             in GUI by hovering mouse over a given field.      
+
+ See also: importc3d/ExpDetails, <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a>	Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.</li><li><a href="setExpDescription.html" class="code" title="function handles = setExpDescription(handles,expDes)">setExpDescription</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="c3d2mat.html" class="code" title="">c3d2mat</a>	c3d2mat -- The main script for parsing .c3d files into a subject .mat file.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function GetInfoGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function description_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function name_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function month_list_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function day_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function year_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function note_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function subID_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function DOBmonth_list_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function DOBday_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function DOByear_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function gender_list_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function domleg_list_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub15" class="code">function domhand_list_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub16" class="code">function strokeCheck_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub17" class="code">function popupAffected_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub18" class="code">function height_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub19" class="code">function weight_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub20" class="code">function browse_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub21" class="code">function c3dlocation_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub22" class="code">function basefile_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub23" class="code">function numoftrials_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub24" class="code">function numofconds_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub25" class="code">function kinematic_check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub26" class="code">function force_check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub27" class="code">function emg_check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub28" class="code">function secfile_browse_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub29" class="code">function secfileloc_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub30" class="code">function condition1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub31" class="code">function condName1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub32" class="code">function description1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub33" class="code">function trialnum1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub34" class="code">function type1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub35" class="code">function condition2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub36" class="code">function condName2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub37" class="code">function description2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub38" class="code">function trialnum2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub39" class="code">function type2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub40" class="code">function condition3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub41" class="code">function condName3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub42" class="code">function description3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub43" class="code">function trialnum3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub44" class="code">function type3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub45" class="code">function condition4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub46" class="code">function condName4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub47" class="code">function description4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub48" class="code">function trialnum4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub49" class="code">function type4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub50" class="code">function condition5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub51" class="code">function condName5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub52" class="code">function description5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub53" class="code">function trialnum5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub54" class="code">function type5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub55" class="code">function condition6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub56" class="code">function condName6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub57" class="code">function description6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub58" class="code">function trialnum6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub59" class="code">function type6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub60" class="code">function condition7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub61" class="code">function condName7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub62" class="code">function description7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub63" class="code">function trialnum7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub64" class="code">function type7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub65" class="code">function condition8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub66" class="code">function condName8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub67" class="code">function description8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub68" class="code">function trialnum8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub69" class="code">function type8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub70" class="code">function condition9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub71" class="code">function condName9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub72" class="code">function description9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub73" class="code">function trialnum9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub74" class="code">function type9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub75" class="code">function condition10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub76" class="code">function condName10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub77" class="code">function description10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub78" class="code">function trialnum10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub79" class="code">function type10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub80" class="code">function condition11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub81" class="code">function condName11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub82" class="code">function description11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub83" class="code">function trialnum11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub84" class="code">function type11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub85" class="code">function condition12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub86" class="code">function condName12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub87" class="code">function description12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub88" class="code">function trialnum12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub89" class="code">function type12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub90" class="code">function condition13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub91" class="code">function condName13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub92" class="code">function description13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub93" class="code">function trialnum13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub94" class="code">function type13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub95" class="code">function condition14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub96" class="code">function condName14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub97" class="code">function description14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub98" class="code">function trialnum14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub99" class="code">function type14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub100" class="code">function condition15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub101" class="code">function condName15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub102" class="code">function description15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub103" class="code">function trialnum15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub104" class="code">function type15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub105" class="code">function saveExpButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub106" class="code">function saveloc_edit_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub107" class="code">function save_browse_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub108" class="code">function ok_button_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub109" class="code">function loadButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub110" class="code">function figure1_CloseRequestFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub111" class="code">function description_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub112" class="code">function name_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub113" class="code">function month_list_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub114" class="code">function day_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub115" class="code">function year_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub116" class="code">function subID_edit_CreateFcn(hObject, ~, handles)</a></li><li><a href="#_sub117" class="code">function DOBmonth_list_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub118" class="code">function DOBday_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub119" class="code">function DOByear_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub120" class="code">function gender_list_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub121" class="code">function domleg_list_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub122" class="code">function domhand_list_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub123" class="code">function popupAffected_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub124" class="code">function height_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub125" class="code">function weight_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub126" class="code">function condition1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub127" class="code">function condName1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub128" class="code">function description1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub129" class="code">function trialnum1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub130" class="code">function condition2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub131" class="code">function condName2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub132" class="code">function description2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub133" class="code">function trialnum2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub134" class="code">function condition3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub135" class="code">function condName3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub136" class="code">function description3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub137" class="code">function trialnum3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub138" class="code">function condition4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub139" class="code">function condName4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub140" class="code">function description4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub141" class="code">function trialnum4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub142" class="code">function condition5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub143" class="code">function condName5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub144" class="code">function description5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub145" class="code">function trialnum5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub146" class="code">function condition6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub147" class="code">function condName6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub148" class="code">function description6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub149" class="code">function trialnum6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub150" class="code">function condition7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub151" class="code">function condName7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub152" class="code">function description7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub153" class="code">function trialnum7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub154" class="code">function condition8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub155" class="code">function condName8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub156" class="code">function description8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub157" class="code">function trialnum8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub158" class="code">function condition9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub159" class="code">function condName9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub160" class="code">function description9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub161" class="code">function trialnum9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub162" class="code">function condition10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub163" class="code">function condName10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub164" class="code">function description10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub165" class="code">function trialnum10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub166" class="code">function condition11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub167" class="code">function condName11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub168" class="code">function description11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub169" class="code">function trialnum11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub170" class="code">function condition12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub171" class="code">function condName12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub172" class="code">function description12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub173" class="code">function trialnum12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub174" class="code">function condition13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub175" class="code">function condName13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub176" class="code">function description13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub177" class="code">function trialnum13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub178" class="code">function condition14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub179" class="code">function condName14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub180" class="code">function description14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub181" class="code">function trialnum14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub182" class="code">function condition15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub183" class="code">function condName15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub184" class="code">function description15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub185" class="code">function trialnum15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub186" class="code">function c3dlocation_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub187" class="code">function numoftrials_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub188" class="code">function numofconds_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub189" class="code">function note_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub190" class="code">function saveloc_edit_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub191" class="code">function basefile_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub192" class="code">function secfileloc_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub193" class="code">function day_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub194" class="code">function name_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub195" class="code">function year_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub196" class="code">function note_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub197" class="code">function subID_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub198" class="code">function DOBday_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub199" class="code">function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub200" class="code">function emg1_1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub201" class="code">function emg1_1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub202" class="code">function emg1_3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub203" class="code">function emg1_3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub204" class="code">function emg1_2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub205" class="code">function emg1_2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub206" class="code">function emg1_4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub207" class="code">function emg1_4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub208" class="code">function emg1_5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub209" class="code">function emg1_5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub210" class="code">function emg1_15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub211" class="code">function emg1_15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub212" class="code">function emg1_14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub213" class="code">function emg1_14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub214" class="code">function emg1_13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub215" class="code">function emg1_13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub216" class="code">function emg1_11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub217" class="code">function emg1_11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub218" class="code">function emg1_10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub219" class="code">function emg1_10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub220" class="code">function emg1_6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub221" class="code">function emg1_6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub222" class="code">function emg1_8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub223" class="code">function emg1_8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub224" class="code">function emg1_7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub225" class="code">function emg1_7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub226" class="code">function emg1_9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub227" class="code">function emg1_9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub228" class="code">function emg1_12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub229" class="code">function emg1_12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub230" class="code">function emg1_16_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub231" class="code">function emg1_16_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub232" class="code">function emg2_1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub233" class="code">function emg2_1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub234" class="code">function emg2_2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub235" class="code">function emg2_2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub236" class="code">function emg2_3_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub237" class="code">function emg2_3_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub238" class="code">function emg2_4_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub239" class="code">function emg2_4_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub240" class="code">function emg2_5_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub241" class="code">function emg2_5_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub242" class="code">function emg2_6_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub243" class="code">function emg2_6_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub244" class="code">function emg2_7_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub245" class="code">function emg2_7_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub246" class="code">function emg2_8_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub247" class="code">function emg2_8_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub248" class="code">function emg2_9_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub249" class="code">function emg2_9_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub250" class="code">function emg2_10_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub251" class="code">function emg2_10_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub252" class="code">function emg2_11_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub253" class="code">function emg2_11_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub254" class="code">function emg2_12_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub255" class="code">function emg2_12_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub256" class="code">function emg2_13_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub257" class="code">function emg2_13_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub258" class="code">function emg2_14_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub259" class="code">function emg2_14_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub260" class="code">function emg2_15_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub261" class="code">function emg2_15_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub262" class="code">function emg2_16_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub263" class="code">function emg2_16_CreateFcn(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = GetInfoGUI(varargin)</a>
+0002 <span class="comment">% GETINFOGUI  Graphical user interface used to collect information regarding</span>
+0003 <span class="comment">%             a single experiment conducted in the HMRL. Refer to help text</span>
+0004 <span class="comment">%             in GUI by hovering mouse over a given field.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% See also: importc3d/ExpDetails, errorProofInfo</span>
+0007 
+0008 <span class="comment">% Last Modified by GUIDE v2.5 16-Jun-2015 14:33:39</span>
+0009 
+0010 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0011 gui_Singleton = 1;
+0012 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0013     <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0014     <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction GetInfoGUI_OpeningFcn(hObject, eventdata, handles, varargin)">GetInfoGUI_OpeningFcn</a>, <span class="keyword">...</span>
+0015     <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)">GetInfoGUI_OutputFcn</a>, <span class="keyword">...</span>
+0016     <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0017     <span class="string">'gui_Callback'</span>,   []);
+0018 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0019     gui_State.gui_Callback = str2func(varargin{1});
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="keyword">if</span> nargout
+0023     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0024 <span class="keyword">else</span>
+0025     gui_mainfcn(gui_State, varargin{:});
+0026 <span class="keyword">end</span>
+0027 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0028 
+0029 
+0030 <span class="comment">% --- Executes just before GetInfoGUI is made visible.</span>
+0031 <a name="_sub1" href="#_subfunctions" class="code">function GetInfoGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0032 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0033 <span class="comment">% hObject    handle to figure</span>
+0034 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0035 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0036 <span class="comment">% varargin   command line arguments to GetInfoGUI (see VARARGIN)</span>
+0037 
+0038 <span class="comment">% Choose default command line output for GetInfoGUI</span>
+0039 handles.output = hObject;
+0040 
+0041 <span class="comment">% Specify number of condition lines in GUI</span>
+0042 handles.lines = 15;
+0043 
+0044 <span class="comment">% Update handles structure</span>
+0045 guidata(hObject, handles);
+0046 
+0047 <span class="comment">%Set GUI position to middle of screen</span>
+0048 <span class="comment">% left, bottom, width, height</span>
+0049 scrsz = get(0,<span class="string">'ScreenSize'</span>); 
+0050 set(gcf,<span class="string">'Units'</span>,<span class="string">'pixels'</span>);
+0051 guiPos = get(hObject,<span class="string">'Position'</span>);
+0052 set(hObject, <span class="string">'Position'</span>, [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+0053 
+0054 
+0055 <span class="comment">%Set text that pops up when fields of GUI are hovered over. Note: sprintf</span>
+0056 <span class="comment">%used to allow line breaks in tool tip string.</span>
+0057 <span class="comment">%------------------------Experiment Info---------------------------------%</span>
+0058 set(handles.description_edit,<span class="string">'TooltipString'</span>,sprintf([<span class="string">'Describes the experiment that was performed, in general terms\n'</span>,<span class="keyword">...</span><span class="comment"> </span>
+0059 <span class="string">'Intended to categorize groups of subjects that all performed the same experiment. When a description is selected,\n'</span><span class="keyword">...</span>
+0060 <span class="string">'the Condition Info should be automatically populated. See &quot;Adding an Experiment Description&quot; in the User guide.'</span>]));
+0061 set(handles.name_edit,<span class="string">'TooltipString'</span>,<span class="string">'The person(s) who ran the experiment.'</span>);
+0062 set(handles.month_list,<span class="string">'TooltipString'</span>,<span class="string">'Date the experiment was performed (NOT the date the data was processed)'</span>);
+0063 set(handles.day_edit,<span class="string">'TooltipString'</span>,<span class="string">'Date the experiment was performed (NOT the date the data was processed)'</span>);
+0064 set(handles.year_edit,<span class="string">'TooltipString'</span>,<span class="string">'Date the experiment was performed (NOT the date the data was processed)'</span>);
+0065 set(handles.note_edit,<span class="string">'TooltipString'</span>,sprintf([<span class="string">'Notes about the experiment as a whole. If a comment is specific to a trial,\n'</span><span class="keyword">...</span>
+0066     <span class="string">'do not enter it here (there will be a chance later on to comment on individual trials).'</span>]));
+0067 <span class="comment">%--------------------------Subject Info----------------------------------%</span>
+0068 set(handles.subID_edit,<span class="string">'TooltipString'</span>,<span class="string">'Coded value used to identify subject. DO NOT use the subjec''s name!'</span>);
+0069 set(handles.DOBmonth_list,<span class="string">'TooltipString'</span>,<span class="string">'Month subject was born'</span>);
+0070 set(handles.DOBday_edit,<span class="string">'TooltipString'</span>,<span class="string">'Day subject was born'</span>);
+0071 set(handles.DOByear_edit,<span class="string">'TooltipString'</span>,<span class="string">'Year subject was born'</span>);
+0072 set(handles.gender_list,<span class="string">'TooltipString'</span>,<span class="string">'Subject''s gender'</span>);
+0073 set(handles.domleg_list,<span class="string">'TooltipString'</span>,<span class="string">'Dominant leg of subject'</span>);
+0074 set(handles.domhand_list,<span class="string">'TooltipString'</span>,<span class="string">'Dominant hand/arm of subject'</span>);
+0075 set(handles.height_edit,<span class="string">'TooltipString'</span>,<span class="string">'Height of subject as measured in the lab (in cm)'</span>);
+0076 set(handles.weight_edit,<span class="string">'TooltipString'</span>,<span class="string">'Weight of subject as measured in the lab (in Kg)'</span>);
+0077 
+0078 <span class="comment">% UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)</span>
+0079  uiwait(handles.figure1);
+0080 
+0081 
+0082 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0083 <a name="_sub2" href="#_subfunctions" class="code">function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)</a>
+0084 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0085 <span class="comment">% hObject    handle to figure</span>
+0086 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0087 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0088 
+0089 <span class="keyword">if</span> ~(isfield(handles,<span class="string">'noSave'</span>) &amp;&amp; handles.noSave)
+0090     info=handles.info;
+0091 
+0092     <span class="comment">%Forcing save before the rest of the things are done (so, if it fails, we</span>
+0093     <span class="comment">%don't lose it).</span>
+0094     <span class="keyword">if</span> exist([info.save_folder filesep info.ID <span class="string">'info.mat'</span>],<span class="string">'file'</span>)&gt;0
+0095         choice=questdlg([<span class="string">'Info file (and possibly others) already exist for '</span> info.ID <span class="string">'. Overwrite?'</span>],<span class="string">'File Name Warning'</span>,<span class="string">'Yes'</span>,<span class="string">'No'</span>,<span class="string">'No'</span>);
+0096         <span class="keyword">if</span> strcmp(choice,<span class="string">'No'</span>)            
+0097             info.ID = [info.ID <span class="string">'_'</span> date];
+0098             h=msgbox([<span class="string">'Saving as '</span> info.ID],<span class="string">''</span>);
+0099             waitfor(h)          
+0100         <span class="keyword">end</span>                
+0101     <span class="keyword">end</span>
+0102     save([info.save_folder filesep info.ID <span class="string">'info'</span>],<span class="string">'info'</span>)
+0103 
+0104     <span class="comment">%ask user if there are observations for individual trials</span>
+0105     answer=inputdlg(<span class="string">'Are there any observations for individual trials?(y/n) '</span>,<span class="string">'s'</span>);
+0106 
+0107     <span class="comment">%make sure the correct response is entered</span>
+0108     <span class="keyword">while</span> length(answer{1})&gt;1 || (~strcmpi(answer{1},<span class="string">'y'</span>) &amp;&amp; ~strcmpi(answer{1},<span class="string">'n'</span>))
+0109         disp(<span class="string">'Error: you must enter either &quot;y&quot; or &quot;n&quot;'</span>)
+0110         answer=inputdlg(<span class="string">'Are there any observations for individual trials?(y/n) '</span>,<span class="string">'s'</span>);
+0111     <span class="keyword">end</span>
+0112 
+0113     <span class="comment">%create a menu to choose any trial</span>
+0114     expTrials = cell2mat(info.trialnums);
+0115     numTrials = length(expTrials);
+0116     <span class="keyword">if</span> ~isfield(info,<span class="string">'trialObs'</span>) || length(info.trialObs)&lt;info.numoftrials
+0117         <span class="comment">%if a subject wasn't loaded</span>
+0118         info.trialObs{1,info.numoftrials} = <span class="string">''</span>;
+0119     <span class="keyword">end</span>
+0120     <span class="keyword">if</span> strcmpi(answer{1},<span class="string">'y'</span>)    
+0121         trialstr = [];
+0122         <span class="comment">%create trial string</span>
+0123         <span class="keyword">for</span> t = expTrials
+0124             trialstr = [trialstr,<span class="string">',''Trial '</span>,num2str(t),<span class="string">''''</span>];
+0125         <span class="keyword">end</span>
+0126         <span class="comment">%generate menu</span>
+0127         eval([<span class="string">'choice = menu(''Choose Trial'''</span>,trialstr,<span class="string">',''Done'');'</span>])
+0128         <span class="keyword">while</span> choice ~= numTrials+1
+0129             <span class="comment">% get observation for trial selected</span>
+0130             obStr = inputdlg([<span class="string">'Observations for Trial '</span>,num2str(expTrials(choice))],<span class="string">'Enter Observation'</span>);
+0131             info.trialObs{expTrials(choice)} = obStr{1,1}; <span class="comment">% obStr by itself is a cell object, so need to index to make a char</span>
+0132             eval([<span class="string">'choice = menu(''Choose Trial'''</span>,trialstr,<span class="string">',''Done'');'</span>])
+0133         <span class="keyword">end</span>   
+0134     <span class="keyword">end</span>
+0135 
+0136     varargout{1}=info;
+0137     save([info.save_folder filesep info.ID <span class="string">'info'</span>],<span class="string">'info'</span>)
+0138 <span class="keyword">else</span>
+0139     varargout{1}=[];
+0140 <span class="keyword">end</span>
+0141 
+0142 
+0143 delete(handles.figure1)
+0144 
+0145 
+0146 <span class="comment">%------------------------Experiment Info---------------------------------%</span>
+0147 
+0148 <a name="_sub3" href="#_subfunctions" class="code">function description_edit_Callback(hObject, eventdata, handles)</a>
+0149 <span class="comment">%This was changed to a list!</span>
+0150 contents = cellstr(get(hObject,<span class="string">'String'</span>));
+0151 expFile = contents{get(hObject,<span class="string">'Value'</span>)};
+0152 
+0153 <span class="comment">% HH 6/16</span>
+0154 <span class="comment">% eval(expFile)</span>
+0155 path=which(<span class="string">'GetInfoGUI'</span>);
+0156 path=strrep(path,<span class="string">'GetInfoGUI.m'</span>,<span class="string">'ExpDetails'</span>);
+0157 <span class="keyword">if</span> exist([path filesep expFile <span class="string">'.mat'</span>],<span class="string">'file'</span>)&gt;0
+0158     <span class="comment">%first, clear all feilds</span>
+0159     set(handles.numofconds,<span class="string">'String'</span>,<span class="string">'0'</span>);
+0160     <span class="keyword">for</span> conds = 1:handles.lines
+0161         set(handles.([<span class="string">'condition'</span>,num2str(conds)]),<span class="string">'string'</span>,<span class="string">''</span>);
+0162         set(handles.([<span class="string">'condName'</span>,num2str(conds)]),<span class="string">'string'</span>,<span class="string">''</span>);
+0163         set(handles.([<span class="string">'description'</span>,num2str(conds)]),<span class="string">'string'</span>,<span class="string">''</span>);
+0164         set(handles.([<span class="string">'trialnum'</span>,num2str(conds)]),<span class="string">'string'</span>,<span class="string">''</span>);
+0165         set(handles.([<span class="string">'type'</span>,num2str(conds)]),<span class="string">'string'</span>,<span class="string">''</span>);
+0166     <span class="keyword">end</span>
+0167 
+0168     <span class="comment">%second, populate feilds based on experiment description entered.</span>
+0169     a=load([path filesep expFile]);
+0170     aux=fields(a);
+0171     expDes=a.(aux{1});
+0172     handles=<a href="setExpDescription.html" class="code" title="function handles = setExpDescription(handles,expDes)">setExpDescription</a>(handles,expDes);
+0173     <a href="#_sub24" class="code" title="subfunction numofconds_Callback(hObject, eventdata, handles)">numofconds_Callback</a>(handles.numofconds, eventdata, handles)
+0174 <span class="keyword">end</span>
+0175 
+0176 guidata(hObject,handles)
+0177 
+0178 
+0179 <a name="_sub4" href="#_subfunctions" class="code">function name_edit_Callback(hObject, eventdata, handles)</a>
+0180 <span class="comment">% Hints: get(hObject,'String') returns contents of name_edit as text</span>
+0181 <span class="comment">%        str2double(get(hObject,'String')) returns contents of name_edit as a double</span>
+0182 
+0183 
+0184 <span class="comment">% --- Executes on selection change in month_list.</span>
+0185 <a name="_sub5" href="#_subfunctions" class="code">function month_list_Callback(hObject, eventdata, handles)</a>
+0186 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns month_list contents as cell array</span>
+0187 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from month_list</span>
+0188 
+0189 <a name="_sub6" href="#_subfunctions" class="code">function day_edit_Callback(hObject, eventdata, handles)</a>
+0190 
+0191 <a name="_sub7" href="#_subfunctions" class="code">function year_edit_Callback(hObject, eventdata, handles)</a>
+0192 
+0193 <a name="_sub8" href="#_subfunctions" class="code">function note_edit_Callback(hObject, eventdata, handles)</a>
+0194 
+0195 
+0196 
+0197 <span class="comment">%-------------------------Subject Info------------------------------%</span>
+0198 
+0199 
+0200 <a name="_sub9" href="#_subfunctions" class="code">function subID_edit_Callback(hObject, eventdata, handles)</a>
+0201 <span class="comment">% Hints: get(hObject,'String') returns contents of subID_edit as text</span>
+0202 <span class="comment">%        str2double(get(hObject,'String')) returns contents of subID_edit as a double</span>
+0203 
+0204 <span class="comment">% --- Executes on selection change in DOBmonth_list.</span>
+0205 <a name="_sub10" href="#_subfunctions" class="code">function DOBmonth_list_Callback(hObject, eventdata, handles)</a>
+0206 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns DOBmonth_list contents as cell array</span>
+0207 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from DOBmonth_list</span>
+0208 
+0209 <a name="_sub11" href="#_subfunctions" class="code">function DOBday_edit_Callback(hObject, eventdata, handles)</a>
+0210 
+0211 <a name="_sub12" href="#_subfunctions" class="code">function DOByear_edit_Callback(hObject, eventdata, handles)</a>
+0212 
+0213 <span class="comment">% --- Executes on selection change in gender_list.</span>
+0214 <a name="_sub13" href="#_subfunctions" class="code">function gender_list_Callback(hObject, eventdata, handles)</a>
+0215 
+0216 <span class="comment">% --- Executes on selection change in domleg_list.</span>
+0217 <a name="_sub14" href="#_subfunctions" class="code">function domleg_list_Callback(hObject, eventdata, handles)</a>
+0218 
+0219 <span class="comment">% --- Executes on selection change in domhand_list.</span>
+0220 <a name="_sub15" href="#_subfunctions" class="code">function domhand_list_Callback(hObject, eventdata, handles)</a>
+0221 
+0222 <span class="comment">% --- Executes on button press in strokeCheck.</span>
+0223 <a name="_sub16" href="#_subfunctions" class="code">function strokeCheck_Callback(hObject, eventdata, handles)</a>
+0224 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of strokeCheck</span>
+0225 
+0226 <span class="keyword">if</span> get(hObject,<span class="string">'Value'</span>)
+0227     set(handles.popupAffected,<span class="string">'Enable'</span>,<span class="string">'On'</span>)
+0228     set(handles.text63,<span class="string">'Enable'</span>,<span class="string">'On'</span>)
+0229 <span class="keyword">else</span>
+0230     set(handles.popupAffected,<span class="string">'Enable'</span>,<span class="string">'Off'</span>)
+0231     set(handles.text63,<span class="string">'Enable'</span>,<span class="string">'Off'</span>)
+0232 <span class="keyword">end</span>
+0233 guidata(hObject,handles)
+0234 
+0235 <span class="comment">% --- Executes on selection change in popupAffected.</span>
+0236 <a name="_sub17" href="#_subfunctions" class="code">function popupAffected_Callback(hObject, eventdata, handles)</a>
+0237 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array</span>
+0238 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from popupAffected</span>
+0239 
+0240 <a name="_sub18" href="#_subfunctions" class="code">function height_edit_Callback(hObject, eventdata, handles)</a>
+0241 
+0242 <a name="_sub19" href="#_subfunctions" class="code">function weight_edit_Callback(hObject, eventdata, handles)</a>
+0243 
+0244 <span class="comment">%------------------------Data Info------------------------------%</span>
+0245 
+0246 <span class="comment">% --- Executes on button press in browse.</span>
+0247 <a name="_sub20" href="#_subfunctions" class="code">function browse_Callback(hObject, eventdata, handles)</a>
+0248 handles.folder_location = uigetdir; <span class="comment">%this is how the output_fcn knows where the folder is</span>
+0249 <span class="keyword">if</span> ~handles.folder_location==0
+0250     set(handles.c3dlocation,<span class="string">'string'</span>,handles.folder_location)
+0251 <span class="keyword">end</span>
+0252 guidata(hObject,handles);
+0253 
+0254 <a name="_sub21" href="#_subfunctions" class="code">function c3dlocation_Callback(hObject, eventdata, handles)</a>
+0255 handles.folder_location = get(hObject,<span class="string">'string'</span>);
+0256 guidata(hObject,handles)
+0257 
+0258 <a name="_sub22" href="#_subfunctions" class="code">function basefile_Callback(hObject, eventdata, handles)</a>
+0259 <span class="comment">% Hints: get(hObject,'String') returns contents of basefile as text</span>
+0260 <span class="comment">%        str2double(get(hObject,'String')) returns contents of basefile as a double</span>
+0261 
+0262 <a name="_sub23" href="#_subfunctions" class="code">function numoftrials_Callback(hObject, eventdata, handles)</a>
+0263 <span class="comment">% Hints: get(hObject,'String') returns contents of numoftrials as text</span>
+0264 <span class="comment">%        str2double(get(hObject,'String')) returns contents of numoftrials as a double</span>
+0265 numoftrials = str2double(get(hObject,<span class="string">'String'</span>));
+0266 
+0267 <a name="_sub24" href="#_subfunctions" class="code">function numofconds_Callback(hObject, eventdata, handles)</a>
+0268 numofconds = str2double(get(hObject,<span class="string">'String'</span>));
+0269 
+0270 <span class="comment">%first, disable ALL</span>
+0271 <span class="keyword">for</span> conds = 1:handles.lines
+0272     set(handles.([<span class="string">'condition'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0273     set(handles.([<span class="string">'condName'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0274     set(handles.([<span class="string">'description'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0275     set(handles.([<span class="string">'trialnum'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0276     set(handles.([<span class="string">'type'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0277 <span class="keyword">end</span>
+0278 <span class="comment">%second, check number eneterd is valid</span>
+0279 <span class="keyword">if</span> isnan(numofconds) || numofconds&lt;0 || numofconds&gt;15
+0280     h_error=errordlg(<span class="string">'Please enter a number between 1 and 15'</span>,<span class="string">'Condition Number Error'</span>);
+0281     waitfor(h_error)
+0282     uicontrol(hObject)
+0283     <span class="keyword">return</span>
+0284 <span class="keyword">end</span>
+0285 
+0286 <span class="comment">%third, enable based on number of conditions entered</span>
+0287 <span class="keyword">for</span> conds = 1:numofconds
+0288     set(handles.([<span class="string">'condition'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0289     set(handles.([<span class="string">'condName'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0290     set(handles.([<span class="string">'description'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0291     set(handles.([<span class="string">'trialnum'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0292     set(handles.([<span class="string">'type'</span>,num2str(conds)]),<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0293 <span class="keyword">end</span>
+0294 
+0295 <span class="comment">% --- Executes on button press in kinematic_check.</span>
+0296 <a name="_sub25" href="#_subfunctions" class="code">function kinematic_check_Callback(hObject, eventdata, handles)</a>
+0297 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of kinematic_check</span>
+0298 
+0299 <span class="comment">% --- Executes on button press in force_check.</span>
+0300 <a name="_sub26" href="#_subfunctions" class="code">function force_check_Callback(hObject, eventdata, handles)</a>
+0301 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of force_check</span>
+0302 
+0303 <span class="comment">% --- Executes on button press in emg_check.</span>
+0304 <a name="_sub27" href="#_subfunctions" class="code">function emg_check_Callback(hObject, eventdata, handles)</a>
+0305 
+0306 state = get(hObject,<span class="string">'Value'</span>);
+0307 
+0308 <span class="keyword">if</span> state
+0309     set(handles.secfile_browse,<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0310     set(handles.secfileloc,<span class="string">'enable'</span>,<span class="string">'on'</span>)
+0311     <span class="keyword">for</span> i=1:16
+0312         eval([<span class="string">'set(handles.emg1_'</span> num2str(i) <span class="string">',''enable'',''off'');'</span>]);
+0313         eval([<span class="string">'set(handles.emg2_'</span> num2str(i) <span class="string">',''enable'',''off'');'</span>]);
+0314         eval([<span class="string">'set(handles.emg1_'</span> num2str(i) <span class="string">',''enable'',''on'');'</span>]);
+0315         eval([<span class="string">'set(handles.emg2_'</span> num2str(i) <span class="string">',''enable'',''on'');'</span>]);
+0316     <span class="keyword">end</span>
+0317 <span class="keyword">else</span>
+0318     set(handles.secfile_browse,<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0319     set(handles.secfileloc,<span class="string">'enable'</span>,<span class="string">'off'</span>)
+0320     <span class="keyword">for</span> i=1:16
+0321         eval([<span class="string">'set(handles.emg1_'</span> num2str(i) <span class="string">',''enable'',''off'');'</span>]);
+0322         eval([<span class="string">'set(handles.emg2_'</span> num2str(i) <span class="string">',''enable'',''off'');'</span>]);
+0323     <span class="keyword">end</span>
+0324 <span class="keyword">end</span>
+0325 guidata(hObject,handles);
+0326 
+0327 <span class="comment">% --- Executes on button press in secfile_browse.</span>
+0328 <a name="_sub28" href="#_subfunctions" class="code">function secfile_browse_Callback(hObject, eventdata, handles)</a>
+0329 handles.secfolder_location = uigetdir; <span class="comment">%this is how the output_fcn knows where the folder is</span>
+0330 <span class="keyword">if</span> ~handles.secfolder_location==0
+0331     set(handles.secfileloc,<span class="string">'string'</span>,handles.secfolder_location)
+0332 <span class="keyword">end</span>
+0333 guidata(hObject,handles);
+0334 
+0335 <a name="_sub29" href="#_subfunctions" class="code">function secfileloc_Callback(hObject, eventdata, handles) </a><span class="comment">%runs if folder is input manually by subject</span>
+0336 handles.secfolder_location = get(hObject,<span class="string">'string'</span>);
+0337 guidata(hObject,handles)
+0338 
+0339 <span class="comment">% ------------------------Condition Info-------------------------------%</span>
+0340 
+0341 <a name="_sub30" href="#_subfunctions" class="code">function condition1_Callback(hObject, eventdata, handles)</a>
+0342 <a name="_sub31" href="#_subfunctions" class="code">function condName1_Callback(hObject, eventdata, handles)</a>
+0343 <a name="_sub32" href="#_subfunctions" class="code">function description1_Callback(hObject, eventdata, handles)</a>
+0344 <a name="_sub33" href="#_subfunctions" class="code">function trialnum1_Callback(hObject, eventdata, handles)</a>
+0345 <a name="_sub34" href="#_subfunctions" class="code">function type1_Callback(hObject, eventdata, handles)</a>
+0346 
+0347 <a name="_sub35" href="#_subfunctions" class="code">function condition2_Callback(hObject, eventdata, handles)</a>
+0348 <a name="_sub36" href="#_subfunctions" class="code">function condName2_Callback(hObject, eventdata, handles)</a>
+0349 <a name="_sub37" href="#_subfunctions" class="code">function description2_Callback(hObject, eventdata, handles)</a>
+0350 <a name="_sub38" href="#_subfunctions" class="code">function trialnum2_Callback(hObject, eventdata, handles)</a>
+0351 <a name="_sub39" href="#_subfunctions" class="code">function type2_Callback(hObject, eventdata, handles)</a>
+0352 
+0353 <a name="_sub40" href="#_subfunctions" class="code">function condition3_Callback(hObject, eventdata, handles)</a>
+0354 <a name="_sub41" href="#_subfunctions" class="code">function condName3_Callback(hObject, eventdata, handles)</a>
+0355 <a name="_sub42" href="#_subfunctions" class="code">function description3_Callback(hObject, eventdata, handles)</a>
+0356 <a name="_sub43" href="#_subfunctions" class="code">function trialnum3_Callback(hObject, eventdata, handles)</a>
+0357 <a name="_sub44" href="#_subfunctions" class="code">function type3_Callback(hObject, eventdata, handles)</a>
+0358 
+0359 <a name="_sub45" href="#_subfunctions" class="code">function condition4_Callback(hObject, eventdata, handles)</a>
+0360 <a name="_sub46" href="#_subfunctions" class="code">function condName4_Callback(hObject, eventdata, handles)</a>
+0361 <a name="_sub47" href="#_subfunctions" class="code">function description4_Callback(hObject, eventdata, handles)</a>
+0362 <a name="_sub48" href="#_subfunctions" class="code">function trialnum4_Callback(hObject, eventdata, handles)</a>
+0363 <a name="_sub49" href="#_subfunctions" class="code">function type4_Callback(hObject, eventdata, handles)</a>
+0364 
+0365 <a name="_sub50" href="#_subfunctions" class="code">function condition5_Callback(hObject, eventdata, handles)</a>
+0366 <a name="_sub51" href="#_subfunctions" class="code">function condName5_Callback(hObject, eventdata, handles)</a>
+0367 <a name="_sub52" href="#_subfunctions" class="code">function description5_Callback(hObject, eventdata, handles)</a>
+0368 <a name="_sub53" href="#_subfunctions" class="code">function trialnum5_Callback(hObject, eventdata, handles)</a>
+0369 <a name="_sub54" href="#_subfunctions" class="code">function type5_Callback(hObject, eventdata, handles)</a>
+0370 
+0371 <a name="_sub55" href="#_subfunctions" class="code">function condition6_Callback(hObject, eventdata, handles)</a>
+0372 <a name="_sub56" href="#_subfunctions" class="code">function condName6_Callback(hObject, eventdata, handles)</a>
+0373 <a name="_sub57" href="#_subfunctions" class="code">function description6_Callback(hObject, eventdata, handles)</a>
+0374 <a name="_sub58" href="#_subfunctions" class="code">function trialnum6_Callback(hObject, eventdata, handles)</a>
+0375 <a name="_sub59" href="#_subfunctions" class="code">function type6_Callback(hObject, eventdata, handles)</a>
+0376 
+0377 <a name="_sub60" href="#_subfunctions" class="code">function condition7_Callback(hObject, eventdata, handles)</a>
+0378 <a name="_sub61" href="#_subfunctions" class="code">function condName7_Callback(hObject, eventdata, handles)</a>
+0379 <a name="_sub62" href="#_subfunctions" class="code">function description7_Callback(hObject, eventdata, handles)</a>
+0380 <a name="_sub63" href="#_subfunctions" class="code">function trialnum7_Callback(hObject, eventdata, handles)</a>
+0381 <a name="_sub64" href="#_subfunctions" class="code">function type7_Callback(hObject, eventdata, handles)</a>
+0382 
+0383 <a name="_sub65" href="#_subfunctions" class="code">function condition8_Callback(hObject, eventdata, handles)</a>
+0384 <a name="_sub66" href="#_subfunctions" class="code">function condName8_Callback(hObject, eventdata, handles)</a>
+0385 <a name="_sub67" href="#_subfunctions" class="code">function description8_Callback(hObject, eventdata, handles)</a>
+0386 <a name="_sub68" href="#_subfunctions" class="code">function trialnum8_Callback(hObject, eventdata, handles)</a>
+0387 <a name="_sub69" href="#_subfunctions" class="code">function type8_Callback(hObject, eventdata, handles)</a>
+0388 
+0389 <a name="_sub70" href="#_subfunctions" class="code">function condition9_Callback(hObject, eventdata, handles)</a>
+0390 <a name="_sub71" href="#_subfunctions" class="code">function condName9_Callback(hObject, eventdata, handles)</a>
+0391 <a name="_sub72" href="#_subfunctions" class="code">function description9_Callback(hObject, eventdata, handles)</a>
+0392 <a name="_sub73" href="#_subfunctions" class="code">function trialnum9_Callback(hObject, eventdata, handles)</a>
+0393 <a name="_sub74" href="#_subfunctions" class="code">function type9_Callback(hObject, eventdata, handles)</a>
+0394 
+0395 <a name="_sub75" href="#_subfunctions" class="code">function condition10_Callback(hObject, eventdata, handles)</a>
+0396 <a name="_sub76" href="#_subfunctions" class="code">function condName10_Callback(hObject, eventdata, handles)</a>
+0397 <a name="_sub77" href="#_subfunctions" class="code">function description10_Callback(hObject, eventdata, handles)</a>
+0398 <a name="_sub78" href="#_subfunctions" class="code">function trialnum10_Callback(hObject, eventdata, handles)</a>
+0399 <a name="_sub79" href="#_subfunctions" class="code">function type10_Callback(hObject, eventdata, handles)</a>
+0400 
+0401 <a name="_sub80" href="#_subfunctions" class="code">function condition11_Callback(hObject, eventdata, handles)</a>
+0402 <a name="_sub81" href="#_subfunctions" class="code">function condName11_Callback(hObject, eventdata, handles)</a>
+0403 <a name="_sub82" href="#_subfunctions" class="code">function description11_Callback(hObject, eventdata, handles)</a>
+0404 <a name="_sub83" href="#_subfunctions" class="code">function trialnum11_Callback(hObject, eventdata, handles)</a>
+0405 <a name="_sub84" href="#_subfunctions" class="code">function type11_Callback(hObject, eventdata, handles)</a>
+0406 
+0407 <a name="_sub85" href="#_subfunctions" class="code">function condition12_Callback(hObject, eventdata, handles)</a>
+0408 <a name="_sub86" href="#_subfunctions" class="code">function condName12_Callback(hObject, eventdata, handles)</a>
+0409 <a name="_sub87" href="#_subfunctions" class="code">function description12_Callback(hObject, eventdata, handles)</a>
+0410 <a name="_sub88" href="#_subfunctions" class="code">function trialnum12_Callback(hObject, eventdata, handles)</a>
+0411 <a name="_sub89" href="#_subfunctions" class="code">function type12_Callback(hObject, eventdata, handles)</a>
+0412 
+0413 <a name="_sub90" href="#_subfunctions" class="code">function condition13_Callback(hObject, eventdata, handles)</a>
+0414 <a name="_sub91" href="#_subfunctions" class="code">function condName13_Callback(hObject, eventdata, handles)</a>
+0415 <a name="_sub92" href="#_subfunctions" class="code">function description13_Callback(hObject, eventdata, handles)</a>
+0416 <a name="_sub93" href="#_subfunctions" class="code">function trialnum13_Callback(hObject, eventdata, handles)</a>
+0417 <a name="_sub94" href="#_subfunctions" class="code">function type13_Callback(hObject, eventdata, handles)</a>
+0418 
+0419 <a name="_sub95" href="#_subfunctions" class="code">function condition14_Callback(hObject, eventdata, handles)</a>
+0420 <a name="_sub96" href="#_subfunctions" class="code">function condName14_Callback(hObject, eventdata, handles)</a>
+0421 <a name="_sub97" href="#_subfunctions" class="code">function description14_Callback(hObject, eventdata, handles)</a>
+0422 <a name="_sub98" href="#_subfunctions" class="code">function trialnum14_Callback(hObject, eventdata, handles)</a>
+0423 <a name="_sub99" href="#_subfunctions" class="code">function type14_Callback(hObject, eventdata, handles)</a>
+0424 
+0425 <a name="_sub100" href="#_subfunctions" class="code">function condition15_Callback(hObject, eventdata, handles)</a>
+0426 <a name="_sub101" href="#_subfunctions" class="code">function condName15_Callback(hObject, eventdata, handles)</a>
+0427 <a name="_sub102" href="#_subfunctions" class="code">function description15_Callback(hObject, eventdata, handles)</a>
+0428 <a name="_sub103" href="#_subfunctions" class="code">function trialnum15_Callback(hObject, eventdata, handles)</a>
+0429 <a name="_sub104" href="#_subfunctions" class="code">function type15_Callback(hObject, eventdata, handles)</a>
+0430 
+0431 
+0432 <span class="comment">% --- Executes on button press in saveExpButton.</span>
+0433 <a name="_sub105" href="#_subfunctions" class="code">function saveExpButton_Callback(hObject, eventdata, handles)</a>
+0434 <span class="comment">%generate expDes structure</span>
+0435 
+0436 c=0;
+0437 <span class="keyword">for</span> i=1:handles.lines
+0438     <span class="comment">%condition numbers</span>
+0439     condNum=get(handles.([<span class="string">'condition'</span> num2str(i)]),<span class="string">'string'</span>);
+0440     <span class="keyword">if</span> ~isempty(condNum)
+0441         expDes.([<span class="string">'condition'</span> num2str(i)])=condNum;
+0442         c=c+1;
+0443     <span class="keyword">end</span>
+0444     <span class="comment">%condition names</span>
+0445     condName=get(handles.([<span class="string">'condName'</span> num2str(i)]),<span class="string">'string'</span>);
+0446     <span class="keyword">if</span> ~isempty(condName)
+0447         expDes.([<span class="string">'condName'</span> num2str(i)])=condName;
+0448     <span class="keyword">end</span>
+0449     <span class="comment">%condition descriptions</span>
+0450     condDesc=get(handles.([<span class="string">'description'</span> num2str(i)]),<span class="string">'string'</span>);
+0451     <span class="keyword">if</span> ~isempty(condDesc)
+0452         expDes.([<span class="string">'description'</span> num2str(i)])=condDesc;
+0453     <span class="keyword">end</span>
+0454     <span class="comment">%trial numbers for each condition</span>
+0455     trialNum=get(handles.([<span class="string">'trialnum'</span> num2str(i)]),<span class="string">'string'</span>);
+0456     <span class="keyword">if</span> ~isempty(trialNum)
+0457         expDes.([<span class="string">'trialnum'</span> num2str(i)])=trialNum;
+0458     <span class="keyword">end</span>
+0459     <span class="comment">%trial types</span>
+0460     type=get(handles.([<span class="string">'type'</span> num2str(i)]),<span class="string">'string'</span>);
+0461     <span class="keyword">if</span> ~isempty(type)
+0462         expDes.([<span class="string">'type'</span> num2str(i)])=type;
+0463     <span class="keyword">end</span>
+0464 <span class="keyword">end</span>
+0465 expDes.numofconds=c;  
+0466 
+0467 answer = inputdlg(<span class="string">'Enter name of new experiment description: '</span>,<span class="string">'Experiment Description Name'</span>);
+0468 <span class="keyword">if</span> ~isempty(answer)
+0469     answer = char(answer);
+0470     expDes.group=answer;
+0471     answer=answer(ismember(answer,[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span> <span class="string">'0'</span>:<span class="string">'9'</span>])); <span class="comment">%remove non-alphanumeric characters</span>
+0472     path=which(<span class="string">'GetInfoGUI'</span>);
+0473     path=strrep(path,<span class="string">'GetInfoGUI.m'</span>,<span class="string">'ExpDetails'</span>);
+0474     <span class="keyword">if</span> exist([path filesep answer <span class="string">'.mat'</span>],<span class="string">'file'</span>)&gt;0
+0475         choice=questdlg(<span class="string">'File name already exists. Overwrite?'</span>,<span class="string">'File Name Warning'</span>,<span class="string">'Yes'</span>,<span class="string">'No'</span>,<span class="string">'No'</span>);
+0476         <span class="keyword">if</span> strcmp(choice,<span class="string">'No'</span>)
+0477             h=msgbox(<span class="string">'Experiment description was not saved.'</span>,<span class="string">''</span>);
+0478             waitfor(h)
+0479             <span class="keyword">return</span>
+0480         <span class="keyword">end</span>                
+0481     <span class="keyword">end</span>
+0482     save([path filesep answer],<span class="string">'expDes'</span>)
+0483     <a href="#_sub111" class="code" title="subfunction description_edit_CreateFcn(hObject, eventdata, handles)">description_edit_CreateFcn</a>(handles.description_edit, eventdata, handles)
+0484     newContents=get(handles.description_edit,<span class="string">'string'</span>);
+0485     ind=find(ismember(newContents,answer));
+0486     set(handles.description_edit,<span class="string">'Value'</span>,ind)
+0487 <span class="keyword">end</span>
+0488 
+0489 
+0490 <span class="comment">%---------------------Save as / Okay Button--------------------------%</span>
+0491 
+0492 <a name="_sub106" href="#_subfunctions" class="code">function saveloc_edit_Callback(hObject, eventdata, handles)</a>
+0493 handles.save_folder = get(hObject,<span class="string">'string'</span>);
+0494 guidata(hObject,handles)
+0495 
+0496 
+0497 <span class="comment">% --- Executes on button press in save_browse.</span>
+0498 <a name="_sub107" href="#_subfunctions" class="code">function save_browse_Callback(hObject, eventdata, handles)</a>
+0499 path = uigetdir;
+0500 <span class="keyword">if</span> ~path==0
+0501     handles.save_folder=path;
+0502     set(handles.saveloc_edit,<span class="string">'string'</span>,handles.save_folder);
+0503 <span class="keyword">end</span>
+0504 guidata(hObject,handles)
+0505 
+0506 <span class="comment">% --- Executes on button press in ok_button.</span>
+0507 <a name="_sub108" href="#_subfunctions" class="code">function ok_button_Callback(hObject, eventdata, handles)</a>
+0508 
+0509 <span class="comment">% % % GET INFORMATION FROM GUI FIELDS AND ERROR PROOF BEFORE SAVING % % %</span>
+0510 handles.info=<a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a>(handles);
+0511 <span class="keyword">if</span> handles.info.bad
+0512     <span class="keyword">return</span>
+0513 <span class="keyword">else</span>
+0514     guidata(hObject,handles)
+0515     uiresume(handles.figure1);
+0516 <span class="keyword">end</span>
+0517 
+0518 <span class="comment">% --- Executes on button press in loadButton.</span>
+0519 <a name="_sub109" href="#_subfunctions" class="code">function loadButton_Callback(hObject, eventdata, handles)</a>
+0520 
+0521 [file,path]=uigetfile(<span class="string">'*.mat'</span>,<span class="string">'Choose subject handles file'</span>);
+0522 
+0523 <span class="keyword">if</span> file~=0
+0524     aux=load([path file]);
+0525     fieldNames=fields(aux);
+0526     subInfo=aux.(fieldNames{1});
+0527     <span class="comment">%TO DO: check that file is correct</span>
+0528     <span class="keyword">if</span> ~isa(subInfo,<span class="string">'struct'</span>)
+0529         h_error=errordlg(<span class="string">'File selected does not seem to be an info file.'</span>,<span class="string">'Load Error'</span>);
+0530         waitfor(h_error)
+0531     <span class="keyword">else</span>
+0532         <span class="comment">% -- Experiment Info</span>
+0533         descriptionContents=cellstr(get(handles.description_edit,<span class="string">'string'</span>));
+0534         <span class="keyword">if</span> isfield(subInfo,<span class="string">'ExpFile'</span>) <span class="comment">%processed after 4/2015</span>
+0535             <span class="keyword">if</span> ~any(strcmp(descriptionContents,subInfo.ExpFile)==1)
+0536                 set(handles.description_edit,<span class="string">'String'</span>,[descriptionContents; subInfo.ExpFile])
+0537                 descriptionContents=cellstr(get(handles.description_edit,<span class="string">'string'</span>));
+0538             <span class="keyword">end</span>
+0539             set(handles.description_edit,<span class="string">'Value'</span>,find(strcmp(descriptionContents,subInfo.ExpFile)));
+0540         <span class="keyword">else</span>
+0541             <span class="keyword">if</span> ~any(strcmp(descriptionContents,subInfo.ExpDescription)==1)
+0542                 set(handles.description_edit,<span class="string">'String'</span>,[descriptionContents; subInfo.ExpDescription])
+0543                 descriptionContents=cellstr(get(handles.description_edit,<span class="string">'string'</span>));
+0544             <span class="keyword">end</span>
+0545             set(handles.description_edit,<span class="string">'Value'</span>,find(strcmp(descriptionContents,subInfo.ExpDescription)));
+0546         <span class="keyword">end</span>
+0547         handles.group=subInfo.ExpDescription;
+0548         
+0549         
+0550         set(handles.name_edit,<span class="string">'string'</span>,subInfo.experimenter);
+0551         monthContents = cellstr(get(handles.month_list,<span class="string">'String'</span>));
+0552         set(handles.month_list,<span class="string">'Value'</span>,find(strcmp(monthContents,subInfo.month)));
+0553         set(handles.day_edit,<span class="string">'string'</span>,subInfo.day);
+0554         set(handles.year_edit,<span class="string">'string'</span>,subInfo.year);
+0555         set(handles.note_edit,<span class="string">'string'</span>,subInfo.exp_obs);
+0556         <span class="comment">% -- Subject Info</span>
+0557         set(handles.subID_edit,<span class="string">'string'</span>,subInfo.ID);
+0558         DOBmonthContents = cellstr(get(handles.DOBmonth_list,<span class="string">'String'</span>));
+0559         set(handles.DOBmonth_list,<span class="string">'Value'</span>,find(strcmp(DOBmonthContents,subInfo.DOBmonth)));
+0560         set(handles.DOBday_edit,<span class="string">'string'</span>,subInfo.DOBday);
+0561         set(handles.DOByear_edit,<span class="string">'string'</span>,subInfo.DOByear);
+0562         genderContents = cellstr(get(handles.gender_list,<span class="string">'String'</span>));
+0563         set(handles.gender_list,<span class="string">'Value'</span>,find(strcmp(genderContents,subInfo.gender)));
+0564         domlegContents = cellstr(get(handles.domleg_list,<span class="string">'String'</span>));
+0565         set(handles.domleg_list,<span class="string">'Value'</span>,find(strcmp(domlegContents,subInfo.domleg)));
+0566         domhandContents = cellstr(get(handles.domhand_list,<span class="string">'String'</span>));
+0567         set(handles.domhand_list,<span class="string">'Value'</span>,find(strcmp(domhandContents,subInfo.domhand)));
+0568         set(handles.height_edit,<span class="string">'string'</span>,subInfo.height);
+0569         set(handles.weight_edit,<span class="string">'string'</span>,subInfo.weight);
+0570         <span class="keyword">if</span> isfield(subInfo,<span class="string">'isStroke'</span>) <span class="comment">%for subject processed before 11/2014</span>
+0571             set(handles.strokeCheck,<span class="string">'Value'</span>,subInfo.isStroke);
+0572         <span class="keyword">else</span> <span class="comment">%Case of old info files, prior support for stroke subjects</span>
+0573             set(handles.strokeCheck,<span class="string">'Value'</span>,0);
+0574         <span class="keyword">end</span>
+0575         <span class="keyword">if</span> get(handles.strokeCheck,<span class="string">'Value'</span>)
+0576             set(handles.popupAffected,<span class="string">'Enable'</span>,<span class="string">'On'</span>);
+0577             set(handles.popupAffected,<span class="string">'Value'</span>,subInfo.affectedValue);
+0578         <span class="keyword">end</span>
+0579         <span class="comment">% -- Data Info</span>
+0580         handles.folder_location=subInfo.dir_location;
+0581         set(handles.c3dlocation,<span class="string">'string'</span>,handles.folder_location);
+0582         set(handles.basefile,<span class="string">'string'</span>,subInfo.basename);
+0583         set(handles.numofconds,<span class="string">'string'</span>,subInfo.numofconds);
+0584         <a href="#_sub24" class="code" title="subfunction numofconds_Callback(hObject, eventdata, handles)">numofconds_Callback</a>(handles.numofconds,eventdata,handles)
+0585         set(handles.kinematic_check,<span class="string">'Value'</span>,subInfo.kinematics);
+0586         set(handles.force_check,<span class="string">'Value'</span>,subInfo.forces);
+0587         set(handles.emg_check,<span class="string">'Value'</span>,subInfo.EMGs);
+0588         handles.secfolder_location=subInfo.secdir_location;
+0589         set(handles.secfileloc,<span class="string">'string'</span>,handles.secfolder_location)
+0590         <span class="comment">% -- Trial Info</span>
+0591         <span class="keyword">for</span> c = 1:subInfo.numofconds
+0592             condNum=subInfo.cond(c);
+0593             set(handles.([<span class="string">'condition'</span>,num2str(c)]),<span class="string">'string'</span>,num2str(condNum));
+0594             set(handles.([<span class="string">'condName'</span>,num2str(c)]),<span class="string">'string'</span>,subInfo.conditionNames{condNum});
+0595             set(handles.([<span class="string">'description'</span>,num2str(c)]),<span class="string">'string'</span>,subInfo.conditionDescriptions{condNum});
+0596             trialnums=subInfo.trialnums{condNum};
+0597             <span class="keyword">if</span> length(trialnums)&gt;2 &amp;&amp; ~any(diff(trialnums)&gt;1)
+0598                 set(handles.([<span class="string">'trialnum'</span>,num2str(c)]),<span class="string">'string'</span>,[num2str(trialnums(1)),<span class="string">':'</span>,num2str(trialnums(end))]);
+0599             <span class="keyword">else</span>
+0600                 set(handles.([<span class="string">'trialnum'</span>,num2str(c)]),<span class="string">'string'</span>,num2str(trialnums));
+0601             <span class="keyword">end</span>
+0602             <span class="keyword">if</span> isfield(subInfo,<span class="string">'isOverGround'</span>) <span class="comment">%for subjects processed before 7/16/2014</span>
+0603                 <span class="keyword">if</span> subInfo.isOverGround(condNum)
+0604                     set(handles.([<span class="string">'type'</span>,num2str(c)]),<span class="string">'string'</span>,<span class="string">'OG'</span>);
+0605                 <span class="keyword">else</span>
+0606                     set(handles.([<span class="string">'type'</span>,num2str(c)]),<span class="string">'string'</span>,<span class="string">'TM'</span>);
+0607                 <span class="keyword">end</span>
+0608             <span class="keyword">else</span>
+0609                 set(handles.([<span class="string">'type'</span>,num2str(c)]),<span class="string">'string'</span>,subInfo.type{condNum});
+0610             <span class="keyword">end</span>
+0611         <span class="keyword">end</span>
+0612         <span class="comment">% -- emg data</span>
+0613         <span class="keyword">if</span> isfield(subInfo,<span class="string">'EMGList1'</span>) &amp;&amp; isfield(subInfo,<span class="string">'EMGList2'</span>) <span class="comment">%for subjects processed before 7/29/2014</span>
+0614             <span class="keyword">for</span> i=1:16
+0615                 aux1=[<span class="string">'emg1_'</span> num2str(i)];
+0616                 set(handles.(aux1),<span class="string">'string'</span>,subInfo.EMGList1{i});
+0617                 aux2=[<span class="string">'emg2_'</span> num2str(i)];
+0618                 set(handles.(aux2),<span class="string">'string'</span>,subInfo.EMGList2{i});
+0619             <span class="keyword">end</span>
+0620         <span class="keyword">end</span>
+0621         <span class="comment">% --  save location</span>
+0622         handles.save_folder=subInfo.save_folder;
+0623         set(handles.saveloc_edit,<span class="string">'string'</span>,handles.save_folder);
+0624         <span class="comment">% -- Trial observations</span>
+0625         <span class="keyword">if</span> isfield(subInfo,<span class="string">'trialObs'</span>)
+0626             handles.trialObs=subInfo.trialObs;
+0627         <span class="keyword">end</span>
+0628     <span class="keyword">end</span>
+0629     guidata(hObject,handles)
+0630 <span class="keyword">end</span>
+0631 
+0632 
+0633 <span class="comment">% --- Executes when user attempts to close figure1.</span>
+0634 <a name="_sub110" href="#_subfunctions" class="code">function figure1_CloseRequestFcn(hObject, eventdata, handles)</a>
+0635 <span class="comment">% hObject    handle to figure1 (see GCBO)</span>
+0636 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0637 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0638 
+0639 choice = questdlg(<span class="string">'Do you want to save changes?'</span>, <span class="keyword">...</span>
+0640 <span class="string">'GetInfoGUI'</span>, <span class="keyword">...</span>
+0641 <span class="string">'Save'</span>,<span class="string">'Don''t Save'</span>,<span class="string">'Cancel'</span>,<span class="string">'Cancel'</span>);
+0642 <span class="keyword">switch</span> choice
+0643     <span class="keyword">case</span> <span class="string">'Save'</span>
+0644         <span class="comment">%check info</span>
+0645         info=<a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a>(handles,true);
+0646         <span class="comment">%save whatever was entered.</span>
+0647         save([info.save_folder filesep info.ID <span class="string">'info'</span>],<span class="string">'info'</span>)
+0648         handles.noSave=true;
+0649         guidata(hObject,handles)
+0650         uiresume(handles.figure1);
+0651     <span class="keyword">case</span> <span class="string">'Don''t Save'</span>
+0652         handles.noSave=true;
+0653         guidata(hObject,handles)
+0654         uiresume(handles.figure1);
+0655     <span class="keyword">case</span> {<span class="string">'Cancel'</span>,<span class="string">''</span>}
+0656         <span class="keyword">return</span>
+0657 <span class="keyword">end</span>
+0658 
+0659 
+0660 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0661 <span class="comment">% --------------------------- CreateFcns -------------------------------%</span>
+0662 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0663 
+0664 <span class="comment">% --- These fcns execute during object creation, after setting all properties.</span>
+0665 
+0666 <span class="comment">% Hint: controls usually have a white background on Windows.</span>
+0667 <span class="comment">%       See ISPC and COMPUTER.</span>
+0668 <a name="_sub111" href="#_subfunctions" class="code">function description_edit_CreateFcn(hObject, eventdata, handles)</a>
+0669 
+0670 <span class="comment">%initialize drop down list with different experiment types</span>
+0671 path=which(<span class="string">'GetInfoGUI'</span>);
+0672 path=strrep(path,<span class="string">'GetInfoGUI.m'</span>,<span class="string">'ExpDetails'</span>);
+0673 W=what(path);
+0674 <span class="comment">% experiments=cellstr(W.m); %HH 6/16</span>
+0675 experiments=cellstr(W.mat);
+0676 <span class="keyword">for</span> i=1:length(experiments)
+0677     fileExt=find(experiments{i}==<span class="string">'.'</span>);
+0678     experiments{i}=experiments{i}(1:fileExt-1);
+0679 <span class="keyword">end</span>
+0680 set(hObject,<span class="string">'String'</span>,[<span class="string">' '</span>;experiments])
+0681 
+0682 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0683     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0684 <span class="keyword">end</span>
+0685 
+0686 <a name="_sub112" href="#_subfunctions" class="code">function name_edit_CreateFcn(hObject, eventdata, handles)</a>
+0687 
+0688 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0689     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0690 <span class="keyword">end</span>
+0691 
+0692 <a name="_sub113" href="#_subfunctions" class="code">function month_list_CreateFcn(hObject, eventdata, handles)</a>
+0693 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0694     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0695 <span class="keyword">end</span>
+0696 
+0697 <a name="_sub114" href="#_subfunctions" class="code">function day_edit_CreateFcn(hObject, eventdata, handles)</a>
+0698 
+0699 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0700     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0701 <span class="keyword">end</span>
+0702 
+0703 <a name="_sub115" href="#_subfunctions" class="code">function year_edit_CreateFcn(hObject, eventdata, handles)</a>
+0704 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0705     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0706 <span class="keyword">end</span>
+0707 
+0708 <a name="_sub116" href="#_subfunctions" class="code">function subID_edit_CreateFcn(hObject, ~, handles)</a>
+0709 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0710     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0711 <span class="keyword">end</span>
+0712 
+0713 <a name="_sub117" href="#_subfunctions" class="code">function DOBmonth_list_CreateFcn(hObject, eventdata, handles)</a>
+0714 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0715     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0716 <span class="keyword">end</span>
+0717 
+0718 <a name="_sub118" href="#_subfunctions" class="code">function DOBday_edit_CreateFcn(hObject, eventdata, handles)</a>
+0719 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0720     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0721 <span class="keyword">end</span>
+0722 
+0723 <a name="_sub119" href="#_subfunctions" class="code">function DOByear_edit_CreateFcn(hObject, eventdata, handles)</a>
+0724 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0725     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0726 <span class="keyword">end</span>
+0727 
+0728 <a name="_sub120" href="#_subfunctions" class="code">function gender_list_CreateFcn(hObject, eventdata, handles)</a>
+0729 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0730     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0731 <span class="keyword">end</span>
+0732 
+0733 <a name="_sub121" href="#_subfunctions" class="code">function domleg_list_CreateFcn(hObject, eventdata, handles)</a>
+0734 
+0735 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0736     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0737 <span class="keyword">end</span>
+0738 
+0739 <a name="_sub122" href="#_subfunctions" class="code">function domhand_list_CreateFcn(hObject, eventdata, handles)</a>
+0740 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0741     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0742 <span class="keyword">end</span>
+0743 
+0744 <a name="_sub123" href="#_subfunctions" class="code">function popupAffected_CreateFcn(hObject, eventdata, handles)</a>
+0745 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0746     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0747 <span class="keyword">end</span>
+0748 
+0749 <a name="_sub124" href="#_subfunctions" class="code">function height_edit_CreateFcn(hObject, eventdata, handles)</a>
+0750 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0751     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0752 <span class="keyword">end</span>
+0753 
+0754 <a name="_sub125" href="#_subfunctions" class="code">function weight_edit_CreateFcn(hObject, eventdata, handles)</a>
+0755 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0756     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0757 <span class="keyword">end</span>
+0758 
+0759 <a name="_sub126" href="#_subfunctions" class="code">function condition1_CreateFcn(hObject, eventdata, handles)</a>
+0760 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0761     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0762 <span class="keyword">end</span>
+0763 <a name="_sub127" href="#_subfunctions" class="code">function condName1_CreateFcn(hObject, eventdata, handles)</a>
+0764 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0765     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0766 <span class="keyword">end</span>
+0767 <a name="_sub128" href="#_subfunctions" class="code">function description1_CreateFcn(hObject, eventdata, handles)</a>
+0768 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0769     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0770 <span class="keyword">end</span>
+0771 <a name="_sub129" href="#_subfunctions" class="code">function trialnum1_CreateFcn(hObject, eventdata, handles)</a>
+0772 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0773     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0774 <span class="keyword">end</span>
+0775 
+0776 <a name="_sub130" href="#_subfunctions" class="code">function condition2_CreateFcn(hObject, eventdata, handles)</a>
+0777 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0778     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0779 <span class="keyword">end</span>
+0780 <a name="_sub131" href="#_subfunctions" class="code">function condName2_CreateFcn(hObject, eventdata, handles)</a>
+0781 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0782     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0783 <span class="keyword">end</span>
+0784 <a name="_sub132" href="#_subfunctions" class="code">function description2_CreateFcn(hObject, eventdata, handles)</a>
+0785 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0786     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0787 <span class="keyword">end</span>
+0788 <a name="_sub133" href="#_subfunctions" class="code">function trialnum2_CreateFcn(hObject, eventdata, handles)</a>
+0789 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0790     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0791 <span class="keyword">end</span>
+0792 
+0793 <a name="_sub134" href="#_subfunctions" class="code">function condition3_CreateFcn(hObject, eventdata, handles)</a>
+0794 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0795     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0796 <span class="keyword">end</span>
+0797 <a name="_sub135" href="#_subfunctions" class="code">function condName3_CreateFcn(hObject, eventdata, handles)</a>
+0798 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0799     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0800 <span class="keyword">end</span>
+0801 <a name="_sub136" href="#_subfunctions" class="code">function description3_CreateFcn(hObject, eventdata, handles)</a>
+0802 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0803     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0804 <span class="keyword">end</span>
+0805 <a name="_sub137" href="#_subfunctions" class="code">function trialnum3_CreateFcn(hObject, eventdata, handles)</a>
+0806 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0807     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0808 <span class="keyword">end</span>
+0809 
+0810 <a name="_sub138" href="#_subfunctions" class="code">function condition4_CreateFcn(hObject, eventdata, handles)</a>
+0811 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0812     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0813 <span class="keyword">end</span>
+0814 <a name="_sub139" href="#_subfunctions" class="code">function condName4_CreateFcn(hObject, eventdata, handles)</a>
+0815 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0816     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0817 <span class="keyword">end</span>
+0818 <a name="_sub140" href="#_subfunctions" class="code">function description4_CreateFcn(hObject, eventdata, handles)</a>
+0819 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0820     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0821 <span class="keyword">end</span>
+0822 <a name="_sub141" href="#_subfunctions" class="code">function trialnum4_CreateFcn(hObject, eventdata, handles)</a>
+0823 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0824     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0825 <span class="keyword">end</span>
+0826 
+0827 <a name="_sub142" href="#_subfunctions" class="code">function condition5_CreateFcn(hObject, eventdata, handles)</a>
+0828 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0829     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0830 <span class="keyword">end</span>
+0831 <a name="_sub143" href="#_subfunctions" class="code">function condName5_CreateFcn(hObject, eventdata, handles)</a>
+0832 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0833     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0834 <span class="keyword">end</span>
+0835 <a name="_sub144" href="#_subfunctions" class="code">function description5_CreateFcn(hObject, eventdata, handles)</a>
+0836 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0837     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0838 <span class="keyword">end</span>
+0839 <a name="_sub145" href="#_subfunctions" class="code">function trialnum5_CreateFcn(hObject, eventdata, handles)</a>
+0840 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0841     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0842 <span class="keyword">end</span>
+0843 
+0844 <a name="_sub146" href="#_subfunctions" class="code">function condition6_CreateFcn(hObject, eventdata, handles)</a>
+0845 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0846     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0847 <span class="keyword">end</span>
+0848 <a name="_sub147" href="#_subfunctions" class="code">function condName6_CreateFcn(hObject, eventdata, handles)</a>
+0849 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0850     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0851 <span class="keyword">end</span>
+0852 <a name="_sub148" href="#_subfunctions" class="code">function description6_CreateFcn(hObject, eventdata, handles)</a>
+0853 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0854     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0855 <span class="keyword">end</span>
+0856 <a name="_sub149" href="#_subfunctions" class="code">function trialnum6_CreateFcn(hObject, eventdata, handles)</a>
+0857 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0858     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0859 <span class="keyword">end</span>
+0860 
+0861 <a name="_sub150" href="#_subfunctions" class="code">function condition7_CreateFcn(hObject, eventdata, handles)</a>
+0862 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0863     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0864 <span class="keyword">end</span>
+0865 <a name="_sub151" href="#_subfunctions" class="code">function condName7_CreateFcn(hObject, eventdata, handles)</a>
+0866 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0867     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0868 <span class="keyword">end</span>
+0869 <a name="_sub152" href="#_subfunctions" class="code">function description7_CreateFcn(hObject, eventdata, handles)</a>
+0870 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0871     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0872 <span class="keyword">end</span>
+0873 <a name="_sub153" href="#_subfunctions" class="code">function trialnum7_CreateFcn(hObject, eventdata, handles)</a>
+0874 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0875     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0876 <span class="keyword">end</span>
+0877 
+0878 <a name="_sub154" href="#_subfunctions" class="code">function condition8_CreateFcn(hObject, eventdata, handles)</a>
+0879 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0880     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0881 <span class="keyword">end</span>
+0882 <a name="_sub155" href="#_subfunctions" class="code">function condName8_CreateFcn(hObject, eventdata, handles)</a>
+0883 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0884     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0885 <span class="keyword">end</span>
+0886 <a name="_sub156" href="#_subfunctions" class="code">function description8_CreateFcn(hObject, eventdata, handles)</a>
+0887 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0888     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0889 <span class="keyword">end</span>
+0890 <a name="_sub157" href="#_subfunctions" class="code">function trialnum8_CreateFcn(hObject, eventdata, handles)</a>
+0891 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0892     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0893 <span class="keyword">end</span>
+0894 
+0895 <a name="_sub158" href="#_subfunctions" class="code">function condition9_CreateFcn(hObject, eventdata, handles)</a>
+0896 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0897     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0898 <span class="keyword">end</span>
+0899 <a name="_sub159" href="#_subfunctions" class="code">function condName9_CreateFcn(hObject, eventdata, handles)</a>
+0900 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0901     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0902 <span class="keyword">end</span>
+0903 <a name="_sub160" href="#_subfunctions" class="code">function description9_CreateFcn(hObject, eventdata, handles)</a>
+0904 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0905     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0906 <span class="keyword">end</span>
+0907 <a name="_sub161" href="#_subfunctions" class="code">function trialnum9_CreateFcn(hObject, eventdata, handles)</a>
+0908 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0909     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0910 <span class="keyword">end</span>
+0911 
+0912 <a name="_sub162" href="#_subfunctions" class="code">function condition10_CreateFcn(hObject, eventdata, handles)</a>
+0913 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0914     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0915 <span class="keyword">end</span>
+0916 <a name="_sub163" href="#_subfunctions" class="code">function condName10_CreateFcn(hObject, eventdata, handles)</a>
+0917 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0918     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0919 <span class="keyword">end</span>
+0920 <a name="_sub164" href="#_subfunctions" class="code">function description10_CreateFcn(hObject, eventdata, handles)</a>
+0921 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0922     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0923 <span class="keyword">end</span>
+0924 <a name="_sub165" href="#_subfunctions" class="code">function trialnum10_CreateFcn(hObject, eventdata, handles)</a>
+0925 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0926     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0927 <span class="keyword">end</span>
+0928 
+0929 <a name="_sub166" href="#_subfunctions" class="code">function condition11_CreateFcn(hObject, eventdata, handles)</a>
+0930 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0931     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0932 <span class="keyword">end</span>
+0933 <a name="_sub167" href="#_subfunctions" class="code">function condName11_CreateFcn(hObject, eventdata, handles)</a>
+0934 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0935     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0936 <span class="keyword">end</span>
+0937 <a name="_sub168" href="#_subfunctions" class="code">function description11_CreateFcn(hObject, eventdata, handles)</a>
+0938 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0939     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0940 <span class="keyword">end</span>
+0941 <a name="_sub169" href="#_subfunctions" class="code">function trialnum11_CreateFcn(hObject, eventdata, handles)</a>
+0942 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0943     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0944 <span class="keyword">end</span>
+0945 
+0946 <a name="_sub170" href="#_subfunctions" class="code">function condition12_CreateFcn(hObject, eventdata, handles)</a>
+0947 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0948     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0949 <span class="keyword">end</span>
+0950 <a name="_sub171" href="#_subfunctions" class="code">function condName12_CreateFcn(hObject, eventdata, handles)</a>
+0951 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0952     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0953 <span class="keyword">end</span>
+0954 <a name="_sub172" href="#_subfunctions" class="code">function description12_CreateFcn(hObject, eventdata, handles)</a>
+0955 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0956     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0957 <span class="keyword">end</span>
+0958 <a name="_sub173" href="#_subfunctions" class="code">function trialnum12_CreateFcn(hObject, eventdata, handles)</a>
+0959 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0960     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0961 <span class="keyword">end</span>
+0962 
+0963 <a name="_sub174" href="#_subfunctions" class="code">function condition13_CreateFcn(hObject, eventdata, handles)</a>
+0964 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0965     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0966 <span class="keyword">end</span>
+0967 <a name="_sub175" href="#_subfunctions" class="code">function condName13_CreateFcn(hObject, eventdata, handles)</a>
+0968 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0969     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0970 <span class="keyword">end</span>
+0971 <a name="_sub176" href="#_subfunctions" class="code">function description13_CreateFcn(hObject, eventdata, handles)</a>
+0972 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0973     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0974 <span class="keyword">end</span>
+0975 <a name="_sub177" href="#_subfunctions" class="code">function trialnum13_CreateFcn(hObject, eventdata, handles)</a>
+0976 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0977     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0978 <span class="keyword">end</span>
+0979 
+0980 <a name="_sub178" href="#_subfunctions" class="code">function condition14_CreateFcn(hObject, eventdata, handles)</a>
+0981 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0982     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0983 <span class="keyword">end</span>
+0984 <a name="_sub179" href="#_subfunctions" class="code">function condName14_CreateFcn(hObject, eventdata, handles)</a>
+0985 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0986     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0987 <span class="keyword">end</span>
+0988 <a name="_sub180" href="#_subfunctions" class="code">function description14_CreateFcn(hObject, eventdata, handles)</a>
+0989 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0990     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0991 <span class="keyword">end</span>
+0992 <a name="_sub181" href="#_subfunctions" class="code">function trialnum14_CreateFcn(hObject, eventdata, handles)</a>
+0993 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0994     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0995 <span class="keyword">end</span>
+0996 
+0997 <a name="_sub182" href="#_subfunctions" class="code">function condition15_CreateFcn(hObject, eventdata, handles)</a>
+0998 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0999     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1000 <span class="keyword">end</span>
+1001 <a name="_sub183" href="#_subfunctions" class="code">function condName15_CreateFcn(hObject, eventdata, handles)</a>
+1002 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1003     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1004 <span class="keyword">end</span>
+1005 <a name="_sub184" href="#_subfunctions" class="code">function description15_CreateFcn(hObject, eventdata, handles)</a>
+1006 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1007     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1008 <span class="keyword">end</span>
+1009 <a name="_sub185" href="#_subfunctions" class="code">function trialnum15_CreateFcn(hObject, eventdata, handles)</a>
+1010 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1011     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1012 <span class="keyword">end</span>
+1013 
+1014 <a name="_sub186" href="#_subfunctions" class="code">function c3dlocation_CreateFcn(hObject, eventdata, handles)</a>
+1015 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1016     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1017 <span class="keyword">end</span>
+1018 
+1019 <a name="_sub187" href="#_subfunctions" class="code">function numoftrials_CreateFcn(hObject, eventdata, handles)</a>
+1020 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1021     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1022 <span class="keyword">end</span>
+1023 
+1024 <a name="_sub188" href="#_subfunctions" class="code">function numofconds_CreateFcn(hObject, eventdata, handles)</a>
+1025 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1026     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1027 <span class="keyword">end</span>
+1028 
+1029 <a name="_sub189" href="#_subfunctions" class="code">function note_edit_CreateFcn(hObject, eventdata, handles)</a>
+1030 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1031     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1032 <span class="keyword">end</span>
+1033 
+1034 <a name="_sub190" href="#_subfunctions" class="code">function saveloc_edit_CreateFcn(hObject, eventdata, handles)</a>
+1035 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1036     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1037 <span class="keyword">end</span>
+1038 
+1039 <a name="_sub191" href="#_subfunctions" class="code">function basefile_CreateFcn(hObject, eventdata, handles)</a>
+1040 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1041     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1042 <span class="keyword">end</span>
+1043 
+1044 <a name="_sub192" href="#_subfunctions" class="code">function secfileloc_CreateFcn(hObject, eventdata, handles)</a>
+1045 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+1046     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+1047 <span class="keyword">end</span>
+1048 
+1049 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+1050 <span class="comment">%----------------------------ButtonDownFcns-----------------------------%</span>
+1051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+1052 
+1053 <span class="comment">% --- If Enable == 'on', executes on mouse press in 5 pixel border.</span>
+1054 <span class="comment">% --- Otherwise, executes on mouse press in 5 pixel border or over description_edit.</span>
+1055 
+1056 <a name="_sub193" href="#_subfunctions" class="code">function day_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1057 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1058 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1059 set(hObject,<span class="string">'String'</span>,[])
+1060 <span class="comment">% Create UI control</span>
+1061 uicontrol(handles.day_edit);
+1062 
+1063 <a name="_sub194" href="#_subfunctions" class="code">function name_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1064 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1065 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1066 set(hObject,<span class="string">'String'</span>,[])
+1067 <span class="comment">% Create UI control</span>
+1068 uicontrol(handles.name_edit);
+1069 
+1070 <a name="_sub195" href="#_subfunctions" class="code">function year_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1071 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1072 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1073 set(hObject,<span class="string">'String'</span>,[])
+1074 <span class="comment">% Create UI control</span>
+1075 uicontrol(handles.year_edit);
+1076 
+1077 <a name="_sub196" href="#_subfunctions" class="code">function note_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1078 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1079 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1080 set(hObject,<span class="string">'String'</span>,[])
+1081 <span class="comment">% Create UI control</span>
+1082 uicontrol(handles.note_edit);
+1083 
+1084 <a name="_sub197" href="#_subfunctions" class="code">function subID_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1085 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1086 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1087 set(hObject,<span class="string">'String'</span>,[])
+1088 <span class="comment">% Create UI control</span>
+1089 uicontrol(handles.subID_edit);
+1090 
+1091 <a name="_sub198" href="#_subfunctions" class="code">function DOBday_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1092 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1093 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1094 set(hObject,<span class="string">'String'</span>,[])
+1095 <span class="comment">% Create UI control</span>
+1096 uicontrol(handles.DOBday_edit);
+1097 
+1098 <a name="_sub199" href="#_subfunctions" class="code">function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)</a>
+1099 <span class="comment">% Toggel the &quot;Enable&quot; state to ON and clear letters</span>
+1100 set(hObject, <span class="string">'Enable'</span>, <span class="string">'On'</span>);
+1101 set(hObject,<span class="string">'String'</span>,[])
+1102 <span class="comment">% Create UI control</span>
+1103 uicontrol(handles.DOByear_edit);
+1104 
+1105 
+1106 
+1107 <a name="_sub200" href="#_subfunctions" class="code">function emg1_1_Callback(hObject, eventdata, handles)</a>
+1108 
+1109 <a name="_sub201" href="#_subfunctions" class="code">function emg1_1_CreateFcn(hObject, eventdata, handles)</a>
+1110 
+1111 <a name="_sub202" href="#_subfunctions" class="code">function emg1_3_Callback(hObject, eventdata, handles)</a>
+1112 
+1113 <a name="_sub203" href="#_subfunctions" class="code">function emg1_3_CreateFcn(hObject, eventdata, handles)</a>
+1114 
+1115 <a name="_sub204" href="#_subfunctions" class="code">function emg1_2_Callback(hObject, eventdata, handles)</a>
+1116 
+1117 <a name="_sub205" href="#_subfunctions" class="code">function emg1_2_CreateFcn(hObject, eventdata, handles)</a>
+1118 
+1119 <a name="_sub206" href="#_subfunctions" class="code">function emg1_4_Callback(hObject, eventdata, handles)</a>
+1120 
+1121 <a name="_sub207" href="#_subfunctions" class="code">function emg1_4_CreateFcn(hObject, eventdata, handles)</a>
+1122 
+1123 <a name="_sub208" href="#_subfunctions" class="code">function emg1_5_Callback(hObject, eventdata, handles)</a>
+1124 
+1125 <a name="_sub209" href="#_subfunctions" class="code">function emg1_5_CreateFcn(hObject, eventdata, handles)</a>
+1126 
+1127 <a name="_sub210" href="#_subfunctions" class="code">function emg1_15_Callback(hObject, eventdata, handles)</a>
+1128 
+1129 <a name="_sub211" href="#_subfunctions" class="code">function emg1_15_CreateFcn(hObject, eventdata, handles)</a>
+1130 
+1131 <a name="_sub212" href="#_subfunctions" class="code">function emg1_14_Callback(hObject, eventdata, handles)</a>
+1132 
+1133 <a name="_sub213" href="#_subfunctions" class="code">function emg1_14_CreateFcn(hObject, eventdata, handles)</a>
+1134 
+1135 <a name="_sub214" href="#_subfunctions" class="code">function emg1_13_Callback(hObject, eventdata, handles)</a>
+1136 
+1137 <a name="_sub215" href="#_subfunctions" class="code">function emg1_13_CreateFcn(hObject, eventdata, handles)</a>
+1138 
+1139 <a name="_sub216" href="#_subfunctions" class="code">function emg1_11_Callback(hObject, eventdata, handles)</a>
+1140 
+1141 <a name="_sub217" href="#_subfunctions" class="code">function emg1_11_CreateFcn(hObject, eventdata, handles)</a>
+1142 
+1143 <a name="_sub218" href="#_subfunctions" class="code">function emg1_10_Callback(hObject, eventdata, handles)</a>
+1144 
+1145 <a name="_sub219" href="#_subfunctions" class="code">function emg1_10_CreateFcn(hObject, eventdata, handles)</a>
+1146 
+1147 <a name="_sub220" href="#_subfunctions" class="code">function emg1_6_Callback(hObject, eventdata, handles)</a>
+1148 
+1149 <a name="_sub221" href="#_subfunctions" class="code">function emg1_6_CreateFcn(hObject, eventdata, handles)</a>
+1150 
+1151 <a name="_sub222" href="#_subfunctions" class="code">function emg1_8_Callback(hObject, eventdata, handles)</a>
+1152 
+1153 <a name="_sub223" href="#_subfunctions" class="code">function emg1_8_CreateFcn(hObject, eventdata, handles)</a>
+1154 
+1155 <a name="_sub224" href="#_subfunctions" class="code">function emg1_7_Callback(hObject, eventdata, handles)</a>
+1156 
+1157 <a name="_sub225" href="#_subfunctions" class="code">function emg1_7_CreateFcn(hObject, eventdata, handles)</a>
+1158 
+1159 <a name="_sub226" href="#_subfunctions" class="code">function emg1_9_Callback(hObject, eventdata, handles)</a>
+1160 
+1161 <a name="_sub227" href="#_subfunctions" class="code">function emg1_9_CreateFcn(hObject, eventdata, handles)</a>
+1162 
+1163 <a name="_sub228" href="#_subfunctions" class="code">function emg1_12_Callback(hObject, eventdata, handles)</a>
+1164 
+1165 <a name="_sub229" href="#_subfunctions" class="code">function emg1_12_CreateFcn(hObject, eventdata, handles)</a>
+1166 
+1167 <a name="_sub230" href="#_subfunctions" class="code">function emg1_16_Callback(hObject, eventdata, handles)</a>
+1168 
+1169 <a name="_sub231" href="#_subfunctions" class="code">function emg1_16_CreateFcn(hObject, eventdata, handles)</a>
+1170 
+1171 <a name="_sub232" href="#_subfunctions" class="code">function emg2_1_Callback(hObject, eventdata, handles)</a>
+1172 
+1173 <a name="_sub233" href="#_subfunctions" class="code">function emg2_1_CreateFcn(hObject, eventdata, handles)</a>
+1174 
+1175 <a name="_sub234" href="#_subfunctions" class="code">function emg2_2_Callback(hObject, eventdata, handles)</a>
+1176 
+1177 <a name="_sub235" href="#_subfunctions" class="code">function emg2_2_CreateFcn(hObject, eventdata, handles)</a>
+1178 
+1179 <a name="_sub236" href="#_subfunctions" class="code">function emg2_3_Callback(hObject, eventdata, handles)</a>
+1180 
+1181 <a name="_sub237" href="#_subfunctions" class="code">function emg2_3_CreateFcn(hObject, eventdata, handles)</a>
+1182 
+1183 <a name="_sub238" href="#_subfunctions" class="code">function emg2_4_Callback(hObject, eventdata, handles)</a>
+1184 
+1185 <a name="_sub239" href="#_subfunctions" class="code">function emg2_4_CreateFcn(hObject, eventdata, handles)</a>
+1186 
+1187 <a name="_sub240" href="#_subfunctions" class="code">function emg2_5_Callback(hObject, eventdata, handles)</a>
+1188 
+1189 <a name="_sub241" href="#_subfunctions" class="code">function emg2_5_CreateFcn(hObject, eventdata, handles)</a>
+1190 
+1191 <a name="_sub242" href="#_subfunctions" class="code">function emg2_6_Callback(hObject, eventdata, handles)</a>
+1192 
+1193 <a name="_sub243" href="#_subfunctions" class="code">function emg2_6_CreateFcn(hObject, eventdata, handles)</a>
+1194 
+1195 <a name="_sub244" href="#_subfunctions" class="code">function emg2_7_Callback(hObject, eventdata, handles)</a>
+1196 
+1197 <a name="_sub245" href="#_subfunctions" class="code">function emg2_7_CreateFcn(hObject, eventdata, handles)</a>
+1198 
+1199 <a name="_sub246" href="#_subfunctions" class="code">function emg2_8_Callback(hObject, eventdata, handles)</a>
+1200 
+1201 <a name="_sub247" href="#_subfunctions" class="code">function emg2_8_CreateFcn(hObject, eventdata, handles)</a>
+1202 
+1203 <a name="_sub248" href="#_subfunctions" class="code">function emg2_9_Callback(hObject, eventdata, handles)</a>
+1204 
+1205 <a name="_sub249" href="#_subfunctions" class="code">function emg2_9_CreateFcn(hObject, eventdata, handles)</a>
+1206 
+1207 <a name="_sub250" href="#_subfunctions" class="code">function emg2_10_Callback(hObject, eventdata, handles)</a>
+1208 
+1209 <a name="_sub251" href="#_subfunctions" class="code">function emg2_10_CreateFcn(hObject, eventdata, handles)</a>
+1210 
+1211 <a name="_sub252" href="#_subfunctions" class="code">function emg2_11_Callback(hObject, eventdata, handles)</a>
+1212 
+1213 <a name="_sub253" href="#_subfunctions" class="code">function emg2_11_CreateFcn(hObject, eventdata, handles)</a>
+1214 
+1215 <a name="_sub254" href="#_subfunctions" class="code">function emg2_12_Callback(hObject, eventdata, handles)</a>
+1216 
+1217 <a name="_sub255" href="#_subfunctions" class="code">function emg2_12_CreateFcn(hObject, eventdata, handles)</a>
+1218 
+1219 <a name="_sub256" href="#_subfunctions" class="code">function emg2_13_Callback(hObject, eventdata, handles)</a>
+1220 
+1221 <a name="_sub257" href="#_subfunctions" class="code">function emg2_13_CreateFcn(hObject, eventdata, handles)</a>
+1222 
+1223 <a name="_sub258" href="#_subfunctions" class="code">function emg2_14_Callback(hObject, eventdata, handles)</a>
+1224 
+1225 <a name="_sub259" href="#_subfunctions" class="code">function emg2_14_CreateFcn(hObject, eventdata, handles)</a>
+1226 
+1227 <a name="_sub260" href="#_subfunctions" class="code">function emg2_15_Callback(hObject, eventdata, handles)</a>
+1228 
+1229 <a name="_sub261" href="#_subfunctions" class="code">function emg2_15_CreateFcn(hObject, eventdata, handles)</a>
+1230 
+1231 <a name="_sub262" href="#_subfunctions" class="code">function emg2_16_Callback(hObject, eventdata, handles)</a>
+1232 
+1233 <a name="_sub263" href="#_subfunctions" class="code">function emg2_16_CreateFcn(hObject, eventdata, handles)</a></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

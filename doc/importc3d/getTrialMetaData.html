@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getTrialMetaData</title>
+  <meta name="keywords" content="getTrialMetaData">
+  <meta name="description" content="getTrialMetaData  generates trialMetaData objects for each trial of a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">importc3d</a> &gt; getTrialMetaData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for importc3d&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>getTrialMetaData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>getTrialMetaData  generates trialMetaData objects for each trial of a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [trialMD,fileList,secFileList] = getTrialMetaData(info) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getTrialMetaData  generates trialMetaData objects for each trial of a
+given experiment.
+
+INPUTS:
+info: structured array output from GetInfoGUI
+
+OUTPUT:
+trialMD: cell array of trialMetaData objects where the cell index corresponds
+to the trial number
+fileList: list of .c3d files containing kinematic and force data for a given experiment
+secFileList: list of files containing EMG data for a given experiment
+
+See also: trialMetaData</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [trialMD,fileList,secFileList] = getTrialMetaData(info)</a>
+0002 <span class="comment">%getTrialMetaData  generates trialMetaData objects for each trial of a</span>
+0003 <span class="comment">%given experiment.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%INPUTS:</span>
+0006 <span class="comment">%info: structured array output from GetInfoGUI</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%OUTPUT:</span>
+0009 <span class="comment">%trialMD: cell array of trialMetaData objects where the cell index corresponds</span>
+0010 <span class="comment">%to the trial number</span>
+0011 <span class="comment">%fileList: list of .c3d files containing kinematic and force data for a given experiment</span>
+0012 <span class="comment">%secFileList: list of files containing EMG data for a given experiment</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%See also: trialMetaData</span>
+0015 
+0016 dirStr = info.dir_location;
+0017 basename = info.basename;
+0018 
+0019 fileList={};
+0020 secFileList={};
+0021 trialMD={};
+0022 
+0023 
+0024 <span class="keyword">for</span> cond = sort(info.cond) 
+0025     <span class="keyword">for</span> t = info.trialnums{cond}
+0026         <span class="comment">%there may be an easier way to do this, basically this assumes that</span>
+0027         <span class="comment">%the .c3d files are named basename01, basename02,..., basename10,</span>
+0028         <span class="comment">%basename11,...</span>
+0029         <span class="keyword">if</span> t&lt;10
+0030             filename = [dirStr filesep basename  <span class="string">'0'</span> num2str(t)];
+0031         <span class="keyword">else</span>
+0032             filename = [dirStr filesep basename num2str(t)];
+0033         <span class="keyword">end</span>
+0034         
+0035         fileList{t}=filename;
+0036                
+0037         <span class="keyword">if</span> ~isempty(info.secdir_location) <span class="comment">%Pablo changed on 7/16/2015 to consider the case where there is EMG from a single file.</span>
+0038             <span class="keyword">if</span> t&lt;10
+0039                 secFileList{t} = [info.secdir_location filesep basename <span class="string">'0'</span> num2str(t)];
+0040             <span class="keyword">else</span>
+0041                 secFileList{t} = [info.secdir_location filesep basename num2str(t)];
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">else</span>
+0044             secFileList{t}=<span class="string">''</span>;
+0045         <span class="keyword">end</span>       
+0046         
+0047         
+0048         <span class="keyword">if</span> ~isfield(info,<span class="string">'trialObs'</span>)
+0049             info.trialObs=cell(info.numoftrials,1);
+0050         <span class="keyword">end</span>
+0051         <span class="comment">% constructor: (name,desc,obs,refLeg,cond,filename,type)</span>
+0052         trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},<span class="keyword">...</span>
+0053             info.trialObs{t},info.refLeg,cond,filename,info.type{cond});        
+0054     <span class="keyword">end</span>    
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
