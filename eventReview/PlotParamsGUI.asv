@@ -98,7 +98,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=1;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','samePlotCheck','conditionList','conditionSubList',...
-            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck','AlignEnd');
+            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck');
         for i=1:17
             set(handles.(['color' num2str(i)]),'Enable','on');
         end
@@ -108,7 +108,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=2;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','conditionList','indivSubs','earlyNumPts','lateNumPts',...
-            'exptLastNumPts','removeBiasCheck','printCodeCheck');
+            'exptLastNumPts','removeBiasCheck','printCodeCheck','AlignEnd');
         set(handles.parameterList,'max',10)
         set(handles.conditionText,'String','Conditions')
     case 'scatterButton'
@@ -506,12 +506,13 @@ condStr=['{' strjoin(strcat('''',conds,'''')',',') '}'];
 indivSubFlag=get(handles.indivSubs,'Value');
 biofeedbackFlag=get(handles.biofeedback,'Value');
 removeBias=get(handles.removeBiasCheck,'Value');
+alignEndFlag=get(handles.AlignEnd,'Value');
 
 switch handles.plotType
     case 1 %time course
         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,'Value')));
         binwidth=str2double(get(handles.binEdit,'string'));
-        alignEndFlag=str2double(get(handles.AlignEnd,'string'));
+        binwidth=str2double(get(handles.binEdit,'string'));
         adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups,[],[],alignEndFlag);
         %to print code previous line to command window:
         if get(handles.printCodeCheck,'value')
