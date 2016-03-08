@@ -100,7 +100,7 @@ if nargin<12 || isempty(medianFlag)
     medianFlag=0;
 end
 
-if nargin<14
+if nargin<14 || alignEnd==0
     alignEnd=[];
 end
 %% Initialize plot
