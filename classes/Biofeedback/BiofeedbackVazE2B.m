@@ -223,6 +223,10 @@ classdef BiofeedbackVazE2B
                        Rgamma2 = interp1(data2(:,1),data2(:,8),frame2,'linear');
                        Lgamma2 = interp1(data2(:,1),data2(:,9),frame2,'linear');
                        ank = interp1(data2(:,1),data2(:,13)-data2(:,12),frame2,'linear');
+                       
+                       %try to remove noise
+                       Rgamma2(abs(Rgamma2)>0.7)=0;
+                       Lgamma2(abs(Lgamma2)>0.7)=0;
 
                        
 %                        ank = 
@@ -298,7 +302,8 @@ classdef BiofeedbackVazE2B
 %                        keyboard
                        tamp = Rgamma3(1:smallest)'-Lgamma3(1:smallest)';
                        tamp2 = Lgamma3(1:smallest)'-Rgamma3(1:smallest)';
-                       tamp3 = ank(find(RHS)-100);
+%                        tamp3 = ank(find(RHS)-100);
+                       tamp3 = ank(find(RHS)-200);
 %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                        
                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
@@ -327,13 +332,15 @@ classdef BiofeedbackVazE2B
 %                         hold on
 %                         plot(ank,'r');
 %                         scatter(find(RHS),ank(find(RHS)),'o','MarkerFaceColor','green');
-%                         scatter(find(RHS)-100,ank(find(RHS)-100),'o','MarkerFaceColor','black');
+%                         scatter(find(RHS)-200,ank(find(RHS)-200),'o','MarkerFaceColor','black');%100 for 1 step 200 for 2 step
 %                         subplot(2,1,2)
 %                         plot(Lgamma2);
 %                         hold on
 %                         plot(ank,'r');
-%                         scatter(find(LTO),ank(find(LTO)),'o','MarkerFaceColor','green');
-% 
+%                         scatter(find(LHS),ank(find(LHS)),'o','MarkerFaceColor','green');
+%                         scatter(find(LHS)-200,ank(find(LHS)-200),'o','MarkerFaceColor','black');%100 for 1 step 200 for 2 step
+%                         
+% % 
 %                         keyboard
 %                         close(g)
                        
@@ -348,7 +355,7 @@ classdef BiofeedbackVazE2B
                        llqr{z} = iqr(lhits{z});
                         clear RHS LHS tamp
                    end
-                   
+%                    keyboard
                    this.saveit();
                    
                    waitbar(1,WB,'Processing complete...');
