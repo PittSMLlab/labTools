@@ -418,7 +418,7 @@ classdef BiofeedbackVazE2B
 %                    subplot(2,1,1)
                    ylim([-0.15 0.15]);
                    xlim([0 h+10]);
-                   title([this.subjectcode ' Step Length Asymmetry Error']);
+                   title([this.subjectcode ' Step Position Error']);
                    xlabel('step #');
                    ylabel('Error (m)');
 
@@ -531,7 +531,7 @@ classdef BiofeedbackVazE2B
                    end
                    ylim([-0.15 0.15]);
                    xlim([0 length(meanhits1)+0.5]);
-                   title([this.subjectcode ' Step Length Asymmetry Error']);
+                   title([this.subjectcode ' Step Position Error']);
                    ylabel('Error (m)');
                    
                    
@@ -618,7 +618,7 @@ classdef BiofeedbackVazE2B
                    end
                    ylim([0 max(meanhits1.^2)+0.1*max(meanhits1.^2)]);
                    xlim([0 length(meanhits1)+0.5]);
-                   title([this.subjectcode ' Step Length Asymmetry Error MSE']);
+                   title([this.subjectcode ' Step Position Error MSE']);
                    ylabel('Error (m)');
                    
 %                    figure(6)
@@ -691,7 +691,7 @@ classdef BiofeedbackVazE2B
                    end
                    ylim([0 110]);
                    ylabel('Accuracy (%)')
-                   title([this.subjectcode ' Step Length Asymmetry Error Accuracy'])
+                   title([this.subjectcode ' Step Position Accuracy'])
                    
 %                    subplot(2,1,2)
 %                    hold on
