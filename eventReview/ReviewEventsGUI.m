@@ -448,7 +448,7 @@ if length(fieldList{value})==2
     if strcmp(dataType,'adaptParams')        
         label=fieldList{value}{1}(1:end-4);
         %plot data
-        bad=TSdata.bad(startSamp:endSamp);
+        bad=TSdata.bad(startSamp:endSamp)
         badStrides=find(bad);
         goodStrides=find(~bad);
         %found error 3/30/2016 this is plotting the same values regardless
@@ -512,10 +512,10 @@ else
         bad=TSdata.bad(startSamp:endSamp);
         badStrides=find(bad);
         goodStrides=find(~bad);        
-        plot(axesHandle,time(goodStrides),dataTS.Data(goodStrides),'b.','MarkerSize',20);  
+        plot(axesHandle,time(goodStrides),dataTS.Data(startSamp+goodStrides),'b.','MarkerSize',20);  
         set(axesHandle,'nextplot','add')
         if get(handles.showBadCheck,'Value')
-             plot(axesHandle,time(badStrides),dataTS.Data(badStrides),'bo','MarkerSize',6);
+             plot(axesHandle,time(badStrides),dataTS.Data(startSamp+badStrides),'bo','MarkerSize',6);
              legendEntries ={'data','bad data'};
         end
     else
