@@ -428,10 +428,12 @@ else
 end
 
 if times(end)<handles.tstop || get(handles.maxCheck,'value')
+%     disp(['Max Time scale selected!'])'
     endSamp=length(times);
     startSamp=max([1 endSamp-find(times<=handles.timeWindow,1,'last')]);
     last=1;    
 else
+%     disp(['using custom time scale']);
     startSamp=max([1 find(times>=handles.tstart,1,'first')]);
     endSamp=max([startSamp find(times<=handles.tstop,1,'last')]);
     last=0;
@@ -449,9 +451,13 @@ if length(fieldList{value})==2
         bad=TSdata.bad(startSamp:endSamp);
         badStrides=find(bad);
         goodStrides=find(~bad);
-        plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
+        %found error 3/30/2016 this is plotting the same values regardless
+        %of time scale, fixed
+%         plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
+        plot(axesHandle,time(goodStrides),FdataTS.Data(startSamp+goodStrides),'r.','MarkerSize',20);
         set(axesHandle,'nextplot','add')
-        plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
+%         plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
+        plot(axesHandle,time(goodStrides),SdataTS.Data(startSamp+goodStrides),'b.','MarkerSize',20);
         legendEntries = {'Fast','Slow'};
         if get(handles.showBadCheck,'Value')
              plot(axesHandle,time(badStrides),FdataTS.Data(badStrides),'ro','MarkerSize',6);
