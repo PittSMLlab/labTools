@@ -177,7 +177,8 @@ classdef BiofeedbackVazE2B
                    for z = 1:length(filename)
                        tempname = filename{z};
                        waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                       if strcmp(tempname(end-5:end-4),'V2') || strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-5:end-4),'V5') || strcmp(tempname(end-10:end-9),'V3') || strcmp(tempname(end-10:end-9),'V5')
+%                        keyboard
+                       if strcmp(tempname(end-5:end-4),'V2') || strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-5:end-4),'V5') || strcmp(tempname(end-10:end-9),'V3') || strcmp(tempname(end-10:end-9),'V5') || strcmp(tempname(end-14:end-13),'V7')
                            color{z} = 'blue';
                        elseif strcmp(tempname(end-10:end-4),'rev12V1')
                            color{z} = 'yellow';
@@ -220,9 +221,9 @@ classdef BiofeedbackVazE2B
 %                        keyboard
                        Rz2 = interp1(data2(:,1),data2(:,2),frame2,'linear');
                        Lz2 = interp1(data2(:,1),data2(:,3),frame2,'linear');
-                       Rgamma2 = interp1(data2(:,1),data2(:,8),frame2,'linear');
-                       Lgamma2 = interp1(data2(:,1),data2(:,9),frame2,'linear');
-                       ank = interp1(data2(:,1),data2(:,13)-data2(:,12),frame2,'linear');
+                       Rgamma2 = interp1(data2(:,1),data2(:,10),frame2,'linear');
+                       Lgamma2 = interp1(data2(:,1),data2(:,11),frame2,'linear');
+                       ank = interp1(data2(:,1),data2(:,7)-data2(:,6),frame2,'linear');
                        
                        %try to remove noise
                        Rgamma2(abs(Rgamma2)>0.7)=0;
@@ -279,12 +280,12 @@ classdef BiofeedbackVazE2B
                        LTO = zeros(length(LTO),1);
                        LTO(tlto) = 1;
                        
-                       [~,trg3] = findpeaks(Rgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
-                       RHS = zeros(length(RHS),1);
-                       RHS(trg3)=1;
-                       [~,tlg3] = findpeaks(Lgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
-                       LHS = zeros(length(LHS),1);
-                       LHS(tlg3)=1;
+%                        [~,trg3] = findpeaks(Rgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
+%                        RHS = zeros(length(RHS),1);
+%                        RHS(trg3)=1;
+%                        [~,tlg3] = findpeaks(Lgamma2,'MinPeakHeight',0.1,'MinPeakDistance',500);
+%                        LHS = zeros(length(LHS),1);
+%                        LHS(tlg3)=1;
                        
 %                        figure(60)
 %                        plot(Rgamma2);
@@ -306,8 +307,8 @@ classdef BiofeedbackVazE2B
                        tamp3 = ank(find(RHS)-200);
 %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                        
-                       tamp(abs(tamp)>0.15)=[];%remove spurios errors
-                       tamp2(abs(tamp2)>0.15)=[];
+%                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
+%                        tamp2(abs(tamp2)>0.15)=[];
                        
 %                        g = figure(60)
 %                        subplot(3,1,1)

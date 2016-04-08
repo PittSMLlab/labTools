@@ -207,7 +207,7 @@ classdef BiofeedbackSL
                    for z = 1:length(filename)
                        tempname = filename{z};
                        waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                       if strcmp(tempname(end-5:end-4),'V3')
+                       if strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-14:end-13),'V7')
                            color{z} = 'blue';
                        elseif strcmp(tempname(end-10:end-4),'rev12V1')
                            color{z} = 'yellow';
@@ -250,8 +250,8 @@ classdef BiofeedbackSL
 %                        keyboard
                        Rz2 = interp1(data2(:,1),data2(:,2),frame2,'linear');
                        Lz2 = interp1(data2(:,1),data2(:,3),frame2,'linear');
-                       Rgamma2 = interp1(data2(:,1),data2(:,6),frame2,'linear');
-                       Lgamma2 = interp1(data2(:,1),data2(:,7),frame2,'linear');
+                       Rgamma2 = interp1(data2(:,1),data2(:,10),frame2,'linear');
+                       Lgamma2 = interp1(data2(:,1),data2(:,11),frame2,'linear');
                        
                        %detect HS
                        for zz = 1:length(Rz2)-1
@@ -280,8 +280,8 @@ classdef BiofeedbackSL
                        tamp = abs(Rgamma2(find(RHS)))'-this.Rtmtarget;
                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                        
-                       tamp(abs(tamp)>0.15)=[];%remove spurios errors
-                       tamp2(abs(tamp2)>0.15)=[];
+%                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
+%                        tamp2(abs(tamp2)>0.15)=[];
                        
                        rhits{z} = tamp;
                        lhits{z} = tamp2;

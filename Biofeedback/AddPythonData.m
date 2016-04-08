@@ -6,7 +6,7 @@
 %  calling this function. otherwise it will not be able to find the
 %  labtools objects to update.
 %
-%  No output is returned, however a message is displayed which indicated
+%  No output is returned, however a message is displayed which indicates
 %  success or failure
 %
 %This function is intended to be universaly usefull, in other words it
@@ -65,7 +65,6 @@ if iscell(filenames)
     set(t,'DeleteFcn','global mdata;mdata = get(t,''Data'');');
     waitfor(t)%wait until user closes the table to continue
     
-
     WB = waitbar(0,['Processing Trial ' num2str(1)]);
     
     strideplace = adaptData.data.stridesTrial;%where to insert data from Python trials
@@ -356,7 +355,6 @@ if iscell(filenames)
     saveloc=[];
     save([saveloc LTfilename 'params.mat'],'adaptData');
     
-    
 else
     
     f = figure;
@@ -371,7 +369,7 @@ else
     set(t,'DeleteFcn','global mdata;mdata = get(t,''Data'');');
     waitfor(t)%wait until user closes the table to continue
     
-%     WB = waitbar(0,['Processing Trial ' num2str(1)]);
+    WB = waitbar(0,['Processing Trial ' num2str(1)]);
     
     strideplace = adaptData.data.stridesTrial;%where to insert data from Python trials
     [Pheader,Pdata] = JSONtxt2cell([path filenames]);%load python data
@@ -384,6 +382,7 @@ else
     ndata = cell(length(Pheader),3);
     ndata(:,1)=Pheader;
     ndata(:,2)={'YES'};%presume that all of the parameters are to be added, don't force user to pick
+    ndata(:,3)={'HS'};
     
     colnames = {'Variable','Include?','Alignment'};
     columnformat = {'char',{'YES','NO'},{'HS','TO'}};
@@ -459,6 +458,8 @@ else
         [~,lhsc,~] = intersect(Pheader,'LHS');
         [~,rtoc,~] = intersect(Pheader,'RTO');
         [~,ltoc,~] = intersect(Pheader,'LTO');
+        [~,rfz,~] = intersect(Pheader,'Rz');
+        [~,lfz,~] = intersect(Pheader,'Lz');
     catch me
         disp('WARNING! One or more requested events was not located in the Python file');
     end
@@ -486,6 +487,25 @@ else
     %localication of HS==1);
     locLHSpyton=find(LHSpyton==1);
     locRHSpyton=find(RHSpyton==1);
+    locRTOpyton = find(RTOpyton==1);
+    locLTOpyton = find(LTOpyton==1);
+    
+    %one time only, recalculate TO for stance time data with incorrectly
+    %saved data
+%     tempRz = newData2(:,2);
+%     tempLz = newData2(:,3);
+%     RTOpyton = zeros(length(tempRz),1);
+%     for s=1:length(tempRz)-1
+%         
+%        if tempRz(s+1)>-30 && tempRz(s)<=-30
+%            RTOpyton(s) = 1;
+%        else
+%            RTOpyton(s) = 0;
+%        end
+%         
+%     end
+    
+    
     locRHSnexus=find(RHSnexus==1);
     locLHSnexus=find(LHSnexus==1);
     locRTOnexus = find(RTOnexus==1);
@@ -505,28 +525,64 @@ else
     end
     
     %Delete extras HS deteted by Python
-    while length(locRHSpyton)~=length(locRindex)
-        diffLengthR=length(locRindex)-length(locRHSpyton);
-        FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
-        IsBadR=find(FrameDiffR<=-10);
-        if isempty(IsBadR)
-            break
-        else
-            locRindex(IsBadR(1))=[];
+    if length(locRHSpyton)~=length(locRindex)
+        disp(['Mismatch in RHS detected, fixing...']);
+        while length(locRHSpyton)~=length(locRindex)
+            diffLengthR=length(locRindex)-length(locRHSpyton);
+            FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
+            IsBadR=find(FrameDiffR<=-10);
+            if isempty(IsBadR)
+                break
+            else
+                locRindex(IsBadR(1))=[];
+            end
         end
     end
     
-    while length(locLHSpyton)~=length(locLindex)
-        diffLength=length(locLindex)-length(locLHSpyton);
-        FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
-        IsBad=find(FrameDiff<=-10);
-        if isempty(IsBad)
-            break
-        else
-            locLindex(IsBad(1))=[];
+    if length(locLHSpyton)~=length(locLindex)
+        disp(['Mismatch in LHS detected, fixing...']);
+        while length(locLHSpyton)~=length(locLindex)
+            diffLength=length(locLindex)-length(locLHSpyton);
+            FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
+            IsBad=find(FrameDiff<=-10);
+            if isempty(IsBad)
+                break
+            else
+                locLindex(IsBad(1))=[];
+            end
         end
     end
     
+    %Delete extras TO deteted by Python
+    if length(locRTOpyton)~=length(locR2index)
+        disp(['Mismatch in RTO detected, fixing...']);
+        while length(locRTOpyton)~=length(locR2index)
+            diffLengthR=length(locR2index)-length(locRTOpyton);
+            FrameDiffR=locR2index(1:end-diffLengthR)-locRTOpyton;
+            IsBadR=find(FrameDiffR<=-10);
+            if isempty(IsBadR)
+                break
+            else
+                locR2index(IsBadR(1))=[];
+            end
+        end
+    end
+    
+    if length(locLTOpyton)~=length(locL2index)
+        disp(['Mismatch in LTO detected, fixing...']);
+        while length(locLTOpyton)~=length(locL2index)
+            diffLengthL=length(locL2index)-length(locLTOpyton);
+            FrameDiffL=locL2index(1:end-diffLengthL)-locLTOpyton;
+            IsBadL=find(FrameDiffL<=-10);
+            if isempty(IsBadL)
+                break
+            else
+                locL2index(IsBadL(1))=[];
+            end
+        end
+    end
+    
+    %Fix missing HS in Python
     if length(locRHSnexus)<length(locRindex)
         FrameDiffR=[];
         IsBadR=[];
@@ -556,6 +612,42 @@ else
             end
         end
     end
+    
+    %Fix missing TO in Python
+    if length(locRTOnexus)<length(locR2index)
+        FrameDiffR=[];
+        IsBadR=[];
+        while length(locRTOnexus)~=length(locR2index)
+            diffLengthR=length(locR2index)-length(locRTOnexus);
+            FrameDiffR=-locR2index(1:end-diffLengthR)+locRTOnexus;
+            IsBadR=find(abs(FrameDiffR)>10);
+            if isempty(IsBadR)
+                break
+            else
+                locR2index(IsBadR(1))=[];
+            end
+        end
+    end
+    
+    if length(locLTOnexus)<length(locL2index)
+        FrameDiff=[];
+        IsBad=[];
+        while length(locL2index)~=length(locLTOnexus)
+            diffLength=length(locL2index)-length(locLTOnexus);
+            FrameDiff=-locL2index(1:end-diffLength)+locLTOnexus;
+            IsBad=find(abs(FrameDiff)>10);
+            if isempty(IsBad)
+                break
+            else
+                locL2index(IsBad(1))=[];
+            end
+        end
+    end
+    
+    
+    
+    
+    
     
     if length(locRHSnexus)>length(locRindex)
         warning(['Gaps affected RHS detection  ' condition{p} ])
@@ -609,21 +701,29 @@ else
     selections = strfind(ndata(:,2),'YES');%find which column contains RHS as detected by Python
     selections(cellfun('isempty',selections))={0};
     selections = find(cell2mat(selections));
+    
+    appendm = nan(length(strideplace),length(selections));
     %make vectors of variable to splice into adapData
     for d = 1:length(selections)
         if ismember('R',Pheader{selections(d)})==1
             event = ndata(selections(d),3);
             if strcmp(event,'HS')
-                eval([Pheader{selections(d)} ' = newData2(locRHSindex,' num2str(selections(d)) ');']);
+                disp(['aligning ',Pheader{selections(d)}, ' with Heel Strikes']);
+                eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
             else
-                eval([Pheader{selections(d)} ' = newData2(locRTOindex,' num2str(selections(d)) ');']);
+                disp(['aligning ',Pheader{selections(d)}, ' with Toe Offs']);
+%                 eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locR2index-1,' num2str(selections(d)) ');']);
             end
         elseif ismember('L',Pheader{selections(d)})==1
             event = ndata(selections(d),3);
             if strcmp(event,'HS')
-                eval([Pheader{selections(d)} ' = newData2(locLHSindex,' num2str(selections(d)) ');']);
+                disp(['aligning ',Pheader{selections(d)}, ' with Heel Strikes']);
+                eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
             else
-                eval([Pheader{selections(d)} ' = newData2(locLTOindex,' num2str(selections(d)) ');']);
+                disp(['aligning ',Pheader{selections(d)}, ' with Toe Offs']);
+%                 eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
+                eval([Pheader{selections(d)} ' = newData2(locL2index-1,' num2str(selections(d)) ');']);
             end
         else
             disp('Can''t tell whether current variable belongs to which leg...')
@@ -650,7 +750,9 @@ else
         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
     end
     
-    
+    waitbar(1,WB,'Synchronizing Finished');
+    pause(0.5);
+    close(WB)
     %now save the adap params
     saveloc=[];
     save([saveloc LTfilename 'params.mat'],'adaptData');

@@ -448,7 +448,7 @@ if length(fieldList{value})==2
     if strcmp(dataType,'adaptParams')        
         label=fieldList{value}{1}(1:end-4);
         %plot data
-        bad=TSdata.bad(startSamp:endSamp)
+        bad=TSdata.bad(startSamp:endSamp);
         badStrides=find(bad);
         goodStrides=find(~bad);
         %found error 3/30/2016 this is plotting the same values regardless
