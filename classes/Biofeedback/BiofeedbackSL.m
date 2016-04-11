@@ -48,6 +48,7 @@ classdef BiofeedbackSL
         dob=''
         dominantleg=''
         dominanthand = ''
+        fastleg = ''
         height=[];
         weight=[];
         age=[];
@@ -65,9 +66,9 @@ classdef BiofeedbackSL
     
     methods
         %constuctor
-        function this=BiofeedbackSL(ID,date,day,sex,dob,dleg,dhand,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)
+        function this=BiofeedbackSL(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)
         
-            if nargin ~= 15
+            if nargin ~= 16
 %                 disp('Error, incorrect # of input arguments provided');
                 cprintf('err','Error: incorrect # of input arguments provided\n');
             else
@@ -119,6 +120,13 @@ classdef BiofeedbackSL
                 else
                     cprintf('err','WARNING: incorrect format for dominant hand input, must be a string\n');
                     this.dominanthand='';
+                end
+                
+                if ischar(fastleg)
+                    this.fastleg=fastleg;
+                else
+                    cprintf('err','WARNING: incorrect format for fast leg, must be a string\n');
+                    this.fastleg='';
                 end
                 
                 if isnumeric(height)
@@ -307,7 +315,11 @@ classdef BiofeedbackSL
                    wash = find(strcmp(tlist(:,4),'washout'));
                    
                    figure(2)
-                   subplot(2,1,1)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
 %                    keyboard
                    fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -335,7 +347,11 @@ classdef BiofeedbackSL
                    h = 0;
                    for z = 1:length(filename)
                        figure(2)
-                       subplot(2,1,1)
+                       if this.fastleg == 'r'
+                           subplot(2,1,1)
+                       else
+                           subplot(2,1,2)
+                       end
                        hold on
                        scatter([1:length(rhits{z})]+h,rhits{z},75,color{z},'fill');
                        plot([h h+length(rhits{z})],[0.0375 0.0375],'k');%tolerance lines
@@ -345,15 +361,25 @@ classdef BiofeedbackSL
                        h = h+length(rhits{z});
                    end
                    figure(2)
-                   subplot(2,1,1)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Step Length Error Fast Leg']);
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Step Length Error Slow Leg']);
+                   end
                    ylim([-0.15 0.15]);
                    xlim([0 h+10]);
-                   title([this.subjectcode ' Step Length Error Fast Leg']);
+%                    title([this.subjectcode ' Step Length Error Fast Leg']);
                    xlabel('step #');
                    ylabel('Error (m)');
 
                    figure(2)
-                   subplot(2,1,2)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
                    fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -379,7 +405,11 @@ classdef BiofeedbackSL
                    h = 0;
                    for z = 1:length(filename)
                        figure(2)
-                       subplot(2,1,2)
+                       if this.fastleg == 'l'
+                           subplot(2,1,1)
+                       else
+                           subplot(2,1,2)
+                       end
                        scatter([1:length(lhits{z})]+h,lhits{z},75,color{z},'fill');
                        plot([h h+length(lhits{z})],[0.0375 0.0375],'k');%tolerance lines
                        plot([h h+length(lhits{z})],[-0.0375 -0.0375],'k');
@@ -389,10 +419,16 @@ classdef BiofeedbackSL
                        %         h = h+length(lhits{z});
                    end
                    figure(2)
-                   subplot(2,1,2)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Step Length Error Fast Leg']);
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Step Length Error Slow Leg']);
+                   end
                    ylim([-0.15 0.15]);
                    xlim([0 h+10]);
-                   title([this.subjectcode ' Step Length Error Slow Leg']);
+%                    title([this.subjectcode ' Step Length Error Slow Leg']);
                    xlabel('step #');
                    ylabel('Error (m)');
                    
@@ -419,7 +455,11 @@ classdef BiofeedbackSL
                    end
                    
                    figure(5)
-                   subplot(2,1,1)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -451,17 +491,27 @@ classdef BiofeedbackSL
                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
                    for z = 1:length(h)
                        figure(5)
-                       subplot(2,1,1)
+                       if this.fastleg == 'r'
+                           subplot(2,1,1)
+                           title([this.subjectcode ' Fast Leg Errors']);
+                       else
+                           subplot(2,1,2)
+                           title([this.subjectcode ' Slow Leg Errors']);
+                       end
                        bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
                    end
                    ylim([-0.15 0.15]);
                    xlim([0 length(meanrhits1)+0.5]);
-                   title([this.subjectcode ' Fast Leg Errors']);
+%                    title([this.subjectcode ' Fast Leg Errors']);
                    ylabel('Error (m)');
                    
                    
                    figure(5)
-                   subplot(2,1,2)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -492,19 +542,29 @@ classdef BiofeedbackSL
                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                    for z = 1:length(h)
                        figure(5)
-                       subplot(2,1,2)
+                       if this.fastleg == 'l'
+                           subplot(2,1,1)
+                           title([this.subjectcode ' Fast Leg Errors'])
+                       else
+                           subplot(2,1,2)
+                           title([this.subjectcode ' Slow Leg Errors'])
+                       end
                        bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
                    end
                    ylim([-0.15 0.15]);
                    xlim([0 length(meanrhits1)+0.5]);
-                   title([this.subjectcode ' Slow Leg Errors'])
+%                    title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
                    
                    
                    
                    
                    figure(6)%plot of mean squared errors
-                   subplot(2,1,1)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -533,7 +593,13 @@ classdef BiofeedbackSL
                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
                    for z = 1:length(h)
                        figure(6)
-                       subplot(2,1,1)
+                       if this.fastleg == 'r'
+                           subplot(2,1,1)
+                           title([this.subjectcode ' Fast Leg Errors']);
+                       else
+                           subplot(2,1,2)
+                           title([this.subjectcode ' Slow Leg Errors']);
+                       end
                        bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));
                    end
                    ylim([0 max(meanrhits1.^2)+0.1*max(meanrhits1.^2)]);
@@ -542,7 +608,11 @@ classdef BiofeedbackSL
                    ylabel('Error (m)');
                    
                    figure(6)
-                   subplot(2,1,2)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
@@ -570,17 +640,29 @@ classdef BiofeedbackSL
 %                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
                    for z = 1:length(h)
                        figure(6)
-                       subplot(2,1,2)
+                       if this.fastleg == 'l'
+                           subplot(2,1,1)
+                           title([this.subjectcode ' Fast Leg Errors'])
+                       else
+                           subplot(2,1,2)
+                           title([this.subjectcode ' Slow Leg Errors'])
+                       end
                        bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});
                    end
                    ylim([0 max(meanlhits1.^2)+0.1*max(meanlhits1.^2)]);
                    xlim([0 length(meanrhits1)+0.5]);
-                   title([this.subjectcode ' Slow Leg Errors'])
+%                    title([this.subjectcode ' Slow Leg Errors'])
                    ylabel('Error (m)');
                    
                    
                    figure(7)
-                   subplot(2,1,1)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Fast Leg Accuracy'])
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Slow Leg Accuracy'])
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
@@ -606,9 +688,15 @@ classdef BiofeedbackSL
                    end
                    ylim([0 110]);
                    ylabel('Accuracy (%)')
-                   title([this.subjectcode ' Fast Leg Accuracy'])
+%                    title([this.subjectcode ' Fast Leg Accuracy'])
                    
-                   subplot(2,1,2)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Fast Leg Accuracy'])
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Slow Leg Accuracy'])
+                   end
                    hold on
                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
@@ -634,7 +722,7 @@ classdef BiofeedbackSL
                    end
                    ylim([0 110]);
                    ylabel('Accuracy (%)')
-                   title([this.subjectcode ' Slow Leg Accuracy'])
+%                    title([this.subjectcode ' Slow Leg Accuracy'])
                    
                end
             end
