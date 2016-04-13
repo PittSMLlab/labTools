@@ -15,7 +15,14 @@
 
 
 %% Load Data
-[filename,path] = uigetfile('*.c3d','Please select the c3d file of interest:');
+
+vicon = ViconNexus();
+[path,filename] = vicon.GetTrialName;
+filename = [filename '.c3d']
+
+%use these two lines when processing c3d files not open in Nexus
+% commandwindow()
+% [filename,path] = uigetfile('*.c3d','Please select the c3d file of interest:');
 
 H = btkReadAcquisition([path filename]);
 
@@ -26,6 +33,7 @@ relData=[];
 forceLabels ={};
 units={};
 fieldList=fields(analogs);
+showWarning = false;
 for j=1:length(fieldList);%parse analog channels by force, moment, cop
     %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
     if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
