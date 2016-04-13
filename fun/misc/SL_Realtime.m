@@ -18,7 +18,7 @@
 
 vicon = ViconNexus();
 [path,filename] = vicon.GetTrialName;
-filename = [filename '.c3d']
+filename = [filename '.c3d'];
 
 %use these two lines when processing c3d files not open in Nexus
 % commandwindow()
@@ -108,7 +108,14 @@ markers = relData;
 %% Compute parameters
 
 %up sample to match forceplate data
-markers1000 = interp1(markers,[1:1/10:length(markers)]);
+%check sampling frequency of forces (could be 1000 or 2000 Hz)
+if length(forces)/1000 == length(markers)/100
+    markers1000 = interp1(markers,[1:1/10:length(markers)]);
+elseif length(forces)/2000 == length(markers)/100
+    markers1000 = interp1(markers,[1:1/20:length(markers)]);
+else
+    disp('Warning: Unknown sampling frequency in analog data!');
+end
 markers1000(end,:)=[];
 
 [~,rank,~] = intersect(markerList,'RANKy');
@@ -158,8 +165,17 @@ plot(Lgamma,'Color',[15/255,129/255,6/255]);
 title('Left Leg Step Lengths (mm)');
 
 %Cadence**********************************************
-duration = length(RANKY)/1000;
-time = 0:0.001:duration;
+if length(forces)/1000 == length(markers)/100
+    duration = length(RANKY)/1000;
+    time = 0:0.001:duration;
+elseif length(forces)/2000 == length(markers)/100
+    duration = length(RANKY)/2000;
+    time = 0:0.0005:duration;
+else
+    disp('Warning: Unknown sampling frequency in analog data!');
+end
+    
+
 time(end)=[];
 Rcadence = 60./diff(time(RHS));
 Lcadence = 60./diff(time(LHS));
@@ -171,6 +187,8 @@ Rcadence(end-5:end)=[];
 Lcadence(end-5:end)=[];
 Rcadence(Rcadence<0)=[];
 Lcadence(Lcadence<0)=[];
+Rcadence(Rcadence>75)=[];
+Lcadence(Lcadence>75)=[];
 
 Rcadmean = nanmean(Rcadence);
 Lcadmean = nanmean(Lcadence);
@@ -217,7 +235,7 @@ RTdata.Lcadence = Lcadence;
 
 fn = strrep(datestr(clock),'-','');
 
-filesave = [path fn(1:9) '_' filename(1:end-4) '_SL_Realtime']
+filesave = [path fn(1:9) '_' filename(1:end-4) '_SL_Realtime'];
 
 save(filesave,'RTdata');
 
@@ -227,6 +245,8 @@ catch ME
     
 end
 
+
+clear all
 
 
 
