@@ -16,8 +16,9 @@
 
 %% Load Data
 
+%Nexus must be open, offline, and the desired trial loaded
 vicon = ViconNexus();
-[path,filename] = vicon.GetTrialName;
+[path,filename] = vicon.GetTrialName;%Ask Nexus which trial is open
 filename = [filename '.c3d'];
 
 %use these two lines when processing c3d files not open in Nexus
@@ -96,7 +97,7 @@ for j=1:length(fieldList);
 end
 
 markers = relData;
-
+clear H
 %*******************************************************************************
 %% Extract Events
 
@@ -157,10 +158,10 @@ Lgammamean = nanmean(Lgamma);
 Lgammastd = nanstd(Lgamma);
 
 figure(2)
-subplot(4,1,1)
+subplot(6,1,1)
 plot(Rgamma,'Color',[195/255,4/255,4/255]);
 title('Right Leg Step Lengths (mm)');
-subplot(4,1,2)
+subplot(6,1,2)
 plot(Lgamma,'Color',[15/255,129/255,6/255]);
 title('Left Leg Step Lengths (mm)');
 
@@ -195,13 +196,56 @@ Lcadmean = nanmean(Lcadence);
 Rcadstd = nanstd(Rcadence);
 Lcadstd = nanstd(Lcadence);
 
+%*****************************************
+%Step times
+HS = [RHS; LHS];
+HS = sort(HS);
+
+[~,rind,~] = intersect(HS,RHS);
+[~,lind,~] = intersect(HS,LHS);
+
+%check to make sure events are spliced in the correct alternating order
+%???
+
+if HS(1) == RHS(1)%first event is RHS
+    for z = 1:length(HS)-2
+        Lsteptime(z) = time(HS(z+1))-time(HS(z));
+        Rsteptime(z) = time(HS(z+2))-time(HS(z+1));
+    end
+else
+    for z = 1:length(HS)-2
+        Rsteptime(z) = time(HS(z+1))-time(HS(z));
+        Lsteptime(z) = time(HS(z+2))-time(HS(z+1));
+    end
+end
+
+Rsteptime(Rsteptime<=0)=[];
+Lsteptime(Lsteptime<=0)=[];
+Rsteptime(1:4) = [];
+Lsteptime(1:4) = [];
+Rsteptime(end-4:end)=[];
+Lsteptime(end-4:end)=[];
+
+rstmean = nanmean(Rsteptime);
+lstmean = nanmean(Lsteptime);
+rststd = nanstd(Rsteptime);
+lststd = nanstd(Lsteptime);
+
 figure(2)
-subplot(4,1,3)
+subplot(6,1,3)
 plot(Rcadence,'.-','Color',[195/255,4/255,4/255]);
 title('Right Leg Cadence (steps/min)');
-subplot(4,1,4)
+subplot(6,1,4)
 plot(Lcadence,'.-','Color',[15/255,129/255,6/255]);
 title('Left Leg Cadence (steps/min)');
+subplot(6,1,5)
+plot(Rsteptime,'Color',[195/255,4/255,4/255]);
+title('Right Leg Step Time (s)');
+ylim([0 1]);
+subplot(6,1,6)
+plot(Lsteptime,'Color',[15/255,129/255,6/255]);
+title('Left Leg Step Time (s)');
+ylim([0 1]);
 
 %report the data
 mesg = 'Mean R Step Length: ';
@@ -212,6 +256,10 @@ mesg = [mesg sprintf('\n\n')];
 mesg = [mesg 'Mean R Cadence: ' num2str(Rcadmean) ' stdev: ' num2str(Rcadstd)];
 mesg = [mesg sprintf('\n')];
 mesg = [mesg 'Mean L Cadence: ' num2str(Lcadmean) ' stdev: ' num2str(Lcadstd)];
+mesg = [mesg sprintf('\n\n')];
+mesg = [mesg 'Mean R Step Time: ' num2str(rstmean) ' stedev: ' num2str(rststd)];
+mesg = [mesg sprintf('\n')];
+mesg = [mesg 'Mean L Step Time: ' num2str(lstmean) ' stedev: ' num2str(lststd)];
 H = msgbox(mesg,'Metrics');
 
 disp(mesg)
@@ -231,7 +279,9 @@ RTdata.Rsteplengths = Rgamma;
 RTdata.Lsteplengths = Lgamma;
 RTdata.Rcadence = Rcadence;
 RTdata.Lcadence = Lcadence;
-
+RTdata.Rsteptime = Rsteptime;
+RTdata.Lsteptime = Lsteptime;
+RTdata.time = time;
 
 fn = strrep(datestr(clock),'-','');
 
@@ -246,7 +296,7 @@ catch ME
 end
 
 
-clear all
+% clear all
 
 
 
