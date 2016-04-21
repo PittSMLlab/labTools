@@ -89,13 +89,6 @@ classdef BiofeedbackPerception
                     this.date='';
                 end
                 
-                if isnumeric(day)
-                    this.day = day;
-                else
-                    cprintf('err','WARNING: input for day must be a number\n');
-                    this.day='';
-                end
-                
                 if ischar(sex)
                     this.sex = sex;
                 else
@@ -148,7 +141,7 @@ classdef BiofeedbackPerception
                 if isa(age,'labDate')
                     this.age = age;
                 else
-                    cprintf('err','WARNING: input weight is not class labDate\n');
+                    cprintf('err','WARNING: input age is not class labDate\n');
                     this.age=[];
                 end
                 
@@ -181,8 +174,8 @@ classdef BiofeedbackPerception
         end
         
         function []=AnalyzePerformance(this)
-            %compute step length error for each trial, uses instance
-            %defined target values and the default tolerance of 0.0375 m
+            %compute step length error for each trial
+            %
             %
             %auto-saves the results
             
@@ -232,10 +225,22 @@ classdef BiofeedbackPerception
                         %save time...
                         if length(this.data)<z
                             disp('Parsing data...');
-                            [header,data] = JSONtxt2cell(filename{z});
                             
-                            this.data{z} = data;
-                            this.dataheader = header;
+                            f = fopen(filename{z});
+                            g = fgetl(f);
+                            fclose(f);
+                            
+                            if strcmp(g,'[')
+                                [header,data] = JSONtxt2cell(filename{z});
+                                this.data{z} = data;
+                                this.dataheader = header;
+                            else
+                                S = importdata(filename{z},',',1);
+                                data = S.data;
+                                this.data{z} = S.data;
+                                this.dataheader = S.textdata;
+                            end
+                            
                             
                         else
                             data = cell2mat(this.data(z));
@@ -844,7 +849,7 @@ classdef BiofeedbackPerception
             if isempty(this.subjectcode)
                 cprintf('err','WARNING: save failed, no valid ID present');
             else
-                savename = [this.subjectcode '_SLBF_day' num2str(this.day) '.mat'];
+                savename = [this.subjectcode '_PerceptionBF_day.mat'];
                 eval([this.subjectcode '=this;']);
                 save(savename,this.subjectcode);
             end
