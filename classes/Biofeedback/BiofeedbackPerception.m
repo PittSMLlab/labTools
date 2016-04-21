@@ -4,33 +4,41 @@ classdef BiofeedbackPerception
     %
     %Properties:
     %
-    %   subjectcode = '' string containing subject code, e.g. 'SLP001'
-    %   date=''  Date of the experiment, lab date object
-    %   day='' string that indicates day1 or day2 testing
-    %   sex = '' string designates subject sex e.g. 'f'
-    %   dob='' lab date object with date of birth
-    %   dominantleg='' string designate dominant leg, e.g. 'r'
-    %   dominanthand = '' string designate dominant hand e.g. 'r'
-    %   height=[];  cm
-    %   weight=[];  kg
-    %   age=[];  years
+    %           subjectcode = '' string containing subject code, e.g. 'SLP001'
     %
-    %   triallist={};  cell array of trial #'s, filenames, and type of
-    %   trial. construct instance with blank cell, can input data using a
-    %   method instead of copying and pasting into inputs
+    %           date='' Date of the experiment, lab date object
+    %           labDate(dd,mm,yyyy)
     %
-    %   Rtmtarget=[]; right leg step length target as determined by treadmill baseline
+    %           sex = '' string designates subject sex e.g. 'f'
     %
-    %   Ltmtarget=[]; left leg step length target as determined by treadmill baseline
+    %           dob='' lab date object with date of birth labDate(dd,mm,yyyy)
+    %
+    %           dominantleg='' string designate dominant leg, e.g. 'r'
+    %
+    %           dominanthand = '' string designate dominant hand e.g. 'r'
+    %
+    %           fastleg = '' string designates which leg was fast
+    %
+    %           height=[];  cm
+    %           weight=[];  kg
+    %           age=[];  years
+    %
+    %           triallist={};  cell array of trial #'s, filenames, and type of
+    %               trial. Construct instance with blank cell, can input data using a
+    %               method instead of copying and pasting into inputs
+    %
+    %           Rtmtarget=[]; right leg step length target as determined by treadmill baseline
+    %
+    %           Ltmtarget=[]; left leg step length target as determined by treadmill baseline
     %
     %
-    %Methods:
+    %     Methods:
     %
-    %   AnalyzePerformance(flag) -- computes step length errors for each
-    %                               biofeedback trial,
+    %       AnalyzePerformance(flag) -- computes step length errors for each
+    %                                   biofeedback trial,
     %
-    %   editTriallist() -- select filenames, edit trial #'s and type and
-    %                      category, input num is the # of trials, or rows in the list
+    %       editTriallist() -- select filenames, edit trial #'s and type and
+    %                          category, input num is the # of trials, or rows in the list
     %
     %   saveit() -- saves the instance with filename equal to the ID
     %
@@ -40,7 +48,6 @@ classdef BiofeedbackPerception
     properties
         subjectcode = ''
         date=''
-        day=''
         sex = ''
         dob=''
         dominantleg=''
@@ -61,9 +68,9 @@ classdef BiofeedbackPerception
     
     methods
         %constuctor
-        function this=BiofeedbackPerception(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget)
+        function this=BiofeedbackPerception(ID,date,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget)
             
-            if nargin ~= 14
+            if nargin ~= 13
                 %                 disp('Error, incorrect # of input arguments provided');
                 cprintf('err','Error: incorrect # of input arguments provided\n');
             else
