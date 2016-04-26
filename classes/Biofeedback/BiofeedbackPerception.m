@@ -180,7 +180,7 @@ classdef BiofeedbackPerception
                 filename = this.triallist(:,1);
                 
                 if iscell(filename)%if more than one file is selected for analysis
-                    %{
+                %{
                 %                     rhits = {0};
                 %                     lhits = {0};
                 %                     rlqr = {0};
@@ -337,7 +337,7 @@ classdef BiofeedbackPerception
                     [rhits, lhits, rts, lts, color,rv,lv]=this.getHits();
                     
                     
-                    this.saveit();
+                    %this.saveit();
                     %
 %                     waitbar(1,WB,'Processing complete...');
 %                     pause(0.5);
@@ -352,7 +352,58 @@ classdef BiofeedbackPerception
                     adapt = find(strcmp(tlist(:,4),'Base Clamp'));
                     wash = find(strcmp(tlist(:,4),'Post Clamp'));
                     wash2 = find(strcmp(tlist(:,4),'Post Map'));
-                    %                     keyboard
+                    
+                    %check for more than one file in a condition
+                    if length(train)>1
+                        rtrain = 0;
+                        ltrain = 0;
+                        for c = 1:length(train)
+                            rtrain = rtrain+length(cell2mat(rhits(train(c))));
+                            ltrain = ltrain+length(cell2mat(lhits(train(c))));
+                        end
+                    else
+                        rtrain = length(cell2mat(rhits(train)));
+                        ltrain = length(cell2mat(lhits(train)));
+                    end
+                    
+                    if length(base)>1
+                        rbase = 0;
+                        lbase = 0;
+                        for c = 1:length(base)
+                            rbase = rbase+length(cell2mat(rhits(base(c))));
+                            lbase = lbase+length(cell2mat(lhits(base(c))));
+                        end
+                    else
+                        rbase = length(cell2mat(rhits(base)));
+                        lbase = length(cell2mat(lhits(base)));
+                    end
+                    
+                    if length(adapt)>1
+                        radapt = 0;
+                        ladapt = 0;
+                        for c = 1:length(adapt)
+                            radapt = radapt+length(cell2mat(rhits(adapt(c))));
+                            ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+                        end
+                    else
+                        radapt = length(cell2mat(rhits(adapt)));
+                        ladapt = length(cell2mat(lhits(adapt)));
+                    end
+                    
+                    if length(wash)>1
+                        rwash = 0;
+                        lwash = 0;
+                        for c = 1:length(wash)
+                            rwash = rwash+length(cell2mat(rhits(wash(c))));
+                            lwash = lwash+length(cell2mat(lhits(wash(c))));
+                        end
+                    else
+                        rwash = length(cell2mat(rhits(wash)));
+                        lwash = length(cell2mat(lhits(wash)));
+                    end
+                    
+                    
+                    
                     figure(2)
                     if this.fastleg == 'r'
                         subplot(2,1,1)
@@ -360,13 +411,11 @@ classdef BiofeedbackPerception
                         subplot(2,1,2)
                     end
                     hold on
-                    %                    keyboard
-                    %fill([0 length(cell2mat(rhits(train))) length(cell2mat(rhits(train))) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    fill([0 length(cell2mat(rhits(train))) length(cell2mat(rhits(train))) 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256)
-                    fill([length(cell2mat(rhits(train))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))  length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))  length(cell2mat(rhits(train)))],[0.255 0.255 -0.255 -0.255],[256 256 256]./256);
-                    fill([length(cell2mat(rhits(train)))+length(cell2mat(rhits(base))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    %fill([length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash)))+length(cell2mat(rhits(wash2))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash)))+length(cell2mat(rhits(wash2))) length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    fill([length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))  length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash)))   length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))+length(cell2mat(rhits(wash)))   length(cell2mat(rhits(train)))+length(cell2mat(rhits(base)))+length(cell2mat(rhits(adapt)))  ],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                     keyboard
+                    fill([0 rtrain rtrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256)
+                    fill([rtrain rtrain+rbase  rtrain+rbase  rtrain],[0.255 0.255 -0.255 -0.255],[256 256 256]./256);
+                    fill([rtrain+rbase rtrain+rbase+radapt rtrain+rbase+radapt rtrain+rbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                    fill([rtrain+rbase+radapt  rtrain+rbase+radapt+rwash   rtrain+rbase+radapt+rwash  rtrain+rbase+radapt],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                     
                     h = 0;
                     for z = 1:length(filename)
@@ -377,11 +426,6 @@ classdef BiofeedbackPerception
                             subplot(2,1,2)
                         end
                         hold on
-                        %                         g = gscatter([1:length(rhits{z})]+h,rhits{z},rts{z},color{z},['s','o','d']);
-                        %                         for y = 1:length(g)
-                        %                             set(g(y),'MarkerFaceColor',color{z});
-                        %                             set(g(y),'MarkerEdgeColor','k');
-                        %                         end
                         
                         if strcmp(this.triallist{z,4},'Familiarization')
                             
@@ -423,12 +467,14 @@ classdef BiofeedbackPerception
                         subplot(2,1,2)
                         title([this.subjectcode ' Step Length Error Slow Leg']);
                     end
-                    ylim([-0.15 0.15]);
+                    ylim([-0.25 0.25]);
                     xlim([0 h+10]);
                     %                    title([this.subjectcode ' Step Length Error Fast Leg']);
                     xlabel('step #');
                     ylabel('Error (m)');
-                    legend('Familiarization', 'Spatial Map', 'Error Clamp','Error Clamp',  'Short Vision', 'Mid Vision', 'Long Vision', 'Short No Vision', 'Mid No Vision', 'Long No Vision')
+                    legend('Familiarization', 'Spatial Map', 'Error Clamp','Error Clamp',  ...
+                        'Short No Vision', 'Mid No Vision', 'Long No Vision',...
+                        'Short Vision', 'Mid Vision', 'Long Vision')
                     
                     figure(2)
                     if this.fastleg == 'l'
@@ -437,10 +483,10 @@ classdef BiofeedbackPerception
                         subplot(2,1,2)
                     end
                     hold on
-                    fill([0 length(cell2mat(lhits(train))) length(cell2mat(lhits(train))) 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256);
-                    fill([length(cell2mat(lhits(train)))+length(cell2mat(lhits(base))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    %                     fill([length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    fill([length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))  length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash)))   length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))+length(cell2mat(lhits(wash)))   length(cell2mat(lhits(train)))+length(cell2mat(lhits(base)))+length(cell2mat(lhits(adapt)))  ],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                    fill([0 ltrain ltrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256);
+                    fill([ltrain+lbase ltrain+lbase+ladapt ltrain+lbase+ladapt ltrain+lbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                    %                     fill([ltrain+lbase+ladapt+length(cell2mat(lhits(wash))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                    fill([ltrain+lbase+ladapt  ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt  ],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
                     
                     
                     h = 0;
@@ -451,13 +497,22 @@ classdef BiofeedbackPerception
                         else
                             subplot(2,1,2)
                         end
-                        %                         scatter([1:length(lhits{z})]+h,lhits{z},75,color{z},'fill','MarkerEdgeColor','k');
-                        %                         gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},color{z},['s','o','d']);
-                        %                         g = gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},color{z},['s','o','d']);
-                        %                         for y = 1:length(g)
-                        %                             set(g(y),'MarkerFaceColor',color{z});
-                        %                             set(g(y),'MarkerEdgeColor','k');
-                        %                         end
+                          if strcmp(this.triallist{z,4},'Familiarization')
+                            
+                            temp = rv{z};
+                            temp2 = rts{z};
+                            groupies = temp+temp2;
+                            
+                            %g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b','b', 'k', 'k' ,'r','r'],['s','s','o','o','d','d']);
+                            g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
+                            %                             g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
+                            colorfull=['w','w', 'w', 'b', 'k' ,'r' ];
+                            colorout=['b','k', 'r', 'k', 'k' ,'k' ];
+                            for y = 1:length(g)
+                                set(g(y),'MarkerFaceColor',colorfull(y));
+                                set(g(y),'MarkerEdgeColor',colorout(y));
+                            end
+                        else
                         g = gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},['b', 'k' ,'r'],['s','o','d']);
                         if z==1 || z==3 || z==4
                             colorCODE=['b', 'k' ,'r'];
@@ -466,6 +521,7 @@ classdef BiofeedbackPerception
                                 set(g(y),'MarkerEdgeColor','k');
                             end
                         end
+                          end
                         
                         plot([h h+length(lhits{z})],[0.02 0.02],'k');%tolerance lines
                         plot([h h+length(lhits{z})],[-0.02 -0.02],'k');
@@ -482,7 +538,7 @@ classdef BiofeedbackPerception
                         subplot(2,1,2)
                         title([this.subjectcode ' Step Length Error Slow Leg']);
                     end
-                    ylim([-0.15 0.15]);
+                    ylim([-0.25 0.25]);
                     xlim([0 h+10]);
                     %                    title([this.subjectcode ' Step Length Error Slow Leg']);
                     xlabel('step #');
@@ -862,7 +918,7 @@ classdef BiofeedbackPerception
         
         function [rhits, lhits, rts, lts, color,rv,lv]=getHits(this)
             
-            filename = this.triallist(:,1)
+            filename = this.triallist(:,1);
             
             if iscell(filename)%if more than one file is selected for analysis
                 disp(['processing multiple trials']);
@@ -1008,6 +1064,7 @@ classdef BiofeedbackPerception
                 end
             end
             close(WB)
+            this.saveit();
         end
         
     end
