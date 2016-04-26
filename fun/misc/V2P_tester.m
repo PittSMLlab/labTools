@@ -4,7 +4,17 @@ close all
 
 filename = uigetfile('*.*');
 
-[header,data] = JSONtxt2cell(filename);
+f = fopen(filename);
+g = fgetl(f);
+fclose(f);
+
+if strcmp(g(1),'[')
+    [header,data] = JSONtxt2cell(filename);
+else
+    S = importdata(filename,',',1);
+    data = S.data;
+    Header = S.textdata;
+end
 
 frame = data(:,1)-data(1,1);
 % disp(['% data received: ' num2str(length(frame)/frame(end)*100)]);
@@ -23,7 +33,7 @@ freq = length(bframe)/timeelap
 
 figure(1)
 plot(framediff);
-ylim([0 6])
+ylim([-4 6])
 
 RHS(isnan(RHS))=[];
 figure(2)
