@@ -444,7 +444,7 @@ classdef BiofeedbackPerception
                             end
                         else
                             g=gscatter([1:length(rhits{z})]+h,rhits{z},rts{z},['b', 'k' ,'r'],['s','o','d']);
-                            if  z==3 || z==4
+                            if  strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
                                 colorCODE=['b', 'k' ,'r'];
                                 for y = 1:length(g)
                                     set(g(y),'MarkerFaceColor',colorCODE(y));
@@ -514,7 +514,7 @@ classdef BiofeedbackPerception
                             end
                         else
                         g = gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},['b', 'k' ,'r'],['s','o','d']);
-                        if z==1 || z==3 || z==4
+                        if strcmp(this.triallist{z,4},'Familiarization') || strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
                             colorCODE=['b', 'k' ,'r'];
                             for y = 1:length(g)
                                 set(g(y),'MarkerFaceColor',colorCODE(y));
@@ -609,6 +609,7 @@ classdef BiofeedbackPerception
                         end
                         clear RDATA LDATA
                     end
+%                     keyboard
                     DDR{1}=RR{4}-RR{3};
                     DDR{2}=nanmean(RR{5}-RR{2});
                     
@@ -943,9 +944,7 @@ classdef BiofeedbackPerception
                     elseif strcmp(this.triallist{z,4},'Post Map')
                         color{z} = [9/255,109/255,143/255];%bluegrey
                     end
-                    %                        keyboard
-                    
-                    
+
                     %check to see if data is already processed, it will
                     %save time...
                     if length(this.data)<z
@@ -965,27 +964,25 @@ classdef BiofeedbackPerception
                             this.data{z} = S.data;
                             this.dataheader = S.textdata;
                         end
-                        
-                        
                     else
                         data = cell2mat(this.data(z));
                         header = this.dataheader;
                     end
                     
-                    %                        keyboard
                     data2 = unique(data,'rows','stable');%remove duplicate frames
                     data2(:,1) = data2(:,1)-data2(1,1)+1;%set frame # to start at 1
                     
                     %check for monotonicity
                     checkers = find(diff(data2(:,1))<1);
                     while ~isempty(checkers)
+                        disp('WARNING repeated frames present in data, removing...');
                         for y=1:length(checkers)
                             data2(checkers(y),:)=[];
                         end
                         checkers = find(diff(data2(:,1))<1);
                     end
-                    %                        keyboard
-                    [~,n] = size(data2);
+
+%                     [~,n] = size(data2);
                     Rz2 = data2(:,2);
                     Lz2 = data2(:,3);
                     Rgamma2 = data2(:,10);
@@ -997,7 +994,7 @@ classdef BiofeedbackPerception
                     
                     %detect HS
                     for zz = 1:length(Rz2)-1
-                        if Rz2(zz) > -10 && Rz2(zz+1) <= -10
+                        if Rz2(zz) > -30 && Rz2(zz+1) <= -30
                             RHS(zz) = 1;
                         else
                             RHS(zz) = 0;
@@ -1007,7 +1004,7 @@ classdef BiofeedbackPerception
                     RHS = zeros(length(RHS),1);
                     RHS(trhs) = 1;
                     for zz = 1:length(Lz2)-1
-                        if Lz2(zz) > -10 && Lz2(zz+1) <= -10
+                        if Lz2(zz) > -30 && Lz2(zz+1) <= -30
                             LHS(zz) = 1;
                         else
                             LHS(zz) = 0;
@@ -1023,6 +1020,7 @@ classdef BiofeedbackPerception
                     %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
                     tamp = Rgamma2(find(RHS))-target(find(RHS)-1);
                     tamp2 = Lgamma2(find(LHS))-target(find(LHS)-1);
+                   % keyboard
                     tamp3 = target(find(RHS));
                     tamp4 = target(find(LHS));
                     if strcmp(this.triallist{z,4},'Familiarization')
@@ -1032,7 +1030,7 @@ classdef BiofeedbackPerception
                         tamp5 = zeros(length(tamp),1);
                         tamp6 = zeros(length(tamp),1);
                     end
-                    
+%                     keyboard
                     %delete 5 strides at each transistion
                     K = find(diff(tamp3));
                     K2 = find(diff(tamp4));
