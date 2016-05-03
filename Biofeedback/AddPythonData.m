@@ -73,8 +73,18 @@ if iscell(filenames)
     for z=1:length(filenames)
         
         waitbar((z-1)/length(filenames),WB,['Loading Trial ' num2str(z)]);
-        %load python file
-        [Pheader,Pdata] = JSONtxt2cell([path{z} filenames{z}]);
+        
+        f = fopen([path{z} filenames{z}]);
+        g = fgetl(f);
+        fclose(f);
+        
+        if strcmp(g(1),'[')
+            [Pheader,Pdata] = JSONtxt2cell([path{z} filenames{z}]);
+        else
+            S = importdata([path{z} filenames{z}],',',1);
+            Pdata = S.data;
+            Pheader = S.textdata;
+        end
         
         
         %in the end we can only patch in data to good strides, so give the
@@ -85,7 +95,7 @@ if iscell(filenames)
             f = figure;
             ndata = cell(length(Pheader),3);
             ndata(:,1)=Pheader;
-            ndata(:,2)={'YES'};%presume that all of the parameters are to be added, don't force user to pick
+            ndata(:,2)={'NO'};%presume that all of the parameters are to be added, don't force user to pick
             ndata(:,3)={'HS'};
             
             colnames = {'Variable','Include?','Alignment'};
@@ -302,34 +312,64 @@ if iscell(filenames)
         selections = strfind(ndata(:,2),'YES');%find which column contains RHS as detected by Python
         selections(cellfun('isempty',selections))={0};
         selections = find(cell2mat(selections));
+        if z==1
+            labels=Pheader(selections);
+            PPheader = Pheader;%in case some parameters are not in all the files to be processed
+        end
         if z ==1
             appendm = nan(length(strideplace),length(selections));%going to be the matrix that gets appended to adaptparams
         end
             %make vectors of variable to splice into adapData
             for d = 1:length(selections)
-                if ismember('R',Pheader{selections(d)})==1
-                    event = ndata(selections(d),3);
-                    if strcmp(event,'HS')
-                        eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
-                    else
-                        eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
-                    end
-                elseif ismember('L',Pheader{selections(d)})==1
-                    event = ndata(selections(d),3);
-                    if strcmp(event,'HS')
-                        eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
-                    else
-                        eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
-                    end
+                disp(z)
+                disp(d)
+                if length(Pheader)<selections(d)%in case one of the parameters is not in this file
+                    eval(['missing' num2str(d) ' = nan(length(locRindex),1);']);
                 else
-                    disp('Can''t tell whether current variable belongs to which leg...')
-                    disp(Pheader{selections(d)});
+                    if ismember('R',Pheader{selections(d)})==1
+                        event = ndata(selections(d),3);
+                        if strcmp(event,'HS')
+                            eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
+                        else
+                            eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
+                        end
+                    elseif ismember('L',Pheader{selections(d)})==1
+                        event = ndata(selections(d),3);
+                        if strcmp(event,'HS')
+                            eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
+                        else
+                            eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
+                        end
+                    else
+                        disp('Can''t tell whether current variable belongs to which leg...adding to Right Leg')
+                        disp(Pheader{selections(d)});
+                        event = ndata(selections(d),3);
+                        if strcmp(event,'HS')
+                            eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
+                        else
+                            eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
+                        end
+                        %                     if strcmp(event,'HS')
+                        %                         eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
+                        %                     else
+                        %                         eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
+                        %                     end
+                    end
                 end
             end
-        
+
+            
             for d = 1:length(selections)
                 indx = find(strideplace==mdata{z,2});
-                eval(['appendm(indx,d) = ' Pheader{selections(d)} '(1:length(indx));']);%insert data
+                if length(Pheader)<selections(d)%in case parameter isn't in a particular file, just add nans
+                    eval(['appendm(indx,d) = nan(length(indx),1);']);%insert data
+                else
+
+                    if length(indx)>length(eval(Pheader{selections(d)}))
+                        eval([Pheader{selections(d)} '(end:length(indx)) = nan;']);
+                    end
+                    eval(['appendm(indx,d) = ' Pheader{selections(d)} '(1:length(indx));']);%insert data
+                end
             end
     
         
@@ -337,12 +377,12 @@ if iscell(filenames)
     
     %finally, append to
     pData=adaptData.data;
-    labels=Pheader(selections);
+%     labels=Pheader(selections);
     [aux,idx]=pData.isaLabel(labels);
     if all(aux)
         adaptData.data.Data(:,idx)=appendm;
     else
-        this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;Pheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
+        this=parameterSeries([adaptData.data.Data,appendm],[adaptData.data.labels;PPheader(selections)'],1:length(adaptData.data.Data),cell(length(adaptData.data.labels)+length(selections)),adaptData.data.trialTypes);
         %this=paramData([adaptData.data.Data,StepsR,StepsL,Steps,Stepsnexus],[adaptData.data.labels; 'TargetHitR'; 'TargetHitL' ;'TargetHit'; 'TargetNexus'],adaptData.data.indsInTrial,adaptData.data.trialTypes);
         adaptData=adaptationData(rawExpData.metaData,rawExpData.subData,this);
     end
