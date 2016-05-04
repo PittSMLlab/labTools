@@ -23,7 +23,7 @@ classdef SombricTaiChi
         
         function this=SombricTaiChi(ID,sex,dleg,dhand,fastleg,height,weight,triallist,Rtarget,Ltarget)
             
-            if nargin ~= 11
+            if nargin ~= 10
                 %                 disp('Error, incorrect # of input arguments provided');
                 cprintf('err','Error: incorrect # of input arguments provided\n');
             else
@@ -104,7 +104,22 @@ classdef SombricTaiChi
         
         function []=AnalyzePerformance(this)
             
+            [Xsag,Xlat,Ysag,Ylat]=this.getHits();
             
+            %calculate errors
+            if ismember('R',this.triallist{z,4})
+                for z=1:length(Xsag)
+                    temp = Xsag{z};
+                    temp = -1*temp-this.Rtarget;
+                    temp2 = Xlat{z};
+                    temp2 = -1*temp2-this.Rtarget;
+                    
+                    Xerrorsag{z} = temp;
+                    Xerrorlat{z} = temp2;
+                    
+                end
+                keyboard
+            end
             
         end
         
@@ -131,7 +146,7 @@ classdef SombricTaiChi
                     end
                     %                     keyboard
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map'}};
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
                     t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
@@ -145,7 +160,7 @@ classdef SombricTaiChi
                         data(1,3) = 'eval';
                     end
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map'}};
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
                     t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
@@ -160,7 +175,7 @@ classdef SombricTaiChi
                     data(:,1)=filenames;
                     data(:,2:4) = this.triallist(:,2:4);
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map'}};
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
                     t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
@@ -170,7 +185,7 @@ classdef SombricTaiChi
                     data(1,1) = filenames;
                     data(1,2:4) = this.triallist(1,2:4);
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map'}};
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
                     t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
@@ -191,80 +206,164 @@ classdef SombricTaiChi
             end
         end
         
-        function [X,Y]=getHits(this)
+        function [Xsag,Xlat,Ysag,Ylat]=getHits(this) %X and Y do not inidicate which leg is being tested
             
             filename = this.triallist(:,1);
             WB = waitbar(0,'Processing Trials...');
             
             if iscell(filename)
-                
-                tempname = filename{z};
-                waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                
-                if strcmp(this.triallist{z,4},'Rleg Train')
-                    color{z} = [189/255,15/255,18/255];%red
-                elseif strcmp(this.triallist{z,4},'Lleg Train')
-                    color{z} = [189/255,15/255,18/255];%red
-                elseif strcmp(this.triallist{z,4},'Base Rleg Map')
-                    color{z} = [48/255,32/255,158/255];%blue
-                elseif strcmp(this.triallist{z,4},'Base Lleg Map')
-                    color{z} = [48/255,32/255,158/255];%blue
-                elseif strcmp(this.triallist{z,4},'Post Rleg Map')
-                    color{z} = [9/255,109/255,143/255];%bluegrey
-                elseif strcmp(this.triallist{z,4},'Post Lleg Map')
-                    color{z} = [9/255,109/255,143/255];%bluegrey
-                end
-                
-                %check to see if data is already processed, it will
-                %save time...
-                if length(this.data)<z
-                    disp('Parsing data...');
-                    fn = filename{z};
-                    keyboard
-                    if strcmp(fn(end-3:end),'c3d')
+                for z=1:length(filename)
+%                     tempname = filename{z};
+                    waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
+                    
+                    if strcmp(this.triallist{z,4},'Rleg Train')
+                        color{z} = [189/255,15/255,18/255];%red
+                    elseif strcmp(this.triallist{z,4},'Lleg Train')
+                        color{z} = [189/255,15/255,18/255];%red
+                    elseif strcmp(this.triallist{z,4},'Base Rleg Map')
+                        color{z} = [48/255,32/255,158/255];%blue
+                    elseif strcmp(this.triallist{z,4},'Base Lleg Map')
+                        color{z} = [48/255,32/255,158/255];%blue
+                    elseif strcmp(this.triallist{z,4},'Post Rleg Map')
+                        color{z} = [9/255,109/255,143/255];%bluegrey
+                    elseif strcmp(this.triallist{z,4},'Post Lleg Map')
+                        color{z} = [9/255,109/255,143/255];%bluegrey
                     end
                     
-                    f = fopen(filename{z});
-                    g = fgetl(f);
-                    fclose(f);
-                    
-                    if strcmp(g(1),'[')
-                        [header,data] = JSONtxt2cell(filename{z});
-                        this.data{z} = data;
-                        this.dataheader = header;
+                    %check to see if data is already processed, it will
+                    %save time...
+                    if length(this.data)<z
+                        disp('Parsing data...');
+                        %                     keyboard
+                        fn = filename{z};
+                        if strcmp(fn(end-3:end),'c3d')
+                            disp('method undeveloped for processing c3d');
+                        end
+                        
+                        f = fopen(filename{z});
+                        g = fgetl(f);
+                        fclose(f);
+                        
+                        if strcmp(g(1),'[')
+                            [header,data] = JSONtxt2cell(filename{z});
+                            this.data{z} = data;
+                            this.dataheader = header;
+                        else
+                            S = importdata(filename{z},',',1);
+                            data = S.data;
+                            this.data{z} = S.data;
+                            this.dataheader = S.textdata;
+                        end
                     else
-                        S = importdata(filename{z},',',1);
-                        data = S.data;
-                        this.data{z} = S.data;
-                        this.dataheader = S.textdata;
+                        data = cell2mat(this.data(z));
+                        header = this.dataheader;
                     end
-                else
-                    data = cell2mat(this.data(z));
-                    header = this.dataheader;
-                end
-                
-                data2 = unique(data,'rows','stable');%remove duplicate frames
-                data2(:,1) = data2(:,1)-data2(1,1)+1;%set frame # to start at 1
-                
-                %check for monotonicity
-                checkers = find(diff(data2(:,1))<1);
-                while ~isempty(checkers)
-                    disp('WARNING repeated frames present in data, removing...');
-                    for y=1:length(checkers)
-                        data2(checkers(y),:)=[];
-                    end
+                    
+                    data2 = unique(data,'rows','stable');%remove duplicate frames
+                    data2(:,1) = data2(:,1)-data2(1,1)+1;%set frame # to start at 1
+                    
+                    %check for monotonicity
                     checkers = find(diff(data2(:,1))<1);
+                    while ~isempty(checkers)
+                        disp('WARNING repeated frames present in data, removing...');
+                        for y=1:length(checkers)
+                            data2(checkers(y),:)=[];
+                        end
+                        checkers = find(diff(data2(:,1))<1);
+                    end
+                    
+%                     Rz2 = data2(:,2);
+%                     Lz2 = data2(:,3);
+                    %                 keyboard
+                    if ismember('R',this.triallist{z,4})
+                        X = data2(:,6);
+                        Y = data2(:,8);
+                        RHS = data2(:,4);
+                        phase = data2(:,10);
+                        %cleanup HS
+                        for zz=2:length(RHS)
+                            if RHS(zz)==1 && RHS(zz-1)==0
+                                RHS2(zz)=1;
+                            else
+                                RHS2(zz)=0;
+                            end
+                        end
+                        RHS = find(RHS2);
+                        clear RHS2
+
+                        for zz=1:length(RHS)
+                            if abs(Y(RHS(zz)))>0.1 %&& abs(X(RHS(zz)))<=0.1
+                                tempx(zz) = X(RHS(zz));
+                                tempy(zz) = Y(RHS(zz));
+                                temp2x(zz) = nan;
+                                temp2y(zz) = nan;
+                            elseif abs(X(RHS(zz)))>0.1 %&& abs(Y(RHS(zz)))<=0.1
+                                tempx(zz) = nan;
+                                tempy(zz) = nan;
+                                temp2x(zz) = X(RHS(zz));
+                                temp2y(zz) = Y(RHS(zz));
+                            else
+                                tempx(zz)=5000;
+                                tempy(zz)=5000;
+                                temp2x(zz)=5000;
+                                temp2y(zz)=5000;
+                            end
+                        end
+                        tempx(tempx==5000)=[];
+                        tempy(tempy==5000)=[];
+                        temp2x(temp2x==5000)=[];
+                        temp2y(temp2y==5000)=[];
+                        Xsag{z}=tempx;
+                        Xlat{z}=temp2x;
+                        Ysag{z}=tempy;
+                        Ylat{z}=temp2y;
+                        
+                    elseif ismember('L',this.triallist{z,4})
+                        X = data2(:,7);
+                        Y = data2(:,9);
+                        LHS = data2(:,5);
+                        phase = data2(:,10);
+                        for zz=2:length(LHS)
+                            if LHS(zz)==1 && LHS(zz-1)==0
+                                LHS2(zz)=1;
+                            else
+                                LHS2(zz)=0;
+                            end
+                        end
+                        LHS = find(LHS2);
+                        clear LHS2
+                        
+                        for zz=1:length(LHS)
+                            if abs(Y(LHS(zz)))>0.1 %&& abs(X(LHS(zz)))<=0.1
+                                tempx(zz) = X(LHS(zz));
+                                tempy(zz) = Y(LHS(zz));
+                                temp2x(zz) = 0;
+                                temp2y(zz) = 0;
+                            elseif abs(X(LHS(zz)))>0.1 %&& abs(Y(LHS(zz)))<=0.1
+                                tempx(zz) = 0;
+                                tempy(zz) = 0;
+                                temp2x(zz) = X(LHS(zz));
+                                temp2y(zz) = Y(LHS(zz));
+                            else
+                                tempx(zz)=5000;
+                                tempy(zz)=5000;
+                                temp2x(zz)=5000;
+                                temp2y(zz)=5000;
+                            end
+                        end
+                        tempx(tempx==5000)=[];
+                        tempy(tempy==5000)=[];
+                        temp2x(temp2x==5000)=[];
+                        temp2y(temp2y==5000)=[];
+                        Xsag{z}=tempx;
+                        Xlat{z}=temp2x;
+                        Ysag{z}=tempy;
+                        Ylat{z}=temp2y;
+                    end
+
                 end
-                
-                Rz2 = data2(:,2);
-                Lz2 = data2(:,3);
-                Rx = data2(:,6);
-                Ry = data2(:,7);
-                Lx = data2(:,8);
-                Ly = data2(:,9);
-                phase = data2(:,10);
-                
-                
+                close(WB);
+                keyboard
             else
                 
             end
@@ -272,5 +371,6 @@ classdef SombricTaiChi
         
     end
     
+    end
 end
 
