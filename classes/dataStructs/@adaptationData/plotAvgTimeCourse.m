@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles,alignEnd)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles,alignEnd,alignIni)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -103,6 +103,11 @@ end
 if nargin<14 || alignEnd==0
     alignEnd=[];
 end
+
+if nargin<15 || alignIni==0
+    alignIni=[];
+end
+
 %% Initialize plot
 
 % axesFontSize=14;
@@ -316,9 +321,22 @@ for group=1:Ngroups
                 afterTrialPad=5; %adds empty sapce to end of trial/condition (in strides)
                 y=[avg(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
-                condLength=length(y);
-                x=Xstart:Xstart+condLength-1;
+%                 condLength=length(y);
+%                 x=Xstart:Xstart+condLength-1;
                 
+                if isempty(alignIni) %DULCE
+                    condLength=length(y);
+                    x=Xstart:Xstart+condLength-1;
+                elseif ~isempty(alignIni) && strcmp(cond{c}(end-2:end), 'End')
+                    condLength=length(y);
+                    x=Xstart:Xstart+condLength-1;
+                else
+                    x=Xstart:Xstart+alignIni-1;
+                    y=y(1:length(x));
+                    E=E(1:length(x));
+                    condLength=length(y);
+                end
+                         
                 %Biofeedback
                 if nargin>8 && ~isempty(biofeedback)                    
                     if biofeedback==1 && strcmp(params{p},'alphaFast')
@@ -436,7 +454,7 @@ for group=1:Ngroups
                     set(H,'Layer','top')
                 end
             end
-            Xstart=Xstart+condLength;
+          Xstart=Xstart+condLength;       
         end
         
         if c==nConds && group==Ngroups
@@ -465,8 +483,8 @@ for group=1:Ngroups
                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
                 end
                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
-                %h=refline(0,0);
-                %set(h,'color','k')
+                h=refline(0,0);
+                set(h,'color','k')
             end            
             hold off
         end
