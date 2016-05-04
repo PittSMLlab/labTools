@@ -3,7 +3,7 @@ function varargout = PlotParamsGUI(varargin)
 %
 % See also:
 
-% Last Modified by GUIDE v2.5 08-Mar-2016 09:54:39
+% Last Modified by GUIDE v2.5 04-May-2016 12:48:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -86,7 +86,7 @@ function plotTypePanel_SelectionChangeFcn(hObject, eventdata, handles)
 handles = disableFields(handles,'groupList','subjectList','parameterList',...
     'conditionList','plotButton','binEdit','conditionSubList','indivSubs',...
     'samePlotCheck','regExpBox','maxPerturbCheck','earlyNumPts','lateNumPts',...
-    'exptLastNumPts','removeBiasCheck','printCodeCheck','colorMenu','saveColorsButton','biofeedback','AlignEnd2');
+    'exptLastNumPts','removeBiasCheck','printCodeCheck','colorMenu','saveColorsButton','biofeedback','AlignEnd2','InitiAlig');
 
 for i=1:17
     set(handles.(['color' num2str(i)]),'Enable','off');
@@ -98,7 +98,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=1;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','samePlotCheck','conditionList','conditionSubList',...
-            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck','AlignEnd2');
+            'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck','AlignEnd2','InitiAlig');
         for i=1:17
             set(handles.(['color' num2str(i)]),'Enable','on');
         end
@@ -385,6 +385,13 @@ function AlignEnd2_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of AlignEnd2 as text
 %        str2double(get(hObject,'String')) returns contents of AlignEnd2 as a double
 end
+
+function InitiAlig_Callback(hObject, eventdata, handles)
+% Hints: get(hObject,'String') returns contents of InitiAlig as text
+%        str2double(get(hObject,'String')) returns contents of InitiAlig as a double
+
+end
+
 %% ----------------- Open/Save button in toolstrip --------------------- %%
 function saveTool_ClickedCallback(hObject, eventdata, handles)
 
@@ -514,7 +521,8 @@ switch handles.plotType
         trialMarkerFlag=ismember(conds,conds(get(handles.conditionSubList,'Value')));
         binwidth=str2double(get(handles.binEdit,'string'));
         alignEndFlag=str2double(get(handles.AlignEnd2,'string'));
-        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups,[],[],alignEndFlag);
+        initiAligFlat=str2double(get(handles.InitiAlig,'string'));
+        adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups,[],[],alignEndFlag,initiAligFlat);
         %to print code previous line to command window:
         if get(handles.printCodeCheck,'value')
             disp(['load(''' handles.dir handles.filename ''')'])
@@ -799,4 +807,12 @@ function AlignEnd2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+end
+
+function InitiAlig_CreateFcn(hObject, eventdata, handles)
+
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
 end
