@@ -193,8 +193,12 @@ classdef groupAdaptationData
         function newThis=removeSubs(this,subList)
            for i=1:length(subList)
                ii=find(strcmp(subList{i},this.ID));
+               if ~isempty(ii)
                this.ID=this.ID([1:ii-1,ii+1:end]);
                this.adaptData=this.adaptData([1:ii-1,ii+1:end]);
+               else
+                   warning(['Subject ' subList{i} ' could not be removed because it is not present'])
+               end
            end
            newThis=this;
         end

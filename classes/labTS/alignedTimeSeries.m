@@ -37,6 +37,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
         end
         
+        function newThis=removeStridesWithNaNs(this)
+           inds=find(all(all(~isnan(this.Data),2),1)); 
+           newThis=getPartialStridesAsATS(this,inds);
+        end
+        
         function newThis=getPartialDataAsATS(this,labels)
             [boolIdx,relIdx]=this.isaLabel(labels);
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
@@ -253,6 +258,26 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
             alignedData=this.Data;
             [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
+        end
+        
+        function newThis=equalizeEnergyPerChannel(this)
+            newThis=this;
+            newThis.Data=bsxfun(@rdivide,newThis.Data,sqrt(mean(mean(this.Data.^2,3),1)));
+        end
+        
+        function newThis=minus(this,other)
+           newThis=this;
+           newThis.Data=this.Data-other.Data;
+        end
+        
+        function newThis=demean(this)
+            newThis=this;
+            newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
+        end
+        
+        function newThis=catStrides(this)
+            auxData=permute(this.Data,[2,1,3]);
+            newThis=labTimeSeries(auxData(:,:)',this.Time(1),this.Time(2)-this.Time(1),this.labels);
         end
         
         function [boolFlag,labelIdx]=isaLabel(this,label)

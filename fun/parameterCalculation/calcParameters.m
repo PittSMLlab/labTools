@@ -49,6 +49,7 @@ if numStrides==0;
     return
 end
 stridedProcEMG=cell(numStrides,1);
+stridedRawEMG=cell(numStrides,1);
 %stridedMarkerData=cell(max(strideIdxs),1);
 stridedEventData=cell(numStrides,1);
 
@@ -62,6 +63,7 @@ eventTimes2=nan(numStrides,length(eventTypes));
 for i=1:numStrides
     if ~isempty(trialData.procEMGData)
         stridedProcEMG{i}=trialData.('procEMGData').split(initTime(i),endTime(i));
+        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i));
     end
     %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
     stridedEventData{i}=trialData.('gaitEvents').split(initTime(i),endTime(i));
@@ -120,6 +122,12 @@ end
 if ~isempty(trialData.procEMGData)
     [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
     out=cat(out,emg);
+    rawEMG = computeEMGParameters(strideEvents,stridedRawEMG,s);
+    %Renaming params & descriptions:
+    nLabels=strcat('RAW',rawEMG.labels);
+    nDescription=regexprep(rawEMG.description,'proc','raw');
+    rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
+    out=cat(out,rawEMG);
 end
 
 %Force

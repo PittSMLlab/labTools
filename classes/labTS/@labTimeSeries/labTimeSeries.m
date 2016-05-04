@@ -366,9 +366,9 @@ classdef labTimeSeries  < timeseries
                    else
                        warning(['Events were not in order on stride ' num2str(i) ', returning empty labTimeSeries.'])
                         if islogical(this.Data)
-                            steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),zeros(1,0),1,this.labels);
+                            steppedDataArray{i,j}=labTimeSeries(false(0,size(this.Data,2)),0,1,this.labels);
                         else
-                            steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),zeros(1,0),1,this.labels); %Empty labTimeSeries
+                            steppedDataArray{i,j}=labTimeSeries(zeros(0,size(this.Data,2)),0,1,this.labels); %Empty labTimeSeries
                         end
                         bad(i)=true;
                    end
@@ -419,6 +419,25 @@ classdef labTimeSeries  < timeseries
                 newLabels{i}=['d/dt ' this.labels{i}];
             end
             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
+        end
+        
+        function newthis=equalizeEnergyPerChannel(this)
+            %Equalizes each channel such that the second moment of each
+            %channel equals 1, E(x^2)=1
+            newthis=this;
+            newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanmean(this.Data.^2,1)));
+        end
+        
+        function newthis=equalizeVarPerChannel(this)
+            %Equalizes each channel such that the second moment  about the mean of each
+            %channel equals 1, E((x-E(x))^2)=1
+            newthis=this;
+            newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanvar(this.Data,[],1)));
+        end
+        
+        function newthis=demean(this)
+            newthis=this;
+            newthis.Data=bsxfun(@minus,this.Data,nanmean(this.Data));
         end
         
         function this=fillts(this) %TODO: Deprecate
@@ -584,6 +603,15 @@ classdef labTimeSeries  < timeseries
                 legend('L','R')
                 end
             end
+        end
+        
+        function h=dispCov(this)
+           h=figure;
+           dd=cov(this.Data);
+           imagesc(dd)
+           set(gca,'XTick',1:length(this.labels),'XTickLabels',this.labels,'XTickLabelRotation',90,'YTick',1:length(this.labels),'YTickLabels',this.labels,'YTickLabelRotation',0)
+           colorbar
+           caxis([-1 1]*max(dd(:)));
         end
         
         %Other
