@@ -131,6 +131,7 @@ classdef experimentData
         end
         
         function fastLeg=get.fastLeg(this)
+            error('Unimplemented')
             %based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even
             %if there is no belt data
             %
@@ -145,8 +146,8 @@ classdef experimentData
                         %Old version: Need to fix, as
                         %we are not really populating the beltSpeedReadData
                         %field.
-                        vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
-                        vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
+                        %vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
+                        %vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
                         %New version:
                         %TODO: Need to come up with an appropriate velocity
                         %measurement if we want this function to work
@@ -155,8 +156,8 @@ classdef experimentData
                 else %Stepped trial
                     for step=1:length(this.data{trial})
                         if ~isempty(this.data{trial}{step}.beltSpeedReadData)
-                            vR(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
-                            vL(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
+                            %vR(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
+                            %vL(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
                         end
                     end
                 end

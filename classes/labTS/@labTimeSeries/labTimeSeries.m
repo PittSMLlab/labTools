@@ -545,7 +545,8 @@ classdef labTimeSeries  < timeseries
                 %end
                 hold off
                 if nargin>4 && ~isempty(events)
-                    [ii,jj]=find(events.Data);
+                    lls={'LHS','RTO','RHS','LTO'};
+                    [ii,jj]=find(events.getDataAsTS(lls).Data);
                     [ii,iaux]=sort(ii);
                     jj=jj(iaux);
                     ax1=gca;
@@ -553,7 +554,8 @@ classdef labTimeSeries  < timeseries
                     %'XAxisLocation','top',...
                     %'YAxisLocation','right',...
                     %'Color','none');%,'XColor','r','YColor','r');
-                   set(ax1,'XTick',events.Time(ii),'XTickLabel',events.labels(jj))
+                    %[tt,i2]=unique(events.Time(ii));
+                   set(ax1,'XTick',events.Time(ii),'XTickLabel',lls(jj))
                    grid on
                 end
             end
