@@ -131,7 +131,7 @@ classdef experimentData
         end
         
         function fastLeg=get.fastLeg(this)
-            error('Unimplemented')
+            error('Unimplemented. Try getRefLeg, which reads slow/fast leg labels from trial metaData.')
             %based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even
             %if there is no belt data
             %
