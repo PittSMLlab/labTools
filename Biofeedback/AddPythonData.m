@@ -151,15 +151,48 @@ if iscell(filenames)
         %synchronize with cross correlation
         [acor, lag]=xcorr(NexusRlowFreq,newData(:,indc));%use RFz from Pdata
         [~,I]=max((acor));
-        timeDiff=lag(I);
-        if timeDiff<0
-            newData=newData(abs(timeDiff)+1:end,1:end);
-            newData2=newData2(abs(timeDiff)+1:end,1:end);
-        elseif timeDiff>0
-            newData=[zeros([timeDiff,size(Pheader,2)]);newData];
-            newData2=[zeros([timeDiff,size(Pheader,2)]);newData2];
-            
+        delay=I-max(length(NexusRlowFreq),length(newData(:,indc)));
+        
+        %remove extra python data at the beginning
+        if (delay < 0)
+            tempdata = newData(abs(delay):end,:);
+        elseif (delay > 0)
+            tempdata = newData(abs(delay):end,:);
+            disp('WARNING: positive delay detected between Python and Labtools, unpredictable alignment is imminent...');
         end
+        
+        %append or delete python data to match labtools
+        if length(tempdata)<length(NexusRlowFreq)
+            tempdata(end:length(NexusRlowFreq),:)=nan;
+        elseif length(tempdata)>length(NexusRlowFreq)
+            tempdata(length(NexusRlowFreq):end,:)=[];
+        end
+        
+%         figure(60)
+%         subplot(2,1,1)
+%         hold on
+%         plot(NexusRlowFreq,'b');
+%         plot([delay+1:length(newData(:,indc))+delay],newData(:,indc),'r');
+%         
+%         subplot(2,1,2)
+%         hold on
+%         plot(NexusRlowFreq,'b');
+%         plot(0:length(tempdata)-1,tempdata(:,indc),'r');
+        
+        
+        %apply alignment
+        newData = tempdata;
+        
+        %old method
+%         if timeDiff<0
+%             newData=newData(abs(timeDiff)+1:end,1:end);
+%             newData2=newData2(abs(timeDiff)+1:end,1:end);
+%         elseif timeDiff>0
+%             newData=[zeros([timeDiff,size(Pheader,2)]);newData];
+%             newData2=[zeros([timeDiff,size(Pheader,2)]);newData2];
+%             
+%         end
+%         keyboard
         
         try
             [~,rhsc,~] = intersect(Pheader,'RHS');%find which column contains RHS as detected by Python

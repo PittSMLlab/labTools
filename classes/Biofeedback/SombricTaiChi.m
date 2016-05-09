@@ -104,22 +104,125 @@ classdef SombricTaiChi
         
         function []=AnalyzePerformance(this)
             
-            [Xsag,Xlat,Ysag,Ylat]=this.getHits();
-            
-            %calculate errors
-            if ismember('R',this.triallist{z,4})
-                for z=1:length(Xsag)
-                    temp = Xsag{z};
-                    temp = -1*temp-this.Rtarget;
-                    temp2 = Xlat{z};
-                    temp2 = -1*temp2-this.Rtarget;
-                    
-                    Xerrorsag{z} = temp;
-                    Xerrorlat{z} = temp2;
-                    
-                end
-                keyboard
+            if this.fastleg == 'r'
+                colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
+            elseif this.fastleg == 'l'
+%                 colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
+                colors = {[2/255,184/255,245/255],[181/255,217/255,230/255],[14/255,201/255,52/255],[201/255,242/255,209/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
             end
+            
+            [Xlat,Ysag]=this.getHits();
+            [m,n]=size(Ysag);
+            sage=cell(m,n);
+            late=cell(m,n);
+            h=0;
+            h2 = 0;
+            h3=0;
+            h4=0;
+%             keyboard
+            for z=1:length(Ysag)
+                
+                
+                
+                
+                if ismember('R',this.triallist{z,4})
+                    
+                    temps = Ysag{z};
+                    templ = Xlat{z};
+                    temps = temps-this.Rtarget;
+                    templ = templ-this.Rtarget;
+                    
+                    temps(abs(temps)>0.1)=[];
+                    templ(abs(templ)>0.1)=[];
+                    
+                    sage{z} = temps;
+                    late{z} = templ;
+                    
+                elseif ismember('L',this.triallist{z,4})
+                    temps = Ysag{z};
+                    templ = Xlat{z};
+                    Xlat{z} = -1*templ;
+                    temps = temps-this.Ltarget;
+                    templ = -1*templ-this.Ltarget;
+%                     keyboard
+                    temps(abs(temps)>0.1)=[];
+                    templ(abs(templ)>0.1)=[];
+                    
+                    sage{z} = temps;
+                    late{z} = templ;
+                    
+                else
+                    disp('no errors computed');
+                    temps = 1000;
+                    templ = 1000;
+                end
+%                 keyboard
+                
+                figure(1) %Saggital errors
+                subplot(2,1,1)
+                hold on
+                scatter(h+[1:length(temps)],temps,'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
+                title('Saggital Target Errors');
+                h = h+length(temps);
+                plot([0 h],[0 0],'k');
+                plot([0 h],[0.01 0.01],'--k');
+                plot([0 h],[-0.01 -0.01],'--k');
+%                 grid on
+                ylim([-0.1 0.1]);
+                ylabel('Step Error (m)');
+                
+                subplot(2,1,2)
+                hold on
+                scatter(h2+[1:length(templ)],templ,'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
+                title('Lateral Target Errors');
+                h2 = h2+length(templ);
+                plot([0 h2],[0 0],'k');
+                plot([0 h2],[0.01 0.01],'--k');
+                plot([0 h2],[-0.01 -0.01],'--k');
+%                 grid on
+                ylim([-0.1 0.1]);
+                ylabel('Step Error (m)');
+                
+                figure(2)
+                subplot(2,1,1)
+                hold on
+                scatter(h3+[1:length(Ysag{z})],Ysag{z},'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
+                title('Saggital Landing Positions')
+                h3 = h3+length(Ysag{z});
+                if ismember('L',this.triallist{z,4})
+                    plot([h3-length(Ysag{z}) h3],[this.Ltarget this.Ltarget],'k');
+                    plot([h3-length(Ysag{z}) h3],[this.Ltarget+0.01 this.Ltarget+0.01],'--k');
+                    plot([h3-length(Ysag{z}) h3],[this.Ltarget-0.01 this.Ltarget-0.01],'--k');
+                elseif ismember('R',this.triallist{z,4})
+                    plot([h3-length(Ysag{z}) h3],[this.Rtarget this.Rtarget],'k');
+                    plot([h3-length(Ysag{z}) h3],[this.Rtarget+0.01 this.Rtarget+0.01],'--k');
+                    plot([h3-length(Ysag{z}) h3],[this.Rtarget-0.01 this.Rtarget-0.01],'--k');
+                end
+                ylim([0.1 0.4]);
+                ylabel('Step Position (m)');
+                
+                subplot(2,1,2)
+                hold on
+                scatter(h4+[1:length(Xlat{z})],Xlat{z},'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
+                title('Lateral Landing Positions')
+                h4 = h4+length(Xlat{z});
+                if ismember('L',this.triallist{z,4})
+                    plot([h4-length(Xlat{z}) h4],[this.Ltarget this.Ltarget],'k');
+                    plot([h4-length(Xlat{z}) h4],[this.Ltarget+0.01 this.Ltarget+0.01],'--k');
+                    plot([h4-length(Xlat{z}) h4],[this.Ltarget-0.01 this.Ltarget-0.01],'--k');
+                elseif ismember('R',this.triallist{z,4})
+                    plot([h4-length(Xlat{z}) h4],[this.Rtarget this.Rtarget],'k');
+                    plot([h4-length(Xlat{z}) h4],[this.Rtarget+0.01 this.Rtarget+0.01],'--k');
+                    plot([h4-length(Xlat{z}) h4],[this.Rtarget-0.01 this.Rtarget-0.01],'--k');
+                end
+                ylim([0.1 0.4]);
+                ylabel('Step Position (m)');
+                
+                
+                
+            end
+            
+%             keyboard
             
         end
         
@@ -206,7 +309,7 @@ classdef SombricTaiChi
             end
         end
         
-        function [Xsag,Xlat,Ysag,Ylat]=getHits(this) %X and Y do not inidicate which leg is being tested
+        function [Xlat,Ysag]=getHits(this) %X and Y do not inidicate which leg is being tested
             
             filename = this.triallist(:,1);
             WB = waitbar(0,'Processing Trials...');
@@ -290,16 +393,16 @@ classdef SombricTaiChi
                         end
                         RHS = find(RHS2);
                         clear RHS2
-
+% keyboard
                         for zz=1:length(RHS)
                             if abs(Y(RHS(zz)))>0.1 %&& abs(X(RHS(zz)))<=0.1
                                 tempx(zz) = X(RHS(zz));
                                 tempy(zz) = Y(RHS(zz));
-                                temp2x(zz) = nan;
-                                temp2y(zz) = nan;
+                                temp2x(zz) = 5000;
+                                temp2y(zz) = 5000;
                             elseif abs(X(RHS(zz)))>0.1 %&& abs(Y(RHS(zz)))<=0.1
-                                tempx(zz) = nan;
-                                tempy(zz) = nan;
+                                tempx(zz) = 5000;
+                                tempy(zz) = 5000;
                                 temp2x(zz) = X(RHS(zz));
                                 temp2y(zz) = Y(RHS(zz));
                             else
@@ -337,11 +440,11 @@ classdef SombricTaiChi
                             if abs(Y(LHS(zz)))>0.1 %&& abs(X(LHS(zz)))<=0.1
                                 tempx(zz) = X(LHS(zz));
                                 tempy(zz) = Y(LHS(zz));
-                                temp2x(zz) = 0;
-                                temp2y(zz) = 0;
+                                temp2x(zz) = 5000;
+                                temp2y(zz) = 5000;
                             elseif abs(X(LHS(zz)))>0.1 %&& abs(Y(LHS(zz)))<=0.1
-                                tempx(zz) = 0;
-                                tempy(zz) = 0;
+                                tempx(zz) = 5000;
+                                tempy(zz) = 5000;
                                 temp2x(zz) = X(LHS(zz));
                                 temp2y(zz) = Y(LHS(zz));
                             else
@@ -363,7 +466,7 @@ classdef SombricTaiChi
 
                 end
                 close(WB);
-                keyboard
+%                 keyboard
             else
                 
             end
