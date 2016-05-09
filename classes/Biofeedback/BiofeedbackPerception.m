@@ -180,7 +180,7 @@ classdef BiofeedbackPerception
                 filename = this.triallist(:,1);
                 
                 if iscell(filename)%if more than one file is selected for analysis
-                %{
+                    %{
                 %                     rhits = {0};
                 %                     lhits = {0};
                 %                     rlqr = {0};
@@ -333,17 +333,10 @@ classdef BiofeedbackPerception
                 %                         clear RHS LHS tamp tamp2
                                     end
                     %}
-                    %filename = this.triallist(:,1);
+                    
                     [rhits, lhits, rts, lts, color,rv,lv]=this.getHits();
-                    
-                    
-                    %this.saveit();
-                    %
-%                     waitbar(1,WB,'Processing complete...');
-%                     pause(0.5);
-%                     close(WB);
+                    [rhits, lhits, rts, lts, rv, lv]=this.removeTransitions(rhits, lhits, rts, lts, rv,lv);
                     clear z
-                    %                     keyboard
                     %load triallist to look for categories
                     tlist = this.triallist;
                     
@@ -353,197 +346,8 @@ classdef BiofeedbackPerception
                     wash = find(strcmp(tlist(:,4),'Post Clamp'));
                     wash2 = find(strcmp(tlist(:,4),'Post Map'));
                     
-                    %check for more than one file in a condition
-                    if length(train)>1
-                        rtrain = 0;
-                        ltrain = 0;
-                        for c = 1:length(train)
-                            rtrain = rtrain+length(cell2mat(rhits(train(c))));
-                            ltrain = ltrain+length(cell2mat(lhits(train(c))));
-                        end
-                    else
-                        rtrain = length(cell2mat(rhits(train)));
-                        ltrain = length(cell2mat(lhits(train)));
-                    end
-                    
-                    if length(base)>1
-                        rbase = 0;
-                        lbase = 0;
-                        for c = 1:length(base)
-                            rbase = rbase+length(cell2mat(rhits(base(c))));
-                            lbase = lbase+length(cell2mat(lhits(base(c))));
-                        end
-                    else
-                        rbase = length(cell2mat(rhits(base)));
-                        lbase = length(cell2mat(lhits(base)));
-                    end
-                    
-                    if length(adapt)>1
-                        radapt = 0;
-                        ladapt = 0;
-                        for c = 1:length(adapt)
-                            radapt = radapt+length(cell2mat(rhits(adapt(c))));
-                            ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
-                        end
-                    else
-                        radapt = length(cell2mat(rhits(adapt)));
-                        ladapt = length(cell2mat(lhits(adapt)));
-                    end
-                    
-                    if length(wash)>1
-                        rwash = 0;
-                        lwash = 0;
-                        for c = 1:length(wash)
-                            rwash = rwash+length(cell2mat(rhits(wash(c))));
-                            lwash = lwash+length(cell2mat(lhits(wash(c))));
-                        end
-                    else
-                        rwash = length(cell2mat(rhits(wash)));
-                        lwash = length(cell2mat(lhits(wash)));
-                    end
-                    
-                    
-                    
-                    figure(2)
-                    if this.fastleg == 'r'
-                        subplot(2,1,1)
-                    else
-                        subplot(2,1,2)
-                    end
-                    hold on
-%                     keyboard
-                    fill([0 rtrain rtrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256)
-                    fill([rtrain rtrain+rbase  rtrain+rbase  rtrain],[0.255 0.255 -0.255 -0.255],[256 256 256]./256);
-                    fill([rtrain+rbase rtrain+rbase+radapt rtrain+rbase+radapt rtrain+rbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    fill([rtrain+rbase+radapt  rtrain+rbase+radapt+rwash   rtrain+rbase+radapt+rwash  rtrain+rbase+radapt],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    
-                    h = 0;
-                    for z = 1:length(filename)
-                        figure(2)
-                        if this.fastleg == 'r'
-                            subplot(2,1,1)
-                        else
-                            subplot(2,1,2)
-                        end
-                        hold on
-                        
-                        if strcmp(this.triallist{z,4},'Familiarization')
-                            
-                            temp = rv{z};
-                            temp2 = rts{z};
-                            groupies = temp+temp2;
-                            
-                            %g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b','b', 'k', 'k' ,'r','r'],['s','s','o','o','d','d']);
-                            g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
-                            %                             g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
-                            colorfull=['w','w', 'w', 'b', 'k' ,'r' ];
-                            colorout=['b','k', 'r', 'k', 'k' ,'k' ];
-                            for y = 1:length(g)
-                                set(g(y),'MarkerFaceColor',colorfull(y));
-                                set(g(y),'MarkerEdgeColor',colorout(y));
-                            end
-                        else
-                            g=gscatter([1:length(rhits{z})]+h,rhits{z},rts{z},['b', 'k' ,'r'],['s','o','d']);
-                            if  strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
-                                colorCODE=['b', 'k' ,'r'];
-                                for y = 1:length(g)
-                                    set(g(y),'MarkerFaceColor',colorCODE(y));
-                                    set(g(y),'MarkerEdgeColor','k');
-                                end
-                            end
-                        end
-                        
-                        %                        plot([h h+length(rhits{z})],[nanmean(rhits{z})+rlqr{z}/2 nanmean(rhits{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                        %                        plot([h h+length(rhits{z})],[nanmean(rhits{z})-rlqr{z}/2 nanmean(rhits{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                        h = h+length(rhits{z});
-                    end
-                    plot([0 h+length(rhits{z})],[0.02 0.02],'k');%tolerance lines
-                    plot([0 h+length(rhits{z})],[-0.02 -0.02],'k');
-                    figure(2)
-                    if this.fastleg == 'r'
-                        subplot(2,1,1)
-                        title([this.subjectcode ' Step Length Error Fast Leg']);
-                    else
-                        subplot(2,1,2)
-                        title([this.subjectcode ' Step Length Error Slow Leg']);
-                    end
-                    ylim([-0.25 0.25]);
-                    xlim([0 h+10]);
-                    %                    title([this.subjectcode ' Step Length Error Fast Leg']);
-                    xlabel('step #');
-                    ylabel('Error (m)');
-                    legend('Familiarization', 'Spatial Map', 'Error Clamp','Error Clamp',  ...
-                        'Short No Vision', 'Mid No Vision', 'Long No Vision',...
-                        'Short Vision', 'Mid Vision', 'Long Vision')
-                    
-                    figure(2)
-                    if this.fastleg == 'l'
-                        subplot(2,1,1)
-                    else
-                        subplot(2,1,2)
-                    end
-                    hold on
-                    fill([0 ltrain ltrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256);
-                    fill([ltrain+lbase ltrain+lbase+ladapt ltrain+lbase+ladapt ltrain+lbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    %                     fill([ltrain+lbase+ladapt+length(cell2mat(lhits(wash))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))+length(cell2mat(lhits(wash2))) ltrain+lbase+ladapt+length(cell2mat(lhits(wash)))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    fill([ltrain+lbase+ladapt  ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt  ],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                    
-                    
-                    h = 0;
-                    for z = 1:length(filename)
-                        figure(2)
-                        if this.fastleg == 'l'
-                            subplot(2,1,1)
-                        else
-                            subplot(2,1,2)
-                        end
-                          if strcmp(this.triallist{z,4},'Familiarization')
-                            
-                            temp = rv{z};
-                            temp2 = rts{z};
-                            groupies = temp+temp2;
-                            
-                            %g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b','b', 'k', 'k' ,'r','r'],['s','s','o','o','d','d']);
-                            g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
-                            %                             g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
-                            colorfull=['w','w', 'w', 'b', 'k' ,'r' ];
-                            colorout=['b','k', 'r', 'k', 'k' ,'k' ];
-                            for y = 1:length(g)
-                                set(g(y),'MarkerFaceColor',colorfull(y));
-                                set(g(y),'MarkerEdgeColor',colorout(y));
-                            end
-                        else
-                        g = gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},['b', 'k' ,'r'],['s','o','d']);
-                        if strcmp(this.triallist{z,4},'Familiarization') || strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
-                            colorCODE=['b', 'k' ,'r'];
-                            for y = 1:length(g)
-                                set(g(y),'MarkerFaceColor',colorCODE(y));
-                                set(g(y),'MarkerEdgeColor','k');
-                            end
-                        end
-                          end
-                        
-                        plot([h h+length(lhits{z})],[0.02 0.02],'k');%tolerance lines
-                        plot([h h+length(lhits{z})],[-0.02 -0.02],'k');
-                        %                        plot([h h+length(lhits{z})],[nanmean(lhits{z})+llqr{z}/2 nanmean(lhits{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                        %                        plot([h h+length(lhits{z})],[nanmean(lhits{z})-llqr{z}/2 nanmean(lhits{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                        h = h+length(lhits{z});
-                        %         h = h+length(lhits{z});
-                    end
-                    figure(2)
-                    if this.fastleg == 'l'
-                        subplot(2,1,1)
-                        title([this.subjectcode ' Step Length Error Fast Leg']);
-                    else
-                        subplot(2,1,2)
-                        title([this.subjectcode ' Step Length Error Slow Leg']);
-                    end
-                    ylim([-0.25 0.25]);
-                    xlim([0 h+10]);
-                    %                    title([this.subjectcode ' Step Length Error Slow Leg']);
-                    xlabel('step #');
-                    ylabel('Error (m)');
-                    
+                    %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    this.PlotErrorTimecourse(rhits, lhits, rts, lts, rv,lv)
                     %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     %organize the data
                     PossibleTarget=sort(unique(rts{1}));
@@ -578,10 +382,19 @@ classdef BiofeedbackPerception
                         r=1;
                         RR{z}=[0, 0, 0];
                         
+                        %new, removing outliers
+                        badR=[find(rhits{z}>=0.255); find(rhits{z}<=-0.255)];
+                        rhits{z}(badR)=NaN;
+                        badL=[find(lhits{z}>=0.255); find(lhits{z}<=-0.255)];
+                        lhits{z}(badR)=NaN;
                         while t<length(rts{z})
-                            RR{z}(r, RDATA(t))=mean(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, 'first')+t-2)));
+                            %                             if strcmp(this.triallist{z,4},'Post Clamp')
+                            %                                 RR{z}(r, RDATA(t))=mean(rhits{z}(t+1:t+3));%(find(RDATA(t:end)~=RDATA(t),1, 'first')+t-2))); %BLAH
+                            %                             else
+                            RR{z}(r, RDATA(t))=nanmean(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, 'first')+t-2))); %BLAH
+                            %                             end
                             if isnan(RR{z}(r, RDATA(t)))
-                                RR{z}(r, RDATA(t))=mean(rhits{z}(t:end));
+                                RR{z}(r, RDATA(t))=nanmean(rhits{z}(t:end));
                             end
                             t=find(RDATA(t:end)~=RDATA(t),1, 'first')+t-1;
                             if isempty(t)
@@ -595,9 +408,13 @@ classdef BiofeedbackPerception
                         r=1;
                         LL{z}=[0, 0, 0];
                         while t<length(lts{z})
-                            LL{z}(r, LDATA(t))=mean(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, 'first')+t-2)));
+                            %                             if strcmp(this.triallist{z,4},'Post Clamp')
+                            %                                 LL{z}(r, LDATA(t))=mean(lhits{z}(t+1:t+3));%(find(LDATA(t:end)~=LDATA(t),1, 'first')+t-2)));%BLAH
+                            %                             else
+                            LL{z}(r, LDATA(t))=nanmean(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, 'first')+t-2)));%BLAH
+                            %                             end
                             if isnan(LL{z}(r, LDATA(t)))
-                                LL{z}(r, LDATA(t))=mean(lhits{z}(t:end));
+                                LL{z}(r, LDATA(t))=nanmean(lhits{z}(t:end));
                             end
                             t=find(LDATA(t:end)~=LDATA(t),1, 'first')+t-1;
                             if isempty(t)
@@ -609,216 +426,24 @@ classdef BiofeedbackPerception
                         end
                         clear RDATA LDATA
                     end
-%                     keyboard
-                    DDR{1}=RR{4}-RR{3};
-                    DDR{2}=nanmean(RR{5}-RR{2});
+                    %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    %DDR{1}=RR{wash}-RR{adapt};%Tit4tat:base subtraction
+                    %DDR{1}=RR{wash}-repmat(RR{adapt}(end, :), size(RR{wash}, 1), 1);% Use the Baseline SS
+                    DDR{1}=RR{wash}-repmat([mean(RR{adapt}(:, 1)) RR{adapt}(end, 2) mean(RR{adapt}(:, 3))], size(RR{wash}, 1), 1);DDR{1}(1:end-1, 2)=0;% Use the whole Baseline, mean
+                    %DDR{1}=RR{wash}-repmat([median(RR{adapt}(:, 1)) RR{adapt}(end, 2) median(RR{adapt}(:, 3))], size(RR{wash}, 1), 1);DDR{1}(1:end-1, 2)=0;% Use the whole Baseline, median
+                    DDR{2}=nanmean(RR{wash2}-RR{base});
                     
-                    DDL{1}=LL{4}-LL{3};
-                    DDL{2}=nanmean(LL{5}-LL{2});
+                    %DDL{1}=LL{wash}-LL{adapt};%Tit4tat:base subtraction
+                    %DDL{1}=LL{wash}-repmat(LL{adapt}(end, :), size(LL{wash}, 1), 1);% Use the Baseline SS
+                    DDL{1}=LL{wash}-repmat([mean(LL{adapt}(:, 1)) LL{adapt}(end, 2) mean(LL{adapt}(:, 3))], size(LL{wash}, 1), 1);DDL{1}(1:end-1, 2)=0;% Use the whole Baseline, mean
+                    %DDL{1}=LL{wash}-repmat([median(LL{adapt}(:, 1)) LL{adapt}(end, 2) median(LL{adapt}(:, 3))], size(LL{wash}, 1), 1);DDL{1}(1:end-1, 2)=0;% Use the whole Baseline, median
+                    DDL{2}=nanmean(LL{wash2}-LL{base});
+                    % % %                     end
+                    %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    PlotMap(this, rhits, lhits,  RR, LL, DDR, DDL)
                     
                     %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    for z = 2%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'r'
-                            subplot(2,3,1)
-                        else
-                            subplot(2,3,4)
-                        end
-                        hold on
-                        bar(RR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg: Baseline Map Test'])
-                        ylabel('Error (m)')
-                        legend({'Short', 'Medium', 'Long'})
-                        xlabel('Set')
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 2%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'l'
-                            subplot(2,3,1)
-                        else
-                            subplot(2,3,4)
-                        end
-                        hold on
-                        bar(LL{z})
-                        xlabel('Set')
-                        title([this.subjectcode ' SlowLeg: Baseline Map Test'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 5%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'r'
-                            subplot(2,3,2)
-                        else
-                            subplot(2,3,5)
-                        end
-                        hold on
-                        bar(RR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg: Post-Adaptation Map Test'])
-                        ylabel('Error (m)')
-                        xlabel('Set')
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 5%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'l'
-                            subplot(2,3,2)
-                        else
-                            subplot(2,3,5)
-                        end
-                        hold on
-                        bar(LL{z})
-                        xlabel('Set')
-                        title([this.subjectcode ' SlowLeg: Post Adaptation Map Test'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 2%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'r'
-                            subplot(2,3,3)
-                        else
-                            subplot(2,3,6)
-                        end
-                        hold on
-                        
-                        bar(DDR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg Map Test (Washtout-Baseline)'])
-                        ylabel('Error (m)')
-                        %legend({'Short', 'Medium', 'Long'})
-                        %xlabel('Set')
-                        set(gca, 'XTickLabel',{'Short', 'Medium', 'Long'}, 'XTick',1:3)
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 2%1:length(filename)
-                        figure(4)
-                        if this.fastleg == 'l'
-                            subplot(2,3,3)
-                        else
-                            subplot(2,3,6)
-                        end
-                        hold on
-                        bar(DDL{z})
-                        %xlabel('Set')
-                        set(gca, 'XTickLabel',{'Short', 'Medium', 'Long'}, 'XTick',1:3)
-                        title([this.subjectcode ' SlowLeg Map Test (Washtout-Baseline)'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                    for z = 3%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'r'
-                            subplot(2,3,1)
-                        else
-                            subplot(2,3,4)
-                        end
-                        hold on
-                        bar(RR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg: Baseline Error Clamp'])
-                        ylabel('Error (m)')
-                        legend({'Short', 'Medium', 'Long'})
-                        xlabel('Set')
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 3%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'l'
-                            subplot(2,3,1)
-                        else
-                            subplot(2,3,4)
-                        end
-                        hold on
-                        bar(LL{z})
-                        xlabel('Set')
-                        title([this.subjectcode ' SlowLeg: Baseline Error Clamp'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 4%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'r'
-                            subplot(2,3,2)
-                        else
-                            subplot(2,3,5)
-                        end
-                        hold on
-                        bar(RR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg: Post-Adaptation Error Clamp'])
-                        ylabel('Error (m)')
-                        xlabel('Set')
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 4%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'l'
-                            subplot(2,3,2)
-                        else
-                            subplot(2,3,5)
-                        end
-                        hold on
-                        bar(LL{z})
-                        xlabel('Set')
-                        title([this.subjectcode ' SlowLeg: Post Adaptation Error Clamp'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 1%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'r'
-                            subplot(2,3,3)
-                        else
-                            subplot(2,3,6)
-                        end
-                        hold on
-                        %bar(RR{z})
-                        bar(DDR{z})
-                        h = h+length(rhits{z});
-                        title([this.subjectcode ' Fastleg Error Clamp (Washtout-Baseline)'])
-                        ylabel('Error (m)')
-                        %legend({'Short', 'Medium', 'Long'})
-                        
-                        xlabel('Set')
-                        ylim([-0.255 0.255])
-                    end
-                    
-                    for z = 1%1:length(filename)
-                        figure(5)
-                        if this.fastleg == 'l'
-                            subplot(2,3,3)
-                        else
-                            subplot(2,3,6)
-                        end
-                        hold on
-                        bar(DDL{z})
-                        xlabel('Set')
-                        
-                        title([this.subjectcode ' SlowLeg Error Clamp (Washtout-Baseline)'])
-                        ylabel('Error (m)')
-                        h = h+length(lhits{z});
-                        ylim([-0.255 0.255])
-                    end
+                    PlotEC(this, rhits, lhits,  RR, LL, DDR, DDL)
                     %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 end
             end
@@ -944,7 +569,7 @@ classdef BiofeedbackPerception
                     elseif strcmp(this.triallist{z,4},'Post Map')
                         color{z} = [9/255,109/255,143/255];%bluegrey
                     end
-
+                    
                     %check to see if data is already processed, it will
                     %save time...
                     if length(this.data)<z
@@ -975,14 +600,13 @@ classdef BiofeedbackPerception
                     %check for monotonicity
                     checkers = find(diff(data2(:,1))<1);
                     while ~isempty(checkers)
-                        disp('WARNING repeated frames present in data, removing...');
+                        %                         disp('WARNING repeated frames present in data, removing...');
                         for y=1:length(checkers)
                             data2(checkers(y),:)=[];
                         end
                         checkers = find(diff(data2(:,1))<1);
                     end
-
-%                     [~,n] = size(data2);
+                    
                     Rz2 = data2(:,2);
                     Lz2 = data2(:,3);
                     Rgamma2 = data2(:,10);
@@ -1000,7 +624,7 @@ classdef BiofeedbackPerception
                             RHS(zz) = 0;
                         end
                     end
-                    [~,trhs] = findpeaks(RHS,'MinPeakDistance',100);
+                    [~,trhs] = findpeaks(RHS,'MinPeakDistance',75);
                     RHS = zeros(length(RHS),1);
                     RHS(trhs) = 1;
                     for zz = 1:length(Lz2)-1
@@ -1010,17 +634,22 @@ classdef BiofeedbackPerception
                             LHS(zz) = 0;
                         end
                     end
-                    [~,tlhs] = findpeaks(LHS,'MinPeakDistance',100);
+                    [~,tlhs] = findpeaks(LHS,'MinPeakDistance',75);
                     LHS = zeros(length(LHS),1);
                     LHS(tlhs) = 1;
-                    %                        keyboard
+                    %keyboard
                     %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
                     %calculate errors
-                    %                        tamp = abs(Rgamma2(find(RHS)))'-this.Rtmtarget;
-                    %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
+                    %                     if strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
+                    %                         vamp = this.Rtmtarget-target(find(RHS)-1);
+                    %                         vamp2 = this.Ltmtarget-target(find(LHS)-1);
+                    %                         tamp = abs(Rgamma2(find(RHS)))-this.Rtmtarget-vamp;
+                    %                         tamp2 = abs(Lgamma2(find(LHS)))-this.Ltmtarget-vamp2;
+                    %                     else
                     tamp = Rgamma2(find(RHS))-target(find(RHS)-1);
                     tamp2 = Lgamma2(find(LHS))-target(find(LHS)-1);
-                   % keyboard
+                    %                     end
+                    
                     tamp3 = target(find(RHS));
                     tamp4 = target(find(LHS));
                     if strcmp(this.triallist{z,4},'Familiarization')
@@ -1030,27 +659,27 @@ classdef BiofeedbackPerception
                         tamp5 = zeros(length(tamp),1);
                         tamp6 = zeros(length(tamp),1);
                     end
-%                     keyboard
-                    %delete 5 strides at each transistion
-                    K = find(diff(tamp3));
-                    K2 = find(diff(tamp4));
-                    for y = 1:length(K)
-                        tamp(K(y):K(y)+5)=100;
-                        tamp3(K(y):K(y)+5)=100;
-                        tamp5(K(y):K(y)+5)=100;
-                    end
-                    for y = 1:length(K2)
-                        tamp2(K2(y):K2(y)+5)=100;
-                        tamp4(K2(y):K2(y)+5)=100;
-                        tamp6(K2(y):K2(y)+5)=100;
-                    end
-                    tamp(tamp==100)=[];
-                    tamp2(tamp2==100)=[];
-                    tamp3(tamp3==100)=[];
-                    tamp4(tamp4==100)=[];
-                    tamp5(tamp5==100)=[];
-                    tamp6(tamp6==100)=[];
                     
+                    % % % %                     %delete 5 strides at each transistion
+                    % % % %                     K = find(diff(tamp3));
+                    % % % %                     K2 = find(diff(tamp4));
+                    % % % %                     for y = 1:length(K)
+                    % % % %                         tamp(K(y):K(y)+5)=100;
+                    % % % %                         tamp3(K(y):K(y)+5)=100;
+                    % % % %                         tamp5(K(y):K(y)+5)=100;
+                    % % % %                     end
+                    % % % %                     for y = 1:length(K2)
+                    % % % %                         tamp2(K2(y):K2(y)+5)=100;
+                    % % % %                         tamp4(K2(y):K2(y)+5)=100;
+                    % % % %                         tamp6(K2(y):K2(y)+5)=100;
+                    % % % %                     end
+                    % % % %                     tamp(tamp==100)=[];
+                    % % % %                     tamp2(tamp2==100)=[];
+                    % % % %                     tamp3(tamp3==100)=[];
+                    % % % %                     tamp4(tamp4==100)=[];
+                    % % % %                     tamp5(tamp5==100)=[];
+                    % % % %                     tamp6(tamp6==100)=[];
+                    % % % %
                     rhits{z} = tamp;
                     lhits{z} = tamp2;
                     rts{z} = tamp3;
@@ -1063,6 +692,552 @@ classdef BiofeedbackPerception
             end
             close(WB)
             this.saveit();
+        end
+        
+        function [rhits, lhits, rts, lts, rv,lv]=removeTransitions(this, tamp, tamp2, tamp3, tamp4, tamp5, tamp6)
+            
+            for z = 1:length(tamp)
+                %delete 5 strides at each transistion
+                K = find(diff(tamp3{z}));
+                K2 = find(diff(tamp4{z}));
+                for y = 1:length(K)
+                    tamp{z}(K(y):K(y)+5)=100;
+                    tamp3{z}(K(y):K(y)+5)=100;
+                    tamp5{z}(K(y):K(y)+5)=100;
+                end
+                for y = 1:length(K2)
+                    tamp2{z}(K2(y):K2(y)+5)=100;
+                    tamp4{z}(K2(y):K2(y)+5)=100;
+                    tamp6{z}(K2(y):K2(y)+5)=100;
+                end
+                tamp{z}(tamp{z}==100)=[];
+                tamp2{z}(tamp2{z}==100)=[];
+                tamp3{z}(tamp3{z}==100)=[];
+                tamp4{z}(tamp4{z}==100)=[];
+                tamp5{z}(tamp5{z}==100)=[];
+                tamp6{z}(tamp6{z}==100)=[];
+                
+                rhits{z} = tamp{z};
+                lhits{z} = tamp2{z};
+                rts{z} = tamp3{z};
+                lts{z} = tamp4{z};
+                rv{z} = tamp5{z};
+                lv{z} = tamp6{z};
+                
+                
+            end
+        end
+        
+        function []=PlotErrorTimecourse(this, rhits, lhits, rts, lts, rv,lv)
+            tlist = this.triallist;
+            filename = this.triallist(:,1);
+            train = find(strcmp(tlist(:,4),'Familiarization'));%logicals of where training trials are
+            base = find(strcmp(tlist(:,4),'Base Map'));
+            adapt = find(strcmp(tlist(:,4),'Base Clamp'));
+            wash = find(strcmp(tlist(:,4),'Post Clamp'));
+            wash2 = find(strcmp(tlist(:,4),'Post Map'));
+            
+            %check for more than one file in a condition
+            if length(train)>1
+                rtrain = 0;
+                ltrain = 0;
+                for c = 1:length(train)
+                    rtrain = rtrain+length(cell2mat(rhits(train(c))));
+                    ltrain = ltrain+length(cell2mat(lhits(train(c))));
+                end
+            else
+                rtrain = length(cell2mat(rhits(train)));
+                ltrain = length(cell2mat(lhits(train)));
+            end
+            
+            if length(base)>1
+                rbase = 0;
+                lbase = 0;
+                for c = 1:length(base)
+                    rbase = rbase+length(cell2mat(rhits(base(c))));
+                    lbase = lbase+length(cell2mat(lhits(base(c))));
+                end
+            else
+                rbase = length(cell2mat(rhits(base)));
+                lbase = length(cell2mat(lhits(base)));
+            end
+            
+            if length(adapt)>1
+                radapt = 0;
+                ladapt = 0;
+                for c = 1:length(adapt)
+                    radapt = radapt+length(cell2mat(rhits(adapt(c))));
+                    ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+                end
+            else
+                radapt = length(cell2mat(rhits(adapt)));
+                ladapt = length(cell2mat(lhits(adapt)));
+            end
+            
+            if length(wash)>1
+                rwash = 0;
+                lwash = 0;
+                for c = 1:length(wash)
+                    rwash = rwash+length(cell2mat(rhits(wash(c))));
+                    lwash = lwash+length(cell2mat(lhits(wash(c))));
+                end
+            else
+                rwash = length(cell2mat(rhits(wash)));
+                lwash = length(cell2mat(lhits(wash)));
+            end
+            
+            figure(2)
+            if this.fastleg == 'r'
+                subplot(2,1,1)
+            else
+                subplot(2,1,2)
+            end
+            hold on
+            
+            fill([0 rtrain rtrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256)
+            fill([rtrain rtrain+rbase  rtrain+rbase  rtrain],[0.255 0.255 -0.255 -0.255],[256 256 256]./256);
+            fill([rtrain+rbase rtrain+rbase+radapt rtrain+rbase+radapt rtrain+rbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+            fill([rtrain+rbase+radapt  rtrain+rbase+radapt+rwash   rtrain+rbase+radapt+rwash  rtrain+rbase+radapt],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+            
+            h = 0;
+            for z = 1:length(filename)
+                figure(2)
+                if this.fastleg == 'r'
+                    subplot(2,1,1)
+                else
+                    subplot(2,1,2)
+                end
+                hold on
+                
+                if strcmp(this.triallist{z,4},'Familiarization')
+                    
+                    temp = rv{z};
+                    temp2 = rts{z};
+                    groupies = temp+temp2;
+                    g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
+                    colorfull=['w','w', 'w', 'b', 'k' ,'r' ];
+                    colorout=['b','k', 'r', 'k', 'k' ,'k' ];
+                    for y = 1:length(g)
+                        set(g(y),'MarkerFaceColor',colorfull(y));
+                        set(g(y),'MarkerEdgeColor',colorout(y));
+                    end
+                else
+                    g=gscatter([1:length(rhits{z})]+h,rhits{z},rts{z},['b', 'k' ,'r'],['s','o','d']);
+                    if  strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
+                        colorCODE=['b', 'k' ,'r'];
+                        for y = 1:length(g)
+                            set(g(y),'MarkerFaceColor',colorCODE(y));
+                            set(g(y),'MarkerEdgeColor','k');
+                        end
+                    end
+                end
+                h = h+length(rhits{z});
+            end
+            plot([0 h+length(rhits{z})],[0.02 0.02],'k');%tolerance lines
+            plot([0 h+length(rhits{z})],[-0.02 -0.02],'k');
+            figure(2)
+            if this.fastleg == 'r'
+                subplot(2,1,1)
+                title([this.subjectcode ' Step Length Error Fast Leg']);
+            else
+                subplot(2,1,2)
+                title([this.subjectcode ' Step Length Error Slow Leg']);
+            end
+            ylim([-0.25 0.25]);
+            xlim([0 h+10]);
+            %                    title([this.subjectcode ' Step Length Error Fast Leg']);
+            xlabel('step #');
+            ylabel('Error (m)');
+            legend('Familiarization', 'Spatial Map', 'Error Clamp','Error Clamp',  ...
+                'Short No Vision', 'Mid No Vision', 'Long No Vision',...
+                'Short Vision', 'Mid Vision', 'Long Vision')
+            
+            figure(2)
+            if this.fastleg == 'l'
+                subplot(2,1,1)
+            else
+                subplot(2,1,2)
+            end
+            hold on
+            fill([0 ltrain ltrain 0],[0.255 0.255 -0.255 -0.255],[150 150 150]./256);
+            fill([ltrain+lbase ltrain+lbase+ladapt ltrain+lbase+ladapt ltrain+lbase],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+            fill([ltrain+lbase+ladapt  ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt+lwash   ltrain+lbase+ladapt  ],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+            
+            h = 0;
+            for z = 1:length(filename)
+                figure(2)
+                if this.fastleg == 'l'
+                    subplot(2,1,1)
+                else
+                    subplot(2,1,2)
+                end
+                if strcmp(this.triallist{z,4},'Familiarization')
+                    
+                    temp = rv{z};
+                    temp2 = rts{z};
+                    groupies = temp+temp2;
+                    g=gscatter([1:length(rhits{z})]+h,rhits{z},groupies,['b', 'k', 'r','b', 'k', 'r'],['s','o','d','s','o','d']);
+                    colorfull=['w','w', 'w', 'b', 'k' ,'r' ];
+                    colorout=['b','k', 'r', 'k', 'k' ,'k' ];
+                    for y = 1:length(g)
+                        set(g(y),'MarkerFaceColor',colorfull(y));
+                        set(g(y),'MarkerEdgeColor',colorout(y));
+                    end
+                else
+                    g = gscatter([1:length(lhits{z})]+h,lhits{z},lts{z},['b', 'k' ,'r'],['s','o','d']);
+                    if strcmp(this.triallist{z,4},'Familiarization') || strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
+                        colorCODE=['b', 'k' ,'r'];
+                        for y = 1:length(g)
+                            set(g(y),'MarkerFaceColor',colorCODE(y));
+                            set(g(y),'MarkerEdgeColor','k');
+                        end
+                    end
+                end
+                
+                plot([h h+length(lhits{z})],[0.02 0.02],'k');%tolerance lines
+                plot([h h+length(lhits{z})],[-0.02 -0.02],'k');
+                h = h+length(lhits{z});
+            end
+            figure(2)
+            if this.fastleg == 'l'
+                subplot(2,1,1)
+                title([this.subjectcode ' Step Length Error Fast Leg']);
+            else
+                subplot(2,1,2)
+                title([this.subjectcode ' Step Length Error Slow Leg']);
+            end
+            ylim([-0.25 0.25]);
+            xlim([0 h+10]);
+            %                    title([this.subjectcode ' Step Length Error Slow Leg']);
+            xlabel('step #');
+            ylabel('Error (m)');
+        end
+        
+        function []=PlotMap(this,rhits, lhits,  RR, LL, DDR, DDL)
+            tlist = this.triallist;
+            filename = this.triallist(:,1);
+            train = find(strcmp(tlist(:,4),'Familiarization'));%logicals of where training trials are
+            base = find(strcmp(tlist(:,4),'Base Map'));
+            adapt = find(strcmp(tlist(:,4),'Base Clamp'));
+            wash = find(strcmp(tlist(:,4),'Post Clamp'));
+            wash2 = find(strcmp(tlist(:,4),'Post Map'));
+            h=0;
+            
+            %check for more than one file in a condition
+            if length(train)>1
+                rtrain = 0;
+                ltrain = 0;
+                for c = 1:length(train)
+                    rtrain = rtrain+length(cell2mat(rhits(train(c))));
+                    ltrain = ltrain+length(cell2mat(lhits(train(c))));
+                end
+            else
+                rtrain = length(cell2mat(rhits(train)));
+                ltrain = length(cell2mat(lhits(train)));
+            end
+            
+            if length(base)>1
+                rbase = 0;
+                lbase = 0;
+                for c = 1:length(base)
+                    rbase = rbase+length(cell2mat(rhits(base(c))));
+                    lbase = lbase+length(cell2mat(lhits(base(c))));
+                end
+            else
+                rbase = length(cell2mat(rhits(base)));
+                lbase = length(cell2mat(lhits(base)));
+            end
+            
+            if length(adapt)>1
+                radapt = 0;
+                ladapt = 0;
+                for c = 1:length(adapt)
+                    radapt = radapt+length(cell2mat(rhits(adapt(c))));
+                    ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+                end
+            else
+                radapt = length(cell2mat(rhits(adapt)));
+                ladapt = length(cell2mat(lhits(adapt)));
+            end
+            
+            if length(wash)>1
+                rwash = 0;
+                lwash = 0;
+                for c = 1:length(wash)
+                    rwash = rwash+length(cell2mat(rhits(wash(c))));
+                    lwash = lwash+length(cell2mat(lhits(wash(c))));
+                end
+            else
+                rwash = length(cell2mat(rhits(wash)));
+                lwash = length(cell2mat(lhits(wash)));
+            end
+            for z = base %2%1:length(filename)
+                figure(4)
+                if this.fastleg == 'r'
+                    subplot(2,3,1)
+                else
+                    subplot(2,3,4)
+                end
+                hold on
+                bar(RR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg: Baseline Map Test'])
+                ylabel('Error (m)')
+                legend({'Short', 'Medium', 'Long'})
+                xlabel('Set')
+                ylim([-0.255 0.255])
+            end
+            
+            for z = base %for z = 2%1:length(filename)
+                figure(4)
+                if this.fastleg == 'l'
+                    subplot(2,3,1)
+                else
+                    subplot(2,3,4)
+                end
+                hold on
+                bar(LL{z})
+                xlabel('Set')
+                title([this.subjectcode ' SlowLeg: Baseline Map Test'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+            end
+            
+            for z = wash2 %%for z = 5%1:length(filename)
+                figure(4)
+                if this.fastleg == 'r'
+                    subplot(2,3,2)
+                else
+                    subplot(2,3,5)
+                end
+                hold on
+                bar(RR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg: Post-Adaptation Map Test'])
+                ylabel('Error (m)')
+                xlabel('Set')
+                ylim([-0.255 0.255])
+            end
+            
+            for z = wash2 %for z = 5%1:length(filename)
+                figure(4)
+                if this.fastleg == 'l'
+                    subplot(2,3,2)
+                else
+                    subplot(2,3,5)
+                end
+                hold on
+                bar(LL{z})
+                xlabel('Set')
+                title([this.subjectcode ' SlowLeg: Post Adaptation Map Test'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+            end
+            
+            for z = 2 %for z = 2%1:length(filename)
+                figure(4)
+                if this.fastleg == 'r'
+                    subplot(2,3,3)
+                else
+                    subplot(2,3,6)
+                end
+                hold on
+                
+                bar(DDR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg Map Test (Washtout-Baseline)'])
+                ylabel('Error (m)')
+                %legend({'Short', 'Medium', 'Long'})
+                %xlabel('Set')
+                set(gca, 'XTickLabel',{'Short', 'Medium', 'Long'}, 'XTick',1:3)
+                ylim([-0.255 0.255])
+            end
+            
+            for z = 2 % %for z = 2%1:length(filename)
+                figure(4)
+                if this.fastleg == 'l'
+                    subplot(2,3,3)
+                else
+                    subplot(2,3,6)
+                end
+                hold on
+                bar(DDL{z})
+                %xlabel('Set')
+                set(gca, 'XTickLabel',{'Short', 'Medium', 'Long'}, 'XTick',1:3)
+                title([this.subjectcode ' SlowLeg Map Test (Washtout-Baseline)'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+            end
+            
+        end
+        
+        function []=PlotEC(this,rhits, lhits,  RR, LL, DDR, DDL)
+            tlist = this.triallist;
+            filename = this.triallist(:,1);
+            train = find(strcmp(tlist(:,4),'Familiarization'));%logicals of where training trials are
+            base = find(strcmp(tlist(:,4),'Base Map'));
+            adapt = find(strcmp(tlist(:,4),'Base Clamp'));
+            wash = find(strcmp(tlist(:,4),'Post Clamp'));
+            wash2 = find(strcmp(tlist(:,4),'Post Map'));
+            h=0;
+            
+            %check for more than one file in a condition
+            if length(train)>1
+                rtrain = 0;
+                ltrain = 0;
+                for c = 1:length(train)
+                    rtrain = rtrain+length(cell2mat(rhits(train(c))));
+                    ltrain = ltrain+length(cell2mat(lhits(train(c))));
+                end
+            else
+                rtrain = length(cell2mat(rhits(train)));
+                ltrain = length(cell2mat(lhits(train)));
+            end
+            
+            if length(base)>1
+                rbase = 0;
+                lbase = 0;
+                for c = 1:length(base)
+                    rbase = rbase+length(cell2mat(rhits(base(c))));
+                    lbase = lbase+length(cell2mat(lhits(base(c))));
+                end
+            else
+                rbase = length(cell2mat(rhits(base)));
+                lbase = length(cell2mat(lhits(base)));
+            end
+            
+            if length(adapt)>1
+                radapt = 0;
+                ladapt = 0;
+                for c = 1:length(adapt)
+                    radapt = radapt+length(cell2mat(rhits(adapt(c))));
+                    ladapt = ladapt+length(cell2mat(lhits(adapt(c))));
+                end
+            else
+                radapt = length(cell2mat(rhits(adapt)));
+                ladapt = length(cell2mat(lhits(adapt)));
+            end
+            
+            if length(wash)>1
+                rwash = 0;
+                lwash = 0;
+                for c = 1:length(wash)
+                    rwash = rwash+length(cell2mat(rhits(wash(c))));
+                    lwash = lwash+length(cell2mat(lhits(wash(c))));
+                end
+            else
+                rwash = length(cell2mat(rhits(wash)));
+                lwash = length(cell2mat(lhits(wash)));
+            end
+            h=0;
+            for z = adapt(1) % for z = 3%1:length(filename)
+                figure(5)
+                if this.fastleg == 'r'
+                    subplot(2,3,1)
+                else
+                    subplot(2,3,4)
+                end
+                hold on
+                bar(RR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg: Baseline Error Clamp'])
+                ylabel('Error (m)')
+                legend({'Short', 'Medium', 'Long'})
+                xlabel('Set')
+                ylim([-0.255 0.255])
+                line([0 6.3 ], [mean(RR{adapt}(:, 1)) mean(RR{adapt}(:, 1))])
+                line([0 6.3 ], [mean(RR{adapt}(:, 3)) mean(RR{adapt}(:, 3))])
+            end
+            
+            for z = adapt(1) %for z = 3%1:length(filename)
+                figure(5)
+                if this.fastleg == 'l'
+                    subplot(2,3,1)
+                else
+                    subplot(2,3,4)
+                end
+                hold on
+                bar(LL{z})
+                xlabel('Set')
+                title([this.subjectcode ' SlowLeg: Baseline Error Clamp'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+                line([0 6.3 ], [mean(LL{adapt}(:, 1)) mean(LL{adapt}(:, 1))])
+                line([0 6.3 ], [mean(LL{adapt}(:, 3)) mean(LL{adapt}(:, 3))])
+            end
+            
+            for z = wash(1) %for z = 4%1:length(filename)
+                figure(5)
+                if this.fastleg == 'r'
+                    subplot(2,3,2)
+                else
+                    subplot(2,3,5)
+                end
+                hold on
+                bar(RR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg: Post-Adaptation Error Clamp'])
+                ylabel('Error (m)')
+                xlabel('Set')
+                ylim([-0.255 0.255])
+                
+            end
+            
+            for z = wash(1) %for z = 4%1:length(filename)
+                figure(5)
+                if this.fastleg == 'l'
+                    subplot(2,3,2)
+                else
+                    subplot(2,3,5)
+                end
+                hold on
+                bar(LL{z})
+                xlabel('Set')
+                title([this.subjectcode ' SlowLeg: Post Adaptation Error Clamp'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+            end
+            
+            for z = 1%for z = 1%1:length(filename)
+                figure(5)
+                if this.fastleg == 'r'
+                    subplot(2,3,3)
+                else
+                    subplot(2,3,6)
+                end
+                hold on
+                %bar(RR{z})
+                bar(DDR{z})
+                h = h+length(rhits{z});
+                title([this.subjectcode ' Fastleg Error Clamp (Washtout-Baseline)'])
+                ylabel('Error (m)')
+                %legend({'Short', 'Medium', 'Long'})
+                
+                xlabel('Set')
+                ylim([-0.255 0.255])
+            end
+            
+            for z = 1 %for z = 1%1:length(filename)
+                figure(5)
+                if this.fastleg == 'l'
+                    subplot(2,3,3)
+                else
+                    subplot(2,3,6)
+                end
+                hold on
+                bar(DDL{z})
+                xlabel('Set')
+                
+                title([this.subjectcode ' SlowLeg Error Clamp (Washtout-Baseline)'])
+                ylabel('Error (m)')
+                h = h+length(lhits{z});
+                ylim([-0.255 0.255])
+            end
         end
         
     end
