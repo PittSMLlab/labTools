@@ -155,9 +155,9 @@ if iscell(filenames)
         
         %remove extra python data at the beginning
         if (delay < 0)
-            tempdata = newData(abs(delay):end,:);
+            tempdata = newData(abs(delay)+1:end,:);
         elseif (delay > 0)
-            tempdata = newData(abs(delay):end,:);
+            tempdata = newData(abs(delay)+1:end,:);
             disp('WARNING: positive delay detected between Python and Labtools, unpredictable alignment is imminent...');
         end
         
@@ -168,18 +168,18 @@ if iscell(filenames)
             tempdata(length(NexusRlowFreq):end,:)=[];
         end
         
-%         figure(60)
-%         subplot(2,1,1)
-%         hold on
-%         plot(NexusRlowFreq,'b');
-%         plot([delay+1:length(newData(:,indc))+delay],newData(:,indc),'r');
-%         
-%         subplot(2,1,2)
-%         hold on
-%         plot(NexusRlowFreq,'b');
-%         plot(0:length(tempdata)-1,tempdata(:,indc),'r');
+        figure(60)
+        subplot(2,1,1)
+        hold on
+        plot(NexusRlowFreq,'b');
+        plot([delay+1:length(newData(:,indc))+delay],newData(:,indc),'r');
         
+        subplot(2,1,2)
+        hold on
+        plot(0:length(NexusRlowFreq)-1,NexusRlowFreq,'b');
+        plot(0:length(tempdata)-1,tempdata(:,indc),'r');
         
+%         keyboard
         %apply alignment
         newData = tempdata;
         
@@ -199,6 +199,8 @@ if iscell(filenames)
             [~,lhsc,~] = intersect(Pheader,'LHS');
             [~,rtoc,~] = intersect(Pheader,'RTO');
             [~,ltoc,~] = intersect(Pheader,'LTO');
+            [~,Rfzc,~] = intersect(Pheader,'Rfz');
+            [~,Lfzc,~] = intersect(Pheader,'Lfz');
         catch me
             disp('WARNING! One or more requested events was not located in the Python file');
         end
@@ -207,7 +209,9 @@ if iscell(filenames)
         %data is used to make sure that we dont take in consideration extras HS.
         %check Gait events
         [LHSnexus,RHSnexus,LTOnexus,RTOnexus]= getEventsFromForces(NexusLlowFreq,NexusRlowFreq,100);
-        [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,lhsc),newData(:,rhsc),100);
+        %aligned python data events:
+        [LHSpyton,RHSpyton,LTOpyton,RTOpyton]= getEventsFromForces(newData(:,Lfzc),newData(:,Rfzc),100);
+        
         
         %localication of HS==1);
         locLHSpyton=find(LHSpyton==1);
@@ -215,25 +219,26 @@ if iscell(filenames)
         locRHSnexus=find(RHSnexus==1);
         locLHSnexus=find(LHSnexus==1);
         
-        
         Pdata(1,rhsc) = 0;
         Pdata(1,rtoc) = 0;
         Pdata(1,lhsc) = 0;
         Pdata(1,ltoc) = 0;
         
         %temporary one time fix for bad TO data, detects rising edges
-        ind = Pdata(:,rtoc)>0.5;
-        ind = [0;diff(ind)>0]>0;
-        Pdata(:,rtoc)=+ind;
+%         ind = Pdata(:,rtoc)>0.5;
+%         ind = [0;diff(ind)>0]>0;
+%         Pdata(:,rtoc)=+ind;
+%         
+%         ind = Pdata(:,ltoc)>0.5;
+%         ind = [0;diff(ind)>0]>0;
+%         Pdata(:,ltoc)=+ind;
         
-        ind = Pdata(:,ltoc)>0.5;
-        ind = [0;diff(ind)>0]>0;
-        Pdata(:,ltoc)=+ind;
-        
-        [~,rhsc,~] = intersect(Pheader,'RHS');%find which column contains RHS as detected by Python
-        [~,lhsc,~] = intersect(Pheader,'LHS');
-        locRindex=find(newData2(:,rhsc)==1);
-        locLindex=find(newData2(:,lhsc)==1);
+%         [~,rhsc,~] = intersect(Pheader,'RHS');%find which column contains RHS as detected by Python
+%         [~,lhsc,~] = intersect(Pheader,'LHS');
+%         locRindex=find(newData2(:,rhsc)==1);
+%         locLindex=find(newData2(:,lhsc)==1);
+        locRindex = locRHSnexus;
+        locLindex = locLHSnexus;
         locR2index=find(newData2(:,rtoc)==1);
         locL2index=find(newData2(:,ltoc)==1);
         
@@ -242,6 +247,7 @@ if iscell(filenames)
         end
         
         %Delete extras HS deteted by Python
+        %{
         while length(locRHSpyton)~=length(locRindex)
             diffLengthR=length(locRindex)-length(locRHSpyton);
             FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
@@ -294,6 +300,7 @@ if iscell(filenames)
             end
         end
         
+        
         if length(locRHSnexus)>length(locRindex)
 %             warning(['Gaps affected RHS detection  ' condition{p} ])
             
@@ -326,12 +333,12 @@ if iscell(filenames)
             end
             
         end
+        %}
+%         for i=1:length(locLindex)-1
+%             locLindex2(i,1)=locLindex(i+1);
+%         end
         
-        for i=1:length(locLindex)-1
-            locLindex2(i,1)=locLindex(i+1);
-        end
-        
-        GoodEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,2);%which events are labeled as good?
+%         GoodEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,2);%which events are labeled as good?
 %         BadEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,1);%which events are labeled as bad?
 %         locRindex=locRindex((GoodEvents)==1,1);
 %         locLindex=locLindex((GoodEvents)==1,1);
@@ -362,25 +369,25 @@ if iscell(filenames)
                     if ismember('R',Pheader{selections(d)})==1
                         event = ndata(selections(d),3);
                         if strcmp(event,'HS')
-                            eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locRindex,' num2str(selections(d)) ');']);
                         else
-                            eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locR2index,' num2str(selections(d)) ');']);
                         end
                     elseif ismember('L',Pheader{selections(d)})==1
                         event = ndata(selections(d),3);
                         if strcmp(event,'HS')
-                            eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locLindex,' num2str(selections(d)) ');']);
                         else
-                            eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locL2index,' num2str(selections(d)) ');']);
                         end
                     else
                         disp('Can''t tell whether current variable belongs to which leg...adding to Right Leg')
                         disp(Pheader{selections(d)});
                         event = ndata(selections(d),3);
                         if strcmp(event,'HS')
-                            eval([Pheader{selections(d)} ' = newData2(locRindex,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locRindex,' num2str(selections(d)) ');']);
                         else
-                            eval([Pheader{selections(d)} ' = newData2(locR2index,' num2str(selections(d)) ');']);
+                            eval([Pheader{selections(d)} ' = newData(locR2index,' num2str(selections(d)) ');']);
                         end
                         %                     if strcmp(event,'HS')
                         %                         eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
