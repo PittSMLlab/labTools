@@ -283,9 +283,9 @@ if iscell(filenames)
 %                 subplot(length(selections),1,d)
 %                 hold on
 %                 eval(['plot(locRindex,' Pheader{selections(d)} ',''o'',''MarkerFaceColor'',''black'');']);
-%                 plot(newData(:,selections(d)));
-% %                 plot(RHSpyton);
-%                 plot(newData(:,4));
+%                 plot(newData(:,selections(d)),'b');
+%                 plot(RHSpyton,'g');
+%                 plot(newData(:,4),'r');
                 
             end
 
