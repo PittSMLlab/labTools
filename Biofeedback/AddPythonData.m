@@ -101,16 +101,9 @@ if iscell(filenames)
             colnames = {'Variable','Include?','Alignment'};
             columnformat = {'char',{'YES','NO'},{'HS','TO'}};
             t=uitable(f,'Position',[10,10,375,375],'Data',ndata,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[false true true],'CellSelectionCallback',@(src,evnt)set(src,'UserData',evnt.Indices));
-            %     set(t,'celleditcallback','global condition;global trialsincond;global t;temp = get(t,''Data'');cel=get(t,''UserData'');tcond = temp(cel(1),cel(2));[~,~,ind]=intersect(tcond,condition);temp{cel(1),2}=trialsincond{ind};set(t,''Data'',temp)');
             set(t,'DeleteFcn','global ndata;ndata = get(t,''Data'');');
             waitfor(t)%wait until user closes the table to continue
-%             [selections,ok] = listdlg('ListString',Pheader,'PromptString','Select variables to add to adapParams:');
-%             appendm = nan(length(strideplace),length(selections));%going to be the matrix that gets appended to adaptparams
-%             if ok
-% %                 selections = Pheader(selections)
-%             else
-%                 dbquit
-%             end
+
         end
         
         waitbar((z-1)/length(filenames),WB,['Synchronizing Trial ' num2str(z)]);
@@ -119,7 +112,7 @@ if iscell(filenames)
         GRLz=getDataAsVector(expData.data{mdata{z,2}}.GRFData,'LFz');
         
         %TO DO, enable variable sampling frequency inputs, since some BF is
-        %collected at 120 Hz
+        %collected at 100 Hz
         %downsample from 1000 to 100Hz
         NexusRlowFreq=resample(GRRz,1,10);
         NexusLlowFreq=resample(GRLz,1,10);
@@ -168,16 +161,16 @@ if iscell(filenames)
             tempdata(length(NexusRlowFreq):end,:)=[];
         end
         
-        figure(60)
-        subplot(2,1,1)
-        hold on
-        plot(NexusRlowFreq,'b');
-        plot([delay+1:length(newData(:,indc))+delay],newData(:,indc),'r');
-        
-        subplot(2,1,2)
-        hold on
-        plot(0:length(NexusRlowFreq)-1,NexusRlowFreq,'b');
-        plot(0:length(tempdata)-1,tempdata(:,indc),'r');
+%         figure(60)
+%         subplot(2,1,1)
+%         hold on
+%         plot(NexusRlowFreq,'b');
+%         plot([delay+1:length(newData(:,indc))+delay],newData(:,indc),'r');
+%         
+%         subplot(2,1,2)
+%         hold on
+%         plot(0:length(NexusRlowFreq)-1,NexusRlowFreq,'b');
+%         plot(0:length(tempdata)-1,tempdata(:,indc),'r');
         
 %         keyboard
         %apply alignment
@@ -219,135 +212,28 @@ if iscell(filenames)
         locRHSnexus=find(RHSnexus==1);
         locLHSnexus=find(LHSnexus==1);
         
-        Pdata(1,rhsc) = 0;
-        Pdata(1,rtoc) = 0;
-        Pdata(1,lhsc) = 0;
-        Pdata(1,ltoc) = 0;
         
-        %temporary one time fix for bad TO data, detects rising edges
-%         ind = Pdata(:,rtoc)>0.5;
-%         ind = [0;diff(ind)>0]>0;
-%         Pdata(:,rtoc)=+ind;
-%         
-%         ind = Pdata(:,ltoc)>0.5;
-%         ind = [0;diff(ind)>0]>0;
-%         Pdata(:,ltoc)=+ind;
+        %verify event detection is acceptable
+%         figure(61)
+% %         subplot(2,1,1)
+%         hold on
+% %         plot(NexusRlowFreq,'b');
+%         plot(RHSnexus,'r');
+% %         plot(newData(:,Rfzc),'g');
+%         plot(RHSpyton,'o','MarkerFaceColor','black');
         
-%         [~,rhsc,~] = intersect(Pheader,'RHS');%find which column contains RHS as detected by Python
-%         [~,lhsc,~] = intersect(Pheader,'LHS');
-%         locRindex=find(newData2(:,rhsc)==1);
-%         locLindex=find(newData2(:,lhsc)==1);
-        locRindex = locRHSnexus;
+        
+%         keyboard
+        
+        locRindex = locRHSnexus;%HS indices
         locLindex = locLHSnexus;
-        locR2index=find(newData2(:,rtoc)==1);
+        locR2index=find(newData2(:,rtoc)==1);%toe off indices
         locL2index=find(newData2(:,ltoc)==1);
         
         if length(locRindex)<length(locRHSpyton)
-            warning('Not all the HS where detected!')
+            warning('Not all the HS where detected in Live mode, appending with NaN.')
         end
-        
-        %Delete extras HS deteted by Python
-        %{
-        while length(locRHSpyton)~=length(locRindex)
-            diffLengthR=length(locRindex)-length(locRHSpyton);
-            FrameDiffR=locRindex(1:end-diffLengthR)-locRHSpyton;
-            IsBadR=find(FrameDiffR<=-10);
-            if isempty(IsBadR)
-                break
-            else
-                locRindex(IsBadR(1))=[];
-            end
-        end
-        
-        while length(locLHSpyton)~=length(locLindex)
-            diffLength=length(locLindex)-length(locLHSpyton);
-            FrameDiff=locLindex(1:end-diffLength)-locLHSpyton;
-            IsBad=find(FrameDiff<=-10);
-            if isempty(IsBad)
-                break
-            else
-                locLindex(IsBad(1))=[];
-            end
-        end
-        
-        if length(locRHSnexus)<length(locRindex)
-            FrameDiffR=[];
-            IsBadR=[];
-            while length(locRHSnexus)~=length(locRindex)
-                diffLengthR=length(locRindex)-length(locRHSnexus);
-                FrameDiffR=-locRindex(1:end-diffLengthR)+locRHSnexus;
-                IsBadR=find(abs(FrameDiffR)>10);
-                if isempty(IsBadR)
-                    break
-                else
-                    locRindex(IsBadR(1))=[];
-                end
-            end
-        end
-        
-        if length(locLHSnexus)<length(locLindex)
-            FrameDiff=[];
-            IsBad=[];
-            while length(locLindex)~=length(locLHSnexus)
-                diffLength=length(locLindex)-length(locLHSnexus);
-                FrameDiff=-locLindex(1:end-diffLength)+locLHSnexus;
-                IsBad=find(abs(FrameDiff)>10);
-                if isempty(IsBad)
-                    break
-                else
-                    locLindex(IsBad(1))=[];
-                end
-            end
-        end
-        
-        
-        if length(locRHSnexus)>length(locRindex)
-%             warning(['Gaps affected RHS detection  ' condition{p} ])
-            
-            while length(locRHSnexus)>length(locRindex)
-                diffLengthR=-length(locRindex)+length(locRHSnexus);
-                FrameDiffR=locRHSnexus(1:end-diffLengthR)-locRindex;
-               
-                IsBadR=find(FrameDiffR<=-10);
-                if isempty(IsBadR)
-                    break
-                else
-                    locfakeR=[locRindex(1:IsBadR-1);locRHSnexus(IsBadR(1));locRindex(IsBadR:end)];
-                    locRindex=locfakeR;
-                end
-            end
-        end
-        if length(locLHSnexus)>length(locLindex)
-%             warning(['Gaps affected LHS detection  ' condition{p}])
-            
-            while length(locLHSnexus)>length(locLindex)
-                diffLengthL=-length(locLindex)+length(locLHSnexus);
-                FrameDiffL=locLHSnexus(1:end-diffLengthL)-locLindex;
-                IsBadL=find(FrameDiffL<=-10);
-                if isempty(IsBadL)
-                    break
-                else
-                    locfakeL=[locLindex(1:IsBadL-1);locLHSnexus(IsBadL(1));locLindex(IsBadL:end)];
-                    locLindex=locfakeL;
-                end
-            end
-            
-        end
-        %}
-%         for i=1:length(locLindex)-1
-%             locLindex2(i,1)=locLindex(i+1);
-%         end
-        
-%         GoodEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,2);%which events are labeled as good?
-%         BadEvents=expData.data{mdata{z,2}}.adaptParams.Data(:,1);%which events are labeled as bad?
-%         locRindex=locRindex((GoodEvents)==1,1);
-%         locLindex=locLindex((GoodEvents)==1,1);
-%         locLindex2=locLindex2((GoodEvents)==1,1);
-       
-%         GoodRHS=newData2(locRindex,rhsc);
-%         GoodLHS=newData2(locLindex,lhsc);
-%         GoodLHS2=newData2(locLindex2,lhsc);
-        
+
 
         selections = strfind(ndata(:,2),'YES');%find which column contains RHS as detected by Python
         selections(cellfun('isempty',selections))={0};
@@ -356,13 +242,14 @@ if iscell(filenames)
             labels=Pheader(selections);
             PPheader = Pheader;%in case some parameters are not in all the files to be processed
         end
+        %initialize appending matrix
         if z ==1
             appendm = nan(length(strideplace),length(selections));%going to be the matrix that gets appended to adaptparams
         end
             %make vectors of variable to splice into adapData
             for d = 1:length(selections)
-                disp(z)
-                disp(d)
+%                 disp(z)
+%                 disp(d)
                 if length(Pheader)<selections(d)%in case one of the parameters is not in this file
                     eval(['missing' num2str(d) ' = nan(length(locRindex),1);']);
                 else
@@ -381,7 +268,7 @@ if iscell(filenames)
                             eval([Pheader{selections(d)} ' = newData(locL2index,' num2str(selections(d)) ');']);
                         end
                     else
-                        disp('Can''t tell whether current variable belongs to which leg...adding to Right Leg')
+                        disp('Can''t which leg current variable belongs to...adding to Right Leg')
                         disp(Pheader{selections(d)});
                         event = ndata(selections(d),3);
                         if strcmp(event,'HS')
@@ -389,14 +276,21 @@ if iscell(filenames)
                         else
                             eval([Pheader{selections(d)} ' = newData(locR2index,' num2str(selections(d)) ');']);
                         end
-                        %                     if strcmp(event,'HS')
-                        %                         eval([Pheader{selections(d)} ' = newData2(locLindex,' num2str(selections(d)) ');']);
-                        %                     else
-                        %                         eval([Pheader{selections(d)} ' = newData2(locL2index,' num2str(selections(d)) ');']);
-                        %                     end
                     end
                 end
+                
+%                 figure(z+100)
+%                 subplot(length(selections),1,d)
+%                 hold on
+%                 eval(['plot(locRindex,' Pheader{selections(d)} ',''o'',''MarkerFaceColor'',''black'');']);
+%                 plot(newData(:,selections(d)));
+% %                 plot(RHSpyton);
+%                 plot(newData(:,4));
+                
             end
+
+            
+            
 
             
             for d = 1:length(selections)
@@ -414,6 +308,9 @@ if iscell(filenames)
     
         
     end
+    
+    
+    
     
     %finally, append to
     pData=adaptData.data;
