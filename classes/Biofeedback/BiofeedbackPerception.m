@@ -180,159 +180,6 @@ classdef BiofeedbackPerception
                 filename = this.triallist(:,1);
                 
                 if iscell(filename)%if more than one file is selected for analysis
-                    %{
-                %                     rhits = {0};
-                %                     lhits = {0};
-                %                     rlqr = {0};
-                %                     llqr = {0};
-                %                     color = {};
-                %                     WB = waitbar(0,'Processing Trials...');
-                %                     for z = 1:length(filename)
-                %                         tempname = filename{z};
-                %                         waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                %
-                %                         if strcmp(this.triallist{z,4},'Familiarization')
-                %                             color{z} = [189/255,15/255,18/255];%red
-                %                         elseif strcmp(this.triallist{z,4},'Base Map')
-                %                             color{z} = [48/255,32/255,158/255];%blue
-                %                         elseif strcmp(this.triallist{z,4},'Base Clamp')
-                %                             color{z} = [1,.8,0];%
-                %                         elseif strcmp(this.triallist{z,4},'Post Clamp')
-                %                             color{z} = [91/255,122/255,5/255];%green
-                %                         elseif strcmp(this.triallist{z,4},'Post Map')
-                %                             color{z} = [9/255,109/255,143/255];%bluegrey
-                %                         end
-                %                         %                        keyboard
-                %
-                %
-                %                         %check to see if data is already processed, it will
-                %                         %save time...
-                %                         if length(this.data)<z
-                %                             disp('Parsing data...');
-                %
-                %                             f = fopen(filename{z});
-                %                             g = fgetl(f);
-                %                             fclose(f);
-                %
-                %                             if strcmp(g(1),'[')
-                %                                 [header,data] = JSONtxt2cell(filename{z});
-                %                                 this.data{z} = data;
-                %                                 this.dataheader = header;
-                %                             else
-                %                                 S = importdata(filename{z},',',1);
-                %                                 data = S.data;
-                %                                 this.data{z} = S.data;
-                %                                 this.dataheader = S.textdata;
-                %                             end
-                %
-                %
-                %                         else
-                %                             data = cell2mat(this.data(z));
-                %                             header = this.dataheader;
-                %                         end
-                %
-                %                         %                        keyboard
-                %                         data2 = unique(data,'rows','stable');%remove duplicate frames
-                %                         data2(:,1) = data2(:,1)-data2(1,1)+1;%set frame # to start at 1
-                %
-                %                         %check for monotonicity
-                %                         checkers = find(diff(data2(:,1))<1);
-                %                         while ~isempty(checkers)
-                %                             for y=1:length(checkers)
-                %                                 data2(checkers(y),:)=[];
-                %                             end
-                %                             checkers = find(diff(data2(:,1))<1);
-                %                         end
-                %                         %                        keyboard
-                %                         %                         for zz = 1:n
-                %                         %                             data3(data2(:,1),zz) = data2(:,zz);
-                %                         %                         end
-                %                         %                         frame = data3(:,1);
-                %                         %                         frame2 = 1:1:data2(end,1);
-                %                         %                        keyboard
-                %                         %                         Rz2 = interp1(data2(:,1),data2(:,2),frame2,'linear');
-                %                         %                         Lz2 = interp1(data2(:,1),data2(:,3),frame2,'linear');
-                %                         %                         Rgamma2 = interp1(data2(:,1),data2(:,10),frame2,'linear');
-                %                         %                         Lgamma2 = interp1(data2(:,1),data2(:,11),frame2,'linear');
-                %                         %                         target = interp1(data2(:,1),data2(:,14),frame2,'linear');
-                %                         [~,n] = size(data2);
-                %                         Rz2 = data2(:,2);
-                %                         Lz2 = data2(:,3);
-                %                         Rgamma2 = data2(:,10);
-                %                         Lgamma2 = data2(:,11);
-                %                         target = data2(:,14);
-                %                         if strcmp(this.triallist{z,4},'Familiarization')
-                %                             visible = data2(:,15);
-                %                         end
-                %
-                %                         %detect HS
-                %                         for zz = 1:length(Rz2)-1
-                %                             if Rz2(zz) > -10 && Rz2(zz+1) <= -10
-                %                                 RHS(zz) = 1;
-                %                             else
-                %                                 RHS(zz) = 0;
-                %                             end
-                %                         end
-                %                         [~,trhs] = findpeaks(RHS,'MinPeakDistance',100);
-                %                         RHS = zeros(length(RHS),1);
-                %                         RHS(trhs) = 1;
-                %                         for zz = 1:length(Lz2)-1
-                %                             if Lz2(zz) > -10 && Lz2(zz+1) <= -10
-                %                                 LHS(zz) = 1;
-                %                             else
-                %                                 LHS(zz) = 0;
-                %                             end
-                %                         end
-                %                         [~,tlhs] = findpeaks(LHS,'MinPeakDistance',100);
-                %                         LHS = zeros(length(LHS),1);
-                %                         LHS(tlhs) = 1;
-                %                         %                        keyboard
-                %                         %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
-                %                         %calculate errors
-                %                         %                        tamp = abs(Rgamma2(find(RHS)))'-this.Rtmtarget;
-                %                         %                        tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
-                %                         tamp = Rgamma2(find(RHS))-target(find(RHS)-1);
-                %                         tamp2 = Lgamma2(find(LHS))-target(find(LHS)-1);
-                %                         tamp3 = target(find(RHS));
-                %                         tamp4 = target(find(LHS));
-                %                         if strcmp(this.triallist{z,4},'Familiarization')
-                %                             tamp5 = visible(find(RHS));
-                %                             tamp6 = visible(find(LHS));%this might be unnesescary since visible changes on RHS events only
-                %                         else
-                %                             tamp5 = zeros(length(tamp),1);
-                %                             tamp6 = zeros(length(tamp),1);
-                %                         end
-                %
-                %                         %delete 5 strides at each transistion
-                %                         K = find(diff(tamp3));
-                %                         K2 = find(diff(tamp4));
-                %                         for y = 1:length(K)
-                %                             tamp(K(y):K(y)+5)=100;
-                %                             tamp3(K(y):K(y)+5)=100;
-                %                             tamp5(K(y):K(y)+5)=100;
-                %                         end
-                %                         for y = 1:length(K2)
-                %                             tamp2(K2(y):K2(y)+5)=100;
-                %                             tamp4(K2(y):K2(y)+5)=100;
-                %                             tamp6(K2(y):K2(y)+5)=100;
-                %                         end
-                %                         tamp(tamp==100)=[];
-                %                         tamp2(tamp2==100)=[];
-                %                         tamp3(tamp3==100)=[];
-                %                         tamp4(tamp4==100)=[];
-                %                         tamp5(tamp5==100)=[];
-                %                         tamp6(tamp6==100)=[];
-                %
-                %                         rhits{z} = tamp;
-                %                         lhits{z} = tamp2;
-                %                         rts{z} = tamp3;
-                %                         lts{z} = tamp4;
-                %                         rv{z} = tamp5;
-                %                         lv{z} = tamp6;
-                %
-                %                         clear RHS LHS tamp tamp2
-                                    end
-                    %}
                     
                     [rhits, lhits, rts, lts, color,rv,lv]=this.getHits();
                     [rhits, lhits, rts, lts, rv, lv]=this.removeTransitions(rhits, lhits, rts, lts, rv,lv);
@@ -616,28 +463,34 @@ classdef BiofeedbackPerception
                         visible = data2(:,15);
                     end
                     
-                    %detect HS
-                    for zz = 1:length(Rz2)-1
-                        if Rz2(zz) > -30 && Rz2(zz+1) <= -30
-                            RHS(zz) = 1;
-                        else
-                            RHS(zz) = 0;
-                        end
-                    end
-                    [~,trhs] = findpeaks(RHS,'MinPeakDistance',75);
-                    RHS = zeros(length(RHS),1);
-                    RHS(trhs) = 1;
-                    for zz = 1:length(Lz2)-1
-                        if Lz2(zz) > -30 && Lz2(zz+1) <= -30
-                            LHS(zz) = 1;
-                        else
-                            LHS(zz) = 0;
-                        end
-                    end
-                    [~,tlhs] = findpeaks(LHS,'MinPeakDistance',75);
-                    LHS = zeros(length(LHS),1);
-                    LHS(tlhs) = 1;
-                    %keyboard
+%                     %detect HS
+%                     for zz = 1:length(Rz2)-1
+%                         if Rz2(zz) > -30 && Rz2(zz+1) <= -30
+%                             RHS(zz) = 1;
+%                         else
+%                             RHS(zz) = 0;
+%                         end
+%                     end
+%                     [~,trhs] = findpeaks(RHS,'MinPeakDistance',75);
+%                     RHS = zeros(length(RHS),1);
+%                     RHS(trhs) = 1;
+%                     for zz = 1:length(Lz2)-1
+%                         if Lz2(zz) > -30 && Lz2(zz+1) <= -30
+%                             LHS(zz) = 1;
+%                         else
+%                             LHS(zz) = 0;
+%                         end
+%                     end
+%                     [~,tlhs] = findpeaks(LHS,'MinPeakDistance',75);
+%                     LHS = zeros(length(LHS),1);
+%                     LHS(tlhs) = 1;
+
+                    %Labtools method of detecting events
+                    [LHS,RHS,~,~]=getEventsFromForces(Lz2,Rz2,100);
+                    
+                    
+                    
+                    % keyboard
                     %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
                     %calculate errors
                     %                     if strcmp(this.triallist{z,4},'Base Clamp') || strcmp(this.triallist{z,4},'Post Clamp')
