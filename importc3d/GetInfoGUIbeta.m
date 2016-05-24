@@ -22,7 +22,7 @@ function varargout = GetInfoGUIbeta(varargin)
 
 % Edit the above text to modify the response to help GetInfoGUIbeta
 
-% Last Modified by GUIDE v2.5 20-May-2016 15:38:05
+% Last Modified by GUIDE v2.5 24-May-2016 09:23:40
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,6 +58,13 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
+%Set GUI position to middle of screen
+% left, bottom, width, height
+scrsz = get(0,'ScreenSize'); 
+set(gcf,'Units','pixels');
+guiPos = get(hObject,'Position');
+set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+
 % UIWAIT makes GetInfoGUIbeta wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -70,7 +77,61 @@ function varargout = GetInfoGUIbeta_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+if ~(isfield(handles,'noSave') && handles.noSave)
+    info=handles.info;
+
+    %Forcing save before the rest of the things are done (so, if it fails, we
+    %don't lose it).
+    if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
+        choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
+        if strcmp(choice,'No')            
+            info.ID = [info.ID '_' date];
+            h=msgbox(['Saving as ' info.ID],'');
+            waitfor(h)          
+        end                
+    end
+    save([info.save_folder filesep info.ID 'info'],'info')
+
+    %ask user if there are observations for individual trials
+    answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+
+    %make sure the correct response is entered
+    while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
+        disp('Error: you must enter either "y" or "n"')
+        answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+    end
+
+    %create a menu to choose any trial
+    expTrials = cell2mat(info.trialnums);
+    numTrials = length(expTrials);
+    if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
+        %if a subject wasn't loaded
+        info.trialObs{1,info.numoftrials} = '';
+    end
+    if strcmpi(answer{1},'y')    
+        trialstr = [];
+        %create trial string
+        for t = expTrials
+            trialstr = [trialstr,',''Trial ',num2str(t),''''];
+        end
+        %generate menu
+        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        while choice ~= numTrials+1
+            % get observation for trial selected
+            obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
+            info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+            eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        end   
+    end
+
+    varargout{1}=info;
+    save([info.save_folder filesep info.ID 'info'],'info')
+else
+    varargout{1}=[];
+end
+
+
+delete(handles.figure1)
 
 
 % --- Executes on selection change in descriptionmenu.
@@ -97,18 +158,18 @@ end
 
 
 
-function edit5_Callback(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function subID_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to subID_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit5 as text
-%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+% Hints: get(hObject,'String') returns contents of subID_edit as text
+%        str2double(get(hObject,'String')) returns contents of subID_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit5 (see GCBO)
+function subID_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to subID_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -119,19 +180,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu5.
-function popupmenu5_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu5 (see GCBO)
+% --- Executes on selection change in gender_list.
+function gender_list_Callback(hObject, eventdata, handles)
+% hObject    handle to gender_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu5 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu5
+% Hints: contents = cellstr(get(hObject,'String')) returns gender_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from gender_list
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu5_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu5 (see GCBO)
+function gender_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to gender_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -142,111 +203,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu6.
-function popupmenu6_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu6 (see GCBO)
+% --- Executes on selection change in DOBmonth_list.
+function DOBmonth_list_Callback(hObject, eventdata, handles)
+% hObject    handle to DOBmonth_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu6 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu6
+% Hints: contents = cellstr(get(hObject,'String')) returns DOBmonth_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from DOBmonth_list
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu6_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit6_Callback(hObject, eventdata, handles)
-% hObject    handle to edit6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit6 as text
-%        str2double(get(hObject,'String')) returns contents of edit6 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit6_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit6 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit7_Callback(hObject, eventdata, handles)
-% hObject    handle to edit7 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit7 as text
-%        str2double(get(hObject,'String')) returns contents of edit7 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit7_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit7 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in popupmenu7.
-function popupmenu7_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu7 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu7 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu7
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu7_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu7 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in popupmenu8.
-function popupmenu8_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu8 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu8 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu8
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu8_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu8 (see GCBO)
+function DOBmonth_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to DOBmonth_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -258,18 +227,18 @@ end
 
 
 
-function edit8_Callback(hObject, eventdata, handles)
-% hObject    handle to edit8 (see GCBO)
+function DOBday_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to DOBday_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit8 as text
-%        str2double(get(hObject,'String')) returns contents of edit8 as a double
+% Hints: get(hObject,'String') returns contents of DOBday_edit as text
+%        str2double(get(hObject,'String')) returns contents of DOBday_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit8_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit8 (see GCBO)
+function DOBday_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to DOBday_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -281,18 +250,18 @@ end
 
 
 
-function edit9_Callback(hObject, eventdata, handles)
-% hObject    handle to edit9 (see GCBO)
+function DOByear_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to DOByear_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit9 as text
-%        str2double(get(hObject,'String')) returns contents of edit9 as a double
+% Hints: get(hObject,'String') returns contents of DOByear_edit as text
+%        str2double(get(hObject,'String')) returns contents of DOByear_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit9_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit9 (see GCBO)
+function DOByear_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to DOByear_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -303,28 +272,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in checkbox1.
-function checkbox1_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox1 (see GCBO)
+% --- Executes on selection change in domleg_list.
+function domleg_list_Callback(hObject, eventdata, handles)
+% hObject    handle to domleg_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of checkbox1
-
-
-% --- Executes on selection change in popupmenu9.
-function popupmenu9_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu9 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu9 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu9
+% Hints: contents = cellstr(get(hObject,'String')) returns domleg_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from domleg_list
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu9_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu9 (see GCBO)
+function domleg_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to domleg_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -335,19 +295,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu3.
-function popupmenu3_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu3 (see GCBO)
+% --- Executes on selection change in domhand_list.
+function domhand_list_Callback(hObject, eventdata, handles)
+% hObject    handle to domhand_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu3 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu3
+% Hints: contents = cellstr(get(hObject,'String')) returns domhand_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from domhand_list
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu3 (see GCBO)
+function domhand_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to domhand_list (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -359,18 +319,18 @@ end
 
 
 
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function height_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to height_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of height_edit as text
+%        str2double(get(hObject,'String')) returns contents of height_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function height_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to height_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -381,19 +341,100 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on selection change in popupmenu4.
-function popupmenu4_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu4 (see GCBO)
+
+function weight_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to weight_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu4 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu4
+% Hints: get(hObject,'String') returns contents of weight_edit as text
+%        str2double(get(hObject,'String')) returns contents of weight_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function popupmenu4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu4 (see GCBO)
+function weight_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to weight_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in strokeCheck.
+function strokeCheck_Callback(hObject, eventdata, handles)
+% hObject    handle to strokeCheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of strokeCheck
+
+
+% --- Executes on selection change in popupAffected.
+function popupAffected_Callback(hObject, eventdata, handles)
+% hObject    handle to popupAffected (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupAffected
+
+
+% --- Executes during object creation, after setting all properties.
+function popupAffected_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupAffected (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in description_edit.
+function description_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to description_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns description_edit contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from description_edit
+contents = cellstr(get(hObject,'String'));
+expFile = contents{get(hObject,'Value')};
+
+% HH 6/16
+% eval(expFile)
+path=which('GetInfoGUI');
+path=strrep(path,'GetInfoGUI.m','ExpDetails');
+if exist([path filesep expFile '.mat'],'file')>0
+    %first, clear all feilds
+    set(handles.numofconds,'String','0');
+    for conds = 1:handles.lines
+        set(handles.(['condition',num2str(conds)]),'string','');
+        set(handles.(['condName',num2str(conds)]),'string','');
+        set(handles.(['description',num2str(conds)]),'string','');
+        set(handles.(['trialnum',num2str(conds)]),'string','');
+        set(handles.(['type',num2str(conds)]),'string','');
+    end
+
+    %second, populate feilds based on experiment description entered.
+    a=load([path filesep expFile]);
+    aux=fields(a);
+    expDes=a.(aux{1});
+    handles=setExpDescription(handles,expDes);
+    numofconds_Callback(handles.numofconds, eventdata, handles)
+end
+
+guidata(hObject,handles)
+
+% --- Executes during object creation, after setting all properties.
+function description_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to description_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -405,18 +446,64 @@ end
 
 
 
-function edit2_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function name_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to name_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+% Hints: get(hObject,'String') returns contents of name_edit as text
+%        str2double(get(hObject,'String')) returns contents of name_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function name_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to name_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in month_list.
+function month_list_Callback(hObject, eventdata, handles)
+% hObject    handle to month_list (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns month_list contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from month_list
+
+
+% --- Executes during object creation, after setting all properties.
+function month_list_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to month_list (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function day_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to day_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of day_edit as text
+%        str2double(get(hObject,'String')) returns contents of day_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function day_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to day_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -428,18 +515,18 @@ end
 
 
 
-function edit3_Callback(hObject, eventdata, handles)
-% hObject    handle to edit3 (see GCBO)
+function year_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to year_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit3 as text
-%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+% Hints: get(hObject,'String') returns contents of year_edit as text
+%        str2double(get(hObject,'String')) returns contents of year_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit3_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit3 (see GCBO)
+function year_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to year_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -451,18 +538,18 @@ end
 
 
 
-function edit4_Callback(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function note_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to note_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit4 as text
-%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+% Hints: get(hObject,'String') returns contents of note_edit as text
+%        str2double(get(hObject,'String')) returns contents of note_edit as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit4_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit4 (see GCBO)
+function note_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to note_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -474,18 +561,18 @@ end
 
 
 
-function edit10_Callback(hObject, eventdata, handles)
-% hObject    handle to edit10 (see GCBO)
+function c3dlocation_Callback(hObject, eventdata, handles)
+% hObject    handle to c3dlocation (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit10 as text
-%        str2double(get(hObject,'String')) returns contents of edit10 as a double
+% Hints: get(hObject,'String') returns contents of c3dlocation as text
+%        str2double(get(hObject,'String')) returns contents of c3dlocation as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit10_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit10 (see GCBO)
+function c3dlocation_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to c3dlocation (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -496,49 +583,26 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+% --- Executes on button press in browse.
+function browse_Callback(hObject, eventdata, handles)
+% hObject    handle to browse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 
 
-function edit11_Callback(hObject, eventdata, handles)
-% hObject    handle to edit11 (see GCBO)
+function basefile_Callback(hObject, eventdata, handles)
+% hObject    handle to basefile (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit11 as text
-%        str2double(get(hObject,'String')) returns contents of edit11 as a double
+% Hints: get(hObject,'String') returns contents of basefile as text
+%        str2double(get(hObject,'String')) returns contents of basefile as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit11_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit11 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function edit12_Callback(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit12 as text
-%        str2double(get(hObject,'String')) returns contents of edit12 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit12_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit12 (see GCBO)
+function basefile_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to basefile (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -550,112 +614,18 @@ end
 
 
 
-function edit13_Callback(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
+function numoftrials_Callback(hObject, eventdata, handles)
+% hObject    handle to numoftrials (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit13 as text
-%        str2double(get(hObject,'String')) returns contents of edit13 as a double
+% Hints: get(hObject,'String') returns contents of numoftrials as text
+%        str2double(get(hObject,'String')) returns contents of numoftrials as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit13_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit13 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in checkbox2.
-function checkbox2_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox2
-
-
-% --- Executes on button press in checkbox3.
-function checkbox3_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox3
-
-
-% --- Executes on button press in checkbox4.
-function checkbox4_Callback(hObject, eventdata, handles)
-% hObject    handle to checkbox4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of checkbox4
-
-
-
-function edit14_Callback(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit14 as text
-%        str2double(get(hObject,'String')) returns contents of edit14 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit14_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit14 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in pushbutton3.
-function pushbutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --- Executes on button press in pushbutton4.
-function pushbutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-
-function edit47_Callback(hObject, eventdata, handles)
-% hObject    handle to edit47 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of edit47 as text
-%        str2double(get(hObject,'String')) returns contents of edit47 as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function edit47_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit47 (see GCBO)
+function numoftrials_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numoftrials (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -667,18 +637,112 @@ end
 
 
 
-function edit48_Callback(hObject, eventdata, handles)
-% hObject    handle to edit48 (see GCBO)
+function numofconds_Callback(hObject, eventdata, handles)
+% hObject    handle to numofconds (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit48 as text
-%        str2double(get(hObject,'String')) returns contents of edit48 as a double
+% Hints: get(hObject,'String') returns contents of numofconds as text
+%        str2double(get(hObject,'String')) returns contents of numofconds as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit48_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit48 (see GCBO)
+function numofconds_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numofconds (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in kinematic_check.
+function kinematic_check_Callback(hObject, eventdata, handles)
+% hObject    handle to kinematic_check (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of kinematic_check
+
+
+% --- Executes on button press in force_check.
+function force_check_Callback(hObject, eventdata, handles)
+% hObject    handle to force_check (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of force_check
+
+
+% --- Executes on button press in emg_check.
+function emg_check_Callback(hObject, eventdata, handles)
+% hObject    handle to emg_check (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of emg_check
+
+
+
+function secfileloc_Callback(hObject, eventdata, handles)
+% hObject    handle to secfileloc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of secfileloc as text
+%        str2double(get(hObject,'String')) returns contents of secfileloc as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function secfileloc_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to secfileloc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in secfile_browse.
+function secfile_browse_Callback(hObject, eventdata, handles)
+% hObject    handle to secfile_browse (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in ok_button.
+function ok_button_Callback(hObject, eventdata, handles)
+% hObject    handle to ok_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in loadButton.
+function loadButton_Callback(hObject, eventdata, handles)
+% hObject    handle to loadButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+function emg1_1_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of emg1_1 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_1 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function emg1_1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -690,18 +754,18 @@ end
 
 
 
-function edit49_Callback(hObject, eventdata, handles)
-% hObject    handle to edit49 (see GCBO)
+function emg1_2_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit49 as text
-%        str2double(get(hObject,'String')) returns contents of edit49 as a double
+% Hints: get(hObject,'String') returns contents of emg1_2 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_2 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit49_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit49 (see GCBO)
+function emg1_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -713,18 +777,18 @@ end
 
 
 
-function edit50_Callback(hObject, eventdata, handles)
-% hObject    handle to edit50 (see GCBO)
+function emg1_3_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit50 as text
-%        str2double(get(hObject,'String')) returns contents of edit50 as a double
+% Hints: get(hObject,'String') returns contents of emg1_3 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_3 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit50_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit50 (see GCBO)
+function emg1_3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -736,18 +800,18 @@ end
 
 
 
-function edit51_Callback(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
+function emg1_4_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit51 as text
-%        str2double(get(hObject,'String')) returns contents of edit51 as a double
+% Hints: get(hObject,'String') returns contents of emg1_4 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_4 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit51_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit51 (see GCBO)
+function emg1_4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -759,18 +823,18 @@ end
 
 
 
-function edit52_Callback(hObject, eventdata, handles)
-% hObject    handle to edit52 (see GCBO)
+function emg1_5_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit52 as text
-%        str2double(get(hObject,'String')) returns contents of edit52 as a double
+% Hints: get(hObject,'String') returns contents of emg1_5 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_5 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit52_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit52 (see GCBO)
+function emg1_5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -782,18 +846,18 @@ end
 
 
 
-function edit53_Callback(hObject, eventdata, handles)
-% hObject    handle to edit53 (see GCBO)
+function emg1_6_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit53 as text
-%        str2double(get(hObject,'String')) returns contents of edit53 as a double
+% Hints: get(hObject,'String') returns contents of emg1_6 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_6 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit53_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit53 (see GCBO)
+function emg1_6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -805,18 +869,18 @@ end
 
 
 
-function edit54_Callback(hObject, eventdata, handles)
-% hObject    handle to edit54 (see GCBO)
+function emg1_7_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit54 as text
-%        str2double(get(hObject,'String')) returns contents of edit54 as a double
+% Hints: get(hObject,'String') returns contents of emg1_7 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_7 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit54_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit54 (see GCBO)
+function emg1_7_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -828,18 +892,18 @@ end
 
 
 
-function edit55_Callback(hObject, eventdata, handles)
-% hObject    handle to edit55 (see GCBO)
+function emg1_8_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit55 as text
-%        str2double(get(hObject,'String')) returns contents of edit55 as a double
+% Hints: get(hObject,'String') returns contents of emg1_8 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_8 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit55_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit55 (see GCBO)
+function emg1_8_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -851,18 +915,18 @@ end
 
 
 
-function edit56_Callback(hObject, eventdata, handles)
-% hObject    handle to edit56 (see GCBO)
+function emg1_9_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit56 as text
-%        str2double(get(hObject,'String')) returns contents of edit56 as a double
+% Hints: get(hObject,'String') returns contents of emg1_9 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_9 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit56_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit56 (see GCBO)
+function emg1_9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -874,18 +938,18 @@ end
 
 
 
-function edit57_Callback(hObject, eventdata, handles)
-% hObject    handle to edit57 (see GCBO)
+function emg1_10_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit57 as text
-%        str2double(get(hObject,'String')) returns contents of edit57 as a double
+% Hints: get(hObject,'String') returns contents of emg1_10 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_10 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit57_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit57 (see GCBO)
+function emg1_10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -897,18 +961,18 @@ end
 
 
 
-function edit58_Callback(hObject, eventdata, handles)
-% hObject    handle to edit58 (see GCBO)
+function emg1_11_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit58 as text
-%        str2double(get(hObject,'String')) returns contents of edit58 as a double
+% Hints: get(hObject,'String') returns contents of emg1_11 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_11 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit58_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit58 (see GCBO)
+function emg1_11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -920,18 +984,18 @@ end
 
 
 
-function edit59_Callback(hObject, eventdata, handles)
-% hObject    handle to edit59 (see GCBO)
+function emg1_12_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit59 as text
-%        str2double(get(hObject,'String')) returns contents of edit59 as a double
+% Hints: get(hObject,'String') returns contents of emg1_12 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_12 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit59_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit59 (see GCBO)
+function emg1_12_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -943,18 +1007,18 @@ end
 
 
 
-function edit60_Callback(hObject, eventdata, handles)
-% hObject    handle to edit60 (see GCBO)
+function emg1_13_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit60 as text
-%        str2double(get(hObject,'String')) returns contents of edit60 as a double
+% Hints: get(hObject,'String') returns contents of emg1_13 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_13 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit60_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit60 (see GCBO)
+function emg1_13_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -966,18 +1030,18 @@ end
 
 
 
-function edit61_Callback(hObject, eventdata, handles)
-% hObject    handle to edit61 (see GCBO)
+function emg1_14_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit61 as text
-%        str2double(get(hObject,'String')) returns contents of edit61 as a double
+% Hints: get(hObject,'String') returns contents of emg1_14 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_14 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit61_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit61 (see GCBO)
+function emg1_14_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -989,18 +1053,18 @@ end
 
 
 
-function edit62_Callback(hObject, eventdata, handles)
-% hObject    handle to edit62 (see GCBO)
+function emg1_15_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_15 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit62 as text
-%        str2double(get(hObject,'String')) returns contents of edit62 as a double
+% Hints: get(hObject,'String') returns contents of emg1_15 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_15 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit62_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit62 (see GCBO)
+function emg1_15_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_15 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1012,18 +1076,18 @@ end
 
 
 
-function edit63_Callback(hObject, eventdata, handles)
-% hObject    handle to edit63 (see GCBO)
+function emg1_16_Callback(hObject, eventdata, handles)
+% hObject    handle to emg1_16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit63 as text
-%        str2double(get(hObject,'String')) returns contents of edit63 as a double
+% Hints: get(hObject,'String') returns contents of emg1_16 as text
+%        str2double(get(hObject,'String')) returns contents of emg1_16 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit63_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit63 (see GCBO)
+function emg1_16_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg1_16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1035,18 +1099,18 @@ end
 
 
 
-function edit64_Callback(hObject, eventdata, handles)
-% hObject    handle to edit64 (see GCBO)
+function emg2_1_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit64 as text
-%        str2double(get(hObject,'String')) returns contents of edit64 as a double
+% Hints: get(hObject,'String') returns contents of emg2_1 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_1 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit64_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit64 (see GCBO)
+function emg2_1_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1058,18 +1122,18 @@ end
 
 
 
-function edit65_Callback(hObject, eventdata, handles)
-% hObject    handle to edit65 (see GCBO)
+function emg2_2_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit65 as text
-%        str2double(get(hObject,'String')) returns contents of edit65 as a double
+% Hints: get(hObject,'String') returns contents of emg2_2 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_2 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit65_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit65 (see GCBO)
+function emg2_2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1081,18 +1145,18 @@ end
 
 
 
-function edit66_Callback(hObject, eventdata, handles)
-% hObject    handle to edit66 (see GCBO)
+function emg2_3_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit66 as text
-%        str2double(get(hObject,'String')) returns contents of edit66 as a double
+% Hints: get(hObject,'String') returns contents of emg2_3 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_3 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit66_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit66 (see GCBO)
+function emg2_3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_3 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1104,18 +1168,18 @@ end
 
 
 
-function edit67_Callback(hObject, eventdata, handles)
-% hObject    handle to edit67 (see GCBO)
+function emg2_4_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit67 as text
-%        str2double(get(hObject,'String')) returns contents of edit67 as a double
+% Hints: get(hObject,'String') returns contents of emg2_4 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_4 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit67_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit67 (see GCBO)
+function emg2_4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_4 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1127,18 +1191,18 @@ end
 
 
 
-function edit68_Callback(hObject, eventdata, handles)
-% hObject    handle to edit68 (see GCBO)
+function emg2_5_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit68 as text
-%        str2double(get(hObject,'String')) returns contents of edit68 as a double
+% Hints: get(hObject,'String') returns contents of emg2_5 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_5 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit68_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit68 (see GCBO)
+function emg2_5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_5 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1150,18 +1214,18 @@ end
 
 
 
-function edit69_Callback(hObject, eventdata, handles)
-% hObject    handle to edit69 (see GCBO)
+function emg2_6_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit69 as text
-%        str2double(get(hObject,'String')) returns contents of edit69 as a double
+% Hints: get(hObject,'String') returns contents of emg2_6 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_6 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit69_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit69 (see GCBO)
+function emg2_6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_6 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1173,18 +1237,18 @@ end
 
 
 
-function edit70_Callback(hObject, eventdata, handles)
-% hObject    handle to edit70 (see GCBO)
+function emg2_7_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit70 as text
-%        str2double(get(hObject,'String')) returns contents of edit70 as a double
+% Hints: get(hObject,'String') returns contents of emg2_7 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_7 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit70_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit70 (see GCBO)
+function emg2_7_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_7 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1196,18 +1260,18 @@ end
 
 
 
-function edit71_Callback(hObject, eventdata, handles)
-% hObject    handle to edit71 (see GCBO)
+function emg2_8_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit71 as text
-%        str2double(get(hObject,'String')) returns contents of edit71 as a double
+% Hints: get(hObject,'String') returns contents of emg2_8 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_8 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit71_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit71 (see GCBO)
+function emg2_8_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_8 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1219,18 +1283,18 @@ end
 
 
 
-function edit72_Callback(hObject, eventdata, handles)
-% hObject    handle to edit72 (see GCBO)
+function emg2_9_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit72 as text
-%        str2double(get(hObject,'String')) returns contents of edit72 as a double
+% Hints: get(hObject,'String') returns contents of emg2_9 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_9 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit72_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit72 (see GCBO)
+function emg2_9_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_9 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1242,18 +1306,18 @@ end
 
 
 
-function edit73_Callback(hObject, eventdata, handles)
-% hObject    handle to edit73 (see GCBO)
+function emg2_10_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit73 as text
-%        str2double(get(hObject,'String')) returns contents of edit73 as a double
+% Hints: get(hObject,'String') returns contents of emg2_10 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_10 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit73_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit73 (see GCBO)
+function emg2_10_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_10 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1265,18 +1329,18 @@ end
 
 
 
-function edit74_Callback(hObject, eventdata, handles)
-% hObject    handle to edit74 (see GCBO)
+function emg2_11_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit74 as text
-%        str2double(get(hObject,'String')) returns contents of edit74 as a double
+% Hints: get(hObject,'String') returns contents of emg2_11 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_11 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit74_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit74 (see GCBO)
+function emg2_11_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_11 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1288,18 +1352,18 @@ end
 
 
 
-function edit75_Callback(hObject, eventdata, handles)
-% hObject    handle to edit75 (see GCBO)
+function emg2_12_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit75 as text
-%        str2double(get(hObject,'String')) returns contents of edit75 as a double
+% Hints: get(hObject,'String') returns contents of emg2_12 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_12 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit75_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit75 (see GCBO)
+function emg2_12_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_12 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1311,18 +1375,18 @@ end
 
 
 
-function edit76_Callback(hObject, eventdata, handles)
-% hObject    handle to edit76 (see GCBO)
+function emg2_13_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit76 as text
-%        str2double(get(hObject,'String')) returns contents of edit76 as a double
+% Hints: get(hObject,'String') returns contents of emg2_13 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_13 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit76_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit76 (see GCBO)
+function emg2_13_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_13 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1334,18 +1398,18 @@ end
 
 
 
-function edit77_Callback(hObject, eventdata, handles)
-% hObject    handle to edit77 (see GCBO)
+function emg2_14_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit77 as text
-%        str2double(get(hObject,'String')) returns contents of edit77 as a double
+% Hints: get(hObject,'String') returns contents of emg2_14 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_14 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit77_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit77 (see GCBO)
+function emg2_14_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_14 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1357,18 +1421,18 @@ end
 
 
 
-function edit78_Callback(hObject, eventdata, handles)
-% hObject    handle to edit78 (see GCBO)
+function emg2_15_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_15 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit78 as text
-%        str2double(get(hObject,'String')) returns contents of edit78 as a double
+% Hints: get(hObject,'String') returns contents of emg2_15 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_15 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit78_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit78 (see GCBO)
+function emg2_15_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_15 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1380,18 +1444,18 @@ end
 
 
 
-function edit79_Callback(hObject, eventdata, handles)
-% hObject    handle to edit79 (see GCBO)
+function emg2_16_Callback(hObject, eventdata, handles)
+% hObject    handle to emg2_16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit79 as text
-%        str2double(get(hObject,'String')) returns contents of edit79 as a double
+% Hints: get(hObject,'String') returns contents of emg2_16 as text
+%        str2double(get(hObject,'String')) returns contents of emg2_16 as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit79_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit79 (see GCBO)
+function emg2_16_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to emg2_16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -1402,8 +1466,38 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton5.
-function pushbutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton5 (see GCBO)
+
+function saveloc_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to saveloc_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of saveloc_edit as text
+%        str2double(get(hObject,'String')) returns contents of saveloc_edit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function saveloc_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to saveloc_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in save_browse.
+function save_browse_Callback(hObject, eventdata, handles)
+% hObject    handle to save_browse (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in saveExpButton.
+function saveExpButton_Callback(hObject, eventdata, handles)
+% hObject    handle to saveExpButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
