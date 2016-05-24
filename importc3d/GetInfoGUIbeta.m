@@ -22,7 +22,7 @@ function varargout = GetInfoGUIbeta(varargin)
 
 % Edit the above text to modify the response to help GetInfoGUIbeta
 
-% Last Modified by GUIDE v2.5 24-May-2016 09:23:40
+% Last Modified by GUIDE v2.5 24-May-2016 15:00:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,7 +67,7 @@ set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3
 
 % UIWAIT makes GetInfoGUIbeta wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-
+clc
 
 % --- Outputs from this function are returned to the command line.
 function varargout = GetInfoGUIbeta_OutputFcn(hObject, eventdata, handles) 
@@ -75,63 +75,6 @@ function varargout = GetInfoGUIbeta_OutputFcn(hObject, eventdata, handles)
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
-if ~(isfield(handles,'noSave') && handles.noSave)
-    info=handles.info;
-
-    %Forcing save before the rest of the things are done (so, if it fails, we
-    %don't lose it).
-    if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
-        choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
-        if strcmp(choice,'No')            
-            info.ID = [info.ID '_' date];
-            h=msgbox(['Saving as ' info.ID],'');
-            waitfor(h)          
-        end                
-    end
-    save([info.save_folder filesep info.ID 'info'],'info')
-
-    %ask user if there are observations for individual trials
-    answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
-
-    %make sure the correct response is entered
-    while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
-        disp('Error: you must enter either "y" or "n"')
-        answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
-    end
-
-    %create a menu to choose any trial
-    expTrials = cell2mat(info.trialnums);
-    numTrials = length(expTrials);
-    if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
-        %if a subject wasn't loaded
-        info.trialObs{1,info.numoftrials} = '';
-    end
-    if strcmpi(answer{1},'y')    
-        trialstr = [];
-        %create trial string
-        for t = expTrials
-            trialstr = [trialstr,',''Trial ',num2str(t),''''];
-        end
-        %generate menu
-        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-        while choice ~= numTrials+1
-            % get observation for trial selected
-            obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
-            info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
-            eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-        end   
-    end
-
-    varargout{1}=info;
-    save([info.save_folder filesep info.ID 'info'],'info')
-else
-    varargout{1}=[];
-end
-
-
-delete(handles.figure1)
 
 
 % --- Executes on selection change in descriptionmenu.
@@ -371,7 +314,14 @@ function strokeCheck_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of strokeCheck
-
+if get(hObject,'Value')
+    set(handles.popupAffected,'Enable','On')
+    set(handles.text63,'Enable','On')
+else
+    set(handles.popupAffected,'Enable','Off')
+    set(handles.text63,'Enable','Off')
+end
+guidata(hObject,handles)
 
 % --- Executes on selection change in popupAffected.
 function popupAffected_Callback(hObject, eventdata, handles)
@@ -401,33 +351,30 @@ function description_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to description_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns description_edit contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from description_edit
 contents = cellstr(get(hObject,'String'));
 expFile = contents{get(hObject,'Value')};
 
-% HH 6/16
-% eval(expFile)
-path=which('GetInfoGUI');
-path=strrep(path,'GetInfoGUI.m','ExpDetails');
-if exist([path filesep expFile '.mat'],'file')>0
-    %first, clear all feilds
-    set(handles.numofconds,'String','0');
-    for conds = 1:handles.lines
-        set(handles.(['condition',num2str(conds)]),'string','');
-        set(handles.(['condName',num2str(conds)]),'string','');
-        set(handles.(['description',num2str(conds)]),'string','');
-        set(handles.(['trialnum',num2str(conds)]),'string','');
-        set(handles.(['type',num2str(conds)]),'string','');
+path=which('GetInfoGUIbeta');
+path=strrep(path,'GetInfoGUIbeta.m','ExpDetails');
+
+if exist([path filesep expFile '.mat'],'file')==2
+    a=load([path filesep expFile]);
+    a = a.expDes;
+    aux=fields(a);
+    numcond = a.numofconds;
+    
+    data = cell(numcond,5);
+    temp = 1;
+    for z=1:numcond
+        data{z,1} = z;
+        data{z,2} = getfield(a,aux{temp+1});
+        data{z,4} = getfield(a,aux{temp+2});
+        data{z,5} = getfield(a,aux{temp+3});
+%         keyboard
+        temp = temp+4;
     end
 
-    %second, populate feilds based on experiment description entered.
-    a=load([path filesep expFile]);
-    aux=fields(a);
-    expDes=a.(aux{1});
-    handles=setExpDescription(handles,expDes);
-    numofconds_Callback(handles.numofconds, eventdata, handles)
+    set(handles.uitable1,'Data',data);
 end
 
 guidata(hObject,handles)
@@ -440,6 +387,18 @@ function description_edit_CreateFcn(hObject, eventdata, handles)
 
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
+
+%initialize drop down list with different experiment types
+path=which('GetInfoGUIbeta');
+path=strrep(path,'GetInfoGUIbeta.m','ExpDetails');
+W=what(path);
+experiments=cellstr(W.mat);
+for i=1:length(experiments)
+    fileExt=find(experiments{i}=='.');
+    experiments{i}=experiments{i}(1:fileExt-1);
+end
+set(hObject,'String',[' ';experiments])
+
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -568,7 +527,8 @@ function c3dlocation_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of c3dlocation as text
 %        str2double(get(hObject,'String')) returns contents of c3dlocation as a double
-
+handles.folder_location = get(hObject,'string');
+guidata(hObject,handles)
 
 % --- Executes during object creation, after setting all properties.
 function c3dlocation_CreateFcn(hObject, eventdata, handles)
@@ -588,7 +548,11 @@ function browse_Callback(hObject, eventdata, handles)
 % hObject    handle to browse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.folder_location = uigetdir; %this is how the output_fcn knows where the folder is
+if ~handles.folder_location==0
+    set(handles.c3dlocation,'string',handles.folder_location)
+end
+guidata(hObject,handles);
 
 
 function basefile_Callback(hObject, eventdata, handles)
@@ -644,7 +608,20 @@ function numofconds_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of numofconds as text
 %        str2double(get(hObject,'String')) returns contents of numofconds as a double
+newnum = get(handles.numofconds,'String');
+data = get(handles.uitable1,'Data');
+[m,~] = size(data);
 
+if str2double(newnum) > m
+%     keyboard
+    data = [data;cell(str2double(newnum)-m,5)];
+    set(handles.uitable1,'Data',data);
+    
+elseif str2double(newnum) < m
+    ends = str2double(newnum);
+    data(ends+1:end,:)=[];
+    set(handles.uitable1,'Data',data);
+end
 
 % --- Executes during object creation, after setting all properties.
 function numofconds_CreateFcn(hObject, eventdata, handles)
@@ -684,7 +661,26 @@ function emg_check_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of emg_check
+state = get(hObject,'Value');
 
+if state
+    set(handles.secfile_browse,'enable','on')
+    set(handles.secfileloc,'enable','on')
+    for i=1:16
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''on'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
+    end
+else
+    set(handles.secfile_browse,'enable','off')
+    set(handles.secfileloc,'enable','off')
+    for i=1:16
+        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
+        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
+    end
+end
+guidata(hObject,handles);
 
 
 function secfileloc_Callback(hObject, eventdata, handles)
@@ -714,14 +710,25 @@ function secfile_browse_Callback(hObject, eventdata, handles)
 % hObject    handle to secfile_browse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.secfolder_location = uigetdir; %this is how the output_fcn knows where the folder is
+if ~handles.secfolder_location==0
+    set(handles.secfileloc,'string',handles.secfolder_location)
+end
+guidata(hObject,handles);
 
 % --- Executes on button press in ok_button.
 function ok_button_Callback(hObject, eventdata, handles)
 % hObject    handle to ok_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+% % % GET INFORMATION FROM GUI FIELDS AND ERROR PROOF BEFORE SAVING % % %
+handles.info=errorProofInfobeta(handles);
+if handles.info.bad
+    return
+else
+    guidata(hObject,handles)
+    uiresume(handles.figure1);
+end
 
 % --- Executes on button press in loadButton.
 function loadButton_Callback(hObject, eventdata, handles)
@@ -1494,10 +1501,81 @@ function save_browse_Callback(hObject, eventdata, handles)
 % hObject    handle to save_browse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+path = uigetdir;
+if ~path==0
+    handles.save_folder=path;
+    set(handles.saveloc_edit,'string',handles.save_folder);
+end
+guidata(hObject,handles)
 
 % --- Executes on button press in saveExpButton.
 function saveExpButton_Callback(hObject, eventdata, handles)
 % hObject    handle to saveExpButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+data = get(handles.uitable1,'Data');
+error = 0;
+for z=1:length(data)
+    if ~isempty(data(z,1))
+        expDes.(['condition' num2str(z)]) = num2str(data{z,1});
+    else
+        disp(['ERROR missing condition number in row: ',num2str(z)]);
+        error = 1;
+    end
+    
+    if ~isempty(data(z,2))
+        expDes.(['condName' num2str(z)]) = num2str(data{z,2});
+    else
+        disp(['ERROR missing condition name in row: ',num2str(z)]);
+        error = 2;
+    end
+    
+%     if ~isempty(data(z,3))
+%         expDes.(['description' num2str(z)]) = data(z,3);
+%     else
+%         disp(['WARNING missing description in row: ',num2str(z)]);
+% %         error = 2;
+%     end
+    
+    if ~isempty(data(z,4))
+        expDes.(['trialnum' num2str(z)]) = num2str(data{z,4});
+    else
+        disp(['ERROR missing trial number in row: ',num2str(z)]);
+        error = 4;
+    end
+    
+    if ~isempty(data(z,5))
+        expDes.(['type' num2str(z)]) = num2str(data{z,5});
+    else
+        disp(['ERROR missing trial type in row: ',num2str(z)]);
+        error = 5;
+    end
+    
+end
+expDes.numofconds=length(data);
+
+if error == 0
+    answer = inputdlg('Enter name of new experiment description: ','Experiment Description Name');
+    if ~isempty(answer)
+        answer = char(answer);
+        expDes.group=answer;
+        answer=answer(ismember(answer,['A':'Z' 'a':'z' '0':'9'])); %remove non-alphanumeric characters
+        path=which('GetInfoGUIbeta');
+        path=strrep(path,'GetInfoGUIbeta.m','ExpDetails');
+        if exist([path filesep answer '.mat'],'file')>0
+            choice=questdlg('File name already exists. Overwrite?','File Name Warning','Yes','No','No');
+            if strcmp(choice,'No')
+                h=msgbox('Experiment description was not saved.','');
+                waitfor(h)
+                return
+            end
+        end
+        save([path filesep answer],'expDes')
+        description_edit_CreateFcn(handles.description_edit, eventdata, handles)
+        newContents=get(handles.description_edit,'String');
+        ind=find(ismember(newContents,answer));
+        set(handles.description_edit,'Value',ind)
+
+    end
+end
