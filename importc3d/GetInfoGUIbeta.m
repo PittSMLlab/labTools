@@ -66,7 +66,7 @@ guiPos = get(hObject,'Position');
 set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
 
 % UIWAIT makes GetInfoGUIbeta wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 clc
 
 % --- Outputs from this function are returned to the command line.
@@ -75,7 +75,61 @@ function varargout = GetInfoGUIbeta_OutputFcn(hObject, eventdata, handles)
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+if ~(isfield(handles,'noSave') && handles.noSave)
+    info=handles.info;
 
+    %Forcing save before the rest of the things are done (so, if it fails, we
+    %don't lose it).
+    if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
+        choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
+        if strcmp(choice,'No')            
+            info.ID = [info.ID '_' date];
+            h=msgbox(['Saving as ' info.ID],'');
+            waitfor(h)          
+        end                
+    end
+    save([info.save_folder filesep info.ID 'info'],'info')
+
+    %ask user if there are observations for individual trials
+    answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+
+    %make sure the correct response is entered
+    while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
+        disp('Error: you must enter either "y" or "n"')
+        answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+    end
+
+    %create a menu to choose any trial
+    expTrials = cell2mat(info.trialnums);
+    numTrials = length(expTrials);
+    if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
+        %if a subject wasn't loaded
+        info.trialObs{1,info.numoftrials} = '';
+    end
+    if strcmpi(answer{1},'y')    
+        trialstr = [];
+        %create trial string
+        for t = expTrials
+            trialstr = [trialstr,',''Trial ',num2str(t),''''];
+        end
+        %generate menu
+        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        while choice ~= numTrials+1
+            % get observation for trial selected
+            obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
+            info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
+            eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        end   
+    end
+
+    varargout{1}=info;
+    save([info.save_folder filesep info.ID 'info'],'info')
+else
+    varargout{1}=[];
+end
+
+
+delete(handles.figure1)
 
 % --- Executes on selection change in descriptionmenu.
 function descriptionmenu_Callback(hObject, eventdata, handles)
@@ -723,6 +777,7 @@ function ok_button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % % % GET INFORMATION FROM GUI FIELDS AND ERROR PROOF BEFORE SAVING % % %
 handles.info=errorProofInfobeta(handles);
+keyboard
 if handles.info.bad
     return
 else

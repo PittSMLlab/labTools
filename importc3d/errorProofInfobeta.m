@@ -6,6 +6,8 @@ function out = errorProofInfobeta(handles,ignoreErrors)
 % hadles - handle structure from GetInfoGUI
 % ignoreErrors - enter true to ignore errors
 
+disp('Checking Inputs for errors...');
+
 out.bad=false;
 
 %% Get info from GUI fields
@@ -74,8 +76,8 @@ if ~isnan(Nconds) && Nconds>0
 %         out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
         out.conditionDescriptions{c}=data{c,3};
 %         trialnums = get(handles.(['trialnum',num2str(c)]),'string');
-        trialnums = data{c,4};
-        out.trialnums{c} = data{c,4};
+        trialnums = data(c,4);
+        out.trialnums{c} = str2double(trialnums);
 %         out.trialnums{c} = eval(['[',trialnums,']']);
         
         %need to eval for entry of numbers like '1:6' or '7 8 9'
@@ -85,9 +87,9 @@ if ~isnan(Nconds) && Nconds>0
 else
     out.trialnums={0};
 end
-keyboard
-trials=cell2mat(out.trialnums)
-out.numoftrials = max(trials)
+% keyboard
+trials=cell2mat(out.trialnums);
+out.numoftrials = max(trials);
 
 % -- EMG data
 if isfield(handles,'emg1_1')
@@ -267,7 +269,9 @@ if ~(nargin>1 && ignoreErrors)
         waitfor(h_error)
         uicontrol(handles.saveloc_edit)
         out.bad=true; 
-    end       
+    end   
+    
+    disp('Finished checking for input errors...');
 end
 
 
