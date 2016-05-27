@@ -113,9 +113,9 @@ end
 % axesFontSize=14;
 % labelFontSize=0;
 % titleFontSize=24;
-axesFontSize=10;
-labelFontSize=0;
-titleFontSize=12;
+axesFontSize=20;
+labelFontSize=10;
+titleFontSize=18;
 if nargin<13 || isempty(plotHandles) || length(plotHandles)~=length(params)
     [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,'tb',axesFontSize,labelFontSize,titleFontSize);
 else
