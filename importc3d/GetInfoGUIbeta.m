@@ -777,7 +777,7 @@ function ok_button_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % % % GET INFORMATION FROM GUI FIELDS AND ERROR PROOF BEFORE SAVING % % %
 handles.info=errorProofInfobeta(handles);
-keyboard
+% keyboard
 if handles.info.bad
     return
 else
