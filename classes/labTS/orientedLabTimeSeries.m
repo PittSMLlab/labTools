@@ -534,7 +534,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         function newThis=highPassFilter(this,fcut)
            newThis=highPassFilter@labTimeSeries(this,fcut); 
-           newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newthis.sampPeriod,newThis.labels,this.orientation);
+           newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newThis.labels,this.orientation);
         end
         
         function newThis=substituteNaNs(this,method)
