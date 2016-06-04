@@ -700,6 +700,51 @@ classdef adaptationData
         
         varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,alignEnd,alignIni)
         
+        function [fh,ph,allData]=plotTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)
+            
+            fh=figure;
+
+            M=length(labels);
+            clear ph
+            for i=1:M
+                ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+                ph(i,2)=subplot(M,3,[3]+3*(i-1));
+            end
+
+            %Defaults:
+            plotHandles=[]; %Not allowed
+            if nargin<8 || isempty(colorOrder)
+                colorScheme
+            colorOrder=color_palette;
+            end
+            plotIndividualsFlag=indivFlag;
+            legendNames=[];
+            significanceThreshold=.05;
+            removeBiasFlag=0; %Disallowing removeBiasFlag
+            significancePlotMatrix=[];
+            alignEnd=abs(numberOfStrides(2));
+            signifPlotMatrixConds=[];
+            exemptFirst=1;
+            exemptLast=5;
+            
+            %Time courses:
+            adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,'UniformOutput',false);
+            fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,ph(:,1),alignEnd);
+
+            %Add bars:
+            [fh,allData]=groupAdaptationData.plotMultipleGroupsBars(adaptDataGroups,labels,removeBiasFlag,plotIndividualsFlag,conds,numberOfStrides,exemptFirst,exemptLast,groupNames,significanceThreshold,ph(:,2),colorOrder,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
+
+            for i=1:M
+                subplot(ph(i,2));
+                grid on
+                aa=axis;
+                subplot(ph(i,1));
+                grid on
+                ab=axis;
+                axis([ab(1:2) aa(3:4)])
+            end
+        end
+        
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
             
