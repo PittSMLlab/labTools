@@ -1,4 +1,34 @@
 function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
+error('This function needs fixing, try using adaptationData.plotAvgTimeCourse')
+%% This function needs fixing, suggestion, call on this piece of code:
+
+% colorScheme
+% color_palette=color_palette([1,3,2,4:size(color_palette,1)],:);
+% binwidth=10;
+% trialMarkerFlag=0;
+% indivFlag=0; %This uses different subplots for each parameter, otherwise they are on top of each other (?)
+% indivSubs=[];
+% colorOrder=color_palette;
+% colors=color_palette;
+% biofeedback=[];
+% groupNames={'Keyboard','Alpha'};
+% medianFlag=1;
+% plotIndividualsFlag=0;
+% legendNames=[];
+% significanceThreshold=.05;
+% numberOfStrides=[100 -50];
+% labels=kG.adaptData{1}.data.getLabelsThatMatch('Norm2$')';
+% removeBiasFlag=0;
+% significancePlotMatrix=[];
+% alignEnd=abs(numberOfStrides(2));
+% signifPlotMatrixConds=zeros(6);
+% signifPlotMatrixConds(2,[5,6])=1;
+% signifPlotMatrixConds(sub2ind([6,6],[1:5],[2:6]))=1;
+% %Time courses:
+% %fh=adaptationData.plotAvgTimeCourse({patientsNoP15Unbiased.adaptData,groupsUnbiased{2}.adaptData},labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,ph(:,1),alignEnd);
+% fh=adaptationData.plotAvgTimeCourse({kGUnb.adaptData,bGUnb.adaptData},labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,[],alignEnd);
+
+%%
 colorScheme
 if nargin<4 || isempty(plotIndividualsFlag)
     plotIndividualsFlag=true;
@@ -70,7 +100,8 @@ for l=1:length(label)
             xCoord=(i-1)*offset + [1:N2];
             yCoord=nanmean(earlyPoints(i,:,:),3);
             yStd=nanstd(earlyPoints(i,:,:),[],3);
-            hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],[.6,.6,.6]);
+            hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],colorGroups{group},'EdgeColor','none','FaceAlpha',.5);
+            uistack(hh,'bottom')
             hLeg(1)=plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group});
             if plotIndividualsFlag==1
                 for j=1:size(earlyPoints,3)
@@ -81,7 +112,8 @@ for l=1:length(label)
             xCoord=(i-1)*offset + [offset-N3-4:offset-5];
             yCoord=nanmean(latePoints(i,:,:),3);
             yStd=nanstd(latePoints(i,:,:),[],3);
-            hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],[.6,.6,.6]);
+            hh=patch([xCoord,xCoord(end:-1:1)],[yCoord-yStd,yCoord(end:-1:1)+yStd(end:-1:1)],colorGroups{group},'EdgeColor','none','FaceAlpha',.5);
+            uistack(hh,'bottom')
             plot(xCoord,yCoord,'LineWidth',3,'Color',colorGroups{group})
             if plotIndividualsFlag==1
                 for j=1:size(earlyPoints,3)

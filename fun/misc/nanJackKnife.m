@@ -139,6 +139,7 @@ switch(nargin)
         U = y + E;
         LineColor =  varargin{4};
         EdgeColor = LineColor-0.5.*abs(LineColor);
+        EdgeColor = 'none';
         PatchColor = varargin{5};
         Opacity= varargin{6};
         w=varargin{7}; %Binary flag to make some markers white (?)
@@ -169,7 +170,7 @@ elseif nargin>=7
             Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',[0 0 0]);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);
         else
-            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeCOlor,'MarkerFaceColor',LineColor);
+            Li = plot(x(l),y(l),'o','MarkerSize',8,'LineWidth',1,'MarkerEdgeColor',EdgeColor,'MarkerFaceColor',LineColor);
             % Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);
         end
     end

@@ -51,6 +51,7 @@ else
 end
 nConds=length(conditions);
 cond=cell(1,nConds);
+Opacity=.3;
 for c=1:nConds
     if isa(conditions{c},'cell')
         cond{c}=conditions{c}{1}(ismember(conditions{c}{1},['A':'Z' 'a':'z' '0':'9']));
@@ -394,9 +395,9 @@ for group=1:Ngroups
                 else %only plot group averages
                      if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
                         if isempty(biofeedback)
-                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7);
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity);
                         else
-                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
                         end
                         %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
@@ -404,13 +405,13 @@ for group=1:Ngroups
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(mod(g-1,size(colorOrder,1))+1,:)./Cdiv;
-                        [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
+                        [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
                 elseif  isempty(biofeedback) %Each group colored differently
                         color=colorOrder(g,:)./Cdiv;
-                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7);
+                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
                         if ~legacyVersion
@@ -429,20 +430,20 @@ for group=1:Ngroups
                         end
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
-                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
+                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');                        
                         group=adaptData{g}{1}.subData.ID;
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
                         elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
-                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),0.7,w);
+                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
                         %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
-                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),0.7,w);
+                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
                         load([adaptDataList{g}{1,1}])
@@ -515,4 +516,12 @@ else
     varargout{2}=avg;
     varargout{3}=indiv;
     varargout{4}=ah; %axes handles
+end
+
+%% Sending patches to back
+p=findobj(gcf,'Type','Patch');
+if ~isempty(p)
+    for i=1:length(p)
+    uistack(p(i),'bottom')
+    end
 end
