@@ -6,7 +6,7 @@ function angle=calcangle(jt1, jt2, jt3)
 %make jt2 the vertex. Pass 2D position for 2D angle
 
 
-     %This is wrong
+     
       vector1=jt2-jt1;
       vector2=jt2-jt3;
       dotprod=dot(vector1,vector2,2); %find dot product in 2D
