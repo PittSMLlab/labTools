@@ -97,6 +97,12 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'stepSpeedFast',           'Ankle relative to hip, from iHS to cHS';...
     'stanceSpeedSlow',          'Ankle relative to hip, during ipsilateral stance';...
     'stanceSpeedFast',          'Ankle relative to hip, during ipsilateral stance';...
+    'alphaTemp_fromAvgHip',     'Ankle placement of slow leg at SHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
+    'alphaFast_fromAvgHip',     'Ankle placement of fast leg at FHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
+    'alphaSlow_fromAvgHip',     'Ankle placement of slow leg at SHS2 (realtive to avg hip marker and avg hip postion during time) (in mm)';...
+    'xTemp_fromAvgHip',         'Ankle placement of fast leg at SHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
+    'xFast_fromAvgHip',         'Ankle placement of slow leg at FHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
+    'xSlow_fromAvgHip',         'Ankle placement of fast leg at SHS2 (realtive to avg hip marker and avg hip postion during time) (in mm)';...
 %    'avgRotation',            'Angle that the coordinates were rotated by';...
     }; 
 
@@ -128,7 +134,7 @@ if any(ee(:))
     error('Setting markers at the origin to NaN did not work')
 end
 %% Get rotated data
-[rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos]=getKinematicData(eventTimes,markerData,angleData,s);
+[rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos,sAnk_fromAvgHip,fAnk_fromAvgHip]=getKinematicData(eventTimes,markerData,angleData,s);
 
 %% Intralimb
 if strcmp(s,'L')
@@ -209,6 +215,15 @@ alphaRatioFast=alphaFast./(alphaSlow+alphaFast);
 %delta alphas
 alphaDeltaSlow=sAngle(:,SHS2)-fAngle(:,FHS); %same as alphaAngSlow-alphaAngFast
 alphaDeltaFast=fAngle(:,FHS)-sAngle(:,SHS);
+
+%%
+alphaTemp_fromAvgHip = sAnk_fromAvgHip(:,SHS);
+alphaFast_fromAvgHip = fAnk_fromAvgHip(:,FHS);
+alphaSlow_fromAvgHip = sAnk_fromAvgHip(:,SHS2);
+
+xTemp_fromAvgHip = fAnk_fromAvgHip(:,SHS);
+xSlow_fromAvgHip = sAnk_fromAvgHip(:,FHS);
+xFast_fromAvgHip = fAnk_fromAvgHip(:,SHS2);
 
 %% Interlimb
 
