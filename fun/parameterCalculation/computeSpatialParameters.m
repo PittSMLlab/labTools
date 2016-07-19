@@ -217,13 +217,13 @@ alphaDeltaSlow=sAngle(:,SHS2)-fAngle(:,FHS); %same as alphaAngSlow-alphaAngFast
 alphaDeltaFast=fAngle(:,FHS)-sAngle(:,SHS);
 
 %%
-alphaTemp_fromAvgHip = sAnk_fromAvgHip(:,SHS);
-alphaFast_fromAvgHip = fAnk_fromAvgHip(:,FHS);
-alphaSlow_fromAvgHip = sAnk_fromAvgHip(:,SHS2);
+alphaTemp_fromAvgHip = (-1)*sAnk_fromAvgHip(:,SHS); % Multiply by -1 to correct for direction alpha has to be positive
+alphaFast_fromAvgHip = (-1)*fAnk_fromAvgHip(:,FHS);
+alphaSlow_fromAvgHip = (-1)*sAnk_fromAvgHip(:,SHS2);
 
-xTemp_fromAvgHip = fAnk_fromAvgHip(:,SHS);
-xSlow_fromAvgHip = sAnk_fromAvgHip(:,FHS);
-xFast_fromAvgHip = fAnk_fromAvgHip(:,SHS2);
+xTemp_fromAvgHip = (-1)*fAnk_fromAvgHip(:,SHS);
+xSlow_fromAvgHip = (-1)*sAnk_fromAvgHip(:,FHS);
+xFast_fromAvgHip = (-1)*fAnk_fromAvgHip(:,SHS2);
 
 %% Interlimb
 

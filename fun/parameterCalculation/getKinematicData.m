@@ -106,7 +106,8 @@ hipPos3DRel=.5*(sHipRel+fHipRel); %Just for check, should be all zeros
 hipPosFwd=hipPos3D(:,:,2);%Y-axis component    
 %hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPosSHS=hipPosFwd(:,1);
-hipPosAvg = mean(nanmean(hipPosFwd)); % Average Hip Position from SHS to STO2
+hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:5))); % Average Hip Position from SHS to STO2
+hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:7))); % Average Hip Position from SHS to STO2
 
 %rotate coordinates to be aligned wiht walking dierection                      
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
@@ -128,8 +129,8 @@ sAnkFwd=sAnk(:,:,2)-hipPosFwd;
 fAnkFwd=fAnk(:,:,2)-hipPosFwd;
 sAnk2D=sAnk(:,:,1:2)-hipPos2D;
 fAnk2D=fAnk(:,:,1:2)-hipPos2D;
-sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg; % y positon of slow ankle corrected by average hip postion 
-fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg; % y positon of fast ankle corrected by average hip postion 
+sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion 
+fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion 
 % Set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
