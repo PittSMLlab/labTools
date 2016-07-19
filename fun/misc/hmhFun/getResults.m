@@ -58,7 +58,7 @@ for g=1:nGroups
     
     AdaptExtent=[];
     
-    for s=1:nSubs
+for s=1:nSubs
         % load subject
         adaptData=Study.(groups{g}).adaptData{s};
         
@@ -104,116 +104,149 @@ for g=1:nGroups
         else
             
             % calculate TM and OG base in same manner as calculating OG after and TM after
-            OGbaseData=adaptData.getParamInCond(params,'OG base');
-            OGbase(s,:)= nanmean(OGbaseData(1:transientNumPts,:));
-                       
-            TMbaseData=adaptData.getParamInCond(params,'TM base');
-            if isempty(TMbaseData)
-                TMbaseData=adaptData.getParamInCond(params,{'slow base','fast base'});
+            if nansum(cellfun(@(x) strcmp(x, 'OG base'), adaptData.metaData.conditionName))==1
+                OGbaseData=adaptData.getParamInCond(params,'OG base');
+                OGbase(s,:)= nanmean(OGbaseData(1:transientNumPts,:));
             end
-            TMbase(s,:)=nanmean(TMbaseData(1:transientNumPts,:));
+             
+             if nansum(cellfun(@(x) strcmp(x, 'TM base'), adaptData.metaData.conditionName))==1
+                 TMbaseData=adaptData.getParamInCond(params,'TM base');
+                 if isempty(TMbaseData)
+                     TMbaseData=adaptData.getParamInCond(params,{'slow base','fast base'});
+                 end
+                 TMbase(s,:)=nanmean(TMbaseData(1:transientNumPts,:));
+             end
+           
+            
             
             % compute catch
-            tmcatchData=adaptData.getParamInCond(params,'catch');
-            if isempty(tmcatchData)
-                newtmcatchData=NaN(1,nParams);
-            elseif size(tmcatchData,1)<3
-                newtmcatchData=nanmean(tmcatchData);
-            else
-                newtmcatchData=nanmean(tmcatchData(1:catchNumPts,:));
-                %newtmcatchData=nanmean(tmcatchData);
+            if nansum(cellfun(@(x) strcmp(x, 'catch'), adaptData.metaData.conditionName))==1
+                tmcatchData=adaptData.getParamInCond(params,'catch');
+                if isempty(tmcatchData)
+                    newtmcatchData=NaN(1,nParams);
+                elseif size(tmcatchData,1)<3
+                    newtmcatchData=nanmean(tmcatchData);
+                else
+                    newtmcatchData=nanmean(tmcatchData(1:catchNumPts,:));
+                    %newtmcatchData=nanmean(tmcatchData);
+                end
+                Catch(s,:)=newtmcatchData;
             end
-            Catch(s,:)=newtmcatchData;
             
             % compute OG post
-            ogafterData=adaptData.getParamInCond(params,'OG post');
-            OGafter(s,:)=nanmean(ogafterData(1:transientNumPts,:));
-            OGafterEarly(s,:)=nanmean(ogafterData(transientNumPts+1:transientNumPts+20,:)); 
-            OGafterLate(s,:)=nanmean(ogafterData((end-5)-steadyNumPts+1:(end-5),:)); %Last strides 
+            if nansum(cellfun(@(x) strcmp(x, 'OG post'), adaptData.metaData.conditionName))==1
+                ogafterData=adaptData.getParamInCond(params,'OG post');
+                OGafter(s,:)=nanmean(ogafterData(1:transientNumPts,:));
+                OGafterEarly(s,:)=nanmean(ogafterData(transientNumPts+1:transientNumPts+20,:));
+                OGafterLate(s,:)=nanmean(ogafterData((end-5)-steadyNumPts+1:(end-5),:)); %Last strides
+                
+                %Sum of OG after-effects
+                AvgOGafter(s,:)=mean(ogafterData(1:min([end 50])));
+            end
             
             % compute TM post
-            tmafterData=adaptData.getParamInCond(params,'TM post');
-            TMafter(s,:)=nanmean(tmafterData(1:transientNumPts,:));
-            TMafterEarly(s,:)=nanmean(tmafterData(transientNumPts+1:transientNumPts+20,:));
-            TMafterLate(s,:)=nanmean(tmafterData((end-5)-steadyNumPts+1:(end-5),:));
+            if nansum(cellfun(@(x) strcmp(x, 'TM post'), adaptData.metaData.conditionName))==1
+                tmafterData=adaptData.getParamInCond(params,'TM post');
+                TMafter(s,:)=nanmean(tmafterData(1:transientNumPts,:));
+                TMafterEarly(s,:)=nanmean(tmafterData(transientNumPts+1:transientNumPts+20,:));
+                TMafterLate(s,:)=nanmean(tmafterData((end-5)-steadyNumPts+1:(end-5),:));
+            end
         end
         
-        %Sum of OG after-effects
-        AvgOGafter(s,:)=mean(ogafterData(1:min([end 50])));
-               
-        % compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)
-        adapt1Data=adaptData.getParamInCond(params,'adaptation');
-        adapt1Velocity=adaptData.getParamInCond('velocityContributionNorm2','adaptation');
         
-%       StartAdapt(s,:)=nanmean(adapt1Data(1:transientNumPts,:));
-        AdaptExtentBeforeCatch(s,:)=nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:)); %Few strides before catch 
-        
-        %start of step length = end of velocityCont    
-        idx = find(strcmpi(params, 'stepLengthAsym'));
-        if isempty(idx)
-            idx = find(strcmpi(params, 'netContributionNorm2'));
+        if nansum(cellfun(@(x) strcmp(x, 'catch'), adaptData.metaData.conditionName))==1     
+            % compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)
+            adapt1Data=adaptData.getParamInCond(params,'adaptation');
+            adapt1Velocity=adaptData.getParamInCond('velocityContributionNorm2','adaptation');
+            
+            %       StartAdapt(s,:)=nanmean(adapt1Data(1:transientNumPts,:));
+            AdaptExtentBeforeCatch(s,:)=nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:)); %Few strides before catch
+            
+            %start of step length = end of velocityCont
+            idx = find(strcmpi(params, 'stepLengthAsym'));
+            if isempty(idx)
+                idx = find(strcmpi(params, 'netContributionNorm2'));
+            end
+            if ~isempty(idx)
+                AdaptExtentBeforeCatch(s,idx)=AdaptExtentBeforeCatch(s,idx)-nanmean(adapt1Velocity((end-2)-transientNumPts+1:(end-2),:));
+            end
+            %
+            
+            % compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)
+            adapt2Data=adaptData.getParamInCond(params,'re-adaptation');
+            adapt2Sasym=adaptData.getParamInCond('stepLengthAsym','re-adaptation');
+            adapt2Velocity=adaptData.getParamInCond('velocityContributionNorm2','re-adaptation');
+            if isempty(adapt2Data)
+                adapt2Data=adaptData.getParamInCond(params,{'adaptation'});
+                adapt2Sasym=adaptData.getParamInCond('stepLengthAsym','adaptation');
+               adapt2Velocity=adaptData.getParamInCond('velocityContributionNorm2','adaptation');
+            end
+                       
+            AdaptIndex(s,:)= nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:)); %last 40 straides of adaptation
+            
+            idx = find(strcmpi(params, 'stepLengthAsym'));
+            if isempty(idx)
+                idx = find(strcmpi(params, 'netContributionNorm2'));
+            end
+            if ~isempty(idx)
+                AdaptIndex(s,idx)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
+            end
+            
+            AdaptExtent(s,:)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
+            
+            
+            % compute average adaptation value before the catch
+            AvgAdaptBeforeCatch(s,:)= nanmean(adapt1Data);
+            
+            % compute average adaptation of all adaptation walking (both
+            % before and after catch)
+            adaptAllData=adaptData.getParamInCond(params,{'adaptation','re-adaptation'});
+            AvgAdaptAll(s,:)= nanmean(adaptAllData);
+            
+            % Calculate Errors outside of baseline during adaptation
+            mu=nanmean(TMbaseData);
+            sigma=nanstd(TMbaseData);
+            upper=mu+2.*sigma;
+            lower=mu-2.*sigma;
+            for i=1:nParams
+                outside(i)=sum(adapt1Data(:,i)>upper(i) | adapt1Data(:,i)<lower(i));
+            end
+            ErrorsOut(s,:)= 100.*(outside./size(adapt1Data,1));
         end
-        if ~isempty(idx)
-            AdaptExtentBeforeCatch(s,idx)=AdaptExtentBeforeCatch(s,idx)-nanmean(adapt1Velocity((end-2)-transientNumPts+1:(end-2),:));           
-        end
-%        
-        
-        % compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)
-        adapt2Data=adaptData.getParamInCond(params,'re-adaptation');
-        adapt2Sasym=adaptData.getParamInCond('stepLengthAsym','re-adaptation');
-        adapt2Velocity=adaptData.getParamInCond('velocityContributionNorm2','re-adaptation')
-        
-        AdaptIndex(s,:)= nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:)); %last 40 straides of adaptation 
-        
-        idx = find(strcmpi(params, 'stepLengthAsym'));
-        if isempty(idx)
-            idx = find(strcmpi(params, 'netContributionNorm2'));
-        end
-        if ~isempty(idx)        
-              AdaptIndex(s,idx)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
-        end
-        
-        AdaptExtent(s,:)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
-        
-        
-        % compute average adaptation value before the catch
-        AvgAdaptBeforeCatch(s,:)= nanmean(adapt1Data);
-        
-        % compute average adaptation of all adaptation walking (both
-        % before and after catch)
-        adaptAllData=adaptData.getParamInCond(params,{'adaptation','re-adaptation'});
-        AvgAdaptAll(s,:)= nanmean(adaptAllData);
-        
-        % Calculate Errors outside of baseline during adaptation
-        mu=nanmean(TMbaseData);
-        sigma=nanstd(TMbaseData);
-        upper=mu+2.*sigma;
-        lower=mu-2.*sigma;
-        for i=1:nParams
-            outside(i)=sum(adapt1Data(:,i)>upper(i) | adapt1Data(:,i)<lower(i));
-        end
-        ErrorsOut(s,:)= 100.*(outside./size(adapt1Data,1));
-    end
+       
+ end
     
     % compute extent of adaptation as difference between start and end
 %     AdaptExtentBeforeCatch=TMsteadyBeforeCatch-StartAdapt;
 %     AdaptExtent=TMsteady-StartAdapt;
             
-    %calculate relative after-effects    
+    %calculate relative after-effects 
+ if nansum(cellfun(@(x) strcmp(x, 'OG post'), adaptData.metaData.conditionName))==1
     idx = find(strcmpi(params, 'stepLengthAsym'));
     if isempty(idx)
         idx = find(strcmpi(params, 'netContributionNorm2'));
     end
     if ~isempty(idx)
         Transfer= 100*(OGafter./(Catch(:,idx)*ones(1,nParams)));
+    else
+        Transfer= 100*(OGafter./Catch);    
+    end
+    Transfer2= 100*(OGafter./(AdaptExtent*ones(1,nParams)))
+ end
+ 
+ if nansum(cellfun(@(x) strcmp(x, 'TM post'), adaptData.metaData.conditionName))==1
+ idx = find(strcmpi(params, 'stepLengthAsym'));
+    if isempty(idx)
+        idx = find(strcmpi(params, 'netContributionNorm2'));
+    end
+    if ~isempty(idx)
         Washout= 100*(1-(TMafter./(Catch(:,idx)*ones(1,nParams))));
     else
-        Transfer= 100*(OGafter./Catch);
         Washout = 100*(1-(TMafter./Catch));
-    end
-        
-    Transfer2= 100*(OGafter./(AdaptExtent*ones(1,nParams)));
+    end    
     Washout2= 100-(100*(TMafter./(AdaptExtent*ones(1,nParams))));
+ end
+    
     
     for j=1:length(outcomeMeasures)
         eval(['results.(outcomeMeasures{j}).avg(g,:)=nanmean(' outcomeMeasures{j} ',1);']);
