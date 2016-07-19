@@ -7,8 +7,9 @@ if nargin<6 || isempty(colorOrder) || size(colorOrder,2)~=3
 end
 
 if type==1 %%by Epochs
-    hold on
+    
     ah=optimizedSubPlot(length(params), length(params), 1);
+    hold on
     i=1;
 for p=1:length(params)
     
@@ -69,8 +70,9 @@ end
     end
 % end
 elseif type==2 %by Parameters 
+   
+    ah=optimizedSubPlot(length(conds), length(conds), 1); 
     hold on
-    ah=optimizedSubPlot(length(conds), length(conds), 1);
     i=1;
  for p=1:length(conds)
     
