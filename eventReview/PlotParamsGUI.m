@@ -133,8 +133,7 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=5;
         handles = enableFields(handles,'groupList','parameterList','regExpBox',...
             'conditionList');
-        set(handles.parameterList,'max',5)
-        
+        set(handles.parameterList,'max',5)      
         set(handles.conditionText,'String','Epochs')
         set(handles.conditionList,'String',fields(results),'max',2)
     case 'CorrelationParams'
@@ -488,7 +487,16 @@ groupContents=fields(handles.Study);
 adaptDataList={};
 indivSubList={};%cell(1,length(get(handles.subjectList,'Value')));
 indivSubStr='[]';
-if ~isempty(get(handles.groupList,'Value'))    
+if handles.plotType==2 %%DULCE
+    if ~isempty(get(handles.groupList,'Value'))
+        groups=groupContents(get(handles.groupList,'Value'));
+        for g=1:length(groups)
+            %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
+            adaptDataList{g}= handles.Study.(groups{g});
+        end
+    end
+else
+    if ~isempty(get(handles.groupList,'Value'))    
     groups=groupContents(get(handles.groupList,'Value'));
     for g=1:length(groups)
         %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
@@ -523,6 +531,7 @@ else
                 end
             end
         end
+    end
     end
 end
 
@@ -573,7 +582,7 @@ switch handles.plotType
         exemptLast=[];
         legendNames=[];
         significanceThreshold=0.01;
-        adaptationData.plotGroupedSubjectsBars(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+        adaptationData.plotGroupedSubjectsBarsv2(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
     case 3 % scatter plot
         binSize=str2double(get(handles.binEdit,'string'));
 %         removeBias=1;
