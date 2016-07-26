@@ -124,10 +124,27 @@ switch get(eventdata.NewValue,'Tag')
             'colorMenu','saveColorsButton');
         for i=1:17
             set(handles.(['color' num2str(i)]),'Enable','on');
-        end
+        end 
         set(handles.parameterList,'max',10)
         set(handles.conditionText,'String','Epochs')
         set(handles.conditionList,'String',fields(results));
+    case 'correlationButton'
+        results=getResults(handles.Study,{'good'},handles.groups(1));
+        handles.plotType=5;
+        handles = enableFields(handles,'groupList','parameterList','regExpBox',...
+            'conditionList');
+        set(handles.parameterList,'max',5)      
+        set(handles.conditionText,'String','Epochs')
+        set(handles.conditionList,'String',fields(results),'max',2)
+    case 'CorrelationParams'
+        results=getResults(handles.Study,{'good'},handles.groups(1));
+        handles.plotType=6;
+        handles = enableFields(handles,'groupList','parameterList','regExpBox',...
+            'conditionList');
+        set(handles.parameterList,'max',2)
+        set(handles.conditionText,'String','Epochs')
+        set(handles.conditionList,'String',fields(results),'max',5)
+        
 end
 set(handles.plotButton,'enable','on')
 guidata(hObject, handles);
@@ -291,9 +308,20 @@ end
 
 % --- Executes on selection change in conditionList.
 function conditionList_Callback(hObject, eventdata, handles)
+values=get(hObject,'Value');
+newVals=values(~ismember(values,handles.paramVals));
+handles.paramVals=values(ismember(values,handles.paramVals));
+maxNum=get(hObject,'max');
+if length(values)>maxNum
+    allVals=[handles.paramVals newVals];
+    handles.paramVals=allVals(end-(maxNum-1):end);
+else
+    handles.paramVals=[handles.paramVals newVals];
+end
+set(hObject,'Value',handles.paramVals)
 
 %add selected conditions to list for plotting individual trials (only for time course)
-if handles.plotType==1
+if handles.plotType==1 
     conditionSubContents=get(handles.conditionSubList,'String');
     selectedSubConds=conditionSubContents(get(handles.conditionSubList,'Value'));
 
@@ -459,7 +487,16 @@ groupContents=fields(handles.Study);
 adaptDataList={};
 indivSubList={};%cell(1,length(get(handles.subjectList,'Value')));
 indivSubStr='[]';
-if ~isempty(get(handles.groupList,'Value'))    
+if handles.plotType==2 %%DULCE
+    if ~isempty(get(handles.groupList,'Value'))
+        groups=groupContents(get(handles.groupList,'Value'));
+        for g=1:length(groups)
+            %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
+            adaptDataList{g}= handles.Study.(groups{g});
+        end
+    end
+else
+    if ~isempty(get(handles.groupList,'Value'))    
     groups=groupContents(get(handles.groupList,'Value'));
     for g=1:length(groups)
         %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
@@ -494,6 +531,7 @@ else
                 end
             end
         end
+    end
     end
 end
 
@@ -544,11 +582,12 @@ switch handles.plotType
         exemptLast=[];
         legendNames=[];
         significanceThreshold=0.01;
-        adaptationData.plotGroupedSubjectsBars(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
+        adaptationData.plotGroupedSubjectsBarsv2(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
     case 3 % scatter plot
         binSize=str2double(get(handles.binEdit,'string'));
-        removeBias=1;
-        adaptationData.groupedScatterPlot(adaptDataList,params,conds,binSize,[],[])
+%         removeBias=1;
+        adaptationData.scatterPlotLab(adaptDataList,params,conds,[],[],binSize,[],removeBias)
+        
     case 4 %epoch bars
         results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
         barGroups(handles.Study,results,groups,params,conds,indivSubFlag,colorOrder);
@@ -561,6 +600,15 @@ switch handles.plotType
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])                 
             disp(['barGroups(' handles.varName ',results,groups,params,epochs,indivSubFlag)'])
         end
+        
+    case 5 %correlation
+        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
+        adaptationData.Correlations(adaptDataList,results,params,conds,groups,colorOrder,1)
+    case 6 %correlation by params 
+        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
+        adaptationData.Correlations(adaptDataList,results,params,conds,groups,colorOrder,2)
+       
+        
 end
 end
 

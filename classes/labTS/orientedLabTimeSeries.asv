@@ -383,7 +383,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
            legend(labelPref)
         end
         
-        function mov=animate(this,t0,t1,frameRate,writeFileFlag,filename,mode)
+        function mov=animate(this,t0,t1,mode,writeFileFlag,frameRate)
             %This function renders a movie of the 3-D position stored in the orientedLabData object.
             %It only makes sense for markerData type objects.
             
@@ -391,24 +391,21 @@ classdef orientedLabTimeSeries  < labTimeSeries
                t0=this.Time(1);
                t1=this.Time(end);
             end
-            if nargin<7 || isempty(mode)
+            if nargin<4 || isempty(mode)
                 mode=2;
             end
             if nargin<5 || isempty(writeFileFlag)
                 writeFileFlag=0;
             end
-            if nargin<4 || isempty(frameRate)
+            if nargin<6 || isempty(frameRate)
                 frameRate=25;
-            end
-            if nargin<6 || isempty(filename)
-                filename=['anim_t=[' num2str(round(t0*10)/10) ',' num2str(round(t1*10)/10) '].avi'];
             end
             f=round(this.sampFreq/frameRate);
             frameRate=this.sampFreq/f;
             this=this.split(t0,t1); %Keeping the requested data only
             
             if writeFileFlag==1
-            
+            filename=['animTrial' num2str(t'.avi'];
             %mov = VideoWriter(filename,'Archival');
             mov = VideoWriter(filename,'Uncompressed AVI');
             mov.FrameRate=frameRate;

@@ -38,6 +38,7 @@ end
 %Define the events that will be used for all further computations
 eventTypes={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
 eventTypes=strcat(eventClass,eventTypes);
+
 eventLables={'SHS','FTO','FHS','STO'};
 triggerEvent=eventTypes{1};
 
