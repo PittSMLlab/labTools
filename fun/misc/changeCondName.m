@@ -38,7 +38,7 @@ for s=1:length(subID)
     try
         load([subID{s} 'params.mat'])
     catch
-        ME=MException('changeCondName:badInput',['The params file for ' subID{s} ' does not appear to be in your curent folder.']);
+        ME=MException('changeCondName:badInput',['The params file for ' subID{s} ' does not appear to be in your current folder.']);
         throw(ME);
     end
     
