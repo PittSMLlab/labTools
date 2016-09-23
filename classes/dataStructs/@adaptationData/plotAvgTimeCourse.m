@@ -375,11 +375,11 @@ for group=1:Ngroups
                             id=subsToPlot{s}(1:end-6);
                         end
                         subInd=find(ismember(subjects,id),1,'first');
-                        y_ind=[indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
+                        y_indiv=[indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
-                        Li{group}(s)=plot(x,y_ind,lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:),'Tag',id);
+                        Li{group}(s)=plot(x,y_indiv(1:length(x)),lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:),'Tag',id);
                         if ~legacyVersion
                             legendStr{group}(s)={subsToPlot{s}.subData.ID};
                         else
