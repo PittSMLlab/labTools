@@ -243,9 +243,14 @@ classdef BiofeedbackSL_c3d
                            
                            Xq = 0:step:length(Rfz)*step;
                            Xq(end) = [];
-                           
+                           try
                            RHIP = markers.RHIP;
                            LHIP = markers.LHIP;
+                           catch
+                               RHIP = markers.RGT;
+                               LHIP = markers.LGT;
+                               
+                           end
                            RANK = markers.RANK;
                            LANK = markers.LANK;
                            
@@ -297,8 +302,8 @@ classdef BiofeedbackSL_c3d
 %                        keyboard
                        %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
                        %calculate errors
-                       temp1 = HIP(find(RHS))-RANK(find(RHS));
-                       temp2 = HIP(find(LHS))-LANK(find(LHS));
+                       temp1 = HIP(find(RHS))-RANK(find(RHS));%Ralpha
+                       temp2 = HIP(find(LHS))-LANK(find(LHS));%Lalpha
                        temp1(temp1<0)=[];
                        temp2(temp2<0)=[];
                        
@@ -334,8 +339,10 @@ classdef BiofeedbackSL_c3d
                    figure(2)
                    if this.fastleg == 'r'
                        subplot(2,1,1)
+                       grid on
                    else
                        subplot(2,1,2)
+                       grid on
                    end
                    hold on
                    fill([0 length(cell2mat(RX(train)')) length(cell2mat(RX(train)')) 0],[0.5 0.5 -0.5 -0.5],[230 230 230]./256);
@@ -365,8 +372,8 @@ classdef BiofeedbackSL_c3d
                        end
                        hold on
                        scatter([1:length(RX{z})]+h,RX{z},75,color{z},'fill');
-                       plot([h h+length(RX{z})],[0.0375 0.0375],'k');%tolerance lines
-                       plot([h h+length(RX{z})],[-0.0375 -0.0375],'k');
+%                        plot([h h+length(RX{z})],[0.0375 0.0375],'k');%tolerance lines
+%                        plot([h h+length(RX{z})],[-0.0375 -0.0375],'k');
 %                        plot([h h+length(RX{z})],[nanmean(RX{z})+rlqr{z}/2 nanmean(RX{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
 %                        plot([h h+length(RX{z})],[nanmean(RX{z})-rlqr{z}/2 nanmean(RX{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
                        h = h+length(RX{z});
@@ -383,7 +390,7 @@ classdef BiofeedbackSL_c3d
                    xlim([0 h+10]);
 %                    title([this.subjectcode ' Step Length Error Fast Leg']);
                    xlabel('step #');
-                   ylabel('Error (m)');
+                   ylabel('X (m)');
                    figure(2)
                    if this.fastleg == 'l'
                        subplot(2,1,1)
@@ -417,8 +424,8 @@ classdef BiofeedbackSL_c3d
                            subplot(2,1,2)
                        end
                        scatter([1:length(LX{z})]+h,LX{z},75,color{z},'fill');
-                       plot([h h+length(LX{z})],[0.0375 0.0375],'k');%tolerance lines
-                       plot([h h+length(LX{z})],[-0.0375 -0.0375],'k');
+%                        plot([h h+length(LX{z})],[0.0375 0.0375],'k');%tolerance lines
+%                        plot([h h+length(LX{z})],[-0.0375 -0.0375],'k');
 %                        plot([h h+length(LX{z})],[nanmean(LX{z})+llqr{z}/2 nanmean(LX{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
 %                        plot([h h+length(LX{z})],[nanmean(LX{z})-llqr{z}/2 nanmean(LX{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
                        h = h+length(LX{z});
@@ -434,11 +441,120 @@ classdef BiofeedbackSL_c3d
                    ylim([0 0.49]);
                    xlim([0 h+10]);
                    xlabel('step #');
-                   ylabel('Error (m)');
+                   ylabel('X (m)');
+                   grid on
                    
+                   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                    
-                   
-                   
+                   figure(3)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                       grid on
+                   else
+                       subplot(2,1,2)
+                       grid on
+                   end
+                   hold on
+                   fill([0 length(cell2mat(Ralpha(train)')) length(cell2mat(Ralpha(train)')) 0],[0.5 0.5 -0.5 -0.5],[230 230 230]./256);
+                   fill([length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)')) length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)')) length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)')) length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))],[0.5 0.5 -0.5 -0.5],[230 230 230]./256);
+                   %add baseline walking bars
+                   for b=1:2:length(base)
+                       fill([length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base(1:b))'))-0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base(1:b))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base(1:b))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base(1:b))'))-0.15],[0.5 0.5 0 0],[20 20 20]./256);
+                       text(length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base(1:b))')),0.125,'Base');
+                   end
+                   %add adaptation walking bars
+                   for a=1:2:length(adapt)
+                       fill([length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt(1:a))'))-0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt(1:a))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt(1:a))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt(1:a))'))-0.15],[0.5 0.5 0 0],[20 20 20]./256);
+                       text(length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt(1:a))')),0.125,'Split');
+                   end
+                   %add washout walking bars
+                   for w=1:2:length(wash)
+                       fill([length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)'))+length(cell2mat(Ralpha(wash(1:w))'))-0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)'))+length(cell2mat(Ralpha(wash(1:w))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)'))+length(cell2mat(Ralpha(wash(1:w))'))+0.15 length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)'))+length(cell2mat(Ralpha(wash(1:w))'))-0.15],[0.5 0.5 0 0],[20 20 20]./256);
+                       text(length(cell2mat(Ralpha(train)'))+length(cell2mat(Ralpha(base)'))+length(cell2mat(Ralpha(adapt)'))+length(cell2mat(Ralpha(wash(1:w))')),0.125,'Wash');
+                   end
+                   h = 0;
+                   for z = 1:length(filename)
+                       figure(3)
+                       if this.fastleg == 'r'
+                           subplot(2,1,1)
+                       else
+                           subplot(2,1,2)
+                       end
+                       hold on
+                       scatter([1:length(Ralpha{z})]+h,Ralpha{z},75,color{z},'fill');
+%                        plot([h h+length(Ralpha{z})],[0.0375 0.0375],'k');%tolerance lines
+%                        plot([h h+length(Ralpha{z})],[-0.0375 -0.0375],'k');
+%                        plot([h h+length(Ralpha{z})],[nanmean(Ralpha{z})+rlqr{z}/2 nanmean(Ralpha{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+%                        plot([h h+length(Ralpha{z})],[nanmean(Ralpha{z})-rlqr{z}/2 nanmean(Ralpha{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+                       h = h+length(Ralpha{z});
+                   end
+                   figure(3)
+                   if this.fastleg == 'r'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Alpha Fast Leg']);
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Alpha Slow Leg']);
+                   end
+                   ylim([0 0.49]);
+                   xlim([0 h+10]);
+%                    title([this.subjectcode ' Step Length Error Fast Leg']);
+                   xlabel('step #');
+                   ylabel('Alpha (m)');
+                   figure(3)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                   else
+                       subplot(2,1,2)
+                   end
+                   hold on
+                   fill([0 length(cell2mat(Lalpha(train)')) length(cell2mat(Lalpha(train)')) 0],[0.5 0.5 0 0],[230 230 230]./256);
+                   fill([length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)')) length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)')) length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)')) length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))],[0.5 0.5 -0.5 -0.5],[230 230 230]./256);
+                   %add baseline walking bars
+                   for b=1:2:length(base)
+                       fill([length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base(1:b))'))-0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base(1:b))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base(1:b))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base(1:b))'))-0.15],[0.5 0.5 0 0],[20 20 20]./256);
+                       text(length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base(1:b))')),0.125,'Base');
+                   end
+                   %add adaptation walking bars
+                   for a=1:2:length(adapt)
+                       fill([length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt(1:a))'))-0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt(1:a))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt(1:a))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt(1:a))'))-0.15],[0.5 0.5 -0.5 -0.5],[20 20 20]./256);
+                       text(length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt(1:a))')),0.125,'Split');
+                   end
+                   %add washout walking bars
+                   for w=1:2:length(wash)
+                       fill([length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)'))+length(cell2mat(Lalpha(wash(1:w))'))-0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)'))+length(cell2mat(Lalpha(wash(1:w))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)'))+length(cell2mat(Lalpha(wash(1:w))'))+0.15 length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)'))+length(cell2mat(Lalpha(wash(1:w))'))-0.15],[0.5 0.5 -0.5 -0.5],[20 20 20]./256);
+                       text(length(cell2mat(Lalpha(train)'))+length(cell2mat(Lalpha(base)'))+length(cell2mat(Lalpha(adapt)'))+length(cell2mat(Lalpha(wash(1:w))')),0.125,'Wash');
+                   end
+                   h = 0;
+                   for z = 1:length(filename)
+                       figure(3)
+                       if this.fastleg == 'l'
+                           subplot(2,1,1)
+                       else
+                           subplot(2,1,2)
+                       end
+                       scatter([1:length(Lalpha{z})]+h,Lalpha{z},75,color{z},'fill');
+%                        plot([h h+length(Lalpha{z})],[0.0375 0.0375],'k');%tolerance lines
+%                        plot([h h+length(Lalpha{z})],[-0.0375 -0.0375],'k');
+%                        plot([h h+length(Lalpha{z})],[nanmean(Lalpha{z})+llqr{z}/2 nanmean(Lalpha{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+%                        plot([h h+length(Lalpha{z})],[nanmean(Lalpha{z})-llqr{z}/2 nanmean(Lalpha{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+                       h = h+length(Lalpha{z});
+                   end
+                   figure(3)
+                   if this.fastleg == 'l'
+                       subplot(2,1,1)
+                       title([this.subjectcode ' Alpha Fast Leg']);
+                   else
+                       subplot(2,1,2)
+                       title([this.subjectcode ' Alpha Slow Leg']);
+                   end
+                   ylim([0 0.49]);
+                   xlim([0 h+10]);
+                   xlabel('step #');
+                   ylabel('Alpha (m)');
+                   grid on
                    
 %                    for z=1:length(RX)
 %                        temp = RX{z};
