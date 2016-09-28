@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlag,plotHandles,alignEnd,alignIni)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlagNew,plotHandles,alignEnd,alignIni)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -97,9 +97,21 @@ if nargin<10 || isempty(removeBiasFlag)
     removeBiasFlag=0;
 end
 
-if nargin<12 || isempty(medianFlag)
-    medianFlag=0;
+if nargin<12 || isempty(medianFlagNew)
+    medianFlagNew=0;
 end
+%Added 9/28/2016: separated the two functionalities of 'medianFlag' into
+%'medianFlag' and 'medianFilter'. Now accept that users may pass a scalar
+%flag or a 2x1 flag vector, where the first index indicates the FILTER
+%flag, and the second indicates the GROUP flag.
+if numel(medianFlagNew)<2
+    medianFilter=medianFlagNew;
+    medianFlag=medianFlagNew;
+else
+    medianFilter=medianFlagNew(1);
+    medianFlag=medianFlagNew(2);
+end
+
 
 if nargin<14 || alignEnd==0
     alignEnd=[];
@@ -259,22 +271,22 @@ for group=1:Ngroups
                     t2 = stop(i);
                     bin = allValues(:,t1:t2);
                     
-                    if length(adaptDataList{group})>1
+                    if length(adaptDataList{group})>1 %Several subjects
                         %errors calculated as standard error of averaged subject points
-                        if medianFlag==0
-                            subBin=nanmean(bin,2);
-                        else
-                            subBin=nanmedian(bin,2);
+                        if medianFilter==0
+                            subBin=nanmean(bin,2); %Mean across time
+                        else 
+                            subBin=nanmedian(bin,2); %Median across  time
                         end
                         if medianFlag==0
-                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin);
+                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin); %Mean across subjects
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
                         else %Using median and 15.87-84.13 percentiles
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(subBin);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(subBin,[16,84]))/sqrt(length(subBin));
                         end
                          indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
-                    else
+                    else %Single subject
                         %errors calculated as standard error of all data
                         %points within a bin
                         if medianFlag==0
