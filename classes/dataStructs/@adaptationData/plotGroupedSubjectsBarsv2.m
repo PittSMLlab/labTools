@@ -151,6 +151,7 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                 else
                     title(label{i})
                 end
+                axis tight
                 aa=axis;
                 for j=2:2:nConds
                    hC=patch(xPos(j) +[-1,1,1,-1]*(length(N2)*(Ngroups+1))/2,[aa(3) aa(3) aa(4) aa(4)],[.8,.8,.8],'EdgeColor','none','FaceAlpha',.6); 

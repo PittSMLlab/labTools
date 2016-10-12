@@ -82,10 +82,13 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                         XData=reshape(XData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);
                         YData=reshape(YData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);
                     end
-                    yRef=.1*(max(YData(:))-min(YData(:)));
+                    %yRef=.1*(max(YData(:))-min(YData(:)));
                     %yRef=.5*std(YData(:));
-                    yOff=max(YData(:));
-                    yOff2=min(YData(:));
+                    aa=axis;
+                    yOff=max([max(YData(:)) aa(4)]);
+                    yOff2=min([min(YData(:)) aa(3)]);
+                    yRef=.05*(yOff-yOff2);
+                    yOff2=yOff2+5*yRef;
                     XData=squeeze(XData(:,1,:));
                     XData=XData(:);
                     YData=squeeze(YData(:,1,:));
@@ -165,22 +168,26 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                     end
                     aa=axis;
                     try
-                    axis([aa(1:2) yOff2-yRef*4*(length(allData.group)+1) yOff+2*yRef])
+                        axis([aa(1:2) min([yOff2-yRef*4*(length(allData.group)+1) aa(3)]) max([yOff+2*yRef aa(4)])])
                     catch
                         axis tight
                     end
-                    
                     %Alt way - using RM stats (works with only two groups
                     %so far!)
-                    dim=2;
-                    relevantData=cat(dim,reshape(allData.group{1}(:,:,aux,:),length(condList)*2,length(groups{1}.ID)),reshape(allData.group{2}(:,:,aux,:),length(condList)*2,length(groups{2}.ID)));
-                    relevantData=relevantData(1:end,:); %Discarding early base
+                    relevantData=reshape(permute(allData.group{1}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{1}.ID));
+                    groupMembership=ones(length(groups{1}.ID),1);
+                    IDs=repmat(groups{1}.ID(1),length(groups{1}.ID),1);
+                    %Cat all groups:
+                    for kk=2:length(allData.group)
+                        relevantData=cat(2,relevantData,reshape(permute(allData.group{kk}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{kk}.ID)));
+                        groupMembership=[groupMembership; kk*ones(length(groups{kk}.ID),1)];
+                        IDs=[IDs; repmat(groups{kk}.ID(1),length(groups{kk}.ID),1)]; %Each group gets assigned the ID of the first member
+                    end
                     dim1Names=[strcat('Early',condList);strcat('Late',condList)];
                     %dim1Names=[strcat('Early',condList)';strcat('Late',condList)']; %Order in which XData is indexed;
                     dim1Names=dim1Names(:);
                     dim1Names=cellfun(@(x)  regexprep(x,'[^\w'']',''),dim1Names(1:end),'UniformOutput',false);
-                    IDs=[groups{1}.ID groups{2}.ID]';
-                    Groups=cellfun(@(x) x(1),IDs); 
+                    Groups=IDs; 
                     auxStr=['t = table(IDs,Groups'];
                     auxStr2=[];
                     for aauxCounter=1:size(relevantData,1)
@@ -194,34 +201,54 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                     ra=ranova(rm);
                     aa=anova(rm);
                     [~,tbl]=anova2(relevantData',16,'off');
-                    phoc=rm.multcompare('Condition','By','Group');
-                    phoc2=rm.multcompare('Group','By','Condition');
+                    phoc=rm.multcompare('Condition','By','Group','ComparisonType','lsd'); %Unpaired t-tests; this is NOT fine, conditions are naturally paired
+                    phoc2=rm.multcompare('Group','By','Condition','ComparisonType','lsd'); %Unpaired t-tests; this is fine
                     xx=get(gca,'YLim');
                     xx2=diff(xx);
                     xx=mean(xx);
                     yy=get(gca,'XLim');
-                    text(mean(yy(2))-.1*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:')
-                    text(mean(yy(2))-.1*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10,'FontWeight','bold')
-                    text(mean(yy(2))-.1*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10,'FontWeight','bold')
-                    text(mean(yy(2))-.1*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10,'FontWeight','bold')
+                    text(mean(yy(2))-.05*diff(yy),xx+1.75*xx2/8,'Mauchly:','FontWeight','bold')
+                    if rm.mauchly.pValue>.05
+                        text(mean(yy(2))-.05*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)])
+                    else
+                        text(mean(yy(2))-.05*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)],'Color','b')
+                    end
+                    text(mean(yy(2))-.05*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:','FontWeight','bold')
+                    text(mean(yy(2))-.05*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10)
+                    if rm.mauchly.pValue>.05
+                        text(mean(yy(2))-.05*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10)
+                        text(mean(yy(2))-.05*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10)
+                    else
+                        text(mean(yy(2))-.05*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', pGG=' num2str(ra.pValueGG(1),2)],'Fontsize',10,'Color','b')
+                        text(mean(yy(2))-.05*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', pGG=' num2str(ra.pValueGG(2),2)],'Fontsize',10,'Color','b')
+                    end
+                    text(mean(yy(2))-.05*diff(yy),xx-2.75*xx2/8,['Post-hoc (unpr.):'],'Fontsize',10,'FontWeight','bold')
+                    text(mean(yy(2)),xx-3.5*xx2/8,['* p<.05'],'Fontsize',10)
+                    text(mean(yy(2)),xx-4.25*xx2/8,['** p<Bonferroni'],'Fontsize',10)
                     %text(mean(yy(2))-.1*diff(yy),xx-2.75*xx2/8,'2-ANOVA stats:')
                     %text(mean(yy(2))-.1*diff(yy),xx-3.5*xx2/8,['Group: F=' num2str(tbl{3,5},2) ', p=' num2str(tbl{3,6},2)],'Fontsize',10,'FontWeight','bold')
                     %text(mean(yy(2))-.1*diff(yy),xx-4.25*xx2/8,['Cond: F=' num2str(tbl{2,5},2) ', p=' num2str(tbl{2,6},2)],'Fontsize',10,'FontWeight','bold')
                     %text(mean(yy(2))-.1*diff(yy),xx-5*xx2/8,['Interac.: F=' num2str(tbl{4,5},2) ', p=' num2str(tbl{4,6},2)],'Fontsize',10,'FontWeight','bold')
                     
-                    for kk=1:length(groups) %all groups
+                    Ncomp=sum(sum(triu(signifPlotMatrixConds),2),1) * length(allData.group); %Number of comparisons being done across epochs
+                    Ncomp2=(.5*length(allData.group)*(length(allData.group)-1))*size(relevantData,1) ;%Number of comparisons being done across groups
+                    for kk=1:length(allData.group) %all groups
                         counter=0;
-                    for ii=1:M
-                        
-                            for ll=[kk+1:length(groups)]
+                    for ii=1:M %Each epoch
+                            for ll=[kk+1:length(allData.group)] %All the other groups
+                                [~,pp3]=ttest2(relevantData(ii,groupMembership==kk),relevantData(ii,groupMembership==ll),'VarType','Unequal'); %Use ttest2 to do unpaired t-test
+                                if medianFlag==1
+                                    [pp3]=ranksum(relevantData(ii,groupMembership==kk),relevantData(ii,groupMembership==ll)); %Use ranksum to paired non-param testing
+                                end
                                 c1=strcmp(dim1Names{ii},phoc2.Condition); %Finding comparisons that relate to condition ii
-                                c2=strcmp(groups{kk}.ID{1}(1),phoc2.Group_1);
-                                c3=strcmp(groups{ll}.ID{1}(1),phoc2.Group_2);
-                                pp=phoc.pValue(c1 & c2 & c3);
-                                if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
+                                c2=strcmp(groups{kk}.ID{1},phoc2.Group_1);
+                                c3=strcmp(groups{ll}.ID{1},phoc2.Group_2);
+                                pp=phoc2.pValue(c1 & c2 & c3);%This is the same as using pp3
+                                %disp(['post-hoc=' num2str(pp) ', t-test (unp)=' num2str(pp3) ', ranksum=' num2str(pp2)]) %This is to check that the post-hoc is indeed an unpaired t-test
+                                if pp3<significanceThreshold 
                                     plot(XData(ii)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2)
                                     %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')
-                                    if pp>significanceThreshold/10
+                                    if pp>(significanceThreshold/Ncomp2) %Bonferroni threshold
                                         text(XData(ii)+.25,yOff+yRef*1.4,['*'],'Color','m')
                                     else
                                         text(XData(ii)+.25,yOff+yRef*1.4,['**'],'Color','m')
@@ -231,20 +258,22 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                             for jj=[ii+1:M]
                                 if signifPlotMatrixConds(ii,jj)==1
                                     counter=counter+1;
-                                    if medianFlag==0
-                                        [~,pp]=ttest(relevantData(ii,:),relevantData(jj,:)); %Use ttest to do paired t-test
-                                    else
-                                        [pp]=signrank(relevantData(ii,:),relevantData(jj,:)); %Use signrank to paired non-param testing
+                                    %error('This doesnt work, figure it out')
+                                    [~,pp1]=ttest(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use ttest to do paired t-test
+                                    [~,pp3]=ttest2(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use ttest2 to do unpaired t-test. Should we use 'Vartype','unequal' ?
+                                    if medianFlag==1
+                                        [pp1]=signrank(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use signrank to paired non-param testing
                                     end
                                     c1=strcmp(dim1Names{ii},phoc.Condition_1); %Finding comparisons that relate to condition ii
                                     c2=strcmp(dim1Names{jj},phoc.Condition_2);
-                                    c3=strcmp(groups{kk}.ID{1}(1),phoc.Group);
+                                    c3=strcmp(groups{kk}.ID{1},phoc.Group);
                                     pp=phoc.pValue(c1 & c2 & c3);
-                                    if pp<significanceThreshold%/(length(numberOfStrides)*length(condList)) 
+                                    %disp(['post-hoc=' num2str(pp) ', t-test (paired)=' num2str(pp1) ', t-test (unp)=' num2str(pp3) ', signrank=' num2str(pp2)])
+                                    if pp1<(significanceThreshold) 
                                         plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),'Color',colors(mod(kk-1,length(colors))+1,:),'LineWidth',2)
-                                        if pp>significanceThreshold/10
+                                        if pp1>(significanceThreshold/(.5*Ncomp)) %Does not pass Bonferroni's criteria for significance
                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['*'],'Color',colors(mod(kk-1,length(colors))+1,:))
-                                        else
+                                        else %Passes Bonferroni criteria
                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['**'],'Color',colors(mod(kk-1,length(colors))+1,:))
                                         end
                                     end
