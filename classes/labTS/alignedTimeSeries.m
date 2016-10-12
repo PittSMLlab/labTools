@@ -104,6 +104,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                else
                    if isa(events,'alignedTimeSeries')
                     [meanEvents,ss]=mean(events);
+                    meanEvents=meanEvents.castAsTS;
                    else
                        meanEvents=events;
                        ss=[];

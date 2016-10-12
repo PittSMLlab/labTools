@@ -703,6 +703,17 @@ classdef labTimeSeries  < timeseries
            for i=1:size(this.Data,2) %Go over event labels
                oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
                closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; %Find closest index in new event 
+               if any(closestNewEventIndexes>newN) %It could happen in case of down-sampling that the closest new index falls outside the range
+                   %Option 1: set it to the last available sample (this
+                   %would no longer be 'rounding')
+                   closestNewEventIndexes(closestNewEventIndexes>newN)=newN;
+                   %Option 2: eliminate event, as it falls outside range.
+                   %This may cause failure of other functions that rely on
+                   %down-sampling of events not changing the number of
+                   %events
+                   closestNewEventIndexes(closestNewEventIndexes>newN)=[];
+               end
+               
                newData(closestNewEventIndexes,i)=true;
            end
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
