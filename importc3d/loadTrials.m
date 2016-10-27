@@ -58,10 +58,15 @@ for t=cell2mat(info.trialnums) %loop through each trial
                         forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
-                    case '4'%Forces/moments ending in '4' area assumed to be of handrail
+                    case '3'%Forces/moments ending in '3' area assumed to be of handrail
                         forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
+                    case '4' %Forces/moments ending in '4' area assumed to be ????
+                        forceLabels{end+1} = ['X',fieldList{j}(end-2:end-1)];
+                        units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
+                        relData=[relData,analogs.(fieldList{j})];
+                        warning('Found a 4-th force plate in the data. Loading as X. You should figure out what it is.')
                     otherwise
                         showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output                        
                 end
