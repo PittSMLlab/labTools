@@ -64,9 +64,11 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                 ch=findobj(figHandle,'Type','Axes');
                 for i=1:length(ch)
                     aux=find(strcmp(label,ch(i).Title.String));
-                    clear XData YData
+                    if ~isempty(aux)
                     subplot(ch(i))
                     hold on
+
+                    clear XData YData
                     b=findobj(ch(i),'Type','Bar');
                     if ~isempty(b)
                     for j=1:length(b)
@@ -93,7 +95,7 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                     signifPlotMatrixConds=signifPlotMatrixConds==1 | signifPlotMatrixConds'==1;
                     M=size(signifPlotMatrixConds,2);
                     NN=sum(signifPlotMatrixConds(:)==1)/2; %Total number of comparisons to be made
-                    for j=1:length(XData) %For each condition
+                    for j=1:length(XData) %For each condition 
                         [a1,a2]=ind2sub([size(allData.group{1},2),size(allData.group{1},1)],j);
                         data1=squeeze(allData.group{1}(a2,a1,aux,:));
                         [b1,b2]=ind2sub([size(allData.group{2},2),size(allData.group{1},1)],j);
@@ -147,14 +149,14 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                         [pp]=signrank(data1,data2); %Use signrank to paired non-param testing
                                     end
                                     if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
-                                        plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),'Color',colors(mod(k-1,length(colors))+1,:),'LineWidth',2)
-                                        %text(XData(l)-1.5,yOff2-yRef*4*(k + (counter-1.5)/NN),[num2str(pp,'%1.1g')],'Color',colors(k,:))
-                                        if pp>significanceThreshold/10
-                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['*'],'Color',colors(mod(k-1,length(colors))+1,:))
-                                        else
-                                            text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['**'],'Color',colors(mod(k-1,length(colors))+1,:))
-                                        end
-                                    end
+                                    %    plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),'Color','k','LineWidth',1)
+                                    %    %text(XData(l)-1.5,yOff2-yRef*4*(k + (counter-1.5)/NN),[num2str(pp,'%1.1g')],'Color',colors(k,:))
+                                    %    if pp>significanceThreshold/10
+                                    %        text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['o'],'Color',colors(mod(k-1,length(colors))+1,:))
+                                    %    else
+                                    %        text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['oo'],'Color',colors(mod(k-1,length(colors))+1,:))
+                                    %    end
+                                    %end
                                 end
                             end
                             end
@@ -167,7 +169,95 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                     catch
                         axis tight
                     end
+                    
+                    %Alt way - using RM stats (works with only two groups
+                    %so far!)
+                    dim=2;
+                    relevantData=cat(dim,reshape(allData.group{1}(:,:,aux,:),length(condList)*2,length(groups{1}.ID)),reshape(allData.group{2}(:,:,aux,:),length(condList)*2,length(groups{2}.ID)));
+                    relevantData=relevantData(1:end,:); %Discarding early base
+                    dim1Names=[strcat('Early',condList);strcat('Late',condList)];
+                    %dim1Names=[strcat('Early',condList)';strcat('Late',condList)']; %Order in which XData is indexed;
+                    dim1Names=dim1Names(:);
+                    dim1Names=cellfun(@(x)  regexprep(x,'[^\w'']',''),dim1Names(1:end),'UniformOutput',false);
+                    IDs=[groups{1}.ID groups{2}.ID]';
+                    Groups=cellfun(@(x) x(1),IDs); 
+                    auxStr=['t = table(IDs,Groups'];
+                    auxStr2=[];
+                    for aauxCounter=1:size(relevantData,1)
+                        auxStr=[auxStr ',relevantData(' num2str(aauxCounter) ',:)'''];
+                        auxStr2=[auxStr2 ',''t' num2str(aauxCounter-1) ''''];
+                    end
+                    auxStr=[auxStr ',''VariableNames'',{''ID'',''Group''' auxStr2 '});'];
+                    eval(auxStr)
+                    wt=table(dim1Names,'VariableNames',{'Condition'});
+                    rm = fitrm(t,['t0-t' num2str(size(relevantData,1)-1) ' ~ Group'],'WithinDesign',wt,'WithinModel','Condition');
+                    ra=ranova(rm);
+                    aa=anova(rm);
+                    [~,tbl]=anova2(relevantData',16,'off');
+                    phoc=rm.multcompare('Condition','By','Group');
+                    phoc2=rm.multcompare('Group','By','Condition');
+                    xx=get(gca,'YLim');
+                    xx2=diff(xx);
+                    xx=mean(xx);
+                    yy=get(gca,'XLim');
+                    text(mean(yy(2))-.1*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:')
+                    text(mean(yy(2))-.1*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10,'FontWeight','bold')
+                    text(mean(yy(2))-.1*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10,'FontWeight','bold')
+                    text(mean(yy(2))-.1*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10,'FontWeight','bold')
+                    %text(mean(yy(2))-.1*diff(yy),xx-2.75*xx2/8,'2-ANOVA stats:')
+                    %text(mean(yy(2))-.1*diff(yy),xx-3.5*xx2/8,['Group: F=' num2str(tbl{3,5},2) ', p=' num2str(tbl{3,6},2)],'Fontsize',10,'FontWeight','bold')
+                    %text(mean(yy(2))-.1*diff(yy),xx-4.25*xx2/8,['Cond: F=' num2str(tbl{2,5},2) ', p=' num2str(tbl{2,6},2)],'Fontsize',10,'FontWeight','bold')
+                    %text(mean(yy(2))-.1*diff(yy),xx-5*xx2/8,['Interac.: F=' num2str(tbl{4,5},2) ', p=' num2str(tbl{4,6},2)],'Fontsize',10,'FontWeight','bold')
+                    
+                    for kk=1:length(groups) %all groups
+                        counter=0;
+                    for ii=1:M
+                        
+                            for ll=[kk+1:length(groups)]
+                                c1=strcmp(dim1Names{ii},phoc2.Condition); %Finding comparisons that relate to condition ii
+                                c2=strcmp(groups{kk}.ID{1}(1),phoc2.Group_1);
+                                c3=strcmp(groups{ll}.ID{1}(1),phoc2.Group_2);
+                                pp=phoc.pValue(c1 & c2 & c3);
+                                if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
+                                    plot(XData(ii)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2)
+                                    %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')
+                                    if pp>significanceThreshold/10
+                                        text(XData(ii)+.25,yOff+yRef*1.4,['*'],'Color','m')
+                                    else
+                                        text(XData(ii)+.25,yOff+yRef*1.4,['**'],'Color','m')
+                                    end
+                                end
+                            end
+                            for jj=[ii+1:M]
+                                if signifPlotMatrixConds(ii,jj)==1
+                                    counter=counter+1;
+                                    if medianFlag==0
+                                        [~,pp]=ttest(relevantData(ii,:),relevantData(jj,:)); %Use ttest to do paired t-test
+                                    else
+                                        [pp]=signrank(relevantData(ii,:),relevantData(jj,:)); %Use signrank to paired non-param testing
+                                    end
+                                    c1=strcmp(dim1Names{ii},phoc.Condition_1); %Finding comparisons that relate to condition ii
+                                    c2=strcmp(dim1Names{jj},phoc.Condition_2);
+                                    c3=strcmp(groups{kk}.ID{1}(1),phoc.Group);
+                                    pp=phoc.pValue(c1 & c2 & c3);
+                                    if pp<significanceThreshold%/(length(numberOfStrides)*length(condList)) 
+                                        plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),'Color',colors(mod(kk-1,length(colors))+1,:),'LineWidth',2)
+                                        if pp>significanceThreshold/10
+                                            text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['*'],'Color',colors(mod(kk-1,length(colors))+1,:))
+                                        else
+                                            text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['**'],'Color',colors(mod(kk-1,length(colors))+1,:))
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    aa=axis;
+                    axis tight
+                    bb=axis;
+                    axis([aa(1:2) bb(3) aa(4)])
                     hold off
+                    end
                 end
             end
             end

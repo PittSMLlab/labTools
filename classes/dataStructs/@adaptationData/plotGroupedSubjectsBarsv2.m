@@ -112,6 +112,7 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                             catch %old matlab versions don't allow for 'FaceAlpha' property on bars
                                 bb(j,k)=bar(xPos,relevantMean,'BarWidth',.9/((Ngroups+1)*length(N2)),'FaceColor',colors(j,:).^(1-((k-1)/length(N2))),'DisplayName',strcat(gName{j},bName{k}),'EdgeColor',colors(j,:),'LineWidth',2);%,'FaceAlpha',(k/length(N2)));
                             end
+                            bb(j,k).Tag=['Group' num2str(j) ',Cond' num2str(k)];
                             hC=errorbar(xPos,relevantMean,relevantSte,'LineStyle','none','LineWidth',2,'Color','k');
                             set(get(get(hC,'Annotation'),'LegendInformation'),'IconDisplayStyle','off');
                         elseif mode==2 %Mean/median lines +- std or 16-84 percentile range
