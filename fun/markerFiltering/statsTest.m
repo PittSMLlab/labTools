@@ -32,28 +32,28 @@ lag=1;
 clear all*
 for mode=[1:3]
 
-allX{mode}=nan(s1*s2,N);
-allV{mode}=nan(s1*s2,N);
-allXm{mode}=nan(s1*s2,N);
-allVm{mode}=nan(s1*s2,N);
+    allX{mode}=nan(s1*s2,N);
+    allV{mode}=nan(s1*s2,N);
+    allXm{mode}=nan(s1*s2,N);
+    allVm{mode}=nan(s1*s2,N);
 
-for n=1:N
-    if mode<=3
-        [nextX,meanV] = predictv2(x,n,mode,tau,lag);
-        errv=diff(Xhist(n:end,:)) -(nextX(1:end-n,:)-meanV(1:end-n,:)); 
-    else
-        [nextX,meanV] = predict(x,n,mode-3,tau,lag);
-        errv=diff(Xhist(n:end,:)) -meanV(1:end-n,:); 
+    for n=1:N
+        if mode<=3
+            [nextX,meanV] = predictv2(x,n,mode,tau,lag);
+            errv=diff(Xhist(n:end,:)) -(nextX(1:end-n,:)-meanV(1:end-n,:)); 
+        else
+            [nextX,meanV] = predict(x,n,mode-3,tau,lag);
+            errv=diff(Xhist(n:end,:)) -meanV(1:end-n,:); 
+        end
+        errx=Xhist(n+2:end,:)-nextX(2:end-n,:); 
+        sdx=nanstd(errx);
+        allX{mode}(:,n)=sdx(:);
+        allXm{mode}(:,n)=nanmean(errx);
+
+        sdv=nanstd(errv(N-n+1:end,:,:));
+        allV{mode}(:,n)=sdv(:);
+        allVm{mode}(:,n)=nanmean(errv(:,:));
     end
-    errx=Xhist(n+2:end,:)-nextX(2:end-n,:); 
-    sdx=nanstd(errx);
-    allX{mode}(:,n)=sdx(:);
-    allXm{mode}(:,n)=nanmean(errx);
-    
-    sdv=nanstd(errv(N-n+1:end,:,:));
-    allV{mode}(:,n)=sdv(:);
-    allVm{mode}(:,n)=nanmean(errv(:,:));
-end
 end
 
 %%

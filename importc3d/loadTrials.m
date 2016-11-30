@@ -58,8 +58,12 @@ for t=cell2mat(info.trialnums) %loop through each trial
                         forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
-                    case '4'%Forces/moments ending in '4' area assumed to be of handrail
+                    case '3' %Forces/moments ending in '4' area assumed to be of handrail %NIV
                         forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
+                        units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
+                        relData=[relData,analogs.(fieldList{j})];
+                    case '4' %Other forceplate, loading just in case
+                        forceLabels{end+1} = ['X',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
                     otherwise
