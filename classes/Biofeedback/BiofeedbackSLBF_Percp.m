@@ -1,4 +1,4 @@
-classdef BiofeedbackSL
+classdef BiofeedbackSLBF_Percp
     %Class BiofeedbackMD houses metadata and methods to process step length
     %biofeedback trials
     %
@@ -66,7 +66,7 @@ classdef BiofeedbackSL
     
     methods
         %constuctor
-        function this=BiofeedbackSL(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)
+        function this=BiofeedbackSLBF_Percp(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)
         
             if nargin ~= 16
 %                 disp('Error, incorrect # of input arguments provided');
@@ -215,10 +215,9 @@ classdef BiofeedbackSL
                    for z = 1:length(filename)
                        tempname = filename{z};
                        waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
-                       if strcmp(tempname(end-5:end-4),'V3') || strcmp(tempname(end-14:end-13),'V7')
+                       
+                       if isempty(strfind(tempname,'Fam'))
                            color{z} = 'blue';
-                       elseif strcmp(tempname(end-10:end-4),'rev12V1')
-                           color{z} = 'yellow';
                        else
                            color{z} = 'red';
                        end
@@ -295,8 +294,8 @@ classdef BiofeedbackSL
 %                        keyboard
                        %%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!
                        %calculate errors
-                       tamp = abs(Rgamma2(find(RHS)))'-this.Rtmtarget;
-                       tamp2 = abs(Lgamma2(find(LHS)))'-this.Ltmtarget;
+                       tamp = abs(Rgamma2(find(RHS)))';%-this.Rtmtarget;
+                       tamp2 = abs(Lgamma2(find(LHS)))';%-this.Ltmtarget;
                        
 %                        tamp(abs(tamp)>0.15)=[];%remove spurios errors
 %                        tamp2(abs(tamp2)>0.15)=[];
@@ -332,25 +331,25 @@ classdef BiofeedbackSL
                    end
                    hold on
 %                    keyboard
-                   fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0 0 0.8 0.8],[230 230 230]./256);
+                   fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))],[0 0 0.8 0.8],[230 230 230]./256);
                    
                    %add baseline walking bars
                    for b=1:2:length(base)
                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))')),0.125,'Base');
+%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))')),0.125,'Base');
                    end
                    
                    %add adaptation walking bars
                    for a=1:2:length(adapt)
-                       fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))')),0.125,'Split');
+%                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))')),0.125,'Split');
                    end
                    
                    %add washout walking bars
                    for w=1:2:length(wash)
                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))')),0.125,'Wash');
+%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))')),0.125,'Wash');
                    end
                    
                    
@@ -364,21 +363,26 @@ classdef BiofeedbackSL
                        end
                        hold on
                        scatter([1:length(rhits{z})]+h,rhits{z},75,color{z},'fill');
-                       plot([h h+length(rhits{z})],[0.0375 0.0375],'k');%tolerance lines
-                       plot([h h+length(rhits{z})],[-0.0375 -0.0375],'k');
-                       plot([h h+length(rhits{z})],[nanmean(rhits{z})+rlqr{z}/2 nanmean(rhits{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                       plot([h h+length(rhits{z})],[nanmean(rhits{z})-rlqr{z}/2 nanmean(rhits{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+                       plot([h h+length(rhits{z})],[this.Rtmtarget+0.06 this.Rtmtarget+0.06],'k','LineWidth',2);%target line
+                       plot([h h+length(rhits{z})],[this.Rtmtarget+0.06+0.0375 this.Rtmtarget+0.06+0.0375],':k','LineWidth',2);%tolerance lines
+                       plot([h h+length(rhits{z})],[this.Rtmtarget+0.06-0.0375 this.Rtmtarget+0.06-0.0375],':k','LineWidth',2);
+                       
+                       plot([h h+length(rhits{z})],[this.Rtmtarget-0.06 this.Rtmtarget-0.06],'k','LineWidth',2);%target line
+                       plot([h h+length(rhits{z})],[this.Rtmtarget-0.06+0.0375 this.Rtmtarget-0.06+0.0375],':k','LineWidth',2);%tolerance lines
+                       plot([h h+length(rhits{z})],[this.Rtmtarget-0.06-0.0375 this.Rtmtarget-0.06-0.0375],':k','LineWidth',2);
+%                        plot([h h+length(rhits{z})],[nanmean(rhits{z})+rlqr{z}/2 nanmean(rhits{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+%                        plot([h h+length(rhits{z})],[nanmean(rhits{z})-rlqr{z}/2 nanmean(rhits{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
                        h = h+length(rhits{z});
                    end
                    figure(2)
                    if this.fastleg == 'r'
                        subplot(2,1,1)
-                       title([this.subjectcode ' Step Length Error Fast Leg']);
+                       title([this.subjectcode ' Step Length Fast Leg']);
                    else
                        subplot(2,1,2)
-                       title([this.subjectcode ' Step Length Error Slow Leg']);
+                       title([this.subjectcode ' Step Length Slow Leg']);
                    end
-                   ylim([-0.15 0.15]);
+                   ylim([0 0.8]);
                    xlim([0 h+10]);
 %                    title([this.subjectcode ' Step Length Error Fast Leg']);
                    xlabel('step #');
@@ -391,25 +395,25 @@ classdef BiofeedbackSL
                        subplot(2,1,2)
                    end
                    hold on
-                   fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+                   fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0 0 0.8 0.8],[230 230 230]./256);
+                   fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0 0 0.8 0.8],[230 230 230]./256);
                    
                    %add baseline walking bars
                    for b=1:2:length(base)
                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))')),0.125,'Base');
+%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))')),0.125,'Base');
                    end
                    
                    %add adaptation walking bars
                    for a=1:2:length(adapt)
-                       fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))')),0.125,'Split');
+%                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))')),0.125,'Split');
                    end
                    
                    %add washout walking bars
                    for w=1:2:length(wash)
                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))')),0.125,'Wash');
+%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))')),0.125,'Wash');
                    end
                    
                    h = 0;
@@ -421,318 +425,323 @@ classdef BiofeedbackSL
                            subplot(2,1,2)
                        end
                        scatter([1:length(lhits{z})]+h,lhits{z},75,color{z},'fill');
-                       plot([h h+length(lhits{z})],[0.0375 0.0375],'k');%tolerance lines
-                       plot([h h+length(lhits{z})],[-0.0375 -0.0375],'k');
-                       plot([h h+length(lhits{z})],[nanmean(lhits{z})+llqr{z}/2 nanmean(lhits{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
-                       plot([h h+length(lhits{z})],[nanmean(lhits{z})-llqr{z}/2 nanmean(lhits{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+                       plot([h h+length(lhits{z})],[this.Rtmtarget+0.06 this.Rtmtarget+0.06],'k','LineWidth',2);%target line
+                       plot([h h+length(lhits{z})],[this.Rtmtarget+0.06+0.0375 this.Rtmtarget+0.06+0.0375],':k','LineWidth',2);%tolerance lines
+                       plot([h h+length(lhits{z})],[this.Rtmtarget+0.06-0.0375 this.Rtmtarget+0.06-0.0375],':k','LineWidth',2);
+                       
+                       plot([h h+length(lhits{z})],[this.Rtmtarget-0.06 this.Rtmtarget-0.06],'k','LineWidth',2);%target line
+                       plot([h h+length(lhits{z})],[this.Rtmtarget-0.06+0.0375 this.Rtmtarget-0.06+0.0375],':k','LineWidth',2);%tolerance lines
+                       plot([h h+length(lhits{z})],[this.Rtmtarget-0.06-0.0375 this.Rtmtarget-0.06-0.0375],':k','LineWidth',2);
+%                        plot([h h+length(lhits{z})],[nanmean(lhits{z})+llqr{z}/2 nanmean(lhits{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
+%                        plot([h h+length(lhits{z})],[nanmean(lhits{z})-llqr{z}/2 nanmean(lhits{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines
                        h = h+length(lhits{z});
                        %         h = h+length(lhits{z});
                    end
                    figure(2)
                    if this.fastleg == 'l'
                        subplot(2,1,1)
-                       title([this.subjectcode ' Step Length Error Fast Leg']);
+                       title([this.subjectcode ' Step Length Fast Leg']);
                    else
                        subplot(2,1,2)
-                       title([this.subjectcode ' Step Length Error Slow Leg']);
+                       title([this.subjectcode ' Step Length Slow Leg']);
                    end
-                   ylim([-0.15 0.15]);
+                   ylim([0 0.8]);
                    xlim([0 h+10]);
 %                    title([this.subjectcode ' Step Length Error Slow Leg']);
                    xlabel('step #');
                    ylabel('Error (m)');
                    
-                   
-%                     keyboard
-                   for z=1:length(rhits)
-                       temp = rhits{z};
-                       temp(abs(temp) > 0.1) = [];
-                       meanrhits1(z) = mean(temp);
-                       stdrhits1(z) = std(temp);
-%                        keyboard
-                       rscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
-%                        meanrhits2(z) = mean(temp(end-2:end));
-%                        stdrhits2(z) = std(temp(end-2:end));
-                   end
-                   for z=1:length(lhits)
-                       temp = lhits{z};
-                       temp(abs(temp) > 0.1) = [];
-                       meanlhits1(z) = mean(temp);
-                       stdlhits1(z) = std(temp);
-                       lscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
-%                        meanlhits2(z) = mean(temp(end-2:end));
-%                        stdlhits2(z) = std(temp(end-2:end));
-                   end
-                   
-                   figure(5)
-                   if this.fastleg == 'r'
-                       subplot(2,1,1)
-                   else
-                       subplot(2,1,2)
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
-                   end
-                   
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
-                   end
-                   
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
-                   end
-                   
-                   h = 1:1:length(meanrhits1);
-%                    h2 = 2:2:2*length(meanrhits2);
-                   errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);
-%                    errorbar(h2,meanrhits2,stdrhits2,'k','LineWidth',1.5);
-                   plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                   plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
-                   %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
-                   for z = 1:length(h)
-                       figure(5)
-                       if this.fastleg == 'r'
-                           subplot(2,1,1)
-                           title([this.subjectcode ' Fast Leg Errors']);
-                       else
-                           subplot(2,1,2)
-                           title([this.subjectcode ' Slow Leg Errors']);
-                       end
-                       bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
-                   end
-                   ylim([-0.15 0.15]);
-                   xlim([0 length(meanrhits1)+0.5]);
-%                    title([this.subjectcode ' Fast Leg Errors']);
-                   ylabel('Error (m)');
-                   
-                   
-                   figure(5)
-                   if this.fastleg == 'l'
-                       subplot(2,1,1)
-                   else
-                       subplot(2,1,2)
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,0.125,'Base');
-                   end
-                   
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
-                   end
-                   
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
-                   end
-                   
-                   h = 1:1:length(meanlhits1);
-%                    h2 = 2:2:2*length(meanlhits2);
-                   errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);
-%                    errorbar(h2,meanlhits2,stdlhits2,'k','LineWidth',1.5);
-                   plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
-                   plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
-                   for z = 1:length(h)
-                       figure(5)
-                       if this.fastleg == 'l'
-                           subplot(2,1,1)
-                           title([this.subjectcode ' Fast Leg Errors'])
-                       else
-                           subplot(2,1,2)
-                           title([this.subjectcode ' Slow Leg Errors'])
-                       end
-                       bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
-                   end
-                   ylim([-0.15 0.15]);
-                   xlim([0 length(meanrhits1)+0.5]);
-%                    title([this.subjectcode ' Slow Leg Errors'])
-                   ylabel('Error (m)');
-                   
-                   
-                   
-                   
-                   figure(6)%plot of mean squared errors
-                   if this.fastleg == 'r'
-                       subplot(2,1,1)
-                   else
-                       subplot(2,1,2)
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,max(meanrhits1.^2)+0.05*max(meanrhits1.^2),'Base');
-                   end
-                   
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Split');
-                   end
-                   
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Wash');
-                   end
-                   
-                   h = 1:1:length(meanrhits1);
-                   plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                    
+% keyboard
+%                    for z=1:length(rhits)
+%                        temp = rhits{z};
+%                        temp(abs(temp) > 0.1) = [];
+%                        meanrhits1(z) = mean(temp);
+%                        stdrhits1(z) = std(temp);
+% %                        keyboard
+%                        rscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
+% %                        meanrhits2(z) = mean(temp(end-2:end));
+% %                        stdrhits2(z) = std(temp(end-2:end));
+%                    end
+%                    for z=1:length(lhits)
+%                        temp = lhits{z};
+%                        temp(abs(temp) > 0.1) = [];
+%                        meanlhits1(z) = mean(temp);
+%                        stdlhits1(z) = std(temp);
+%                        lscore(z) = length(temp(abs(temp)<0.0375))/length(temp);
+% %                        meanlhits2(z) = mean(temp(end-2:end));
+% %                        stdlhits2(z) = std(temp(end-2:end));
+%                    end
+%                    
+%                    figure(5)
+%                    if this.fastleg == 'r'
+%                        subplot(2,1,1)
+%                    else
+%                        subplot(2,1,2)
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+%                    end
+%                    
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+%                    end
+%                    
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+%                    end
+%                    
+%                    h = 1:1:length(meanrhits1);
+% %                    h2 = 2:2:2*length(meanrhits2);
+%                    errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);
+% %                    errorbar(h2,meanrhits2,stdrhits2,'k','LineWidth',1.5);
+%                    plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
 %                    plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
-                   %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
-                   for z = 1:length(h)
-                       figure(6)
-                       if this.fastleg == 'r'
-                           subplot(2,1,1)
-                           title([this.subjectcode ' Fast Leg Errors']);
-                       else
-                           subplot(2,1,2)
-                           title([this.subjectcode ' Slow Leg Errors']);
-                       end
-                       bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));
-                   end
-                   ylim([0 max(meanrhits1.^2)+0.1*max(meanrhits1.^2)]);
-                   xlim([0 length(meanrhits1)+0.5]);
-                   title([this.subjectcode ' Fast Leg Errors']);
-                   ylabel('Error (m)');
-                   
-                   figure(6)
-                   if this.fastleg == 'l'
-                       subplot(2,1,1)
-                   else
-                       subplot(2,1,2)
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
-                   
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Base');
-                   end
-                   
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Split');
-                   end
-                   
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Wash');
-                   end
-                   
-                   h = 1:1:length(meanlhits1);
-                   plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+%                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
+%                    for z = 1:length(h)
+%                        figure(5)
+%                        if this.fastleg == 'r'
+%                            subplot(2,1,1)
+%                            title([this.subjectcode ' Fast Leg Errors']);
+%                        else
+%                            subplot(2,1,2)
+%                            title([this.subjectcode ' Slow Leg Errors']);
+%                        end
+%                        bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));
+%                    end
+%                    ylim([-0.15 0.15]);
+%                    xlim([0 length(meanrhits1)+0.5]);
+% %                    title([this.subjectcode ' Fast Leg Errors']);
+%                    ylabel('Error (m)');
+%                    
+%                    
+%                    figure(5)
+%                    if this.fastleg == 'l'
+%                        subplot(2,1,1)
+%                    else
+%                        subplot(2,1,2)
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,0.125,'Base');
+%                    end
+%                    
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');
+%                    end
+%                    
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');
+%                    end
+%                    
+%                    h = 1:1:length(meanlhits1);
+% %                    h2 = 2:2:2*length(meanlhits2);
+%                    errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);
+% %                    errorbar(h2,meanlhits2,stdlhits2,'k','LineWidth',1.5);
+%                    plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
 %                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
-                   for z = 1:length(h)
-                       figure(6)
-                       if this.fastleg == 'l'
-                           subplot(2,1,1)
-                           title([this.subjectcode ' Fast Leg Errors'])
-                       else
-                           subplot(2,1,2)
-                           title([this.subjectcode ' Slow Leg Errors'])
-                       end
-                       bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});
-                   end
-                   ylim([0 max(meanlhits1.^2)+0.1*max(meanlhits1.^2)]);
-                   xlim([0 length(meanrhits1)+0.5]);
-%                    title([this.subjectcode ' Slow Leg Errors'])
-                   ylabel('Error (m)');
-                   
-                   
-                   figure(7)
-                   if this.fastleg == 'r'
-                       subplot(2,1,1)
-                       title([this.subjectcode ' Fast Leg Accuracy'])
-                   else
-                       subplot(2,1,2)
-                       title([this.subjectcode ' Slow Leg Accuracy'])
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,105,'Base');
-                   end
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
-                   end
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
-                   end
-                   plot([0 length(meanrhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
-                   plot([0 length(meanrhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
-                   for z=1:length(rscore)
-                       bar(z,rscore(z)*100,0.5,'FaceColor',color{z});
-                   end
-                   ylim([0 110]);
-                   ylabel('Accuracy (%)')
-%                    title([this.subjectcode ' Fast Leg Accuracy'])
-                   
-                   if this.fastleg == 'l'
-                       subplot(2,1,1)
-                       title([this.subjectcode ' Fast Leg Accuracy'])
-                   else
-                       subplot(2,1,2)
-                       title([this.subjectcode ' Slow Leg Accuracy'])
-                   end
-                   hold on
-                   fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
-                   fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
-                   %add baseline bars
-                   for b=1:2:length(base)
-                       fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base(1:b))+0.45,105,'Base');
-                   end
-                   %add adaptation bars
-                   for a=1:2:length(adapt)
-                       fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
-                   end
-                   %add washout bars
-                   for w=1:2:length(wash)
-                       fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
-                       text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
-                   end
-                   plot([0 length(meanlhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
-                   plot([0 length(meanlhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
-                   for z=1:length(lscore)
-                       bar(z,lscore(z)*100,0.5,'FaceColor',color{z});
-                   end
-                   ylim([0 110]);
-                   ylabel('Accuracy (%)')
-%                    title([this.subjectcode ' Slow Leg Accuracy'])
+%                    for z = 1:length(h)
+%                        figure(5)
+%                        if this.fastleg == 'l'
+%                            subplot(2,1,1)
+%                            title([this.subjectcode ' Fast Leg Errors'])
+%                        else
+%                            subplot(2,1,2)
+%                            title([this.subjectcode ' Slow Leg Errors'])
+%                        end
+%                        bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});
+%                    end
+%                    ylim([-0.15 0.15]);
+%                    xlim([0 length(meanrhits1)+0.5]);
+% %                    title([this.subjectcode ' Slow Leg Errors'])
+%                    ylabel('Error (m)');
+%                    
+%                    
+%                    
+%                    
+%                    figure(6)%plot of mean squared errors
+%                    if this.fastleg == 'r'
+%                        subplot(2,1,1)
+%                    else
+%                        subplot(2,1,2)
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,max(meanrhits1.^2)+0.05*max(meanrhits1.^2),'Base');
+%                    end
+%                    
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Split');
+%                    end
+%                    
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Wash');
+%                    end
+%                    
+%                    h = 1:1:length(meanrhits1);
+%                    plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+% %                    plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+%                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]
+%                    for z = 1:length(h)
+%                        figure(6)
+%                        if this.fastleg == 'r'
+%                            subplot(2,1,1)
+%                            title([this.subjectcode ' Fast Leg Errors']);
+%                        else
+%                            subplot(2,1,2)
+%                            title([this.subjectcode ' Slow Leg Errors']);
+%                        end
+%                        bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));
+%                    end
+%                    ylim([0 max(meanrhits1.^2)+0.1*max(meanrhits1.^2)]);
+%                    xlim([0 length(meanrhits1)+0.5]);
+%                    title([this.subjectcode ' Fast Leg Errors']);
+%                    ylabel('Error (m)');
+%                    
+%                    figure(6)
+%                    if this.fastleg == 'l'
+%                        subplot(2,1,1)
+%                    else
+%                        subplot(2,1,2)
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);
+%                    
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Base');
+%                    end
+%                    
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Split');
+%                    end
+%                    
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Wash');
+%                    end
+%                    
+%                    h = 1:1:length(meanlhits1);
+%                    plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines
+% %                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);
+%                    for z = 1:length(h)
+%                        figure(6)
+%                        if this.fastleg == 'l'
+%                            subplot(2,1,1)
+%                            title([this.subjectcode ' Fast Leg Errors'])
+%                        else
+%                            subplot(2,1,2)
+%                            title([this.subjectcode ' Slow Leg Errors'])
+%                        end
+%                        bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});
+%                    end
+%                    ylim([0 max(meanlhits1.^2)+0.1*max(meanlhits1.^2)]);
+%                    xlim([0 length(meanrhits1)+0.5]);
+% %                    title([this.subjectcode ' Slow Leg Errors'])
+%                    ylabel('Error (m)');
+%                    
+%                    
+%                    figure(7)
+%                    if this.fastleg == 'r'
+%                        subplot(2,1,1)
+%                        title([this.subjectcode ' Fast Leg Accuracy'])
+%                    else
+%                        subplot(2,1,2)
+%                        title([this.subjectcode ' Slow Leg Accuracy'])
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,105,'Base');
+%                    end
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
+%                    end
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
+%                    end
+%                    plot([0 length(meanrhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
+%                    plot([0 length(meanrhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
+%                    for z=1:length(rscore)
+%                        bar(z,rscore(z)*100,0.5,'FaceColor',color{z});
+%                    end
+%                    ylim([0 110]);
+%                    ylabel('Accuracy (%)')
+% %                    title([this.subjectcode ' Fast Leg Accuracy'])
+%                    
+%                    if this.fastleg == 'l'
+%                        subplot(2,1,1)
+%                        title([this.subjectcode ' Fast Leg Accuracy'])
+%                    else
+%                        subplot(2,1,2)
+%                        title([this.subjectcode ' Slow Leg Accuracy'])
+%                    end
+%                    hold on
+%                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);
+%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);
+%                    %add baseline bars
+%                    for b=1:2:length(base)
+%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base(1:b))+0.45,105,'Base');
+%                    end
+%                    %add adaptation bars
+%                    for a=1:2:length(adapt)
+%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');
+%                    end
+%                    %add washout bars
+%                    for w=1:2:length(wash)
+%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);
+%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');
+%                    end
+%                    plot([0 length(meanlhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines
+%                    plot([0 length(meanlhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines
+%                    for z=1:length(lscore)
+%                        bar(z,lscore(z)*100,0.5,'FaceColor',color{z});
+%                    end
+%                    ylim([0 110]);
+%                    ylabel('Accuracy (%)')
+% %                    title([this.subjectcode ' Slow Leg Accuracy'])
                    
                end
             end
@@ -751,14 +760,14 @@ classdef BiofeedbackSL
                     data = cell(length(filenames),4);
                     data(:,1)=filenames;
                     
-                    for z=1:length(filenames)%autodetect if a trial was a train for evaluation
-                        tname = filenames{z};
-                        if strcmp(tname(end-5:end-4),'V3')
-                            data{z,3} = 'train';
-                        else
-                            data{z,3} = 'eval';
-                        end
-                    end
+%                     for z=1:length(filenames)%autodetect if a trial was a train for evaluation
+%                         tname = filenames{z};
+%                         if strcmp(tname(end-5:end-4),'V3')
+%                             data{z,3} = 'train';
+%                         else
+%                             data{z,3} = 'eval';
+%                         end
+%                     end
                     
                     colnames = {'Filename','#','type','category'};
                     columnformat = {'char','numeric',{'train','eval'},{'training','baseline','adaptation','washout'}};

@@ -464,28 +464,37 @@ for group=1:Ngroups
             for p=1:length(params)
                 if ~(size(params,1)>1)
                     axes(ah(p))
-                    title(params{p},'fontsize',titleFontSize)
+                    %title(params{p},'fontsize',titleFontSize)
+                    ylabel(params{p})
                 else
                     axes(ah)
                 end
                 axis tight
-                if isempty(alignEnd)
-                    line([lineX; lineX],ylim,'color','k')
-                else %When plotting data aligned to end, only put a vertical line for actual condition end
-                    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
-                end
+                %if isempty(alignEnd)
+                %    line([lineX; lineX],ylim,'color','k')
+                %else %When plotting data aligned to end, only put a vertical line for actual condition end
+                %    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
+                %end
                 xticks=lineX+diff([lineX Xstart])./2;
+                
                 %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
                 if ~isempty(alignEnd)
-                    xtl=cond;
-                    xtl(1:2:end)=strcat(xtl(1:2:end),'Early');
-                    xticks(2:2:end)=xticks(2:2:end)+25;
+                    
+                    xticks=[[0 lineX(3:2:end)];xticks(1:2:end)];
+                    xticks=xticks(:);
+                    xtl=[adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))];
+                    xtl=xtl(:);
+                    xtl(1:2:end)={''};
+                    %xtl=cond;
+                    %xtl(1:2:end)=strcat(xtl(1:2:end),'Early');
+                    %xticks(2:2:end)=xticks(2:2:end)+25;
+                    
                 else
                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
                 end
                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
-                h=refline(0,0);
-                set(h,'color','k')
+                %h=refline(0,0);
+                %set(h,'color','k')
             end            
             hold off
         end
@@ -525,3 +534,7 @@ if ~isempty(p)
     uistack(p(i),'bottom')
     end
 end
+
+%% Eliminating marker edge color
+%p=findobj(gcf,'Type','Line');
+%set(p,'MarkerEdgeColor','none')

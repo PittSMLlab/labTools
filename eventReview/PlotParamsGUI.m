@@ -576,10 +576,10 @@ switch handles.plotType
             disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' num2str(biofeedbackFlag) ')','removeBias','groups'])
         end
     case 2 % early/late bars
-        removeBiasFlag=1;
-        earlyNumber=[];
+        removeBiasFlag=get(handles.removeBiasCheck,'Value');
+        earlyNumber=[str2double(get(handles.earlyNumPts,'string')) str2double(get(handles.lateNumPts,'string'))];
         lateNumber=[];
-        exemptLast=[];
+        exemptLast=str2double(get(handles.exptLastNumPts,'string'));
         legendNames=[];
         significanceThreshold=0.01;
         adaptationData.plotGroupedSubjectsBarsv2(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)

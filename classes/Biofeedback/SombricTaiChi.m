@@ -104,12 +104,12 @@ classdef SombricTaiChi
         
         function []=AnalyzePerformance(this)
             
-            if this.fastleg == 'r'
-                colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
-            elseif this.fastleg == 'l'
+%             if this.fastleg == 'r'
 %                 colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
-                colors = {[2/255,184/255,245/255],[181/255,217/255,230/255],[14/255,201/255,52/255],[201/255,242/255,209/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
-            end
+%             elseif this.fastleg == 'l'
+% %                 colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
+%                 colors = {[2/255,184/255,245/255],[181/255,217/255,230/255],[14/255,201/255,52/255],[201/255,242/255,209/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};
+%             end
             
             [Xlat,Ysag]=this.getHits();
             [m,n]=size(Ysag);
@@ -122,8 +122,23 @@ classdef SombricTaiChi
 %             keyboard
             for z=1:length(Ysag)
                 
-                
-                
+                if strcmp(this.triallist{z,4},'Rleg Train')
+                    colors{z} = [189/255,15/255,18/255];%red
+                elseif strcmp(this.triallist{z,4},'Lleg Train')
+                    colors{z} = [189/255,15/255,18/255];%red
+                elseif strcmp(this.triallist{z,4},'Base Rleg Map')
+                    colors{z} = [48/255,32/255,158/255];%blue
+                elseif strcmp(this.triallist{z,4},'Base Lleg Map')
+                    colors{z} = [48/255,32/255,158/255];%blue
+                elseif strcmp(this.triallist{z,4},'Pre Rleg Train')
+                    colors{z} = [25/255,235/255,74/255];%green
+                elseif strcmp(this.triallist{z,4},'Pre Lleg Train')
+                    colors{z} = [25/255,235/255,74/255];%green
+                elseif strcmp(this.triallist{z,4},'Post Rleg Map')
+                    colors{z} = [9/255,109/255,143/255];%bluegrey
+                elseif strcmp(this.triallist{z,4},'Post Lleg Map')
+                    colors{z} = [9/255,109/255,143/255];%bluegrey
+                end
                 
                 if ismember('R',this.triallist{z,4})
                     
@@ -158,37 +173,34 @@ classdef SombricTaiChi
                 end
 %                 keyboard
                 
-                figure(1) %Saggital errors
+                figure(2) %Saggital errors
                 subplot(2,1,1)
                 hold on
                 scatter(h+[1:length(temps)],temps,'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
                 title('Saggital Target Errors');
                 h = h+length(temps);
-                plot([0 h],[0 0],'k');
-                plot([0 h],[0.01 0.01],'--k');
-                plot([0 h],[-0.01 -0.01],'--k');
-%                 grid on
-                ylim([-0.1 0.1]);
-                ylabel('Step Error (m)');
+                plot([h h],[-1 1],'k');
+                
                 
                 subplot(2,1,2)
                 hold on
                 scatter(h2+[1:length(templ)],templ,'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
                 title('Lateral Target Errors');
                 h2 = h2+length(templ);
-                plot([0 h2],[0 0],'k');
-                plot([0 h2],[0.01 0.01],'--k');
-                plot([0 h2],[-0.01 -0.01],'--k');
-%                 grid on
-                ylim([-0.1 0.1]);
-                ylabel('Step Error (m)');
+                plot([h2 h2],[-1 1],'k');
+%                 plot([0 h2],[0.01 0.01],'--k');
+%                 plot([0 h2],[-0.01 -0.01],'--k');
+% %                 grid on
+%                 ylim([-0.1 0.1]);
+%                 ylabel('Step Error (m)');
                 
-                figure(2)
+                figure(3)
                 subplot(2,1,1)
                 hold on
                 scatter(h3+[1:length(Ysag{z})],Ysag{z},'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
                 title('Saggital Landing Positions')
                 h3 = h3+length(Ysag{z});
+                plot([h3 h3],[-1 1],'k');
                 if ismember('L',this.triallist{z,4})
                     plot([h3-length(Ysag{z}) h3],[this.Ltarget this.Ltarget],'k');
                     plot([h3-length(Ysag{z}) h3],[this.Ltarget+0.01 this.Ltarget+0.01],'--k');
@@ -198,14 +210,14 @@ classdef SombricTaiChi
                     plot([h3-length(Ysag{z}) h3],[this.Rtarget+0.01 this.Rtarget+0.01],'--k');
                     plot([h3-length(Ysag{z}) h3],[this.Rtarget-0.01 this.Rtarget-0.01],'--k');
                 end
-                ylim([0.1 0.4]);
-                ylabel('Step Position (m)');
+
                 
                 subplot(2,1,2)
                 hold on
                 scatter(h4+[1:length(Xlat{z})],Xlat{z},'MarkerFaceColor',colors{z},'MarkerEdgeColor',colors{z});
                 title('Lateral Landing Positions')
                 h4 = h4+length(Xlat{z});
+                plot([h4 h4],[-1 1],'k');
                 if ismember('L',this.triallist{z,4})
                     plot([h4-length(Xlat{z}) h4],[this.Ltarget this.Ltarget],'k');
                     plot([h4-length(Xlat{z}) h4],[this.Ltarget+0.01 this.Ltarget+0.01],'--k');
@@ -215,12 +227,35 @@ classdef SombricTaiChi
                     plot([h4-length(Xlat{z}) h4],[this.Rtarget+0.01 this.Rtarget+0.01],'--k');
                     plot([h4-length(Xlat{z}) h4],[this.Rtarget-0.01 this.Rtarget-0.01],'--k');
                 end
-                ylim([0.1 0.4]);
-                ylabel('Step Position (m)');
+
                 
                 
                 
             end
+            
+            figure(2) %Saggital errors
+            subplot(2,1,1)
+            ylim([-0.1 0.1]);
+            ylabel('Step Error (m)');
+%             legend('Training','Map','Base Map','Pre train','Post Map');
+            plot([0 h],[0 0],'k');
+            plot([0 h],[0.01 0.01],'--k');
+            plot([0 h],[-0.01 -0.01],'--k');
+            subplot(2,1,2)
+            plot([0 h2],[0 0],'k');
+            plot([0 h2],[0.01 0.01],'--k');
+            plot([0 h2],[-0.01 -0.01],'--k');
+            ylim([-0.1 0.1]);
+            ylabel('Step Error (m)');
+            
+            figure(3)
+            subplot(2,1,1)
+            ylim([0.1 0.4]);
+            ylabel('Step Position (m)');
+            
+            subplot(2,1,2)
+            ylim([0.1 0.4]);
+            ylabel('Step Position (m)');
             
 %             keyboard
             
@@ -236,35 +271,35 @@ classdef SombricTaiChi
                 this.data = cell(length(filenames),1);
                 if iscell(filenames)
                     f = figure;
-                    data = cell(length(filenames),4);
-                    data(:,1)=filenames;
+                    data1 = cell(length(filenames),4);
+                    data1(:,1)=filenames;
                     
                     for z=1:length(filenames)%autodetect if a trial was a train for evaluation
                         tname = filenames{z};
                         if strcmp(tname(end-5:end-4),'V1')
-                            data{z,3} = 'train';
+                            data1{z,3} = 'train';
                         else
-                            data{z,3} = 'eval';
+                            data1{z,3} = 'eval';
                         end
                     end
                     %                     keyboard
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
-                    t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Pre Rleg Train','Pre Lleg Train','Post Rleg Map','Post Lleg Map'}};
+                    t=uitable(f,'Position',[10,10,375,375],'Data',data1,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
                 else
                     f = figure;
-                    data = cell(1,4);
-                    data(1,1) = filenames;
+                    data1 = cell(1,4);
+                    data1(1,1) = filenames;
                     if strcmp(filenames(end-5:end-4),'V3')
-                        data(1,3) = 'train';
+                        data1(1,3) = 'train';
                     else
-                        data(1,3) = 'eval';
+                        data1(1,3) = 'eval';
                     end
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
-                    t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Pre Rleg Train','Pre Lleg Train','Post Rleg Map','Post Lleg Map'}};
+                    t=uitable(f,'Position',[10,10,375,375],'Data',data1,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
                 end
@@ -274,22 +309,22 @@ classdef SombricTaiChi
                 this.data = cell(length(filenames),1);
                 if iscell(filenames)
                     f = figure;
-                    data = cell(length(filenames),4);
-                    data(:,1)=filenames;
-                    data(:,2:4) = this.triallist(:,2:4);
+                    data1 = cell(length(filenames),4);
+                    data1(:,1)=filenames;
+                    data1(:,2:4) = this.triallist(:,2:4);
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
-                    t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Pre Rleg Train','Pre Lleg Train','Post Rleg Map','Post Lleg Map'}};
+                    t=uitable(f,'Position',[10,10,375,375],'Data',data1,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
                 else
                     f = figure;
-                    data = cell(1,4);
-                    data(1,1) = filenames;
-                    data(1,2:4) = this.triallist(1,2:4);
+                    data1 = cell(1,4);
+                    data1(1,1) = filenames;
+                    data1(1,2:4) = this.triallist(1,2:4);
                     colnames = {'Filename','#','type','category'};
-                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Post Rleg Map','Post Lleg Map','Wash Rleg Map','Wash Lleg Map'}};
-                    t=uitable(f,'Position',[10,10,375,375],'Data',data,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
+                    columnformat = {'char','numeric',{'train','eval'},{'Rleg Train','Lleg Train','Base Rleg Map','Base Lleg Map','Pre Rleg Train','Pre Lleg Train','Post Rleg Map','Post Lleg Map'}};
+                    t=uitable(f,'Position',[10,10,375,375],'Data',data1,'ColumnName',colnames,'ColumnFormat',columnformat,'ColumnEditable',[true true true true]);
                     set(t,'celleditcallback','global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);');
                     set(t,'DeleteFcn','global ID;eval([ID ''.saveit()'']);');
                 end
@@ -319,19 +354,23 @@ classdef SombricTaiChi
 %                     tempname = filename{z};
                     waitbar((z-1)/length(filename),WB,['Processing Trial ' num2str(z)]);
                     
-                    if strcmp(this.triallist{z,4},'Rleg Train')
-                        color{z} = [189/255,15/255,18/255];%red
-                    elseif strcmp(this.triallist{z,4},'Lleg Train')
-                        color{z} = [189/255,15/255,18/255];%red
-                    elseif strcmp(this.triallist{z,4},'Base Rleg Map')
-                        color{z} = [48/255,32/255,158/255];%blue
-                    elseif strcmp(this.triallist{z,4},'Base Lleg Map')
-                        color{z} = [48/255,32/255,158/255];%blue
-                    elseif strcmp(this.triallist{z,4},'Post Rleg Map')
-                        color{z} = [9/255,109/255,143/255];%bluegrey
-                    elseif strcmp(this.triallist{z,4},'Post Lleg Map')
-                        color{z} = [9/255,109/255,143/255];%bluegrey
-                    end
+%                     if strcmp(this.triallist{z,4},'Rleg Train')
+%                         color{z} = [189/255,15/255,18/255];%red
+%                     elseif strcmp(this.triallist{z,4},'Lleg Train')
+%                         color{z} = [189/255,15/255,18/255];%red
+%                     elseif strcmp(this.triallist{z,4},'Base Rleg Map')
+%                         color{z} = [48/255,32/255,158/255];%blue
+%                     elseif strcmp(this.triallist{z,4},'Base Lleg Map')
+%                         color{z} = [48/255,32/255,158/255];%blue
+%                     elseif strcmp(this.triallist{z,4},'Pre Rleg Train')
+%                         color{z} = [25/255,235/255,74/255];%green
+%                     elseif strcmp(this.triallist{z,4},'Pre Lleg Train')
+%                         color{z} = [25/255,235/255,74/255];%green
+%                     elseif strcmp(this.triallist{z,4},'Post Rleg Map')
+%                         color{z} = [9/255,109/255,143/255];%bluegrey
+%                     elseif strcmp(this.triallist{z,4},'Post Lleg Map')
+%                         color{z} = [9/255,109/255,143/255];%bluegrey
+%                     end
                     
                     %check to see if data is already processed, it will
                     %save time...
@@ -381,18 +420,28 @@ classdef SombricTaiChi
                     if ismember('R',this.triallist{z,4})
                         X = data2(:,6);
                         Y = data2(:,8);
-                        RHS = data2(:,4);
+%                         RHS = data2(:,4);
                         phase = data2(:,10);
-                        %cleanup HS
-                        for zz=2:length(RHS)
-                            if RHS(zz)==1 && RHS(zz-1)==0
-                                RHS2(zz)=1;
-                            else
-                                RHS2(zz)=0;
+%                         target = data2(:,11);
+                        
+                        RHS = zeros(length(X),1);%not real HS, just when to sample
+                        for n = 1:length(X)-1
+                            if (phase(n)==2) && (phase(n+1)==0)
+                                RHS(n) = 1;
                             end
                         end
-                        RHS = find(RHS2);
-                        clear RHS2
+                        RHS = find(RHS);
+                        
+%                         %cleanup HS
+%                         for zz=2:length(RHS)
+%                             if RHS(zz)==1 && RHS(zz-1)==0
+%                                 RHS2(zz)=1;
+%                             else
+%                                 RHS2(zz)=0;
+%                             end
+%                         end
+%                         RHS = find(RHS2);
+%                         clear RHS2
 % keyboard
                         for zz=1:length(RHS)
                             if abs(Y(RHS(zz)))>0.1 %&& abs(X(RHS(zz)))<=0.1
@@ -424,17 +473,26 @@ classdef SombricTaiChi
                     elseif ismember('L',this.triallist{z,4})
                         X = data2(:,7);
                         Y = data2(:,9);
-                        LHS = data2(:,5);
+%                         LHS = data2(:,5);
                         phase = data2(:,10);
-                        for zz=2:length(LHS)
-                            if LHS(zz)==1 && LHS(zz-1)==0
-                                LHS2(zz)=1;
-                            else
-                                LHS2(zz)=0;
+                        
+                        LHS = zeros(length(X),1);%not real HS, just when to sample
+                        for n = 1:length(X)-1
+                            if (phase(n)==2) && (phase(n+1)==0)
+                                LHS(n) = 1;
                             end
                         end
-                        LHS = find(LHS2);
-                        clear LHS2
+                        LHS = find(LHS);
+                        
+%                         for zz=2:length(LHS)
+%                             if LHS(zz)==1 && LHS(zz-1)==0
+%                                 LHS2(zz)=1;
+%                             else
+%                                 LHS2(zz)=0;
+%                             end
+%                         end
+%                         LHS = find(LHS2);
+%                         clear LHS2
                         
                         for zz=1:length(LHS)
                             if abs(Y(LHS(zz)))>0.1 %&& abs(X(LHS(zz)))<=0.1

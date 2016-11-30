@@ -280,6 +280,43 @@ classdef groupAdaptationData
         
         %Visualization
         %Scatter
+        function [fh,dataAll,idAll]=scatter(this, params, conditions)
+            fh=figure;
+            hold on
+            colorScheme
+            colors=color_palette;
+            marker={'.','x','o','+','*','x'};
+           if length(params)>3 || length(params)<2
+               error('')
+           end
+           dataAll=[];
+               idAll=[];
+           for j=1:length(conditions)
+            for i=1:length(this.ID)
+                dd=this.adaptData{i}.getParamInCond(params,conditions{j});
+                idAll=[idAll repmat({[this.ID{i} '_' conditions{j}]},1,size(dd,1))];
+                dataAll=[dataAll;dd];
+                switch length(params)
+                    case 2
+                        pp=plot(dd(:,1),dd(:,2),marker{j},'Color',colors(i,:));
+                        xlabel(params{1})
+                        ylabel(params{2})
+                    case 3
+                        pp=plot3(dd(:,1),dd(:,2),dd(:,3),marker{j},'Color',colors(i,:));
+                        xlabel(params{1})
+                        ylabel(params{2})
+                        zlabel(params{3})
+                end
+                if j==1
+                    ppp(i)=pp;
+                end
+            end
+           %Fake plots to have in legend
+           p(j)=plot(nanmean(dd(:,1)),nanmean(dd(:,2)),marker{j},'Color',.7*ones(1,3));
+           end
+           legend([p ppp],[conditions this.ID])
+           idAll=idAll';
+        end
         
         %TimeCourses
         function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
