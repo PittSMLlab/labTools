@@ -59,7 +59,7 @@ classdef groupAdaptationData
                 %check if current subject didn't have a condition that the rest had
                 for c=1:length(conditions)
                     if ~ismember(lower(conditions(c)),lower(conds)) && ~isempty(conditions{c})
-                        disp(['Warning: ' this.ID{subs(s)} ' did not perform ' conditions{c} ' but ' strjoin(this.ID(subs(1:s-1)),', ') ' did.'])
+                        %disp(['Warning: ' this.ID{subs(s)} ' did not perform ' conditions{c} ' but ' strjoin(this.ID(subs(1:s-1)),', ') ' did.'])
                         conditions{c}='';
                     end
                 end
@@ -70,7 +70,7 @@ classdef groupAdaptationData
             allConditions = getAllConditions(this,subs);
             nonCommonConditions = setdiff(lower(allConditions),lower(conditions));
             disp(['Warning: found some non common conditions: ' ])
-            disp(nonCommonConditions)
+            disp(nonCommonConditions')
         end
         
         function conditions = getAllConditions(this,subs)
