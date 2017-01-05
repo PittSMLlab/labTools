@@ -69,7 +69,7 @@ if ~isnan(Nconds) && Nconds>0
     for c = 1:Nconds
         condNum = str2double(get(handles.(['condition',num2str(c)]),'string'));
         out.cond(c) = condNum;
-        out.conditionNames{condNum}=get(handles.(['condName',num2str(c)]),'string');
+        out.conditionNames{condNum}=strtrim(get(handles.(['condName',num2str(c)]),'string'));
         out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
         trialnums = get(handles.(['trialnum',num2str(c)]),'string');
         out.trialnums{condNum} = eval(['[',trialnums,']']);
