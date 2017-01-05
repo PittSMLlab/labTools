@@ -49,6 +49,12 @@ for itype=1:length(types)
     else
         baseCond=refConditions{itype};
     end
+    if length(baseCond)>1
+        warning('More than one base condition was provided/found. Using only the first one.')
+        disp('List of baseline conditions provided:')
+        disp(baseCond)
+        baseCond=baseCond{1};
+    end
     %Remove baseline tendencies from all itype trials   
     if ~isempty(baseCond)
         switch upper(types{itype})
