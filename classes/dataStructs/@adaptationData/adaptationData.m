@@ -200,6 +200,8 @@ classdef adaptationData
 
         end
         
+
+        
         function newThis=medianFilter(this,N)
             newThis=this;
             newThis.data=this.data.medianFilter(N);

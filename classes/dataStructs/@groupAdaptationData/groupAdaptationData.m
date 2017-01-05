@@ -36,7 +36,7 @@ classdef groupAdaptationData
         
         %% Other Functions
         
-        function conditions = getCommonConditions(this,subs)
+        function [conditions,nonCommonConditions] = getCommonConditions(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
             else
@@ -50,12 +50,12 @@ classdef groupAdaptationData
                 conds=this.adaptData{subs(s)}.metaData.conditionName;
                 conds=conds(~cellfun('isempty',conds));
                 %check if current subject had conditions other than the rest
-                for c=1:length(conds)                    
-                    if ~ismember(lower(conds(c)),lower(conditions))
-                        %Subs.(abrevGroup).conditions{end+1}=conditions{c};
-                        disp(['Warning: ' this.ID{subs(s)} ' performed ' conds{c} ', but it was not perfomred by all subjects.'])
-                    end                    
-                end
+                %for c=1:length(conds)                    
+                %    if ~ismember(lower(conds(c)),lower(conditions))
+                %        %Subs.(abrevGroup).conditions{end+1}=conditions{c};
+                %        disp(['Warning: ' this.ID{subs(s)} ' performed ' conds{c} ', but it was not performed by all subjects.'])
+                %    end                    
+                %end
                 %check if current subject didn't have a condition that the rest had
                 for c=1:length(conditions)
                     if ~ismember(lower(conditions(c)),lower(conds)) && ~isempty(conditions{c})
@@ -67,6 +67,26 @@ classdef groupAdaptationData
                 %them above, the for loop doesn't work any more)
                 conditions=conditions(~cellfun('isempty',conditions));
             end
+            allConditions = getAllConditions(this,subs);
+            nonCommonConditions = setdiff(lower(allConditions),lower(conditions));
+            disp(['Warning: found some non common conditions: ' ])
+            disp(nonCommonConditions)
+        end
+        
+        function conditions = getAllConditions(this,subs)
+            if nargin<2 || isempty(subs)
+                subs=1:length(this.ID);
+            else
+                if isa(subs,'cell')
+                    subs=find(ismember(this.ID,subs));
+                end
+            end
+            conditions={}; 
+            for s=1:length(subs)
+                conditions=[conditions lower(this.adaptData{subs(s)}.metaData.conditionName)];
+            end
+            conditions=conditions(~cellfun('isempty',conditions));
+            conditions=unique(conditions);
         end
         
         function [parameters,descriptions] = getCommonParameters(this,subs)
@@ -172,6 +192,20 @@ classdef groupAdaptationData
         function newThis=renameParams(this,oldLabels,newLabels)
            for i=1:length(this.ID)
                this.adaptData{i}=this.adaptData{i}.renameParams(oldLabels,newLabels);
+           end
+           newThis=this;
+        end
+        
+        function newThis=renameConditions(this,oldNames,newNames)
+            %Replaces names for conditions in all members of the group. 
+            %Old names is a cell array containing strings, or containing
+            %cell arrays of strings with multiple alternative spellings.
+            %New names is a cell array of strings.
+            %Only exact matches to old names are replaced, and if no exact
+            %match is found, then no replacement happens but the process
+            %continues (warning thrown, same as adaptationData method)
+            for i=1:length(this.ID)
+               this.adaptData{i}.metaData=this.adaptData{i}.metaData.replaceConditionNames(oldNames,newNames);
            end
            newThis=this;
         end
