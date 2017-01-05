@@ -45,7 +45,7 @@ for i=1:N %For each stride
             l='f';
         end
         mData=Data(:,j);
-        for k=1:length(labelSuff)
+        for k=1:length(labelSuff) %Computing each param
             relIdx=1:length(Time);
             paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
             switch labelSuff{k}
@@ -97,6 +97,10 @@ for i=1:N %For each stride
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['Integral of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
                         paramData(i,j,k)=sum(mData(relIdx));
+                    elseif strcmp(labelSuff{k}(1),'e')
+                        relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
+                        description{j,k}=['EMG ''effort'' per unit of time in muscle ' labs{j} ' from ' desc2{phaseN}];
+                        paramData(i,j,k)=sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride length
                     end
                     if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
                         paramData(i,j,k)=nan;
