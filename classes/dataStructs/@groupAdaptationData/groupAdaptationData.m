@@ -277,7 +277,7 @@ classdef groupAdaptationData
         end
         
         function [data]=getGroupedDataFromInds(this,inds,label)
-            data=cell(size(inds,1));
+            data=cell(size(inds,1),1);
             nConds=size(inds{1,1},2);
             nLabs=length(label);
             nSubs=length(this.ID);
@@ -295,7 +295,7 @@ classdef groupAdaptationData
             
             %Alt: (using the inds data, so we are sure we are actually
             %getting the same strides when calling upon any function)            
-            for j=1:length(this.adaptData) %For each sub
+            for j=1:nSubs %For each sub
                 allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
                 for i=1:length(data) %For each strideGroup
                     data{i}(:,:,:,j)=allData{i};
