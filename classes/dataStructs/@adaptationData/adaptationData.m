@@ -679,8 +679,9 @@ classdef adaptationData
             %[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
             data=this.data.getDataAsVector(labels);
             nConds=size(inds{1},2);
-            nSteps=size(inds{1},1);
+            
             for j=1:length(inds)
+                nSteps=size(inds{j},1);
                 %for i=1:nConds
                 %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
                 %end
@@ -695,7 +696,7 @@ classdef adaptationData
                     auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
                     dataPoints{j}=reshape(auxData,nConds,nSteps,length(labels));
                 else
-                    dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
+                    dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,length(labels)); 
                 end
             end
         end
