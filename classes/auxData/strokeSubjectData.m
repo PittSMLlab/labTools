@@ -35,7 +35,7 @@ classdef strokeSubjectData<subjectData
                     this.affectedSide='L';
                 end
             else
-                error('strokeSubjectData:Constructor','Argument ''affected'' needs to be either ''R'' or ''L''.')
+                %error('strokeSubjectData:Constructor','Argument ''affected'' needs to be either ''R'' or ''L''.')
             end
         end
         function this=set.strokeDate(this,strokeDate)
