@@ -679,6 +679,7 @@ classdef adaptationData
             %[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
             data=this.data.getDataAsVector(labels);
             nConds=size(inds{1},2);
+            nSteps=size(inds{1},1);
             for j=1:length(inds)
                 %for i=1:nConds
                 %    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);
@@ -686,6 +687,13 @@ classdef adaptationData
                 %This line does the same as the for loop commented above:
                 if any(isnan(inds{j}(:)))
                     error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    %A less drastic option:
+                    warning('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    inds{j}=inds{j}';
+                    auxInds=inds{j}(~isnan(inds{j}(:)));
+                    auxData=nan(numel(inds{j}),nConds);
+                    auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
+                    dataPoints{j}=reshape(auxData,nConds,nSteps,length(labels));
                 else
                     dataPoints{j}=reshape(data(inds{j}',:),nConds,size(inds{j},1),length(labels)); 
                 end
