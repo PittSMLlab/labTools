@@ -25,7 +25,7 @@ desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fa
 %% Parameter list and description (per muscle!)
 labelSuff={'max','min','iqr','avg','var','skw','kur','med','snr','bad'}; %Some stats on channel data
 labelSuff=[labelSuff strcat('p',regexp(num2str(1:6),' +','split')) strcat('s',regexp(num2str(1:12),' +','split'))];
-labelSuff=[labelSuff strcat('t',regexp(num2str(1:12),' +','split'))];
+labelSuff=[labelSuff strcat('t',regexp(num2str(1:12),' +','split')) strcat('e',regexp(num2str(1:12),' +','split'))];
 
 %%
 N=length(stridedProcEMG);
@@ -83,24 +83,24 @@ for i=1:N %For each stride
                     else
                         paramData(i,j,k)=0;
                     end
-                otherwise %Mean of muscle activity, per PHASE or SUBPHASE
+                otherwise %These are phase-dependent parameters
                     phaseN=str2double(regexp(labelSuff{k},'[0-9]+','match'));
-                    if strcmp(labelSuff{k}(1),'p')
+                    if strcmp(labelSuff{k}(1),'p') %Mean EMG per phase (6 phases).
                         relIdx=Time<=eventTimes(i,phaseN+1) & Time>=eventTimes(i,phaseN); %Computing mean for 1 of 6 phases
                         description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc{phaseN}];
                         paramData(i,j,k)=mean(mData(relIdx));
-                    elseif strcmp(labelSuff{k}(1),'s')
+                    elseif strcmp(labelSuff{k}(1),'s') %Mean EMG per phase (12 phases)
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
                         paramData(i,j,k)=mean(mData(relIdx));
-                    elseif strcmp(labelSuff{k}(1),'t')
+                    elseif strcmp(labelSuff{k}(1),'t') %Integrated EMG per phase (12 phases), this is different from 'p' because different phases have different durations
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['Integral of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
                         paramData(i,j,k)=sum(mData(relIdx));
-                    elseif strcmp(labelSuff{k}(1),'e')
+                    elseif strcmp(labelSuff{k}(1),'e') % 't' divided by STRIDE duration, so we get a measure per unit of time (closer to actual effort)
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['EMG ''effort'' per unit of time in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride length
+                        paramData(i,j,k)=sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
                     end
                     if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
                         paramData(i,j,k)=nan;
