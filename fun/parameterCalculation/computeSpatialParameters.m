@@ -383,6 +383,21 @@ for i=1:T
     end
 end
 
+singleStanceSlowAnkleSpeed=nan(T,1);
+singleStanceFastAnkleSpeed=nan(T,1);
+sAnkVel=markerData.getDataAsOTS({[s 'ANK']}).derivate;
+fAnkVel=markerData.getDataAsOTS({[f 'ANK']}).derivate;
+for i=1:T
+    if ~isnan(timeFTO(i)) && ~isnan(timeFHS(i)) %Case that the event is missing
+        sAnkPartial=sAnkVel.split(timeFTO(i),timeFHS(i)).getOrientedData();
+        singleStanceSlowAnkleSpeed(i)=prctile(sAnkPartial(:,1,2),70);
+    end
+    if ~isnan(timeSTO(i)) && ~isnan(timeSHS2(i))
+        fToePartial=fAnkVel.split(timeSTO(i),timeSHS2(i)).getOrientedData();
+        singleStanceFastAnkleSpeed(i)=prctile(fToePartial(:,1,2),70);
+    end
+end
+
 
 stanceSpeedSlow=abs(sAnkFwd(:,STO)-sAnkFwd(:,SHS))./(timeSTO-timeSHS); %Ankle relative to hip, during ipsilateral stance
 stanceSpeedFast=abs(fAnkFwd(:,FTO2)-fAnkFwd(:,FHS))./(timeFTO2-timeFHS); %Ankle relative to hip, during ipsilateral stance
