@@ -1,5 +1,6 @@
 function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)
 %%
+
 timeSHS=strideEvents.tSHS;
 timeFTO=strideEvents.tFTO;
 timeFHS=strideEvents.tFHS;
@@ -90,8 +91,8 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'stepTimeErrorS',           'Difference between stepTimeContributionNorm2 and stepTimeIdealS';...
     'spatialErrorS',            'Difference between spatialContributionNorm2 and spatialIdealS';...
     'equivalentSpeed',          'Relative speed of hip to feet, ';...
-    'singleStanceSpeedSlowAbs',    'Absolute speed of slow toe during contralateral swing';...
-    'singleStanceSpeedFastAbs',    'Absolute speed of fast toe during contralateral swing';...
+    'singleStanceSpeedSlowAbs',    'Absolute speed of slow ankle during contralateral swing';...
+    'singleStanceSpeedFastAbs',    'Absolute speed of fast ankle during contralateral swing';...
     'stepSpeedSlow',           'Ankle relative to hip, from iHS to cHS';...
     'stepSpeedFast',           'Ankle relative to hip, from iHS to cHS';...
     'stanceSpeedSlow',          'Ankle relative to hip, during ipsilateral stance';...
@@ -379,21 +380,6 @@ for i=1:T
     if ~isnan(timeSTO(i)) && ~isnan(timeSHS2(i))
         fToePartial=fToeAbsVel.split(timeSTO(i),timeSHS2(i)).getOrientedData();
         singleStanceSpeedFastAbs(i)=prctile(fToePartial(:,1,2),70);
-    end
-end
-
-singleStanceSlowAnkleSpeed=nan(T,1);
-singleStanceFastAnkleSpeed=nan(T,1);
-sAnkVel=markerData.getDataAsOTS({[s 'ANK']}).derivate;
-fAnkVel=markerData.getDataAsOTS({[f 'ANK']}).derivate;
-for i=1:T
-    if ~isnan(timeFTO(i)) && ~isnan(timeFHS(i)) %Case that the event is missing
-        sAnkPartial=sAnkVel.split(timeFTO(i),timeFHS(i)).getOrientedData();
-        singleStanceSlowAnkleSpeed(i)=prctile(sAnkPartial(:,1,2),70);
-    end
-    if ~isnan(timeSTO(i)) && ~isnan(timeSHS2(i))
-        fToePartial=fAnkVel.split(timeSTO(i),timeSHS2(i)).getOrientedData();
-        singleStanceFastAnkleSpeed(i)=prctile(fToePartial(:,1,2),70);
     end
 end
 
