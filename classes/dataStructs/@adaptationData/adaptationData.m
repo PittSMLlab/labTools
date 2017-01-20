@@ -561,108 +561,109 @@ classdef adaptationData
             figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag);
         end
          %Dulce: This functions has its own scrip 
-         function figHandle=scatterPlot(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
+%         [figHandle]=scatterPlotLab(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
+%        
+%         
            %Plots up to 3 parameters as coordinates in a single cartesian axes system
-           markerList={'x','o','.','+','*','s','v','^','d'};
-           colorScheme
-           if nargin<9 || isempty(addID)
-              addID=0; 
-           end
-           if nargin<8 || isempty(removeBias)
-               removeBias=0;
-           end
-           if nargin<4 || isempty(figHandle)
-              figHandle=figure; 
-           else
-               figure(figHandle)
-           end
-           if nargin<7 || isempty(trajectoryColor)
-               trajectoryColor=[0,0,0]; %Black
-           end
-           if nargin<5 || isempty(marker)
-               marker=markerList{randi(length(markerList),1)};
-           end
-           if nargin<3 || isempty(conditionIdxs)
-               conditionIdxs=1:length(this.metaData.conditionName);
-           end
-           aux=cell2mat(colorConds');
-           set(gca,'ColorOrder',aux(1:length(conditionIdxs),:));
-           hold on
-           if length(labels)>3
-               error('adaptationData:scatterPlot','Cannot plot more than 3 parameters at a time')
-           end
-           markerFaceColors={'r','b',[1,.8,0],'g','y','w','c','m','k'};
-           if length(labels)==3
-               last=[];
-               for c=1:length(conditionIdxs)
-                   if removeBias==1
-                       this=this.removeBias;
-                   end
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
-                    if nargin>5 && ~isempty(binSize) && binSize>1
-                        %aux2=conv2(double(~isnan(data)),ones(binSize,1),'same');
-                        %data(isnan(data(:)))=0; %Substituting NaNs
-                        %data2=conv2(data,ones(binSize,1),'same')./aux2; %Moving avg.
-                        %data=data2(1:binSize:end,:);    %Plotting only one point every bin_size, so each point plotted is independent of others
-                        for i=1:size(data,2)
-                            data(:,i)=smooth(data(:,i),binSize,'rlowess');
-                        end
-                    end
-                    if ~isempty(binSize) && binSize~=0
-                        hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
-                        uistack(hh(c),'bottom')
-                    end
-                    if ~isempty(last)
-                            %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        %h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
-                        h=plot3(data(:,1),data(:,2),data(:,3),'Color',trajectoryColor.^(c/length(conditionIdxs)),'LineWidth',1);
-                        uistack(h,'bottom')
-                        plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1},'Color',trajectoryColor)
-                    else
-                       if addID==1
-                            %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                            hhh=text([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],this.subData.ID);
-                            set(hhh,'LineWidth',1,'FontSize',14);
-                       end
-                    end
-                    last=nanmedian(data,1);
-               end
-              xlabel(labels{1})
-              ylabel(labels{2})
-              zlabel(labels{3})
-           elseif length(labels)==2
-               last=[];
-               for c=1:length(conditionIdxs)
-                   if removeBias==1
-                       this=this.removeBias;
-                   end
-                    [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
-                    if nargin>5 && ~isempty(binSize) && binSize>1
-                        data2=conv2(data,ones(binSize,1)/binSize);
-                        data=data2(1:binSize:end,:);
-                    end
-                    cc=aux(mod(c,size(aux,1))+1,:);
-                    if nargin>5 && ~isempty(binSize) && binSize==0
-                        hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
-                        uistack(hh(c),'bottom')
-                    end
-                    if ~isempty(last)
-                        %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
-                        h=plot([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
-                        uistack(h,'bottom')
-                        plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1})
-                    end
-                    last=nanmedian(data,1);
-               end
-               xlabel(labels{1})
-               ylabel(labels{2})
-           end
-           if exist('hh','var') && ~isempty(hh)
-                legend(hh,this.metaData.conditionName{conditionIdxs})
-           end
-           hold off     
-        end
-
+%            markerList={'x','o','.','+','*','s','v','^','d'};
+%            colorScheme
+%            if nargin<9 || isempty(addID)
+%               addID=0; 
+%            end
+%            if nargin<8 || isempty(removeBias)
+%                removeBias=0;
+%            end
+%            if nargin<4 || isempty(figHandle)
+%               figHandle=figure; 
+%            else
+%                figure(figHandle)
+%            end
+%            if nargin<7 || isempty(trajectoryColor)
+%                trajectoryColor=[0,0,0]; %Black
+%            end
+%            if nargin<5 || isempty(marker)
+%                marker=markerList{randi(length(markerList),1)};
+%            end
+%            if nargin<3 || isempty(conditionIdxs)
+%                conditionIdxs=1:length(this.metaData.conditionName);
+%            end
+%            aux=cell2mat(colorConds');
+%            set(gca,'ColorOrder',aux(1:length(conditionIdxs),:));
+%            hold on
+%            if length(labels)>3
+%                error('adaptationData:scatterPlot','Cannot plot more than 3 parameters at a time')
+%            end
+%            markerFaceColors={'r','b',[1,.8,0],'g','y','w','c','m','k'};
+%            if length(labels)==3
+%                last=[];
+%                for c=1:length(conditionIdxs)
+%                    if removeBias==1
+%                        this=this.removeBias;
+%                    end
+%                     [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+%                     if nargin>5 && ~isempty(binSize) && binSize>1
+%                         %aux2=conv2(double(~isnan(data)),ones(binSize,1),'same');
+%                         %data(isnan(data(:)))=0; %Substituting NaNs
+%                         %data2=conv2(data,ones(binSize,1),'same')./aux2; %Moving avg.
+%                         %data=data2(1:binSize:end,:);    %Plotting only one point every bin_size, so each point plotted is independent of others
+%                         for i=1:size(data,2)
+%                             data(:,i)=smooth(data(:,i),binSize,'rlowess');
+%                         end
+%                     end
+%                     if ~isempty(binSize) && binSize~=0
+%                         hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,'LineWidth',1,'Color',aux(mod(c,size(aux,1))+1,:));
+%                         uistack(hh(c),'bottom')
+%                     end
+%                     if ~isempty(last)
+%                             %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+%                         %h=plot3([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],[last(3) nanmedian(data(:,3))],'Color',trajectoryColor,'LineWidth',2);
+%                         h=plot3(data(:,1),data(:,2),data(:,3),'Color',trajectoryColor.^(c/length(conditionIdxs)),'LineWidth',1);
+%                         uistack(h,'bottom')
+%                         plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],'o','MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1},'Color',trajectoryColor)
+%                     else
+%                        if addID==1
+%                             %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+%                             hhh=text([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],this.subData.ID);
+%                             set(hhh,'LineWidth',1,'FontSize',14);
+%                        end
+%                     end
+%                     last=nanmedian(data,1);
+%                end
+%               xlabel(labels{1})
+%               ylabel(labels{2})
+%               zlabel(labels{3})
+%            elseif length(labels)==2
+%                last=[];
+%                for c=1:length(conditionIdxs)
+%                    if removeBias==1
+%                        this=this.removeBias;
+%                    end
+%                     [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+%                     if nargin>5 && ~isempty(binSize) && binSize>1
+%                         data2=conv2(data,ones(binSize,1)/binSize);
+%                         data=data2(1:binSize:end,:);
+%                     end
+%                     cc=aux(mod(c,size(aux,1))+1,:);
+%                     if nargin>5 && ~isempty(binSize) && binSize==0
+%                         hh(c)=plot(data(:,1),data(:,2),marker,'LineWidth',1,'Color',cc);
+%                         uistack(hh(c),'bottom')
+%                     end
+%                     if ~isempty(last)
+%                         %annotation('textarrow',[last(1) mean(data(:,1))],[last(2) mean(data(:,2))],'String',this.subData.ID)
+%                         h=plot([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],'Color',trajectoryColor,'LineWidth',2);
+%                         uistack(h,'bottom')
+%                         plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],'o','Color',trajectoryColor,'MarkerFaceColor',markerFaceColors{mod(c,length(markerFaceColors))+1})
+%                     end
+%                     last=nanmedian(data,1);
+%                end
+%                xlabel(labels{1})
+%                ylabel(labels{2})
+%            end
+%            if exist('hh','var') && ~isempty(hh)
+%                 legend(hh,this.metaData.conditionName{conditionIdxs})
+%            end
+%            hold off     
+%         end
         
         [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
         
@@ -816,60 +817,60 @@ classdef adaptationData
             end
         end
           
-        function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
-            
-            if isa(adaptDataList,'cell')
-                if ~isa(adaptDataList{1},'cell')
-                    adaptDataList={adaptDataList};
-                end
-            elseif isa(adaptDataList,'char')
-                adaptDataList={{adaptDataList}};
-            end
-            Ngroups=length(adaptDataList);
-            
-            if nargin<7 || isempty(removeBias)
-                removeBias=0;
-            end
-            if nargin<5 || isempty(figHandle)
-                figHandle=figure;
-            else
-                figure(figHandle);
-                hold on
-            end
-            markerList={'x','o','.','+','*','s','v','^','d'};
-            if nargin<3 || isempty(conditionIdxs)
-                conditionIdxs=[];
-            end
-            if nargin<4 || isempty(binSize)
-                binSize=[];
-            end
-            for g=1:Ngroups
-                for i=1:length(adaptDataList{g})
-                    r=(i-1)/(length(adaptDataList{g})-1);
-                    if nargin<6 || isempty(trajColors)
-                        trajColor=[1,0,0] + r*[-1,0,1];
-                    elseif iscell(trajColors)
-                        trajColor=trajColors{i};
-                    elseif size(trajColors,2)==3
-                        trajColor=trajColors(mod(i,size(trajColors,1))+1,:);
-                    else
-                        warning('Could not interpret trajecColors input')
-                        trajColor='k';
-                    end
-                    this=adaptDataList{g}{i};
-                    fieldList=fields(this);
-                    a=this.(fieldList{1});
-                    if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different
-                        conditionIdxs1=getConditionIdxsFromName(a,conditionIdxs);
-                    else
-                        conditionIdxs1=conditionIdxs;
-                    end
-                    figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);
-                       figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList,binSize,[],removeBias,1);
-                end
-            end
-            
-        end
+%         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
+%             
+%             if isa(adaptDataList,'cell')
+%                 if ~isa(adaptDataList{1},'cell')
+%                     adaptDataList={adaptDataList};
+%                 end
+%             elseif isa(adaptDataList,'char')
+%                 adaptDataList={{adaptDataList}};
+%             end
+%             Ngroups=length(adaptDataList);
+%             
+%             if nargin<7 || isempty(removeBias)
+%                 removeBias=0;
+%             end
+%             if nargin<5 || isempty(figHandle)
+%                 figHandle=figure;
+%             else
+%                 figure(figHandle);
+%                 hold on
+%             end
+%             markerList={'x','o','.','+','*','s','v','^','d'};
+%             if nargin<3 || isempty(conditionIdxs)
+%                 conditionIdxs=[];
+%             end
+%             if nargin<4 || isempty(binSize)
+%                 binSize=[];
+%             end
+%             for g=1:Ngroups
+%                 for i=1:length(adaptDataList{g})
+%                     r=(i-1)/(length(adaptDataList{g})-1);
+%                     if nargin<6 || isempty(trajColors)
+%                         trajColor=[1,0,0] + r*[-1,0,1];
+%                     elseif iscell(trajColors)
+%                         trajColor=trajColors{i};
+%                     elseif size(trajColors,2)==3
+%                         trajColor=trajColors(mod(i,size(trajColors,1))+1,:);
+%                     else
+%                         warning('Could not interpret trajecColors input')
+%                         trajColor='k';
+%                     end
+%                     this=adaptDataList{g}{i};
+%                     fieldList=fields(this);
+%                     a=this.(fieldList{1});
+%                     if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different
+%                         conditionIdxs1=getConditionIdxsFromName(a,conditionIdxs);
+%                     else
+%                         conditionIdxs1=conditionIdxs;
+%                     end
+%                     figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);
+%                        figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList,binSize,[],removeBias,1);
+%                 end
+%             end
+%             
+%         end
         
         [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
     end %static methods

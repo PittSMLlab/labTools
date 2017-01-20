@@ -482,11 +482,11 @@ for group=1:Ngroups
                     axes(ah)
                 end
                 axis tight
-                if isempty(alignEnd)
-                   line([lineX; lineX],ylim,'color','k')
-                else %When plotting data aligned to end, only put a vertical line for actual condition end
-                   line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
-                end
+                %if isempty(alignEnd)
+                %    line([lineX; lineX],ylim,'color','k')
+                %else %When plotting data aligned to end, only put a vertical line for actual condition end
+                %    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
+                %end
                 xticks=lineX+diff([lineX Xstart])./2;
                 
                 %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
