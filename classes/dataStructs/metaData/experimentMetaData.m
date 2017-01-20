@@ -206,7 +206,8 @@ classdef experimentMetaData
                     conditionIdxs(i)=condIdx;
                 else
                     if ~ignoreMissingNamesFlag
-                        error(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, stopping.'])
+%                         error(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, stopping.'])
+                        warning(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, ignoring.'])
                     else
                         warning(['Looking for conditions named ''' cell2mat(strcat(condName,',')) '''but found no matches, ignoring.'])
                     end
