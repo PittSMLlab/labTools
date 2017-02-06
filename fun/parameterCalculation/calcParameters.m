@@ -130,15 +130,25 @@ if ~isempty(trialData.procEMGData)
     rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
     out=cat(out,rawEMG);
 end
-
 %Force
 if ~isempty(trialData.GRFData)
-    [force] = computeForceParameters(strideEvents,trialData.GRFData,s);
-%     keyboard
+    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
+
     if ~isempty(force.stridesTrial)
         out=cat(out,force);
     end
+    
+    out=cat(out,force);%cjs
 end
+
+%%Force
+%if ~isempty(trialData.GRFData)
+%    [force] = computeForceParameters(strideEvents,trialData.GRFData,s);
+%%     keyboard
+%    if ~isempty(force.stridesTrial)
+%        out=cat(out,force);
+%    end
+%end
 
 %% Compute an updated bad/good flag based on computed parameters & finding outliers
 badStart=bad; %make a copy to compare at the end
