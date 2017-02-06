@@ -1,4 +1,5 @@
-function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
+function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
+%function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
 % %UNTITLED4 Summary of this function goes here
 % %   Detailed explanation goes here
 % [GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
