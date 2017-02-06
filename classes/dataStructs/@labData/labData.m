@@ -184,6 +184,25 @@ classdef labData
             beltSp=this.getPartialData('beltSpeedReadData',side);
         end
         
+        function COPData=computeCOP(this)
+            COPData=COPCalculator(this.GRFData);
+        end
+        
+        function COMData=computeCOM(this)
+            [COMData] = COMCalculator(this.markerData);
+        end
+        
+        function momentData=computeTorques(this,subjectWeight)
+            if nargin<2 || isempty(subjectWeight)
+                warning('Subject weight not given, estimating from GRFs. This will fail miserably if z-axis force is not representative of weight.')
+                subjectWeight=estimateSubjectBodyWeight(this);
+            end
+           [ momentData,~,~ ] = TorqueCalculator(this, subjectWeight); 
+        end
+        
+        function bodyWeight=estimateSubjectBodyWeight(this)
+            bodyWeight=-nanmean(sum(this.GRFData.getDataAsVector({'LFz','RFz'}),2))/9.8; %Taking forces in z-axis and averaging to estimate subject weight
+        end
         
         % Process data method
         function processedData=process(this,subData,eventClass)
