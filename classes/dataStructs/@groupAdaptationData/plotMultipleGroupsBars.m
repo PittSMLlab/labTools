@@ -200,29 +200,30 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                     rm = fitrm(t,['t0-t' num2str(size(relevantData,1)-1) ' ~ Group'],'WithinDesign',wt,'WithinModel','Condition');
                     ra=ranova(rm);
                     aa=anova(rm);
-                    [~,tbl]=anova2(relevantData',16,'off');
+                    %[~,tbl]=anova2(relevantData',size(allData.group{1},4),'off'); %This fails for imbalanced groups
                     phoc=rm.multcompare('Condition','By','Group','ComparisonType','lsd'); %Unpaired t-tests; this is NOT fine, conditions are naturally paired
                     phoc2=rm.multcompare('Group','By','Condition','ComparisonType','lsd'); %Unpaired t-tests; this is fine
                     xx=get(gca,'YLim');
                     xx2=diff(xx);
                     xx=mean(xx);
                     yy=get(gca,'XLim');
-                    text(mean(yy(2))-.05*diff(yy),xx+1.75*xx2/8,'Mauchly:','FontWeight','bold')
+                    yk=-.01;
+                    text(mean(yy(2))-yk*diff(yy),xx+1.75*xx2/8,'Mauchly:','FontWeight','bold')
                     if rm.mauchly.pValue>.05
-                        text(mean(yy(2))-.05*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)])
+                        text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)])
                     else
-                        text(mean(yy(2))-.05*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)],'Color','b')
+                        text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)],'Color','b')
                     end
-                    text(mean(yy(2))-.05*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:','FontWeight','bold')
-                    text(mean(yy(2))-.05*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10)
+                    text(mean(yy(2))-yk*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:','FontWeight','bold')
+                    text(mean(yy(2))-yk*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10)
                     if rm.mauchly.pValue>.05
-                        text(mean(yy(2))-.05*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10)
-                        text(mean(yy(2))-.05*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10)
+                        text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10)
+                        text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10)
                     else
-                        text(mean(yy(2))-.05*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', pGG=' num2str(ra.pValueGG(1),2)],'Fontsize',10,'Color','b')
-                        text(mean(yy(2))-.05*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', pGG=' num2str(ra.pValueGG(2),2)],'Fontsize',10,'Color','b')
+                        text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', pGG=' num2str(ra.pValueGG(1),2)],'Fontsize',10,'Color','b')
+                        text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', pGG=' num2str(ra.pValueGG(2),2)],'Fontsize',10,'Color','b')
                     end
-                    text(mean(yy(2))-.05*diff(yy),xx-2.75*xx2/8,['Post-hoc (unpr.):'],'Fontsize',10,'FontWeight','bold')
+                    text(mean(yy(2))-yk*diff(yy),xx-2.75*xx2/8,['Post-hoc (unpr.):'],'Fontsize',10,'FontWeight','bold')
                     text(mean(yy(2)),xx-3.5*xx2/8,['* p<.05'],'Fontsize',10)
                     text(mean(yy(2)),xx-4.25*xx2/8,['** p<Bonferroni'],'Fontsize',10)
                     %text(mean(yy(2))-.1*diff(yy),xx-2.75*xx2/8,'2-ANOVA stats:')
