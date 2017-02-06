@@ -5,68 +5,13 @@ or=GRFData.orientation;
 GRFData=GRFData.medianFilter(3);
 GRFData=GRFData.lowPassFilter(25);
 
-
-
 %% Define the force data
-%---------------------------------------------------------
-%PABLO, new code:
 labs={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz'};
 aux=GRFData.getDataAsVector(labs);
 for i=1:length(labs)
     eval([labs{i} '=aux(:,i);']);
 end
 clear aux
-%---------------------------------------------------
-%PABLO, commented out:
-% if strcmp(in.GRFData.labels{1,1},'LFx')==1
-%     LFx=in.GRFData.Data(:,1);
-%     LFy=in.GRFData.Data(:,2);
-%     LFz=in.GRFData.Data(:,3);
-%     LMx=in.GRFData.Data(:,4);
-%     LMy=in.GRFData.Data(:,5);
-%     LMz=in.GRFData.Data(:,6);
-%     RFx=in.GRFData.Data(:,7);
-%     RFy=in.GRFData.Data(:,8);
-%     RFz=in.GRFData.Data(:,9);
-%     RMx=in.GRFData.Data(:,10);
-%     RMy=in.GRFData.Data(:,11);
-%     RMz=in.GRFData.Data(:,12);
-% elseif strcmp(in.GRFData.labels{1,1},'RFx')==1
-%     LFx=in.GRFData.Data(:,7);
-%     LFy=in.GRFData.Data(:,8);
-%     LFz=in.GRFData.Data(:,9);
-%     LMx=in.GRFData.Data(:,10);
-%     LMy=in.GRFData.Data(:,11);
-%     LMz=in.GRFData.Data(:,12);
-%     RFx=in.GRFData.Data(:,1);
-%     RFy=in.GRFData.Data(:,2);
-%     RFz=in.GRFData.Data(:,3);
-%     RMx=in.GRFData.Data(:,4);
-%     RMy=in.GRFData.Data(:,5);
-%     RMz=in.GRFData.Data(:,6);
-% end
-%-------------------------------------------------
-
-%---------------------------------
-%PABLO, commented out (I don't think the events should be needed for any of these computations):
-
-% TheEvents=events.Data;
-% SHS=find(TheEvents(:,1)==1);
-% FHS=find(TheEvents(:,2)==1);
-% STO=find(TheEvents(:,3)==1);
-% FTO=find(TheEvents(:,4)==1);
-% Cuts out all events before the first SHS so that it is always the first
-% event
-% while FHS(1)<SHS(1)
-%     FHS(1)=[];
-% end
-% while STO(1)<SHS(1)
-%     STO(1)=[];
-% end
-% while FTO(1)<SHS(1)
-%     FTO(1)=[];
-% end
-% -----------------------------------
 
 % Define the Calibration Matrices that were experimentally calculated based
 %on Dr. Collins' method
@@ -90,57 +35,6 @@ GRFzR=-1*NewRightForces(3,:);
 GRMxR=-1*NewRightForces(4,:);
 GRMyR=-1*NewRightForces(5,:);
 
-
-% Set all moment and some force data equal to zero when the foot is not
-% on the force plate. Small fluctuations in the data here cause the
-% moment data to increase rapidly.
-
-%---------------------------------------------
-%PABLO: Commented out. We need to come up with a more robust way to force
-%data to 0 during swing. May be threshold the forces
-
-% if DomLeg==1
-%     for e=1:length(SHS)-2
-%         stride_start=STO(e);
-%         stride_end=SHS(e+1);
-%         GRMxL(stride_end:stride_start)=0;
-%         GRMyL(stride_end:stride_start)=0;
-%         GRFxL(stride_end:stride_start)=0;
-%         GRFyL(stride_end:stride_start)=0;
-%         GRFzL(stride_end:stride_start)=0;
-%     end
-%     for u=1:length(FHS)-2
-%         stride_start=FTO(u);
-%         stride_end=FHS(u);
-%         GRMxR(stride_end:stride_start)=0;
-%         GRMyR(stride_end:stride_start)=0;
-%         GRFxR(stride_end:stride_start)=0;
-%         GRFyR(stride_end:stride_start)=0;
-%         GRFzR(stride_end:stride_start)=0;
-%     end
-% elseif DomLeg==0
-%     for e=1:length(SHS)-2
-%         stride_start=STO(e);
-%         stride_end=SHS(e+1);
-%         GRMxR(stride_end:stride_start)=0;
-%         GRMyR(stride_end:stride_start)=0;
-%         GRFxR(stride_end:stride_start)=0;
-%         GRFyR(stride_end:stride_start)=0;
-%         GRFzR(stride_end:stride_start)=0;
-%     end
-%     for u=1:length(FHS)-2
-%         stride_start=FTO(u);
-%         stride_end=FHS(u);
-%         GRMxL(stride_end:stride_start)=0;
-%         GRMyL(stride_end:stride_start)=0;
-%         GRFxL(stride_end:stride_start)=0;
-%         GRFyL(stride_end:stride_start)=0;
-%         GRFzL(stride_end:stride_start)=0;
-%     end
-% end
-%-----------------------------------------------------
-
-
 % Apply filters to the Force data collected. Data collected prior to
 % Summer 2014 is very noisy due to the lack of a true ground and needs
 % a heavy duty filter. Should not drastically affect other data.
@@ -152,6 +46,7 @@ GRFzL = filtfilthd(TheDesign,GRFzL');
 GRFxR = filtfilthd(TheDesign,GRFxR');
 GRFyR = filtfilthd(TheDesign,GRFyR');
 GRFzR = filtfilthd(TheDesign,GRFzR');
+
 % Apply a filter to the moment data collected as well.
 [Bmom, Amom]=butter(4,10/(1000/2));
 GRMxL=filtfilt(Bmom, Amom, GRMxL)';
@@ -159,60 +54,12 @@ GRMyL=filtfilt(Bmom, Amom, GRMyL)';
 GRMxR=filtfilt(Bmom, Amom, GRMxR)';
 GRMyR=filtfilt(Bmom, Amom, GRMyR)';
 
-
-% Set all moment and some force data equal to zero when the foot is not
-% on the force plate. The filter can cause there to be non-zero data
-% when the foot is not on the forceplate.
-
-%-------------------------------------------
-%PABLO: Commented out. Once again, need a more robust way to do this.
-
-% if DomLeg==1
-%     for e=1:length(SHS)-2
-%         stride_start=STO(e);
-%         stride_end=SHS(e+1);
-%         GRMxL(stride_end:stride_start)=0;
-%         GRMyL(stride_end:stride_start)=0;
-%         GRFxL(stride_end:stride_start)=0;
-%         GRFyL(stride_end:stride_start)=0;
-%         GRFzL(stride_end:stride_start)=0;
-%     end
-%     for u=1:length(FHS)-2
-%         stride_start=FTO(u);
-%         stride_end=FHS(u);
-%         GRMxR(stride_end:stride_start)=0;
-%         GRMyR(stride_end:stride_start)=0;
-%         GRFxR(stride_end:stride_start)=0;
-%         GRFyR(stride_end:stride_start)=0;
-%         GRFzR(stride_end:stride_start)=0;
-%     end
-% elseif DomLeg==0
-%     for e=1:length(SHS)-2
-%         stride_start=STO(e);
-%         stride_end=SHS(e+1);
-%         GRMxR(stride_end:stride_start)=0;
-%         GRMyR(stride_end:stride_start)=0;
-%         GRFxR(stride_end:stride_start)=0;
-%         GRFyR(stride_end:stride_start)=0;
-%         GRFzR(stride_end:stride_start)=0;
-%     end
-%     for u=1:length(FHS)-2
-%         stride_start=FTO(u);
-%         stride_end=FHS(u);
-%         GRMxL(stride_end:stride_start)=0;
-%         GRMyL(stride_end:stride_start)=0;
-%         GRFxL(stride_end:stride_start)=0;
-%         GRFyL(stride_end:stride_start)=0;
-%         GRFzL(stride_end:stride_start)=0;
-%     end
-% end
-%-----------------------------------------------------
-
 % Calculate the center of pressure for the data.
 COPxL=[(((-.005.*GRFxL-GRMyL./1000)./GRFzL))]*1000;%millimeters
 COPyL=[(((-.005.*GRFyL+GRMxL./1000)./GRFzL))]*1000;
 COPxR=[(((-.005.*-1.*GRFxR+GRMyR./1000)./GRFzR))]*1000;
 COPyR=[(((-.005.*GRFyR+GRMxR./1000)./GRFzR))]*1000;
+
 % Transform the center of pressure data from the local treadmill
 % coordinate system to the global vicon coordinate system.
 %These are now loaded from .mat file:
@@ -228,51 +75,8 @@ for i=1:length(COPxR)
     NewCOPxR(i)=NewRightCOP(2);
     NewCOPyR(i)=NewRightCOP(3);
 end
-% Filter the center of pressure data. This is difficult because the
-% nans cause the filters to do strange things. Therefore they are set
-% to the average of the previous five data points, then a filter is
-% applied and then the NaN's are placed back into the center of
-% pressure data.
 
-%------------------------------------------------
-% PABLO Commented OUT
-% xL=isnan(NewCOPxL);
-% xR=isnan(NewCOPxR);
-% yL=isnan(NewCOPyL);
-% yR=isnan(NewCOPyR);
-% for i=1:length(xL)-25
-%     % Setting the NaN's to the mean of the data
-%     if xL(i)==1
-%         if xL(i+25)==1
-%             NewCOPxL(i)=mean(NewCOPxL(i-6:i-1));
-%         else
-%             NewCOPxL(i)=NewCOPxL(i+25);
-%         end
-%     end
-%     if xR(i)==1
-%         if xR(i+25)==1
-%             NewCOPxR(i)=mean(NewCOPxR(i-6:i-1));
-%         else
-%             NewCOPxR(i)=NewCOPxR(i+25);
-%         end
-%     end
-%     if yL(i)==1
-%         if yL(i+25)==1
-%             NewCOPyL(i)=mean(NewCOPyL(i-6:i-1));
-%         else
-%             NewCOPyL(i)=NewCOPyL(i+25);
-%         end
-%     end
-%     if yR(i)==1
-%         if yR(i+25)
-%             NewCOPyR(i)=mean(NewCOPyR(i-6:i-1));
-%         else
-%             NewCOPyR(i)=NewCOPyR(i+25);
-%         end
-%     end
-% end
-%---------------------------------------------
-% PABLO, new code to substitute NaNs, by doing a linear interpolation:
+% substitute NaNs, by doing a linear interpolation:
 ll={'NewCOPxL','NewCOPxR','NewCOPyL','NewCOPyR'};
 for i=1:length(ll)
     eval(['aux=' ll{i} ';']);
@@ -283,24 +87,6 @@ for i=1:length(ll)
         eval([ll{i} '=aux;']);
     end    
 end
-%---------------------------------------------
-
-
-% Get rid of large outliers to the data
-% for i=2:length(NewCOPxL)
-%     if abs(NewCOPxL(i)-NewCOPxL(i-1))>25000
-%         NewCOPxL(i)=NewCOPxL(i-1);
-%     end
-%     if abs(NewCOPxR(i)-NewCOPxR(i-1))>25000
-%         NewCOPxR(i)=NewCOPxR(i-1);
-%     end
-%     if abs(NewCOPyL(i)-NewCOPyL(i-1))>25000
-%         NewCOPyL(i)=NewCOPyL(i-1);
-%     end
-%     if abs(NewCOPyR(i)-NewCOPyR(i-1))>25000
-%         NewCOPyR(i)=NewCOPyR(i-1);
-%     end
-% end
 
 [Bcop,Acop]=butter(1,3/100/2);
 [Bcopy,Acopy]=butter(1,3/100/2);
@@ -309,37 +95,15 @@ NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);
 NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);
 NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);
 
-%Replace the NaNs that were previously removed:
-%---------------------------------
-% PABLO, new code to replace NaNs, by doing a linear interpolation:
+% replace NaNs, by doing a linear interpolation:
 ll={'NewCOPxL','NewCOPxR','NewCOPyL','NewCOPyR'};
 for i=1:length(ll)
     eval(['aux=' ll{i} ';']);
     aux(badInds(i,:))=NaN;
     eval([ll{i} '=aux;']);
 end
-%-----------------------------------
-%Pablo: commented out
-% for i=1:length(NewCOPxL)
-%     if xL(i)==1
-%         NewCOPxL(i)=NaN;
-%     end
-%     if xR(i)==1
-%         NewCOPxR(i)=NaN;
-%     end
-%     if yR(i)==1
-%         NewCOPyR(i)=NaN;
-%     end
-%     if yL(i)==1
-%         NewCOPyL(i)=NaN;
-%     end
-% end
-%----------------------------------
 
-% keyboard
 COPData=[NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' NewCOPyR' zeros(size(NewCOPxR))' GRFxL GRFyL GRFzL GRFxR GRFyR GRFzR GRMxL GRMyL zeros(size(GRMyL)) GRMxR GRMyR zeros(size(GRMyL))];
-
-%Pablo: creating orientedLabTS
 COPTS=orientedLabTimeSeries(COPData,GRFData.Time(1),GRFData.sampPeriod,{'LCOPx','LCOPy','LCOPz','RCOPx','RCOPy','RCOPz', 'LGRFx','LGRFy','LGRFz','RGRFx','RGRFy','RGRFz','LGRMx','LGRMy','LGRMz','RGRMx','RGRMy','RGRMz'},or);
 
 
