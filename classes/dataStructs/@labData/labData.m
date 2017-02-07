@@ -192,12 +192,27 @@ classdef labData
             [COMData] = COMCalculator(this.markerData);
         end
         
-        function momentData=computeTorques(this,subjectWeight)
+        function [COPData,COPL,COPR]=computeCOPAlt(this,noFilterFlag)
+            if nargin<2 || isempty(noFilterFlag)
+                noFilterFlag=1;
+            end
+            this=this.GRFData;
+            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
+            [COPL,FL,~]=computeHemiCOP(this,'L',noFilterFlag);
+            [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
+            COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
+            COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
+            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
+            COP=orientedLabTimeSeries(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),this.orientation);
+            COPData=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
+        end
+        
+        function [momentData,COP,COM]=computeTorques(this,subjectWeight)
             if nargin<2 || isempty(subjectWeight)
                 warning('Subject weight not given, estimating from GRFs. This will fail miserably if z-axis force is not representative of weight.')
                 subjectWeight=estimateSubjectBodyWeight(this);
             end
-           [ momentData,~,~ ] = TorqueCalculator(this, subjectWeight); 
+           [ momentData,COP,COM ] = TorqueCalculator(this, subjectWeight); 
         end
         
         function bodyWeight=estimateSubjectBodyWeight(this)
@@ -235,7 +250,7 @@ classdef labData
             end
             
             %6) Get COP, COM and joint torque data.
-            [jointMomentsData,COPData,COMData] = TorqueCalculator(this, subData.weight);
+            [jointMomentsData,COPData,COMData] = this.computeTorques(subData.weight);
             
             % 7) Generate processedTrial object
             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
@@ -250,51 +265,111 @@ classdef labData
         
         function checkMarkerDataHealth(this)
             ts=this.markerData;
-            %Check for missing samples (and do nothing?):
+            
+            %First: diagnose missing markers
             ll=ts.getLabelPrefix;
             dd=ts.getOrientedData;
+            aux=zeros(size(dd,1),size(dd,2));
             for i=1:length(ll)
                 l=ll{i};
-                aux=any(isnan(dd(:,i,:)),3);
-                if any(aux)
+                aux(:,i)=any(isnan(dd(:,i,:)),3);
+                if any(aux(i,:))
                     warning('labData:checkMarkerDataHealth',['Marker ' l ' is missing for ' num2str(sum(aux)*ts.sampPeriod) ' secs.'])
                     for j=1:3
                         dd(aux,i,j)=nanmean(dd(:,i,j)); %Filling gaps just for healthCheck purposes
                     end
                 end
             end
+            figure
+            subplot(2,2,1) % Missing frames as % of total
+            hold on
+            c=sum(aux,1)/size(aux,1);
+            bar(c)
+            set(gca,'XTick',1:numel(ll),'XTickLabel',ll,'XTickLabelRotation',90)
+            ylabel('Missing frames (%)')
             
-            %Check for outliers:
-            %Do a data translation:
-            %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist
-            %Do a label-agnostic data translation:
-            refMarker=squeeze(nanmean(dd,2));
-            newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis
-            %Not agnostic rotation:
-            %relData=squeeze(markerData.getOrientedData('RHIP'));
-            %Label agnostic data rotation:
-            newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
-            medianTS=newTS.median; %Gets the median skeleton of the markers
+            subplot(2,2,2) %Distribution of gap lengths
+            hold on
+            h=[];
+            s={};
+            for i=1:length(ll)
+                if c(i)>.01
+                 w= [ 0; aux(:,i); 0 ]; % auxiliary vector
+                 runs_ones = find(diff(w)==-1)-find(diff(w)==1); 
+                 h(end+1)=histogram(runs_ones,[.5:1:50],'DisplayName',ll{i});
+                 s{end+1}=ll{i};
+                end
+            end
+            legend(h,s)
+            title('Distribution of gap lenghts')
+            ylabel('Gap count')
+            xlabel('Gap length')
+            axis tight
             
-            %With this median skeleton, a minimization can be done to find
-            %another label agnostic data rotation that does not depend on
-            %estimating the translation velocity:
-            
-            %Another attempt at label agnostic rotation (not using
-            %velocity, but actually some info about the skeleton having
-            %Left and Right)
-            %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);
-            %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);
-            %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));
-            %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this
+            subplot(2,2,3)
+            hold on
+            d=sum(aux,2);
+            histogram(d,[-.5:1:5.5],'Normalization','probability')
+            title('Distribution of # missing in each frame')
+            ylabel('% of frames with missing markers')
+            xlabel('# missing markers')
+            axis tight
             
             
-                      
-            %Try to fit a 2-cluster model, to see if some marker labels are
-            %switched at some point during experiment
+            %Two: create a model to determine if outliers are present
+            dd=permute(dd,[2,3,1]);
+            [D,sD] = createZeroModel(dd);
+            [lp,~] = determineLikelihoodFromZeroModel(dd,D,sD);
+            subplot(2,2,4)
+            hold on
+            minLike=min(lp,[],1);
+            plot(minLike)
+            medLike=nanmedian(lp,1);
+            plot(medLike,'r')
+            legend(ll)
+            ii=find(medLike<-1);
+            for j=1:length(ii)
+               figure
+               plot3(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),'o')
+               text(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),ll)
+               hold on
+               [~,zz]=min(lp(:,ii(j)));
+               plot3(dd(zz,1,ii(j)),dd(zz,2,ii(j)),dd(zz,3,ii(j)),'ro')
+               title(['median likeli=' num2str(medLike(ii(j))) ', frame ' num2str(ii(j))])
+               pause
+            end
             
-            %Assuming single mode/cluster, find outliers by getting stats
-            %on distribution of positions/distance and velocities.
+%             %Check for outliers:
+%             %Do a data translation:
+%             %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist
+%             %Do a label-agnostic data translation:
+%             refMarker=squeeze(nanmean(dd,2));
+%             newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis
+%             %Not agnostic rotation:
+%             %relData=squeeze(markerData.getOrientedData('RHIP'));
+%             %Label agnostic data rotation:
+%             newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
+%             medianTS=newTS.median; %Gets the median skeleton of the markers
+%             
+%             %With this median skeleton, a minimization can be done to find
+%             %another label agnostic data rotation that does not depend on
+%             %estimating the translation velocity:
+%             
+%             %Another attempt at label agnostic rotation (not using
+%             %velocity, but actually some info about the skeleton having
+%             %Left and Right)
+%             %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);
+%             %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);
+%             %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));
+%             %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this
+%             
+%             
+%                       
+%             %Try to fit a 2-cluster model, to see if some marker labels are
+%             %switched at some point during experiment
+%             
+%             %Assuming single mode/cluster, find outliers by getting stats
+%             %on distribution of positions/distance and velocities.
         end
         
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
@@ -346,14 +421,48 @@ classdef labData
             %labels -- 
             
             if nargin<3 || isempty(labels)
-                eval(['partialData=this.' fieldName ';']);
+                partialData=this.(fieldName);
             else
-                eval(['partialData=this.' fieldName '.getDataAsVector(labels);']); %Should I return this as labTS?
+                partialData=this.(fieldNAme).getDataAsVector(labels);
             end
         end
         
         function list=getLabelList(this,fieldName)
-            eval(['list = this.' fieldName '.labels;']);
+            list=this.(fieldName).labels;
+        end
+        
+        %COP calculation as used by the ALTERNATIVE version
+        function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
+            this=this.GRFData;
+            %Warning: this only works if GRF data is stored here
+            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
+            if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
+                F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
+                M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
+            else
+            F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
+            F=F.lowPassFilter(20).thresholdByChannel(-100,[side 'Fz'],1);
+            F=squeeze(F.getOrientedData);
+            M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
+            M=M.lowPassFilter(20);
+            M=squeeze(M.getOrientedData);
+            F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
+            end
+            %I believe this should work for all forceplates in the world:
+            %aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));
+            %t=-aux(:,3)./F(:,3);
+            %COP=orientedLabTimeSeries(aux+t.*F,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
+            %This is Bertec Treadmill specific:
+            aux(:,1)=(-15*F(:,1)-M(:,2))./F(:,3);
+            aux(:,2)=(15*F(:,2)+M(:,1))./F(:,3);
+            aux(:,3)=0;
+            if strcmp(side,'R')
+                aux(:,1)=aux(:,1)-977.9; %Flipping and offsetting to match reference axis of L-forceplate
+            end
+            aux(:,2)=-aux(:,2)+1619.25; %Flipping & adding offset to match lab's reference axis sign
+            aux(:,1)=aux(:,1)+25.4; %Adding offset to lab's reference origin
+            COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
+           
         end
         
     end

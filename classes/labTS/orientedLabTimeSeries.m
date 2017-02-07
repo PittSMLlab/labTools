@@ -168,48 +168,6 @@ classdef orientedLabTimeSeries  < labTimeSeries
             [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2);
             distMatrix=sqrt(sum(diffMatrix.^2,4));
         end
-        
-        function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
-            %Warning: this only works if GRF data is stored here
-            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
-            if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
-                F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
-                M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
-            else
-            F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-            F=F.lowPassFilter(20).thresholdByChannel(-100,[side 'Fz'],1);
-            F=squeeze(F.getOrientedData);
-            M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
-            M=M.lowPassFilter(20);
-            M=squeeze(M.getOrientedData);
-            F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
-            end
-            %I believe this should work for all forceplates in the world:
-            %aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));
-            %t=-aux(:,3)./F(:,3);
-            %COP=orientedLabTimeSeries(aux+t.*F,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
-            %This is Bertec Treadmill specific:
-            aux(:,1)=(-15*F(:,1)-M(:,2))./F(:,3);
-            aux(:,2)=(15*F(:,2)+M(:,1))./F(:,3);
-            aux(:,3)=0;
-            if strcmp(side,'R')
-                aux(:,1)=aux(:,1)-977.9; %Flipping and offsetting to match reference axis of L-forceplate
-            end
-            aux(:,2)=-aux(:,2)+1619.25; %Flipping & adding offset to match lab's reference axis sign
-            aux(:,1)=aux(:,1)+25.4; %Adding offset to lab's reference origin
-            COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
-           
-        end
-        function [COP]=computeCOP(this)
-            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
-            [COPL,FL,~]=computeHemiCOP(this,'L',1);
-            [COPR,FR,~]=computeHemiCOP(this,'R',1);
-            COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
-            COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
-            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
-            COP=orientedLabTimeSeries(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),this.orientation);
-            COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
-        end
 
         %-------------------
         
