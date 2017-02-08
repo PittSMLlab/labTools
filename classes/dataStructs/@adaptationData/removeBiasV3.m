@@ -80,12 +80,13 @@ for itype=1:length(types)
                     %data(isnan(data))=-100000;
                     base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
                     newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
+                    base(base==0)=nan;
                 else
                     base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
                     newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
+                    base(base==1)=nan;
                 end
-                newData(isnan(data))=nan;
-                base(base==0)=nan;
+                %newData(isnan(data))=nan;
                 baseValues(itype,:)=base;
         end
     else
