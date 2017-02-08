@@ -1,5 +1,5 @@
-        function figHandle=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode)
-
+        function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)
+            %TODO: this file should be updated to call upon plotGroupedBars
            if nargin<3 || isempty(number)
                 n=[5,20]; %early number of points
            else
@@ -16,8 +16,11 @@
                 Nf=exemptLast;
             end
             
-            [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
-            
+            if nargin<8 || isempty(plotHandles) || length(label)~=length(plotHandles)
+                [ah,figHandle]=optimizedSubPlot(length(label),4,1);           
+            else
+                ah=plotHandles;
+            end
             if nargin<6 || isempty(condList)
                 conds=find(~cellfun(@isempty,this.metaData.conditionName));
             else
@@ -41,7 +44,8 @@
                     end
                 end
 
-                axes(ah(l))
+                %axes(ah(l))
+                subplot(ah(l))
                 hold on
                 if nargin<7 ||isempty(mode)
                     mode=1;
@@ -75,4 +79,5 @@
                 case 2
                     legend(legStr2)
             end
+            plotHandles=ah;
         end

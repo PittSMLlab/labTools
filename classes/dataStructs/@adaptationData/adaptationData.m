@@ -529,7 +529,7 @@ classdef adaptationData
         %end
         
         %Display functions:
-        function figHandle=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag)
+        function [figHandle,plotHandles]=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag,plotHandles)
                     %Plot of the behaviour of parameters through the different conditions 
             %specify the parameter behaviour on each condition and trial
             %
@@ -558,7 +558,10 @@ classdef adaptationData
             if nargin<6 || isempty(medianFlag)
                 medianFlag=[];
             end
-            figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag);
+            if nargin<7
+                plotHandles=[];
+            end
+            figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag,plotHandles);
         end
          %Dulce: This functions has its own scrip 
 %         [figHandle]=scatterPlotLab(this,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
@@ -669,7 +672,7 @@ classdef adaptationData
         
         [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
         
-        [figHandle]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode);
+        [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
         
         function dataPoints=getDataFromInds(this,inds,labels)
             %Returns data associated to certain stride indexes (e.g.
@@ -700,6 +703,48 @@ classdef adaptationData
                 end
             end
         end
+        
+        function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,plotHandles,numberOfStrides)
+            
+            fh=figure;
+
+            M=length(labels);
+            clear ph
+            for i=1:M
+                ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+                ph(i,2)=subplot(M,3,[3]+3*(i-1));
+            end
+
+            %Defaults:
+            plotHandles=[]; %Not allowed
+            exemptFirst=1;
+            exemptLast=5;
+            mode=[];
+            
+            %Time courses:
+            this.plotParamTimeCourse(labels,binwidth,trialMarkerFlag,conds,medianFlag,ph(:,1));
+            %Add bars:
+            this.plotParamBarsByConditionsv2(labels,numberOfStrides,exemptLast,exemptFirst,conds,mode,ph(:,2));
+
+            for i=1:M               
+                subplot(ph(i,1));
+                grid on
+                axis tight
+                aa=axis;
+                subplot(ph(i,2));
+                grid on
+                ab=axis;
+                axis([ab(1:2) aa(3:4)])
+                if i~=M
+                    ph(i,1).XTickLabel={};
+                    ph(i,2).XTickLabel={};
+                else
+                    subplot(ph(i,1))
+                    legend off
+                end
+                ph(i,2).Title.String=labels{i};
+            end
+        end
     end
     
     
@@ -718,7 +763,7 @@ classdef adaptationData
         
          [figHandle]=Correlations(adapDataList, results,epochx,epochy,param1,groups,colorOrder,type)
        
-        function [fh,ph,allData]=plotTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)
+        function [fh,ph,allData]=plotGroupedTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)
             
             fh=figure;
 
