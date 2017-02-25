@@ -679,6 +679,19 @@ classdef labTimeSeries  < timeseries
                 newThis.UserData.processingInfo{end+1}=filterList{1};
         end
         
+        function newThis=monotonicFilter(this,Nderiv,Nreg)
+            if nargin<2 || isempty(Nderiv)
+                Nderiv=2;
+            end
+            if nargin<3 || isempty(Nreg)
+               Nreg=2; 
+            end
+            for i=1:size(this.Data,2)
+               this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg); 
+            end
+            newThis=this;
+        end
+        
         function this=medianFilter(this,N)
             if mod(N,2)==0
                 error('Only odd filter orders are allowed')
