@@ -1,7 +1,6 @@
 function [z] = monoLS(y,p,monotonicDerivativeFlag,regularizeFlag)
 %This function does an LS minimization of z-y, subject to z being monotonic
 %(or constant?)
-y=y(:);
 if nargin<2 || isempty(p)
     p=2;
 end
@@ -13,6 +12,15 @@ if nargin<4 || isempty(regularizeFlag) || monotonicDerivativeFlag==0
     %otherwise we lose monotonicity
     regularizeFlag=0;
 end
+
+if numel(y)~=length(y) %More than 1 vector
+    z=nan(size(y));
+    for i=1:size(y,2)
+        z(:,i)=monoLS(y(:,i),p,monotonicDerivativeFlag,regularizeFlag);
+    end
+else
+    
+y=y(:); %Column vector
 
 %s=sign(median(diff(y)));
 pp=polyfit([1:numel(y)]',y,1);
@@ -70,4 +78,5 @@ if s>0
     z=-z;
 end
 
+end
 end

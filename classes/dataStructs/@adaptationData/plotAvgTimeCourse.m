@@ -1,4 +1,4 @@
-function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,medianFlagNew,plotHandles,alignEnd,alignIni)
+function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)
 %adaptDataList must be cell array of 'param.mat' file names
 %params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
 %plot on separate graphs or with semicolons to plot on same graph.
@@ -97,19 +97,30 @@ if nargin<10 || isempty(removeBiasFlag)
     removeBiasFlag=0;
 end
 
-if nargin<12 || isempty(medianFlagNew)
-    medianFlagNew=0;
+if nargin<12 || isempty(filterFlag)
+    filterFlag=0;
 end
 %Added 9/28/2016: separated the two functionalities of 'medianFlag' into
 %'medianFlag' and 'medianFilter'. Now accept that users may pass a scalar
 %flag or a 2x1 flag vector, where the first index indicates the FILTER
-%flag, and the second indicates the GROUP flag.
-if numel(medianFlagNew)<2
-    medianFilter=medianFlagNew;
-    medianFlag=medianFlagNew;
+%flag (median across samples), and the second indicates the GROUP flag (median across subjects).
+%Update: 3/01/2017: if the vector is of length 3, using monoLS filter
+%instead of median
+monoFlag=false;
+if numel(filterFlag)<2
+    medianFilter=filterFlag;
+    medianFlag=filterFlag;
+elseif numel(filterFlag)==2
+    medianFilter=filterFlag(1);
+    medianFlag=filterFlag(2);
+elseif numel(filterFlag)==4 %This is interpreted as using the monoLS filter, instead of median filter for samples
+    monoFlag=true;
+    medianFlag=filterFlag(1); %Taking median across groups, or not
+    monoNder=filterFlag(2); %
+    monoNreg=filterFlag(3);
+    monoTrialBased=filterFlag(4);
 else
-    medianFilter=medianFlagNew(1);
-    medianFlag=medianFlagNew(2);
+    error('filterFlag length not recognized: can be a binary scalar (for median across subjects and samples), a 2x1 binary vector (to do median across samples or subjects), or 4x1 vector (to use monoLS for samples)')
 end
 
 
@@ -175,7 +186,18 @@ for group=1:Ngroups
                     error('Not all provided labels are parameters in this subject')
                     keyboard %This shouldnt happen
                 end
-                dataPts=adaptData.getParamInTrial(params,trials{t});
+                if monoFlag && ~monoTrialBased
+                    dataPts2=adaptData.getParamInTrial(params,trials{t});
+                    dataPts=monoLS(dataPts2,[],monoNder,monoNreg);
+                elseif monoFlag
+                    dataPts=[];
+                    for j=1:length(trials{1})
+                        aux=monoLS(adaptData.getParamInTrial(params,trials{1}(j)),[],monoNder,monoNreg);
+                        dataPts=[dataPts; aux];
+                    end
+                else
+                    dataPts=adaptData.getParamInTrial(params,trials{t});
+                end
                 nPoints=size(dataPts,1);
                 M=2000; %this assumes that the max number of data points that could exist in a single conition or trial is M
                 if nPoints == 0
@@ -187,16 +209,9 @@ for group=1:Ngroups
                     end
                 end
                 for p=1:length(params)
-                    %initialize so there are no inconsistant dimensions or out of bounds errors
-                    
+                    %initialize so there are no inconsistant dimensions or out of bounds errors 
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M); 
-                    
-%                     %%VELOCITY CONTRIBUTION IS FLIPPED HERE
-%                     if strcmp(params{p},'velocityContribution')
-%                         values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=-dataPts(:,p);
-%                     else
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
-%                     end
                     if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
                         values(group).(params{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
                     end

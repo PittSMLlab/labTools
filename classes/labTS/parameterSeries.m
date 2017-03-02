@@ -178,8 +178,9 @@ classdef parameterSeries < labTimeSeries
             if nargin<2 || isempty(labels)
                 labels=this.labels;
             end
-            extendedLabels=[{'bad';'trial';'initTime'} ;labels(:)];
-            extendedLabels=unique(extendedLabels); %To avoid repeating bad, trial, initTime
+            extendedLabels=[this.labels(1:5) ;labels(:)];
+            [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
+            extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
             [bool,idx]=this.isaLabel(extendedLabels);
             idx=idx(bool);
             if nargin<3 || isempty(strides)
