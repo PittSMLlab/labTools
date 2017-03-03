@@ -210,24 +210,34 @@ classdef adaptationData
             newThis.data=this.data.medianFilter(N);
         end
         
-        function newThis=monoLS(this,trialBased,order,Nregularization);
+        function newThis=monoLS(this,trialBased,order,Nregularization)
             newThis=this;
             %For each condition, or trial:
             if trialBased==1
-                for i=1:unique(this.data.getDataAsVector('trial'))
-                    [partialData,indData]=this.getParamInTrial([],i);
-                    aux=monoLS(partialData,[],order,Nregularization);
-                    newThis.data.Data(indData,:)=aux;
+                t=unique(this.data.getDataAsVector('trial'));
+                for i=1:length(t)
+                    [partialData,indData]=this.getParamInTrial([],t(i));
+                    aux=monoLS(partialData(:,6:end),[],order,Nregularization);
+                    newThis.data.Data(indData,6:end)=aux;
                 end
             else %Condition based
-                for i=1:unique(this.data.getDataAsVector('trial'))
-                    [partialData,indData]=this.getParamInCond([],i);
-                    aux=monoLS(partialData,[],order,Nregularization);
-                    newThis.data.Data(indData,:)=aux;
+                t=unique(1:length(this.metaData.trialsInCondition));
+                for i=1:length(t)
+                    [partialData,indData]=this.getParamInCond([],t(i));
+                    aux=monoLS(partialData(:,6:end),[],order,Nregularization);
+                    newThis.data.Data(indData,6:end)=aux;
                 end
             end
             
             
+        end
+        
+        function newThis=substituteNaNs(this,method)
+            if nargin<2 || isempty(method)
+                method='linear';
+            end
+            newThis=this;
+            newThis.data=this.data.substituteNaNs(method);
         end
         
         %Other I/O functions:

@@ -25,6 +25,7 @@ classdef parameterSeries < labTimeSeries
     properties(Hidden)
        description_={}; 
        trialTypes_={};
+       fixedParams=5;
     end
     
     methods
@@ -178,7 +179,7 @@ classdef parameterSeries < labTimeSeries
             if nargin<2 || isempty(labels)
                 labels=this.labels;
             end
-            extendedLabels=[this.labels(1:5) ;labels(:)];
+            extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
             [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
             extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
             [bool,idx]=this.isaLabel(extendedLabels);
@@ -213,6 +214,15 @@ classdef parameterSeries < labTimeSeries
             newThis.Data(:,bi)=this.bad | all(isnan(aux),2);
             [~,bg]=this.isaLabel('good');
             newThis.Data(:,bg)=~this.bad;
+        end
+        
+        function newThis=substituteNaNs(this,method)
+            if nargin<2 || isempty(method)
+                method='linear';
+            end
+            newThis=this.substituteNaNs@labTimeSeries(method);
+            newThis.Data(:,1:this.fixedParams)=this.Data(:,1:this.fixedParams);
+            
         end
         
         %% Other functions that need redefining:

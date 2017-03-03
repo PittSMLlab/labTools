@@ -119,6 +119,7 @@ elseif numel(filterFlag)==4 %This is interpreted as using the monoLS filter, ins
     monoNder=filterFlag(2); %
     monoNreg=filterFlag(3);
     monoTrialBased=filterFlag(4);
+    medianFilter=0;
 else
     error('filterFlag length not recognized: can be a binary scalar (for median across subjects and samples), a 2x1 binary vector (to do median across samples or subjects), or 4x1 vector (to use monoLS for samples)')
 end
@@ -192,7 +193,8 @@ for group=1:Ngroups
                 elseif monoFlag
                     dataPts=[];
                     for j=1:length(trials{1})
-                        aux=monoLS(adaptData.getParamInTrial(params,trials{1}(j)),[],monoNder,monoNreg);
+                        origData=adaptData.getParamInTrial(params,trials{1}(j));
+                        aux=monoLS(origData,[],monoNder,monoNreg);
                         dataPts=[dataPts; aux];
                     end
                 else
