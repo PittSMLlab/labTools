@@ -38,7 +38,7 @@ if ~isempty(findstr(trial, 'deg'))%( ~iscell(cell2mat(regexp(trial, 'deg'))))|| 
     if iscell(i)
         i=i{1};
     end
-    string=trial(i-6:i);
+    string=trial(max([i,7])-6:i);
     digits=regexp(string,'\d'); %Assuming the number of degrees does not precede the string 'deg' by more than 5 chars
     if ~isempty(digits)
     number=str2double(string(digits)); %This discards any decimal points that may appear
