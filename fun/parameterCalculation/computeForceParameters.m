@@ -2,7 +2,7 @@ function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW
 %function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
 % %UNTITLED4 Summary of this function goes here
 % %   Detailed explanation goes here
-% [GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
+%[GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
 % %% COP range and symmetry
 % [COP] = computeCOP(GRFDataS,GRFDataF,s,f);
 %         %Mawase's way based on TO and HS
@@ -21,7 +21,7 @@ function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW
 %         COPsym=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);
 % 
 % %% Hand holding
-%         handHolding=sum(mean(abs(GRFDataH)))>2;
+%handHolding=sum(mean(abs(GRFDataH)))>2;
 
 %data=[];
 %labels={};
@@ -30,7 +30,7 @@ function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW
 %end
 
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis. 
-% This code is a bit essentric in the way that identifies the inclination for the TM.
+% This code is a bit eccentric in the way that identifies the inclination for the TM.
 
 
 %~~~~~~~ Here is where I am putting real stuffs ~~~~~~~~
@@ -46,7 +46,7 @@ if iscell(trial)
     trial=trial{1};
 end
 
-[ ang ] = DetermineTMAngle( trial );
+[ ang ] = DetermineTMAngle( trialData );
 flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
 Filtered=GRFData.lowPassFilter(20);
 
