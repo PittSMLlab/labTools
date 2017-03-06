@@ -305,6 +305,38 @@ classdef labTimeSeries  < timeseries
             end
         end
         
+        function newThis=appendData(this,newData,newLabels) %For back compat
+            other=labTimeSeries(newData,newLabels,this.Time(1),this.sampPeriod);
+            newThis=cat(this,other);
+        end
+        
+        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
+           %This function allows to compute new parameters from other existing parameters and have them added to the data.
+           %This is useful when trying out new parameters without having to
+           %recompute all existing parameters.
+           %INPUT:
+           %newPAramLAbel: string with the name of the new parameter
+           %funHandle: a function handle with N input variables, whose
+           %result will be used to compute the new parameter
+           %inputParameterLabels: the parameters that will replace each of
+           %the variables in the funHandle
+           %EXAMPLE:
+           %See example in parameterSeries
+           
+           %Check input sanity:
+           if length(inputParameterLabels)~=nargin(funHandle)
+               error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
+           end
+           oldData=this.getDataAsVector(inputParameterLabels);
+           str='(';
+           for i=1:size(oldData,2)
+               str=[str 'oldData(:,' num2str(i) '),'];
+           end
+           str(end)=')'; %Replacing last comma with parenthesis
+           eval(['newData=funHandle' str ';']);
+           newThis=appendData(this,newData,{newParamLabel}) ;
+        end
+        
         function newThis=castAsOTS(this)
             error('Unimplemented')
             newThis=this; %Doxy
@@ -452,6 +484,9 @@ classdef labTimeSeries  < timeseries
             else
                 error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
             end
+        end
+        function newThis=cat(this,other)
+            newThis=concatenate(this,other);
         end
         
         function this=substituteNaNs(this,method)
