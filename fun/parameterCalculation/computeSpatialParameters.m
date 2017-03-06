@@ -314,6 +314,7 @@ netContribution=spatialContribution+stepTimeContribution+velocityContribution;
 strideTimeSlow=timeSHS2-timeSHS; %Exactly the same definition as in computeTemporalParameters
 spatialContributionAlt=spatialContribution./strideTimeSlow;
 stepTimeContributionAlt=stepTimeContribution./strideTimeSlow;
+velocityContributionAlt=velocityContribution./strideTimeSlow;
 netContributionAlt=netContribution./strideTimeSlow;
 
 %spatialContributionNorm=spatialContributionAlt./equivalentSpeed;
