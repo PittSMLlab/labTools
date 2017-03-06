@@ -423,7 +423,7 @@ classdef labData
             if nargin<3 || isempty(labels)
                 partialData=this.(fieldName);
             else
-                partialData=this.(fieldNAme).getDataAsVector(labels);
+                partialData=this.(fieldName).getDataAsVector(labels);
             end
         end
         

@@ -81,7 +81,7 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'spatialContributionNorm2',    'spatialContribution/(stepLengthFast+stepLengthSlow)';...
     'stepTimeContributionNorm2',    'stepTimeContribution/(stepLengthFast+stepLengthSlow)';...
     'velocityContributionNorm2',    'velContribution/(stepLengthFast+stepLengthSlow)';...
-    'netContributionNorm2',    'netContribution/(stepLengthFast+stepLengthSlow). With this normalization, netContributionNorm2 shoudl be IDENTICAL to stepLengthAsym';...
+    'netContributionNorm2',     'netContribution/(stepLengthFast+stepLengthSlow). With this normalization, netContributionNorm2 shoudl be IDENTICAL to stepLengthAsym';...
     'stepTimeIdealT',           'Ideal stepTimeContribution value (normalized to sum of step lengths) based on Tgoal parameter';...
     'spatialIdealT',            'Ideal spatialContribution value (normalized to sum of step length) equivalent to -(velocityContributionNorm2+stepTimeIdealT)';...
     'stepTimeErrorT',           'Difference between stepTimeContributionNorm2 and stepTimeIdealT';...
@@ -93,8 +93,8 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'equivalentSpeed',          'Relative speed of hip to feet, ';...
     'singleStanceSpeedSlowAbs',    'Absolute speed of slow ankle during contralateral swing';...
     'singleStanceSpeedFastAbs',    'Absolute speed of fast ankle during contralateral swing';...
-    'stepSpeedSlow',           'Ankle relative to hip, from iHS to cHS';...
-    'stepSpeedFast',           'Ankle relative to hip, from iHS to cHS';...
+    'stepSpeedSlow',            'Ankle relative to hip, from iHS to cHS';...
+    'stepSpeedFast',            'Ankle relative to hip, from iHS to cHS';...
     'stanceSpeedSlow',          'Ankle relative to hip, during ipsilateral stance';...
     'stanceSpeedFast',          'Ankle relative to hip, during ipsilateral stance';...
     'alphaTemp_fromAvgHip',     'Ankle placement of slow leg at SHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
@@ -105,6 +105,11 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'xSlow_fromAvgHip',         'Ankle placement of fast leg at SHS2 (realtive to avg hip marker and avg hip postion during time) (in mm)';...
     'velocitySlow'              ' Velocity of  slow foot relative to hip, should be close to actual belt speed in TM trials';...
     'velocityFast'              ' Velocity of  fast foot relative to hip, should be close to actual belt speed in TM trials';...
+    'velocityAltContribution'   'Alternative velocity contribution, which subtracts belt speeds as estimated by singleStanceSpeedFastAbs and SlowAbs (in mm)';...
+    'velocityAltContributionAlt' 'velocityAltContribution, normalized by stride time';...
+    'velocityAltContributionNorm2' 'velocityAltContribution, normalized by sum of step lengths';...
+    'velocityAltContributionP'  'velocityAltContribtuion using absolute lab reference (mm)';...
+    'velocityAltContributionPNorm' 'velocityAltContributionP, normalized to sum of step lengths'
 %    'avgRotation',            'Angle that the coordinates were rotated by';...
     }; 
 
@@ -137,6 +142,7 @@ if any(ee(:))
 end
 %% Get rotated data
 [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos,sAnk_fromAvgHip,fAnk_fromAvgHip]=getKinematicData(eventTimes,markerData,angleData,s);
+[rotatedMarkerDataAbs,sAnkFwdAbs,fAnkFwdAbs,sAnk2DAbs,fAnk2DAbs,sAngleAbs,fAngleAbs,directionAbs,hipPosSHSAbs,sAnk_fromAvgHipAbs,fAnk_fromAvgHipAbs]=getKinematicDataAbs(eventTimes,markerData,angleData,s);
 
 %% Intralimb
 if strcmp(s,'L')
@@ -153,15 +159,15 @@ stepLengthFast=fAnkFwd(:,FHS)-sAnkFwd(:,FHS);
 takeOffLengthSlow=sAnkFwd(:,STO)-fAnkFwd(:,STO);
 takeOffLengthFast=fAnkFwd(:,FTO)-sAnkFwd(:,FTO);
 
-%ALTERNATIVE COMPUTATION WAY: should be equivalent for TM walking (no
-%direction is enforced) but doesn't use HIP, which was causing problems
-%previously.
-% sAnkAbs=markerData.getDataAsTS({[s 'ANKy']}).getSample(eventTimes,'closest');
-% fAnkAbs=markerData.getDataAsTS({[f 'ANKy']}).getSample(eventTimes,'closest');
-% stepLengthSlow=sAnkAbs(:,SHS2)-fAnkAbs(:,SHS2);
-% stepLengthFast=sAnkAbs(:,FHS)-fAnkAbs(:,FHS);
-% takeOffLengthSlow=sAnkAbs(:,STO)-fAnkAbs(:,STO);
-% takeOffLengthFast=fAnkAbs(:,FTO)-sAnkAbs(:,FTO);
+%ALTERNATIVE COMPUTATION WAY: doesn't use HIP, so HIP loss is not an issue
+%(HIP value doesn't affect tis computation, but since it is used as
+%reference, it generates NaN downstream if absent:
+%Because we are not using HIP, walking direction is determined through Left
+%to Right ankle vector.
+stepLengthSlow=sAnkFwdAbs(:,SHS2)-fAnkFwdAbs(:,SHS2);
+stepLengthFast=sAnkFwdAbs(:,FHS)-fAnkFwdAbs(:,FHS);
+takeOffLengthSlow=sAnkFwdAbs(:,STO)-fAnkFwdAbs(:,STO);
+takeOffLengthFast=fAnkFwdAbs(:,FTO)-sAnkFwdAbs(:,FTO);
 
 
 %step length (2D) Express w.r.t the hip -- don't save, for now.
@@ -186,6 +192,8 @@ stanceRangeFast=alphaFast-betaFast;
 %swing range
 swingRangeSlow=sAnkFwd(:,SHS2)-sAnkFwd(:,STO);
 swingRangeFast=fAnkFwd(:,FHS)-fAnkFwd(:,FTO);
+swingRangeSlowAbs=sAnkFwdAbs(:,SHS2)-sAnkFwdAbs(:,STO);
+swingRangeFastAbs=fAnkFwdAbs(:,FHS)-fAnkFwdAbs(:,FTO);
 
 %Ratio TO./HS
 RFastPos=abs(betaFast./alphaFast);
@@ -306,7 +314,6 @@ netContribution=spatialContribution+stepTimeContribution+velocityContribution;
 strideTimeSlow=timeSHS2-timeSHS; %Exactly the same definition as in computeTemporalParameters
 spatialContributionAlt=spatialContribution./strideTimeSlow;
 stepTimeContributionAlt=stepTimeContribution./strideTimeSlow;
-velocityContributionAlt=velocityContribution./strideTimeSlow;
 netContributionAlt=netContribution./strideTimeSlow;
 
 %spatialContributionNorm=spatialContributionAlt./equivalentSpeed;
@@ -333,6 +340,7 @@ vs=(aux(:,FHS,2)-aux(:,SHS,2))./ts;
 stepTimeContributionP= .5*(vf + vs).*(ts-tf);
 velocityContributionP= .5*(vs-vf).*(tf+ts);
 netContributionP=spatialContributionP+stepTimeContributionP+velocityContributionP;
+
 spatialContributionPNorm=spatialContributionP./Dist;
 stepTimeContributionPNorm=stepTimeContributionP./Dist;
 velocityContributionPNorm=velocityContributionP./Dist;
@@ -398,7 +406,13 @@ stepSpeedFast=dispFast./tf; %Ankle relative to hip, from iHS to cHS
 % fAnk(indSHS:indFTO2,:) = (rotationMatrix*fAnk(indSHS:indFTO2,:)')';
 % sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
 % fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
-            
+
+%% Other contributions
+velocityAltContribution=velocityContribution +(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*avgStepTime;
+velocityAltContributionAlt=velocityAltContribution./strideTimeSlow;
+velocityAltContributionNorm2=velocityAltContribution./Dist;
+velocityAltContributionP=velocityContributionP +(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*(tf+ts)/2;
+velocityAltContributionPNorm=velocityAltContributionP./Dist;
 
 %% Assign parameters to data matrix
 data=nan(length(timeSHS),length(paramLabels));
