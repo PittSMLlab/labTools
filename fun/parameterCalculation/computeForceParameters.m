@@ -159,6 +159,7 @@ else
             warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
         else
             HandrailHolding(i)=NaN;
+            warning('Found no handrail force data.')
         end
         
         %Previously the following was part of a funciton called SeperateBP
