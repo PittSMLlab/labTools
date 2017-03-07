@@ -165,7 +165,7 @@ takeOffLengthFast=fAnkFwd(:,FTO)-sAnkFwd(:,FTO);
 %Because we are not using HIP, walking direction is determined through Left
 %to Right ankle vector.
 stepLengthSlow=sAnkFwdAbs(:,SHS2)-fAnkFwdAbs(:,SHS2);
-stepLengthFast=sAnkFwdAbs(:,FHS)-fAnkFwdAbs(:,FHS);
+stepLengthFast=fAnkFwdAbs(:,FHS)-sAnkFwdAbs(:,FHS);
 takeOffLengthSlow=sAnkFwdAbs(:,STO)-fAnkFwdAbs(:,STO);
 takeOffLengthFast=fAnkFwdAbs(:,FTO)-sAnkFwdAbs(:,FTO);
 
