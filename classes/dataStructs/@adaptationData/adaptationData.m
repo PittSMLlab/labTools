@@ -636,15 +636,22 @@ classdef adaptationData
             end
         end
         
-        function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,plotHandles,numberOfStrides)
+        function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,ph,numberOfStrides,monoLSfitFlag)
+            %Plots time courses and early/late averaged data in bar form
+            %INPUTS:
+            %monoLSfitFlag: a value in the [0,3] integer range. 0 plots
+            %no fits, 1 plots condition based fit, 2 plots trial based fit,
+            %3 plots condition & trial based fits
             
             fh=figure;
 
             M=length(labels);
+            if nargin<7 || isempty(ph) || size(ph,1)~=M || size(ph,2)~=2
             clear ph
             for i=1:M
                 ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
                 ph(i,2)=subplot(M,3,[3]+3*(i-1));
+            end
             end
 
             %Defaults:
@@ -655,6 +662,32 @@ classdef adaptationData
             
             %Time courses:
             this.plotParamTimeCourse(labels,binwidth,trialMarkerFlag,conds,medianFlag,ph(:,1));
+            if mod(monoLSfitFlag,2)==1 %Add condition based monoLS fits if flag=1,3
+                % Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each condition
+                order=2;
+                reg=0;
+                medianAcrossSubj=0;
+                trialBased=0;
+                filterFlag=[medianAcrossSubj,order,reg,trialBased];
+                colorOrder=repmat(.6*ones(1,3),3,1); %Changing colors for plot
+                binWidth=1;
+                %Do the plot:
+                adaptationData.plotAvgTimeCourse(this,labels,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph(:,1));
+            end
+            if monoLSfitFlag>1 %Add trial based monoLS fits if flag=2,3
+                % Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each TRIAL
+                order=2;
+                reg=0;
+                medianAcrossSubj=0;
+                trialBased=1;
+                filterFlag=[medianAcrossSubj,order,reg,trialBased];
+                colorOrder=repmat(0*ones(1,3),3,1); %Changing colors for plot
+                binWidth=1;
+                %Do the plot:
+                adaptationData.plotAvgTimeCourse(this,labels,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph(:,1));
+            end
+            
+            
             %Add bars:
             this.plotParamBarsByConditionsv2(labels,numberOfStrides,exemptLast,exemptFirst,conds,mode,ph(:,2));
 
