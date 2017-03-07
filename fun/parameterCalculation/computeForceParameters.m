@@ -151,7 +151,15 @@ else
         end
         
         %HandrailHolding(i)= .05 < sqrt(nanmean(GRFData.Data(SHS:SHS2, find(strcmp(GRFData.labels, ['HFy']))))^2+nanmean(GRFData.Data(SHS:SHS2, find(strcmp(GRFData.labels, ['HFz']))))^2)/Normalizer;
-        HandrailHolding(i)= .05 < sqrt(nanmean(Filtered.split(SHS, SHS2).getDataAsTS('HFy').Data).^2+nanmean(GRFData.split(SHS,SHS2).getDataAsTS('HFz').lowPassFilter(20).Data).^2)/Normalizer;
+        %HandrailHolding(i)= .05 < sqrt(nanmean(Filtered.split(SHS, SHS2).getDataAsTS('HFy').Data).^2+nanmean(GRFData.split(SHS,SHS2).getDataAsTS('HFz').lowPassFilter(20).Data).^2)/Normalizer;
+        if Filtered.isaLabel('HFx')
+            HandrailHolding(i)= .05 < sqrt(nanmean(sum(Filtered.split(SHS, SHS2).getDataAsTS({'HFy','HFz'}).Data.^2,2)))/Normalizer;
+        elseif Filtered.isaLabel('XFx')
+            HandrailHolding(i)= .05 < sqrt(nanmean(sum(Filtered.split(SHS, SHS2).getDataAsTS({'XFy','XFz'}).Data.^2,2)))/Normalizer;
+            warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
+        else
+            HandrailHolding(i)=NaN;
+        end
         
         %Previously the following was part of a funciton called SeperateBP
         if isempty(striderS) || all(striderS==striderS(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN

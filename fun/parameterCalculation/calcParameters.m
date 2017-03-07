@@ -134,11 +134,9 @@ end
 if ~isempty(trialData.GRFData)
     [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
 
-    if ~isempty(force.stridesTrial)
+    if ~isempty(force.Data)
         out=cat(out,force);
     end
-    
-    out=cat(out,force);%cjs
 end
 
 %%Force
