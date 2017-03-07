@@ -409,10 +409,10 @@ stepSpeedFast=dispFast./tf; %Ankle relative to hip, from iHS to cHS
 % fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
 
 %% Other contributions
-velocityAltContribution=velocityContribution +(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*avgStepTime;
+velocityAltContribution=velocityContribution -(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*avgStepTime;
 velocityAltContributionAlt=velocityAltContribution./strideTimeSlow;
 velocityAltContributionNorm2=velocityAltContribution./Dist;
-velocityAltContributionP=velocityContributionP +(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*(tf+ts)/2;
+velocityAltContributionP=velocityContributionP -(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*(tf+ts)/2;
 velocityAltContributionPNorm=velocityAltContributionP./Dist;
 
 %% Assign parameters to data matrix
