@@ -11,6 +11,9 @@ if nargin<4 || isempty(regularizeFlag) || monotonicDerivativeFlag==0
     %No regularization allowed if only one derivative is being forced,
     %otherwise we may lose monotonicity
     regularizeFlag=0;
+else
+    regularizeFlag=0;
+    warning('monoLS2 doesn''t work well with regularization, ignoring.')
 end
 
 if numel(y)~=length(y) %More than 1 vector (matrix input, acting along columns)
@@ -47,8 +50,8 @@ else %Vector input-data
         b=zeros(size(B,1),1); %This enforces positivity of 1st der
         for i=1:monotonicDerivativeFlag
             Baux=B(end-numel(y)+1+i:end-1,:)-B(end-numel(y)+i+2:end,:); %Computes succesive derivatives
-            baux=zeros(size(Baux,1),1);
-            B=[B;Baux];
+            baux=1e-12*ones(size(Baux,1),1);
+            B=[B;-Baux];
             b=[b;baux];
         end
     else
