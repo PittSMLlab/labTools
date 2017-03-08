@@ -44,7 +44,7 @@ else %Vector input-data
         A=tril(ones(numel(y)));
         %First guess (init) for optimization target:
         w0=zeros(size(A,2),1);
-        pp=polyfit([1:numel(y)]',y,1); %Fit a line to use as initial estimate: a line is always admissible!
+        pp=polyfit([0:numel(y)-1]',y,1); %Fit a line to use as initial estimate: a line is always admissible!
         w0(1)=pp(2);
         w0(2:end)=pp(1);
         for i=1:monotonicDerivativeFlag
@@ -98,7 +98,8 @@ else %Vector input-data
 %         end
         zz=A*w;
     else %Generic solver for other norms, which result in non-quadratic programs (solver is slower, but somewhat better)
-        opts=optimoptions('fmincon','Display','off','SpecifyObjectiveGradient',true,'Algorithm','trust-region-reflective');
+        %As of Mar 07 2017, this didn't work properly. Convergence?
+        opts=optimoptions('fmincon','Display','off','SpecifyObjectiveGradient',true);
         w1=fmincon(@(x) cost(y,A,x,p),w0,[],[],[],[],zeros(size(w0)),[],[],opts); 
         zz=A*w1;
     end
@@ -106,7 +107,7 @@ else %Vector input-data
     
     %Dealing with some ill-conditioned cases, in which a line is better
     %than the solution found:
-    if norm(zz-y)>norm(A*w0-y)
+    if norm(zz-y,p)>norm(A*w0-y,p)
        zz=A*w0;
     end
 
@@ -127,6 +128,6 @@ end
 
 function [f,g,h]=cost(y,A,w,p)
     f=norm(y-A*w,p)^p;
-    g=p*(A*w-y)'.^(p-1) *A;
+    g=p*sign(A*w-y)'.*abs(A*w-y)'.^(p-1) *A;
     h=p*(p-1)*A'*A;
 end
