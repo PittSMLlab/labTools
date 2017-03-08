@@ -70,13 +70,34 @@ else %Vector input-data
 
         %Alternative solver: (this would allow us to pose the problem in different,
         %perhaps better conditioned, ways)
-        opts=optimoptions('quadprog','Display','off','Algorithm','trust-region-reflective');
+        %opts=optimoptions('quadprog','Display','off','Algorithm','trust-region-reflective');
+        opts=optimoptions('quadprog','Display','off');
         w=quadprog(A'*A,-y'*A,[],[],[],[],zeros(size(w0)),[],w0,opts);
+        %Impose KKT conditions?
+        %d=(y-A*w)'*A; %Gradient of the quadratic function with respect to w
+        %For each element, there are two options (if solution is optimal):
+        %1) d(i)>0 & w(i)=0, meaning the cost could decrease if w(i) decreases, but w(i) is at its lower bound
+        %2) d(i)=0 & w(i)>0[meaning optimal value of w(i) in an unconstrained sense]
+        %Note that w(i)<0 is inadmissible, and d(i)<0 means that w(i)=w(i)+dw is an admissible better solution
+%         iter=0;
+%         while any(d'.*w <0 & w>1e-9) && iter<1e3
+%            ii=find(d'.*w <0 & w>1e-9,1,'last');
+%            w(ii)=w(ii)*(1+.5*min([d(ii),-1]));
+%            iter=iter+1;
+%            d=(y-A*w)'*A;
+%         end
         zz=A*w;
     else %Generic solver for other norms, which result in non-quadratic programs (solver is slower, but somewhat better)
         opts=optimoptions('fmincon','Display','off','SpecifyObjectiveGradient',true,'Algorithm','trust-region-reflective');
         w1=fmincon(@(x) cost(y,A,x,p),w0,[],[],[],[],zeros(size(w0)),[],[],opts); 
         zz=A*w1;
+    end
+    
+    
+    %Dealing with some ill-conditioned cases, in which a line is better
+    %than the solution found:
+    if norm(zz-y)>norm(A*w0-y)
+       zz=A*w0;
     end
 
     %Invert the flipping and positivization

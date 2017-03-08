@@ -664,8 +664,8 @@ classdef adaptationData
             this.plotParamTimeCourse(labels,binwidth,trialMarkerFlag,conds,medianFlag,ph(:,1));
             if mod(monoLSfitFlag,2)==1 %Add condition based monoLS fits if flag=1,3
                 % Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each condition
-                order=2;
-                reg=0;
+                order=1;
+                reg=1;
                 medianAcrossSubj=0;
                 trialBased=0;
                 filterFlag=[medianAcrossSubj,order,reg,trialBased];
@@ -676,8 +676,8 @@ classdef adaptationData
             end
             if monoLSfitFlag>1 %Add trial based monoLS fits if flag=2,3
                 % Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each TRIAL
-                order=2;
-                reg=0;
+                order=1;
+                reg=1;
                 medianAcrossSubj=0;
                 trialBased=1;
                 filterFlag=[medianAcrossSubj,order,reg,trialBased];
