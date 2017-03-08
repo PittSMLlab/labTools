@@ -34,7 +34,7 @@ else %Vector input-data
     if s>0
         y=-y; %Data is now decreasing, f'<0
     end
-    a=min(y);
+    a=min(y)-1;
     y=y-a; %Data is now f>0 & f'<0
     y=flipud(y); %Data is now f>0, f'>0, as I inverted the 'x' axis
 
@@ -42,8 +42,14 @@ else %Vector input-data
     %First, construct matrix that computes data from optimized variables: (By induction!)
     if monotonicDerivativeFlag<numel(y)
         A=tril(ones(numel(y)));
+        %First guess (init) for optimization target:
+        w0=zeros(size(A,2),1);
+        pp=polyfit([1:numel(y)]',y,1); %Fit a line to use as initial estimate: a line is always admissible!
+        w0(1)=pp(2);
+        w0(2:end)=pp(1);
         for i=1:monotonicDerivativeFlag
             A(:,i+1:end)=cumsum(A(:,i+1:end),2,'reverse');
+            w0(3:end)=0; %If working with 2nd or higher derivative, those derivatives are null for a line
         end
     else
         error('Cannot force the sign of so many derivatives!')
@@ -54,6 +60,7 @@ else %Vector input-data
        %This avoids over-fitting to the first few datapoints (especially the
        %1st). %It is equivalent to reducing the size of the vector w() to be estimated.
        A(:,end-regularizeFlag+1:end)=[]; 
+       w0(end-regularizeFlag+1:end)=[];
     end
 
     if p==2
@@ -63,14 +70,13 @@ else %Vector input-data
 
         %Alternative solver: (this would allow us to pose the problem in different,
         %perhaps better conditioned, ways)
-        w0=zeros(size(A,2),1);
-        opts=optimoptions('quadprog','Display','off');
+        opts=optimoptions('quadprog','Display','off','Algorithm','trust-region-reflective');
         w=quadprog(A'*A,-y'*A,[],[],[],[],zeros(size(w0)),[],w0,opts);
         zz=A*w;
-    else %Generic solver for other norms, which result in non-quadratic programs
-        w0=zeros(size(A,2),1);
-        opts=optimoptions('fmincon','Display','off');
-        w=fmincon(@(x) norm(y-A*x,p),x0,[],[],[],[],zeros(size(w0)),[],opts); 
+    else %Generic solver for other norms, which result in non-quadratic programs (solver is slower, but somewhat better)
+        opts=optimoptions('fmincon','Display','off','SpecifyObjectiveGradient',true,'Algorithm','trust-region-reflective');
+        w1=fmincon(@(x) cost(y,A,x,p),w0,[],[],[],[],zeros(size(w0)),[],[],opts); 
+        zz=A*w1;
     end
 
     %Invert the flipping and positivization
@@ -86,4 +92,10 @@ else %Vector input-data
         z=y; %All elements are NaN
     end
 end
+end
+
+function [f,g,h]=cost(y,A,w,p)
+    f=norm(y-A*w,p)^p;
+    g=p*(A*w-y)'.^(p-1) *A;
+    h=p*(p-1)*A'*A;
 end
