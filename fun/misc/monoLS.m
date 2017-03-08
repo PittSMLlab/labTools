@@ -72,19 +72,29 @@ else %Vector input-data
         %perhaps better conditioned, ways)
         %opts=optimoptions('quadprog','Display','off','Algorithm','trust-region-reflective');
         opts=optimoptions('quadprog','Display','off');
-        w=quadprog(A'*A,-y'*A,[],[],[],[],zeros(size(w0)),[],w0,opts);
-        %Impose KKT conditions?
-        %d=(y-A*w)'*A; %Gradient of the quadratic function with respect to w
-        %For each element, there are two options (if solution is optimal):
-        %1) d(i)>0 & w(i)=0, meaning the cost could decrease if w(i) decreases, but w(i) is at its lower bound
-        %2) d(i)=0 & w(i)>0[meaning optimal value of w(i) in an unconstrained sense]
-        %Note that w(i)<0 is inadmissible, and d(i)<0 means that w(i)=w(i)+dw is an admissible better solution
+        B=A'*A;C=y'*A;
+        w=quadprog(B,-C,[],[],[],[],zeros(size(w0)),[],w0,opts);
+        
+%         %Impose KKT conditions?: this improves the sol but is very slow,
+%         %and doesnt get all the way to the optimum
+%         d=(w'*B-C)'; %Gradient of the quadratic function with respect to w
+%         %For each element, there are two options (if solution is optimal):
+%         %1) d(i)>0 & w(i)=0, meaning the cost could decrease if w(i) decreases, but w(i) is at its lower bound
+%         %2) d(i)=0 & w(i)>0[meaning optimal value of w(i) in an unconstrained sense]
+%         %Note that w(i)<0 is inadmissible, and d(i)<0 means that w(i)=w(i)+dw is an admissible better solution
 %         iter=0;
-%         while any(d'.*w <0 & w>1e-9) && iter<1e3
-%            ii=find(d'.*w <0 & w>1e-9,1,'last');
-%            w(ii)=w(ii)*(1+.5*min([d(ii),-1]));
+%         tol=1e-9/numel(y);
+%         tol2=1e0*tol;
+%         w(w<tol2)=0;
+%         while any(w>tol2 & abs(d)>tol) && iter<1e5
+%             dd=d.*(w>tol2).*(abs(d)>tol); %Projecting gradient along normal to admissibility set
+%             H=dd'*B*dd /norm(dd)^2;
+%             m=.1*norm(dd)/H;
+%             idx2=w<m*dd;
+%             dd(idx2)=0; %Not moving along directions where we would get w<0
+%             w=w-m*dd;
+%             w(idx2)=.5*w(idx2);
 %            iter=iter+1;
-%            d=(y-A*w)'*A;
 %         end
         zz=A*w;
     else %Generic solver for other norms, which result in non-quadratic programs (solver is slower, but somewhat better)
