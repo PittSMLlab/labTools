@@ -323,7 +323,7 @@ classdef groupAdaptationData
         end
 
         function newThis=catGroups(this,other)
-            %
+            newThis=groupAdaptationData([this.ID other.ID],[this.data other.data]);
         end
         %Visualization
         %Scatter
