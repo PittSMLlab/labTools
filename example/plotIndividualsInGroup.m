@@ -6,8 +6,8 @@
 %name is gAdaptData
 
 fh=figure;
-for i=1:4
-    ph(i)=subplot(2,2,i);
+for i=1:6
+    ph(i)=subplot(2,3,i);
 end
 
 %% Example 1: compare a single parameter across conditions
@@ -37,7 +37,7 @@ exemptNo=5;
 regFlag=1;
 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(3),regFlag);
 
-%% Example 4: same as 2, overlaying two groups (assuming gAdaptData2 exists)
+%% Example 4: overlaying two groups (assuming gAdaptData2 exists)
 param={'netContributionNorm2','spatialContributionNorm2'};
 medianFlag=[]; %MEan used by default
 strideNo=[20];
@@ -47,5 +47,24 @@ regFlag=1; %Regression flag
 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
 gAdaptData2.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
 
+%% Example 5: compare BASELINE behavior of one variable, to early post- of the same
+param={'netContributionNorm2'};
+medianFlag=1; %MEan used by default
+strideNo=[-40,20];
+conds={'Base','Wash'};
+exemptNo=5;
+regFlag=1;
+diffFlag=0;
+gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(5),regFlag,diffFlag);
+
+%% Example 6: compare BASELINE behavior of one variable, to CAHANGE in early post WRT to baseline
+param={'netContributionNorm2'};
+medianFlag=1; %MEan used by default
+strideNo=[-40,20];
+conds={'Base','Wash'};
+exemptNo=5;
+regFlag=1;
+diffFlag=1;
+gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(6),regFlag,diffFlag);
 %% save fig
 saveFig(fh,'./','plotIndividualsInGroup')

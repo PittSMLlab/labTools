@@ -406,7 +406,7 @@ classdef groupAdaptationData
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
 
         %Individuals
-        function [fh,ph]=plotIndividuals(this,labels,conds,strideNo,exemptStrides,medianFlag,ph,regFlag)
+        function [fh,ph]=plotIndividuals(this,labels,conds,strideNo,exemptStrides,medianFlag,ph,regFlag,differenceFlag)
             %This function plots individual averages (or medians) for some subset of strides
             %INPUTS:
             %this: a groupAdapatationData object
@@ -414,7 +414,13 @@ classdef groupAdaptationData
             %conds: a string, or cell containing up to two condition names (if only one, .. blah)
             %strideNo: a scalar or 2x1 vector, containing the number of strides to be used. Negative numbers indicate indexing from the end
             %exemptStrides: scalar or 2x1 determining how many strides are to be exempted from counting [no sign, exempting equally from end and beginning]
-            %
+            %medianFlag: whether we take mean or median across strides
+            %(mean is default)
+            %ph: handles to individual axes to plot
+            %regFlag: plot linear regression between variables (default=no)
+            %differenceFlag: instead of plotting the second data set as is,
+            %subtract the first set from it first. Useful to compare
+            %baseline behavior to change from baseline
             if ischar(labels)
               labels={labels};
             end
@@ -451,6 +457,10 @@ classdef groupAdaptationData
             else
               data1=nanmean(data1,1);
               data2=nanmean(data2,1);
+            end
+            if nargin>8 && ~isempty(differenceFlag) && differenceFlag==1
+               data2=data2-data1; 
+               str2=[str2 ' (diff)'];
             end
             if nargin<7 || isempty(ph)
               fh=figure();
