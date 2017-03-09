@@ -470,12 +470,12 @@ classdef groupAdaptationData
                     [rho2,pval2]=corr(data1',data2','type','spearman');
                     pp=polyfit(data1,data2,1);
                     plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',[this.groupID ' lin corr']);
-                    text(.9*data1(end),pp(1)*.9*data1(end) + pp(2),['r_{lin} = ' num2str(rho,3) ', p_{lin} = ' num2str(pval,3)])
-                    text(.9*data1(end),.9*(pp(1)*.9*data1(end)+pp(2)),['r_{rank} = ' num2str(rho2,3) ', p_{rank} = ' num2str(pval2,3)])
+                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,3) ', p_{lin} = ' num2str(pval,3)]);
+                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,3) ', p_{rank} = ' num2str(pval2,3)]);
             end
             hold off
             ph=get(gca);
-
+            legend('Location','best')
 
         end
         %Stats
