@@ -9,20 +9,24 @@ classdef groupAdaptationData
     %groupAdaptaitonData Methods:
     %
     %See also: experimentMetaData, subjectData, adaptationData
-    
+
     properties
         ID %cell array of strings listing subject ID's in group
         adaptData % cell array of adaptationData objects
     end
-    
+
     properties (Dependent)
-        
+        groupID
     end
-    
+
+    properties (Hidden)
+      hiddenID='';
+    end
+
     methods
         %% Constructor
-        function this=groupAdaptationData(ID,data)
-            if nargin>1 && length(ID)==length(data)
+        function this=groupAdaptationData(ID,data,groupID)
+            if nargin >1 && length(ID)==length(data)
                 boolFlag=false(1,length(data));
                 for i=1:length(data)
                     boolFlag(i)=isa(data{i},'adaptationData');
@@ -32,10 +36,16 @@ classdef groupAdaptationData
                     this.adaptData=data;
                 end
             end
+
+            if nargin<3 || isempty(groupID)
+                %nop
+            else
+                hiddenID=groupID;
+            end
         end
-        
+
         %% Other Functions
-        
+
         function [conditions,nonCommonConditions] = getCommonConditions(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -50,11 +60,11 @@ classdef groupAdaptationData
                 conds=this.adaptData{subs(s)}.metaData.conditionName;
                 conds=conds(~cellfun('isempty',conds));
                 %check if current subject had conditions other than the rest
-                %for c=1:length(conds)                    
+                %for c=1:length(conds)
                 %    if ~ismember(lower(conds(c)),lower(conditions))
                 %        %Subs.(abrevGroup).conditions{end+1}=conditions{c};
                 %        disp(['Warning: ' this.ID{subs(s)} ' performed ' conds{c} ', but it was not performed by all subjects.'])
-                %    end                    
+                %    end
                 %end
                 %check if current subject didn't have a condition that the rest had
                 for c=1:length(conditions)
@@ -72,7 +82,7 @@ classdef groupAdaptationData
             disp(['Warning: found some non common conditions: ' ])
             disp(nonCommonConditions')
         end
-        
+
         function conditions = getAllConditions(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -81,14 +91,14 @@ classdef groupAdaptationData
                     subs=find(ismember(this.ID,subs));
                 end
             end
-            conditions={}; 
+            conditions={};
             for s=1:length(subs)
                 conditions=[conditions lower(this.adaptData{subs(s)}.metaData.conditionName)];
             end
             conditions=conditions(~cellfun('isempty',conditions));
             conditions=unique(conditions);
         end
-        
+
         function [parameters,descriptions] = getCommonParameters(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -101,16 +111,16 @@ classdef groupAdaptationData
             for s=2:length(subs)
                 params=this.adaptData{subs(s)}.getParameterList;
                 %check if current subject had parameters other than the rest
-                for p=1:length(params)                    
+                for p=1:length(params)
                     if ~ismember(params(p),parameters)
                         disp(['Warning: ' this.ID{subs(s)} ' has ' params{p} ', but it was not computed for all subjects.'])
-                    end                    
+                    end
                 end
                 %check if current subject didn't have a parameter that the rest had
                 for p=1:length(parameters)
                     if ~ismember(parameters(p),params)
                         disp(['Warning: '  parameters{p} 'was not computed for' this.ID{subs(s)} ', but was for ' strjoin(this.ID(1:subs(1:s-1)),', ') '.'])
-                        parameters{p}='';                        
+                        parameters{p}='';
                     end
                 end
                 %refresh parameters by removing empty cells (if you remove
@@ -120,7 +130,7 @@ classdef groupAdaptationData
                 descriptions=descriptions(inds);
             end
         end
-        
+
         function [parameters,descriptions] = getAllParameters(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -139,65 +149,73 @@ classdef groupAdaptationData
             [parameters,idx]=unique(allParams);
             descriptions=allDesc(idx);
         end
-        
+
         function labelList=getLabelsThatMatch(this,exp)
-            labelList=this.getAllParameters; 
+            labelList=this.getAllParameters;
             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
             labelList=labelList(flags);
         end
-        
-        
+
+        function gID=get.groupID(this)
+            if ~isempty(this.hiddenID)
+              gID=this.hiddenID;
+            else
+              gID=this.ID{1}(1); %Using first char in first subjects' ID as group ID.
+            end
+        end
+
+
         %Modifiers
         function newThis=cat(this,other)
-            newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);            
+            newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);
         end
-        
+
         function newThis=removeBadStrides(this)
             newThis=this;
            for i=1:length(this.ID)
               newThis.adaptData{i}=this.adaptData{i}.removeBadStrides;
            end
         end
-        
+
         function newThis=markBadWhenMissingAny(this,labels)
             newThis=this;
            for i=1:length(this.ID)
               newThis.adaptData{i}=this.adaptData{i}.markBadWhenMissingAny(labels);
            end
         end
-        
+
         function newThis=markBadWhenMissingAll(this,labels)
             newThis=this;
            for i=1:length(this.ID)
               newThis.adaptData{i}=this.adaptData{i}.markBadWhenMissingAll(labels);
            end
         end
-        
+
         function newThis=removeBias(this)
             newThis=this;
             for i=1:length(this.ID)
                 newThis.adaptData{i}=this.adaptData{i}.removeBias;
             end
-              
+
         end
-        
+
         function newThis=normalizeBias(this)
             newThis=this;
             for i=1:length(this.ID)
                 newThis.adaptData{i}=this.adaptData{i}.normalizeBias;
             end
-              
+
         end
-        
+
         function newThis=renameParams(this,oldLabels,newLabels)
            for i=1:length(this.ID)
                this.adaptData{i}=this.adaptData{i}.renameParams(oldLabels,newLabels);
            end
            newThis=this;
         end
-        
+
         function newThis=renameConditions(this,oldNames,newNames)
-            %Replaces names for conditions in all members of the group. 
+            %Replaces names for conditions in all members of the group.
             %Old names is a cell array containing strings, or containing
             %cell arrays of strings with multiple alternative spellings.
             %New names is a cell array of strings.
@@ -209,21 +227,21 @@ classdef groupAdaptationData
            end
            newThis=this;
         end
-        
+
         function newThis=medianFilter(this,N)
             newThis=this;
             for i=1:length(this.adaptData)
                 newThis.adaptData{i}=this.adaptData{i}.medianFilter(N);
             end
         end
-        
+
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
             newThis=this;
             for i=1:length(this.adaptData)
                newThis.adaptData{i}=this.adaptData{i}.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
             end
         end
-        
+
         function newThis=removeSubs(this,subList)
            for i=1:length(subList)
                ii=find(strcmp(subList{i},this.ID));
@@ -236,7 +254,7 @@ classdef groupAdaptationData
            end
            newThis=this;
         end
-        
+
         function newThis=getSubGroup(this,subList)
             ii=nan(size(subList));
             for i=1:length(subList)
@@ -251,7 +269,7 @@ classdef groupAdaptationData
            newThis.ID=newThis.ID(ii);
            newThis.adaptData=newThis.adaptData(ii);
         end
-        
+
         %I/O
         function data=getAdaptData(this,subID)
            subInd=find(ismember(subID,this.ID));
@@ -261,21 +279,21 @@ classdef groupAdaptationData
                data =[];
            end
         end
-        
+
         function [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast)
             for subject=1:length(this.adaptData) %Getting data for each subject in the list
                 [inds(:,subject),names]=this.adaptData{subject}.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
             end
         end
-        
+
         function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
             if removeBiasFlag
                 this=this.removeBias;
             end
-            [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);  
+            [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);
             [data]=getGroupedDataFromInds(this,inds,label);
         end
-        
+
         function [data]=getGroupedDataFromInds(this,inds,label)
             data=cell(size(inds,1),1);
             nConds=size(inds{1,1},2);
@@ -285,33 +303,28 @@ classdef groupAdaptationData
             for i=1:length(data)
                data{i}=zeros(nConds,size(inds{i,1},1),nLabs,nSubs);  %Conds x strideGroups x labels x subs
             end
-            
-%             for subject=1:length(this.adaptData) %Getting data for each subject in the list
-%                data_aux=getEarlyLateData_v2(this.adaptData{subject},label,conds,0,numberOfStrides,exemptLast,exemptFirst);
-%                for i=1:length(data)
-%                    data{i}(:,:,:,subject)=data_aux{i}; %conds x strides x parameters(labels) x subjects
-%                end
-%             end
-            
             %Alt: (using the inds data, so we are sure we are actually
-            %getting the same strides when calling upon any function)            
+            %getting the same strides when calling upon any function)
             for j=1:nSubs %For each sub
                 allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
                 for i=1:length(data) %For each strideGroup
                     data{i}(:,:,:,j)=allData{i};
                 end
             end
-            
+
         end
-        
+
         function [meanData,stdData]=getAvgGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
             [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast);
             for i=1:length(data)
                meanData(:,i,:,:)=nanmean(data{i},2); %conds x strideGroups x parameters x subjects
-               stdData(:,i,:,:)=nanstd(data{i},[],2); 
+               stdData(:,i,:,:)=nanstd(data{i},[],2);
             end
         end
-        
+
+        function newThis=catGroups(this,other)
+            %
+        end
         %Visualization
         %Scatter
         function [fh,dataAll,idAll]=scatter(this, params, conditions)
@@ -351,7 +364,7 @@ classdef groupAdaptationData
            legend([p ppp],[conditions this.ID])
            idAll=idAll';
         end
-        
+
         %TimeCourses
         function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
             if nargin<4 || isempty(binwidth)
@@ -369,7 +382,7 @@ classdef groupAdaptationData
             if nargin<8
                 colorOrder=[];
             end
-            if nargin<9 
+            if nargin<9
                 biofeedback=[];
             end
             if nargin<10
@@ -384,23 +397,96 @@ classdef groupAdaptationData
             if nargin<13
                 plotHandles=[];
             end
-                
+
             fh=adaptationData.plotAvgTimeCourse(this.adaptData,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles);
-            
+
         end
-        
+
         %Bars
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
-        
+
+        %Individuals
+        function [fh,ph]=plotIndividuals(this,labels,conds,strideNo,exemptStrides,medianFlag,ph,regFlag)
+            %This function plots individual averages (or medians) for some subset of strides
+            %INPUTS:
+            %this: a groupAdapatationData object
+            %labels: a string, or cell containing up to two parameter names (if only one, assume the same label is being compared to itself)
+            %conds: a string, or cell containing up to two condition names (if only one, .. blah)
+            %strideNo: a scalar or 2x1 vector, containing the number of strides to be used. Negative numbers indicate indexing from the end
+            %exemptStrides: scalar or 2x1 determining how many strides are to be exempted from counting [no sign, exempting equally from end and beginning]
+            %
+            if ischar(labels)
+              labels={labels};
+            end
+            if ischar(conds)
+              conds={conds};
+            end
+            if length(labels)>2 || length(conds)>2 || length(strideNo)>2
+              error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
+            end
+            auxStr={'last', '', 'first'};
+            if ~strcmp('sub',labels{1}(1:3))
+                [data1]=getGroupedData(this,labels(1),conds(1),0,strideNo(1),exemptStrides(1),exemptStrides(1));
+                data1=squeeze(data1{1});
+                str1=[labels{1} ' [' auxStr{sign(strideNo(1))+2} ' ' num2str(abs(strideNo(1))) ' (' num2str(exemptStrides(1)) ') ' conds{1} ']'];
+            else
+               for j=1:length(this.ID)
+                  data1(1,j)=this.adaptData{j}.subData.(labels{1}(4:end)); %Needs to be numeric field or it will fail 
+               end
+               str1=['Subject ' labels{1}(4:end)];
+            end
+            if ~strcmp('sub',labels{end}(1:3))
+                [data2]=getGroupedData(this,labels(end),conds(end),0,strideNo(end),exemptStrides(end),exemptStrides(end));
+                data2=squeeze(data2{1});
+                str2=[labels{end} ' [' auxStr{sign(strideNo(end))+2} ' ' num2str(abs(strideNo(end))) ' (' num2str(exemptStrides(end)) ') ' conds{end} ']'];
+            else
+                for j=1:length(this.ID)
+                    data2(1,j)=this.adaptData{j}.subData.(labels{end}(4:end)); %Needs to be numeric field or it will fail 
+                end
+               str2=['Subject ' labels{end}(4:end)];
+            end
+            if nargin>5 && ~isempty(medianFlag) && medianFlag==1
+              data1=nanmedian(data1,1);
+              data2=nanmedian(data2,1);
+            else
+              data1=nanmean(data1,1);
+              data2=nanmean(data2,1);
+            end
+            if nargin<7 || isempty(ph)
+              fh=figure();
+            else
+              subplot(ph);
+            end
+            hold on
+            p=plot(data1,data2,'o','DisplayName',[this.groupID]);
+            text(data1,data2,strcat('-  ',this.ID),'FontSize',8,'Color',p.Color)
+            set(p,'MarkerFaceColor',p.Color);
+            p.MarkerEdgeColor='None';
+            
+            xlabel(str1)
+            ylabel(str2)
+            if nargin>7 && ~isempty(regFlag) && regFlag ==1
+                    [rho,pval]=corr(data1',data2','type','pearson');
+                    [rho2,pval2]=corr(data1',data2','type','spearman');
+                    pp=polyfit(data1,data2,1);
+                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',[this.groupID ' lin corr']);
+                    text(.9*data1(end),pp(1)*.9*data1(end) + pp(2),['r_{lin} = ' num2str(rho,3) ', p_{lin} = ' num2str(pval,3)])
+                    text(.9*data1(end),.9*(pp(1)*.9*data1(end)+pp(2)),['r_{rank} = ' num2str(rho2,3) ', p_{rank} = ' num2str(pval2,3)])
+            end
+            hold off
+            ph=get(gca);
+
+
+        end
         %Stats
         %function []=anova2()
         %
         %end
-        
+
         %function []=anova1()
-        %    
+        %
         %end
-        
+
         function [p,table,stats,postHoc,postHocEstimates,data]=friedman(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)
             %Runs Friedman (non-parametric 1-way repeated measures anova
             %equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is
@@ -424,12 +510,12 @@ classdef groupAdaptationData
             end
             inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
             inds=cell2mat(inds');
-            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order. 
+            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order.
             inds=inds(:,ii);
             inds=mat2cell(inds,N*ones(length(this.ID),1),M);
             [p,table,stats,postHoc,postHocEstimates,data]=friedmanI(this,label,inds,interactionFlag,avgFlag);
         end
-        
+
         function [p,table,stats,postHoc,postHocEstimates,data]=anova1RM(this,label,conds,groupingStrides,exemptFirst,exemptLast,interactionFlag,avgFlag)
             %TODO: Should check that numberOfStrides groups are given in
             %chronological order & that so are the conditions in condList
@@ -449,18 +535,18 @@ classdef groupAdaptationData
             end
             inds=this.getGroupedInds(conds,groupingStrides,exemptFirst,exemptLast);
             inds=cell2mat(inds');
-            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order. 
+            [~,ii]=sort(nanmean(inds,1)); %Sorting so groups are presented in appearance order.
             inds=inds(:,ii);
             inds=mat2cell(inds,N*ones(length(this.ID),1),M);
             [p,table,stats,postHoc,postHocEstimates,data]=anova1RMI(this,label,inds,interactionFlag,avgFlag);
         end
-        
+
         function [p,table,stats,postHoc,postHocEstimates,allData]=friedmanI(this,label,inds,interactionFlag,avgFlag)
             %Runs Friedman (non-parametric 1-way repeated measures anova
             %equivalent) for the grouped data. Individual ID is considered to be the blocking factor, each individual is
             %considered to be a block, and the different index groups are
             %compared to each other.
-            
+
             %inds should be a cell with length = #subs and its contents a
             %NxM matrix, where M is the number of groups to be tested and N
             %the number of strides/repetitions in each group
@@ -471,12 +557,12 @@ classdef groupAdaptationData
             %N=size(inds{1},1);
             %M=size(inds{1},2)*size(inds,1);
             %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
-            
-            %Check that the size of inds is the same for all 
+
+            %Check that the size of inds is the same for all
             %subjects (friedman needs to be balanced)
-            
+
             %Check that size(inds,1)==#subs
-            
+
             %Do Friedman
             N=size(inds{1},1); %Number of strides per stride group
             M=size(inds{1},2); %Number of stride groups
@@ -501,7 +587,7 @@ classdef groupAdaptationData
                     [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=this.friedmanI(label{i},inds,interactionFlag,avgFlag);
                 end
             else
-                allData=nan(N,P,M);                
+                allData=nan(N,P,M);
                 for j=1:P
                     aux=this.adaptData{j}.data.getDataAsVector(label); %Should I be normalizing or removing bias?
                     for i=1:M
@@ -531,7 +617,7 @@ classdef groupAdaptationData
                 end
             end
         end
-        
+
         function [p,table,stats,postHoc,postHocEstimates,allData]=anova1RMI(this,label,inds,interactionFlag,avgFlag)
             %One-way repeated measures anova, using each individual as a
             %block, and testing across stride groups (e.g. early adap vs late
@@ -544,7 +630,7 @@ classdef groupAdaptationData
             %M=size(inds{1},2)*size(inds,1);
             %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
             N=size(inds{1},1);%Number of strides per stride group
-            M=size(inds{1},2);%Number of strideGroups 
+            M=size(inds{1},2);%Number of strideGroups
             P=length(this.ID); %#subs = size(inds,2)
             if isa(label,'char')
                 label={label};
@@ -566,7 +652,7 @@ classdef groupAdaptationData
                     [p{i},table{i},stats{i},postHoc{i},postHocEstimates{i},allData{i}]=anova1RMI(this,label{i},inds,interactionFlag,avgFlag);
                 end
             else
-                allData=nan(N,P,M);                
+                allData=nan(N,P,M);
                 for j=1:P %For each sub
                     aux=this.adaptData{j}.data.getDataAsVector(label); %Should I be normalizing or removing bias?
                     for i=1:M %For each strideGroup
@@ -577,7 +663,7 @@ classdef groupAdaptationData
                     allData=nanmean(allData,1);
                     N=1;
                 end
-                data=reshape(allData,N*P,M); 
+                data=reshape(allData,N*P,M);
                 subID=repmat(this.ID,N,M);
                 strideGroup=repmat([1:M],N*P,1);
                 [p,table,stats,~]=anovan(data(:),{subID(:) strideGroup(:)},'display','off','random',[1],'varnames',{'subID','strideGroup'},'model',model);
@@ -590,7 +676,7 @@ classdef groupAdaptationData
                 postHocEstimates(sub2ind([M,M],mm(:,1),mm(:,2)))=mm(:,4);
             end
         end
-        
+
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=summaryKW(this,param,conds,groupingStrides,exemptFirst,exemptLast)
             %Runs kruskal-wallis for each individual, and returns
             %summarized results.
@@ -598,14 +684,15 @@ classdef groupAdaptationData
                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
            end
         end
-        
+
     end
     methods(Static)
        % Several groups visualization
        [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
-       
+
        % Several groups stats
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
+          %2-sample t-test comparing behavior of parameters across groups, for a given subset of strides
            %Check that there are exactly two groups
 
             for j=1:length(condition)
@@ -618,7 +705,6 @@ classdef groupAdaptationData
                 end
             end
        end
-        
+
     end
 end
-
