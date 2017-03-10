@@ -36,8 +36,9 @@ classdef adaptationData
         data %cell array of parameterSeries type
     end
     
-    properties (Dependent)
-        
+    properties(Hidden)
+        TMbias_=[];
+        OGbias_=[];
     end
     
     methods
@@ -120,6 +121,40 @@ classdef adaptationData
                 conditions=[];
             end
             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
+            newThis.TMbias_=baseValues(strcmp(typeList,'TM'),:);
+            newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
+        end
+        
+        function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
+           %Same as removeBias, but for an arbitrary subset of strides
+           %(e.g. remove the mean of the first 20 strides of adaptation)
+           
+           base=getEarlyLateData_v2(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); %Last 40, exempting very last 5 and first 10
+           if nargin<5 || isempty(medianFlag) || medianFlag==0
+               base=nanmean(squeeze(base{1}));
+           else
+               base=nanmedian(squeeze(base{1}));
+           end
+           newThis=this;
+           dataOld=this.data.Data;
+            if normalizeFlag==0
+                %added lines to ensure that if certain parameters never
+                %have a baseline to remove the bias, they are not assigned
+                %as NaN from the bsxfun @minus. 
+                %data(isnan(data))=-100000;
+                base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
+                newData=bsxfun(@minus,dataOld,base); %Substracting baseline
+                base(base==0)=nan;
+            else
+                base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
+                newData=bsxfun(@rdivide,dataOld,base); %Dividing by baseline
+                base(base==1)=nan;
+            end
+            newThis.data.Data=newData;
+            %newData(isnan(data))=nan;
+            newThis.TMbias_=base;
+            newThis.OGbias_=base;
+                
         end
         
         function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
@@ -170,7 +205,20 @@ classdef adaptationData
         end
         
         function newThis=replaceLR(this)
-            
+            %Idea: get any label that uses 'L' or 'R' and replace it by 'S'
+            %and 'F' as corresponds.
+            %Also need to write the inverse function
+        end
+        
+        function [biasTM,biasOG]=getParameterBias(this,labels)
+            if isempty(this.TMbias_)
+                warning('This adaptationData object is not unbiased.')
+                bias=[];
+            else
+                [boolFlag,idx]=this.data.isaLabel(labels);
+                biasOG=this.OGbias_(idx(boolFlag));
+                biasTM=this.TMbias_(idx(boolFlag));
+            end
         end
         
         function newThis=markBadWhenMissingAny(this,labels)

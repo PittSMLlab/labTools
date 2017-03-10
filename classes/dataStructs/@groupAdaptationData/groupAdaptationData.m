@@ -313,6 +313,12 @@ classdef groupAdaptationData
             end
 
         end
+        
+        function [biasTM, biasOG]= getGroupedBias(this,label)
+            for i=1:length(this.ID)
+                [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getParameterBias(label);
+            end
+        end
 
         function [meanData,stdData]=getAvgGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
             [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast);
@@ -431,42 +437,65 @@ classdef groupAdaptationData
               error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
             end
             auxStr={'last', '', 'first'};
-            if ~strcmp('sub',labels{1}(1:3))
-                [data1]=getGroupedData(this,labels(1),conds(1),0,strideNo(1),exemptStrides(1),exemptStrides(1));
-                data1=squeeze(data1{1});
-                str1=[labels{1} ' [' auxStr{sign(strideNo(1))+2} ' ' num2str(abs(strideNo(1))) ' (' num2str(exemptStrides(1)) ') ' conds{1} ']'];
-            else
-               for j=1:length(this.ID)
-                  data1(1,j)=this.adaptData{j}.subData.(labels{1}(4:end)); %Needs to be numeric field or it will fail 
-               end
-               str1=['Subject ' labels{1}(4:end)];
+            if length(labels)==1
+                labels=[labels labels];
             end
-            if ~strcmp('sub',labels{end}(1:3))
-                [data2]=getGroupedData(this,labels(end),conds(end),0,strideNo(end),exemptStrides(end),exemptStrides(end));
-                data2=squeeze(data2{1});
-                str2=[labels{end} ' [' auxStr{sign(strideNo(end))+2} ' ' num2str(abs(strideNo(end))) ' (' num2str(exemptStrides(end)) ') ' conds{end} ']'];
-            else
-                for j=1:length(this.ID)
-                    data2(1,j)=this.adaptData{j}.subData.(labels{end}(4:end)); %Needs to be numeric field or it will fail 
+            if length(strideNo)==1
+                strideNo=[strideNo strideNo];
+            end
+            if length(conds)==1
+                conds=[conds conds];
+            end
+            if length(exemptStrides)==1
+                exemptStrides=[exemptstrides exemptStrides];
+            end
+            
+            for kk=1:2 %Getting data for X & Y
+                if length(labels{kk})>2 && strcmp('sub',labels{kk}(1:3)) %Case we are asking for biographical data
+                    for j=1:length(this.ID)
+                      data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail 
+                    end
+                    str=['Subject ' labels{kk}(4:end)];
+                elseif length(labels{kk})>5 && (strcmp('biasTM',labels{kk}(1:6)) || strcmp('biasOG',labels{kk}(1:6)))%Parameter is actually the bias of a parameter
+                    try %This could fail if the adaptationData contained here is not unbiased
+                        [biasTM,biasOG]= this.getGroupedBias(labels{kk}(7:end));
+                        if strcmp(labels{kk}(5:6),'TM')
+                            data=biasTM;
+                            str=[labels{kk}(7:end) ' TM bias'];
+                        else
+                            data=biasOG;
+                            str=[labels{kk}(7:end) 'OG bias'];
+                        end
+                    catch
+                       ME=MException('groupAdaptData:plotIndividuals','Attempted to plot the bias of a parameter, but adaptationData appears not to be biased');
+                       throw(ME)
+                    end
+
+                else %Standard parameter
+                    [data]=getGroupedData(this,labels(kk),conds(kk),0,strideNo(kk),exemptStrides(kk),exemptStrides(kk));
+                    data=squeeze(data{1});
+                    str=[labels(kk);{[ ' [' auxStr{sign(strideNo(kk))+2} ' ' num2str(abs(strideNo(kk))) ' (' num2str(exemptStrides(kk)) ') ' conds{kk} ']']}];
                 end
-               str2=['Subject ' labels{end}(4:end)];
+                if nargin>5 && ~isempty(medianFlag) && medianFlag==1
+                    data=nanmedian(data,1);
+                else
+                    data=nanmean(data,1);
+                end
+                eval(['data' num2str(kk) '=data;']);
+                eval(['str' num2str(kk) '=str;']);
             end
-            if nargin>5 && ~isempty(medianFlag) && medianFlag==1
-              data1=nanmedian(data1,1);
-              data2=nanmedian(data2,1);
-            else
-              data1=nanmean(data1,1);
-              data2=nanmean(data2,1);
-            end
+
             if nargin>8 && ~isempty(differenceFlag) && differenceFlag==1
                data2=data2-data1; 
-               str2=[str2 ' (diff)'];
+               str2{1}=[str2{1} ' (diff)'];
             end
+            
             if nargin<7 || isempty(ph)
               fh=figure();
             else
               subplot(ph);
             end
+            
             hold on
             p=plot(data1,data2,'o','DisplayName',[this.groupID]);
             text(data1,data2,strcat('-  ',this.ID),'FontSize',8,'Color',p.Color)
@@ -475,17 +504,19 @@ classdef groupAdaptationData
             
             xlabel(str1)
             ylabel(str2)
+            p2=[];
+            p3=[];
             if nargin>7 && ~isempty(regFlag) && regFlag ==1
                     [rho,pval]=corr(data1',data2','type','pearson');
                     [rho2,pval2]=corr(data1',data2','type','spearman');
                     pp=polyfit(data1,data2,1);
-                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',[this.groupID ' lin corr']);
-                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,3) ', p_{lin} = ' num2str(pval,3)]);
-                    plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,3) ', p_{rank} = ' num2str(pval2,3)]);
+                    p2=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,2) ', p_{lin} = ' num2str(pval,2)]);
+                    p3=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,2) ', p_{rank} = ' num2str(pval2,2)]);
             end
             hold off
             ph=get(gca);
-            legend('Location','best')
+            hl=legend('Location','best');
+            set(hl,'FontSize',4)
 
         end
         %Stats
