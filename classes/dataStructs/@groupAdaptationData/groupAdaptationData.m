@@ -206,6 +206,19 @@ classdef groupAdaptationData
             end
 
         end
+        
+        function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
+            newThis=this;
+            if nargin<5 
+                medianFlag=0;
+            end
+            if nargin<6
+                normalizeFlag=[];
+            end
+            for i=1:length(this.ID)
+                newThis.adaptData{i}=this.adaptData{i}.removeAltBias(condName,strideNo,exemptStrides,medianFlag,normalizeFlag);
+            end
+        end
 
         function newThis=renameParams(this,oldLabels,newLabels)
            for i=1:length(this.ID)
