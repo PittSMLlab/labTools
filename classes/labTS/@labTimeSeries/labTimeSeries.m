@@ -73,13 +73,15 @@ classdef labTimeSeries  < timeseries
             time=this.Time;
             [boolFlag,labelIdx]=this.isaLabel(auxLabel);
             for i=1:length(boolFlag)
-                if boolFlag(i)==0
+                if ~boolFlag(i)
                     warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
                 end
             end
             
-            data=this.Data(:,labelIdx(boolFlag==1));
-            auxLabel=this.labels(labelIdx(boolFlag==1));
+            data=this.Data(:,labelIdx(boolFlag));
+            if nargout>2
+                auxLabel=this.labels(boolFlag);
+            end
         end
         
         function [newTS,auxLabel]=getDataAsTS(this,label)
@@ -115,18 +117,29 @@ classdef labTimeSeries  < timeseries
             end
             
             N=length(auxLabel);
-            boolFlag=false(N,1);
-            labelIdx=zeros(N,1);
-            for j=1:N
-                %Alternative efficient formulation:
-                %boolFlag(j)=any(strcmp(auxLabel{j},this.labels));
-                %labelIdx(j)=find(strcmp(auxLabel{j},this.labels));
-                for i=1:length(this.labels)
-                     if strcmpi(auxLabel{j},this.labels{i})
-                       boolFlag(j)=true;
-                       labelIdx(j)=i;
-                       break;
-                     end
+            M=length(this.labels);
+            if N==M && all(strcmp(label,this.labels)) %Case in which the list is identical to the label list, save time by not calling find() recursively. 
+                %If this is true, it saves about 50ms per call, or 5 secs every 100 calls
+                %If false, it adds a small overhead of less than .1ms per call, which is negligible compared to the loop that needs to be performed.
+                boolFlag=true(N,1);
+                labelIdx=1:M;
+            else
+                boolFlag=false(N,1);
+                labelIdx=zeros(N,1);
+                for j=1:N
+                    %Alternative efficient formulation: (when running
+                    %removeAltBias for a group of 16 subjects, this change
+                    %shaves 180s of processing, which is roughly 85% of total
+                    %processing time!)
+                    boolFlag(j)=any(strcmp(auxLabel{j},this.labels));
+                    labelIdx(j)=find(strcmp(auxLabel{j},this.labels));
+    %                 for i=1:length(this.labels)
+    %                      if strcmpi(auxLabel{j},this.labels{i})
+    %                        boolFlag(j)=true;
+    %                        labelIdx(j)=i;
+    %                        break;
+    %                      end
+    %                 end
                 end
             end
         end
