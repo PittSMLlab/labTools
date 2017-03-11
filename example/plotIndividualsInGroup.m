@@ -96,8 +96,8 @@ strideNo=[-40,-40];
 conds={'Adap'};
 exemptNo=5;
 regFlag=1;
-diffFlag=1;
-gAdaptData=gAdaptData.removeAltBias({'Adap'},20,5,1,0); %This removes the median of the first 20 strides of adaptation, exempting the very first 5: everything will be with respect to early adaptation behavior
+diffFlag=0;
+gAdaptData=gAdaptData.removeAltBias({'Adap'},20,5,1,diffFlag); %This removes the median of the first 20 strides of adaptation, exempting the very first 5: everything will be with respect to early adaptation behavior
 %Note that removeAltBias can be called successively and it acts in such a
 %way that it is the same as only having made the last call
 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(9),regFlag,diffFlag);
