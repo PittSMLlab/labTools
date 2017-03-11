@@ -446,24 +446,32 @@ classdef groupAdaptationData
             if ischar(conds)
               conds={conds};
             end
+            maxK=2;
             if length(labels)>2 || length(conds)>2 || length(strideNo)>2
-              error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
+                if differenceFlag==1 && length(labels)<3 && length(conds)<4 && length(strideNo)<4
+                    maxK=3; %Three strides sets provided, going to plot 1 vs. (2 minus 3), 2 and 3 need to be for the same parameter
+                else
+                    error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
+                end
             end
             auxStr={'last', '', 'first'};
-            if length(labels)==1
-                labels=[labels labels];
+            while length(labels)<3 %If we have less than 3 labels, 
+                %repeat the last label: it works both if a single label is provided,
+                %as well as if two are. In the case that user did not specify 
+                %a third stride subset to subtract (maxK==2) the third one is just ignored
+                labels=[labels labels(end)];
             end
-            if length(strideNo)==1
-                strideNo=[strideNo strideNo];
+            while length(strideNo)<3
+                strideNo=[strideNo strideNo(end)];
             end
-            if length(conds)==1
-                conds=[conds conds];
+            while length(conds)<3
+                conds=[conds conds(end)];
             end
-            if length(exemptStrides)==1
-                exemptStrides=[exemptstrides exemptStrides];
+            while length(exemptStrides)<3
+                exemptStrides=[exemptStrides exemptStrides(end)];
             end
             
-            for kk=1:2 %Getting data for X & Y
+            for kk=1:maxK %Getting data for X & Y
                 if length(labels{kk})>2 && strcmp('sub',labels{kk}(1:3)) %Case we are asking for biographical data
                     for j=1:length(this.ID)
                       data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail 
@@ -474,10 +482,10 @@ classdef groupAdaptationData
                         [biasTM,biasOG]= this.getGroupedBias(labels{kk}(7:end));
                         if strcmp(labels{kk}(5:6),'TM')
                             data=biasTM;
-                            str=[labels{kk}(7:end) ' TM bias'];
+                            str=[{labels{kk}(7:end)}; {'TM bias'}];
                         else
                             data=biasOG;
-                            str=[labels{kk}(7:end) 'OG bias'];
+                            str=[{labels{kk}(7:end)}; {'OG bias'}];
                         end
                     catch
                        ME=MException('groupAdaptData:plotIndividuals','Attempted to plot the bias of a parameter, but adaptationData appears not to be biased');
@@ -499,8 +507,13 @@ classdef groupAdaptationData
             end
 
             if nargin>8 && ~isempty(differenceFlag) && differenceFlag==1
-               data2=data2-data1; 
-               str2{1}=[str2{1} ' (diff)'];
+                if maxK==2
+                    data2=data2-data1; 
+                    str2{1}=[str2{1} ' (diff)'];
+                else
+                    data2=data2-data3; 
+                    str2{2}=[str2{2} ' minus ' str3{2}];
+                end
             end
             
             if nargin<7 || isempty(ph)
@@ -529,7 +542,8 @@ classdef groupAdaptationData
             hold off
             ph=get(gca);
             hl=legend('Location','best');
-            set(hl,'FontSize',4)
+            set(hl,'FontSize',6)
+            set(gca,'Units','Normalized')
 
         end
         %Stats
