@@ -329,7 +329,7 @@ classdef groupAdaptationData
         
         function [biasTM, biasOG]= getGroupedBias(this,label)
             for i=1:length(this.ID)
-                [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getParameterBias(label);
+                [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getBias(label);
             end
         end
 
