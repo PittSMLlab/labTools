@@ -129,7 +129,7 @@ classdef adaptationData
            %Same as removeBias, but for an arbitrary subset of strides
            %(e.g. remove the mean of the first 20 strides of adaptation)
            
-           base=getEarlyLateData_v2(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); %Last 40, exempting very last 5 and first 10
+           base=getEarlyLateData_v2(this.removeBadStrides,this.data.labels,condName,0,strideNo,exemptStrides,exemptStrides); %Last 40, exempting very last 5 and first 10
            if nargin<5 || isempty(medianFlag) || medianFlag==0
                base=nanmean(squeeze(base{1}));
            else
@@ -150,11 +150,16 @@ classdef adaptationData
                 newData=bsxfun(@rdivide,dataOld,base); %Dividing by baseline
                 base(base==1)=nan;
             end
-            newThis.data.Data=newData;
+            M=newThis.data.fixedParams;
+            newThis.data.Data(:,M+1:end)=newData(:,newThis.data.fixedParams+1:end); %Not removing bias for 'fixed' params: initTime, finalTime, trial, good, bad
             %newData(isnan(data))=nan;
-            newThis.TMbias_=base;
-            newThis.OGbias_=base;
-                
+            if isempty(this.TMbias_) %Default if bias was not removed previously
+                newThis.TMbias_=[zeros(1,M) base(M+1:end)];
+                newThis.OGbias_=[zeros(1,M) base(M+1:end)];
+            else
+                newThis.TMbias_=newThis.TMbias_+[zeros(1,M) base(M+1:end)];
+                newThis.OGbias_=newThis.OGbias_+[zeros(1,M) base(M+1:end)];
+            end
         end
         
         function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
