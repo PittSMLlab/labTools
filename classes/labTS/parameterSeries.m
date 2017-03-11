@@ -47,7 +47,7 @@ classdef parameterSeries < labTimeSeries
         end
        
         
-        %% Getters for dependent variabls
+        %% Getters for dependent variables (this could be made more efficient by fixing the indexes for these parameters ( which is something that already happens in practice) and doing direct indexing to data,
         function vals=get.bad(this)
             if this.isaParameter('bad')
                 vals=this.getDataAsVector('bad');
