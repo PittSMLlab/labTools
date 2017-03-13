@@ -122,10 +122,10 @@ hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % Average Hip Position from
 
 hipPos2D=hipPos3D(:,:,1:2);
 %Compute ankle position relative to average hip position
-sAnkFwd=sAnk(:,:,2)-hipPosFwd;
-fAnkFwd=fAnk(:,:,2)-hipPosFwd;
-sAnk2D=sAnk(:,:,1:2)-hipPos2D;
-fAnk2D=fAnk(:,:,1:2)-hipPos2D;
+sAnkFwd=sAnk(:,:,2);
+fAnkFwd=fAnk(:,:,2);
+sAnk2D=sAnk(:,:,1:2);
+fAnk2D=fAnk(:,:,1:2);
 sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion 
 fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion 
 % Set all steps to have the same slope (a negative slope during stance phase is assumed)
