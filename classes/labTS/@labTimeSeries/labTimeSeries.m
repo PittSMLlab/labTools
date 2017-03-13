@@ -115,10 +115,10 @@ classdef labTimeSeries  < timeseries
             else
                 error('labTimeSeries:isaLabel','label input argument has to be a string or a cell array containing strings.')
             end
-            
+            auxLabel=auxLabel(:)';
             N=length(auxLabel);
             M=length(this.labels);
-            if N==M && all(strcmp(label,this.labels)) %Case in which the list is identical to the label list, save time by not calling find() recursively. 
+            if N==M && all(strcmp(auxLabel,this.labels)) %Case in which the list is identical to the label list, save time by not calling find() recursively. 
                 %If this is true, it saves about 50ms per call, or 5 secs every 100 calls
                 %If false, it adds a small overhead of less than .1ms per call, which is negligible compared to the loop that needs to be performed.
                 boolFlag=true(N,1);
