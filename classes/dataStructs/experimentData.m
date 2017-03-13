@@ -340,7 +340,7 @@ classdef experimentData
         end
         
         %% Update/modify
-        function this=recomputeParameters(this,eventClass,initEventSide)
+        function this=recomputeParameters(this,eventClass,initEventSide,parameterClasses)
         %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
         %objects in experimentData.data.
         %
@@ -356,9 +356,13 @@ classdef experimentData
             if nargin<3 || isempty(initEventSide)
                 initEventSide=[];
             end
+            if nargin<4 || isempty(parameterClasses)
+                parameterClasses=[];
+            end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide); 
+                  newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses); 
+                  this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
         

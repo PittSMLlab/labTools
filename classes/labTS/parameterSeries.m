@@ -175,11 +175,15 @@ classdef parameterSeries < labTimeSeries
            newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
         end
         
-        function newThis=getDataAsPS(this,labels,strides)
+        function newThis=getDataAsPS(this,labels,strides,skipFixedParams)
             if nargin<2 || isempty(labels)
                 labels=this.labels;
             end
-            extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
+            if nargin<4 || isempty(skipFixedParams) || skipFixedParams~=1
+                extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
+            else
+                extendedLabels=labels(:);
+            end
             [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
             extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
             [bool,idx]=this.isaLabel(extendedLabels);
@@ -196,6 +200,19 @@ classdef parameterSeries < labTimeSeries
             end
             other=parameterSeries(newData,newLabels,this.hiddenTime,newDesc,this.trialTypes);
             newThis=cat(this,other);
+        end
+        
+        function this=replaceParams(this,other)
+           %Replaces existing parameters in this, with parameter data in other
+           
+          [bool,idx]=this.isaLabel(other.labels); %Finding parameters that already existed
+          this.Data(:,idx(bool))=other.Data(:,bool); %Replacing data
+          this.description_(idx(bool))=other.description(bool); %Replacing descriptions (is this necessary?)
+          %catting data for parameters that DIDN'T exist
+          if any(~bool)
+              warning('Asked to replace parameters, but found parameters that didn''t exist. Appending.')
+             this=this.cat(other.getDataAsPS(other.labels(~bool),[],1));
+          end
         end
         
         function newThis=markBadWhenMissingAny(this,labels)

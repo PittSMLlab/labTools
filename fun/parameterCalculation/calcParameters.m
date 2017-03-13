@@ -1,4 +1,4 @@
-function out = calcParameters(trialData,subData,eventClass,initEventSide)
+function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)
 %out = calcParameters(trialData,subData,eventClass,initEventSide)
 %INPUT:
 %trialData: processedTrialData object
@@ -16,6 +16,11 @@ function out = calcParameters(trialData,subData,eventClass,initEventSide)
 
 if nargin<3 || isempty(eventClass)
     eventClass='';
+end
+if nargin<5 || isempty(parameterClasses)
+    parameterClasses={'basic','temporal','spatial','rawEMG','procEMG','force'};
+elseif ischar(parameterClasses)
+    parameterClasses={parameterClasses};
 end
 
 %% Separate into strides & identify events on each
@@ -82,12 +87,16 @@ for j=1:length(eventTypes)
     strideEvents.(['t' upper(eventLables{j}) '2'])=eventTimes2(:,j);
 end
 
-%% Compute basic parameters to save & initialize parameterSeries
-%initialize the bad/good flag
+%% Compute params
 extendedEventTimes=[eventTimes, eventTimes2(:,1:2)]; %times of SHS, FTO, FHS, FTO, SHS2, FTO2
 times=nanmean(extendedEventTimes,2); %This is an average of the times of SHS, FTO, FHS, FTO, SHS2, FTO2 (same as old code), IF available.
+out=parameterSeries(zeros(length(times),0),{},times,{});
+%initialize the bad/good flag
 strideDuration=diff(extendedEventTimes(:,[1,5]),1,2);
 bad=any(isnan(extendedEventTimes),2) | any(diff(extendedEventTimes,1,2)<0,2) | (strideDuration >1.5*nanmedian(strideDuration)) | (strideDuration<.4) | (strideDuration>2.5); %Checking for missing events, negative duration phases (wrong event order), too long or too short strides
+
+%% basic parameters to save & initialize parameterSeries
+if any(strcmpi(parameterClasses,'basic'))
 
 %initialize trial number
 try
@@ -106,23 +115,28 @@ finalTime=extendedEventTimes(:,6); %FTO2
 data=[bad,~bad,trial,initTime,finalTime];
 labels={'bad','good','trial','initTime','finalTime'};
 description={'True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
-out=parameterSeries(data,labels,times,description);  
+basic=parameterSeries(data,labels,times,description);  
+out=cat(out,basic);
+end
 
-%% Compute parameters
-%Temporal:
+%% Temporal:
+if any(strcmpi(parameterClasses,'temporal'))
 [temp] = computeTemporalParameters(strideEvents);
 out=cat(out,temp);
+end
 
-%Spatial:
-if ~isempty(trialData.markerData) && (numel(trialData.markerData.labels)~=0)
+%% Spatial:
+if any(strcmpi(parameterClasses,'spatial')) && ~isempty(trialData.markerData) && (numel(trialData.markerData.labels)~=0)
 [spat] = computeSpatialParameters(strideEvents,trialData.markerData,trialData.angleData,s);
 out=cat(out,spat);
 end
 
-%EMG:
-if ~isempty(trialData.procEMGData)
+%% EMG:
+if any(strcmpi(parameterClasses,'procEMG')) && ~isempty(trialData.procEMGData)
     [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
     out=cat(out,emg);
+end
+if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.rawEMGData)
     rawEMG = computeEMGParameters(strideEvents,stridedRawEMG,s);
     %Renaming params & descriptions:
     nLabels=strcat('RAW',rawEMG.labels);
@@ -130,8 +144,9 @@ if ~isempty(trialData.procEMGData)
     rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
     out=cat(out,rawEMG);
 end
-%Force
-if ~isempty(trialData.GRFData)
+
+%% Force
+if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
 
     if ~isempty(force.Data)
@@ -139,43 +154,38 @@ if ~isempty(trialData.GRFData)
     end
 end
 
-%%Force
-%if ~isempty(trialData.GRFData)
-%    [force] = computeForceParameters(strideEvents,trialData.GRFData,s);
-%%     keyboard
-%    if ~isempty(force.stridesTrial)
-%        out=cat(out,force);
-%    end
-%end
-
-%% Compute an updated bad/good flag based on computed parameters & finding outliers
-badStart=bad; %make a copy to compare at the end
+%% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
+if any(strcmpi(parameterClasses,'basic'))
+%badStart=bad; %make a copy to compare at the end
 %TODO: make this process generalized so that it can filter any parameter
 %TODO: make this into a method of parameterSeries or labTimeSeries
 %should also consider a different method of filtering...
-paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
-for i=1:length(paramsToFilter)
-    aux=out.getDataAsVector(paramsToFilter{i});
-    if ~isempty(aux) %In case any of these parameters does not exist
-    aux=aux-runAvg(aux,50); % remove effects of adaptation
-    % mark strides bad if values for SL or alpha are larger than 3x the
-    % interquartile range away from the median.
-    %Criteria 1: anything outside +-3.5 interquartile ranges
-    %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
-
-    %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
-    %5 strides of any trial.
-    % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-    %    inds=inds(inds>5);
-    %    bad(inds)=true;
-    end
-    
-end
+%paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
+%Pablo block-commented on MAr 13th 2017, because this part of code was
+%doing nothing anyway (only defined the variable named 'aux', which wasn't
+%used downstream
+% for i=1:length(paramsToFilter)
+%     aux=out.getDataAsVector(paramsToFilter{i});
+%     if ~isempty(aux) %In case any of these parameters does not exist
+%     aux=aux-runAvg(aux,50); % remove effects of adaptation
+%     % mark strides bad if values for SL or alpha are larger than 3x the
+%     % interquartile range away from the median.
+%     %Criteria 1: anything outside +-3.5 interquartile ranges
+%     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+% 
+%     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
+%     %5 strides of any trial.
+%     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+%     %    inds=inds(inds>5);
+%     %    bad(inds)=true;
+%     end
+%     
+% end
 %Remove outliers according to new values of 'bad':
-[~,idxs]=out.isaParameter({'bad','good'});
-out.Data(:,idxs)=[bad,~bad];
-outlierStrides=find(bad & ~badStart);
-disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+%[~,idxs]=out.isaParameter({'bad','good'});
+%out.Data(:,idxs)=[bad,~bad];
+%outlierStrides=find(bad & ~badStart);
+%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
 %----------REMOVE STOP/START STRIDES-------------
 badStart=bad; %make a copy to compare at the end
@@ -200,10 +210,11 @@ out.Data(:,idxs)=[bad,~bad];
 outlierStrides=find(bad & ~badStart);
 disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])  
 
-
-%% Issue bad strides warning
+% Issue bad strides warning
 if any(bad)    
     disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])    
+end
+
 end
 
 %% Use 'bad' as mask (necessary?)
