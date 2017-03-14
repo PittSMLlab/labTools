@@ -536,8 +536,20 @@ classdef groupAdaptationData
                     [rho,pval]=corr(data1',data2','type','pearson');
                     [rho2,pval2]=corr(data1',data2','type','spearman');
                     pp=polyfit1PCA(data1,data2); %Best line from PCA
-                    p2=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,2) ', p_{lin} = ' num2str(pval,2)]);
-                    p3=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,2) ', p_{rank} = ' num2str(pval2,2)]);
+                    x=[min(data1) max(data1)];
+                    y=pp(1)*x + pp(2);
+                    if max(y)> max(data2)
+                      [~,i]=max(y);
+                      y(i)=max(data2);
+                      x(i)=(y(i)-pp(2))/pp(1);
+                    end
+                    if min(y)< min(data2)
+                      [~,i]=min(y);
+                      y(i)=min(data2);
+                      x(i)=(y(i)-pp(2))/pp(1);
+                    end
+                    p2=plot(x,y,'Color',p.Color,'DisplayName',['s=' sprintf('%.3f',pp(1)) ', r=.' sprintf('%03.0f',rho*1000) ', p=.' sprintf('%03.0f',pval*1000)]);
+                    p3=plot(x,y,'Color',p.Color,'DisplayName',['r_{rnk}=.' sprintf('%03.0f',rho2*1000) ', p_{rnk}=.' sprintf('%03.0f',pval2*1000)]);
             end
             hold off
             ph=get(gca);
