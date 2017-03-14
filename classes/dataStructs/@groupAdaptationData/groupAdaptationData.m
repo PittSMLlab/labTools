@@ -206,10 +206,10 @@ classdef groupAdaptationData
             end
 
         end
-        
+
         function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
             newThis=this;
-            if nargin<5 
+            if nargin<5
                 medianFlag=0;
             end
             if nargin<6
@@ -326,7 +326,7 @@ classdef groupAdaptationData
             end
 
         end
-        
+
         function [biasTM, biasOG]= getGroupedBias(this,label)
             for i=1:length(this.ID)
                 [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getBias(label);
@@ -455,9 +455,9 @@ classdef groupAdaptationData
                 end
             end
             auxStr={'last', '', 'first'};
-            while length(labels)<3 %If we have less than 3 labels, 
+            while length(labels)<3 %If we have less than 3 labels,
                 %repeat the last label: it works both if a single label is provided,
-                %as well as if two are. In the case that user did not specify 
+                %as well as if two are. In the case that user did not specify
                 %a third stride subset to subtract (maxK==2) the third one is just ignored
                 labels=[labels labels(end)];
             end
@@ -470,11 +470,11 @@ classdef groupAdaptationData
             while length(exemptStrides)<3
                 exemptStrides=[exemptStrides exemptStrides(end)];
             end
-            
+
             for kk=1:maxK %Getting data for X & Y
                 if length(labels{kk})>2 && strcmp('sub',labels{kk}(1:3)) %Case we are asking for biographical data
                     for j=1:length(this.ID)
-                      data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail 
+                      data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail
                     end
                     str=['Subject ' labels{kk}(4:end)];
                 elseif length(labels{kk})>5 && (strcmp('biasTM',labels{kk}(1:6)) || strcmp('biasOG',labels{kk}(1:6)))%Parameter is actually the bias of a parameter
@@ -508,26 +508,26 @@ classdef groupAdaptationData
 
             if nargin>8 && ~isempty(differenceFlag) && differenceFlag==1
                 if maxK==2
-                    data2=data2-data1; 
+                    data2=data2-data1;
                     str2{1}=[str2{1} ' (diff)'];
                 else
-                    data2=data2-data3; 
+                    data2=data2-data3;
                     str2{2}=[str2{2} ' minus ' str3{2}];
                 end
             end
-            
+
             if nargin<7 || isempty(ph)
               fh=figure();
             else
               subplot(ph);
             end
-            
+
             hold on
             p=plot(data1,data2,'o','DisplayName',[this.groupID]);
             text(data1,data2,strcat('-  ',this.ID),'FontSize',8,'Color',p.Color)
             set(p,'MarkerFaceColor',p.Color);
             p.MarkerEdgeColor='None';
-            
+
             xlabel(str1)
             ylabel(str2)
             p2=[];
@@ -535,7 +535,7 @@ classdef groupAdaptationData
             if nargin>7 && ~isempty(regFlag) && regFlag ==1
                     [rho,pval]=corr(data1',data2','type','pearson');
                     [rho2,pval2]=corr(data1',data2','type','spearman');
-                    pp=polyfit(data1,data2,1);
+                    pp=polyfit1PCA(data1,data2); %Best line from PCA
                     p2=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,2) ', p_{lin} = ' num2str(pval,2)]);
                     p3=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,2) ', p_{rank} = ' num2str(pval2,2)]);
             end
