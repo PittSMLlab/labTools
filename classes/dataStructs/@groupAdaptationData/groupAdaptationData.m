@@ -535,7 +535,7 @@ classdef groupAdaptationData
             if nargin>7 && ~isempty(regFlag) && regFlag ==1
                     [rho,pval]=corr(data1',data2','type','pearson');
                     [rho2,pval2]=corr(data1',data2','type','spearman');
-                    pp=polyfit1PCA(data1,data2); %Best line from PCA
+                    pp=polyfit1PCA(data1,data2,1); %Best line from PCA
                     x=[min(data1) max(data1)];
                     y=pp(1)*x + pp(2);
                     if max(y)> max(data2)
