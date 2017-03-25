@@ -28,7 +28,7 @@ end
 if nargin<4 || isempty(initEventSide)
     refLeg=trialData.metaData.refLeg;
 else
-    refLeg=initEventSide; 
+    refLeg=initEventSide;
 end
 
 if refLeg == 'R'
@@ -49,7 +49,7 @@ triggerEvent=eventTypes{1};
 
 %Initialize:
 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
-if numStrides==0;    
+if numStrides==0;
     disp(['Warning: No strides detected in ',file])
     out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
     return
@@ -60,9 +60,9 @@ stridedRawEMG=cell(numStrides,1);
 stridedEventData=cell(numStrides,1);
 
 %Stride:
-%steppedDataArray=separateIntoStrides(in,triggerEvent); %This is 
-%computationally expensive to do: it calls the split function for every 
-%labTS in trialData. If we only care about some fields, we should try 
+%steppedDataArray=separateIntoStrides(in,triggerEvent); %This is
+%computationally expensive to do: it calls the split function for every
+%labTS in trialData. If we only care about some fields, we should try
 %calling split independently for those TSs.
 eventTimes=nan(numStrides,length(eventTypes));
 eventTimes2=nan(numStrides,length(eventTypes));
@@ -115,7 +115,7 @@ finalTime=extendedEventTimes(:,6); %FTO2
 data=[bad,~bad,trial,initTime,finalTime];
 labels={'bad','good','trial','initTime','finalTime'};
 description={'True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
-basic=parameterSeries(data,labels,times,description);  
+basic=parameterSeries(data,labels,times,description);
 out=cat(out,basic);
 end
 
@@ -136,7 +136,7 @@ if any(strcmpi(parameterClasses,'procEMG')) && ~isempty(trialData.procEMGData)
     [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
     out=cat(out,emg);
 end
-if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.rawEMGData)
+if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     rawEMG = computeEMGParameters(strideEvents,stridedRawEMG,s);
     %Renaming params & descriptions:
     nLabels=strcat('RAW',rawEMG.labels);
@@ -172,20 +172,20 @@ if any(strcmpi(parameterClasses,'basic'))
 %     % interquartile range away from the median.
 %     %Criteria 1: anything outside +-3.5 interquartile ranges
 %     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
-% 
+%
 %     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
 %     %5 strides of any trial.
 %     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
 %     %    inds=inds(inds>5);
 %     %    bad(inds)=true;
 %     end
-%     
+%
 % end
 %Remove outliers according to new values of 'bad':
 %[~,idxs]=out.isaParameter({'bad','good'});
 %out.Data(:,idxs)=[bad,~bad];
 %outlierStrides=find(bad & ~badStart);
-%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])  
+%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
 
 %----------REMOVE STOP/START STRIDES-------------
 badStart=bad; %make a copy to compare at the end
@@ -208,11 +208,11 @@ end
 [~,idxs]=out.isaParameter({'bad','good'});
 out.Data(:,idxs)=[bad,~bad];
 outlierStrides=find(bad & ~badStart);
-disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])  
+disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
 
 % Issue bad strides warning
-if any(bad)    
-    disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])    
+if any(bad)
+    disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])
 end
 
 end
