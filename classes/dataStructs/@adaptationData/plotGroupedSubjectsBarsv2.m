@@ -160,9 +160,5 @@ function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,remov
                 end
                 axis(aa)
             end
-            
-            
-            
-            
- 
+
 end
