@@ -1,6 +1,7 @@
 classdef labTimeSeries  < timeseries
     %labTimeSeries  Extends timeseries (built-in MATLAB class) to meet
-    %               our lab's needs for storing data.
+    %               our lab's needs for storing data. Forces timeseries to
+    %               be uniformly sampled.
     %
     %labTimeSeries properties:
     %   labels - cell array of strings with labels for the columns of Data
@@ -15,8 +16,24 @@ classdef labTimeSeries  < timeseries
     %   getDataAsVector - get a vector of data for a given label
     %   getDataAsTS - returns a new labTimeSeries with data for given label(s) 
     %   getLabels - returns list of labels
+    %   getLabelsThatMatch - returns list of labels that match a given string
     %   isaLabel - checks if a string is contained in label array
-    %   plot - plots data...
+    %   getSample - samples the timeseries at arbitrary timepoints
+    %   resample - resamples timeseries to a different sampling period
+    %   split - returns a timeseries containing the data between to given timepoints
+    %   appendData - adds more data to the timeseries (As new 'labels')
+    %   addNewParameter - adds data to TS computing it from existing data
+    %   getPartialDataAsVector - returns data corresponding to some labels in matrix form
+    %   splitByEvents - separates the timeseries according to the events given in an event (boolean) timeseries
+    %   derivate - differentiates the timeseries in time
+    %   fillts - substitutes NaN values by interpolation
+    %   concatenate/cat - merges two timeseries into a single one
+    %   lowPassFilter - what the name says
+    %   highPassFilter - what the name says
+    %   monotonicFilter - calls monoLS on the data for each column
+    %   medianFilter - what the name says
+    %   FourierTransform - what the name says
+    %   plot - plots data
     
     %%
     properties(SetAccess=private)
