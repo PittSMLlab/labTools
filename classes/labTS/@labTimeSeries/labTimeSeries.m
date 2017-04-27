@@ -14,7 +14,7 @@ classdef labTimeSeries  < timeseries
     %
     %labTimeSeries methods:
     %   getDataAsVector - get a vector of data for a given label
-    %   getDataAsTS - returns a new labTimeSeries with data for given label(s) 
+    %   getDataAsTS - returns a new labTimeSeries with data for given label(s)
     %   getLabels - returns list of labels
     %   getLabelsThatMatch - returns list of labels that match a given string
     %   isaLabel - checks if a string is contained in label array
@@ -34,7 +34,7 @@ classdef labTimeSeries  < timeseries
     %   medianFilter - what the name says
     %   FourierTransform - what the name says
     %   plot - plots data
-    
+
     %%
     properties(SetAccess=private)
         labels={''};
@@ -45,10 +45,10 @@ classdef labTimeSeries  < timeseries
         timeRange
         Nsamples
     end
-    
+
     %%
     methods
-        
+
         %Constructor:
         function this=labTimeSeries(data,t0,Ts,labels) %Necessarily uniformly sampled
             if nargin==0
@@ -74,9 +74,9 @@ classdef labTimeSeries  < timeseries
                     throw(ME)
             end
         end
-        
+
         %-------------------
-        
+
         %Other I/O functions:
         function [data,time,auxLabel]=getDataAsVector(this,label)
             if nargin<2 || isempty(label)
@@ -94,36 +94,36 @@ classdef labTimeSeries  < timeseries
                     warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
                 end
             end
-            
+
             data=this.Data(:,labelIdx(boolFlag));
             if nargout>2
-                auxLabel=this.labels(boolFlag);
+                auxLabel=this.labels(labelIdx(boolFlag));
             end
         end
-        
+
         function [newTS,auxLabel]=getDataAsTS(this,label)
             [data,time,auxLabel]=getDataAsVector(this,label);
             newTS=labTimeSeries(data,time(1),this.sampPeriod,auxLabel);
         end
-        
+
         function labelList=getLabels(this)
-           labelList=this.labels; 
+           labelList=this.labels;
         end
-        
+
         function labelList=getLabelsThatMatch(this,exp)
             %Returns labels on this labTS that match the regular expression exp.
             %labelList=getLabelsThatMatch(this,exp)
             %INPUT:
             %this: labTS object
-            %exp: any regular expression (as string). 
+            %exp: any regular expression (as string).
             %OUTPUT:
             %labelList: cell array containing labels of this labTS that match
             %See also regexp
-            labelList=this.labels; 
+            labelList=this.labels;
             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
             labelList=labelList(flags);
         end
-        
+
         function [boolFlag,labelIdx]=isaLabel(this,label)
             if isa(label,'char')
                 auxLabel{1}=label;
@@ -135,7 +135,7 @@ classdef labTimeSeries  < timeseries
             auxLabel=auxLabel(:);
             N=length(auxLabel);
             M=length(this.labels);
-            if N==M && all(strcmpi(auxLabel,this.labels(:))) %Case in which the list is identical to the label list, save time by not calling find() recursively. 
+            if N==M && all(strcmpi(auxLabel,this.labels(:))) %Case in which the list is identical to the label list, save time by not calling find() recursively.
                 %If this is true, it saves about 50ms per call, or 5 secs every 100 calls
                 %If false, it adds a small overhead of less than .1ms per call, which is negligible compared to the loop that needs to be performed.
                 boolFlag=true(N,1);
@@ -157,12 +157,12 @@ classdef labTimeSeries  < timeseries
                 end
             end
         end
-        
-        function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method. 
+
+        function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method.
             if nargin<3 || isempty(method)
                 method='linear';
             end
-            
+
             if ~isempty(timePoints)
                 M=length(this.labels);
                 data=nan(numel(timePoints),M);
@@ -183,10 +183,10 @@ classdef labTimeSeries  < timeseries
                 data=[];
             end
         end
-        
+
         function index=getIndexClosestToTimePoint(this,timePoints)
             %NaN returns NaN
-            
+
             %aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))<=(this.sampPeriod/2+eps);
             %[ii,jj]=find(aux);
             %index=nan(size(timePoints));
@@ -201,7 +201,7 @@ classdef labTimeSeries  < timeseries
             %end
         end
         %-------------------
-        
+
         %Modifier functions:
         function newThis=resample(this,newTs,newT0,hiddenFlag)
             if nargin<3 || isempty(newT0)
@@ -216,7 +216,7 @@ classdef labTimeSeries  < timeseries
                 %resampling on the same range, should use resampleN.
                 %Otherwise, if we try to synch two signals, and there is an
                 %offset in initial time, this returns something else.
-                
+
                 %newN=ceil(this.timeRange/newTs)+1;
                 %newThis=resampleN(this,newN);
                 newTime=newT0:newTs:this.Time(end);
@@ -226,14 +226,14 @@ classdef labTimeSeries  < timeseries
                  else %logical timeseries
                        newThis=resampleLogical(this,newTs,newT0);
                  end
-                
+
             elseif hiddenFlag==1% this allows for non-uniform resampling, and returns a timeseries object.
                 newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period. The super-class resampling returns a super-class object.
             else
                 error('labTS:resample','HiddenFlag argument has to be 0 or 1');
             end
         end
-        
+
         function newThis=resampleN(this,newN,method)
             %Uniform resampling of data, over the same time range. This
             %keeps the initial time on the same value, and returns newN
@@ -279,16 +279,16 @@ classdef labTimeSeries  < timeseries
                 error('labTimeSeries:resampleN','Interpolating empty labTimeSeries,impossible.')
             end
         end
-        
+
         function newThis=split(this,t0,t1)
-            
+
             %Need to test this chunk of code before enabling:
             %if isnan(t0) || isnan(t1)
             %    warning('labTS:split','One of the interval limits is NaN. Returning empty TS.')
             %    newTS=[];
             %    return
             %end
-            
+
            %Check t0>= Time(1)
            %Check t1<= Time(end)
            initT=this.Time(1)-eps;
@@ -306,7 +306,7 @@ classdef labTimeSeries  < timeseries
             i1=find(this.Time>=t0,1);
             i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)
             if i2<i1
-                warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] falls completely within two samples: returning empty timeSeries.']) 
+                warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] falls completely within two samples: returning empty timeSeries.'])
             end
             %In case the requested time interval is larger than the
             %timeseries' actual time vector, pad with NaNs:
@@ -331,12 +331,12 @@ classdef labTimeSeries  < timeseries
                 newThis.Quality=[k*ones(ia,size(this.Quality,2)) ; this.Quality(i1:i2,:); k*ones(ib,size(this.Quality,2))];
             end
         end
-        
+
         function newThis=appendData(this,newData,newLabels) %For back compat
             other=labTimeSeries(newData,newLabels,this.Time(1),this.sampPeriod);
             newThis=cat(this,other);
         end
-        
+
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
            %This function allows to compute new parameters from other existing parameters and have them added to the data.
            %This is useful when trying out new parameters without having to
@@ -349,7 +349,7 @@ classdef labTimeSeries  < timeseries
            %the variables in the funHandle
            %EXAMPLE:
            %See example in parameterSeries
-           
+
            %Check input sanity:
            if length(inputParameterLabels)~=nargin(funHandle)
                error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
@@ -363,7 +363,7 @@ classdef labTimeSeries  < timeseries
            eval(['newData=funHandle' str ';']);
            newThis=appendData(this,newData,{newParamLabel}) ;
         end
-        
+
         function newThis=castAsOTS(this)
             error('Unimplemented')
             newThis=this; %Doxy
@@ -377,18 +377,18 @@ classdef labTimeSeries  < timeseries
             spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
             newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
         end
-        
+
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
             newThis=split(this.getDataAsTS(label),t0,t1);
             [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
-        
+
         function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
            %eventTS needs to be a labTimeSeries with binary events as data
            %If eventLabel is not given, the first data column is used as
            %the relevant event marker. If given, eventLabel must be the
            %label of one of the data columns in eventTS
-           
+
            %Check needed: is eventTS a labTimeSeries?
            if nargin>2
                 eventList=eventTS.getDataAsVector(eventLabel);
@@ -402,7 +402,7 @@ classdef labTimeSeries  < timeseries
            if nargin<4 || isempty(timeMargin)
                timeMargin=0;
            end
-           
+
             refIdxLst=find(auxList==1);
             M=length(refIdxLst)-1;
             auxTime=eventTS.Time;
@@ -431,12 +431,12 @@ classdef labTimeSeries  < timeseries
                         end
                         bad(i)=true;
                    end
-                   
+
                 end
                 steppedDataArray{i,N}=this.split(t0-timeMargin,nextT0+timeMargin); %This line is executed for the last interval btw events, which is the only one when there is a single event separating (N=1).
             end
         end
-        
+
         function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)
           %Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints
           for i=1:length(timeBreakpoints)-1
@@ -445,11 +445,11 @@ classdef labTimeSeries  < timeseries
             initTime=timeBreakpoints(1:end-1)-timeMargin;
             duration=diff(timeBreakpoints)+2*timeMargin;
         end
-        
+
         function this=times(this,constant)
             this.Data=this.Data*constant;
         end
-        
+
         function newThis=plus(this,other)
             M=size(this.Data,2);
             for i=1:M
@@ -459,7 +459,7 @@ classdef labTimeSeries  < timeseries
                 newThis=labTimeSeries(this.Data+other.Data,this.Time(1),this.sampPeriod,this.labels);
             end
         end
-        
+
         function newThis=minus(this,other)
             M=size(this.Data,2);
             for i=1:M
@@ -469,7 +469,7 @@ classdef labTimeSeries  < timeseries
                 newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,newLabels);
             end
         end
-        
+
         function newThis=derivate(this)
             M=size(this.Data,2);
             newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
@@ -479,31 +479,31 @@ classdef labTimeSeries  < timeseries
             end
             newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
         end
-        
+
         function newthis=equalizeEnergyPerChannel(this)
             %Equalizes each channel such that the second moment of each
             %channel equals 1, E(x^2)=1
             newthis=this;
             newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanmean(this.Data.^2,1)));
         end
-        
+
         function newthis=equalizeVarPerChannel(this)
             %Equalizes each channel such that the second moment  about the mean of each
             %channel equals 1, E((x-E(x))^2)=1
             newthis=this;
             newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanvar(this.Data,[],1)));
         end
-        
+
         function newthis=demean(this)
             newthis=this;
             newthis.Data=bsxfun(@minus,this.Data,nanmean(this.Data));
         end
-        
+
         function this=fillts(this) %TODO: Deprecate
             warning('labTS.fillts is being deprecated. Use substituteNaNs instead.')
             this=substituteNaNs(this,'linear');
         end
-        
+
         function newThis=concatenate(this,other)
             %Check if time vectors are the same
             if all(this.Time==other.Time)
@@ -515,7 +515,7 @@ classdef labTimeSeries  < timeseries
         function newThis=cat(this,other)
             newThis=concatenate(this,other);
         end
-        
+
         function this=substituteNaNs(this,method)
             if nargin<2 || isempty(method)
                 method='linear';
@@ -538,7 +538,7 @@ classdef labTimeSeries  < timeseries
              this.QualityInfo.Code=[0 1];
              this.QualityInfo.Description={'good','missing'};
         end
-        
+
         function newThis=thresholdByChannel(this,th,label,moreThanFlag)
             newThis=this;
             if nargin<4 || isempty(moreThanFlag) || moreThanFlag==0
@@ -547,22 +547,22 @@ classdef labTimeSeries  < timeseries
                 newThis.Data(newThis.getDataAsVector(label)>th,:)=0;
             end
         end
-        
+
         %------------------
-        
+
         %Getters for dependent properties
         function fs=get.sampFreq(this)
             fs=1/this.sampPeriod;
         end
-        
+
         function tr=get.timeRange(this)
             tr=(this.Nsamples)*this.sampPeriod;
         end
-        
+
         function Nsamp=get.Nsamples(this)
             Nsamp=this.TimeInfo.Length;
         end
-        
+
         %Display
         function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
@@ -575,7 +575,7 @@ classdef labTimeSeries  < timeseries
                 relData=this.Data;
                 relLabels=this.labels;
             else
-               [relData,~,relLabels]=this.getDataAsVector(labels); 
+               [relData,~,relLabels]=this.getDataAsVector(labels);
                N=size(relData,2);
             end
             if nargin<4 || isempty(plotHandles) || length(plotHandles)<length(relLabels)
@@ -622,17 +622,17 @@ classdef labTimeSeries  < timeseries
                 end
             end
             %linkaxes([h1,ax2],'x')
-            plotHandles=h1;  
+            plotHandles=h1;
         end
         function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
             error('Unimplemented')
             %First attempt: align the data to the first column of events
             %provided
             for i=1:length(ee)
-               this.split(t1,t2).plot 
+               this.split(t1,t2).plot
             end
         end
-        
+
         function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
             %Ideally we would plot 'L' and 'R' timeseries on top of each
             %other, to do a bilateral comparison. Need to implement.
@@ -668,7 +668,7 @@ classdef labTimeSeries  < timeseries
                 end
             end
         end
-        
+
         function h=dispCov(this)
            h=figure;
            dd=cov(this.Data);
@@ -677,7 +677,7 @@ classdef labTimeSeries  < timeseries
            colorbar
            caxis([-1 1]*max(dd(:)));
         end
-        
+
         %Other
         function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
             if nargin>1
@@ -687,7 +687,7 @@ classdef labTimeSeries  < timeseries
             Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',this.labels),')'));
             Fthis.TimeInfo.Units='Hz';
         end
-        
+
         function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)
             if nargin<2
                 labels=[];
@@ -703,7 +703,7 @@ classdef labTimeSeries  < timeseries
             end
             Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
         end
-        
+
         function [Athis,originalDurations,bad,initTime]=align(this,eventTS,eventLabel,N,timeMargin)
             if nargin<4 || isempty(N)
                 N=256;
@@ -714,12 +714,12 @@ classdef labTimeSeries  < timeseries
             [steppedDataArray,bad,initTime,~]=splitByEvents(this,eventTS,eventLabel,timeMargin);
             [Athis,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
         end
-        
+
         function newThis=lowPassFilter(this,fcut)
                 Wn=fcut*2/this.sampFreq;
                 Wst=min([2*Wn,Wn+.2*(1-Wn)]);
                filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
-                lowPassFilter=design(filterList{1},'butter'); 
+                lowPassFilter=design(filterList{1},'butter');
                 newData=filtfilthd(lowPassFilter,this.Data);  %Ext function
                 newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
                 if ~isfield(this.UserData,'processingInfo')
@@ -730,9 +730,9 @@ classdef labTimeSeries  < timeseries
         end
         function newThis=highPassFilter(this,fcut)
                 Wn=fcut*2/this.sampFreq;
-                filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3); 
-                highPassFilter=design(filterList{1},'butter'); 
-                newData=filtfilthd(highPassFilter,this.Data); 
+                filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
+                highPassFilter=design(filterList{1},'butter');
+                newData=filtfilthd(highPassFilter,this.Data);
                 newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
                 if ~isfield(this.UserData,'processingInfo')
                     this.UserData.processingInfo={};
@@ -740,20 +740,20 @@ classdef labTimeSeries  < timeseries
                 newThis.UserData=this.UserData;
                 newThis.UserData.processingInfo{end+1}=filterList{1};
         end
-        
+
         function newThis=monotonicFilter(this,Nderiv,Nreg)
             if nargin<2 || isempty(Nderiv)
                 Nderiv=2;
             end
             if nargin<3 || isempty(Nreg)
-               Nreg=2; 
+               Nreg=2;
             end
             for i=1:size(this.Data,2)
-               this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg); 
+               this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg);
             end
             newThis=this;
         end
-        
+
         function this=medianFilter(this,N)
             if mod(N,2)==0
                 error('Only odd filter orders are allowed')
@@ -767,9 +767,9 @@ classdef labTimeSeries  < timeseries
             this.Data(1:floor(N/2),:)=NaN;
             this.Data(end-floor(N/2)+1:end,:)=NaN;
         end
-                
+
     end
-    
+
     methods(Hidden)
         function newThis=resampleLogical(this,newTs, newT0,newN)
             newTime=[0:newN-1]*newTs+newT0;
@@ -777,7 +777,7 @@ classdef labTimeSeries  < timeseries
             newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
            for i=1:size(this.Data,2) %Go over event labels
                oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
-               closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; %Find closest index in new event 
+               closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; %Find closest index in new event
                if any(closestNewEventIndexes>newN) %It could happen in case of down-sampling that the closest new index falls outside the range
                    %Option 1: set it to the last available sample (this
                    %would no longer be 'rounding')
@@ -788,16 +788,16 @@ classdef labTimeSeries  < timeseries
                    %events
                    closestNewEventIndexes(closestNewEventIndexes>newN)=[];
                end
-               
+
                newData(closestNewEventIndexes,i)=true;
            end
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
         end
     end
-    
+
     methods(Static)
         this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
-        
+
         function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
             if numel(stridedTS)~=0
@@ -835,7 +835,7 @@ classdef labTimeSeries  < timeseries
                 originalDurations=[];
             end
         end
-        
+
         function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)
                 if nargin<2
                     figHandle=[];
@@ -847,7 +847,7 @@ classdef labTimeSeries  < timeseries
                structure=labTimeSeries.stridedTSToAlignedTS(stridedTS,N);
                [figHandle,plotHandles]=plot(structure,figHandle,plotHandles); %Using the alignedTimeSeries plot function
         end
-        
+
         function this=join(labTSCellArray)
             masterSampPeriod=labTSCellArray{1}.sampPeriod;
             masterLabels=labTSCellArray{1}.labels;
@@ -858,13 +858,12 @@ classdef labTimeSeries  < timeseries
                if all(cellfun(@strcmp,masterLabels,labTSCellArray{i}.labels)) && masterSampPeriod==labTSCellArray{i}.sampPeriod
                    newData=[newData;labTSCellArray{i}.Data];
                else
-                  warning([num2str(i) '-th element of input cell array does not have labels or sampling period consistent with other elements.']); 
+                  warning([num2str(i) '-th element of input cell array does not have labels or sampling period consistent with other elements.']);
                end
                this=labTimeSeries(newData,labTSCellArray{1}.Time(1),masterSampPeriod,masterLabels);
            end
         end
     end
-    
-        
-end
 
+
+end
