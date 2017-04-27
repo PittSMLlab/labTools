@@ -318,7 +318,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
         function newThis=cat(this, other)
             newThis=cat@labTimeSeries(this,other);
-            newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+            newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,newThis.labels,this.orientation);
         end
         %-------------------
         function fh=plot3(this,fh)
