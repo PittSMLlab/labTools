@@ -168,6 +168,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
             [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2);
             distMatrix=sqrt(sum(diffMatrix.^2,4));
         end
+        
+        function newThis=vectorNorm(this)
+           newThis=labTimeSeries(sqrt(sum(this.getOrientedData.^2,3)),this.Time(1),this.sampPeriod,strcat(this.getLabelPrefix,'_2-norm')); 
+        end
 
         %-------------------
 
@@ -506,7 +510,14 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         %-------------------
         %Modifier functions:
-
+        function newThis=resample(this,newTs,newT0,hiddenFlag)
+            %Resample to a new sampling period
+            if nargin<4
+                hiddenFlag=[];
+            end
+            auxThis=this.resample@labTimeSeries(newTs,newT0,hiddenFlag);
+            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
+        end
         function newThis=resampleN(this,newN,method)
             %Same as resample function, but directly fixing the number of samples instead of TS
 
@@ -605,7 +616,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
             [data,~]=getOrientedData(this,marker);
             newThis=translate(this,squeeze(-1*data));
         end
-
+        
         function newThis=derivate(this)
             %take derivative of OTS
 
@@ -629,6 +640,15 @@ classdef orientedLabTimeSeries  < labTimeSeries
             end
            this=substituteNaNs@labTimeSeries(this,method);
            newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+        end
+        
+        function newThis=plus(this,other)
+            newThis=plus@labTimeSeries(this,other);
+            newThis=newThis.castAsOTS(this.orientation);
+        end
+        function newThis=times(this,constant)
+            newThis=times@labTimeSeries(this,constant);
+            newThis=newThis.castAsOTS(this.orientation);
         end
 
     end
