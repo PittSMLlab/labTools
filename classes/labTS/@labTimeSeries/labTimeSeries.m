@@ -827,7 +827,7 @@ classdef labTimeSeries  < timeseries
                 for j=1:Nphases %Going over aligned phases
                     if isa(stridedTS{i,j},'labTimeSeries')
                         originalDurations(i,j)=stridedTS{i,j}.timeRange;
-                        if ~isempty(stridedTS{i,j}.Data)
+                        if ~isempty(stridedTS{i,j}.Data) && sum(~isnan(stridedTS{i,j}.Data(:,1)))>1
                             aa=resampleN(stridedTS{i,j},N(j));
                             aux(M(j)+1:M(j+1),:,i)=aa.Data;
                         else %Separating by strides returned empty labTimeSeries, possibly because of events in disorder
