@@ -207,7 +207,7 @@ classdef labTimeSeries  < timeseries
             if nargin<3 || isempty(newT0)
                 error('labTS:resample','Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.')
             end
-            if nargin<4 || hiddenFlag==0 %hiddenFlag allows to do non-uniform sampling
+            if nargin<4 || isempty(hiddenFlag) || hiddenFlag==0 %hiddenFlag allows to do non-uniform sampling
                 if newTs>this.sampPeriod %Under-sampling! be careful of aliasing
                     warning('labTS:resample','Under-sampling data, be careful of aliasing!');
                 end
@@ -364,10 +364,13 @@ classdef labTimeSeries  < timeseries
            newThis=appendData(this,newData,{newParamLabel}) ;
         end
 
-        function newThis=castAsOTS(this)
-            error('Unimplemented')
-            newThis=this; %Doxy
+        function newThis=castAsOTS(this,orientation)
+            if nargin<2 || isempty(orientation)
+                orientation=orientationInfo;
+            end
+            newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,orientation);
         end
+        
         function newThis=castAsSTS(this,F,tWin,tOverlap)
             %1) Check if it satisfies STS requirements
             dataF=this.Data;
@@ -447,7 +450,13 @@ classdef labTimeSeries  < timeseries
         end
 
         function this=times(this,constant)
-            this.Data=this.Data*constant;
+            this.Data=this.Data .* constant;
+            if numel(constant)==1
+                s=num2str(constant);
+            else
+                s='k'; %Generic constant string
+            end
+            this.labels=strcat([s '*'],this.labels);
         end
 
         function newThis=plus(this,other)
@@ -461,6 +470,8 @@ classdef labTimeSeries  < timeseries
         end
 
         function newThis=minus(this,other)
+            %Subtracts two labTSs
+            %Could be deprecated in favor of: newThis=this + -1*other;
             M=size(this.Data,2);
             for i=1:M
                 newLabels{i}=['(' this.labels{i} ' - ' other.labels{i} ')'];
@@ -713,6 +724,7 @@ classdef labTimeSeries  < timeseries
             end
             [steppedDataArray,bad,initTime,~]=splitByEvents(this,eventTS,eventLabel,timeMargin);
             [Athis,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
+            Athis.alignmentLabels=[eventLabel];
         end
 
         function newThis=lowPassFilter(this,fcut)
@@ -771,9 +783,10 @@ classdef labTimeSeries  < timeseries
     end
 
     methods(Hidden)
-        function newThis=resampleLogical(this,newTs, newT0,newN)
+        function newThis=resampleLogical(this,newTs, newT0)
+            newN=floor((this.Time(end)-newT0)/newTs +1);
             newTime=[0:newN-1]*newTs+newT0;
-            newN=length(newTime);
+            %newN=length(newTime);
             newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
            for i=1:size(this.Data,2) %Go over event labels
                oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
@@ -829,9 +842,10 @@ classdef labTimeSeries  < timeseries
                     end
                 end
             end
-            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,cell(size(N)));
+            alignmentLabels=cell(size(N)); %Need to populate this field properly
+            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,alignmentLabels);
             else
-                alignedTS=alignedTimeSeries(0,1/sum(N),zeros(0,0),[],N,cell(size(N)));
+                alignedTS=alignedTimeSeries(0,1/sum(N),zeros(0,0),[],N,alignmentLabels);
                 originalDurations=[];
             end
         end
