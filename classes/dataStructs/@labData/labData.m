@@ -196,15 +196,12 @@ classdef labData
             if nargin<2 || isempty(noFilterFlag)
                 noFilterFlag=1;
             end
-            this=this.GRFData;
             warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
             [COPL,FL,~]=computeHemiCOP(this,'L',noFilterFlag);
             [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
-            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
-            COP=orientedLabTimeSeries(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),this.orientation);
-            COPData=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            COPData=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
         end
         
         function [momentData,COP,COM]=computeTorques(this,subjectWeight)
@@ -464,7 +461,16 @@ classdef labData
             COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
            
         end
-        
+    end
+    
+    methods (Static)
+       function COP=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
+            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
+            COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),COPL.orientation);
+            if noFilterFlag==1
+                COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            end
+       end
     end
     
     
