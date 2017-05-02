@@ -217,14 +217,14 @@ classdef labTimeSeries  < timeseries
                 %Otherwise, if we try to synch two signals, and there is an
                 %offset in initial time, this returns something else.
 
-                %newN=ceil(this.timeRange/newTs)+1;
+                newN=ceil(this.timeRange/newTs)+1;
                 %newThis=resampleN(this,newN);
                 newTime=newT0:newTs:this.Time(end);
                  if ~isa(this.Data(1,1),'logical')
                         newThis=this.resample@timeseries(newTime);
                         newThis=labTimeSeries(newThis.Data,newThis.Time(1),newTs,this.labels);
                  else %logical timeseries
-                       newThis=resampleLogical(this,newTs,newT0);
+                       newThis=resampleLogical(this,newTs,newT0,newN);
                  end
 
             elseif hiddenFlag==1% this allows for non-uniform resampling, and returns a timeseries object.
@@ -783,10 +783,10 @@ classdef labTimeSeries  < timeseries
     end
 
     methods(Hidden)
-        function newThis=resampleLogical(this,newTs, newT0)
-            newN=floor((this.Time(end)-newT0)/newTs +1);
+        function newThis=resampleLogical(this,newTs, newT0,newN)
+            %newN=floor((this.Time(end)-newT0)/newTs +1);
             newTime=[0:newN-1]*newTs+newT0;
-            %newN=length(newTime);
+            newN=length(newTime);
             newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
            for i=1:size(this.Data,2) %Go over event labels
                oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
@@ -814,38 +814,39 @@ classdef labTimeSeries  < timeseries
         function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
             %To be used after splitByEvents
             if numel(stridedTS)~=0
-            if ~islogical(stridedTS{1}.Data)
-                aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
-            else
-                aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
-            end
-            Nstrides=size(stridedTS,1);
-            Nphases=size(stridedTS,2);
-            originalDurations=nan(Nstrides,Nphases);
-            for i=1:Nstrides %Going over strides
-                M=[0,cumsum(N)];
-                for j=1:Nphases %Going over aligned phases
-                    if isa(stridedTS{i,j},'labTimeSeries')
-                        originalDurations(i,j)=stridedTS{i,j}.timeRange;
-                        if ~isempty(stridedTS{i,j}.Data) && sum(~isnan(stridedTS{i,j}.Data(:,1)))>1
-                            aa=resampleN(stridedTS{i,j},N(j));
-                            aux(M(j)+1:M(j+1),:,i)=aa.Data;
-                        else %Separating by strides returned empty labTimeSeries, possibly because of events in disorder
-                            if islogical(stridedTS{i,j}.Data)
-                            	aux(M(j)+1:M(j+1),:,i)=false;
-                            else
-                                aux(M(j)+1:M(j+1),:,i)=NaN;
+                if ~islogical(stridedTS{1}.Data)
+                    aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
+                else
+                    aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
+                end
+                Nstrides=size(stridedTS,1);
+                Nphases=size(stridedTS,2);
+                originalDurations=nan(Nstrides,Nphases);
+                for i=1:Nstrides %Going over strides
+                    M=[0,cumsum(N)];
+                    for j=1:Nphases %Going over aligned phases
+                        if isa(stridedTS{i,j},'labTimeSeries')
+                            originalDurations(i,j)=stridedTS{i,j}.timeRange;
+                            if ~isempty(stridedTS{i,j}.Data) && sum(~isnan(stridedTS{i,j}.Data(:,1)))>1
+                                aa=resampleN(stridedTS{i,j},N(j));
+                                aux(M(j)+1:M(j+1),:,i)=aa.Data;
+                            else %Separating by strides returned empty labTimeSeries, possibly because of events in disorder
+                                if islogical(stridedTS{i,j}.Data)
+                                    aux(M(j)+1:M(j+1),:,i)=false;
+                                else
+                                    aux(M(j)+1:M(j+1),:,i)=NaN;
+                                end
                             end
+                        else
+                            error('labTimeSeries:stridedTSToAlignedTS',['First argument is not a cell array of labTimeSeries. Element i=' num2str(i) ', j=' num2str(j)])
                         end
-                    else
-                        error('labTimeSeries:stridedTSToAlignedTS',['First argument is not a cell array of labTimeSeries. Element i=' num2str(i) ', j=' num2str(j)])
                     end
                 end
-            end
-            alignmentLabels=cell(size(N)); %Need to populate this field properly
-            alignedTS=alignedTimeSeries(0,1/sum(N),aux,stridedTS{1}.labels,N,alignmentLabels);
+                alignmentLabels=cell(size(N)); %Need to populate this field properly
+                alignedTS=alignedTimeSeries(0,1,aux,stridedTS{1}.labels,N,alignmentLabels); %On May 2nd 2017, Pablo changed to have sampling time =1 [time vector now counts samples]
             else
-                alignedTS=alignedTimeSeries(0,1/sum(N),zeros(0,0),[],N,alignmentLabels);
+                alignmentLabels=cell(size(N));
+                alignedTS=alignedTimeSeries(0,1,zeros(0,0),[],N,alignmentLabels);
                 originalDurations=[];
             end
         end
