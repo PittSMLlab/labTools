@@ -162,7 +162,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    meanM(i)=prctile(data(:),50);
                    maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i)+eps;
                    minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
-                   axis([0 1 minM(i) maxM(i)])
+                   axis([this.Time(1) this.Time(end) minM(i) maxM(i)])
                    hold off
                end
      
@@ -180,7 +180,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                else
                    for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
                         subplot(plotHandles(i))
-                        set(gca,'XTick',[0,cumsum(this.alignmentVector)]/sum(this.alignmentVector),'XTickLabel',[this.alignmentLabels, this.alignmentLabels(1)])
+                        set(gca,'XTick',this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector),'XTickLabel',[this.alignmentLabels, this.alignmentLabels(1)])
                         set(gca,'xgrid','on')
                    end
                end
@@ -211,6 +211,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
                 mH=nanmedian(histogram);
                 for i=1:size(histogram,2)
+                    if mod(mH(i),1)~=0
+                        mH(i)=floor(mH(i));
+                        warning(['Median event ' num2str(i) ' falls between two samples'])
+                    end
                     newData(mH(i),i)=true;
                 end
                 %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
@@ -404,6 +408,19 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             labelList=this.labels; 
             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
             labelList=labelList(flags);
+        end
+        
+        function newThis=rescaleTime(this,newTs,newT0)
+            %Re-defines the Time vector to force a new sampling time
+            %Made for backwards compatibility of aligned series always
+            %being defined with time in [0 1]
+            if nargin<3 || isempty(newT0)
+                newT0=0;
+            end
+            if nargin<2 || isempty(newTs)
+                newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
+            end
+            newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
         end
     end
     
