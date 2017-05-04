@@ -97,6 +97,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                            structure=structure(:,:,plottedInds);
                    end
                end
+               
+               %Define centerline plot:
+               centerline=this.median.castAsTS; %Could do mean or median
+               
                %Plot percentiles (bounds)
                if nargin<5 || isempty(events)
                     events=[];
@@ -113,8 +117,18 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
                if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
                    if length(bounds)==2 %Alt visualization: add patch
-                       aux1=prctile(this,bounds(1));
-                       aux2=prctile(this,bounds(2));
+                       if any(bounds)==0
+                           if all(bounds)==0 %Plots ste
+                               aux1=centerline+(this.std.castAsTS .* 1/sqrt(size(this.Data,3))); 
+                               aux2=centerline-(this.std.castAsTS .* 1/sqrt(size(this.Data,3)));
+                           else %Plots std
+                               aux1=centerline+(this.std.castAsTS); 
+                               aux2=centerline-(this.std.castAsTS); 
+                           end
+                       else
+                            aux1=prctile(this,bounds(1));
+                            aux2=prctile(this,bounds(2));
+                       end
                        for i=1:M
                            subplot(plotHandles(i))
                            hold on
@@ -123,11 +137,13 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                            else %row vector
                                megaTime=[aux1.Time, aux1.Time(end:-1:1)];
                            end
-                           pp=patch(megaTime,[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                           megaData=[aux1.Data(:,i);aux2.Data(end:-1:1,i)];
+                           megaData(isnan(megaData))=0;
+                           pp=patch(megaTime,megaData,meanColor,'FaceAlpha',.4,'EdgeColor','none');
                            uistack(pp,'bottom');
                            hold off
                        end
-                   else
+                   else %Plot each percentile line
                        for k=1:length(bounds)
                         [figHandle,plotHandles]=plot(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
                        end
@@ -135,8 +151,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
                
                %PLot mean trace
-               %[figHandle,plotHandles]=plot(this.mean.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
-               [figHandle,plotHandles]=plot(this.median.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               [figHandle,plotHandles]=plot(centerline,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
           
                %Plot individual traces
                for i=1:M %Go over labels
@@ -180,7 +195,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                else
                    for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
                         subplot(plotHandles(i))
-                        set(gca,'XTick',this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector),'XTickLabel',[this.alignmentLabels, this.alignmentLabels(1)])
+                        xt=get(gca,'XTick');
+                        xt=[this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector)];
+                        xtl=[[this.alignmentLabels, this.alignmentLabels(1)]];
+                        set(gca,'XTick',xt,'XTickLabel',xtl)
                         set(gca,'xgrid','on')
                    end
                end
@@ -320,6 +338,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             if nargin<4
                 forceFlag=false;
             end
+            if nargin<3 || isempty(dim)
+                dim=3;%Cat-ting strides
+            end
+            
             %Check alignment vectors coincide & alignment labels coincide
             if any(this.alignmentVector~=other.alignmentVector)
                 ME=MException('ATS:cat','Alignment vector mismatch');
