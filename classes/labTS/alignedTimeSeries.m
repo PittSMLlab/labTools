@@ -119,11 +119,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    if length(bounds)==2 %Alt visualization: add patch
                        if any(bounds)==0
                            if all(bounds)==0 %Plots ste
-                               aux1=centerline+(this.std.castAsTS .* 1/sqrt(size(this.Data,3))); 
-                               aux2=centerline-(this.std.castAsTS .* 1/sqrt(size(this.Data,3)));
+                               aux1=centerline+(this.stdRobust.castAsTS .* 1/sqrt(size(this.Data,3))); 
+                               aux2=centerline-(this.stdRobust.castAsTS .* 1/sqrt(size(this.Data,3)));
                            else %Plots std
-                               aux1=centerline+(this.std.castAsTS); 
-                               aux2=centerline-(this.std.castAsTS); 
+                               aux1=centerline+(this.stdRobust.castAsTS); 
+                               aux2=centerline-(this.stdRobust.castAsTS); 
                            end
                        else
                             aux1=prctile(this,bounds(1));
@@ -257,6 +257,28 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 [histogram,~]=logicalHist(this);
                 stdTS=std(histogram); %Not really a tS
             end
+        end
+        
+        function [iqrTS]=iqr(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            else
+                strideIdxs=[];
+            end
+            if ~islogical(this.Data(1))
+                iqrTS=this.prctile(75) - this.prctile(25);
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,~]=logicalHist(this);
+                iqrTS=iqr(histogram); %Not really a tS
+            end
+        end
+        
+        function [stdTS]=stdRobust(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            %IQR-based std computation
+            stdTS=this.iqr .* (1/1.35);
         end
         
         function [prctileTS]=prctile(this,p,strideIdxs)
