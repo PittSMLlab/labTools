@@ -109,6 +109,15 @@ classdef labTimeSeries  < timeseries
         function labelList=getLabels(this)
            labelList=this.labels;
         end
+        
+        function this=renameLabels(this,originalLabels,newLabels)
+            warning('You should not be renaming the labels. You have been warned.')
+            if size(newLabels)~=size(originalLabels)
+                error('Inconsistent label sizes')
+            end
+            [boo,idx]=this.isaLabel(originalLabels);
+            this.labels(idx(boo))=newLabels;
+        end
 
         function labelList=getLabelsThatMatch(this,exp)
             %Returns labels on this labTS that match the regular expression exp.
@@ -518,7 +527,7 @@ classdef labTimeSeries  < timeseries
         function newThis=concatenate(this,other)
             %Check if time vectors are the same
             if all(this.Time==other.Time)
-                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels, other.labels]);
+                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels(:)', other.labels(:)']);
             else
                 error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
             end

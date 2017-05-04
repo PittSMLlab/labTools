@@ -324,6 +324,20 @@ classdef orientedLabTimeSeries  < labTimeSeries
             newThis=cat@labTimeSeries(this,other);
             newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,newThis.labels,this.orientation);
         end
+        
+        function this=renameLabels(this,originalPrefixes,newPrefixes)
+            warning('You should not be renaming the labels. You have been warned. Also, in OTS you can only rename the prefixes.')
+            if size(newPrefixes)~=size(originalPrefixes)
+                error('Inconsistent label sizes')
+            end
+            if ~isa(originalPrefixes,'cell')
+                originalPrefixes={originalPrefixes};
+                newPrefixes={newPrefixes};
+            end
+            for i=1:length(originalPrefixes)
+                this=this.renameLabels@labTimeSeries(strcat(originalPrefixes{i},{'x','y','z'}),strcat(newPrefixes{i},{'x','y','z'}));
+            end
+        end
         %-------------------
         function fh=plot3(this,fh)
             %plots all 3 components of all variables in OTS instance
