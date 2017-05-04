@@ -201,7 +201,7 @@ classdef labData
             [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
-            COPData=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
+            [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
         end
         
         function [momentData,COP,COM]=computeTorques(this,subjectWeight)
@@ -465,12 +465,14 @@ classdef labData
     end
     
     methods (Static)
-       function COP=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
+       function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
+           if noFilterFlag==1
+            COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+           end
             newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
             COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),COPL.orientation);
-            if noFilterFlag==1
-                COP=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
-            end
+            COP=COP.cat(COPL).cat(COPR);
        end
     end
     
