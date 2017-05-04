@@ -431,6 +431,7 @@ classdef labData
         %COP calculation as used by the ALTERNATIVE version
         function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
             this=this.GRFData;
+            fcut=50;
             %Warning: this only works if GRF data is stored here
             warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
             if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
@@ -438,10 +439,10 @@ classdef labData
                 M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
             else
             F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-            F=F.lowPassFilter(20).thresholdByChannel(-100,[side 'Fz'],1);
+            F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side 'Fz'],1);
             F=squeeze(F.getOrientedData);
             M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
-            M=M.lowPassFilter(20);
+            M=M.lowPassFilter(fcut);
             M=squeeze(M.getOrientedData);
             F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
             end
