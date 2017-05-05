@@ -247,7 +247,9 @@ classdef labData
             end
             
             %6) Get COP, COM and joint torque data.
-            [jointMomentsData,COPData,COMData] = this.computeTorques(subData.weight);
+            [jointMomentsData,~,COMData] = this.computeTorques(subData.weight);
+            COPData=this.computeCOPAlt; %Replacing COPData with alternative computation
+            %COMDATA=this.CarlysCOMData; %CJS: you should do this!
             
             % 7) Generate processedTrial object
             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
