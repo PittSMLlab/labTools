@@ -47,7 +47,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
         end
         
-        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)
+        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
             % labTimeSeries.plot).
@@ -75,6 +75,9 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 if nargin<4 || isempty(meanColor)
                    meanColor=[1,0,0]; 
                 end
+                if nargin<9 || isempty(medianFlag)
+                    medianFlag=1;
+                end
                 structure=this.Data;
                 if nargin<2 || isempty(figHandle)
                     figHandle=figure();
@@ -99,7 +102,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
                
                %Define centerline plot:
-               centerline=this.median.castAsTS; %Could do mean or median
+               if medianFlag==1
+                   centerline=this.median.castAsTS; %Could do mean or median
+               else
+                   centerline=this.mean.castAsTS;
+               end
                
                %Plot percentiles (bounds)
                if nargin<5 || isempty(events)
@@ -118,12 +125,17 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
                    if length(bounds)==2 %Alt visualization: add patch
                        if any(bounds)==0
+                           if medianFlag==1
+                               st=this.stdRobust.castAsTS;
+                           else
+                               st=this.std.castAsTS;
+                           end
                            if all(bounds)==0 %Plots ste
-                               aux1=centerline+(this.stdRobust.castAsTS .* 1/sqrt(size(this.Data,3))); 
-                               aux2=centerline-(this.stdRobust.castAsTS .* 1/sqrt(size(this.Data,3)));
+                               aux1=centerline+(st.* 1/sqrt(size(this.Data,3))); 
+                               aux2=centerline-(st .* 1/sqrt(size(this.Data,3)));
                            else %Plots std
-                               aux1=centerline+(this.stdRobust.castAsTS); 
-                               aux2=centerline-(this.stdRobust.castAsTS); 
+                               aux1=centerline+(st); 
+                               aux2=centerline-(st); 
                            end
                        else
                             aux1=prctile(this,bounds(1));
@@ -162,12 +174,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    data=squeeze(structure(:,i,:));
                    N=size(data,1);
                    if nargin<6 || isempty(individualLineStyle)
-                        ppp=plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                        ppp=plot(this.Time,data,'Color',[.7,.7,.7]);
                         uistack(ppp,'bottom')
                    elseif individualLineStyle==0
                        %nop
                    else
-                       ppp=plot([0:N-1]/N,data,individualLineStyle);
+                       ppp=plot(this.Time,data,individualLineStyle);
                        uistack(ppp,'bottom')
                    end
                    
@@ -315,6 +327,21 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            newThis.Data=this.Data-other.Data;
         end
         
+        function newThis=plus(this,other)
+           newThis=this;
+           newThis.Data=this.Data+other.Data;
+        end
+        
+        function this=times(this,constant)
+            this.Data=this.Data .* constant;
+            if numel(constant)==1
+                s=num2str(constant);
+            else
+                s='k'; %Generic constant string
+            end
+            this.labels=strcat([s '*'],this.labels);
+        end
+        
         function newThis=demean(this)
             newThis=this;
             newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
@@ -335,25 +362,6 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                     labelIdx(j)=find(idx==j);
                 end
             end
-
-%             if isa(label,'char')
-%                 auxLabel{1}=label;
-%             elseif isa(label,'cell')
-%                 auxLabel=label;
-%             end
-%             
-%             N=length(auxLabel);
-%             boolFlag=false(N,1);
-%             labelIdx=zeros(N,1);
-%             for j=1:N
-%                 for i=1:length(this.labels)
-%                      if strcmpi(auxLabel{j},this.labels{i})
-%                        boolFlag(j)=true;
-%                        labelIdx(j)=i;
-%                        break;
-%                      end
-%                 end
-%             end
         end
         
         function newThis=cat(this,other,dim,forceFlag)
@@ -504,7 +512,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 end
             end
 
-            for i=1:nStrides;
+            for i=1:nStrides
                 [eventTimeIndex,eventType]=find(this.Data(:,aaux,i));
                 if length(eventTimeIndex)~=length(newLabels)
                     warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more or less events than expected (expecting ' num2str(length(newLabels)) ', but got ' num2str(length(eventTimeIndex)) '). Discarding.']);
