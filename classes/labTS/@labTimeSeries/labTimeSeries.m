@@ -112,6 +112,9 @@ classdef labTimeSeries  < timeseries
         
         function this=renameLabels(this,originalLabels,newLabels)
             warning('You should not be renaming the labels. You have been warned.')
+            if isempty(originalLabels)
+                originalLabels=this.labels;
+            end
             if size(newLabels)~=size(originalLabels)
                 error('Inconsistent label sizes')
             end
