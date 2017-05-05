@@ -327,9 +327,12 @@ classdef orientedLabTimeSeries  < labTimeSeries
         
         function this=renameLabels(this,originalPrefixes,newPrefixes)
             warning('You should not be renaming the labels. You have been warned. Also, in OTS you can only rename the prefixes.')
+            if isempty(originalPrefixes)
+                originalPrefixes=this.getLabelPrefix;
+            end
             if size(newPrefixes)~=size(originalPrefixes)
                 error('Inconsistent label sizes')
-            end
+            end          
             if ~isa(originalPrefixes,'cell')
                 originalPrefixes={originalPrefixes};
                 newPrefixes={newPrefixes};
