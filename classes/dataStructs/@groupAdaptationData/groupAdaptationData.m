@@ -764,20 +764,23 @@ classdef groupAdaptationData
                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
            end
         end
-        
-        function [Demographics]=GroupDemographics(this)
-            for s=1:length(SMatrix.(grps{g}).adaptData)
-                tempAge=[tempAge SMatrix.(grps{g}).adaptData{s}.subData.age];
-                if strcmp(lower(SMatrix.(grps{g}).adaptData{s}.subData.sex), 'male')==1
-                    tempMale=[tempMale 1];
-                elseif strcmp(lower(SMatrix.(grps{g}).adaptData{s}.subData.sex), 'female')==1
-                    tempMale=[tempMale 0];
+
+        function [Demographic]=GroupDemographics(this) 
+            %Calculates number subjects, mean and std of age and number of males
+            %Use in conjuction with "GroupDemographics"
+            for s=1:length(this.adaptData)
+                tempAge(s)=[this.adaptData{s}.subData.age];
+                if strcmp(lower(this.adaptData{s}.subData.sex), 'male')==1
+                    tempMale(s)=[1];
+                elseif strcmp(lower(this.adaptData{s}.subData.sex), 'female')==1
+                    tempMale(s)=[0];
                 end
             end
-            Demographic.(grps{g}).N=length(tempAge);
-            Demographic.(grps{g}).MeanAge=mean(tempAge);
-            Demographic.(grps{g}).StdAge=tempAge;
-            Demographic.(grps{g}).NMale=sum(tempMale);
+            Demographic.N=length(tempAge);
+            Demographic.MeanAge=mean(tempAge);
+            Demographic.StdAge=std(tempAge);
+            Demographic.AllAge=tempAge;
+            Demographic.NMale=sum(tempMale);
         end
 
     end
