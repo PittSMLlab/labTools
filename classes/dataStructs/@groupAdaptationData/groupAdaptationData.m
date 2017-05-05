@@ -764,6 +764,21 @@ classdef groupAdaptationData
                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
            end
         end
+        
+        function [Demographics]=GroupDemographics(this)
+            for s=1:length(SMatrix.(grps{g}).adaptData)
+                tempAge=[tempAge SMatrix.(grps{g}).adaptData{s}.subData.age];
+                if strcmp(lower(SMatrix.(grps{g}).adaptData{s}.subData.sex), 'male')==1
+                    tempMale=[tempMale 1];
+                elseif strcmp(lower(SMatrix.(grps{g}).adaptData{s}.subData.sex), 'female')==1
+                    tempMale=[tempMale 0];
+                end
+            end
+            Demographic.(grps{g}).N=length(tempAge);
+            Demographic.(grps{g}).MeanAge=mean(tempAge);
+            Demographic.(grps{g}).StdAge=tempAge;
+            Demographic.(grps{g}).NMale=sum(tempMale);
+        end
 
     end
     methods(Static)
