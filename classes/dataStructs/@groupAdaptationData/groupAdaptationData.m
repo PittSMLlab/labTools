@@ -765,6 +765,24 @@ classdef groupAdaptationData
            end
         end
 
+        function [Demographic]=GroupDemographics(this) 
+            %Calculates number subjects, mean and std of age and number of males
+            %Use in conjuction with "GroupDemographics"
+            for s=1:length(this.adaptData)
+                tempAge(s)=[this.adaptData{s}.subData.age];
+                if strcmp(lower(this.adaptData{s}.subData.sex), 'male')==1
+                    tempMale(s)=[1];
+                elseif strcmp(lower(this.adaptData{s}.subData.sex), 'female')==1
+                    tempMale(s)=[0];
+                end
+            end
+            Demographic.N=length(tempAge);
+            Demographic.MeanAge=mean(tempAge);
+            Demographic.StdAge=std(tempAge);
+            Demographic.AllAge=tempAge;
+            Demographic.NMale=sum(tempMale);
+        end
+
     end
     methods(Static)
        % Several groups visualization
