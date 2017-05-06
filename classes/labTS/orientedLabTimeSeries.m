@@ -570,14 +570,30 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
         function newThis=rotate(this, matrix)
             %rotate OTS data using input rotation matrix
+            %Since no check is done on the matrix, it really allows for any
+            %arbitrary linear transformation of the data [including
+            %contractions/expansions and inversions]
 
             [data,label]=getOrientedData(this);
-            M=size(matrix,1);
+            if ndims(matrix)==3
+                M=size(matrix,1);
+            else
+                M=1;
+            end
             matrix=reshape(matrix,M,1,3,3);
             newData=permute(sum(bsxfun(@times,data,matrix),3),[1,4,2,3]);
             newThis=orientedLabTimeSeries(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
             %newThis.UserData.rotation=; %ToDo: store the rotation
             %info in some structure so that it can be backtracked
+        end
+        
+        function newThis=flipAxis(this,axis)
+            matrix=eye(3);
+            if isa(axis,'char')
+                axis=axis-'w'; %This converts 'x','y','z' to 1,2,3
+            end
+            matrix(axis,axis)=-1;
+           newThis=this.rotate(matrix);
         end
 
         function newThis=alignRotate(this,newX,newZ)
