@@ -494,13 +494,61 @@ classdef labTimeSeries  < timeseries
         end
 
         function newThis=derivate(this)
-            M=size(this.Data,2);
-            newData=[nan(1,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(1,M)]/this.sampPeriod;
-            newLabels={};
-            for i=1:M
-                newLabels{i}=['d/dt ' this.labels{i}];
+            warning('This function is going to be deprecated, please use derivative() instead.')
+            newThis=this.derivative;
+        end
+        
+        function [newThis,lag]=derivative(this,diffOrder)
+            %Numerical differentiation of labTS
+            %diffOrder establishes the order of the filter used for
+            %estimation, NOT higher order derivatives [we are approximating
+            %an IIR filter -the true derivative- through a FIR].
+            %Ref: https://en.wikipedia.org/wiki/Finite_difference_coefficient
+            if nargin<2 || isempty(diffOrder)
+                diffOrder=2; %Default
             end
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,newLabels);
+            lag=diffOrder/2;
+            switch diffOrder
+               case 1
+                   w= [1 -1];
+               case 2
+                   w=.5*[1 0 -1];
+               case 4
+                   w=[-1 8 0 -8 1]/12;
+               case 6
+                   w=[1 -9 45 0 -45 9 -1]/60;
+               case 8
+                   w=[-1/56 4/21 -1 4 0 -4 1 -4/21 1/56]/5;
+               otherwise
+                   error('Order not supported')
+            end
+
+            M=size(this.Data,2);
+            newData=conv2(this.Data,w','valid')/this.sampPeriod;
+            %newData=[nan(order,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(order,M)]/this.sampPeriod; %Centered differential
+            newT0=this.Time(1)+lag*this.sampPeriod;
+            newLabels=strcat('d/dt',{' '},this.labels);
+            newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
+        end
+        
+        function newThis=integrate(this,initValues)
+            %This is the inverse operator of derivative when used with
+            %diffOrder=1;
+            M=size(this.Data,2);
+            if nargin<2 || isempty(initValues)
+               initValues=zeros(1,M);  %Default initial condition = 0
+               %Initial values represent the integrated data values HALF A
+               %SAMPLE before the first sample of this.
+               %
+            end
+            if numel(initValues)~=M
+                error('Initial values mismatch between Data and initValues')
+            end
+            newData=bsxfun(@plus,initValues(:)',cumsum([zeros(1,M); this.Data],1) * this.sampPeriod); 
+            lag=-.5;
+            newLabels=strcat('\int',{' '},this.labels,{' '},'dt');
+            newT0=this.Time(1)+lag*this.sampPeriod;
+            newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
         end
 
         function newthis=equalizeEnergyPerChannel(this)
