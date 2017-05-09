@@ -495,7 +495,9 @@ classdef labTimeSeries  < timeseries
 
         function newThis=derivate(this)
             warning('This function is going to be deprecated, please use derivative() instead.')
-            newThis=this.derivative;
+            partialThis=this.derivative;
+            pad=nan(1,size(this.Data,2));
+            newThis=newThis=labTimeSeries([pad;partialThis.Data;pad],this.Time(1),this.sampPeriod,partialThis.labels);
         end
         
         function [newThis,lag]=derivative(this,diffOrder)
