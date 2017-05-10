@@ -8,10 +8,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         labels
         alignmentVector=[];
         alignmentLabels={};
+        eventTimes=[];
+    end
+    
+    properties(Dependent)
+        expandedEventTimes
     end
     
     methods
-        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels)
+        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels,eventTimes)
             %Check: 
             if nargin<6
                 warning('alignedTimeSeries being created without specifying alignment criteria.')
@@ -30,6 +35,21 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 end
             else
                 error('alignedTS:Constructor','Data size and label number do not match.')
+            end
+            if nargin>6 
+                if any(size(eventTimes)~=size(Data,[1,3]))
+                    error('alignedTS:Constructor','Data and eventTimes sizes do not match.')
+                else
+                    this.eventTimes=eventTimes;
+                end
+            end
+        end
+        
+        function eET=get.expandedEventTimes(this)
+            if ~isempty(this.eventTimes)
+                eET=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector); 
+            else %legacy version
+                error('eventTimes are not determined')
             end
         end
         
@@ -475,6 +495,30 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
             end
             newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
+        end
+    end
+    
+    methods (Static)
+        function expEventTimes=expandEventTimes(eventTimes,alignmentVector)
+            %Given event times and an alignment vectors, this function
+            %computes the corresponding time for each sample in an
+            %alignedTimeSeries, provided that the sampling is uniform
+            %between events.
+            %Can this method be hidden?
+            expEventTimes=nan(size(eventTimes,1)-1,sum(alignmentVector));
+            refTime=1+[0 cumsum(alignmentVector)]; %This should be 0+ for the old-style alignment
+            M=size(eventTimes,1)-1;
+            N=sum(alignmentVector);
+            %TODO: replace for loop with a single call to expEventTimes
+            for j=1:M %Strides
+                expEventTimes(j,:)=interp1(refTime,[eventTimes(j,:) eventTimes(j+1,1)],1:N);
+            end 
+
+            %allEventTimes=reshape(eventTimes',numel(eventTimes),1);
+            %refTime2=refTime'+N*[0:M];
+            %allExpEventTimes=interp1(refTime2(:)',allEventTimes,1:N*M);
+            %expEventTimes=reshape(allExpEventTimes,N,M);
+           
         end
     end
     
