@@ -111,7 +111,7 @@ classdef labTimeSeries  < timeseries
         end
         
         function this=renameLabels(this,originalLabels,newLabels)
-            warning('You should not be renaming the labels. You have been warned.')
+            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
             if isempty(originalLabels)
                 originalLabels=this.labels;
             end
@@ -799,51 +799,22 @@ classdef labTimeSeries  < timeseries
             Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
         end
 
-        function [ATS,bad]=align(this,eventTS,eventLabel,N,timeMargin)
-            if nargin<4 || isempty(N)
-                N=256;
-            end
-            if nargin<5 || isempty(timeMargin)
-                timeMargin=0;
-            end
-            [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin);
-            [ATS,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
-            ATS.alignmentLabels=[eventLabel];
-            ATS.eventTimes=[eventTimes' nan(size(eventTimes,2),1)];
-        end
-        
-        function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
-            %This is not yet ready for primetime
+        function [ATS,bad]=align(this,eventTS,eventLabel,N,~)
+            if nargin<3 || isempty(eventLabel)
+                eventLabel=eventTS.labels(1);
+            end    
             if nargin<4 || isempty(N)
                 N=256*ones(size(eventLabel));
             end
-%            NN=[0 cumsum(N)];
-            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-%             [M,~]=size(eventTimes);
-%             Data=nan(sum(N),size(this.Data,2),M-1);
-%             eventTimes2=[eventTimes(1:end-1,:) eventTimes(2:end,1)];
-%             bad=false(M-1,1);
-%             %TODO: remove for loop. getSample() accepts a matrix of
-%             %timepoints and would return another matrix. If we shape
-%             %timepoints accordingly, we can obtain all the data in a single
-%             %call to getSample()
-%             for i=1:M-1
-%                 for j=1:size(eventTimes,2)
-%                     t1=eventTimes2(i,j);
-%                     t2=eventTimes2(i,j+1);
-%                     if ~isnan(t1) && ~isnan(t2)
-%                         timepoints=t1+(t2-t1)*[0:N(j)]/N(j);
-%                         sample=squeeze(this.getSample(timepoints(1:N(j)))); %This does linear interp1 by default, switch to interpft1?
-%                         Data(NN(j)+[1:N(j)],:,i)=sample;
-%                     else
-%                         bad(i)=true;
-%                     end
-%                 end
+            [ATS,bad]=this.align_v2(eventTS,eventLabel,N);
+            %Deprecated on May 10, 2017 by PAI
+%             if nargin<5 || isempty(timeMargin)
+%                 timeMargin=0;
 %             end
-            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
-            Data=permute(this.getSample(expEventTimes),[1,3,2]);
-            bad=any(isnan(eventTimes(1:end-1,:)),2);
-            ATS=alignedTimeSeries(0,1,Data,this.labels,N,eventLabel,eventTimes');
+%             [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin);
+%             [ATS,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
+%             ATS.alignmentLabels=[eventLabel];
+%             ATS.eventTimes=[eventTimes' nan(size(eventTimes,2),1)];
         end
 
         function newThis=lowPassFilter(this,fcut)
@@ -926,6 +897,14 @@ classdef labTimeSeries  < timeseries
                newData(closestNewEventIndexes,i)=true;
            end
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
+        end
+        function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
+            %Efficient & robust substitute for legacy align()
+            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
+            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
+            Data=permute(this.getSample(expEventTimes),[1,3,2]);
+            bad=any(isnan(eventTimes(1:end-1,:)),2);
+            ATS=alignedTimeSeries(0,1,Data,this.labels,N,eventLabel,eventTimes');
         end
     end
 
