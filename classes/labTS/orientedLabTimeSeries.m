@@ -39,7 +39,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
         %Other I/O functions:
         function [newTS,auxLabel]=getDataAsTS(this,label)
             %return data as a time series
-            %
+            % I think this is unnecessary: default behavior if function is
+            %not defined in inheriting class is to call the superclass'
+            %method
             [newTS,auxLabel]=getDataAsTS@labTimeSeries(this,label);
         end
 
