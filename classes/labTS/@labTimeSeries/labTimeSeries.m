@@ -817,29 +817,32 @@ classdef labTimeSeries  < timeseries
             if nargin<4 || isempty(N)
                 N=256*ones(size(eventLabel));
             end
-            NN=[0 cumsum(N)];
+%            NN=[0 cumsum(N)];
             eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-            [M,~]=size(eventTimes);
-            Data=nan(sum(N),size(this.Data,2),M-1);
-            eventTimes2=[eventTimes(1:end-1,:) eventTimes(2:end,1)];
-            bad=false(M-1,1);
-            %TODO: remove for loop. getSample() accepts a matrix of
-            %timepoints and would return another matrix. If we shape
-            %timepoints accordingly, we can obtain all the data in a single
-            %call to getSample()
-            for i=1:M-1
-                for j=1:size(eventTimes,2)
-                    t1=eventTimes2(i,j);
-                    t2=eventTimes2(i,j+1);
-                    if ~isnan(t1) && ~isnan(t2)
-                        timepoints=t1+(t2-t1)*[0:N(j)]/N(j);
-                        sample=squeeze(this.getSample(timepoints(1:N(j)))); %This does linear interp1 by default, switch to interpft1?
-                        Data(NN(j)+[1:N(j)],:,i)=sample;
-                    else
-                        bad(i)=true;
-                    end
-                end
-            end
+%             [M,~]=size(eventTimes);
+%             Data=nan(sum(N),size(this.Data,2),M-1);
+%             eventTimes2=[eventTimes(1:end-1,:) eventTimes(2:end,1)];
+%             bad=false(M-1,1);
+%             %TODO: remove for loop. getSample() accepts a matrix of
+%             %timepoints and would return another matrix. If we shape
+%             %timepoints accordingly, we can obtain all the data in a single
+%             %call to getSample()
+%             for i=1:M-1
+%                 for j=1:size(eventTimes,2)
+%                     t1=eventTimes2(i,j);
+%                     t2=eventTimes2(i,j+1);
+%                     if ~isnan(t1) && ~isnan(t2)
+%                         timepoints=t1+(t2-t1)*[0:N(j)]/N(j);
+%                         sample=squeeze(this.getSample(timepoints(1:N(j)))); %This does linear interp1 by default, switch to interpft1?
+%                         Data(NN(j)+[1:N(j)],:,i)=sample;
+%                     else
+%                         bad(i)=true;
+%                     end
+%                 end
+%             end
+            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
+            Data=permute(this.getSample(expEventTimes),[1,3,2]);
+            bad=any(isnan(eventTimes(1:end-1,:)),2);
             ATS=alignedTimeSeries(0,1,Data,this.labels,N,eventLabel,eventTimes');
         end
 

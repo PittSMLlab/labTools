@@ -510,20 +510,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             %computes the corresponding time for each sample in an
             %alignedTimeSeries, provided that the sampling is uniform
             %between events.
-            %Can this method be hidden?
-            expEventTimes=nan(sum(alignmentVector),size(eventTimes,1)-1);
+            %This method cannot be hiddent because it is used in labTS
+            
             refTime=1+[0 cumsum(alignmentVector)]'; %This should be 0+ for the old-style alignment
             M=size(eventTimes,2)-1;
             N=sum(alignmentVector);
-            %TODO: replace for loop with a single call to expEventTimes
-            for j=1:M %Strides
-                expEventTimes(:,j)=interp1(refTime,[eventTimes(:,j); eventTimes(1,j+1)],[1:N]');
-            end 
-
-            %allEventTimes=eventTimes(:);
-            %refTime2=bsxfun(@plus,refTime,N*[0:M]);
-            %allExpEventTimes=interp1(refTime2(:),allEventTimes,[1:N*M]');
-            %expEventTimes=reshape(allExpEventTimes,N,M);
+            allEventTimes=eventTimes(:);
+            refTime2=bsxfun(@plus,refTime(1:end-1),N*[0:M]);
+            allExpEventTimes=interp1(refTime2(:),allEventTimes(:),[1:N*M]');
+            expEventTimes=reshape(allExpEventTimes,N,M);
            
         end
     end
