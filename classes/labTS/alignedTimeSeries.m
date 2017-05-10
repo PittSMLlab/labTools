@@ -60,7 +60,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,this.eventTimes);
         end
         
         function newThis=removeStridesWithNaNs(this)
@@ -70,7 +70,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         function newThis=getPartialDataAsATS(this,labels)
             [boolIdx,relIdx]=this.isaLabel(labels);
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
         end
         
         function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
@@ -425,7 +425,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             
             %Do the cat:
             newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
-            elseif dim==2
+            elseif dim==2 %Cat-ting labels
                 %Check dimensions coincide
                 s1=size(this.Data);
                 s2=size(other.Data);
@@ -436,9 +436,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 %Check no repeated labels
             
                 %Check alignmentVector & Labels
+                
+                %Check that all eventTimes match
+                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes-other.eventTimes)>1e-9)
+                   ME=MException('ATS:cat','Trying to cat labels, but event times are different');
+                   throw(ME);
+                end
             
                 %Do the cat
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels);
+                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels,this.eventTimes);
             else
                 ME=MException();
                 throw(ME);
@@ -502,6 +508,19 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
             newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
         end
+        
+        function this=renameLabels(this,originalLabels,newLabels)
+            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
+            if isempty(originalLabels)
+                originalLabels=this.labels;
+            end
+            if size(newLabels)~=size(originalLabels)
+                error('Inconsistent label sizes')
+            end
+            [boo,idx]=this.isaLabel(originalLabels);
+            this.labels(idx(boo))=newLabels;
+        end
+        
     end
     
     methods (Static)
