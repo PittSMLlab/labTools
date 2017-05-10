@@ -37,7 +37,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 error('alignedTS:Constructor','Data size and label number do not match.')
             end
             if nargin>6 
-                if any(size(eventTimes)~=size(Data,[1,3]))
+                if any(size(eventTimes)~=[length(alignmentVector) size(Data,3)+1])
                     error('alignedTS:Constructor','Data and eventTimes sizes do not match.')
                 else
                     this.eventTimes=eventTimes;
@@ -506,12 +506,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             %between events.
             %Can this method be hidden?
             expEventTimes=nan(size(eventTimes,1)-1,sum(alignmentVector));
-            refTime=1+[0 cumsum(alignmentVector)]; %This should be 0+ for the old-style alignment
-            M=size(eventTimes,1)-1;
+            refTime=1+[0 cumsum(alignmentVector)]'; %This should be 0+ for the old-style alignment
+            M=size(eventTimes,2)-1;
             N=sum(alignmentVector);
             %TODO: replace for loop with a single call to expEventTimes
             for j=1:M %Strides
-                expEventTimes(j,:)=interp1(refTime,[eventTimes(j,:) eventTimes(j+1,1)],1:N);
+                expEventTimes(:,j)=interp1(refTime,[eventTimes(:,j); eventTimes(1,j+1)],[1:N]');
             end 
 
             %allEventTimes=reshape(eventTimes',numel(eventTimes),1);
