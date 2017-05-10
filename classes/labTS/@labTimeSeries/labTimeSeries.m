@@ -809,7 +809,7 @@ classdef labTimeSeries  < timeseries
             [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin);
             [ATS,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
             ATS.alignmentLabels=[eventLabel];
-            ATS.eventTimes=eventTimes';
+            ATS.eventTimes=[eventTimes' nan(size(eventTimes,2),1)];
         end
         
         function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
