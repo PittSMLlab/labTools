@@ -44,12 +44,12 @@ end
 eventTypes={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
 eventTypes=strcat(eventClass,eventTypes);
 
-eventLables={'SHS','FTO','FHS','STO'};
+eventLabels={'SHS','FTO','FHS','STO'};
 triggerEvent=eventTypes{1};
 
 %Initialize:
 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
-if numStrides==0;
+if numStrides==0
     disp(['Warning: No strides detected in ',file])
     out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
     return
@@ -83,8 +83,8 @@ for i=1:numStrides
 end
 eventTimes2=[eventTimes(2:end,:);nan(1,size(eventTimes,2))]; %This could be improved by trying to find if there exist any other events after the end of the last stride.
 for j=1:length(eventTypes)
-    strideEvents.(['t' upper(eventLables{j})])=eventTimes(:,j); %generates a structure of tSHS, tFTO, etc
-    strideEvents.(['t' upper(eventLables{j}) '2'])=eventTimes2(:,j);
+    strideEvents.(['t' upper(eventLabels{j})])=eventTimes(:,j); %generates a structure of tSHS, tFTO, etc
+    strideEvents.(['t' upper(eventLabels{j}) '2'])=eventTimes2(:,j);
 end
 
 %% Compute params
