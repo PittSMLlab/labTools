@@ -172,7 +172,11 @@ classdef labTimeSeries  < timeseries
 
         function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method.
             if nargin<3 || isempty(method)
-                method='linear';
+                if isa(this.Data,'logical')
+                    method='closest';
+                else
+                    method='linear';
+                end
             end
 
             if ~isempty(timePoints)
@@ -189,11 +193,26 @@ classdef labTimeSeries  < timeseries
                     case 'closest'
                         aux=this.getIndexClosestToTimePoint(timePoints(:));
                         data(~isnan(aux),:)=this.Data(aux(~isnan(aux)),:);
+                        
+                        %TODO: add interpft1 interpolation as possible
+                        %method, provided that the timepoints are equally
+                        %spaced.
                 end
                 data=reshape(data,[size(timePoints),M]);
             else
                 data=[];
             end
+        end
+        
+        function newTS=synchTo(this,otherTS)
+           %Resamples the timeseries assuring that the new time vector coincides with that of otherTS. Pads with NaN if necessary.
+           if ~islogical(this.Data)
+                method=[];
+           else
+               method='closest';
+           end
+           data=squeeze(this.getSample(otherTS.Time,method));
+           newTS=labTimeSeries(data,otherTS.Time(1),otherTS.sampPeriod,this.labels);
         end
 
         function index=getIndexClosestToTimePoint(this,timePoints)
@@ -398,7 +417,7 @@ classdef labTimeSeries  < timeseries
             [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
 
-        function [steppedDataArray,bad,initTime,duration]=splitByEvents(this,eventTS,eventLabel,timeMargin)
+        function [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin)
            %eventTS needs to be a labTimeSeries with binary events as data
            %If eventLabel is not given, the first data column is used as
            %the relevant event marker. If given, eventLabel must be the
@@ -423,7 +442,8 @@ classdef labTimeSeries  < timeseries
             auxTime=eventTS.Time;
             aa=auxTime(refIdxLst);
             initTime=aa(1:M); %Initial time of each interval identified
-            duration=diff(aa); %Duration of each interval
+            eventTimes=nan(M,N); %Duration of each interval
+            eventTimes(:,1)=initTime;
             steppedDataArray=cell(M,N);
             bad=false(M,1);
             for i=1:M %Going over strides
@@ -434,6 +454,7 @@ classdef labTimeSeries  < timeseries
                    nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
                    t1= auxTime(nextEventIdx); %Look for next event
                    if ~isempty(t1) && ~isempty(t0)
+                       eventTimes(i,j+1)=t1;
                         steppedDataArray{i,j}=this.split(t0-timeMargin,t1+timeMargin);
                         t0=t1;
                         lastEventIdx=nextEventIdx;
@@ -593,12 +614,13 @@ classdef labTimeSeries  < timeseries
             if nargin<2 || isempty(method)
                 method='linear';
             end
-            if any(all(isnan(this.Data))) %Returns true if any TS contained in the data is all NaN
+            badColumns=sum(~isnan(this.Data))<2;
+            if any(badColumns) %Returns true if any TS contained in the data is all NaN
                 %FIXME: This throws an exception now, but it should just
                 %return all NaN labels as all NaN and substitute missing
                 %values in the others.
-                warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all NaN. Can''t replace those values (no data to use as reference), setting to 0.')
-                this.Data(:,all(isnan(this.Data)))=0;
+                warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all (or all but one sample) NaN. Can''t replace those values (no data to use as reference), setting to 0.')
+                this.Data(:,badColumns)=0;
             end
             this.Quality=zeros(size(this.Data),'int8');
              for i=1:size(this.Data,2) %Going through labels
@@ -777,16 +799,48 @@ classdef labTimeSeries  < timeseries
             Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
         end
 
-        function [Athis,originalDurations,bad,initTime]=align(this,eventTS,eventLabel,N,timeMargin)
+        function [ATS,bad]=align(this,eventTS,eventLabel,N,timeMargin)
             if nargin<4 || isempty(N)
                 N=256;
             end
             if nargin<5 || isempty(timeMargin)
                 timeMargin=0;
             end
-            [steppedDataArray,bad,initTime,~]=splitByEvents(this,eventTS,eventLabel,timeMargin);
-            [Athis,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
-            Athis.alignmentLabels=[eventLabel];
+            [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin);
+            [ATS,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
+            ATS.alignmentLabels=[eventLabel];
+            ATS.eventTimes=eventTimes';
+        end
+        
+        function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
+            %This is not yet ready for primetime
+            if nargin<4 || isempty(N)
+                N=256*ones(size(eventLabel));
+            end
+            NN=[0 cumsum(N)];
+            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
+            [M,~]=size(eventTimes);
+            Data=nan(sum(N),size(this.Data,2),M-1);
+            eventTimes2=[eventTimes(1:end-1,:) eventTimes(2:end,1)];
+            bad=false(M-1,1);
+            %TODO: remove for loop. getSample() accepts a matrix of
+            %timepoints and would return another matrix. If we shape
+            %timepoints accordingly, we can obtain all the data in a single
+            %call to getSample()
+            for i=1:M-1
+                for j=1:size(eventTimes,2)
+                    t1=eventTimes2(i,j);
+                    t2=eventTimes2(i,j+1);
+                    if ~isnan(t1) && ~isnan(t2)
+                        timepoints=t1+(t2-t1)*[0:N(j)]/N(j);
+                        sample=squeeze(this.getSample(timepoints(1:N(j)))); %This does linear interp1 by default, switch to interpft1?
+                        Data(NN(j)+[1:N(j)],:,i)=sample;
+                    else
+                        bad(i)=true;
+                    end
+                end
+            end
+            ATS=alignedTimeSeries(0,1,Data,this.labels,N,eventLabel,eventTimes');
         end
 
         function newThis=lowPassFilter(this,fcut)
@@ -847,6 +901,8 @@ classdef labTimeSeries  < timeseries
     methods(Hidden)
         function newThis=resampleLogical(this,newTs, newT0,newN)
             %newN=floor((this.Time(end)-newT0)/newTs +1);
+            %Can this be deprecated in favor of resample with 'logical'
+            %method?
             newTime=[0:newN-1]*newTs+newT0;
             newN=length(newTime);
             newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
@@ -872,8 +928,39 @@ classdef labTimeSeries  < timeseries
 
     methods(Static)
         this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
+        
+        function eventTimes=getArrayedEvents(eventTS,eventLabel)
+           if nargin>1
+                eventList=eventTS.getDataAsVector(eventLabel);
+           else
+               eventList=eventTS.Data(:,1);
+           end
+           %Check needed: is eventList binary?
+           N=size(eventList,2); %Number of events & intervals to be found
+           auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
 
-        function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) %Need to correct this, so it aligns by all events, as opposed to just aligning the initial time-point
+            refIdxLst=find(auxList==1);
+            M=length(refIdxLst)-1;
+            auxTime=eventTS.Time;
+            initTime=auxTime(refIdxLst); %Initial time of each interval identified
+            eventTimes=nan(M+1,N); %Duration of each interval
+            eventTimes(:,1)=initTime;
+            for i=1:M %Going over strides
+                t0=auxTime(refIdxLst(i));
+                lastEventIdx=refIdxLst(i);
+                for j=1:N-1 %Going over events
+                   nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+                   t1= auxTime(nextEventIdx); %Look for next event
+                   if ~isempty(t1) && ~isempty(t0)
+                       eventTimes(i,j+1)=t1;
+                        lastEventIdx=nextEventIdx;
+                   end
+
+                end
+            end
+        end
+
+        function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) 
             %To be used after splitByEvents
             if numel(stridedTS)~=0
                 if ~islogical(stridedTS{1}.Data)
