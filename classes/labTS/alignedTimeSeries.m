@@ -37,14 +37,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 error('alignedTS:Constructor','Data size and label number do not match.')
             end
             if nargin>6 
-                if any(size(eventTimes)~=[length(alignmentVector) size(Data,3)+1])
-                    error('alignedTS:Constructor','Data and eventTimes sizes do not match.')
-                else
-                    this.eventTimes=eventTimes;
-                end
+                this.eventTimes=eventTimes; %This actually calls on the set() method
             end
         end
         
+        %Getters & setters
         function eET=get.expandedEventTimes(this)
             if ~isempty(this.eventTimes)
                 eET=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector); 
@@ -53,6 +50,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
         end
         
+        function this=set.eventTimes(this,eventTimes)
+            if any(size(eventTimes)~=[length(this.alignmentVector) size(this.Data,3)+1])
+                error('alignedTS:SetEventTimes','Data and eventTimes sizes do not match.')
+            else
+                this.eventTimes=eventTimes;
+            end
+        end
+        
+        %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
             newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
         end
@@ -505,7 +511,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             %alignedTimeSeries, provided that the sampling is uniform
             %between events.
             %Can this method be hidden?
-            expEventTimes=nan(size(eventTimes,1)-1,sum(alignmentVector));
+            expEventTimes=nan(sum(alignmentVector),size(eventTimes,1)-1);
             refTime=1+[0 cumsum(alignmentVector)]'; %This should be 0+ for the old-style alignment
             M=size(eventTimes,2)-1;
             N=sum(alignmentVector);
@@ -514,9 +520,9 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 expEventTimes(:,j)=interp1(refTime,[eventTimes(:,j); eventTimes(1,j+1)],[1:N]');
             end 
 
-            %allEventTimes=reshape(eventTimes',numel(eventTimes),1);
-            %refTime2=refTime'+N*[0:M];
-            %allExpEventTimes=interp1(refTime2(:)',allEventTimes,1:N*M);
+            %allEventTimes=eventTimes(:);
+            %refTime2=bsxfun(@plus,refTime,N*[0:M]);
+            %allExpEventTimes=interp1(refTime2(:),allEventTimes,[1:N*M]');
             %expEventTimes=reshape(allExpEventTimes,N,M);
            
         end
