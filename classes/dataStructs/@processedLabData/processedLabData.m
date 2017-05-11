@@ -160,7 +160,7 @@ classdef processedLabData < labData
                 eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
             end
             if nargin<3 || isempty(N)
-                N=[24 76 24 76]; %12/38% split for DS single stance, 200 samples per gait cycle
+                N=[18 57 18 57]; %12/38% split for DS single stance, 150 samples per gait cycle, to keep it above 100Hz in general
             end
             warning('off','labTS:renameLabels:dont')
             %Synchronize all relevant TSs
