@@ -719,6 +719,7 @@ classdef labTimeSeries  < timeseries
             %linkaxes([h1,ax2],'x')
             plotHandles=h1;
         end
+        
         function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
             error('Unimplemented')
             %First attempt: align the data to the first column of events
@@ -830,6 +831,7 @@ classdef labTimeSeries  < timeseries
                 newThis.UserData=this.UserData;
                 newThis.UserData.processingInfo{end+1}=filterList{1};
         end
+        
         function newThis=highPassFilter(this,fcut)
                 Wn=fcut*2/this.sampFreq;
                 filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
@@ -898,6 +900,7 @@ classdef labTimeSeries  < timeseries
            end
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
         end
+        
         function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
             %Efficient & robust substitute for legacy align()
             eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
@@ -943,6 +946,7 @@ classdef labTimeSeries  < timeseries
         end
 
         function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N) 
+            error('Deprecated. Use labTS.align()')
             %To be used after splitByEvents
             if numel(stridedTS)~=0
                 if ~islogical(stridedTS{1}.Data)
