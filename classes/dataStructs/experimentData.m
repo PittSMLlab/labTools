@@ -86,7 +86,7 @@ classdef experimentData
             if isa(data,'cell')  % Has to be array of labData type cells. 
                aux=find(cellfun('isempty',data)~=1);
                for i=1:length(aux)
-                   if ~isa(data{aux(i)},'labData')
+                   if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
                        ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
                        throw(ME);
                    end
@@ -252,6 +252,7 @@ classdef experimentData
             end
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
+        
 		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=expData.makeDataObj(filename,experimentalFlag)
@@ -291,7 +292,22 @@ classdef experimentData
             end
             adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
         end
-     
+        
+        function reducedThis=reduce(this,eventLabels,N)
+            if nargin<2 || isempty(eventLabels)
+                s=this.getRefLeg;
+                f=this.getNonRefLeg;
+                eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
+            end
+            if nargin<3
+                N=[];
+            end
+            redData=cell(size(this.data));
+            for i=1:length(this.data)
+                redData{i}=this.data{i}.reduce(eventLabels,N);
+            end
+            reducedThis=experimentData(this.metaData,this.subData,redData);
+        end
         
         
         %% Display
