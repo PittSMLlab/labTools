@@ -138,51 +138,51 @@ classdef labData
         
         
         %Other I/O:
-        function partialMarkerData= getMarkerData(this,markerName)
-            %returns marker data for input markername
-            partialMarkerData=this.getPartialData('markerData',markerName);
-        end
-        
-        function list=getMarkerList(this)
-            %returns list of available marker names
-            list=this.getLabelList('markerData');
-        end
-        
-        function partialEMGData=getEMGData(this,muscleName)
-            partialEMGData=this.getPartialData('EMGData',muscleName);
-        end
-        
-        function list=getEMGList(this)
-            list=this.getLabelList('EMGData');
-        end
-        
-        function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
-            partialEEGData=this.getPartialData('EEGData',positionName);
-        end
-        
-        function list=getEEGList(this)
-            list=this.getLabelList('EEGData');
-        end
-        
-        function partialGRFData=getGRFData(this,label)
-            partialGRFData=this.getPartialData('GRFData',label);
-        end
-        
-        function list=getGRFList(this)
-            list=this.getLabelList('GRFData');
-        end
-        
-        function specificForce=getForce(this,side,axis)
-            specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
-        end
-        
-        function specificMoment=getMoment(this,side,axis)
-            specificMoment=this.getGRFData([side 'M' axis]);
-        end
-        
-        function beltSp=getBeltSpeed(this,side)
-            beltSp=this.getPartialData('beltSpeedReadData',side);
-        end
+%         function partialMarkerData= getMarkerData(this,markerName)
+%             %returns marker data for input markername
+%             partialMarkerData=this.getPartialData('markerData',markerName);
+%         end
+%         
+%         function list=getMarkerList(this)
+%             %returns list of available marker names
+%             list=this.getLabelList('markerData');
+%         end
+%         
+%         function partialEMGData=getEMGData(this,muscleName)
+%             partialEMGData=this.getPartialData('EMGData',muscleName);
+%         end
+%         
+%         function list=getEMGList(this)
+%             list=this.getLabelList('EMGData');
+%         end
+%         
+%         function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
+%             partialEEGData=this.getPartialData('EEGData',positionName);
+%         end
+%         
+%         function list=getEEGList(this)
+%             list=this.getLabelList('EEGData');
+%         end
+%         
+%         function partialGRFData=getGRFData(this,label)
+%             partialGRFData=this.getPartialData('GRFData',label);
+%         end
+%         
+%         function list=getGRFList(this)
+%             list=this.getLabelList('GRFData');
+%         end
+%         
+%         function specificForce=getForce(this,side,axis)
+%             specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
+%         end
+%         
+%         function specificMoment=getMoment(this,side,axis)
+%             specificMoment=this.getGRFData([side 'M' axis]);
+%         end
+%         
+%         function beltSp=getBeltSpeed(this,side)
+%             beltSp=this.getPartialData('beltSpeedReadData',side);
+%         end
         
         function COPData=computeCOP(this)
             COPData=COPCalculator(this.GRFData);
