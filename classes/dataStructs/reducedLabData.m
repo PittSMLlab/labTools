@@ -133,7 +133,9 @@ classdef reducedLabData %AKA alignedLabData
             fieldName=regexp(funName,'\.get\.','split');
             prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName{2}));
             pED=this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
+            warning('off','labTS:renameLabels:dont')
             pED=pED.renameLabels([],cellfun(@(x) x(4:end),pED.labels,'UniformOutput',false));
+            warning('on','labTS:renameLabels:dont')
         end
     end
 end
