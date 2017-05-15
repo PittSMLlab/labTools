@@ -368,7 +368,7 @@ classdef labTimeSeries  < timeseries
             newThis=cat(this,other);
         end
 
-        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
+        function [newThis,newData]=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
            %This function allows to compute new parameters from other existing parameters and have them added to the data.
            %This is useful when trying out new parameters without having to
            %recompute all existing parameters.
@@ -393,6 +393,16 @@ classdef labTimeSeries  < timeseries
            str(end)=')'; %Replacing last comma with parenthesis
            eval(['newData=funHandle' str ';']);
            newThis=appendData(this,newData,{newParamLabel}) ;
+        end
+        
+        function newThis=removeParameter(labels)
+            [bool,idxs] = compareLists(this.labels,labels);
+            if any(~bool)
+                warning([{'Could not remove some parameters because they are not present: '} labels(~bool)])
+            end
+            newThis=this;
+            newThis.labels(idxs(bool))=[];
+            newThis.Data(:,idxs(bool))=[];
         end
 
         function newThis=castAsOTS(this,orientation)
