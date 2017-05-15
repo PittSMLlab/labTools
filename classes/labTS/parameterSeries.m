@@ -27,7 +27,7 @@ classdef parameterSeries < labTimeSeries
        trialTypes_={};
        fixedParams=5;
     end
-    
+           
     methods
         function this=parameterSeries(data,labels,times,description,types)            
             this@labTimeSeries(data,1,1,labels);
@@ -79,8 +79,7 @@ classdef parameterSeries < labTimeSeries
 %                 disp('trying to access trialTypes')
 %                vals={}; 
 %             end
-        end
-        
+        end      
         
         %% I/O
         function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib
@@ -100,7 +99,27 @@ classdef parameterSeries < labTimeSeries
         
         function [data,auxLabel]=getParameter(this,label) %Backwards compat
             [data,~,auxLabel]=this.getDataAsVector(label);
-        end                  
+        end       
+        
+        function newThis=incorporateDependentParameters(this,labels)
+           ff=load('DependParamRecipes.mat','fieldList');
+           fTable=ff.fieldList;
+           newThis=this;
+           if isa(labels,'char')
+               labels={labels};
+           end
+           [bool,idxs] = compareLists(fTable(:,1),labels);
+           acceptedLabels=labels(bool);
+           acceptedDesc=fTable(idxs(bool),4);
+           acceptedHandles=fTable(idxs(bool),2);
+           acceptedParams=fTable(idxs(bool),3);
+           if any(~bool)
+               warning(strcat('Did not find recipes for some of the labels provided: ', labels(~bool)))
+           end
+           for i=1:length(acceptedLabels)
+               newThis=addNewParameter(newThis,acceptedLabels{i},eval(acceptedHandles{i}),acceptedParams{i},acceptedDesc{i});
+           end
+        end
        
   
         %% Modifiers
@@ -161,17 +180,7 @@ classdef parameterSeries < labTimeSeries
            %This can be implemented as:
            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
            
-           %Check input sanity:
-           if length(inputParameterLabels)~=nargin(funHandle)
-               error('parameterSeris:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
-           end
-           oldData=this.getDataAsVector(inputParameterLabels);
-           str='(';
-           for i=1:size(oldData,2)
-               str=[str 'oldData(:,' num2str(i) '),'];
-           end
-           str(end)=')'; %Replacing last comma with parenthesis
-           eval(['newData=funHandle' str ';']);
+           [~,newData]=this.addNewParameter@labTimeSeries(newParamLabel,funHandle,inputParameterLabels);
            newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
         end
         
@@ -276,31 +285,7 @@ classdef parameterSeries < labTimeSeries
             [h,h1]=this.plot(h,labels,plotHandles,[],color,1);
             ll=findobj(h,'Type','Line');
             set(ll,'LineStyle','None','Marker','.')
-%             if nargin<2 || isempty(h)
-%                 h=figure;
-%             else
-%                 figure(h)
-%             end
-%             N=length(this.labels);
-%             if nargin<3 || isempty(labels)
-%                 relData=this.Data;
-%                 relLabels=this.labels;
-%             else
-%                [relData,~,relLabels]=this.getDataAsVector(labels); 
-%                N=size(relData,2);
-%             end
-%             bad=this.bad;
-%             for i=1:N
-%                 h1(i)=subplot(ceil(N/2),2,i);
-%                 T=1:length(bad);
-%                 hold on
-%                 plot(T(bad==0),relData(bad==0,i),'.')
-%                 plot(T(bad==1),relData(bad==1,i),'x')
-%                 ylabel(relLabels{i})
-%                 hold off
-%             end
-             linkaxes(h1,'x')
-                
+            linkaxes(h1,'x')  
         end
         
         %% Stats
