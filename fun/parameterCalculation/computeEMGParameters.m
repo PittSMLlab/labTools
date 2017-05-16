@@ -40,6 +40,7 @@ for i=1:N %For each stride
     labs=stridedProcEMG{i}.labels;
     Data=stridedProcEMG{i}.Data;
     Qual=stridedProcEMG{i}.Quality;
+    sP=stridedProcEMG{i}.sampPeriod;
     for j=1:length(labs) %Muscles
         if strcmp(labs{j}(1),s)
             l='s';
@@ -98,11 +99,11 @@ for i=1:N %For each stride
                     elseif strcmp(labelSuff{k}(1),'t') %Integrated EMG per phase (12 phases), this is different from 'p' because different phases have different durations
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['Integral of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx));
+                        paramData(i,j,k)=sum(mData(relIdx))*sampPeriod;
                     elseif strcmp(labelSuff{k}(1),'e') % 't' divided by STRIDE duration, so we get a measure per unit of time (closer to actual effort)
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['EMG ''effort'' per unit of time in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
+                        paramData(i,j,k)=sampPeriod*    sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
                     end
                     if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
                         paramData(i,j,k)=nan;
