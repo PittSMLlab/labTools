@@ -666,7 +666,7 @@ classdef adaptationData
         
         [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
         
-        function dataPoints=getDataFromInds(this,inds,labels)
+        function dataPoints=getDataFromInds(this,inds,labels,padWithNaNFlag)
             %Returns data associated to certain stride indexes (e.g. strides 1, 3, 10:15, 21)
             %Inds comes from a call to getEarlyLateIdxs:
             %[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
@@ -674,6 +674,9 @@ classdef adaptationData
                 data=this.data.Data;
             else
                 data=this.data.getDataAsVector(labels);
+            end
+            if nargin<4 || isempty(padWithNaNFlag)
+               padWithNaNFlag=false; 
             end
             nConds=size(inds{1},2);
             nLabels=size(data,2);
@@ -685,14 +688,17 @@ classdef adaptationData
                 %end
                 %This line does the same as the for loop commented above:
                 if any(isnan(inds{j}(:)))
+                    if ~padWithNaNFlag
                     error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    else
                     %A less drastic option:
-                    warning('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    warning('adaptationData:getDataFromInds',['Index strides for ' this.subData.ID ' are NaN. Data will be padded with NaNs.'])
                     inds{j}=inds{j}';
                     auxInds=inds{j}(~isnan(inds{j}(:)));
-                    auxData=nan(numel(inds{j}),nConds);
+                    auxData=nan(numel(inds{j}),nLabels);
                     auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
-                    dataPoints{j}=reshape(auxData,nConds,nSteps,length(labels));
+                    dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
+                    end
                 else
                     dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels); 
                 end

@@ -163,6 +163,30 @@ classdef groupAdaptationData
               gID=this.ID{1}(1); %Using first char in first subjects' ID as group ID.
             end
         end
+        
+        function meanSub=getMeanSubject(this)
+            
+            error('Unimplemented')
+            %This requires finisihing getMinSharedNumberOfStrides
+            commonConds=this.getCommonConditions;
+            commonParams=this.getCommonParameters;
+            commonStrides=this.getMinSharedNumberOfStrides(this,commonConds);
+            [data]=getGroupedData(this,commonParams,commonConds,0,numberOfStrides,0,0); %No removal of bias, no exempt strides
+            meanSub=adaptationData(this.adaptData{1}.metaData,this.adaptData{1}.subData,data); %Doxy: need to fill meta data and subject data fields appropriately
+        end
+        
+        function minNumStrides=getMinSharedNumberOfStrides(this, conds)
+            %This function returns the minimum number of strides ALL
+            %subjects have for any given condition(s)
+            error('Unimplemented')
+           if nargin<2 || isempty(conds)
+               conds=this.getCommonConditions;
+           end
+           minNumStrides=nan(size(conds));
+           for i=1:length(conds)
+               minNumStrides(i)=NaN; %Doxy
+           end
+        end
 
 
         %Modifiers
@@ -299,15 +323,21 @@ classdef groupAdaptationData
             end
         end
 
-        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
+        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast,padWithNaNFlag)
             if removeBiasFlag
                 this=this.removeBias;
             end
+            if nargin<8 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
             [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);
-            [data]=getGroupedDataFromInds(this,inds,label);
+            [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
         end
 
-        function [data]=getGroupedDataFromInds(this,inds,label)
+        function [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag)
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
             data=cell(size(inds,1),1);
             nConds=size(inds{1,1},2);
             nLabs=length(label);
@@ -319,7 +349,7 @@ classdef groupAdaptationData
             %Alt: (using the inds data, so we are sure we are actually
             %getting the same strides when calling upon any function)
             for j=1:nSubs %For each sub
-                allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
+                allData=this.adaptData{j}.getDataFromInds(inds(:,j),label,padWithNaNFlag);
                 for i=1:length(data) %For each strideGroup
                     data{i}(:,:,:,j)=allData{i};
                 end
