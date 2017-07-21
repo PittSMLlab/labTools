@@ -120,9 +120,9 @@ classdef processedLabData < labData
 %             list=this.getLabelList('procEMGData');
 %         end
 %         
-%         function partialGaitEvents=getPartialGaitEvents(this,eventName)
-%             partialGaitEvents=this.getPartialData('gaitEvents',eventName);
-%         end
+        function partialGaitEvents=getPartialGaitEvents(this,eventName)
+            partialGaitEvents=this.getPartialData('gaitEvents',eventName);
+        end
 %         
 %         function list=getEventList(this)
 %             list=this.getLabelList('gaitEvents');
