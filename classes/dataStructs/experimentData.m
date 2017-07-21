@@ -433,16 +433,36 @@ classdef experimentData
            end
         end
         
-        function [alignedField,originalDurations,originalTrial,originalInitTime,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
-            if nargin<4 
-                events=[];
-            end
-            [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events);
-            if any(bad)
-                warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
-            end
-            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
-            alignedField.alignmentLabels=events;
+        function [alignedField,originalTrial,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
+           if nargin<4 || isempty(events)
+               events=[this.getSlowLeg 'HS'];
+           end
+           if nargin<3 || isempty(conditions)
+               trials=cell2mat(this.metaData.trialsInCondition);
+           else
+               if ~isa(conditions,'double') %If conditions are given by name, and not by index
+                   conditions=getConditionIdxsFromName(this,conditions);
+               end
+               trials=cell2mat(this.metaData.trialsInCondition(conditions));
+           end
+           bad=[];
+           originalInitTime=[];
+           originalTrial=[];
+           originalDurations=[];
+           for i=trials %Trials in condition
+              %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              [alignedField1,bad1]=this.data{i}.getAlignedField(field,events,alignmentLengths);
+              if i==trials(1)
+                  alignedField=alignedField1;
+              else
+                  force=false;
+                  alignedField=alignedField.cat(alignedField1,[],force);
+              end
+              bad=[bad; bad1];
+              originalTrial=[originalTrial; i*ones(size(bad1))];
+              %originalInitTime=[originalInitTime; initTime1];
+              %originalDurations=[originalDurations; originalDurations1];
+           end
         end
         
         %% Auxiliar

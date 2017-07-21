@@ -60,7 +60,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,this.eventTimes);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,this.eventTimes(:,[inds inds(end)+1]));
         end
         
         function newThis=removeStridesWithNaNs(this)
@@ -70,7 +70,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         function newThis=getPartialDataAsATS(this,labels)
             [boolIdx,relIdx]=this.isaLabel(labels);
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
+            this.Data=this.Data(:,relIdx(boolIdx),:);
+            this.labels=this.labels(relIdx(boolIdx));
+            newThis=this;
+            %newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
         end
         
         function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
@@ -125,7 +128,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                            plottedInds=1:P;  
                            structure=structure(:,:,plottedInds);
                    end
+               elseif any(plottedInds<=0) %Counting from the back
+                  plottedInds(plottedInds<=0)=size(structure,3)+plottedInds(plottedInds<=0); 
                end
+                   
                
                %Define centerline plot:
                if medianFlag==1

@@ -318,6 +318,7 @@ classdef processedLabData < labData
         end
         
         function [stridedField,bad,initTime,events]=getStridedField(this,field,events)
+            warning('This is very slow and has been deprecated. Please don''t use')
             if isa(events,'char')
                 events={events};
             end
@@ -345,13 +346,16 @@ classdef processedLabData < labData
             %Step 4: reshape & set to [] the slices which didn't have
             %proper events
             stridedField=reshape(slicedTS,N,M)';
-            
         end
         
-        function [alignedField,originalDurations,bad,initTime,events]=getAlignedField(this,field,events,alignmentLengths)
-            error('This function has been deprecated. Needs to be updated to using the new labTS.align()')
-            [stridedField,bad,initTime,events]=getStridedField(this,field,events);
-            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+        function [alignedField,bad]=getAlignedField(this,field,events,alignmentLengths)
+            [alignedField,bad]=this.(field).align(this.gaitEvents,events,alignmentLengths);
+            %originalDurations=[]; %This is now within the alignedTS
+            %initTime=[]; %This is now within the alignedTS
+            
+            %error('This function has been deprecated. Needs to be updated to using the new labTS.align()')
+            %[stridedField,bad,initTime,events]=getStridedField(this,field,events);
+            %[alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
         end
     end
     
