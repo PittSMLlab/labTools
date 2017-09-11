@@ -673,13 +673,28 @@ classdef orientedLabTimeSeries  < labTimeSeries
             if nargin<2 || isempty(method)
                 method=[];
             end
-           this=substituteNaNs@labTimeSeries(this,method);
-           newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
+           newThis=substituteNaNs@labTimeSeries(this,method);
+           newThis=newThis.castAsOTS(this.orientation);
+        end
+        
+        function newThis=derivative(this,diffOrder)
+            if nargin<2
+                diffOrder=[];
+            end
+           newThis=derivative@labTimeSeries(this,diffOrder);
+           newThis=newThis.castAsOTS(this.orientation);
         end
         
         function newThis=plus(this,other)
             newThis=plus@labTimeSeries(this,other);
-            newThis=newThis.castAsOTS(this.orientation);
+            tL=this.getLabelPrefix;
+            oL=other.getLabelPrefix;
+            newLabelPrefixes=cell(size(tL));
+            for i=1:length(newLabelPrefixes)
+                newLabelPrefixes{i}=['(' tL{i} ' + ' oL{i} ')'];
+            end
+            newLabels=orientedLabTimeSeries.addLabelSuffix(newLabelPrefixes);
+            newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newLabels,this.orientation);
         end
         function newThis=times(this,constant)
             newThis=times@labTimeSeries(this,constant);
