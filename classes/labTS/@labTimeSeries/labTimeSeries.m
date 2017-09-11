@@ -595,7 +595,12 @@ classdef labTimeSeries  < timeseries
             M=size(this.Data,2);
             newData=conv2(this.Data,w','valid')/this.sampPeriod;
             %newData=[nan(order,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(order,M)]/this.sampPeriod; %Centered differential
-            newT0=this.Time(1)+lag*this.sampPeriod;
+            if mod(diffOrder,2)==0 %For even order differences, we can preserve the sampling of the time series, padding with NaN on the edges
+                newT0=this.Time(1);
+                newData=cat(1,nan(lag,size(newData,2)),newData,nan(lag,size(newData,2)));
+            else
+                newT0=this.Time(1)+lag*this.sampPeriod;
+            end
             newLabels=strcat('d/dt',{' '},this.labels);
             newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
         end
