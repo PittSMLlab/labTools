@@ -340,7 +340,11 @@ classdef groupAdaptationData
             end
             data=cell(size(inds,1),1);
             nConds=size(inds{1,1},2);
+            if isa(label,'cell')
             nLabs=length(label);
+            else
+                nLabs=1;
+            end
             nSubs=length(this.ID);
             %Initialize:
             for i=1:length(data)
