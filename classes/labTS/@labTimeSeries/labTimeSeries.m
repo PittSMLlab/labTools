@@ -858,15 +858,26 @@ classdef labTimeSeries  < timeseries
             if nargin<4 || isempty(N)
                 N=256*ones(size(eventLabel));
             end
-            [ATS,bad]=this.align_v2(eventTS,eventLabel,N);
-            %Deprecated on May 10, 2017 by PAI
-%             if nargin<5 || isempty(timeMargin)
-%                 timeMargin=0;
-%             end
-%             [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin);
-%             [ATS,originalDurations]=labTimeSeries.stridedTSToAlignedTS(steppedDataArray,N);
-%             ATS.alignmentLabels=[eventLabel];
-%             ATS.eventTimes=[eventTimes' nan(size(eventTimes,2),1)];
+            [ATS,bad]=this.align_v2(eventTS.split(this.Time(1)-this.sampPeriod,this.Time(end)+this.sampPeriod),eventLabel,N);
+        end
+        
+        function [DTS,bad]=discretize(this,eventTS,eventLabel,N)
+            %Discretizes a time-series by averaging data across different
+            %phases of gait. The phases are defined by intervals between
+            %given events, and in turn these can be divided into sub-phases
+            if nargin<3 || isempty(eventLabel)
+                eventLabel=eventTS.labels(1);
+                N=10; %10 equal subphases per gait cycle
+            end
+            k=10;
+            M=k*N; %re-sampling with 10 samples for each desired sub-phase.
+            [ATS,bad]=align(this,eventTS,eventLabel,M);
+%             newData=cat(1,zeros(1,size(ATS.Data,2),size(ATS.Data,3)), cumsum(ATS.Data,1));
+%             newData=newData(1:k:end,:,:)/k;
+%             newData=diff(newData,[],1);
+%             eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
+%             DTS=alignedTimeSeries(0,1,newData,this.labels,N,eventLabel,eventTimes');
+            DTS=ATS.discretize(k*ones(sum(N),1));
         end
 
         function newThis=lowPassFilter(this,fcut)

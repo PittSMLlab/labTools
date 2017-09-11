@@ -527,6 +527,23 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             this.labels(idx(boo))=newLabels;
         end
         
+        function newThis=discretize(this,averagingVector)
+            if sum(averagingVector)~=sum(this.alignmentVector)
+                error('The averaging vector must sum to the number of samples of the alignedTS')
+            end
+            lastInd=0;
+            newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
+            expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
+            newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
+            for i=1:length(averagingVector)
+                newData(i,:,:)=nanmean(this.Data(lastInd+[1:averagingVector(i)],:,:));
+                alignLabel{i}=''; %TO DO
+                newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
+                lastInd=lastInd+averagingVector(i);
+            end
+            newEventTimes(1,end)=this.eventTimes(1,end);
+            newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
+        end
     end
     
     methods (Static)
