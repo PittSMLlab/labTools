@@ -65,7 +65,7 @@ function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exe
                     end
                     inds{j}(1:length(relInds),i)=relInds; %This allows for there to exist less strides than requested
                     if length(relInds)<abs(numberOfStrides)
-                        warning(['Requested ' num2str(abs(numberOfStrides)) ' but after removing the exempt ones, there are only ' num2str(length(relInds))])
+                        warning(['Requested ' num2str(abs(numberOfStrides)) ' strides for ' this.subData.ID ' but after removing the exempt ones, there are only ' num2str(length(relInds))])
                     end
                 end
             end
