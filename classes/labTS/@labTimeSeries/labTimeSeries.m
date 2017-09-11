@@ -181,9 +181,9 @@ classdef labTimeSeries  < timeseries
 
             if ~isempty(timePoints)
                 M=length(this.labels);
-                data=nan(numel(timePoints),M);
                 switch method
                     case 'linear'
+                        data=nan(numel(timePoints),M);
                         notNaNIdxs=~isnan(timePoints) & ~isinf(timePoints) & timePoints<this.Time(end) & timePoints>this.Time(1); %Excluding NaNs, Infs and out-of-range times from interpolation.
                         [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),'ascend');
                         newTS=resample(this,notNaNTimes,this.Time(1),1); %Using timeseres.resample which does linear interp by default
@@ -191,14 +191,42 @@ classdef labTimeSeries  < timeseries
                         newTS.Data(sorting,:)=newTS.Data;
                         data(notNaNIdxs,:)=newTS.Data;
                     case 'closest'
+                        data=logical(sparse(numel(timePoints),M));
                         aux=this.getIndexClosestToTimePoint(timePoints(:));
-                        data(~isnan(aux),:)=this.Data(aux(~isnan(aux)),:);
+                        inds=~isnan(aux);
+                        aux=aux(inds); %Eliminating NaNs
+                        newData=this.Data(aux,:); %This would be the new data in the simplest case.
+                        initData=newData;
+                        %But, if two samples map to the same timePoint (sub-sampling) and that timePoint corresponds 
+                        %to an event, just keep the closest one, to avoid repeating events.
+                        trueEventSamples=unique(aux(any(newData,2) & [diff(aux);1]==0)); %Unique samples that contain an event
+                        tt=this.Time(trueEventSamples);
+                        for i=1:length(trueEventSamples)
+                            mappedInds=find(aux==trueEventSamples(i));
+                            relevantTimePoints=timePoints(mappedInds);
+                            Dt=abs(tt(i)-relevantTimePoints);
+                            jj=find(Dt==min(Dt),1,'first'); %The find() is needed to resolve ties
+                            mappedInds(jj)=[];
+                            newData(mappedInds,:)=false;
+                        end
                         
+                        data(inds,:)=newData;
+%                         %Sanity check, this can be deprecated if no errors
+%                         %found by Jan 1st 2018. [implemented Sept 11 2017]
+%                         %Check that #events did not change:
+%                         if any(sum(newData)~=sum(this.split(min(timePoints(:))-this.sampPeriod/2,max(timePoints(:))+this.sampPeriod).Data))
+%                             error('Something went wrong when resampling: number of events changed')
+%                         end
+%                         %Check that no event is present at a sample where
+%                         %it was previously not:
+%                         if any(any(newData & ~initData))
+%                             error('Something went wrong when resampling: event location changed')
+%                         end
                         %TODO: add interpft1 interpolation as possible
                         %method, provided that the timepoints are equally
                         %spaced.
                 end
-                data=reshape(data,[size(timePoints),M]);
+                data=reshape(full(data),[size(timePoints),M]); %Can't have sparse ND matrices (WHY??)
             else
                 data=[];
             end
@@ -256,6 +284,8 @@ classdef labTimeSeries  < timeseries
                         newThis=labTimeSeries(newThis.Data,newThis.Time(1),newTs,this.labels);
                  else %logical timeseries
                        newThis=resampleLogical(this,newTs,newT0,newN);
+                       %Can be this deprecated in favor of just using
+                       %getSample() for a logical TS?
                  end
 
             elseif hiddenFlag==1% this allows for non-uniform resampling, and returns a timeseries object.
