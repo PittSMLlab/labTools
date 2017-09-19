@@ -579,7 +579,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            ax=gca;
            ax.YTick=1:length(this.labels);
            ax.YTickLabels=this.labels;
-           ax.XTick=[1:length(this.alignmentLabels)]-.5;
+           ax.XTick=[1 cumsum(this.alignmentVector)]-.5;
            ax.XTickLabel=this.alignmentLabels;
            %Colormap:
             ex1=[.85,0,.1];
