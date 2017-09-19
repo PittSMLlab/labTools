@@ -119,7 +119,7 @@ classdef labTimeSeries  < timeseries
                 error('Inconsistent label sizes')
             end
             [boo,idx]=this.isaLabel(originalLabels);
-            this.labels(idx(boo))=newLabels;
+            this.labels(idx(boo))=newLabels(boo);
         end
 
         function labelList=getLabelsThatMatch(this,exp)
