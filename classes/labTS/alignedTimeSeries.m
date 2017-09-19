@@ -535,14 +535,59 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
             expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
             newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
+            auxSamp=1+[0 cumsum(this.alignmentVector)];
             for i=1:length(averagingVector)
-                newData(i,:,:)=nanmean(this.Data(lastInd+[1:averagingVector(i)],:,:));
-                alignLabel{i}=''; %TO DO
+                inds=lastInd+[1:averagingVector(i)];
+                newData(i,:,:)=nanmean(this.Data(inds,:,:));
+                if ~any(auxSamp==inds(1))
+                    aux1='-';
+                else
+                    aux1=this.alignmentLabels{auxSamp==inds(1)};
+                end
+                if ~any(auxSamp==inds(end))
+                    aux2='-';
+                else
+                    aux2=this.alignmentLabels{auxSamp==inds(end)};
+                end
+                aux=this.alignmentLabels(auxSamp>inds(1) & auxSamp<inds(end));
+                if ~isempty(aux)
+                    auxM=cell2mat(aux);
+                else
+                    auxM='-';
+                end
+                alignLabel{i}=[aux1 aux2];
                 newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
                 lastInd=lastInd+averagingVector(i);
             end
             newEventTimes(1,end)=this.eventTimes(1,end);
             newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
+        end
+        
+        function [fh,ph]=plotCheckerboard(this,fh,ph)
+           if nargin<2
+               fh=figure();
+           else
+               figure(fh);
+           end
+           if nargin<3
+               ph=gca;
+           else
+               axes(ph);
+           end
+           m=this.mean;
+           imagesc(m.Data')
+           ax=gca;
+           ax.YTick=1:length(this.labels);
+           ax.YTickLabels=this.labels;
+           ax.XTick=[1:length(this.alignmentLabels)]-.5;
+           ax.XTickLabel=this.alignmentLabels;
+           %Colormap:
+            ex1=[.85,0,.1];
+            ex2=[0,.1,.6];
+            map=[bsxfun(@plus,ex1,bsxfun(@times,1-ex1,[0:.01:1]'));bsxfun(@plus,ex2,bsxfun(@times,1-ex2,[1:-.01:0]'))].^.5;
+            colormap(flipud(map))
+            caxis([-1 1]*max(abs(m.Data(:))))
+            colorbar
         end
     end
     
