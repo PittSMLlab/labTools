@@ -125,11 +125,15 @@ classdef adaptationData
             newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
         end
         
-        function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
+        function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag,removeBadFlag)
            %Same as removeBias, but for an arbitrary subset of strides
            %(e.g. remove the mean of the first 20 strides of adaptation)
-           
-           base=getEarlyLateData_v2(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); %Last 40, exempting very last 5 and first 10
+           if nargin<7 || isempty(removeBadFlag) || removeBadFlag==0
+               base=getEarlyLateData_v2(this,[],condName,0,strideNo,exemptStrides,exemptStrides); %Not removing bad strides
+           else
+               base=getEarlyLateData_v2(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); %Removing bad strides for the purpose of baseline computations
+           end
+                
            if nargin<5 || isempty(medianFlag) || medianFlag==0
                base=nanmean(squeeze(base{1}));
            else
@@ -144,17 +148,25 @@ classdef adaptationData
                 %data(isnan(data))=-100000;
                 base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
                 newData=bsxfun(@minus,dataOld,base); %Substracting baseline
-                base(base==0)=nan;
             else
                 base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
                 newData=bsxfun(@rdivide,dataOld,base); %Dividing by baseline
-                base(base==1)=nan;
             end
-            newThis.data.Data=newData;
+            M=newThis.data.fixedParams;
+            newThis.data.Data(:,M+1:end)=newData(:,newThis.data.fixedParams+1:end); %Not removing bias for 'fixed' params: initTime, finalTime, trial, good, bad
             %newData(isnan(data))=nan;
-            newThis.TMbias_=base;
-            newThis.OGbias_=base;
-                
+            if isempty(this.TMbias_) %Default if bias was not removed previously
+                newThis.TMbias_=[zeros(1,M) base(M+1:end)];
+                newThis.OGbias_=[zeros(1,M) base(M+1:end)];
+            else
+                if normalizeFlag==0
+                    newThis.TMbias_=newThis.TMbias_+[zeros(1,M) base(M+1:end)];
+                    newThis.OGbias_=newThis.OGbias_+[zeros(1,M) base(M+1:end)];
+                else
+                    newThis.TMbias_=newThis.TMbias_.*[zeros(1,M) base(M+1:end)];
+                    newThis.OGbias_=newThis.OGbias_.*[zeros(1,M) base(M+1:end)];
+                end
+            end
         end
         
         function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
@@ -165,12 +177,13 @@ classdef adaptationData
         end
         
         function newThis=removeBadStrides(this)
-            if isa(this.data,'paramData')
+            if isa(this.data,'paramData') %What does this do?
                 newParamData=this.data;
             else
-                inds=find(this.data.bad==0);
-                newParamData=parameterSeries(this.data.Data(inds,:),this.data.labels,this.data.hiddenTime(inds),this.data.description);
-                newParamData=newParamData.setTrialTypes(this.data.trialTypes);
+                aux=this.data;
+                inds=~aux.bad;
+                newParamData=parameterSeries(aux.Data(inds,:),aux.labels,aux.hiddenTime(inds),aux.description);
+                newParamData=newParamData.setTrialTypes(aux.trialTypes);
             end
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
@@ -210,14 +223,19 @@ classdef adaptationData
             %Also need to write the inverse function
         end
         
-        function [biasTM,biasOG]=getParameterBias(this,labels)
+        function [biasTM,biasOG]=getBias(this,labels)
             if isempty(this.TMbias_)
                 warning('This adaptationData object is not unbiased.')
                 bias=[];
             else
-                [boolFlag,idx]=this.data.isaLabel(labels);
-                biasOG=this.OGbias_(idx(boolFlag));
-                biasTM=this.TMbias_(idx(boolFlag));
+                if nargin>1 && ~isempty(labels)
+                    [boolFlag,idx]=this.data.isaLabel(labels);
+                    biasOG=this.OGbias_(idx(boolFlag));
+                    biasTM=this.TMbias_(idx(boolFlag));
+                else %Fast eval
+                    biasOG=this.OGbias_;
+                    biasTM=this.TMbias_;
+                end
             end
         end
         
@@ -509,12 +527,6 @@ classdef adaptationData
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
         
-        function [baseValues,baseTypes]=getBias(this,conditions)
-            warning('adaptationData:getBias','This function is not yet implemented.')
-            baseValues=[];
-            baseTypes=[];
-        end
-        
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
@@ -654,14 +666,20 @@ classdef adaptationData
         
         [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
         
-        function dataPoints=getDataFromInds(this,inds,labels)
-            %Returns data associated to certain stride indexes (e.g.
-            %strides
-            %1, 3, 10:15, 21)
+        function dataPoints=getDataFromInds(this,inds,labels,padWithNaNFlag)
+            %Returns data associated to certain stride indexes (e.g. strides 1, 3, 10:15, 21)
             %Inds comes from a call to getEarlyLateIdxs:
             %[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
-            data=this.data.getDataAsVector(labels);
+            if nargin<3 || isempty(labels) %More efficient call for when we want everything
+                data=this.data.Data;
+            else
+                data=this.data.getDataAsVector(labels);
+            end
+            if nargin<4 || isempty(padWithNaNFlag)
+               padWithNaNFlag=false; 
+            end
             nConds=size(inds{1},2);
+            nLabels=size(data,2);
             
             for j=1:length(inds)
                 nSteps=size(inds{j},1);
@@ -670,16 +688,19 @@ classdef adaptationData
                 %end
                 %This line does the same as the for loop commented above:
                 if any(isnan(inds{j}(:)))
+                    if ~padWithNaNFlag
                     error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    else
                     %A less drastic option:
-                    warning('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                    warning('adaptationData:getDataFromInds',['Index strides for ' this.subData.ID ' are NaN. Data will be padded with NaNs.'])
                     inds{j}=inds{j}';
                     auxInds=inds{j}(~isnan(inds{j}(:)));
-                    auxData=nan(numel(inds{j}),nConds);
+                    auxData=nan(numel(inds{j}),nLabels);
                     auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
-                    dataPoints{j}=reshape(auxData,nConds,nSteps,length(labels));
+                    dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
+                    end
                 else
-                    dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,length(labels)); 
+                    dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels); 
                 end
             end
         end

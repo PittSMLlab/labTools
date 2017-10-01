@@ -86,7 +86,7 @@ classdef experimentData
             if isa(data,'cell')  % Has to be array of labData type cells. 
                aux=find(cellfun('isempty',data)~=1);
                for i=1:length(aux)
-                   if ~isa(data{aux(i)},'labData')
+                   if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
                        ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
                        throw(ME);
                    end
@@ -252,6 +252,7 @@ classdef experimentData
             end
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
+        
 		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=expData.makeDataObj(filename,experimentalFlag)
@@ -291,7 +292,22 @@ classdef experimentData
             end
             adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
         end
-     
+        
+        function reducedThis=reduce(this,eventLabels,N)
+            if nargin<2 || isempty(eventLabels)
+                s=this.getRefLeg;
+                f=this.getNonRefLeg;
+                eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
+            end
+            if nargin<3
+                N=[];
+            end
+            redData=cell(size(this.data));
+            for i=1:length(this.data)
+                redData{i}=this.data{i}.reduce(eventLabels,N);
+            end
+            reducedThis=experimentData(this.metaData,this.subData,redData);
+        end
         
         
         %% Display
@@ -340,7 +356,7 @@ classdef experimentData
         end
         
         %% Update/modify
-        function this=recomputeParameters(this,eventClass,initEventSide)
+        function this=recomputeParameters(this,eventClass,initEventSide,parameterClasses)
         %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
         %objects in experimentData.data.
         %
@@ -356,9 +372,13 @@ classdef experimentData
             if nargin<3 || isempty(initEventSide)
                 initEventSide=[];
             end
+            if nargin<4 || isempty(parameterClasses)
+                parameterClasses=[];
+            end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide); 
+                  newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses); 
+                  this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
         
@@ -413,16 +433,36 @@ classdef experimentData
            end
         end
         
-        function [alignedField,originalDurations,originalTrial,originalInitTime,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
-            if nargin<4 
-                events=[];
-            end
-            [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events);
-            if any(bad)
-                warning(['Some strides [' num2str(find(bad(:)')) '] did not have all the proper events, discarding.'])
-            end
-            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField,alignmentLengths);
-            alignedField.alignmentLabels=events;
+        function [alignedField,originalTrial,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
+           if nargin<4 || isempty(events)
+               events=[this.getSlowLeg 'HS'];
+           end
+           if nargin<3 || isempty(conditions)
+               trials=cell2mat(this.metaData.trialsInCondition);
+           else
+               if ~isa(conditions,'double') %If conditions are given by name, and not by index
+                   conditions=getConditionIdxsFromName(this,conditions);
+               end
+               trials=cell2mat(this.metaData.trialsInCondition(conditions));
+           end
+           bad=[];
+           originalInitTime=[];
+           originalTrial=[];
+           originalDurations=[];
+           for i=trials %Trials in condition
+              %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+              [alignedField1,bad1]=this.data{i}.getAlignedField(field,events,alignmentLengths);
+              if i==trials(1)
+                  alignedField=alignedField1;
+              else
+                  force=false;
+                  alignedField=alignedField.cat(alignedField1,[],force);
+              end
+              bad=[bad; bad1];
+              originalTrial=[originalTrial; i*ones(size(bad1))];
+              %originalInitTime=[originalInitTime; initTime1];
+              %originalDurations=[originalDurations; originalDurations1];
+           end
         end
         
         %% Auxiliar

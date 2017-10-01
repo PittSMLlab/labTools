@@ -112,37 +112,83 @@ classdef processedLabData < labData
         end
        
         %Access method for fields not defined in raw class.
-        function partialProcEMGData=getProcEMGData(this,muscleName)
-            partialProcEMGData=this.getPartialData('procEMGData',muscleName);
-        end
-        
-        function list=getProcEMGList(this)
-            list=this.getLabelList('procEMGData');
-        end
-        
+%         function partialProcEMGData=getProcEMGData(this,muscleName)
+%             partialProcEMGData=this.getPartialData('procEMGData',muscleName);
+%         end
+%         
+%         function list=getProcEMGList(this)
+%             list=this.getLabelList('procEMGData');
+%         end
+%         
         function partialGaitEvents=getPartialGaitEvents(this,eventName)
             partialGaitEvents=this.getPartialData('gaitEvents',eventName);
         end
-        
-        function list=getEventList(this)
-            list=this.getLabelList('gaitEvents');
-        end
-        
-        function partialAngleData= getAngleData(this,angleName)
-            partialAngleData=this.getPartialData('angleData',angleName);
-        end
-        
-        function partialParamData=getParam(this,paramName)
-            partialParamData=this.getPartialData('adaptParams',paramName);
-        end
-        
-        function partialParamData=getExpParam(this,paramName)
-            partialParamData=this.getPartialData('experimentalParams',paramName);
-        end
+%         
+%         function list=getEventList(this)
+%             list=this.getLabelList('gaitEvents');
+%         end
+%         
+%         function partialAngleData= getAngleData(this,angleName)
+%             partialAngleData=this.getPartialData('angleData',angleName);
+%         end
+%         
+%         function partialParamData=getParam(this,paramName)
+%             partialParamData=this.getPartialData('adaptParams',paramName);
+%         end
+%         
+%         function partialParamData=getExpParam(this,paramName)
+%             partialParamData=this.getPartialData('experimentalParams',paramName);
+%         end
                 
         function adaptParams=calcAdaptParams(this)
              adaptParams=calcParameters(this);            
         end
+        
+        %Modifiers
+        function reducedThis=reduce(this,eventLabels,N)
+            %Define the events that will be used for all further computations
+            if nargin<2 || isempty(eventLabels)
+                refLeg=this.metaData.refLeg;
+                if refLeg == 'R'
+                    s = 'R';    f = 'L';
+                elseif refLeg == 'L'
+                    s = 'L';    f = 'R';
+                else
+                    ME=MException('processedLabData:reduce:refLegError','the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.');
+                    throw(ME);
+                end
+                eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
+            end
+            if nargin<3 || isempty(N)
+                N=[18 57 18 57]; %12/38% split for DS single stance, 150 samples per gait cycle, to keep it above 100Hz in general
+            end
+            warning('off','labTS:renameLabels:dont')
+            %Synchronize all relevant TSs
+            allTS=this.markerData.getDataAsTS([]);
+            reducedFields{1}='markerData';
+            fieldPrefixes{1}='mrk';
+            fieldLabels{1}=allTS.labels;
+            %ff=fields(this);
+            ff={'markerData','GRFData','accData','procEMGData','angleData','COPData','COMData','jointMomentsData'}; %Exhaustive list of fields to be preserved
+            ffShort={'mrk','GRF','acc','EMG','ang','COP','COM','mom'};
+            for i=1:length(ff)
+                field= this.(ff{i});
+                if ~isempty(field) && isa(field,'labTimeSeries') && ~strcmp(ff{i},'gaitEvents') && ~strcmp(ff{i},'markerData') && ~strcmp(ff{i},'EMGData') && ~strcmp(ff{i},'adaptParams')
+                    reducedFields{end+1}=ff{i};
+                    fieldLabels{end+1}=strcat(ffShort{i},field.labels);
+                    fieldPrefixes{end+1}=ffShort{i};
+                    allTS=allTS.cat(field.getDataAsTS(field.labels).renameLabels([],fieldLabels{end}).synchTo(allTS));
+                end
+            end
+            
+            %Align:
+            [alignTS,bad]=allTS.align(this.gaitEvents,eventLabels,N);
+            
+            %Create reduced struct:
+            reducedThis=reducedLabData(this.metaData,this.gaitEvents,alignTS,bad,reducedFields,fieldPrefixes,this.adaptParams); %Constructor
+            warning('on','labTS:renameLabels:dont')
+        end
+        
            
         %Getters for dependent properties:
         function expParams=get.experimentalParams(this)
@@ -165,30 +211,9 @@ classdef processedLabData < labData
         end
         
         function [steppedDataArray,initTime,endTime]=separateIntoSuperStrides(this,triggerEvent) %SuperStride= 1.5 strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
-            %triggerEvent needs to be one of the valid gaitEvent labels
-            
+            %triggerEvent needs to be one of the valid gaitEvent labels         
             %Determine end event (ex: if triggerEvent='LHS' then we
             %need 'RHS')           
-            %Version deprecated on Apr 2nd 2015
-%             if strcmpi(triggerEvent(2:3),'HS')
-%                 eventType = 'HS';
-%             else
-%                 eventType = 'TO';
-%             end
-%             if strcmpi(triggerEvent(1),'R')
-%                 opLeg = 'L';
-%             else
-%                 opLeg = 'R';
-%             end
-%             refLegEventList=this.getPartialGaitEvents(triggerEvent);
-%             opLegEventList=this.getPartialGaitEvents([opLeg,eventType]);
-%             refIdxLst=find(refLegEventList==1);
-%             opIdxLst=find(opLegEventList==1);
-%             auxTime=this.gaitEvents.Time;
-%             steppedDataArray={};
-%             for i=1:length(refIdxLst)-2
-%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(opIdxLst(find(opIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
-%             end
             if strcmp(triggerEvent(1),'L')
                 contraLeg='R';
             else 
@@ -205,15 +230,7 @@ classdef processedLabData < labData
                 
         function [steppedDataArray,initTime,endTime]=separateIntoDoubleStrides(this,triggerEvent) %DoubleStride= 2 full strides, the minimum unit we need to get our parameters consistently for an individual stride cycle
              %Version deprecated on Apr 2nd 2015
-            %triggerEvent needs to be one of the valid gaitEvent labels
-%             refLegEventList=this.getPartialGaitEvents(triggerEvent);
-%             refIdxLst=find(refLegEventList==1);
-%             auxTime=this.gaitEvents.Time;
-%             steppedDataArray={};
-%             for i=1:length(refIdxLst)-2
-%                 steppedDataArray{i}=this.split(auxTime(refIdxLst(i)),auxTime(refIdxLst(find(refIdxLst(:)>refIdxLst(i+1),1,'first'))),'strideData');
-%             end
-            
+            %triggerEvent needs to be one of the valid gaitEvent labels            
             [strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
             steppedDataArray={};
             for i=strideIdxs(1:end-1)
@@ -301,6 +318,7 @@ classdef processedLabData < labData
         end
         
         function [stridedField,bad,initTime,events]=getStridedField(this,field,events)
+            warning('This is very slow and has been deprecated. Please don''t use')
             if isa(events,'char')
                 events={events};
             end
@@ -328,12 +346,16 @@ classdef processedLabData < labData
             %Step 4: reshape & set to [] the slices which didn't have
             %proper events
             stridedField=reshape(slicedTS,N,M)';
-            
         end
         
-        function [alignedField,originalDurations,bad,initTime,events]=getAlignedField(this,field,events,alignmentLengths)
-            [stridedField,bad,initTime,events]=getStridedField(this,field,events);
-            [alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
+        function [alignedField,bad]=getAlignedField(this,field,events,alignmentLengths)
+            [alignedField,bad]=this.(field).align(this.gaitEvents,events,alignmentLengths);
+            %originalDurations=[]; %This is now within the alignedTS
+            %initTime=[]; %This is now within the alignedTS
+            
+            %error('This function has been deprecated. Needs to be updated to using the new labTS.align()')
+            %[stridedField,bad,initTime,events]=getStridedField(this,field,events);
+            %[alignedField,originalDurations]=labTimeSeries.stridedTSToAlignedTS(stridedField(~bad,:),alignmentLengths);
         end
     end
     

@@ -124,7 +124,8 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                     [pp]=ranksum(data1,data2); %Use ranksum 2 to do independent 2-sample non-param testing
                                 end
                                 if pp<significanceThreshold%/(length(numberOfStrides)*length(condList))
-                                    plot(XData(j)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2)
+                                    lh=plot(XData(j)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2);
+                                    lh.Annotation.LegendInformation.IconDisplayStyle='off';
                                     %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')
                                     if pp>significanceThreshold/10
                                         text(XData(j)+.25,yOff+yRef*1.4,['*'],'Color','m')
@@ -247,7 +248,8 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                 pp=phoc2.pValue(c1 & c2 & c3);%This is the same as using pp3
                                 %disp(['post-hoc=' num2str(pp) ', t-test (unp)=' num2str(pp3) ', ranksum=' num2str(pp2)]) %This is to check that the post-hoc is indeed an unpaired t-test
                                 if pp3<significanceThreshold 
-                                    plot(XData(ii)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2)
+                                    lh=plot(XData(ii)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2);
+                                    lh.Annotation.LegendInformation.IconDisplayStyle='off';
                                     %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')
                                     if pp>(significanceThreshold/Ncomp2) %Bonferroni threshold
                                         text(XData(ii)+.25,yOff+yRef*1.4,['*'],'Color','m')
@@ -271,7 +273,8 @@ function [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,
                                     pp=phoc.pValue(c1 & c2 & c3);
                                     %disp(['post-hoc=' num2str(pp) ', t-test (paired)=' num2str(pp1) ', t-test (unp)=' num2str(pp3) ', signrank=' num2str(pp2)])
                                     if pp1<(significanceThreshold) 
-                                        plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),'Color',colors(mod(kk-1,length(colors))+1,:),'LineWidth',2)
+                                        lh=plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),'Color',colors(mod(kk-1,length(colors))+1,:),'LineWidth',2);
+                                        lh.Annotation.LegendInformation.IconDisplayStyle='off';
                                         if pp1>(significanceThreshold/(.5*Ncomp)) %Does not pass Bonferroni's criteria for significance
                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['*'],'Color',colors(mod(kk-1,length(colors))+1,:))
                                         else %Passes Bonferroni criteria

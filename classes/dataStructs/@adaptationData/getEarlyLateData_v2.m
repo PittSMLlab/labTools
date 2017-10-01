@@ -32,7 +32,9 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                 error('adaptationData:getEarlyLateData','Conditions must be a string or a cell array containing strings.');
             end
             nConds=length(conds);
-            if nargin<2 || ~(isa(labels,'char') || (isa(labels,'cell') && all(cellfun(@(x) isa(x,'char'),labels)) ))
+            if nargin<2 
+                labels=[]; %Empty labels interpreted as ALL labels down-stream
+            elseif ~isempty(labels) && ( ~(isa(labels,'char') || (isa(labels,'cell') && all(cellfun(@(x) isa(x,'char'),labels)) )))
                 error('adaptationData:getEarlyLateData','Labels must be a string or a cell array containing strings.')
             end
             if nargin<5 || isempty(numberOfStrides)
@@ -55,7 +57,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                 %this=adaptData;
             end
             
-            this=this.removeBadStrides; %Should this be default?
+            %this=this.removeBadStrides; %Should this be default? Pablo: I don't think we should be changing the # of strides in the middle of a request for data.
             [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
             switch removeBiasFlag
                 case 1

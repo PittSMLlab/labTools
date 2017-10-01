@@ -24,8 +24,10 @@ phases2={'eDS1','lDS1','EfSwing1','EfSwing2','LfSwing1','LfSwing2','eDS2','lDS2'
 desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'};
 %% Parameter list and description (per muscle!)
 labelSuff={'max','min','iqr','avg','var','skw','kur','med','snr','bad'}; %Some stats on channel data
-labelSuff=[labelSuff strcat('p',regexp(num2str(1:6),' +','split')) strcat('s',regexp(num2str(1:12),' +','split'))]; %Could 'p' be expressed as dependent on s? Because of the equal splitting, each 'p' should be the average of two 's'
-labelSuff=[labelSuff strcat('t',regexp(num2str(1:12),' +','split')) strcat('e',regexp(num2str(1:12),' +','split'))]; %These two need to be deprecated.
+labelSuff=[labelSuff strcat('s',regexp(num2str(1:12),' +','split'))];
+%labelSuff=[labelSuff strcat('p',regexp(num2str(1:6),' +','split')) strcat('s',regexp(num2str(1:12),' +','split'))]; 
+%'p' parameters were deprecated becase they can be expressed as a function of 's' parameters. The numerical difference between the two is <1e-8, which is less than 1%%of the minimum value observed in practice
+%labelSuff=[labelSuff strcat('t',regexp(num2str(1:12),' +','split')) strcat('e',regexp(num2str(1:12),' +','split'))]; %These two need to be deprecated.
 
 %%
 N=length(stridedProcEMG);
@@ -38,6 +40,7 @@ for i=1:N %For each stride
     labs=stridedProcEMG{i}.labels;
     Data=stridedProcEMG{i}.Data;
     Qual=stridedProcEMG{i}.Quality;
+    sP=stridedProcEMG{i}.sampPeriod;
     for j=1:length(labs) %Muscles
         if strcmp(labs{j}(1),s)
             l='s';
@@ -96,11 +99,11 @@ for i=1:N %For each stride
                     elseif strcmp(labelSuff{k}(1),'t') %Integrated EMG per phase (12 phases), this is different from 'p' because different phases have different durations
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['Integral of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx));
+                        paramData(i,j,k)=sum(mData(relIdx))*sampPeriod;
                     elseif strcmp(labelSuff{k}(1),'e') % 't' divided by STRIDE duration, so we get a measure per unit of time (closer to actual effort)
                         relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
                         description{j,k}=['EMG ''effort'' per unit of time in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
+                        paramData(i,j,k)=sampPeriod*    sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
                     end
                     if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
                         paramData(i,j,k)=nan;

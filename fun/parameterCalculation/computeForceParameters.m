@@ -314,45 +314,42 @@ SXmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Norma
             FZmax(i)=-1*nanmin(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
             FXmax(i)=nanmax(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
         end
-        %3.) Calculate some aspect of this stride based on the transition point
-        %4.) Take care of any normalizing that might need to be done because I
-        %am not time normalizing the data... if I average I don't have to do
-        %this really...
     end
 end
-%For each stride (REMOVE THE BAD STRIDES?) --> No because the timecourses
-%will remove these strides automatically
+%% COM:
+%if ~isempty(markerData.getLabelsThatMatch('HAT'))
+    [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
+% else
+%     outCOM.Data=[];
+% end
 
-%Flip the decline people
-%Normalize
+%% COP: not ready for real life
+% if ~isempty(markerData.getLabelsThatMatch('LCOP'))
+%     [outCOP] = computeCOPParams( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents );
+% else
+      outCOP.Data=[];
+      outCOP.labels=[];
+      outCOP.description=[];
+% end
 
-%Define the transition --> No this is only for the SS
-%Seperate BP
-
-
-%Seperately need plotting functions to the early minus late stuff, this is
-%just to get the timecourse!
-
-%Plotting the needs to be done
-%regular plotting, check
-%Bar plots, early minus SS
-%Traces of the GRF's, TODO!
-
-
-%% Actually output and store stuff
+%% Compile
 data=[[impactS NaN]' [SB NaN]' [SP NaN]' [impactF NaN]' [FB NaN]' [FP NaN]' [FB-SB NaN]' [FP-SP NaN]' [SX NaN]' [SZ NaN]' [FX NaN]' [FZ NaN]' [HandrailHolding NaN]'...
-    [impactSmax NaN]' [SBmax NaN]' [SPmax NaN]' [impactFmax NaN]' [FBmax NaN]' [FPmax NaN]' [SXmax NaN]' [SZmax NaN]' [FXmax NaN]' [FZmax NaN]' ];
-labels={'FyImpactS', 'FyBS', 'FyPS', 'FyImpactF', 'FyBF', 'FyPF','FyBSym', 'FyPSym', 'FxS', 'FzS', 'FxF', 'FzF', 'HandrailHolding', 'FyImpactSmax', 'FyBSmax', 'FyPSmax', 'FyImpactFmax', 'FyBFmax', 'FyPFmax', 'FxSmax', 'FzSmax', 'FxFmax', 'FzFmax'};
+    [impactSmax NaN]' [SBmax NaN]' [SPmax NaN]' [impactFmax NaN]' [FBmax NaN]' [FPmax NaN]' [SXmax NaN]' [SZmax NaN]' [FXmax NaN]' [FZmax NaN]' ...
+    outCOM.Data outCOP.Data];
 description={'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
-    'GRF-FYf average signed impact force', 'GRF-FYf average signed braking', 'GRF-FYf average signed propulsion', ...
-    'GRF-FYs average signed Symmetry braking', 'GRF-FYs average signed Symmetry propulsion',...
-    'GRF-Fxs average force', 'GRF-Fzs average force',...
-    'GRF-Fxf average force', 'GRF-Fzf average force', 'Handrail was being held onto'...
-    'GRF-FYs max signed impact force', 'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion',...
-    'GRF-FYf max signed impact force', 'GRF-FYf max signed braking', 'GRF-FYf max signed propulsion', ...
-    'GRF-Fxs max force', 'GRF-Fzs max force',...
-    'GRF-Fxf max force', 'GRF-Fzf max force',};
+        'GRF-FYf average signed impact force', 'GRF-FYf average signed braking', 'GRF-FYf average signed propulsion', ...
+        'GRF-FYs average signed Symmetry braking', 'GRF-FYs average signed Symmetry propulsion',...
+        'GRF-Fxs average force', 'GRF-Fzs average force',...
+        'GRF-Fxf average force', 'GRF-Fzf average force', 'Handrail was being held onto'...
+        'GRF-FYs max signed impact force', 'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion',...
+        'GRF-FYf max signed impact force', 'GRF-FYf max signed braking', 'GRF-FYf max signed propulsion', ...
+        'GRF-Fxs max force', 'GRF-Fzs max force',...
+        'GRF-Fxf max force', 'GRF-Fzf max force'};
+labels={'FyImpactS', 'FyBS', 'FyPS', 'FyImpactF', 'FyBF', 'FyPF','FyBSym', 'FyPSym', 'FxS', 'FzS', 'FxF', 'FzF', 'HandrailHolding', 'FyImpactSmax', 'FyBSmax', 'FyPSmax', 'FyImpactFmax', 'FyBFmax', 'FyPFmax', 'FxSmax', 'FzSmax', 'FxFmax', 'FzFmax'};
+
+if isempty(markerData.getLabelsThatMatch('Hat'))
+    labels=[labels outCOM.labels outCOP.labels];
+    description=[description outCOM.description outCOP.description];
+end
 out=parameterSeries(data,labels,[],description);
 end
-
-

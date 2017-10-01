@@ -8,10 +8,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         labels
         alignmentVector=[];
         alignmentLabels={};
+        eventTimes=[];
+    end
+    
+    properties(Dependent)
+        expandedEventTimes
     end
     
     methods
-        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels)
+        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels,eventTimes)
             %Check: 
             if nargin<6
                 warning('alignedTimeSeries being created without specifying alignment criteria.')
@@ -31,10 +36,31 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             else
                 error('alignedTS:Constructor','Data size and label number do not match.')
             end
+            if nargin>6 
+                this.eventTimes=eventTimes; %This actually calls on the set() method
+            end
         end
         
+        %Getters & setters
+        function eET=get.expandedEventTimes(this)
+            if ~isempty(this.eventTimes)
+                eET=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector); 
+            else %legacy version
+                error('eventTimes are not determined')
+            end
+        end
+        
+        function this=set.eventTimes(this,eventTimes)
+            if any(size(eventTimes)~=[length(this.alignmentVector) size(this.Data,3)+1])
+                error('alignedTS:SetEventTimes','Data and eventTimes sizes do not match.')
+            else
+                this.eventTimes=eventTimes;
+            end
+        end
+        
+        %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels);
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,this.eventTimes(:,[inds inds(end)+1]));
         end
         
         function newThis=removeStridesWithNaNs(this)
@@ -44,10 +70,13 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         function newThis=getPartialDataAsATS(this,labels)
             [boolIdx,relIdx]=this.isaLabel(labels);
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels);
+            this.Data=this.Data(:,relIdx(boolIdx),:);
+            this.labels=this.labels(relIdx(boolIdx));
+            newThis=this;
+            %newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
         end
         
-        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds)
+        function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
             % labTimeSeries.plot).
@@ -75,6 +104,9 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 if nargin<4 || isempty(meanColor)
                    meanColor=[1,0,0]; 
                 end
+                if nargin<9 || isempty(medianFlag)
+                    medianFlag=1;
+                end
                 structure=this.Data;
                 if nargin<2 || isempty(figHandle)
                     figHandle=figure();
@@ -96,7 +128,18 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                            plottedInds=1:P;  
                            structure=structure(:,:,plottedInds);
                    end
+               elseif any(plottedInds<=0) %Counting from the back
+                  plottedInds(plottedInds<=0)=size(structure,3)+plottedInds(plottedInds<=0); 
                end
+                   
+               
+               %Define centerline plot:
+               if medianFlag==1
+                   centerline=this.median.castAsTS; %Could do mean or median
+               else
+                   centerline=this.mean.castAsTS;
+               end
+               
                %Plot percentiles (bounds)
                if nargin<5 || isempty(events)
                     events=[];
@@ -113,8 +156,23 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
                if ~islogical(this.Data) && nargin>7 && ~isempty(bounds)
                    if length(bounds)==2 %Alt visualization: add patch
-                       aux1=prctile(this,bounds(1));
-                       aux2=prctile(this,bounds(2));
+                       if any(bounds)==0
+                           if medianFlag==1
+                               st=this.stdRobust.castAsTS;
+                           else
+                               st=this.std.castAsTS;
+                           end
+                           if all(bounds)==0 %Plots ste
+                               aux1=centerline+(st.* 1/sqrt(size(this.Data,3))); 
+                               aux2=centerline-(st .* 1/sqrt(size(this.Data,3)));
+                           else %Plots std
+                               aux1=centerline+(st); 
+                               aux2=centerline-(st); 
+                           end
+                       else
+                            aux1=prctile(this,bounds(1));
+                            aux2=prctile(this,bounds(2));
+                       end
                        for i=1:M
                            subplot(plotHandles(i))
                            hold on
@@ -123,11 +181,13 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                            else %row vector
                                megaTime=[aux1.Time, aux1.Time(end:-1:1)];
                            end
-                           pp=patch(megaTime,[aux1.Data(:,i);aux2.Data(end:-1:1,i)],meanColor,'FaceAlpha',.4,'EdgeColor','none');
+                           megaData=[aux1.Data(:,i);aux2.Data(end:-1:1,i)];
+                           megaData(isnan(megaData))=0;
+                           pp=patch(megaTime,megaData,meanColor,'FaceAlpha',.4,'EdgeColor','none');
                            uistack(pp,'bottom');
                            hold off
                        end
-                   else
+                   else %Plot each percentile line
                        for k=1:length(bounds)
                         [figHandle,plotHandles]=plot(this.prctile(bounds(k)).castAsTS,figHandle,[],plotHandles,[],meanColor*.8,.5);
                        end
@@ -135,8 +195,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
                
                %PLot mean trace
-               %[figHandle,plotHandles]=plot(this.mean.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
-               [figHandle,plotHandles]=plot(this.median.castAsTS,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
+               [figHandle,plotHandles]=plot(centerline,figHandle,[],plotHandles,meanEvents,meanColor); %Plotting mean data
           
                %Plot individual traces
                for i=1:M %Go over labels
@@ -147,12 +206,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    data=squeeze(structure(:,i,:));
                    N=size(data,1);
                    if nargin<6 || isempty(individualLineStyle)
-                        ppp=plot([0:N-1]/N,data,'Color',[.7,.7,.7]);
+                        ppp=plot(this.Time,data,'Color',[.7,.7,.7]);
                         uistack(ppp,'bottom')
                    elseif individualLineStyle==0
                        %nop
                    else
-                       ppp=plot([0:N-1]/N,data,individualLineStyle);
+                       ppp=plot(this.Time,data,individualLineStyle);
                        uistack(ppp,'bottom')
                    end
                    
@@ -162,7 +221,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                    meanM(i)=prctile(data(:),50);
                    maxM(i)=2*(prctile(data(:),99)-meanM(i))+meanM(i)+eps;
                    minM(i)=2*(prctile(data(:),1)-meanM(i))+meanM(i);
-                   axis([0 1 minM(i) maxM(i)])
+                   axis([this.Time(1) this.Time(end) minM(i) maxM(i)])
                    hold off
                end
      
@@ -180,7 +239,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                else
                    for i=1:length(plotHandles) %For each plot, plot a standard deviation bar indicating how disperse are events with respect to their mean/median (XTick set).
                         subplot(plotHandles(i))
-                        set(gca,'XTick',[0,cumsum(this.alignmentVector)]/sum(this.alignmentVector),'XTickLabel',[this.alignmentLabels, this.alignmentLabels(1)])
+                        xt=get(gca,'XTick');
+                        xt=[this.Time(1)+[0,cumsum(this.alignmentVector)]*(this.Time(end)-this.Time(1))/sum(this.alignmentVector)];
+                        xtl=[[this.alignmentLabels, this.alignmentLabels(1)]];
+                        set(gca,'XTick',xt,'XTickLabel',xtl)
                         set(gca,'xgrid','on')
                    end
                end
@@ -211,6 +273,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
                 mH=nanmedian(histogram);
                 for i=1:size(histogram,2)
+                    if mod(mH(i),1)~=0
+                        mH(i)=floor(mH(i));
+                        warning(['Median event ' num2str(i) ' falls between two samples'])
+                    end
                     newData(mH(i),i)=true;
                 end
                 %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
@@ -235,6 +301,28 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 [histogram,~]=logicalHist(this);
                 stdTS=std(histogram); %Not really a tS
             end
+        end
+        
+        function [iqrTS]=iqr(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            else
+                strideIdxs=[];
+            end
+            if ~islogical(this.Data(1))
+                iqrTS=this.prctile(75) - this.prctile(25);
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,~]=logicalHist(this);
+                iqrTS=iqr(histogram); %Not really a tS
+            end
+        end
+        
+        function [stdTS]=stdRobust(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            %IQR-based std computation
+            stdTS=this.iqr .* (1/1.35);
         end
         
         function [prctileTS]=prctile(this,p,strideIdxs)
@@ -271,6 +359,21 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            newThis.Data=this.Data-other.Data;
         end
         
+        function newThis=plus(this,other)
+           newThis=this;
+           newThis.Data=this.Data+other.Data;
+        end
+        
+        function this=times(this,constant)
+            this.Data=this.Data .* constant;
+            if numel(constant)==1
+                s=num2str(constant);
+            else
+                s='k'; %Generic constant string
+            end
+            this.labels=strcat([s '*'],this.labels);
+        end
+        
         function newThis=demean(this)
             newThis=this;
             newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
@@ -291,31 +394,16 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                     labelIdx(j)=find(idx==j);
                 end
             end
-
-%             if isa(label,'char')
-%                 auxLabel{1}=label;
-%             elseif isa(label,'cell')
-%                 auxLabel=label;
-%             end
-%             
-%             N=length(auxLabel);
-%             boolFlag=false(N,1);
-%             labelIdx=zeros(N,1);
-%             for j=1:N
-%                 for i=1:length(this.labels)
-%                      if strcmpi(auxLabel{j},this.labels{i})
-%                        boolFlag(j)=true;
-%                        labelIdx(j)=i;
-%                        break;
-%                      end
-%                 end
-%             end
         end
         
         function newThis=cat(this,other,dim,forceFlag)
             if nargin<4
                 forceFlag=false;
             end
+            if nargin<3 || isempty(dim)
+                dim=3;%Cat-ting strides
+            end
+            
             %Check alignment vectors coincide & alignment labels coincide
             if any(this.alignmentVector~=other.alignmentVector)
                 ME=MException('ATS:cat','Alignment vector mismatch');
@@ -343,7 +431,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             
             %Do the cat:
             newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
-            elseif dim==2
+            elseif dim==2 %Cat-ting labels
                 %Check dimensions coincide
                 s1=size(this.Data);
                 s2=size(other.Data);
@@ -354,9 +442,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 %Check no repeated labels
             
                 %Check alignmentVector & Labels
+                
+                %Check that all eventTimes match
+                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes-other.eventTimes)>1e-9)
+                   ME=MException('ATS:cat','Trying to cat labels, but event times are different');
+                   throw(ME);
+                end
             
                 %Do the cat
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels);
+                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels,this.eventTimes);
             else
                 ME=MException();
                 throw(ME);
@@ -373,10 +467,16 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         end
         
         function newThis=concatenateAsTS(this)
+            %This concatenates the ATS by putting strides one after another
+            %in time, returning a single labTS
            newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
         end
         
         function newThis=fftshift(this,labels)
+            %Shifts the first and second halves of the alignment cycle
+            %Example, if the first half starts at FHS and second half
+            %starts at SHS, the shifted version will start at SHS and FHS
+            %will be the midpoint of the cycle.
             if nargin>1 && ~isempty(labels)
                 [~,idxs]=this.isaLabel(labels);
             else
@@ -400,6 +500,113 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             labelList=this.labels; 
             flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
             labelList=labelList(flags);
+        end
+        
+        function newThis=rescaleTime(this,newTs,newT0)
+            %Re-defines the Time vector to force a new sampling time
+            %Made for backwards compatibility of aligned series always
+            %being defined with time in [0 1]
+            if nargin<3 || isempty(newT0)
+                newT0=0;
+            end
+            if nargin<2 || isempty(newTs)
+                newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
+            end
+            newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
+        end
+        
+        function this=renameLabels(this,originalLabels,newLabels)
+            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
+            if isempty(originalLabels)
+                originalLabels=this.labels;
+            end
+            if size(newLabels)~=size(originalLabels)
+                error('Inconsistent label sizes')
+            end
+            [boo,idx]=this.isaLabel(originalLabels);
+            this.labels(idx(boo))=newLabels;
+        end
+        
+        function newThis=discretize(this,averagingVector)
+            if sum(averagingVector)~=sum(this.alignmentVector)
+                error('The averaging vector must sum to the number of samples of the alignedTS')
+            end
+            lastInd=0;
+            newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
+            expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
+            newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
+            auxSamp=1+[0 cumsum(this.alignmentVector)];
+            for i=1:length(averagingVector)
+                inds=lastInd+[1:averagingVector(i)];
+                newData(i,:,:)=nanmean(this.Data(inds,:,:));
+                if ~any(auxSamp==inds(1))
+                    aux1='-';
+                else
+                    aux1=this.alignmentLabels{auxSamp==inds(1)};
+                end
+                if ~any(auxSamp==inds(end))
+                    aux2='-';
+                else
+                    aux2=this.alignmentLabels{auxSamp==inds(end)};
+                end
+                aux=this.alignmentLabels(auxSamp>inds(1) & auxSamp<inds(end));
+                if ~isempty(aux)
+                    auxM=cell2mat(aux);
+                else
+                    auxM='-';
+                end
+                alignLabel{i}=[aux1 aux2];
+                newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
+                lastInd=lastInd+averagingVector(i);
+            end
+            newEventTimes(1,end)=this.eventTimes(1,end);
+            newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
+        end
+        
+        function [fh,ph]=plotCheckerboard(this,fh,ph)
+           if nargin<2
+               fh=figure();
+           else
+               figure(fh);
+           end
+           if nargin<3
+               ph=gca;
+           else
+               axes(ph);
+           end
+           m=this.mean;
+           imagesc(m.Data')
+           ax=gca;
+           ax.YTick=1:length(this.labels);
+           ax.YTickLabels=this.labels;
+           ax.XTick=[1 cumsum(this.alignmentVector)]-.5;
+           ax.XTickLabel=this.alignmentLabels;
+           %Colormap:
+            ex1=[.85,0,.1];
+            ex2=[0,.1,.6];
+            map=[bsxfun(@plus,ex1,bsxfun(@times,1-ex1,[0:.01:1]'));bsxfun(@plus,ex2,bsxfun(@times,1-ex2,[1:-.01:0]'))].^.5;
+            colormap(flipud(map))
+            caxis([-1 1]*max(abs(m.Data(:))))
+            colorbar
+        end
+    end
+    
+    methods (Static)
+        function expEventTimes=expandEventTimes(eventTimes,alignmentVector)
+            %Given event times and an alignment vectors, this function
+            %computes the corresponding time for each sample in an
+            %alignedTimeSeries, provided that the sampling is uniform
+            %between events.
+            %This method cannot be hiddent because it is used in labTS
+            
+            refTime=1+[0 cumsum(alignmentVector)]'; %This should be 0+ for the old-style alignment
+            M=size(eventTimes,2)-1;
+            N=sum(alignmentVector);
+            allEventTimes=eventTimes(:);
+            refTime2=bsxfun(@plus,refTime(1:end-1),N*[0:M]);
+            allExpEventTimes=interp1(refTime2(:),allEventTimes(:),[1:N*M]');
+            expEventTimes=reshape(allExpEventTimes,N,M);
+           
         end
     end
     
@@ -439,7 +646,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 end
             end
 
-            for i=1:nStrides;
+            for i=1:nStrides
                 [eventTimeIndex,eventType]=find(this.Data(:,aaux,i));
                 if length(eventTimeIndex)~=length(newLabels)
                     warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more or less events than expected (expecting ' num2str(length(newLabels)) ', but got ' num2str(length(eventTimeIndex)) '). Discarding.']);

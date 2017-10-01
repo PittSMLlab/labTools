@@ -1,6 +1,19 @@
 function [z] = monoLS(y,p,monotonicDerivativeFlag,regularizeFlag)
-%This function does an LS minimization of z-y, subject to z being monotonic
-%(or constant?)
+%This function does an p-norm minimization of (z-y), subject to z being monotonic
+%(or constant?). The returned vector z is a 'smoothed' version of y.
+%INPUTS:
+%y: the column vector or matrix to smooth (monoLS acts along dim 1)
+%p: norm used for minimization. Default p=2 (least squares)
+%monotonicDerivativeFlag: order of the derivatives forced to be of constant sign. =0 means
+%monotonic z, =2 means monotonic z & monotonic derivative (e.g. concave or
+%convex all the way), =3 forces the second derivative to be of constant
+%sign too, etc.
+%regularizeFlag: number of samples that are force to have a zero value for
+%the last derivative forced by monotonicDerivativeFlag. These samples are
+%taken at the end of the z if y is increasing, and at the beginning of z if
+%it is decreasing. It avoids overfit of said samples.
+
+
 if nargin<2 || isempty(p)
     p=2;
 end
@@ -29,6 +42,8 @@ else %Vector input-data
     %Determine if data is increasing or decreasing:
     pp=polyfit([1:numel(y)]',y,1);
     s=sign(pp(1));
+    s=sign(mean(diff(y))); %Alternative determination of increasing/decreasing
+    %s=sign(median(diff(y)));
 
     %To make it simple, we flip the data so that it is always increasing & positive
     if s>0

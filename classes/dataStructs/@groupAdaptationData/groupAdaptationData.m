@@ -163,6 +163,30 @@ classdef groupAdaptationData
               gID=this.ID{1}(1); %Using first char in first subjects' ID as group ID.
             end
         end
+        
+        function meanSub=getMeanSubject(this)
+            
+            error('Unimplemented')
+            %This requires finisihing getMinSharedNumberOfStrides
+            commonConds=this.getCommonConditions;
+            commonParams=this.getCommonParameters;
+            commonStrides=this.getMinSharedNumberOfStrides(this,commonConds);
+            [data]=getGroupedData(this,commonParams,commonConds,0,numberOfStrides,0,0); %No removal of bias, no exempt strides
+            meanSub=adaptationData(this.adaptData{1}.metaData,this.adaptData{1}.subData,data); %Doxy: need to fill meta data and subject data fields appropriately
+        end
+        
+        function minNumStrides=getMinSharedNumberOfStrides(this, conds)
+            %This function returns the minimum number of strides ALL
+            %subjects have for any given condition(s)
+            error('Unimplemented')
+           if nargin<2 || isempty(conds)
+               conds=this.getCommonConditions;
+           end
+           minNumStrides=nan(size(conds));
+           for i=1:length(conds)
+               minNumStrides(i)=NaN; %Doxy
+           end
+        end
 
 
         %Modifiers
@@ -206,10 +230,10 @@ classdef groupAdaptationData
             end
 
         end
-        
+
         function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
             newThis=this;
-            if nargin<5 
+            if nargin<5
                 medianFlag=0;
             end
             if nargin<6
@@ -299,18 +323,28 @@ classdef groupAdaptationData
             end
         end
 
-        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast)
+        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast,padWithNaNFlag)
             if removeBiasFlag
                 this=this.removeBias;
             end
+            if nargin<8 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
             [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);
-            [data]=getGroupedDataFromInds(this,inds,label);
+            [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
         end
 
-        function [data]=getGroupedDataFromInds(this,inds,label)
+        function [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag)
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
             data=cell(size(inds,1),1);
             nConds=size(inds{1,1},2);
+            if isa(label,'cell')
             nLabs=length(label);
+            else
+                nLabs=1;
+            end
             nSubs=length(this.ID);
             %Initialize:
             for i=1:length(data)
@@ -319,17 +353,17 @@ classdef groupAdaptationData
             %Alt: (using the inds data, so we are sure we are actually
             %getting the same strides when calling upon any function)
             for j=1:nSubs %For each sub
-                allData=this.adaptData{j}.getDataFromInds(inds(:,j),label);
+                allData=this.adaptData{j}.getDataFromInds(inds(:,j),label,padWithNaNFlag);
                 for i=1:length(data) %For each strideGroup
                     data{i}(:,:,:,j)=allData{i};
                 end
             end
 
         end
-        
+
         function [biasTM, biasOG]= getGroupedBias(this,label)
             for i=1:length(this.ID)
-                [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getParameterBias(label);
+                [biasTM(:,i),biasOG(:,i)]=this.adaptData{i}.getBias(label);
             end
         end
 
@@ -342,7 +376,7 @@ classdef groupAdaptationData
         end
 
         function newThis=catGroups(this,other)
-            newThis=groupAdaptationData([this.ID other.ID],[this.data other.data]);
+            newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);
         end
         %Visualization
         %Scatter
@@ -446,27 +480,35 @@ classdef groupAdaptationData
             if ischar(conds)
               conds={conds};
             end
+            maxK=2;
             if length(labels)>2 || length(conds)>2 || length(strideNo)>2
-              error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
+                if differenceFlag==1 && length(labels)<3 && length(conds)<4 && length(strideNo)<4
+                    maxK=3; %Three strides sets provided, going to plot 1 vs. (2 minus 3), 2 and 3 need to be for the same parameter
+                else
+                    error('Using more than 2 parameters, conditions, or stride sets. Cannot do.')
+                end
             end
             auxStr={'last', '', 'first'};
-            if length(labels)==1
-                labels=[labels labels];
+            while length(labels)<3 %If we have less than 3 labels,
+                %repeat the last label: it works both if a single label is provided,
+                %as well as if two are. In the case that user did not specify
+                %a third stride subset to subtract (maxK==2) the third one is just ignored
+                labels=[labels labels(end)];
             end
-            if length(strideNo)==1
-                strideNo=[strideNo strideNo];
+            while length(strideNo)<3
+                strideNo=[strideNo strideNo(end)];
             end
-            if length(conds)==1
-                conds=[conds conds];
+            while length(conds)<3
+                conds=[conds conds(end)];
             end
-            if length(exemptStrides)==1
-                exemptStrides=[exemptstrides exemptStrides];
+            while length(exemptStrides)<3
+                exemptStrides=[exemptStrides exemptStrides(end)];
             end
-            
-            for kk=1:2 %Getting data for X & Y
+
+            for kk=1:maxK %Getting data for X & Y
                 if length(labels{kk})>2 && strcmp('sub',labels{kk}(1:3)) %Case we are asking for biographical data
                     for j=1:length(this.ID)
-                      data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail 
+                      data(1,j)=this.adaptData{j}.subData.(labels{kk}(4:end)); %Needs to be numeric field or it will fail
                     end
                     str=['Subject ' labels{kk}(4:end)];
                 elseif length(labels{kk})>5 && (strcmp('biasTM',labels{kk}(1:6)) || strcmp('biasOG',labels{kk}(1:6)))%Parameter is actually the bias of a parameter
@@ -474,10 +516,10 @@ classdef groupAdaptationData
                         [biasTM,biasOG]= this.getGroupedBias(labels{kk}(7:end));
                         if strcmp(labels{kk}(5:6),'TM')
                             data=biasTM;
-                            str=[labels{kk}(7:end) ' TM bias'];
+                            str=[{labels{kk}(7:end)}; {'TM bias'}];
                         else
                             data=biasOG;
-                            str=[labels{kk}(7:end) 'OG bias'];
+                            str=[{labels{kk}(7:end)}; {'OG bias'}];
                         end
                     catch
                        ME=MException('groupAdaptData:plotIndividuals','Attempted to plot the bias of a parameter, but adaptationData appears not to be biased');
@@ -499,22 +541,27 @@ classdef groupAdaptationData
             end
 
             if nargin>8 && ~isempty(differenceFlag) && differenceFlag==1
-               data2=data2-data1; 
-               str2{1}=[str2{1} ' (diff)'];
+                if maxK==2
+                    data2=data2-data1;
+                    str2{1}=[str2{1} ' (diff)'];
+                else
+                    data2=data2-data3;
+                    str2{2}=[str2{2} ' minus ' str3{2}];
+                end
             end
-            
+
             if nargin<7 || isempty(ph)
               fh=figure();
             else
               subplot(ph);
             end
-            
+
             hold on
             p=plot(data1,data2,'o','DisplayName',[this.groupID]);
             text(data1,data2,strcat('-  ',this.ID),'FontSize',8,'Color',p.Color)
             set(p,'MarkerFaceColor',p.Color);
             p.MarkerEdgeColor='None';
-            
+
             xlabel(str1)
             ylabel(str2)
             p2=[];
@@ -522,14 +569,27 @@ classdef groupAdaptationData
             if nargin>7 && ~isempty(regFlag) && regFlag ==1
                     [rho,pval]=corr(data1',data2','type','pearson');
                     [rho2,pval2]=corr(data1',data2','type','spearman');
-                    pp=polyfit(data1,data2,1);
-                    p2=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{lin} = ' num2str(rho,2) ', p_{lin} = ' num2str(pval,2)]);
-                    p3=plot(data1,pp(1)*data1 + pp(2),'Color',p.Color,'DisplayName',['r_{rank} = ' num2str(rho2,2) ', p_{rank} = ' num2str(pval2,2)]);
+                    pp=polyfit1PCA(data1,data2,1); %Best line from PCA
+                    x=[min(data1) max(data1)];
+                    y=pp(1)*x + pp(2);
+                    if max(y)> max(data2)
+                      [~,i]=max(y);
+                      y(i)=max(data2);
+                      x(i)=(y(i)-pp(2))/pp(1);
+                    end
+                    if min(y)< min(data2)
+                      [~,i]=min(y);
+                      y(i)=min(data2);
+                      x(i)=(y(i)-pp(2))/pp(1);
+                    end
+                    p2=plot(x,y,'Color',p.Color,'DisplayName',['s=' sprintf('%.3f',pp(1)) ', r=.' sprintf('%03.0f',rho*1000) ', p=.' sprintf('%03.0f',pval*1000)]);
+                    p3=plot(x,y,'Color',p.Color,'DisplayName',['r_{rnk}=.' sprintf('%03.0f',rho2*1000) ', p_{rnk}=.' sprintf('%03.0f',pval2*1000)]);
             end
             hold off
             ph=get(gca);
             hl=legend('Location','best');
-            set(hl,'FontSize',4)
+            set(hl,'FontSize',6)
+            set(gca,'Units','Normalized')
 
         end
         %Stats
@@ -737,6 +797,24 @@ classdef groupAdaptationData
            for i=1:length(this.ID)
                [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=this.adaptData{i}.kruskalwallis(param,conds,groupingStrides,exemptFirst,exemptLast);
            end
+        end
+
+        function [Demographic]=GroupDemographics(this) 
+            %Calculates number subjects, mean and std of age and number of males
+            %Use in conjuction with "GroupDemographics"
+            for s=1:length(this.adaptData)
+                tempAge(s)=[this.adaptData{s}.subData.age];
+                if strcmp(lower(this.adaptData{s}.subData.sex), 'male')==1
+                    tempMale(s)=[1];
+                elseif strcmp(lower(this.adaptData{s}.subData.sex), 'female')==1
+                    tempMale(s)=[0];
+                end
+            end
+            Demographic.N=length(tempAge);
+            Demographic.MeanAge=mean(tempAge);
+            Demographic.StdAge=std(tempAge);
+            Demographic.AllAge=tempAge;
+            Demographic.NMale=sum(tempMale);
         end
 
     end

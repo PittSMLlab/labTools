@@ -138,51 +138,51 @@ classdef labData
         
         
         %Other I/O:
-        function partialMarkerData= getMarkerData(this,markerName)
-            %returns marker data for input markername
-            partialMarkerData=this.getPartialData('markerData',markerName);
-        end
-        
-        function list=getMarkerList(this)
-            %returns list of available marker names
-            list=this.getLabelList('markerData');
-        end
-        
-        function partialEMGData=getEMGData(this,muscleName)
-            partialEMGData=this.getPartialData('EMGData',muscleName);
-        end
-        
-        function list=getEMGList(this)
-            list=this.getLabelList('EMGData');
-        end
-        
-        function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
-            partialEEGData=this.getPartialData('EEGData',positionName);
-        end
-        
-        function list=getEEGList(this)
-            list=this.getLabelList('EEGData');
-        end
-        
-        function partialGRFData=getGRFData(this,label)
-            partialGRFData=this.getPartialData('GRFData',label);
-        end
-        
-        function list=getGRFList(this)
-            list=this.getLabelList('GRFData');
-        end
-        
-        function specificForce=getForce(this,side,axis)
-            specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
-        end
-        
-        function specificMoment=getMoment(this,side,axis)
-            specificMoment=this.getGRFData([side 'M' axis]);
-        end
-        
-        function beltSp=getBeltSpeed(this,side)
-            beltSp=this.getPartialData('beltSpeedReadData',side);
-        end
+%         function partialMarkerData= getMarkerData(this,markerName)
+%             %returns marker data for input markername
+%             partialMarkerData=this.getPartialData('markerData',markerName);
+%         end
+%         
+%         function list=getMarkerList(this)
+%             %returns list of available marker names
+%             list=this.getLabelList('markerData');
+%         end
+%         
+%         function partialEMGData=getEMGData(this,muscleName)
+%             partialEMGData=this.getPartialData('EMGData',muscleName);
+%         end
+%         
+%         function list=getEMGList(this)
+%             list=this.getLabelList('EMGData');
+%         end
+%         
+%         function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
+%             partialEEGData=this.getPartialData('EEGData',positionName);
+%         end
+%         
+%         function list=getEEGList(this)
+%             list=this.getLabelList('EEGData');
+%         end
+%         
+%         function partialGRFData=getGRFData(this,label)
+%             partialGRFData=this.getPartialData('GRFData',label);
+%         end
+%         
+%         function list=getGRFList(this)
+%             list=this.getLabelList('GRFData');
+%         end
+%         
+%         function specificForce=getForce(this,side,axis)
+%             specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
+%         end
+%         
+%         function specificMoment=getMoment(this,side,axis)
+%             specificMoment=this.getGRFData([side 'M' axis]);
+%         end
+%         
+%         function beltSp=getBeltSpeed(this,side)
+%             beltSp=this.getPartialData('beltSpeedReadData',side);
+%         end
         
         function COPData=computeCOP(this)
             COPData=COPCalculator(this.GRFData);
@@ -196,15 +196,12 @@ classdef labData
             if nargin<2 || isempty(noFilterFlag)
                 noFilterFlag=1;
             end
-            this=this.GRFData;
             warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
             [COPL,FL,~]=computeHemiCOP(this,'L',noFilterFlag);
             [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
-            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
-            COP=orientedLabTimeSeries(newData,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),this.orientation);
-            COPData=COP.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
         end
         
         function [momentData,COP,COM]=computeTorques(this,subjectWeight)
@@ -250,7 +247,9 @@ classdef labData
             end
             
             %6) Get COP, COM and joint torque data.
-            [jointMomentsData,COPData,COMData] = this.computeTorques(subData.weight);
+            [jointMomentsData,~,COMData] = this.computeTorques(subData.weight);
+            COPData=this.computeCOPAlt; %Replacing COPData with alternative computation
+            %COMDATA=this.CarlysCOMData; %CJS: you should do this!
             
             % 7) Generate processedTrial object
             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
@@ -434,6 +433,7 @@ classdef labData
         %COP calculation as used by the ALTERNATIVE version
         function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
             this=this.GRFData;
+            fcut=50;
             %Warning: this only works if GRF data is stored here
             warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
             if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
@@ -441,10 +441,10 @@ classdef labData
                 M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
             else
             F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-            F=F.lowPassFilter(20).thresholdByChannel(-100,[side 'Fz'],1);
+            F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side 'Fz'],1);
             F=squeeze(F.getOrientedData);
             M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
-            M=M.lowPassFilter(20);
+            M=M.lowPassFilter(fcut);
             M=squeeze(M.getOrientedData);
             F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
             end
@@ -464,7 +464,18 @@ classdef labData
             COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
            
         end
-        
+    end
+    
+    methods (Static)
+       function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
+           if noFilterFlag==1
+            COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+           end
+            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
+            COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),COPL.orientation);
+            COP=COP.cat(COPL).cat(COPR);
+       end
     end
     
     
