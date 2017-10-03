@@ -1,0 +1,21 @@
+Status of project Oct 2nd 2017: untested
+
+Two ideas: 
+
+1) use bayesian updates on a skeleton model [D*x ~ N(m,R)] to find the most 
+likely positions of markers, given some prior belief. Missing markers can be modeled through
+infinite prior uncertainty.
+Skeleton would be 'learnt' as a normal distribution of relative marker distances. 
+This can only work well if we know the orientation of subjects.  
+Untested
+
+2) do the same thing but working on distances: 
+ie. transform to distance space (trivial), apply a skeleton (same as before), transform back (through mdscale or similar).
+Can this be done/implemented efficiently through the 'kernel' trick?
+Unimplemented.
+
+Some of this stuff was tried, but is undocumented, on /sideProjects/markerModels
+
+FUTURE WORK: 
+- to integrate this with a kalman filter/smoother to be able to use history of markers in the estimation too
+- delete? /sideProjects/markerModels folder
