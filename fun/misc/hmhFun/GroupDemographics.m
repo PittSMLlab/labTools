@@ -12,7 +12,7 @@ grps=fieldnames(SMatrix);
 StudyAge=[];
 StudyMale=[];
 for g=1:length(grps)  
-    [Demographics.(grps{g})]=SMatrix.(grps{g}).GroupDemographics(grps{g});
+    [Demographics.(grps{g})]=SMatrix.(grps{g}).GroupDemographics;
     StudyAge=[StudyAge Demographics.(grps{g}).AllAge];
     StudyMale=[StudyMale Demographics.(grps{g}).NMale];
 end
