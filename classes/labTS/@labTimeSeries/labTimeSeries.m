@@ -191,7 +191,7 @@ classdef labTimeSeries  < timeseries
                         newTS.Data(sorting,:)=newTS.Data;
                         data(notNaNIdxs,:)=newTS.Data;
                     case 'closest'
-                        data=logical(sparse(numel(timePoints),M));
+                        data=sparse(numel(timePoints),M);
                         aux=this.getIndexClosestToTimePoint(timePoints(:));
                         inds=~isnan(aux);
                         aux=aux(inds); %Eliminating NaNs
@@ -207,7 +207,7 @@ classdef labTimeSeries  < timeseries
                             Dt=abs(tt(i)-relevantTimePoints);
                             jj=find(Dt==min(Dt),1,'first'); %The find() is needed to resolve ties
                             mappedInds(jj)=[];
-                            newData(mappedInds,:)=false;
+                            newData(mappedInds,:)=0;
                         end
                         
                         data(inds,:)=newData;
@@ -561,7 +561,7 @@ classdef labTimeSeries  < timeseries
         end
 
         function newThis=derivate(this)
-            warning('This function is going to be deprecated, please use derivative() instead.')
+            %This is kept for legacy compatibility purposes only
             partialThis=this.derivative;
             pad=nan(1,size(this.Data,2));
             newThis=labTimeSeries([pad;partialThis.Data;pad],this.Time(1),this.sampPeriod,partialThis.labels);
