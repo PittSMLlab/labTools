@@ -20,9 +20,9 @@ end
 
 % get hip position in fore-aft and up-down axes
 if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIPx')
-    LhipPos2D=trialData.getMarkerData({['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
+    LhipPos2D=trialData.markerData.getDataAsVector({['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
     LhipPos2D=[orientation.foreaftSign* LhipPos2D(:,1),orientation.updownSign*LhipPos2D(:,2)];
-    RhipPos2D=trialData.getMarkerData({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
+    RhipPos2D=trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
 else
     warning(['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
@@ -32,9 +32,9 @@ end
 
 % get ankle position in fore-aft and up-down axes
 if trialData.markerData.isaLabel('RANKx') && trialData.markerData.isaLabel('LANKx')
-    LankPos2D=trialData.getMarkerData({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
+    LankPos2D=trialData.markerData.getDataAsVector({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
     LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
-    RankPos2D=trialData.getMarkerData({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
+    RankPos2D=trialData.markerData.getDataAsVector({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
     RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
 else    
     warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
