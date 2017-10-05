@@ -77,8 +77,8 @@ else %Treadmill trial
     else        
         upAxis=trialData.GRFData.orientation.updownAxis;
         upSign=trialData.GRFData.orientation.updownSign;
-        FzL=upSign*trialData.getForce('L',upAxis);
-        FzR=upSign*trialData.getForce('R',upAxis);
+        FzL=upSign*trialData.GRFData.getDataAsVector(['LF',upAxis]);
+        FzR=upSign*trialData.GRFData.getDataAsVector(['RF',upAxis]);
         
         %Sanity check: correct non-zeroed force-plates: 
         if mode(FzL)~=0
