@@ -317,11 +317,15 @@ SXmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Norma
     end
 end
 %% COM:
-%if ~isempty(markerData.getLabelsThatMatch('HAT'))
-    [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
-% else
-%     outCOM.Data=[];
-% end
+if false %~isempty(markerData.getLabelsThatMatch('HAT'))
+    %Pablo commented COM calculation out on Oct 5th 2017 because it doesn't run
+    %with main code (as it is in GitHub).
+   [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
+else
+     outCOM.Data=[];
+     outCOM.labels=[];
+     outCOM.description=[];
+end
 
 %% COP: not ready for real life
 % if ~isempty(markerData.getLabelsThatMatch('LCOP'))
