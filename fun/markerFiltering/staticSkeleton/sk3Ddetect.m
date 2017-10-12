@@ -1,6 +1,7 @@
 function [markerLogL,totalLogL] = sk3Ddetect(data,m,R)
 [N,d,M]=size(data);
 [D] = computeDiffMatrix(data); %Will be NxdxNxM
+missing=squeeze(any(isnan(data),2));
 clear data
 D=permute(D,[1,3,2,4]); %NxNxdxM
 R=reshape(R,N,N,d);
@@ -14,6 +15,9 @@ totalLogL=squeeze(nanmean(nanmean(nanmean(auxScores))));
 %markerLogL=nan(N,M);
 markerLogL=squeeze(nanmedian(reshape(auxScores,N,N*d,M),2));
 %markerLogL=squeeze(mean(reshape(auxScores,N,N*d,M),2));
+
+
+markerLogL(missing)=-10;
 
 end
 
