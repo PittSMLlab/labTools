@@ -1,6 +1,6 @@
 function [markerLogL,totalLogL] = skDistdetect(data,m,R)
 [N,d,M]=size(data);
-[D] = computeDistMatrix(data); %Will be NxNxM
+[D] = computeDistanceMatrix(data); %Will be NxNxM
 missing=squeeze(any(isnan(data),2));
 clear data
 D=D-m; %Subtracting mean

@@ -18,15 +18,19 @@ endFlag=false;
 changeTh=1e-3;
 xMLE=x(:); %Nd x 1
 %Reshaping parameters for updateKF:
-y=zeros(N^2*d,1);s=s(:);R=diag(R(:));x=x(:);
-xMLE=x; %Init guess
-while ~endFlag
+y=zeros(N^2,1);s=s(:);R=diag(R(:));x=x(:);
+lastXMLE=x; %Init guess
+iter=0;
+maxIter=25;
+while ~endFlag && iter<maxIter
   %Linearize distance constraints:
-  [off,W]=linearizeDist(reshape(xMLE,N,d));
+  [off,W]=linearizeDist(reshape(lastXMLE,N,d));
   %Optimal bayesian solution around linearized point:
   [xMLE,PMLE]=updateKF(W,R,x,P,s-off(:),y);
   change=sqrt(sum((xMLE-lastXMLE(:)).^2));
   endFlag=change<changeTh;
+  lastXMLE=xMLE;
+  iter=iter+1;
 end
 end
 
@@ -35,10 +39,10 @@ function [Do,W]=linearizeDist(xo)
   %D=computedDistanceMatrix(x) around x=xo
   %As: D(:) ~ Do(:) + W*x(:)
   %Assumed xo is Nxd
-  [N,d]=size(x);
-  D=computedDistanceMatrix(xo);
-  G1=reshape(x,N,1,d)./D;
-  G2=reshape(x,1,N,d)./D;
+  [N,d]=size(xo);
+  D=computeDistanceMatrix(xo);
+  G1=reshape(xo,N,1,d)./(D+eye(N));
+  G2=reshape(xo,1,N,d)./(D+eye(N));
   W1=zeros(N,N,N,d);
   W2=zeros(N,N,N,d);
   for i=1:N
@@ -48,17 +52,17 @@ function [Do,W]=linearizeDist(xo)
   %Need to reshape G/pad with 0's, so W is NxNxNd
   W=W1-W2; %NxNxNxd
   W=reshape(W,N^2,N*d);
-  Do=D-W*x(:); %N^2x1
+  Do=D-reshape(W*xo(:),N,N); %NxN
 end
 
 function testLinearization(xo)
-D=computedDistanceMatrix(xo);
+D=computeDistanceMatrix(xo);
 [Do,W]=linearizeDist(xo);
 e=1e-3;
-p=e*randn(numel(xo),1);
-x=xo(:)+p;
+p=e*randn(size(xo));
+x=xo+p;
 D1=computeDistanceMatrix(x);
-D1app=Do(:)+W*x;
+D1app=Do(:)+W*x(:);
 
 %Check: D1 ~ D1app
 norm(D1(:)-D1app) %Should be very small
