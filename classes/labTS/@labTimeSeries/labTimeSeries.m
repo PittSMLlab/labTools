@@ -89,11 +89,21 @@ classdef labTimeSeries  < timeseries
             end
             time=this.Time;
             [boolFlag,labelIdx]=this.isaLabel(auxLabel);
-            for i=1:length(boolFlag)
-                if ~boolFlag(i)
-                    warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
+            if ~any(boolFlag)
+                auxLabel2=[];
+                for i=1:length(auxLabel)
+                    auxLabel2=[auxLabel2 this.getLabelsThatMatch(auxLabel{i})];
                 end
-            end
+                [boolFlag,labelIdx]=this.isaLabel(auxLabel2);
+                NN=numel(auxLabel2);
+                warning(['None of the provided labels are a parameter in this timeSeries. Trying to return labels that match the provided label as a regular expression: found ' num2str(NN) ' matches.'])
+                else
+                    for i=1:length(boolFlag)
+                        if ~boolFlag(i)
+                            warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
+                        end
+                    end
+                end
 
             data=this.Data(:,labelIdx(boolFlag));
             if nargout>2
