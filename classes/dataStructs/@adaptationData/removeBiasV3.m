@@ -16,7 +16,7 @@ function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalize
 
 conds=this.metaData.conditionName;
 if nargin<2 || isempty(refConditions)
-    warning('No condition names passed to removeBiasV2, will find reference conditions by name search.')
+    warning('No condition names passed to removeBiasV3, will find reference conditions by name search.')
     refConditions=[];
 end
 %if nargin>1 && ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)
@@ -26,7 +26,7 @@ end
     elseif isa(refConditions,'double')
         refConditions=conds(refConditions);
     end
-    % validate condition(s)    
+    % validate condition(s)
     cInput=refConditions(this.isaCondition(refConditions));
 %end
 if nargin<3 || isempty(normalizeFlag)
@@ -55,7 +55,7 @@ for itype=1:length(types)
         disp(baseCond)
         baseCond=baseCond{1};
     end
-    %Remove baseline tendencies from all itype trials   
+    %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
         switch upper(types{itype})
             case 'OG'
@@ -68,15 +68,16 @@ for itype=1:length(types)
                         error('Failed to remove OG bias. Likely problem is that bias was already removed for this adaptationData object.')
                     end
                 end %Nop for normalizeBias in OG trials
-            
+
             otherwise %'TM' and any other
+              %TODO: switch to using getBaseData()
                 base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,10); %Last 40, exempting very last 5 and first 10
                 base=nanmean(squeeze(base{1}));
                 [data, inds]=this.getParamInTrial(labels,allTrials);
                 if normalizeFlag==0
                     %added lines to ensure that if certain parameters never
                     %have a baseline to remove the bias, they are not assigned
-                    %as NaN from the bsxfun @minus. 
+                    %as NaN from the bsxfun @minus.
                     %data(isnan(data))=-100000;
                     base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
                     newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
