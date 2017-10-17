@@ -251,6 +251,26 @@ classdef parameterSeries < labTimeSeries
             
         end
         
+        function this=normalizeToBaseline(this,labels,rangeValues)
+           %This normalization transforms the values of the parameters given in labels
+           %such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
+           %It creates NEW parameters with the same name, and the 'Norm' prefix.
+           %See also: adaptationData.normalizeToBaseline
+            if numel(rangeValues)~=2
+                error('rangeValues has to be a 2 element vector')
+            end
+            [boolFlag,labelIdx]=isaLabel(this,labels);
+            for i=1:length(labels)              
+                if boolFlag(i)
+                    oldDesc=this.description(labelIdx(i));
+                    newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
+                    funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+                    this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);
+                end
+                
+            end
+        end
+        
         %% Other functions that need redefining:
         function [F]=fourierTransform(this)
             %error('parameterSeries:fourierTransform','You cannot do that!')

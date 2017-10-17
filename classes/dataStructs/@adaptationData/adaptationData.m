@@ -1,5 +1,5 @@
 classdef adaptationData
-%ADAPTATIONDATA - Class to store all parameters of interest for every stride 
+%ADAPTATIONDATA - Class to store all parameters of interest for every stride
 %in an experiment
 %   Objects of this class can be generated from experimentData by calling
 %   experimentData.makeDataObj
@@ -11,7 +11,7 @@ classdef adaptationData
 %
 %adaptationData methods:
 %   removeBias - subtract off mean baseline values
-%   normalizeBias - 
+%   normalizeBias -
 %   getParameterList - obtain an array of strings with the labels of the all parameters
 %   getParamInTrial - obtain data for a parameter in a specific trial
 %   getParamInCond - obtain data for a parameter in a specific condition
@@ -27,38 +27,38 @@ classdef adaptationData
 %   getGroupedData -
 %   plotAvgTimeCourse -
 %   groupedScatterPlot -
-%   correlations -   
+%   correlations -
 %   See also: experimentData
-    
+
     properties
-        metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object 
+        metaData %cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object
         subData %cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object
         data %cell array of parameterSeries type
     end
-    
+
     properties(Hidden)
         TMbias_=[];
         OGbias_=[];
     end
-    
+
     methods
         %Constructor
         function this=adaptationData(meta,sub,data)
-            
+
             if nargin>0 && isa(meta,'experimentMetaData')
                 this.metaData=meta;
             else
                 ME=MException('adaptationData:Constructor','metaData is not an experimentMetaData type object.');
                 throw(ME);
             end
-            
+
             if nargin>1 && isa(sub,'subjectData')
                 this.subData=sub;
             else
                 ME=MException('adaptationData:Constructor','Subject data is not a subjectData type object.');
                 throw(ME);
             end
-            
+
             if nargin>2 && (isa(data,'parameterSeries') || isa(data,'paramData'))
                 this.data=data;
             else
@@ -66,8 +66,8 @@ classdef adaptationData
                 throw(ME);
             end
         end
-        
-        function tT=trialTypes(this) 
+
+        function tT=trialTypes(this)
             if ~isempty(this.data.trialTypes)
                 tT=this.data.trialTypes; %Tries to read from parameterSeries' trialType field, if it was populated, as we expect it to be with newer versions
             else %If the field was not populated, make an educated guess.
@@ -93,10 +93,10 @@ classdef adaptationData
             end
         end
         %Modifiers
-        
+
         [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag) %Going to deprecate in favor of removeBiasV3's simpler code
         [newThis,baseValues,typeList]=removeBiasV3(this,conditions,normalizeFlag)
-        
+
         function [newThis,baseValues,typeList]=removeBias(this,conditions)
         % Removes baseline value for all parameters.
         % removeBias('condition') or removeBias({'Condition1','Condition2',...})
@@ -124,7 +124,7 @@ classdef adaptationData
             newThis.TMbias_=baseValues(strcmp(typeList,'TM'),:);
             newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
         end
-        
+
         function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag,removeBadFlag)
            %Same as removeBias, but for an arbitrary subset of strides
            %(e.g. remove the mean of the first 20 strides of adaptation)
@@ -133,7 +133,7 @@ classdef adaptationData
            else
                base=getEarlyLateData_v2(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); %Removing bad strides for the purpose of baseline computations
            end
-                
+
            if nargin<5 || isempty(medianFlag) || medianFlag==0
                base=nanmean(squeeze(base{1}));
            else
@@ -144,7 +144,7 @@ classdef adaptationData
             if normalizeFlag==0
                 %added lines to ensure that if certain parameters never
                 %have a baseline to remove the bias, they are not assigned
-                %as NaN from the bsxfun @minus. 
+                %as NaN from the bsxfun @minus.
                 %data(isnan(data))=-100000;
                 base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
                 newData=bsxfun(@minus,dataOld,base); %Substracting baseline
@@ -168,14 +168,50 @@ classdef adaptationData
                 end
             end
         end
-        
+
         function [newThis,baseValues,typeList]=normalizeBias(this,conditions)
             if nargin<2
                 conditions=[];
             end
             [newThis,baseValues,typeList]=removeBiasV3(this,conditions,1);
         end
-        
+
+        function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)
+           %This normalization takes the last N strides from a given
+           %'baseline' condition and uses it to normalize values of the
+           %parameter for the whole experiment.
+           %Meant to be used for EMG parameters ONLY
+           %It creates NEW parameters with the same name, and the 'Norm' prefix.
+           %See also: EMGnormalization (example) parameterSeries.normalizeToBaseline
+            warning('This function is meant to be used for EMG parameters only. Use at own risk.')
+            if nargin<3
+                baseConds2=[];
+            end
+            if nargin<2
+                error('Need to provide a suffix for parameters')
+            end
+            
+            if isa(labelPrefix,'char')
+                labelPrefix={labelPrefix};
+            end
+            for i=1:length(labelPrefix)
+                %First: get all parameters with given prefix
+                labels=this.data.getLabelsThatMatch(['^' labelPrefix{i} '\d+$']);
+                %Second: get baseline data for those
+                [baseData,baseConds,tType]=getBaseData(this,baseConds2,labels);
+                if length(baseConds)>1 %More than 1 baseline found
+                   idx=find(strcmp(tType,'TM'));
+                   warning(['More than 1 baseline condition found or provided. Using the first that matches TM type trials: ' baseConds{idx}]) 
+                   baseCond=baseConds{idx};
+                   baseData=baseData(idx,:,:);
+                end
+                range=squeeze(nanmean(baseData,2));
+                rangeValues=[min(range) max(range)];
+                this.data=this.data.normalizeToBaseline(labels,rangeValues);
+            end
+            newThis=this;
+        end
+
         function newThis=removeBadStrides(this)
             if isa(this.data,'paramData') %What does this do?
                 newParamData=this.data;
@@ -187,7 +223,7 @@ classdef adaptationData
             end
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
-        
+
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
            %This function allows to compute new parameters from other existing parameters and have them added to the data.
            %This is useful when trying out new parameters without having to
@@ -216,13 +252,13 @@ classdef adaptationData
            this.data=newPS;
            newThis=this;
         end
-        
+
         function newThis=replaceLR(this)
             %Idea: get any label that uses 'L' or 'R' and replace it by 'S'
             %and 'F' as corresponds.
             %Also need to write the inverse function
         end
-        
+
         function [biasTM,biasOG]=getBias(this,labels)
             if isempty(this.TMbias_)
                 warning('This adaptationData object is not unbiased.')
@@ -238,17 +274,17 @@ classdef adaptationData
                 end
             end
         end
-        
+
         function newThis=markBadWhenMissingAny(this,labels)
             newThis=this;
             newThis.data=newThis.data.markBadWhenMissingAny(labels);
         end
-        
+
         function newThis=markBadWhenMissingAll(this,labels)
             newThis=this;
             newThis.data=newThis.data.markBadWhenMissingAll(labels);
         end
-        
+
         function newThis=renameParams(this,oldLabels,newLabels)
 
               [b,ii]=isaLabel(this.data,oldLabels);
@@ -265,17 +301,17 @@ classdef adaptationData
               end
 
         end
-        
+
         function newThis=getPartialParameters(this,labels)
            newThis=this;
            newThis.data=this.data.getDataAsPS(labels);
         end
-        
+
         function newThis=medianFilter(this,N)
             newThis=this;
             newThis.data=this.data.medianFilter(N);
         end
-        
+
         function newThis=monoLS(this,trialBased,order,Nregularization)
             newThis=this;
             %For each condition, or trial:
@@ -294,10 +330,10 @@ classdef adaptationData
                     newThis.data.Data(indData,6:end)=aux;
                 end
             end
-            
-            
+
+
         end
-        
+
         function newThis=substituteNaNs(this,method)
             if nargin<2 || isempty(method)
                 method='linear';
@@ -305,7 +341,7 @@ classdef adaptationData
             newThis=this;
             newThis.data=this.data.substituteNaNs(method);
         end
-        
+
         %Other I/O functions:
         function [labelList,descriptionList]=getParameterList(this)
         %obtain an array of strings with the labels of the all parameters
@@ -319,7 +355,7 @@ classdef adaptationData
             labelList=this.data.labels;
             descriptionList=this.data.description;
         end
-        
+
         function [data,inds,auxLabel]=getParamInTrial(this,label,trial)
         %Obtain strides information for a parameter in a specific trial
         %
@@ -338,7 +374,7 @@ classdef adaptationData
             if isempty(label)
                 label=getParameterList(this);
             end
-            
+
             if isa(label,'char')
                 auxLabel={label};
             else
@@ -346,7 +382,7 @@ classdef adaptationData
             end
             % validate label(s)
             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
-            
+
             % validate trial(s)
             trialNum = [];
             for t=trial
@@ -361,7 +397,7 @@ classdef adaptationData
             data=this.data.Data(inds,labelIdx(boolFlag==1));
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
-        
+
         function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)
         %Obtain strides information for a parameter in a condition.
         %INPUTS:
@@ -379,7 +415,7 @@ classdef adaptationData
         %EX: adaptData.getParamInCond('alphaFast','OG base',0)
         %See also: adaptationData.getParamInTrial
         %          adaptationData.removeBias
-            
+
 %             if nargin<4 || isempty(removeBias)
 %                 removeBias=0;
 %             end
@@ -393,16 +429,16 @@ classdef adaptationData
             end
             % validate label(s)
             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
-            
+
             % validate condition(s)
             if nargin<3 || isempty(condition) || (~isa(condition,'cell') && any(isnan(condition)))
-                condition=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));                
+                condition=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
             end
             condNum = [];
             if isa(condition,'char')
                 condition={condition};
             end
-            
+
             if isa(condition,'cell')
                 condNum=this.metaData.getConditionIdxsFromName(condition);
                 if any(isnan(condNum))
@@ -415,22 +451,12 @@ classdef adaptationData
                 ME=MException('AdaptData.getParamInCond','Condition has to be char, cell of char, or double');
                 throw(ME)
             end
-            
+
             %get data
             if nargin>3 && ~isempty(removeBias) %Default: no bias removal
                 error('Remove bias is no longer supported from within getParamInCond. Remove bias first and then call this function')
-%             switch removeBias
-%                 case 1
-%                 this=this.removeBias;
-%                 case 2
-%                 this=this.normalizeBias;
-%                 case 0
-%                     %nop
-%                 otherwise
-%                     error('Invalid value of removeBiasFlag')
-%             end
             end
-                
+
             trials=cell2mat(this.metaData.trialsInCondition(condNum));
             inds=cell2mat(this.data.indsInTrial(trials));
             origTrials=[];
@@ -441,7 +467,7 @@ classdef adaptationData
             auxLabel=this.data.labels(labelIdx(boolFlag==1));
         end
 
-        function [boolFlag,labelIdx]=isaCondition(this,cond)	
+        function [boolFlag,labelIdx]=isaCondition(this,cond)
             if isa(cond,'char')
                 auxCond{1}=cond;
             elseif isa(cond,'cell')
@@ -467,31 +493,31 @@ classdef adaptationData
                 end
             end
         end
-        
+
         function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
         %obtain the earliest and late data points for conditions
-		%allow to eliminate very late data points 
-		%Predefine values:  
+		%allow to eliminate very late data points
+		%Predefine values:
 		%earlyNumber=5
 		%veryEarlyPoints=3
 		%latePoints=20
 		%exemptLast=5
 		%
 		%INPUTS:
-		%this:experimentData object 
-		%labels: parameters to plot 
-		%conds: condition that information is needed 
+		%this:experimentData object
+		%labels: parameters to plot
+		%conds: condition that information is needed
 		%removeBiasFlag:1 to activate function to remove bias, 0 or empty to no activate function
-		%earlyNumber:number of strides to take as earliest values 
-		%lateNumber: number of strides to take as late values 
+		%earlyNumber:number of strides to take as earliest values
+		%lateNumber: number of strides to take as late values
 		%exemptLast: number of strides to discard
 		%OUTPUTS:
-		%veryEarlyPoints:  value of the 3 strides on the condition 
-		%earlyPoints: value of the earliest strides 
+		%veryEarlyPoints:  value of the 3 strides on the condition
+		%earlyPoints: value of the earliest strides
 		%latePoints: value of the late strides
 		%
 		%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);
-		
+
             N1=3;%all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
@@ -517,7 +543,7 @@ classdef adaptationData
             else
                 Ne=exemptLast;
             end
-            if nargin<4 || isempty(removeBiasFlag) 
+            if nargin<4 || isempty(removeBiasFlag)
                 removeBiasFlag=1; %Default
             end
             [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,[N1,N2,-N3],Ne,0);
@@ -526,16 +552,16 @@ classdef adaptationData
             latePoints=dataPoints{3};
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
-        
+
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
-            %ConditionNames should be a cell array containing a string or 
-            %another cell array of strings in each of its cells. 
+            %ConditionNames should be a cell array containing a string or
+            %another cell array of strings in each of its cells.
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
-        
+
         function inds=getIndsInCondition(this,conditionNames)
             %Get condition indexes if not already provided:
             if isa(conditionNames,'char') || isa(conditionNames,'cell')
@@ -555,15 +581,15 @@ classdef adaptationData
                 end
             end
         end
-        
+
         function trialNums=getTrialsInCond(this,conditionNames)
-            trialNums=this.metaData.getTrialsInCondition(conditionNames);            
+            trialNums=this.metaData.getTrialsInCondition(conditionNames);
         end
-        
-        
+
+
         %Stats testing:
         % 1) Multiple groups
-        
+
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)
             %Post-hoc is Bonferroni corrected t-test
             [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
@@ -581,7 +607,7 @@ classdef adaptationData
             postHoc(sub2ind([M,M],c(:,1),c(:,2)))=c(:,6);
             postHocEstimate(sub2ind([M,M],c(:,1),c(:,2)))=c(:,4);
         end
-        
+
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)
             if isa(param,'char')
                 param={param};
@@ -618,25 +644,25 @@ classdef adaptationData
             end
         end
         %function [p,data]=twoSampleTtest()
-        %    
+        %
         %end
         %function [p,data]=twoSampleMWWU()
-        %    
+        %
         %end
-        
+
         %Display functions:
         function [figHandle,plotHandles]=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag,plotHandles)
-                    %Plot of the behaviour of parameters through the different conditions 
+                    %Plot of the behaviour of parameters through the different conditions
             %specify the parameter behaviour on each condition and trial
             %
             %INPUTS:
-            %this:experimentData object 
-            %label: parameters to plot 
-            %runningBinSize: number of data points to considered to make an average 
-            %trialMarkerFlag: 1 to identify the different trials that compose a single condition. 
+            %this:experimentData object
+            %label: parameters to plot
+            %runningBinSize: number of data points to considered to make an average
+            %trialMarkerFlag: 1 to identify the different trials that compose a single condition.
             %
             %OUTPUT:
-            %figHandle: number of the figure where is the plot 	
+            %figHandle: number of the figure where is the plot
             %
             %EX: adaptData.plotParamTimeCourse('spatialContribution',2,1)
             if isa(label,'char')
@@ -646,7 +672,7 @@ classdef adaptationData
                 trialMarkerFlag=0;
             end
             if nargin<3 || isempty(runningBinSize)
-                runningBinSize=1; 
+                runningBinSize=1;
             end
             if nargin<5 || isempty(conditions)
                 conditions=this.metaData.conditionName;
@@ -659,13 +685,13 @@ classdef adaptationData
             end
             figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag,plotHandles);
         end
-        
+
         [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
-        
+
         [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
-        
+
         [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
-        
+
         function dataPoints=getDataFromInds(this,inds,labels,padWithNaNFlag)
             %Returns data associated to certain stride indexes (e.g. strides 1, 3, 10:15, 21)
             %Inds comes from a call to getEarlyLateIdxs:
@@ -676,11 +702,11 @@ classdef adaptationData
                 data=this.data.getDataAsVector(labels);
             end
             if nargin<4 || isempty(padWithNaNFlag)
-               padWithNaNFlag=false; 
+               padWithNaNFlag=false;
             end
             nConds=size(inds{1},2);
             nLabels=size(data,2);
-            
+
             for j=1:length(inds)
                 nSteps=size(inds{j},1);
                 %for i=1:nConds
@@ -700,18 +726,18 @@ classdef adaptationData
                     dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
                     end
                 else
-                    dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels); 
+                    dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels);
                 end
             end
         end
-        
+
         function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,ph,numberOfStrides,monoLSfitFlag)
             %Plots time courses and early/late averaged data in bar form
             %INPUTS:
             %monoLSfitFlag: a value in the [0,3] integer range. 0 plots
             %no fits, 1 plots condition based fit, 2 plots trial based fit,
             %3 plots condition & trial based fits
-            
+
             fh=figure;
 
             M=length(labels);
@@ -728,7 +754,7 @@ classdef adaptationData
             exemptFirst=1;
             exemptLast=5;
             mode=[];
-            
+
             %Time courses:
             this.plotParamTimeCourse(labels,binwidth,trialMarkerFlag,conds,medianFlag,ph(:,1));
             if mod(monoLSfitFlag,2)==1 %Add condition based monoLS fits if flag=1,3
@@ -755,12 +781,12 @@ classdef adaptationData
                 %Do the plot:
                 adaptationData.plotAvgTimeCourse(this,labels,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph(:,1));
             end
-            
-            
+
+
             %Add bars:
             this.plotParamBarsByConditionsv2(labels,numberOfStrides,exemptLast,exemptFirst,conds,mode,ph(:,2));
 
-            for i=1:M               
+            for i=1:M
                 subplot(ph(i,1));
                 grid on
                 axis tight
@@ -780,25 +806,25 @@ classdef adaptationData
             end
         end
     end
-    
-    
-    
+
+
+
     methods(Static)
- 
+
          [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
-         
+
          [figHandle,allData]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) %Will deprecate, use plotGroupedSubjectsBars instead.
-        
+
          [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
-        
+
          varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,alignEnd,alignIni)
-           
+
          [figHandle]=scatterPlotLab(adapDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)
-        
+
          [figHandle]=Correlations(adapDataList, results,epochx,epochy,param1,groups,colorOrder,type)
-       
+
         function [fh,ph,allData]=plotGroupedTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)
-            
+
             fh=figure;
 
             M=length(labels);
@@ -823,7 +849,7 @@ classdef adaptationData
             signifPlotMatrixConds=[];
             exemptFirst=1;
             exemptLast=5;
-            
+
             %Time courses:
             adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,'UniformOutput',false);
             fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,ph(:,1),alignEnd);
@@ -841,10 +867,10 @@ classdef adaptationData
                 axis([ab(1:2) aa(3:4)])
             end
         end
-        
+
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
-            
+
             %Load and construct object:
             for i=1:length(adaptDataList)
                 a=load(adaptDataList{i});
@@ -855,11 +881,11 @@ classdef adaptationData
         end
 
         function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
-            
+
             if ~(isa(label,'char') || (isa(label,'cell') && length(label)==1 && (isa(label{1},'char'))))
                 error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.'); %This is NOT true (?). Fix.
             end
-            
+
             %Create a groupAdaptationData object and use it to get the
             %requested data in matrix form:
             groupData=adaptationData.createGroupAdaptData(adaptDataList);
@@ -867,7 +893,7 @@ classdef adaptationData
             earlyPoints=data{2};
             veryEarlyPoints=data{1};
             latePoints=data{3};
-            
+
             %Compute some stats (this may only work properly if length(label)==1)
             if length(label)>1
                 pEarly=[];
@@ -895,9 +921,9 @@ classdef adaptationData
                 end
             end
         end
-          
+
 %         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
-%             
+%
 %             if isa(adaptDataList,'cell')
 %                 if ~isa(adaptDataList{1},'cell')
 %                     adaptDataList={adaptDataList};
@@ -906,7 +932,7 @@ classdef adaptationData
 %                 adaptDataList={{adaptDataList}};
 %             end
 %             Ngroups=length(adaptDataList);
-%             
+%
 %             if nargin<7 || isempty(removeBias)
 %                 removeBias=0;
 %             end
@@ -948,10 +974,10 @@ classdef adaptationData
 %                        figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList,binSize,[],removeBias,1);
 %                 end
 %             end
-%             
+%
 %         end
-        
+
         [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
     end %static methods
-    
+
 end

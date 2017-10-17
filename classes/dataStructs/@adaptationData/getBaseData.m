@@ -16,6 +16,7 @@ exemptFirst=10;
 exemptLast=5;
 removeBiasFlag=0;
 [data]=getEarlyLateData_v2(this,labels,baseConds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst);
+data=data{1};
 
 
 end
