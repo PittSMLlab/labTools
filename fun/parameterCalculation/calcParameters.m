@@ -69,7 +69,7 @@ eventTimes2=nan(numStrides,length(eventTypes));
 for i=1:numStrides
     if ~isempty(trialData.procEMGData)
         stridedProcEMG{i}=trialData.('procEMGData').split(initTime(i),endTime(i));
-        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i));
+        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i)).rectify;
     end
     %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
     stridedEventData{i}=trialData.('gaitEvents').split(initTime(i),endTime(i));

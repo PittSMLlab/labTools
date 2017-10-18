@@ -23,8 +23,9 @@ desc={'SHS to FTO', 'FTO to mid fast swing', 'mid fast swing to FHS', 'FHS to ST
 phases2={'eDS1','lDS1','EfSwing1','EfSwing2','LfSwing1','LfSwing2','eDS2','lDS2','EsSwing1','EsSwing2','LsSwing1','LsSwing2'};
 desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'};
 %% Parameter list and description (per muscle!)
-labelSuff={'max','min','iqr','avg','var','skw','kur','med','snr','bad'}; %Some stats on channel data
-labelSuff=[labelSuff strcat('s',regexp(num2str(1:12),' +','split'))];
+labelSuff={'max','min','avg','var','med','snr','bad'}; %Some stats on channel data, excluded 'skw','kur','iqr' because they are never used and take long to compute
+labelSuff=[labelSuff repmat({'s'},1,numel(phases2))]; %Reserving 12 phases for 's' paramters
+
 %labelSuff=[labelSuff strcat('p',regexp(num2str(1:6),' +','split')) strcat('s',regexp(num2str(1:12),' +','split'))]; 
 %'p' parameters were deprecated becase they can be expressed as a function of 's' parameters. The numerical difference between the two is <1e-8, which is less than 1%%of the minimum value observed in practice
 %labelSuff=[labelSuff strcat('t',regexp(num2str(1:12),' +','split')) strcat('e',regexp(num2str(1:12),' +','split'))]; %These two need to be deprecated.
@@ -35,75 +36,82 @@ labs=stridedProcEMG{1}.labels;
 paramData=nan(N,length(labs),length(labelSuff));
 paramLabels=cell(length(labs),length(labelSuff));
 description=cell(length(labs),length(labelSuff));
+
+%Define parameter names and descriptions:
+for j=1:length(labs) %Muscles
+    if strcmp(labs{j}(1),s)
+        l='s';
+    else
+        l='f';
+    end
+    phaseS=0;
+     for k=1:length(labelSuff) %Computing each param
+        if strcmp(labelSuff{k},'bad')
+            paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
+            description{j,k}=['Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
+        elseif strcmp(labelSuff{k},'s')
+            phaseS=phaseS+1;
+            description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseS}];
+            paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k} num2str(phaseS)];
+        else
+            paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
+            description{j,k}=[labelSuff{k} ' procEMG in muscle ' labs{j}];
+        end
+        %This gets overwritten for  
+     end
+end
+
 for i=1:N %For each stride
     Time=stridedProcEMG{i}.Time;
     labs=stridedProcEMG{i}.labels;
     Data=stridedProcEMG{i}.Data;
     Qual=stridedProcEMG{i}.Quality;
-    sP=stridedProcEMG{i}.sampPeriod;
+    %sP=stridedProcEMG{i}.sampPeriod;
     for j=1:length(labs) %Muscles
-        if strcmp(labs{j}(1),s)
-            l='s';
-        else
-            l='f';
-        end
         mData=Data(:,j);
+        phaseS=0;
         for k=1:length(labelSuff) %Computing each param
             relIdx=1:length(Time);
-            paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
             switch labelSuff{k}
                 case 'max'
-                    description{j,k}=['Peak proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Peak proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=max(mData);
                 case 'min'
-                    description{j,k}=['Min proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Min proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=min(mData);
                 case 'iqr'
-                    description{j,k}=['Inter-quartile range of proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Inter-quartile range of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=iqr(mData);
                 case 'avg'
-                    description{j,k}=['Avg. (mean) of proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Avg. (mean) of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=mean(mData);
                 case 'var'
-                    description{j,k}=['Variance of proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Variance of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=var(mData,0); %Unbiased
                 case 'skw'
-                    description{j,k}=['Skewness of proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Skewness of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=skewness(mData,0); %Unbiased
                 case 'kur'
-                    description{j,k}=['Kurtosis of proc EMG in muscle ' labs{j}];
-                    paramData(i,j,k)=skewness(mData,0); %Unbiased
+                    %description{j,k}=['Kurtosis of proc EMG in muscle ' labs{j}];
+                    paramData(i,j,k)=kurtosis(mData,0); %Unbiased
                 case 'med'
-                    description{j,k}=['Median of proc EMG in muscle ' labs{j}];
+                    %description{j,k}=['Median of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=median(mData);
                 case 'snr'
-                    description{j,k}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' labs{j}];
+                    %description{j,k}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' labs{j}];
                     paramData(i,j,k)=20*log10(mean(mData.^2)/min(mData)^2); %Is this a good estimate?? Seems like min() will always be very close to zero because of the low-pass filtering and the 'dip' it introduces
                 case 'bad'
-                    description{j,k}=['Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
                     if ~isempty(Qual)
                         paramData(i,j,k)=sum(unique(Qual(:,j))); %Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.
                     else
                         paramData(i,j,k)=0;
                     end
                 otherwise %These are phase-dependent parameters
-                    phaseN=str2double(regexp(labelSuff{k},'[0-9]+','match'));
-                    if strcmp(labelSuff{k}(1),'p') %Mean EMG per phase (6 phases).
-                        relIdx=Time<=eventTimes(i,phaseN+1) & Time>=eventTimes(i,phaseN); %Computing mean for 1 of 6 phases
-                        description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc{phaseN}];
+                    if strcmp(labelSuff{k}(1),'s') %Mean EMG per phase (12 phases)
+                        phaseS=phaseS+1;
+                        relIdx=Time<=eventTimes2(i,phaseS+1) & Time>=eventTimes2(i,phaseS); %Computing mean for 1 of 12 phases
+                        %description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseS}];
                         paramData(i,j,k)=mean(mData(relIdx));
-                    elseif strcmp(labelSuff{k}(1),'s') %Mean EMG per phase (12 phases)
-                        relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
-                        description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=mean(mData(relIdx));
-                    elseif strcmp(labelSuff{k}(1),'t') %Integrated EMG per phase (12 phases), this is different from 'p' because different phases have different durations
-                        relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
-                        description{j,k}=['Integral of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sum(mData(relIdx))*sampPeriod;
-                    elseif strcmp(labelSuff{k}(1),'e') % 't' divided by STRIDE duration, so we get a measure per unit of time (closer to actual effort)
-                        relIdx=Time<=eventTimes2(i,phaseN+1) & Time>=eventTimes2(i,phaseN); %Computing mean for 1 of 12 phases
-                        description{j,k}=['EMG ''effort'' per unit of time in muscle ' labs{j} ' from ' desc2{phaseN}];
-                        paramData(i,j,k)=sampPeriod*    sum(mData(relIdx))/(eventTimes(i,end)-eventTimes(i,1)); %Same as before, but dividing by stride duration
                     end
                     if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
                         paramData(i,j,k)=nan;

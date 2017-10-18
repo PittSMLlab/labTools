@@ -58,8 +58,11 @@ Filtered=GRFData.lowPassFilter(20);
 %events are wrong and these lines of code will not save you. rats
 
 %figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');
+fFy=Filtered.getDataAsTS([fastleg 'Fy']);
+sFy=Filtered.getDataAsTS([slowleg 'Fy']);
+FastLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+SlowLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
 for i=1:length(strideEvents.tSHS)-1
-        timeGRF=round(Filtered.Time,6);
         SHS=strideEvents.tSHS(i);
         FTO=strideEvents.tFTO(i);
         FHS=strideEvents.tFHS(i);
@@ -68,15 +71,14 @@ for i=1:length(strideEvents.tSHS)-1
         SHS2=strideEvents.tSHS2(i);
         
         if isnan(FTO) || isnan(FHS) ||FTO>FHS
-            %keyboard
-            FastLegOffSetData(i)=NaN;
+            %nop
         else
-            FastLegOffSetData(i)=nanmedian(Filtered.split(FTO, FHS).getDataAsTS([fastleg 'Fy']).Data);
+            FastLegOffSetData(i)=nanmedian(fFy.split(FTO, FHS).Data);
         end
         if isnan(STO) || isnan(SHS2)
-            SlowLegOffSetData(i)=NaN;
+            %nop
         else
-            SlowLegOffSetData(i)=nanmedian(Filtered.split(STO, SHS2).getDataAsTS([slowleg 'Fy']).Data);
+            SlowLegOffSetData(i)=nanmedian(sFy.split(STO, SHS2).Data);
         end
 end
 FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
@@ -89,34 +91,37 @@ Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getD
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LevelofInterest=0.5.*flipIT.*cosd(90-abs(ang)); %The actual angle of the incline
 
+lenny=length(strideEvents.tSHS)-1;
+impactS=NaN(1, lenny);
+SB=NaN(1, lenny);
+SP=NaN(1, lenny);
+SZ=NaN(1, lenny);
+SX=NaN(1, lenny);
+impactF=NaN(1, lenny);
+FB=NaN(1, lenny);
+FP=NaN(1, lenny);
+FZ=NaN(1, lenny);
+FX=NaN(1, lenny);
+HandrailHolding=NaN(1, lenny);
+SBmax=NaN(1, lenny);
+SPmax=NaN(1, lenny);
+SZmax=NaN(1, lenny);
+SXmax=NaN(1, lenny);
+impactSmax=NaN(1, lenny);
+FBmax=NaN(1, lenny);
+FPmax=NaN(1, lenny);
+FZmax=NaN(1, lenny);
+FXmax=NaN(1, lenny);
+impactFmax=NaN(1, lenny);
 if ~isempty(regexp(trial, 'OG')) || ~isempty(regexp(trialData.type, 'OG'))
-    lenny=length(strideEvents.tSHS)-1;
-    impactS=NaN.*ones(1, lenny);
-    SB=NaN.*ones(1, lenny);
-    SP=NaN.*ones(1, lenny);
-    SZ=NaN.*ones(1, lenny);
-    SX=NaN.*ones(1, lenny);
-    impactF=NaN.*ones(1, lenny);
-    FB=NaN.*ones(1, lenny);
-    FP=NaN.*ones(1, lenny);
-    FZ=NaN.*ones(1, lenny);
-    FX=NaN.*ones(1, lenny);
-    HandrailHolding=NaN.*ones(1, lenny);
-    SBmax=NaN.*ones(1, lenny);
-    SPmax=NaN.*ones(1, lenny);
-    SZmax=NaN.*ones(1, lenny);
-    SXmax=NaN.*ones(1, lenny);
-    impactSmax=NaN.*ones(1, lenny);
-    FBmax=NaN.*ones(1, lenny);
-    FPmax=NaN.*ones(1, lenny);
-    FZmax=NaN.*ones(1, lenny);
-    FXmax=NaN.*ones(1, lenny);
-    impactFmax=NaN.*ones(1, lenny);
+ %nop
 else
     for i=1:length(strideEvents.tSHS)-1
+        filteredSlowStance=Filtered.split(SHS, STO);
+        filteredFastStance=Filtered.split(FHS, FTO2);
         %1.) get the entire stride of interest on BOTH sides (SHS-->SHS2, and
         %FHS--> FHS2)  Also flip it if declien people
-        timeGRF=round(GRFData.Time,6);
+        %timeGRF=round(GRFData.Time,6);
         % %         SHS=find(timeGRF==round(strideEvents.tSHS(i),6));
         % %         FTO=find(timeGRF==round(strideEvents.tFTO(i),6));
         % %         FHS=find(timeGRF==round(strideEvents.tFHS(i),6));
@@ -138,14 +143,14 @@ else
         if isnan(SHS) || isnan(STO)
             striderS=[];
         else %FILTERING
-            striderS=flipIT.*Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;
+            striderS=flipIT.*filteredSlowStance.getDataAsVector([slowleg 'Fy'])/Normalizer;
             %striderS=flipIT.*GRFData.lowPassFilter(20).split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;
             %striderS=flipIT.*GRFData.split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;%
         end
         if isnan(FHS) || isnan(FTO2)
             striderF=[];
         else%FILTERING
-            striderF=flipIT.*Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
+            striderF=flipIT.*filteredFastStance.getDataAsVector([fastleg 'Fy'])/Normalizer;
             %striderF=flipIT.*GRFData.lowPassFilter(20).split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
             %striderF=flipIT.*GRFData.split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
         end
@@ -164,28 +169,29 @@ else
         
         %Previously the following was part of a funciton called SeperateBP
         if isempty(striderS) || all(striderS==striderS(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
-            impactS(i)=NaN;
-            SB(i)=NaN;
-            SP(i)=NaN;
-            SZ(i)=NaN;
-            SX(i)=NaN;
-            SBmax(i)=NaN;
-            SPmax(i)=NaN;
-            SZmax(i)=NaN;
-            SXmax(i)=NaN;
-            impactSmax(i)=NaN;
+            %This does nothing, as vars are initialized as nan:
+%             impactS(i)=NaN;
+%             SB(i)=NaN;
+%             SP(i)=NaN;
+%             SZ(i)=NaN;
+%             SX(i)=NaN;
+%             SBmax(i)=NaN;
+%             SPmax(i)=NaN;
+%             SZmax(i)=NaN;
+%             SXmax(i)=NaN;
+%             impactSmax(i)=NaN;
         else
             if nanstd(striderS)<0.01 && nanmean(striderS)<0.01 %This is to get rid of places where there is only noise and no data
-                impactS(i)=NaN;
-                SB(i)=NaN;
-                SP(i)=NaN;
-                SZ(i)=NaN;
-                SX(i)=NaN;
-                SBmax(i)=NaN;
-                SPmax(i)=NaN;
-                SZmax(i)=NaN;
-                SXmax(i)=NaN;
-                impactSmax(i)=NaN;
+%                 impactS(i)=NaN;
+%                 SB(i)=NaN;
+%                 SP(i)=NaN;
+%                 SZ(i)=NaN;
+%                 SX(i)=NaN;
+%                 SBmax(i)=NaN;
+%                 SPmax(i)=NaN;
+%                 SZmax(i)=NaN;
+%                 SXmax(i)=NaN;
+%                 impactSmax(i)=NaN;
             else
 %               ns=find((striderS(SHS-SHS+1:STO-SHS+1)-LevelofInterest)<0);%1:65
 %               ps=find((striderS(SHS-SHS+1:STO-SHS+1)-LevelofInterest)>0);
@@ -202,8 +208,8 @@ else
                 end
                 
                 if isempty(ns)
-                    SB(i)=NaN;
-                    SBmax(i)=NaN;
+%                     SB(i)=NaN;
+%                     SBmax(i)=NaN;
                 else
 %                     SB(i)=FlipB.*(nanmean(striderS(ns))-LevelofInterest);
 %                     SBmax(i)=FlipB.*(nanmin(striderS(ns))-LevelofInterest);
@@ -211,8 +217,8 @@ else
                     SBmax(i)=FlipB.*(nanmin(striderS(ns)-LevelofInterest));
                 end
                 if isempty(ps)
-                    SP(i)=NaN;
-                    SPmax(i)=NaN;
+%                     SP(i)=NaN;
+%                     SPmax(i)=NaN;
                 else
 %                     SP(i)=nanmean(striderS(ps))-LevelofInterest;
 %                     SPmax(i)=nanmax(striderS(ps))-LevelofInterest;
@@ -221,12 +227,12 @@ else
                 end
                 
                 if exist('postImpactS')==0 || isempty(postImpactS)==1
-                    impactS(i)=NaN;
-                    impactSmax(i)=NaN;
+%                     impactS(i)=NaN;
+%                     impactSmax(i)=NaN;
                 else
                     impactS(i)=nanmean(striderS(find((striderS(SHS-SHS+1: postImpactS)-LevelofInterest)>0)))-LevelofInterest;
                     if isempty(striderS(find((striderS(SHS-SHS+1: postImpactS)-LevelofInterest)>0)))
-                        impactSmax(i)=NaN;
+                        %impactSmax(i)=NaN;
                     else
                         impactSmax(i)=nanmax(striderS(find((striderS(SHS-SHS+1: postImpactS)-LevelofInterest)>0)))-LevelofInterest;
                     end
@@ -234,37 +240,36 @@ else
                 
             end
            
-
-SZ(i)=-1*nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fz']).Data)/Normalizer;
-SX(i)=nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Normalizer;
-SZmax(i)=-1*nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fz']).Data)/Normalizer;
-SXmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Normalizer;
+SZ(i)=-1*nanmean(filteredSlowStance.getDataAsVector([slowleg 'Fz']))/Normalizer;
+SX(i)=nanmean(filteredSlowStance.getDataAsVector([slowleg 'Fx']))/Normalizer;
+SZmax(i)=-1*nanmin(filteredSlowStance.getDataAsVector([slowleg 'Fz']))/Normalizer;
+SXmax(i)=nanmin(filteredSlowStance.getDataAsVector([slowleg 'Fx']))/Normalizer;
          end
         
         %%Now for the fast leg...
         if isempty(striderF) || all(striderF==striderF(1)) || isempty(FTO) || isempty(STO)
-            impactF(i)=NaN;
-            FB(i)=NaN;
-            FP(i)=NaN;
-            FZ(i)=NaN;
-            FX(i)=NaN;
-            FBmax(i)=NaN;
-            FPmax(i)=NaN;
-            FZmax(i)=NaN;
-            FXmax(i)=NaN;
-            impactFmax(i)=NaN;
+%             impactF(i)=NaN;
+%             FB(i)=NaN;
+%             FP(i)=NaN;
+%             FZ(i)=NaN;
+%             FX(i)=NaN;
+%             FBmax(i)=NaN;
+%             FPmax(i)=NaN;
+%             FZmax(i)=NaN;
+%             FXmax(i)=NaN;
+%             impactFmax(i)=NaN;
         else
             if nanstd(striderF)<0.01 && nanmean(striderF)<0.01 %This is to get rid of places where there is only noise and no data
-                impactF(i)=NaN;
-                FB(i)=NaN;
-                FP(i)=NaN;
-                FZ(i)=NaN;
-                FX(i)=NaN;
-                FBmax(i)=NaN;
-                FPmax(i)=NaN;
-                FZmax(i)=NaN;
-                FXmax(i)=NaN;
-                impactFmax(i)=NaN;
+%                 impactF(i)=NaN;
+%                 FB(i)=NaN;
+%                 FP(i)=NaN;
+%                 FZ(i)=NaN;
+%                 FX(i)=NaN;
+%                 FBmax(i)=NaN;
+%                 FPmax(i)=NaN;
+%                 FZmax(i)=NaN;
+%                 FXmax(i)=NaN;
+%                 impactFmax(i)=NaN;
             else
 %                 nf=find((striderF(FHS-FHS+1:FTO2-FHS+1)-LevelofInterest)<0);%1:65
 %                 pf=find((striderF(FHS-FHS+1:FTO2-FHS+1)-LevelofInterest)>0);
@@ -280,8 +285,8 @@ SXmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Norma
                 end
                 
                 if isempty(pf)
-                    FP(i)=NaN;
-                    FPmax(i)=NaN;
+%                     FP(i)=NaN;
+%                     FPmax(i)=NaN;
                 else
 %                     FP(i)=nanmean(striderF(pf))-LevelofInterest;
 %                     FPmax(i)=nanmax(striderF(pf))-LevelofInterest;
@@ -289,30 +294,29 @@ SXmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Norma
                     FPmax(i)=nanmax(striderF(pf)-LevelofInterest);
                 end
                 if isempty(nf)
-                    FB(i)=NaN;
-                    FBmax(i)=NaN;
+%                     FB(i)=NaN;
+%                     FBmax(i)=NaN;
                 else
                     FB(i)=FlipB.*(nanmean(striderF(nf)-LevelofInterest));
                     FBmax(i)=FlipB.*(nanmin(striderF(nf)-LevelofInterest));
                 end
                 
                 if exist('postImpactF')==0 || isempty(postImpactF)==1
-                    impactF(i)=NaN;
-                    impactFmax(i)=NaN;
+%                     impactF(i)=NaN;
+%                     impactFmax(i)=NaN;
                 else
                     impactF(i)=nanmean(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))-LevelofInterest;
                     if isempty(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))
-                        impactFmax(i)=NaN;
+%                         impactFmax(i)=NaN;
                     else
                         impactFmax(i)=nanmax(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))-LevelofInterest;
                     end
                 end
             end
-                  
-            FZ(i)=-1*nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
-            FX(i)=nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
-            FZmax(i)=-1*nanmin(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
-            FXmax(i)=nanmax(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
+            FZ(i)=-1*nanmean(filteredFastStance.getDataAsVector([fastleg 'Fz']))/Normalizer;
+            FX(i)=nanmean(filteredFastStance.getDataAsVector([fastleg 'Fx']))/Normalizer;
+            FZmax(i)=-1*nanmin(filteredFastStance.getDataAsVector([fastleg 'Fz']))/Normalizer;
+            FXmax(i)=nanmax(filteredFastStance.getDataAsVector([fastleg 'Fx']))/Normalizer;
         end
     end
 end
