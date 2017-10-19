@@ -1,5 +1,5 @@
 classdef experimentData
-    %experimentData  Contains all information for a single experiment  
+    %experimentData  Contains all information for a single experiment
     %
     %experimentData properties:
     %   metaData - experimentMetaData object
@@ -17,45 +17,45 @@ classdef experimentData
     %   process - creates a new experimentData object with data property
     %   being a cell of processedLabData objects
     %   makeDataObj - creates an adaptationData object
-    %   parameterEvolutionPlot - 
-    %   parameterTimeCourse - 
-    %   recomputeParameters - 
-    %   splitIntoStrides - 
-    %   getStridedField - 
-    %   getAlignedField - 
-    %   getConditionIdxsFromName - 
+    %   parameterEvolutionPlot -
+    %   parameterTimeCourse -
+    %   recomputeParameters -
+    %   splitIntoStrides -
+    %   getStridedField -
+    %   getAlignedField -
+    %   getConditionIdxsFromName -
     %
     %See also: experimentMetaData, subjectData, labData
-    
+
     properties
         metaData % field that contains information from the experiment. Has to be an experimentMetaData object
         subData %subjectData type
         data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
     end
-    
+
     properties (Dependent)
         isRaw %true if data is an object of the rawLabData class
         isProcessed %true if data is an object of the processedLabData class
         isStepped %or strided
         fastLeg
     end
-    
+
     methods
         %% Constructor
         function this=experimentData(meta,sub,data)
             %inputs are metaData, subData, and rawTrialData
-            
+
            if nargin>0
                this.metaData=meta;
            end
            if nargin>1
                this.subData=sub;
            end
-           if nargin>2 
+           if nargin>2
                this.data=data;
            end
         end
-        
+
         %% Setters for class properties
         function this=set.metaData(this,meta)
             %define or re-define metaData for this experiment
@@ -83,7 +83,7 @@ classdef experimentData
             %define or redefine experiment data
             %
             %INPUT: labData object or one of its subclasses
-            if isa(data,'cell')  % Has to be array of labData type cells. 
+            if isa(data,'cell')  % Has to be array of labData type cells.
                aux=find(cellfun('isempty',data)~=1);
                for i=1:length(aux)
                    if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
@@ -97,14 +97,14 @@ classdef experimentData
                throw(ME);
             end
         end
-        
+
         %% Getters for Dependent properties
         function a=get.isProcessed(this)
             %Returns true if the trials have been processed (i.e. parameters have been calculated through ladData.process()), and false if
             %they contain only rawData.
-            %   INPUTS: 
+            %   INPUTS:
             %       this: experimentData object
-            %   OUTPUTS: 
+            %   OUTPUTS:
             %       a: boolean
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1); %Not empty
@@ -115,21 +115,21 @@ classdef experimentData
                end
             end
         end
-        
+
         function a=get.isStepped(this)
             %returns true if data is an object of the strideData class
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1);
             a=isa(this.data{idx},'strideData');
         end
-        
+
         function a=get.isRaw(this)
             %returns true if data is an object of the rawLabData class
             aux=cellfun('isempty',this.data);
             idx=find(aux~=1,1);
             a=isa(this.data{idx},'rawLabData');
         end
-        
+
         function fastLeg=get.fastLeg(this)
             error('Unimplemented. Try getRefLeg, which reads slow/fast leg labels from trial metaData.')
             %based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even
@@ -174,7 +174,13 @@ classdef experimentData
                 error('experimentData:fastLeg','No data to compute fastest leg, try using expData.getRefLeg which reads from each trial''s metaData.');
             end
         end
-        
+
+        function ageInMonths=getSubjectAgeAtExperimentDate(this)
+            dob=this.subData.dateOfBirth;
+            testData=this.metaData.date;
+            [ageInMonths]=testData.timeSince(dob);
+        end
+
         function slowLeg=getSlowLeg(this)
             %determine which leg is the slow leg, simply the opposite of
             %the fast leg, be sure to call get.fastLeg() first
@@ -188,8 +194,8 @@ classdef experimentData
                 slowLeg=[];
             end
         end
-        
-        function refLeg=getRefLeg(this) 
+
+        function refLeg=getRefLeg(this)
             %By majority vote over trials, returns the reference leg for
             %the entire experiment
             %
@@ -210,7 +216,7 @@ classdef experimentData
                error('experimentData:getRefLeg','Could not determine unique reference leg');
            end
         end
-        
+
         function fL=getNonRefLeg(this)
             %returns the non-reference leg, 'R' or 'L'
             sL=this.getRefLeg;
@@ -220,10 +226,10 @@ classdef experimentData
                 fL='R';
             end
         end
-        
-        %% processing 
+
+        %% processing
         function processedThis=process(this,eventClass)
-            
+
         if nargin<2 || isempty(eventClass)
             eventClass=[];
         end
@@ -231,7 +237,7 @@ classdef experimentData
         %
         %Returns a new experimentData object with same metaData, subData and processed (trial) data.
         %This is done by iterating through data (trials) and
-        %processing each by using labData.process 
+        %processing each by using labData.process
         %ex: expData=rawExpData.process
         %
         %INPUTS:
@@ -241,7 +247,7 @@ classdef experimentData
         %processedThis: experimentData object with processed data
         %
         %See also: labData
-            
+
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
@@ -252,7 +258,7 @@ classdef experimentData
             end
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
-        
+
 		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
         %   adaptData=expData.makeDataObj(filename,experimentalFlag)
@@ -280,7 +286,7 @@ classdef experimentData
                 ME=MException('experimentData:makeDataObj','Cannot create an adaptationData object from unprocessed data!');
                 throw(ME);
             end
-            
+
             if nargin<3
                 experimentalFlag=[];
             end
@@ -292,7 +298,7 @@ classdef experimentData
             end
             adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
         end
-        
+
         function reducedThis=reduce(this,eventLabels,N)
             if nargin<2 || isempty(eventLabels)
                 s=this.getRefLeg;
@@ -308,8 +314,8 @@ classdef experimentData
             end
             reducedThis=experimentData(this.metaData,this.subData,redData);
         end
-        
-        
+
+
         %% Display
         %HH: I don't like either of these functions. They take way too long
         %to run, and at the time being they assume that if a field isn't a
@@ -327,11 +333,11 @@ classdef experimentData
             %???
             %
             %INPUTS:
-            %field, 
+            %field,
             if ~(this.isProcessed)
                 ME=MException('experimentData:parameterEvolutionPlot','Cannot generate parameter evolution plot from unprocessed data!');
                 throw(ME);
-            end                
+            end
             if ~isempty(this.data{1}) && (all(this.data{1}.adaptParams.isaLabel(field)))
                 adaptDataObject=this.makeDataObj([],0);
                 h=adaptDataObject.plotParamByConditions(field);
@@ -340,7 +346,7 @@ classdef experimentData
                 h=adaptDataObject.plotParamByConditions(field);
             end
         end
-        
+
         function [h,adaptDataObject]=parameterTimeCourse(this,field)
             if ~(this.isProcessed)
                 ME=MException('experimentData:parameterTimeCourse','Cannot generate parameter time course plot from unprocessed data!');
@@ -354,7 +360,7 @@ classdef experimentData
                 h=adaptDataObject.plotParamTimeCourse(field);
             end
         end
-        
+
         %% Update/modify
         function this=recomputeParameters(this,eventClass,initEventSide,parameterClasses)
         %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
@@ -377,13 +383,38 @@ classdef experimentData
             end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses); 
+                  newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses);
                   this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
         
+        function this=flushAndRecomputeParameters(this,eventClass,initEventSide)
+        %FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
+        %objects in experimentData.data
+        %Different from recomputeParameters() it throws away the previously
+        %existing parameters [recompute only substitutes IF there are name
+        %collisions, so it allows for recomputing only force or EMG params]
+        %
+        %   Example: if expData is an object of the experimentalData class,
+        %       expData=expData.recomputeParameters
+        %   will recompute expData.data{i}.adaptParams for all i where
+        %   i is a trial of the experiment
+        %
+        %   See also: parameterSeries
+            if nargin<2 || isempty(eventClass)
+                eventClass=[];
+            end
+            if nargin<3 || isempty(initEventSide)
+                initEventSide=[];
+            end
+            trials=cell2mat(this.metaData.trialsInCondition);
+            for t=trials
+                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,[]);
+            end
+        end
+
         function stridedExp=splitIntoStrides(this,refEvent)
-        %This might not be used?    
+        %This might not be used?
             if ~this.isStepped && this.isProcessed
                 for trial=1:length(this.data)
                     disp(['Splitting trial ' num2str(trial) '...'])
@@ -396,17 +427,17 @@ classdef experimentData
                             %refleg should be opposite the dominant/fast leg)
                         end
                         aux=trialData.separateIntoStrides(refEvent);
-                        strides{trial}=aux;                        
+                        strides{trial}=aux;
                     else
-                        strides{trial}=[];                        
+                        strides{trial}=[];
                     end
                 end
-                stridedExp=stridedExperimentData(this.metaData,this.subData,strides); 
+                stridedExp=stridedExperimentData(this.metaData,this.subData,strides);
             else
                 disp('Cannot stride experiment because it is raw or already strided.');
             end
         end
-        
+
         function [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)
             if nargin<4 || isempty(events)
                 events=[this.getSlowLeg 'HS'];
@@ -426,13 +457,13 @@ classdef experimentData
            for i=trials
               %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
               [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
-              stridedField=[stridedField; aux]; 
+              stridedField=[stridedField; aux];
               bad=[bad; bad1];
               originalTrial=[originalTrial; i*ones(size(bad1))];
               originalInitTime=[originalInitTime; initTime1];
            end
         end
-        
+
         function [alignedField,originalTrial,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
            if nargin<4 || isempty(events)
                events=[this.getSlowLeg 'HS'];
@@ -464,17 +495,17 @@ classdef experimentData
               %originalDurations=[originalDurations; originalDurations1];
            end
         end
-        
+
         %% Auxiliar
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
-            %ConditionNames should be a cell array containing a string or 
-            %another cell array of strings in each of its cells. 
+            %ConditionNames should be a cell array containing a string or
+            %another cell array of strings in each of its cells.
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
         end
-        
+
         function [numStrides,trials,initTimes,endTimes]=getStrideInfo(this,eventClass)
             numStrides=0;
             initTimes=[];
@@ -516,13 +547,13 @@ classdef experimentData
                     aux=this.data{i}.adaptParams;
                     trialTypes{i}=this.data{i}.metaData.type;
                     if ~(nargin>2 && ~isempty(experimentalFlag) && experimentalFlag==0)
-                        aux=cat(aux,this.data{i}.experimentalParams); 
+                        aux=cat(aux,this.data{i}.experimentalParams);
                     end
                     %Concatenate with other trials:
                     if ~isempty(aux.Data) %Case in which no strides were detected for a trial, it could happen. Not concatenating those
-                        if ~exist('paramData','var') 
+                        if ~exist('paramData','var')
                             paramData=aux;
-                        else 
+                        else
                             paramData=addStrides(paramData,aux);
                         end
                     end
@@ -530,12 +561,11 @@ classdef experimentData
             end
             % HH: remove all bad strides completely
             % paramData=parameterSeries(paramData.Data(paramData.bad==0,:),paramData.labels,paramData.hiddenTime(paramData.bad==0),paramData.description);
-            paramData=paramData.setTrialTypes(trialTypes);             
-            adaptData=adaptationData(this.metaData,this.subData,paramData);  
+            paramData=paramData.setTrialTypes(trialTypes);
+            adaptData=adaptationData(this.metaData,this.subData,paramData);
             if nargin>1 && ~isempty(filename)
                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
         end
 	end
 end
-
