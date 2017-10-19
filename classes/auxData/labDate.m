@@ -11,17 +11,17 @@ classdef labDate
     %   genIDFromClock
     %   getCurrent
     %   default - generates default date (Jan 1, 1900)
-    
+
     properties
         day; %a day (ex: 27)
         month; %a month (ex: 4)
         year;% a year (ex: 2015)
     end
-    
+
     methods
 
         function this=labDate(dd,mm,year)
-            %Constructor 
+            %Constructor
             %
             %inputs: dd, mm, yyyy
             %
@@ -31,7 +31,7 @@ classdef labDate
             %'jan' or 'dec'
             %
             %yyyy must be 4 digit double
-            
+
             this.day=dd;
             if isa(mm,'char') && length(mm)==3
                 switch lower(mm)
@@ -68,10 +68,10 @@ classdef labDate
            else
                 ME=MException('labDate:Constructor','Month parameter is not a 3-letter string or a valid numerical value.');
                 throw(ME);
-           end 
+           end
             this.year=year;
         end
-        
+
         %Setters
         function this=set.day(this,dd)
             if dd<32 && dd>0 && rem(dd,1)==0
@@ -80,29 +80,35 @@ classdef labDate
                 ME=MException('labDate:Constructor','Day parameter is not an integer in the [1,31] range.');
                 throw(ME);
             end
-        end        
-        
+        end
+
         % HH: no setter for month because it was mis-behaving
 %         function this=set.month(this,mm)
-%            
-%         end        
+%
+%         end
         function this=set.year(this,year)
             if rem(year,1)==0
                 this.year=year;
             else
                 ME=MException('labDate:Constructor','Year parameter is not an integer.');
                 throw(ME);
-           end 
+           end
         end
-    end 
-    
-    
-    %Suggested method: find number of years/months/days that separate two
-    %dates. The method could be called like
-    %[days,months,years]=labDate1.timeSince(labDate2)
-    
-    methods(Static)
         
+            %Suggested method: find number of years/months/days that separate two
+        %dates. The method could be called like
+        function [timeInMonths]=timeSince(this,other)
+              %Returns elapsed time in MONTHS
+              timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
+        end
+
+    end
+
+
+
+
+    methods(Static)
+
         function str=monthString(a)
         % monthString  turns numeric month value into a string
         %   str=monthString(a) outputs a three-character string for an
@@ -138,7 +144,7 @@ classdef labDate
                     str='';
             end
         end
-        
+
         function id=genIDFromClock()
             %get the current time and convert it to date ID: yyyymmddhhmmss
             %
@@ -148,7 +154,7 @@ classdef labDate
            aux=clock;
            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
         end
-        
+
         function d=getCurrent()
             %create labDate instance d as the current time and date
             %
@@ -162,12 +168,11 @@ classdef labDate
             aux=clock;
             d=labDate(aux(3),labDate.monthString(aux(2)),aux(1));
         end
-        
+
         function d=default()
             %set date to 1 Jan 1900
             d=labDate(1,'jan',1900);
         end
     end
-    
-end
 
+end
