@@ -135,7 +135,7 @@ fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corre
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
 
-aux=sign(diff(sAnk(:,[4,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.
+aux=sign(diff(sAnk(:,[3,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indFHS,2). Doesn't use HIP to avoid HIP fluctuation issues.
 sAnkFwd=bsxfun(@times,sAnkFwd,aux);
 fAnkFwd=bsxfun(@times,fAnkFwd,aux);
 sAnk2D=bsxfun(@times,sAnk2D,aux);

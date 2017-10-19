@@ -201,7 +201,7 @@ classdef labTimeSeries  < timeseries
                         newTS.Data(sorting,:)=newTS.Data;
                         data(notNaNIdxs,:)=newTS.Data;
                     case 'closest'
-                        data=sparse(numel(timePoints),M);
+                        data=nan(numel(timePoints),M);
                         aux=this.getIndexClosestToTimePoint(timePoints(:));
                         inds=~isnan(aux);
                         aux=aux(inds); %Eliminating NaNs
@@ -540,6 +540,11 @@ classdef labTimeSeries  < timeseries
                 s='k'; %Generic constant string
             end
             this.labels=strcat([s '*'],this.labels);
+        end
+        
+        function this=rectify(this)
+            this.Data=abs(this.Data);
+            this.labels=strcat(strcat(this.labels),'abs');
         end
 
         function newThis=plus(this,other)
