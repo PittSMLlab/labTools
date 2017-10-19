@@ -190,21 +190,26 @@ classdef adaptationData
             if nargin<2
                 error('Need to provide a suffix for parameters')
             end
-            
+
             if isa(labelPrefix,'char')
                 labelPrefix={labelPrefix};
+            end
+            
+            if nargin<2 || isempty(baseConds2)
+                [baseConds,tType]=this.getBaseConditions;
+            else
+                baseConds=baseConds2;
+            end
+            if length(baseConds)>1 %More than 1 baseline found
+               idx=find(strcmp(tType,'TM'));
+               warning(['More than 1 baseline condition found or provided. Using the first that matches TM type trials: ' baseConds{idx}])
+               baseCond=baseConds{idx};
             end
             for i=1:length(labelPrefix)
                 %First: get all parameters with given prefix
                 labels=this.data.getLabelsThatMatch(['^' labelPrefix{i} '\d+$']);
                 %Second: get baseline data for those
-                [baseData,baseConds,tType]=getBaseData(this,baseConds2,labels);
-                if length(baseConds)>1 %More than 1 baseline found
-                   idx=find(strcmp(tType,'TM'));
-                   warning(['More than 1 baseline condition found or provided. Using the first that matches TM type trials: ' baseConds{idx}]) 
-                   baseCond=baseConds{idx};
-                   baseData=baseData(idx,:,:);
-                end
+                [baseData]=getBaseData(this,baseCond,labels);
                 range=squeeze(nanmean(baseData,2));
                 rangeValues=[min(range) max(range)];
                 this.data=this.data.normalizeToBaseline(labels,rangeValues);
@@ -305,6 +310,12 @@ classdef adaptationData
         function newThis=getPartialParameters(this,labels)
            newThis=this;
            newThis.data=this.data.getDataAsPS(labels);
+        end
+
+        function ageInMonths=getSubjectAgeAtExperimentDate(this)
+            dob=this.subData.dateOfBirth;
+            testData=this.metaData.date;
+            [ageInMonths]=testData.timeSince(dob);
         end
 
         function newThis=medianFilter(this,N)
@@ -715,15 +726,15 @@ classdef adaptationData
                 %This line does the same as the for loop commented above:
                 if any(isnan(inds{j}(:)))
                     if ~padWithNaNFlag
-                    error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
+                        error('adaptationData:getDataFromInds',['Could not retrieve for subject ' this.subData.ID ' because some of the indexes given are NaN.'])
                     else
                     %A less drastic option:
-                    warning('adaptationData:getDataFromInds',['Index strides for ' this.subData.ID ' are NaN. Data will be padded with NaNs.'])
-                    inds{j}=inds{j}';
-                    auxInds=inds{j}(~isnan(inds{j}(:)));
-                    auxData=nan(numel(inds{j}),nLabels);
-                    auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
-                    dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
+                        warning('adaptationData:getDataFromInds',['Index strides for ' this.subData.ID ' are NaN. Data will be padded with NaNs.'])
+                        inds{j}=inds{j}';
+                        auxInds=inds{j}(~isnan(inds{j}(:)));
+                        auxData=nan(numel(inds{j}),nLabels);
+                        auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
+                        dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
                     end
                 else
                     dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels);
@@ -873,7 +884,21 @@ classdef adaptationData
 
             %Load and construct object:
             for i=1:length(adaptDataList)
-                a=load(adaptDataList{i});
+                try
+                    a=load(adaptDataList{i});
+                catch ME
+                    warning('Could not find filename as provided. Trying alternative spellings.')
+                    try
+                        a=load([adaptDataList{i} 'Params']);
+                    catch
+                        try
+                            a=load([adaptDataList{i} 'params']);
+                        catch
+                            warning('Alternative spellings failed too.')
+                            throw(ME)
+                        end
+                    end
+                end
                 data{i}=a.('adaptData');
                 ID{i}=a.('adaptData').subData.ID;
             end

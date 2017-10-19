@@ -187,6 +187,12 @@ classdef groupAdaptationData
                minNumStrides(i)=NaN; %Doxy
            end
         end
+        
+        function ageInMonths=getSubjectAgeAtExperimentDate(this)
+            for i=1:length(this.ID)
+               ageInMonths(i)=this.adaptData{i}.getSubjectAgeAtExperimentDate;
+            end
+        end
 
 
         %Modifiers
@@ -227,6 +233,16 @@ classdef groupAdaptationData
             newThis=this;
             for i=1:length(this.ID)
                 newThis.adaptData{i}=this.adaptData{i}.normalizeBias;
+            end
+
+        end
+        function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)
+            newThis=this;
+            if nargin<3
+                baseConds2=[];
+            end
+            for i=1:length(this.ID)
+                newThis.adaptData{i}=this.adaptData{i}.normalizeToBaseline(labelPrefix,baseConds2);
             end
 
         end
@@ -420,6 +436,9 @@ classdef groupAdaptationData
 
         %TimeCourses
         function fh=plotAvgTimeCourse(this,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles)
+            if nargin<3 || isempty(conditions)
+                conditions=this.getCommonConditions;
+            end
             if nargin<4 || isempty(binwidth)
                 binwidth=[];
             end
