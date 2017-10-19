@@ -251,6 +251,11 @@ classdef parameterSeries < labTimeSeries
             
         end
         
+        function this=markBadStridesAsNan(this)
+                inds=this.bad;
+                this.Data(inds==1,this.fixedParams+1:end)=NaN;
+        end
+        
         function this=normalizeToBaseline(this,labels,rangeValues)
            %This normalization transforms the values of the parameters given in labels
            %such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1

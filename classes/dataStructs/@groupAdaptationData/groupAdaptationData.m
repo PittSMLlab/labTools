@@ -200,10 +200,13 @@ classdef groupAdaptationData
             newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);
         end
 
-        function newThis=removeBadStrides(this)
+        function newThis=removeBadStrides(this,markAsNaNflag)
             newThis=this;
+            if nargin<2 || isempty(markAsNaNflag)
+                markAsNaNflag=[];
+            end
            for i=1:length(this.ID)
-              newThis.adaptData{i}=this.adaptData{i}.removeBadStrides;
+              newThis.adaptData{i}=this.adaptData{i}.removeBadStrides(markAsNaNflag);
            end
         end
 

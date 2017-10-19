@@ -217,14 +217,21 @@ classdef adaptationData
             newThis=this;
         end
 
-        function newThis=removeBadStrides(this)
+        function newThis=removeBadStrides(this,markAsNaNflag)
+            if nargin<2 || isempty(markAsNaNflag)
+               markAsNaNflag=false; 
+            end
             if isa(this.data,'paramData') %What does this do?
                 newParamData=this.data;
             else
                 aux=this.data;
                 inds=~aux.bad;
-                newParamData=parameterSeries(aux.Data(inds,:),aux.labels,aux.hiddenTime(inds),aux.description);
-                newParamData=newParamData.setTrialTypes(aux.trialTypes);
+                if ~markAsNaNflag
+                    newParamData=parameterSeries(aux.Data(inds,:),aux.labels,aux.hiddenTime(inds),aux.description);
+                    newParamData=newParamData.setTrialTypes(aux.trialTypes);
+                else
+                    newParamData=this.data.markBadStridesAsNan;
+                end
             end
             newThis=adaptationData(this.metaData,this.subData,newParamData);
         end
