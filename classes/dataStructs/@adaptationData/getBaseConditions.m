@@ -8,6 +8,9 @@ end
   for itype=1:length(types)
       allTrials=find(strcmp(this.trialTypes,types{itype}));
       [baseCond]=this.metaData.getConditionsThatMatch('base',types{itype});
+      if isempty(baseCond)
+          error('No base conditions were found. Exiting.')
+      end
       if length(baseCond)>1
           warning('More than one base condition was provided/found. Using only the first one.')
           disp('List of baseline conditions provided:')
