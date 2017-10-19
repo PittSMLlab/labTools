@@ -262,6 +262,12 @@ classdef labData
             
         end
         
+        function newThis=recomputeEvents(this)
+            events = getEvents(this,this.angleData);
+            this.gaitEvents=events;
+            newThis=this;
+        end
+        
         function checkMarkerDataHealth(this)
             ts=this.markerData;
             
