@@ -342,7 +342,7 @@ classdef groupAdaptationData
             end
         end
 
-        function [data]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast,padWithNaNFlag)
+        function [data,inds]=getGroupedData(this,label,conds,removeBiasFlag,numberOfStrides,exemptFirst,exemptLast,padWithNaNFlag)
             if removeBiasFlag
                 this=this.removeBias;
             end
