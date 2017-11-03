@@ -23,7 +23,7 @@ desc={'SHS to FTO', 'FTO to mid fast swing', 'mid fast swing to FHS', 'FHS to ST
 phases2={'eDS1','lDS1','EfSwing1','EfSwing2','LfSwing1','LfSwing2','eDS2','lDS2','EsSwing1','EsSwing2','LsSwing1','LsSwing2'};
 desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'};
 %% Parameter list and description (per angle!)
-labelSuff=[repmat({'s'},1,numel(phases2))]; %Reserving 12 phases for 's' paramters
+labelSuff=[repmat({'Angle'},1,numel(phases2))]; %Reserving 12 phases for 's' paramters
 
 %labelSuff=[labelSuff strcat('p',regexp(num2str(1:6),' +','split')) strcat('s',regexp(num2str(1:12),' +','split'))]; 
 %'p' parameters were deprecated becase they can be expressed as a function of 's' parameters. The numerical difference between the two is <1e-8, which is less than 1%%of the minimum value observed in practice
@@ -45,7 +45,7 @@ for j=1:length(labs) %Angles
     end
     phaseS=0;
      for k=1:length(labelSuff) %Computing each param
-        if strcmp(labelSuff{k},'s')
+        if strcmp(labelSuff{k},'Angle')
             phaseS=phaseS+1;
             description{j,k}=['Average of angle' labs{j} ' from ' desc2{phaseS}];
             paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k} num2str(phaseS)];
