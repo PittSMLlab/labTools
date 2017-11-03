@@ -138,11 +138,13 @@ classdef labData
         
         
         %Other I/O:
-%         function partialMarkerData= getMarkerData(this,markerName)
-%             %returns marker data for input markername
-%             partialMarkerData=this.getPartialData('markerData',markerName);
-%         end
+        function partialMarkerData= getMarkerData(this,markerName)
+            %returns marker data for input markername
+            partialMarkerData=this.getPartialData('markerData',markerName);
+        end
+        % DK uncommented because it is used in calcLimbAngles
 %         
+
 %         function list=getMarkerList(this)
 %             %returns list of available marker names
 %             list=this.getLabelList('markerData');
