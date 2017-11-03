@@ -258,6 +258,19 @@ classdef experimentData
             end
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
+        
+        
+         function this=computeAngles(this)%added by Digna
+           
+            for trial=1:length(this.data)
+                disp(['Computing angles for trial ' num2str(trial) '...'])
+                if ~isempty(this.data{trial})
+                    this.data{trial}.angleData=this.data{trial}.calcLimbAngles;
+                else
+
+                end
+            end
+       end
 
 		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
         %MAKEDATAOBJ  creates an object of the adaptationData class.
