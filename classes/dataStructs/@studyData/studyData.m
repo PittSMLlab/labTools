@@ -29,6 +29,7 @@ classdef studyData %< dynamicprops
         end
         
         function outputArg = get.groupNames(this)
+            outputArg=cell(size(this.groupData));
             for i=1:length(this.groupData)
                 outputArg{i} = this.groupData{i}.groupID;
             end
