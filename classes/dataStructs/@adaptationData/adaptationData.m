@@ -570,6 +570,57 @@ classdef adaptationData
             latePoints=dataPoints{3};
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
+        
+        function data=getEpochData(this,epochs,labels,summaryFlag)
+           
+            %INPUTS:
+            %this must be adaptationData object
+            %epochs must be a dataset created with defineEpochs()
+            %labels is string or cell-array of strings to be used as parameter names
+            %summaryFlag indicates how to summarize strides: 'nanmean','nanmedian','nanmax','nanmin','mean','median','min','max','std'...
+            %Default is 'nanmean'
+            
+            %Manage inputs:
+            if nargin<4 || isempty(summaryFlag)
+                summaryFlag='nanmean';
+            end
+            if isa(labels,'char')
+                labels={labels};
+            end
+            
+            %First: validate epochs:
+            valid=this.validateEpochs(epochs);
+            
+            %Second: get data
+            removeBiasFlag=0;
+            conds=epochs.Condition;
+            numberOfStrides=epochs.Stride_No;
+            exemptLast=epochs.ExemptFirst; %Only if getting late strides
+            exemptFirst=epochs.ExemptLast; %Only if getting early strides
+            data=nan(length(labels),length(epochs));
+            summFun=str2func(summaryFlag);
+            for i=1:length(valid) %Each valid epoch
+                if valid(i)
+                    [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i));%Get data
+                    %Summarize it:
+                    data(:,i)=squeeze(summFun(dataPoints{1}));
+                else
+                    %nop
+                end
+            end
+        end
+        
+        function flags=validateEpochs(this,epochs)
+            flags=true(length(epochs),1);
+            for i=1:length(epochs) %for each epoch
+                if all(this.isaCondition(epochs.Condition)) %all good
+                    %nop
+                else
+                    warning(['Invalid epoch ' epoch(i).Name ' for subject ' this.subData.ID])
+                    flags(i)=false;
+                end
+            end
+        end
 
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
@@ -609,6 +660,7 @@ classdef adaptationData
         % 1) Multiple groups
 
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+            warning('This needs to be moved to studyData or something like that')
             %Post-hoc is Bonferroni corrected t-test
             [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
             for i=1:length(data)
@@ -627,6 +679,7 @@ classdef adaptationData
         end
 
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+            warning('This needs to be moved to studyData or something like that')
             if isa(param,'char')
                 param={param};
             end

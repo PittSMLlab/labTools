@@ -11,12 +11,13 @@ classdef groupAdaptationData
     %See also: experimentMetaData, subjectData, adaptationData
 
     properties
-        ID %cell array of strings listing subject ID's in group
-        adaptData % cell array of adaptationData objects
+        ID %cell array of strings listing subject ID's in group: should be a dependent property!
+        adaptData % cell array of adaptationData objects. This should be called 'subjectData'
     end
 
     properties (Dependent)
         groupID
+        subjectData
     end
 
     properties (Hidden)
@@ -45,7 +46,10 @@ classdef groupAdaptationData
         end
 
         %% Other Functions
-
+        function out = get.subjectData(this)
+            out=this.adaptData;
+        end
+        
         function [conditions,nonCommonConditions] = getCommonConditions(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -194,7 +198,6 @@ classdef groupAdaptationData
             end
         end
 
-
         %Modifiers
         function newThis=cat(this,other)
             newThis=groupAdaptationData([this.ID other.ID],[this.adaptData other.adaptData]);
@@ -239,6 +242,7 @@ classdef groupAdaptationData
             end
 
         end
+        
         function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)
             newThis=this;
             if nargin<3
@@ -351,6 +355,24 @@ classdef groupAdaptationData
             end
             [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);
             [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
+        end
+        
+        function data=getEpochData(this,epochs,labels,summaryFlag)
+            %getEpochData returns data from all subjects for each epoch
+            %See also: adaptationData.getEpochData
+            
+            %Manage inputs:
+            if nargin<4 
+                summaryFlag=[]; %Respect default in adaptationData.getEpochData
+            end
+            if isa(labels,'char')
+                labels={labels};
+            end
+            
+            data=nan(length(labels),length(epochs),length(this.ID));
+            for i=1:length(this.ID)
+                data(:,:,i)=this.adaptData{i}.getEpochData(epochs,labels,summaryFlag);
+            end
         end
 
         function [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag)
