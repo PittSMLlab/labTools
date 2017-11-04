@@ -43,8 +43,29 @@ classdef studyData %< dynamicprops
             out = []; %Doxy
         end
         
-        function out = getEpochData(this,epochs)
-            out = []; %Doxy
+       function data=getEpochData(this,epochs,labels,summaryFlag)
+            %getEpochData returns data from all subjects in all groups for each epoch
+            %See also: adaptationData.getEpochData
+            
+            %Manage inputs:
+            if nargin<4 
+                summaryFlag=[]; %Respect default in adaptationData.getEpochData
+            end
+            if isa(labels,'char')
+                labels={labels};
+            end
+            
+            data=cell(size(this.groupData));
+            allSameSize=true;
+            N=length(this.groupData{1}.ID);
+            for i=1:length(this.groupData)
+                data{i}=this.groupData{i}.getEpochData(epochs,labels,summaryFlag);
+                allSameSize=allSameSize && N==size(data{i},3);
+            end
+            
+            if allSameSize %If all groups are same size, catting into a matrix for easier manipulation (this is probably a bad idea)
+                data=reshape(cell2mat(data),length(labels),length(epochs),length(this.groupData),N); %Cats along dim 2 by default
+            end
         end
         
         function out = barPlot(this,epochs)
