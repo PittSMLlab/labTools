@@ -23,9 +23,14 @@ RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientati
 LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis],['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
 LAnk=[orientation.sideSign*LAnk(:,1),orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];
 %get knee position
-RKnee=markerData.getDataAsVector({['RKNE' orientation.sideAxis],['RKNE' orientation.foreaftAxis],['RKNE' orientation.updownAxis]});
+RkneeName=markerData.getLabelsThatMatch('^RKNE');
+RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix
+RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis],[RkneeName orientation.foreaftAxis],[RkneeName orientation.updownAxis]});
 RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
-LKnee=markerData.getDataAsVector({['LKNE' orientation.sideAxis],['LKNE' orientation.foreaftAxis],['LKNE' orientation.updownAxis]});
+
+LkneeName=markerData.getLabelsThatMatch('^LKNE');
+LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix
+LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis],[LkneeName orientation.foreaftAxis],[LkneeName orientation.updownAxis]});
 LKnee=[orientation.sideSign*LKnee(:,1),orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];
 %get toe position
 RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis],['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
