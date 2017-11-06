@@ -584,6 +584,9 @@ classdef adaptationData
             if nargin<4 || isempty(summaryFlag)
                 summaryFlag='nanmean';
             end
+            if size(summaryFlag,1)==1 %Allow for each epoch to be summarized differently
+                summaryFlag=repmat(summaryFlag,length(epochs),1); 
+            end
             if isa(labels,'char')
                 labels={labels};
             end
@@ -598,11 +601,11 @@ classdef adaptationData
             exemptLast=epochs.ExemptFirst; %Only if getting late strides
             exemptFirst=epochs.ExemptLast; %Only if getting early strides
             data=nan(length(labels),length(epochs));
-            summFun=str2func(summaryFlag);
             for i=1:length(valid) %Each valid epoch
                 if valid(i)
                     [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i));%Get data
                     %Summarize it:
+                    summFun=str2func(summaryFlag(i,:));
                     data(:,i)=squeeze(summFun(dataPoints{1}));
                 else
                     %nop
