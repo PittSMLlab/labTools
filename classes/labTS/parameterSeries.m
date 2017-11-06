@@ -149,13 +149,15 @@ classdef parameterSeries < labTimeSeries
                     newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
                 else
                     warning('parameterSeries:addStrides','Concatenating parameterSeries with different number of parameters. Merging parameter lists & filling NaNs for missing parameters. You (yes, YOU, the current user) SHOULD FIX THIS. Ask Pablo for guidance.');
-                    [bool2,~] = compareLists(this.labels,other.labels) %Labels present in other but NOT in this
-                    [bool1,~] = compareLists(other.labels,this.labels) %Labels present in this but NOT in other
-                    if any(bool2)
-                        newThis=this.appendData(nan(size(this.Data,1),sum(bool2)),other.labels(~bool2),other.description(~bool2)); %Expanding this
+                    [bool2,~] = compareLists(this.labels,other.labels); %Labels present in other but NOT in this
+                    [bool1,~] = compareLists(other.labels,this.labels); %Labels present in this but NOT in other
+                    if any(~bool2)
+                        newThis=this.appendData(nan(size(this.Data,1),sum(~bool2)),other.labels(~bool2),other.description(~bool2)); %Expanding this
+                    else newThis=this;%digna added this, review
                     end
-                    if any(bool1)
-                        newOther=other.appendData(nan(size(other.Data,1),sum(bool1)),this.labels(~bool1),this.description(~bool1)); %Expanding other
+                    if any(~bool1)
+                        newOther=other.appendData(nan(size(other.Data,1),sum(~bool1)),this.labels(~bool1),this.description(~bool1)); %Expanding other
+                    else newOther=other;%Digna added this, review
                     end
                     newThis=addStrides(newThis,newOther);
                 end
