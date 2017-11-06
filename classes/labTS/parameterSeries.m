@@ -148,10 +148,19 @@ classdef parameterSeries < labTimeSeries
                 if size(this.Data,2)==size(other.Data,2)                    
                     newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
                 else
-                    error('parameterSeries:addStrides','Cannot concatenate series with different number of parameters.');
+                    warning('parameterSeries:addStrides','Concatenating parameterSeries with different number of parameters. Merging parameter lists & filling NaNs for missing parameters. You (yes, YOU, the current user) SHOULD FIX THIS. Ask Pablo for guidance.');
+                    [bool2,~] = compareLists(this.labels,other.labels) %Labels present in other but NOT in this
+                    [bool1,~] = compareLists(other.labels,this.labels) %Labels present in this but NOT in other
+                    if any(bool2)
+                        newThis=this.appendData(nan(size(this.Data,1),sum(bool2)),other.labels(~bool2),other.description(~bool2)); %Expanding this
+                    end
+                    if any(bool1)
+                        newOther=other.appendData(nan(size(other.Data,1),sum(bool1)),this.labels(~bool1),this.description(~bool1)); %Expanding other
+                    end
+                    newThis=addStrides(newThis,newOther);
                 end
             else
-                newThis=this;
+                newThis=this; %Empty second arg., adding nothing.
             end
         end
         
