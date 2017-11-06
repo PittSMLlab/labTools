@@ -900,7 +900,7 @@ classdef labTimeSeries  < timeseries
                 Wst=min([2*Wn,Wn+.2*(1-Wn)]);
                filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
                 lowPassFilter=design(filterList{1},'butter');
-                newData=filtfilthd(lowPassFilter,this.Data);  %Ext function
+                newData=filtfilthd_short(lowPassFilter,this.Data,'reflect',this.sampFreq);  %Ext function
                 newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
                 if ~isfield(this.UserData,'processingInfo')
                     this.UserData.processingInfo={};
@@ -913,7 +913,7 @@ classdef labTimeSeries  < timeseries
                 Wn=fcut*2/this.sampFreq;
                 filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
                 highPassFilter=design(filterList{1},'butter');
-                newData=filtfilthd(highPassFilter,this.Data);
+                newData=filtfilthd_short(highPassFilter,this.Data,'reflect',this.sampFreq);
                 newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
                 if ~isfield(this.UserData,'processingInfo')
                     this.UserData.processingInfo={};
