@@ -2,8 +2,8 @@ function [COPTS] = COPCalculator(GRFData)
 
 %% Filter the GRFs
 or=GRFData.orientation;
-GRFData=GRFData.medianFilter(3);
-GRFData=GRFData.lowPassFilter(25);
+GRFData=GRFData.medianFilter(3); %Eliminate outliers
+GRFData=GRFData.lowPassFilter(25); %LPF
 
 %% Define the force data
 labs={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz'};
@@ -35,27 +35,8 @@ GRFzR=-1*NewRightForces(3,:);
 GRMxR=-1*NewRightForces(4,:);
 GRMyR=-1*NewRightForces(5,:);
 
-% Apply filters to the Force data collected. Data collected prior to
-% Summer 2014 is very noisy due to the lack of a true ground and needs
-% a heavy duty filter. Should not drastically affect other data.
-FiltDesign=fdesign.lowpass('N,F3db',6,25/1000);
-TheDesign=design(FiltDesign,'butter');
-GRFxL = filtfilthd(TheDesign,GRFxL');
-GRFyL = filtfilthd(TheDesign,GRFyL');
-GRFzL = filtfilthd(TheDesign,GRFzL');
-GRFxR = filtfilthd(TheDesign,GRFxR');
-GRFyR = filtfilthd(TheDesign,GRFyR');
-GRFzR = filtfilthd(TheDesign,GRFzR');
-
-% Apply a filter to the moment data collected as well.
-[Bmom, Amom]=butter(4,10/(1000/2));
-GRMxL=filtfilt(Bmom, Amom, GRMxL)';
-GRMyL=filtfilt(Bmom, Amom, GRMyL)';
-GRMxR=filtfilt(Bmom, Amom, GRMxR)';
-GRMyR=filtfilt(Bmom, Amom, GRMyR)';
-
 % Calculate the center of pressure for the data.
-COPxL=[(((-.005.*GRFxL-GRMyL./1000)./GRFzL))]*1000;%millimeters
+COPxL=[(((-.005.*GRFxL-GRMyL./1000)./GRFzL))]*1000;%milimeters
 COPyL=[(((-.005.*GRFyL+GRMxL./1000)./GRFzL))]*1000;
 COPxR=[(((-.005.*-1.*GRFxR+GRMyR./1000)./GRFzR))]*1000;
 COPyR=[(((-.005.*GRFyR+GRMxR./1000)./GRFzR))]*1000;
@@ -88,12 +69,13 @@ for i=1:length(ll)
     end    
 end
 
-[Bcop,Acop]=butter(1,3/100/2);
-[Bcopy,Acopy]=butter(1,3/100/2);
-NewCOPxL=filtfilt(Bcop,Acop,NewCOPxL);
-NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);
-NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);
-NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);
+%I don't think this smoothing is needed:
+% [Bcop,Acop]=butter(1,3/100/2);
+% [Bcopy,Acopy]=butter(1,3/100/2);
+% NewCOPxL=filtfilt(Bcop,Acop,NewCOPxL);
+% NewCOPxR=filtfilt(Bcop,Acop,NewCOPxR);
+% NewCOPyL=filtfilt(Bcopy,Acopy,NewCOPyL);
+% NewCOPyR=filtfilt(Bcopy,Acopy,NewCOPyR);
 
 % replace NaNs, by doing a linear interpolation:
 ll={'NewCOPxL','NewCOPxR','NewCOPyL','NewCOPyR'};
@@ -103,7 +85,7 @@ for i=1:length(ll)
     eval([ll{i} '=aux;']);
 end
 
-COPData=[NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' NewCOPyR' zeros(size(NewCOPxR))' GRFxL GRFyL GRFzL GRFxR GRFyR GRFzR GRMxL GRMyL zeros(size(GRMyL)) GRMxR GRMyR zeros(size(GRMyL))];
+COPData=[NewCOPxL' NewCOPyL' zeros(size(NewCOPxL))' NewCOPxR' NewCOPyR' zeros(size(NewCOPxR))' GRFxL' GRFyL' GRFzL' GRFxR' GRFyR' GRFzR' GRMxL' GRMyL' zeros(size(GRMyL))' GRMxR' GRMyR' zeros(size(GRMyL))'];
 COPTS=orientedLabTimeSeries(COPData,GRFData.Time(1),GRFData.sampPeriod,{'LCOPx','LCOPy','LCOPz','RCOPx','RCOPy','RCOPz', 'LGRFx','LGRFy','LGRFz','RGRFx','RGRFy','RGRFz','LGRMx','LGRMy','LGRMz','RGRMx','RGRMy','RGRMz'},or);
 
 
