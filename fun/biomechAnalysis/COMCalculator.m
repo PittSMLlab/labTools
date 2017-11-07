@@ -24,8 +24,8 @@ for i=1:length(markerList)
         aux=nan(length(markerData.Time),3);
         warning(['Marker ' markerList{i} ' was missing from markerData.'])
     end
-    %eval([markerList{i} '=aux;']); 
-    assignin('base',markerList{i},aux) %This is more elegant than eval (and
+    eval([markerList{i} '=aux;']); 
+    %assignin('base',markerList{i},aux) %This is more elegant than eval (and
     %recommended, but it doesnt seem to work)
 end
 
