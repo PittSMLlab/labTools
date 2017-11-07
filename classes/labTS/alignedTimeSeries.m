@@ -579,7 +579,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            ax=gca;
            ax.YTick=1:length(this.labels);
            ax.YTickLabels=this.labels;
-           ax.XTick=[1 cumsum(this.alignmentVector)]-.5;
+           ax.XTick=[1 1+cumsum(this.alignmentVector)]-.5;
            ax.XTickLabel=this.alignmentLabels;
            %Colormap:
             ex1=[.85,0,.1];
@@ -588,6 +588,8 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             colormap(flipud(map))
             caxis([-1 1]*max(abs(m.Data(:))))
             colorbar
+            
+            %To do: check if the events exist, and add DS/STANCE/DS/SWING labels
         end
     end
     
