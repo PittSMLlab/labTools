@@ -2,7 +2,8 @@ function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)
 %This function computes summary parameters per stride based on EMG data.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
-%computeTemporalParameters.
+%computeTemporalParameters. While this is used for EMG parameters strictly,
+%it should work for any labTS.
 %See also computeSpatialParameters, computeTemporalParameters,
 %computeForceParameters, parameterSeries
 
@@ -33,11 +34,11 @@ phaseBasedLabelSuff={'s'};%[repmat({'s'},1,Np)]; %Reserving 12 phases for 's' pa
 
 %%
 N=length(stridedProcEMG);
-
+Nl=length(labelSuff);
 labs=stridedProcEMG{1}.labels;
-paramData=nan(N,length(labs),length(labelSuff)+Np*length(phaseBasedLabelSuff));
-paramLabels=cell(length(labs),length(labelSuff)+Np*length(phaseBasedLabelSuff));
-description=cell(length(labs),length(labelSuff)+Np*length(phaseBasedLabelSuff));
+paramData=nan(N,length(labs),Nl+Np*length(phaseBasedLabelSuff));
+paramLabels=cell(length(labs),Nl+Np*length(phaseBasedLabelSuff));
+description=cell(length(labs),Nl+Np*length(phaseBasedLabelSuff));
 %Define parameter names and descriptions:
 for j=1:length(labs) %Muscles
     if strcmp(labs{j}(1),s)
@@ -45,7 +46,7 @@ for j=1:length(labs) %Muscles
     else
         l='f';
     end
-     for k=1:length(labelSuff) %Description for each param NOT phase-based
+     for k=1:Nl %Description for each param NOT phase-based
         if strcmp(labelSuff{k},'bad')
             paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
             description{j,k}=['Signals if EMG quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
@@ -55,7 +56,7 @@ for j=1:length(labs) %Muscles
         end
         %This gets overwritten for  
      end
-     lK=length(labelSuff);
+     lK=Nl;
      for k=1:length(phaseBasedLabelSuff) %Phase-based params
         if strcmp(phaseBasedLabelSuff{k},'s')
             for kk=1:Np
@@ -71,7 +72,6 @@ for i=1:N %For each stride
     labs=stridedProcEMG{i}.labels;
     Data=stridedProcEMG{i}.Data;
     Qual=stridedProcEMG{i}.Quality;
-    %sP=stridedProcEMG{i}.sampPeriod;
     for j=1:length(labs) %Muscles
         mData=Data(:,j);
         if ~isempty(Qual)
@@ -79,15 +79,8 @@ for i=1:N %For each stride
         else
             qq=0;
         end
-        %phaseS=0;
-        %Pre-computing relevant indexes for efficiency:
-        relIdx=sparse(Np,length(Time));
-        relIdx= Time<eventTimes2(i,2:end) & Time>=eventTimes2(i,1:end-1);
-        %for k=1:Np
-        %    relIdx(k,:)=Time<=eventTimes2(i,k+1) & Time>=eventTimes2(i,k);
-        %end
-        for k=1:length(labelSuff) %Computing each param
-            relIdx=1:length(Time);
+        relIdx= sparse(Time<eventTimes2(i,2:end) & Time>=eventTimes2(i,1:end-1));
+        for k=1:Nl %Computing each param
             switch labelSuff{k}
                 case 'max'
                     %description{j,k}=['Peak proc EMG in muscle ' labs{j}];
@@ -120,22 +113,16 @@ for i=1:N %For each stride
                     paramData(i,j,k)=sum(unique(qq)); %Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.
             end
         end
+        lK=Nl;
         for k=1:length(phaseBasedLabelSuff)
-            switch(labelSuff{k})
+            switch(phaseBasedLabelSuff{k})
                 case 's' %Mean EMG per phase (12 phases)
-                    paramData(i,j,:)=mean(mData.*relIdx,2);
-                    paramData(i,j,any((qq.*relIdx')~=0))=NaN;
-                        %phaseS=phaseS+1;
-                        %relIdx=Time<=eventTimes2(i,phaseS+1) & Time>=eventTimes2(i,phaseS); %Computing mean for 1 of 12 phases
-                        %description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseS}];
-                        %paramData(i,j,k)=mean(mData(relIdx));
-                        %paramData(i,j,k)=mean(mData(relIdx(k,:)));
-%                     if ~isempty(Qual) && any(Qual(relIdx(k,:),j)~=0) %Quality points to bad muscle
-%                         paramData(i,j,k)=nan;
-%                     end
+                    paramDataS=full(sum(mData.*relIdx)./sum(relIdx)); %NaN if no samples in phase
+                    paramDataS(any((qq~=0) .* relIdx))=NaN;
                 otherwise
                         %nop
             end 
+            paramData(i,j,lK+(k-1)*Np+[1:Np])=paramDataS;
         end
     end
 end
