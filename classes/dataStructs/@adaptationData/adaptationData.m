@@ -507,7 +507,7 @@ classdef adaptationData
             end
             for i=1:length(boolFlag)
                 if boolFlag(i)==0
-                    warning([this.subData.ID 'did not perform condition ''' cond{i} ''' or the condition is misspelled.'])
+                    warning([this.subData.ID ' did not perform condition ''' cond{i} ''' or the condition is misspelled.'])
                 end
             end
         end
@@ -579,6 +579,9 @@ classdef adaptationData
             %labels is string or cell-array of strings to be used as parameter names
             %summaryFlag indicates how to summarize strides: 'nanmean','nanmedian','nanmax','nanmin','mean','median','min','max','std'...
             %Default is 'nanmean'
+            %OUTPUT:
+            %data: length(labels) x length(epochs) matrix containing requested data
+            
             
             %Manage inputs:
             if nargin<4 || isempty(summaryFlag)
@@ -619,7 +622,7 @@ classdef adaptationData
                 if all(this.isaCondition(epochs.Condition)) %all good
                     %nop
                 else
-                    warning(['Invalid epoch ' epoch(i).Name ' for subject ' this.subData.ID])
+                    warning(['Invalid epoch ' epochs.Properties.ObsNames{i} ' for subject ' this.subData.ID])
                     flags(i)=false;
                 end
             end
@@ -878,6 +881,44 @@ classdef adaptationData
                 end
                 ph(i,2).Title.String=labels{i};
             end
+        end
+        
+        function [fh,ph]=plotCheckerboards(this,labelPrefix,epoch,summFlag,fh,ph,refEpoch)
+            %This is meant to be used with parameters that end in
+            %'s1...s12' as are computed for EMG and angles. The 's' must be
+            %included in the labelPrefixes (to allow for other options too)
+            
+            if nargin<4
+                summFlag=[];
+            end
+            %First, get epoch data:
+            labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
+            aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '\d+$']);
+            if isempty(aux)
+                error('Fail')
+                return
+            end
+                        Np=length(aux);
+            suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,'UniformOutput',false); %Extracting suffixes, I am lazy
+            labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
+            dataE=this.getEpochData(epoch,labels(:),summFlag);
+            if nargin>6 && ~isempty(refEpoch)
+                dataRef=this.getEpochData(refEpoch,labels(:),summFlag);
+                dataE=dataE-dataRef;
+            end
+            
+            %Second: use ATS.plotCheckerboard
+            if nargin<5 || isempty(fh)
+                fh=figure();
+            end
+            for i=1:length(epoch)
+                if nargin<6 || isempty(ph) || length(ph)~=length(epoch)
+                    ph(i)=subplot(length(epoch),1,i);
+                end
+                ATS=alignedTimeSeries(0,1,reshape(dataE(:,i),Np,length(labelPrefix)),labelPrefix,ones(1,Np),{'sHS','','fTO','','','','fHS','','sTO','','',''});
+                ATS.plotCheckerboard(fh,ph(i));
+            end
+            
         end
     end
 

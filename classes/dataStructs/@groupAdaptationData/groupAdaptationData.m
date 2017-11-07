@@ -501,6 +501,46 @@ classdef groupAdaptationData
 
         %Bars
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
+        
+        %Checkerboard:
+        function [fh,ph]=plotCheckerboards(this,labelPrefix,epoch,summFlag,fh,ph,refEpoch)
+            %This is meant to be used with parameters that end in
+            %'s1...s12' as are computed for EMG and angles. The 's' must be
+            %included in the labelPrefixes (to allow for other options too)
+            
+            if nargin<4
+                summFlag=[];
+            end
+            %First, get epoch data:
+            labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
+            aux=this.adaptData{1}.data.getLabelsThatMatch(['^' labelPrefix{1} '\d+$']);
+            if isempty(aux)
+                error('Fail')
+                return
+            end
+            Np=length(aux);
+            suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,'UniformOutput',false); %Extracting suffixes, I am lazy
+            labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
+            dataE=this.getEpochData(epoch,labels(:),summFlag);
+            if nargin>6 && ~isempty(refEpoch)
+                dataRef=this.getEpochData(refEpoch,labels(:),summFlag);
+                dataE=dataE-dataRef;
+            end
+            dataE=nanmean(dataE,3); %MEan across subjs
+            
+            %Second: use ATS.plotCheckerboard
+            if nargin<5 || isempty(fh)
+                fh=figure();
+            end
+            for i=1:length(epoch)
+                if nargin<6 || isempty(ph) || length(ph)~=length(epoch)
+                    ph(i)=subplot(length(epoch),1,i);
+                end
+                ATS=alignedTimeSeries(0,1,reshape(dataE(:,i),Np,length(labelPrefix)),labelPrefix,ones(1,Np),{'sHS','','fTO','','','','fHS','','sTO','','',''});
+                ATS.plotCheckerboard(fh,ph(i));
+            end
+            
+        end
 
         %Individuals
         function [fh,ph]=plotIndividuals(this,labels,conds,strideNo,exemptStrides,medianFlag,ph,regFlag,differenceFlag)
