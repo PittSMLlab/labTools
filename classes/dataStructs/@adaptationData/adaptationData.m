@@ -600,7 +600,7 @@ classdef adaptationData
             %Second: get data
             removeBiasFlag=0;
             conds=epochs.Condition;
-            numberOfStrides=epochs.Stride_No;
+            numberOfStrides=epochs.Stride_No .* sign(epochs.EarlyOrLate-.5);
             exemptLast=epochs.ExemptFirst; %Only if getting late strides
             exemptFirst=epochs.ExemptLast; %Only if getting early strides
             data=nan(length(labels),length(epochs));

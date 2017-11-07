@@ -31,6 +31,6 @@ if numel(exemptLast)==1
 end
 earlyOrLate=sign(strideNo)==-1;
 
-epochs=dataset(condition,abs(strideNo),exemptFirst,exemptLast,earlyOrLate,'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate'},'ObsNames',epochNames);
+epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate'},'ObsNames',epochNames);
 end
 
