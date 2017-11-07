@@ -218,6 +218,11 @@ classdef labData
         
         % Process data method
         function processedData=process(this,subData,eventClass)
+            
+            %To all coders: this function HAS TO BE idempotent, ie:
+            %labData.process.process = labData.process
+            %Otherwise re-processing data may lead to double or triple
+            %filtering.
             if nargin<3 || isempty(eventClass)
                 eventClass=[];
             end

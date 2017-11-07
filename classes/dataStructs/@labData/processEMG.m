@@ -1,6 +1,14 @@
  function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
 
 emg=trialData.EMGData;
+if isprop(emg,'processingInfo')
+    warning('Trying to re-process already processed EMG data, this can lead to over-smoothing. Skipping.')
+    filteredEMGData=emg;
+    procEMGData=trialData.procEMGData;
+    return
+    %If you really want to re-process EMG data, you should get the RAW EMG!
+end
+
 if ~isempty(emg)
     quality=sparse([],[],[],size(emg.Data,1),size(emg.Data,2),round(.01*numel(emg.Data)));%Pre-allocating for 1% spikes total.
     
