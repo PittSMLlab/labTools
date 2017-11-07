@@ -4,7 +4,8 @@ if nargin<3 || isempty(BW)
     %BW=[20,450]; %As per recommendations on De Luca et al. 2010 (Filtering the surface EMG signal: Movement artifact and baseline noise contamination).
     %BW=[50,450]; %Changed on Sept 23 2014, by Pablo, because of artifacts detected in P0001. This should not alter the envelope detected for actual EMG activity.
     %BW=[30,450]; %Changed on Feb 20 2015, by Pablo, following recommendations on the book Electromyography by Merletti and Parker (Section 5.6, First Edition, p.121)
-    BW=[200,450];% On March 18th, decided to make this the default behavior, based on Potvin &Brown 2004. Not sure this is optimal, but seems better than 30.
+    BW=[200,450]; % On March 18th, decided to make this the default behavior, based on Potvin & Brown 2004. Not sure this is optimal, but seems better than 30.
+    BW=[30,450]; %On Nov 6th 2017, I moved to this BW to make publication easier by sticking to a field standard. 
 end
 if nargin<4 || isempty(notchList)
     %notchList=[23.5,60,120,180,100,200,300,400];
