@@ -49,11 +49,9 @@ for j=1:length(labs) %Angles
             phaseS=phaseS+1;
             description{j,k}=['Average of angle' labs{j} ' from ' desc2{phaseS}];
             paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k} num2str(phaseS)];
-        else
-%             paramLabels{j,k}=[l labs{j}(2:end) labelSuff{k}];
-%             description{j,k}=[labelSuff{k} ' procEMG in muscle ' labs{j}];
+        
         end
-        %This gets overwritten for  
+          
      end
 end
 
@@ -61,62 +59,24 @@ for i=1:N %For each stride
     Time=stridedAngleData{i}.Time;
     labs=stridedAngleData{i}.labels;
     Data=stridedAngleData{i}.Data;
-    Qual=stridedAngleData{i}.Quality;
-    %sP=stridedProcEMG{i}.sampPeriod;
+   
     for j=1:length(labs) %Angles
         mData=Data(:,j);
         phaseS=0;
         for k=1:length(labelSuff) %Computing each param
             relIdx=1:length(Time);
-%             switch labelSuff{k}
-%                 case 'max'
-%                     %description{j,k}=['Peak proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=max(mData);
-%                 case 'min'
-%                     %description{j,k}=['Min proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=min(mData);
-%                 case 'iqr'
-%                     %description{j,k}=['Inter-quartile range of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=iqr(mData);
-%                 case 'avg'
-%                     %description{j,k}=['Avg. (mean) of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=mean(mData);
-%                 case 'var'
-%                     %description{j,k}=['Variance of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=var(mData,0); %Unbiased
-%                 case 'skw'
-%                     %description{j,k}=['Skewness of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=skewness(mData,0); %Unbiased
-%                 case 'kur'
-%                     %description{j,k}=['Kurtosis of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=kurtosis(mData,0); %Unbiased
-%                 case 'med'
-%                     %description{j,k}=['Median of proc EMG in muscle ' labs{j}];
-%                     paramData(i,j,k)=median(mData);
-%                 case 'snr'
-%                     %description{j,k}=['Energy of proc EMG divided by base noise energy (in dB) for muscle ' labs{j}];
-%                     paramData(i,j,k)=20*log10(mean(mData.^2)/min(mData)^2); %Is this a good estimate?? Seems like min() will always be very close to zero because of the low-pass filtering and the 'dip' it introduces
-%                 case 'bad'
-%                     if ~isempty(Qual)
-%                         paramData(i,j,k)=sum(unique(Qual(:,j))); %Quality codes used are powers of 2, which allows for 8 different codes (int8). Sum of unique appearances allows to keep track of all codes at the same time.
-%                     else
-%                         paramData(i,j,k)=0;
-%                     end
-               % otherwise %These are phase-dependent parameters
-                    if strcmp(labelSuff{k}(1),'s') %Mean EMG per phase (12 phases)
+
+                    if strcmp(labelSuff{k},'Angle') %Mean EMG per phase (12 phases)
                         phaseS=phaseS+1;
                         relIdx=Time<=eventTimes2(i,phaseS+1) & Time>=eventTimes2(i,phaseS); %Computing mean for 1 of 12 phases
-                        %description{j,k}=['Average of proc EMG data in muscle ' labs{j} ' from ' desc2{phaseS}];
                         paramData(i,j,k)=mean(mData(relIdx));
                     end
-                    if ~isempty(Qual) && any(Qual(relIdx,j)~=0) %Quality points to bad muscle
-                        paramData(i,j,k)=nan;
-                    end
-            % end    
+%                    
+              
         end
     end
 end
 %% Create parameterSeries
-out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));        
+out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));  
 end
 
