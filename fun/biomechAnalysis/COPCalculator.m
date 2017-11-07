@@ -46,16 +46,22 @@ COPyR=[(((-.005.*GRFyR+GRMxR./1000)./GRFzR))]*1000;
 %These are now loaded from .mat file:
 %LTransformationMatrix=[1,0,0,0;20,1,0,0;1612,0,-1,0;0,0,0,-1];
 %RTransformationMatrix=[1,0,0,0;-944,-1,0,0;1612,0,-1,0;0,0,0,-1];
-for i=1:length(COPxR)
-    LeftCOP=[1;COPxL(i);COPyL(i);0];
-    RightCOP=[1;COPxR(i);COPyR(i);0];
-    NewLeftCOP=LTransformationMatrix*LeftCOP;
-    NewRightCOP=RTransformationMatrix*RightCOP;
-    NewCOPxL(i)=NewLeftCOP(2);
-    NewCOPyL(i)=NewLeftCOP(3);
-    NewCOPxR(i)=NewRightCOP(2);
-    NewCOPyR(i)=NewRightCOP(3);
-end
+NewLeftCOP=LTransformationMatrix*[ones(size(COPxL));COPxL; COPyL; zeros(size(COPxL))];
+NewCOPxL=NewLeftCOP(2,:);
+NewCOPyL=NewLeftCOP(3,:);
+NewRightCOP=RTransformationMatrix*[ones(size(COPxR));COPxR; COPyR; zeros(size(COPxR))];
+NewCOPxR=NewRightCOP(2,:);
+NewCOPyR=NewRightCOP(3,:);
+% for i=1:length(COPxR)
+%     LeftCOP=[1;COPxL(i);COPyL(i);0];
+%     RightCOP=[1;COPxR(i);COPyR(i);0];
+%     NewLeftCOP=LTransformationMatrix*LeftCOP;
+%     NewRightCOP=RTransformationMatrix*RightCOP;
+%     NewCOPxL(i)=NewLeftCOP(2);
+%     NewCOPyL(i)=NewLeftCOP(3);
+%     NewCOPxR(i)=NewRightCOP(2);
+%     NewCOPyR(i)=NewRightCOP(3);
+% end
 
 % substitute NaNs, by doing a linear interpolation:
 ll={'NewCOPxL','NewCOPxR','NewCOPyL','NewCOPyR'};

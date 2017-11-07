@@ -634,7 +634,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
            matrix=cat(2,matrix,matrix3);
            for i=1:size(matrix,1)
                if ~any(isnan(matrix(i,:,:)))
-                matrix(i,1:3,1:3)=inv(squeeze(matrix(i,:,:)));
+                   matrix(i,1:3,1:3)=inv(squeeze(matrix(i,:,:))); %Very expensive computation
                else
                    matrix(i,1:3,1:3)=nan;
                end
