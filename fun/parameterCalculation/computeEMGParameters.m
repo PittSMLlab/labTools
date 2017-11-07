@@ -79,7 +79,7 @@ for i=1:N %For each stride
         else
             qq=0;
         end
-        relIdx= sparse(Time<eventTimes2(i,2:end) & Time>=eventTimes2(i,1:end-1));
+        relIdx= sparse(Time<eventTimes2(i,2:end) & Time>=eventTimes2(i,1:end-1)); %t
         for k=1:Nl %Computing each param
             switch labelSuff{k}
                 case 'max'
