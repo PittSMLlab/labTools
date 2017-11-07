@@ -688,14 +688,14 @@ classdef labTimeSeries  < timeseries
                 warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all (or all but one sample) NaN. Can''t replace those values (no data to use as reference), setting to 0.')
                 this.Data(:,badColumns)=0;
             end
-            this.Quality=zeros(size(this.Data),'int8');
+            %this.Quality=zeros(size(this.Data),'int8');
+            aux=isnan(this.Data);
              for i=1:size(this.Data,2) %Going through labels
-                 auxIdx=~isnan(this.Data(:,i)); %Finding indexes for non-NaN data under this label
-                 %Saving quality data (to mark which samples were
-                 %interpolated)
-                 this.Quality(:,i)=~auxIdx; %Matlab's timeseries stores this as int8. I would have preferred a sparse array.
-                 this.Data(:,i)=interp1(this.Time(auxIdx),this.Data(auxIdx,i),this.Time,method,0); %Extrapolation values are filled with 0,
+                 auxIdx=aux(:,i);
+                 this.Data(auxIdx,i)=interp1(this.Time(~auxIdx),this.Data(~auxIdx,i),this.Time(auxIdx),method,0); %Extrapolation values are filled with 0,
              end
+             %Saving quality data (to mark which samples were interpolated):
+             this.Quality=int8(aux); %Matlab's timeseries stores this as int8. I would have preferred a sparse array.
              this.QualityInfo.Code=[0 1];
              this.QualityInfo.Description={'good','missing'};
         end
