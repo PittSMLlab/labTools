@@ -65,34 +65,22 @@ ShankWeight=BW*.0465;
 ThighWeight=BW*0.1;
 
 % Get marker data
-% Define the marker data for relevant markers
-
-%get hip position
-RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis],['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
-RHip=[orientation.sideSign*RHip(:,1),orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];
-LHip=markerData.getDataAsVector({['LHIP' orientation.sideAxis],['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
-LHip=[orientation.sideSign*LHip(:,1),orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];
-%get ankle position
-RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis],['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
-RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];
-LAnk=markerData.getDataAsVector({['LANK' orientation.sideAxis],['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
-LAnk=[orientation.sideSign*LAnk(:,1),orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];
-%get knee position
-RkneeName=markerData.getLabelsThatMatch('^RKNE');
-RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix
-RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis],[RkneeName orientation.foreaftAxis],[RkneeName orientation.updownAxis]});
-RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
-
-LkneeName=markerData.getLabelsThatMatch('^LKNE');
-LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix
-LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis],[LkneeName orientation.foreaftAxis],[LkneeName orientation.updownAxis]});
-LKnee=[orientation.sideSign*LKnee(:,1),orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];
-%get toe position
-RToe=markerData.getDataAsVector({['RTOE' orientation.sideAxis],['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
-RToe=[orientation.sideSign*RToe(:,1),orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];
-LToe=markerData.getDataAsVector({['LTOE' orientation.sideAxis],['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
-LToe=[orientation.sideSign*LToe(:,1),orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];
-
+u=[orientation.sideSign, orientation.foreaftSign, orientation.updownSign];
+markerList={'RHip','LHip','RAnk','LAnk','RKne','LKne','RToe','LToe'};
+for i=1:length(markerList)
+    name=markerData.getLabelsThatMatch(['^' upper(markerList{i}) '*x$']); %To allow variations of the type: RKNEx and RKNEEx
+    if ~isempty(name)
+        name=name{1}(1:end-1);
+        aux=markerData.getDataAsVector({[name orientation.sideAxis],[name orientation.foreaftAxis],[name orientation.updownAxis]});
+        aux=aux.*u;
+    else %Marker is missing from full trial (it happens)
+        aux=nan(length(markerData.Time),3);
+        warning(['Marker ' markerList{i} ' was missing from markerData.'])
+    end
+    eval([markerList{i} '=aux;']); 
+    %assignin('base',markerList{i},aux) %This is more elegant than eval (and
+    %recommended, but it doesnt seem to work)
+end
 
 %%
 fcomRangle=[]; fcomLangle=[]; scomRangle=[]; scomLangle=[]; tcomRangle=[]; tcomLangle=[];
@@ -101,8 +89,8 @@ VerticalVector=[0,0,1];
 for i=1:size(fcomL,1)
         RFootCOMLength=RAnk(i,:)-fcomR(i,:);
         LFootCOMLength=LAnk(i,:)-fcomL(i,:);
-        RShankCOMLength=RKnee(i,:)-scomR(i,:);
-        LShankCOMLength=LKnee(i,:)-scomL(i,:);
+        RShankCOMLength=RKne(i,:)-scomR(i,:);
+        LShankCOMLength=LKne(i,:)-scomL(i,:);
         RThighCOMLength=RHip(i,:)-tcomR(i,:);
         LThighCOMLength=LHip(i,:)-tcomL(i,:);
     
@@ -270,7 +258,7 @@ end
 
 
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
-    RShankLength=norm(RKnee(i,:)-RAnk(i,:))/1000;
+    RShankLength=norm(RKne(i,:)-RAnk(i,:))/1000;
     RShankI0=ShankWeight*(RShankLength*0.645)^2;
         RyKneeForce(i)=RyAnkleForce(i)-ShankWeight*AscomyR(i);
         RzKneeForce(i)=RzAnkleForce(i)-ShankWeight*AscomzR(i)-ShankWeight*9.8;
@@ -280,13 +268,13 @@ for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     RKneeF=[RxKneeForce(i),RyKneeForce(i),RzKneeForce(i)];
         scomR(i,:)=[scomxR(i),scomyR(i),scomzR(i)];
     r1=(scomR(i,:)-RAnk(i,:))/1000;
-    r2=(RKnee(i,:)-scomR(i,:))/1000;
+    r2=(RKne(i,:)-scomR(i,:))/1000;
     RKneeCross=cross(r1,RAnkF)+cross(r2,RKneeF);
         RKneeMoment(i)=-1*((RKneeCross(1,1))-RShankI0*alphaRshank(i)+RAnkleMoment(i));
         RKneePower(i)=RKneeMoment(i)*wscomyR(i);
 end
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
-    LShankLength=norm(LKnee(i,:)-LAnk(i,:))/1000;
+    LShankLength=norm(LKne(i,:)-LAnk(i,:))/1000;
     LShankI0=ShankWeight*(LShankLength*0.645)^2;
         LyKneeForce(i)=LyAnkleForce(i)-ShankWeight*AscomyL(i);
         LzKneeForce(i)=LzAnkleForce(i)-ShankWeight*AscomzL(i)-ShankWeight*9.8;
@@ -295,14 +283,14 @@ for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     LKneeF=[LxKneeForce(i),LyKneeForce(i),LzKneeForce(i)];
         scomL(i,:)=[scomxL(i),scomyL(i),scomzL(i)];
     r1=(scomL(i,:)-LAnk(i,:))/1000;
-    r2=(LKnee(i,:)-scomL(i,:))/1000;
+    r2=(LKne(i,:)-scomL(i,:))/1000;
     LKneeCross=cross(r1,LAnkF)+cross(r2,LKneeF);
         LKneeMoment(i)=-1*((LKneeCross(1,1))-LShankI0*alphaLshank(i)+LAnkleMoment(i));
         LKneePower(i)=LKneeMoment(i)*wscomyL(i);
 end
 
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
-    RThighLength=norm(RHip(i,:)-RKnee(i,:))/1000;
+    RThighLength=norm(RHip(i,:)-RKne(i,:))/1000;
     RThighI0=ThighWeight*(RThighLength*0.54)^2;
         RxHipForce(i)=RxKneeForce(i)-ThighWeight*AtcomxR(i);
         RyHipForce(i)=RyKneeForce(i)-ThighWeight*AtcomyR(i);
@@ -310,14 +298,14 @@ for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     RHipF=[RxHipForce(i), RyHipForce(i), RzHipForce(i)];
     RKneeF=[RxKneeForce(i), RyKneeForce(i), RzKneeForce(i)];
         tcomF=[tcomxR(i), tcomyR(i), tcomzR(i)];
-    r1=(tcomF-RKnee(i,:))/1000;
+    r1=(tcomF-RKne(i,:))/1000;
     r2=(RHip(i,:)-tcomF)/1000;
     RHipCross=cross(r1,RKneeF)+cross(r2,RHipF);
         RHipMoment(i)=RHipCross(1,1)-RThighI0*alphaRthigh(i)+RKneeMoment(i);
         RHipPower(i)=RHipMoment(i)*wtcomyR(i);
 end
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
-    LThighLength=norm(LHip(i,:)-LKnee(i,:))/1000;
+    LThighLength=norm(LHip(i,:)-LKne(i,:))/1000;
     LThighI0=ThighWeight*(LThighLength*0.54)^2;
         LxHipForce(i)=LxKneeForce(i)-ThighWeight*AtcomxL(i);
         LyHipForce(i)=LyKneeForce(i)-ThighWeight*AtcomyL(i);
@@ -325,7 +313,7 @@ for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     LHipF=[LxHipForce(i), LyHipForce(i), LzHipForce(i)];
     LKneeF=[LxKneeForce(i), LyKneeForce(i), LzKneeForce(i)];
         tcomS=[tcomxL(i), tcomyL(i), tcomzL(i)];
-    r1=(tcomS-LKnee(i,:))/1000;
+    r1=(tcomS-LKne(i,:))/1000;
     r2=(LHip(i,:)-tcomS)/1000;
     LHipCross=cross(r1,LKneeF)+cross(r2,LHipF);
         LHipMoment(i)=LHipCross(1,1)-LThighI0*alphaLthigh(i)+LKneeMoment(i);
