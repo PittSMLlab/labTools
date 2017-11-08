@@ -1,4 +1,4 @@
-function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast)
+function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod)
 %defineEpochs is used to create a dataset object that defines relevant
 %epochs in the analysis of experimental data. It is used by several
 %functions within studyData, groupAdaptationData and adaptationData
@@ -9,14 +9,22 @@ function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemp
 %strideNo has to be a non-zero integer array: negative numbers are interpreted as
 %'last M strides' while positive numbers are interpreted as 'first M
 %strides'
-%exemptStrides has to be positive, and is interpreted as 'first M' or 'last
-%M' according to the interpretation from strideNo
+%exemptFirst has to be positive
+%exemptLast has to be positive
+%summaryMethod is a cell array of strings, with the name of the function
+%used to summarize accross strides, default is 'nanmean'
 
 N=length(epochNames);
 if isa(condition,'char')
     condition={condtion};
 end
+if nargin<6 || isempty(summaryMethod)
+    summaryMethod='nanmean';
+end
 
+if isa(summaryMethod,'char') %To allow for summaryMethod to be given as string directly
+    summaryMethod={summaryMethod};
+end
 if numel(condition)==1
     condition=repmat(condition,N,1);
 end
@@ -29,8 +37,11 @@ end
 if numel(exemptLast)==1
     exemptLast=repmat(exemptLast,N,1);
 end
+if numel(summaryMethod)==1
+    summaryMethod=repmat(summaryMethod,N,1);
+end
 earlyOrLate=sign(strideNo)==-1;
 
-epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate'},'ObsNames',epochNames);
+epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate','summaryMethod'},'ObsNames',epochNames);
 end
 

@@ -571,25 +571,17 @@ classdef adaptationData
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
         
-        function data=getEpochData(this,epochs,labels,summaryFlag)
+        function [data,validStrides]=getEpochData(this,epochs,labels)
            
             %INPUTS:
             %this must be adaptationData object
             %epochs must be a dataset created with defineEpochs()
             %labels is string or cell-array of strings to be used as parameter names
-            %summaryFlag indicates how to summarize strides: 'nanmean','nanmedian','nanmax','nanmin','mean','median','min','max','std'...
-            %Default is 'nanmean'
             %OUTPUT:
             %data: length(labels) x length(epochs) matrix containing requested data
             
             
             %Manage inputs:
-            if nargin<4 || isempty(summaryFlag)
-                summaryFlag='nanmean';
-            end
-            if size(summaryFlag,1)==1 %Allow for each epoch to be summarized differently
-                summaryFlag=repmat(summaryFlag,length(epochs),1); 
-            end
             if isa(labels,'char')
                 labels={labels};
             end
@@ -604,12 +596,15 @@ classdef adaptationData
             exemptLast=epochs.ExemptFirst; %Only if getting late strides
             exemptFirst=epochs.ExemptLast; %Only if getting early strides
             data=nan(length(labels),length(epochs));
+            validStrides=nan(length(epochs),1);
+            summaryFlag=epochs.summaryMethod;
             for i=1:length(valid) %Each valid epoch
                 if valid(i)
                     [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i));%Get data
                     %Summarize it:
-                    summFun=str2func(summaryFlag(i,:));
+                    summFun=str2func(summaryFlag{i});
                     data(:,i)=squeeze(summFun(dataPoints{1}));
+                    validStrides(i)=sum(~isnan(dataPoints{1})); %Counting non-nan values
                 else
                     %nop
                 end
