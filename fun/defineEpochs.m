@@ -40,7 +40,7 @@ end
 if numel(summaryMethod)==1
     summaryMethod=repmat(summaryMethod,N,1);
 end
-earlyOrLate=sign(strideNo)==-1;
+earlyOrLate=sign(strideNo)==1;
 
 epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate','summaryMethod'},'ObsNames',epochNames);
 end
