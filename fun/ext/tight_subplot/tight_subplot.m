@@ -24,6 +24,9 @@ function ha = tight_subplot(Nh, Nw, gap, marg_h, marg_w)
 % Pekka Kumpulainen 20.6.2010   @tut.fi
 % Tampere University of Technology / Automation Science and Engineering
 
+% Modified by Pablo A. Iturralde 08.11.2017 (pai7)
+% Univ. of Pittsburgh
+
 
 if nargin<3; gap = .02; end
 if nargin<4 || isempty(marg_h); marg_h = .05; end
@@ -44,7 +47,7 @@ axw = (1-sum(marg_w)-(Nw-1)*gap(2))/Nw;
 
 py = 1-marg_h(2)-axh; 
 
-ha = zeros(Nh*Nw,1);
+%ha = zeros(Nh*Nw,1);
 ii = 0;
 for ih = 1:Nh
     px = marg_w(1);
@@ -59,4 +62,5 @@ for ih = 1:Nh
     end
     py = py-axh-gap(1);
 end
+ha=reshape(ha,Nw,Nh)';
 

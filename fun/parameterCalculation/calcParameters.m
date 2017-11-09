@@ -54,10 +54,11 @@ if numStrides==0
     out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
     return
 end
-stridedProcEMG=cell(numStrides,1);
+%stridedProcEMG=cell(numStrides,1);
 stridedRawEMG=cell(numStrides,1);
 %stridedMarkerData=cell(max(strideIdxs),1);
 stridedEventData=cell(numStrides,1);
+stridedAngleData=cell(numStrides,1);
 
 %Stride:
 %steppedDataArray=separateIntoStrides(in,triggerEvent); %This is
@@ -65,11 +66,10 @@ stridedEventData=cell(numStrides,1);
 %labTS in trialData. If we only care about some fields, we should try
 %calling split independently for those TSs.
 eventTimes=nan(numStrides,length(eventTypes));
-eventTimes2=nan(numStrides,length(eventTypes));
 for i=1:numStrides
     if ~isempty(trialData.procEMGData)
-        stridedProcEMG{i}=trialData.('procEMGData').split(initTime(i),endTime(i));
-        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i)).rectify;
+        %stridedProcEMG{i}=trialData.('procEMGData').split(initTime(i),endTime(i)); %No longer needed
+        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i)).rectify.renameLabels([],trialData.EMGData.labels);
     end
     if ~isempty(trialData.angleData) %this if loop is added by Digna in order to bin the angle data
         stridedAngleData{i}=trialData.('angleData').split(initTime(i),endTime(i));
@@ -138,16 +138,16 @@ out=cat(out,spat);
 end
 
 %% EMG:
-if any(strcmpi(parameterClasses,'procEMG')) && ~isempty(trialData.procEMGData)
-    [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
-    out=cat(out,emg);
-end
+%if any(strcmpi(parameterClasses,'procEMG')) && ~isempty(trialData.procEMGData)
+%    [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
+%    out=cat(out,emg);
+%end
 if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     rawEMG = computeEMGParameters(strideEvents,stridedRawEMG,s);
     %Renaming params & descriptions:
-    nLabels=strcat('RAW',rawEMG.labels);
-    nDescription=regexprep(rawEMG.description,'proc','raw');
-    rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
+    %nLabels=strcat('RAW',rawEMG.labels);
+    %nDescription=regexprep(rawEMG.description,'proc','raw');
+    %rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
     out=cat(out,rawEMG);
 end
 

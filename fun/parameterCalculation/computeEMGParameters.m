@@ -7,6 +7,9 @@ function [out] = computeEMGParameters(strideEvents,stridedProcEMG,s)
 %See also computeSpatialParameters, computeTemporalParameters,
 %computeForceParameters, parameterSeries
 
+%% TO DO:
+%Use discretize to generate an alignedTS from each stride, and get the
+%'sXX' parameters from there, instead of computing them manually here.
 %%
 timeSHS=strideEvents.tSHS;
 timeFTO=strideEvents.tFTO;
