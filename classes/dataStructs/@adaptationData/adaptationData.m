@@ -183,12 +183,13 @@ classdef adaptationData
            %Meant to be used for EMG parameters ONLY
            %It creates NEW parameters with the same name, and the 'Norm' prefix.
            %See also: EMGnormalization (example) parameterSeries.normalizeToBaseline
+           error('Deprecated. Use normalizeToBaselineEpoch instead.')
             warning('This function is meant to be used for EMG parameters only. Use at own risk.')
             if nargin<3
                 baseConds2=[];
             end
             if nargin<2
-                error('Need to provide a suffix for parameters')
+                error('Need to provide a prefix for parameters')
             end
 
             if isa(labelPrefix,'char')
@@ -213,6 +214,30 @@ classdef adaptationData
                 range=squeeze(nanmean(baseData,2));
                 rangeValues=[min(range) max(range)];
                 this.data=this.data.normalizeToBaseline(labels,rangeValues);
+            end
+            newThis=this;
+        end
+        
+        function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch)
+           %This normalization takes the last N strides from a given
+           %'baseline' condition and uses it to normalize values of the
+           %parameter for the whole experiment.
+           %Meant to be used for EMG parameters ONLY
+           %It creates NEW parameters with the same name, and the 'Norm' prefix.
+           %See also: EMGnormalization (example) parameterSeries.normalizeToBaseline
+            warning('This function is meant to be used for EMG parameters only. Use at own risk.')
+            if nargin<2
+                error('Need to provide a prefix for parameters')
+            end
+            if isa(labelPrefix,'char')
+                labelPrefix={labelPrefix};
+            end
+            
+            [baseData,label]=this.getPrefixedEpochData(labelPrefix,baseEpoch);
+            baseData=reshape(baseData,size(label,1),numel(labelPrefix));
+            rangeValues=[min(baseData); max(baseData)];
+            for i=1:length(labelPrefix)
+                this.data=this.data.linearStretch(label(:,i),rangeValues(:,i));
             end
             newThis=this;
         end
@@ -604,7 +629,7 @@ classdef adaptationData
                     %Summarize it:
                     summFun=str2func(summaryFlag{i});
                     data(:,i)=squeeze(summFun(dataPoints{1}));
-                    validStrides(i)=sum(~isnan(dataPoints{1})); %Counting non-nan values
+                    validStrides(i)=sum(any(~isnan(dataPoints{1}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
                     %nop
                 end
@@ -623,6 +648,25 @@ classdef adaptationData
             end
         end
 
+        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs)
+            %This is meant to be used with parameters that end in
+            %'s1...s12' as are computed for EMG and angles. The 's' must be
+            %included in the labelPrefixes (to allow for other options too)
+            if isa(labelPrefix,'char')
+                labelPrefix={labelPrefix};
+            end
+            labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
+            aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '\d+$']); %Assuming same suffix for all
+            if isempty(aux)
+                error('Fail')
+                return
+            end
+            Np=length(aux);
+            suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,'UniformOutput',false); %Extracting suffixes, I am lazy
+            labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
+            dataE=this.getEpochData(epochs,labels(:));
+        end
+        
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx

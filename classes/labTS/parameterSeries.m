@@ -126,16 +126,15 @@ classdef parameterSeries < labTimeSeries
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
                 if isempty(this.description)
-                    thisDescription=cell(size(this.labels));
-                else
-                    thisDescription=this.description;
+                    this.description=cell(size(this.labels));
                 end
                 if isempty(other.description)
-                    otherDescription=cell(size(other.labels));
-                else
-                    otherDescription=other.description;
+                    other.description=cell(size(other.labels));
                 end 
-                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription(:); otherDescription(:)],this.trialTypes); 
+                newThis=parameterSeries([this.Data other.Data],[this.labels; other.labels],this.hiddenTime,[this.description; other.description],this.trialTypes); 
+                %this.Data=[this.Data other.Data];
+                %this.labels=[this.labels; other.labels];
+                %this.description=[this.description; other.description];
             else
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
@@ -191,7 +190,7 @@ classdef parameterSeries < labTimeSeries
            %This can be implemented as:
            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
            
-           [~,newData]=this.addNewParameter@labTimeSeries(newParamLabel,funHandle,inputParameterLabels);
+           [newData]=this.computeNewParameter(newParamLabel,funHandle,inputParameterLabels);
            newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
         end
         
@@ -268,23 +267,41 @@ classdef parameterSeries < labTimeSeries
         end
         
         function this=normalizeToBaseline(this,labels,rangeValues)
+            warning('parameterSeries:normalizeToBaseline','Deprecated, use linearStretch')
+            this=linearStretch(this,labels,rangeValues);
+        end
+        
+        function newThis=linearStretch(this,labels,rangeValues)
            %This normalization transforms the values of the parameters given in labels
            %such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
            %It creates NEW parameters with the same name, and the 'Norm' prefix.
-           %See also: adaptationData.normalizeToBaseline
+           %This will generate collisions if run multiple times for the
+           %same parameters
+           %See also: adaptationData.normalizeToBaselineEpoch
             if numel(rangeValues)~=2
                 error('rangeValues has to be a 2 element vector')
             end
-            [boolFlag,labelIdx]=isaLabel(this,labels);
-            for i=1:length(labels)              
-                if boolFlag(i)
-                    oldDesc=this.description(labelIdx(i));
-                    newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
-                    funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-                    this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);
-                end
-                
+%             [boolFlag,labelIdx]=isaLabel(this,labels);
+%             for i=1:length(labels)              
+%                 if boolFlag(i)
+%                     oldDesc=this.description(labelIdx(i));
+%                     newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
+%                     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+%                     this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);
+%                 end
+%                 
+%             end
+            %More efficient:
+            N=length(labels);
+            newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ']']},N,1);
+            newL=cell(N,1);
+            nD=zeros(size(this.Data,1),N);
+            for i=1:N
+                funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+                newL{i}=strcat('Norm',labels{i});
+                nD(:,i)=this.computeNewParameter(newL{i},funHandle,labels(i));
             end
+            newThis=appendData(this,nD,newL,newDesc);
         end
         
         %% Other functions that need redefining:

@@ -68,9 +68,13 @@ classdef labTimeSeries  < timeseries
                 throw(ME)
             end
             %Check for repeat labels:
-            labels2=unique(lower(labels));
-            if length(labels2)<length(labels)
-                ME=MException('labTimeSeries:ConstructorRepeatedLabels','Two labels provided are the same (caps don''t matter).');
+            [~,i1,i2]=unique(lower(labels));
+            if length(i1)<length(labels)
+                repIdx=find((sort(i1)-[1:length(i1)]')~=0,1,'first');
+                if isempty(repIdx)
+                    repIdx=length(i1)+1;
+                end
+                ME=MException('labTimeSeries:ConstructorRepeatedLabels',['Found ' num2str(length(labels)-length(i1)) ' collisions of label names. First collision is: ' labels{repIdx}]);
                     throw(ME)
             end
         end
@@ -163,20 +167,7 @@ classdef labTimeSeries  < timeseries
                 boolFlag=true(N,1);
                 labelIdx=1:M;
             else
-                boolFlag=false(N,1);
-                labelIdx=zeros(N,1);
-                idxList=1:M;
-                for j=1:N
-                    %Alternative efficient formulation: (when running
-                    %removeAltBias for a group of 16 subjects, this change
-                    %shaves 180s of processing, which is roughly 85% of total
-                    %processing time!)
-                    aux=strcmpi(auxLabel{j},this.labels);
-                    if any(aux)
-                        boolFlag(j)=true;
-                        labelIdx(j)=idxList(aux); %This will fail if there are repeated elements in list
-                    end
-                end
+                [boolFlag,labelIdx] = compareListsFast(this.labels,auxLabel);
             end
         end
 
@@ -421,9 +412,36 @@ classdef labTimeSeries  < timeseries
            %EXAMPLE:
            %See example in parameterSeries
 
+           [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels);
+           newThis=appendData(this,newData,{newParamLabel}) ;
+        end
+        
+        function [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
+           %This function allows to compute new parameters from other existing parameters and have them added to the data.
+           %This is useful when trying out new parameters without having to
+           %recompute all existing parameters.
+           %INPUT:
+           %newPAramLAbel: string with the name of the new parameter
+           %funHandle: a function handle with N input variables, whose
+           %result will be used to compute the new parameter
+           %inputParameterLabels: the parameters that will replace each of
+           %the variables in the funHandle
+           %EXAMPLE:
+           %See example in parameterSeries
+           %See also: addNewParameter
+           
+           %TO DO: support many new parameters together, as long as they
+           %use the same funHandle, with inputParameterLabels an NxM array,
+           %where N is the size of newParamLabel (# parameters to be
+           %computed). Use this change in
+           %linearStretch(this,labels,rangeValues) for efficiency
+           
            %Check input sanity:
            if length(inputParameterLabels)~=nargin(funHandle)
                error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
+           end
+           if compareListsFast(this.labels,newParamLabel)
+               error('labTS:addNewParameter','Cannot add parameter because it already exists')
            end
            oldData=this.getDataAsVector(inputParameterLabels);
            str='(';
@@ -431,8 +449,7 @@ classdef labTimeSeries  < timeseries
                str=[str 'oldData(:,' num2str(i) '),'];
            end
            str(end)=')'; %Replacing last comma with parenthesis
-           eval(['newData=funHandle' str ';']);
-           newThis=appendData(this,newData,{newParamLabel}) ;
+           eval(['newData=funHandle' str ';']); %Isn't there a way to do this without eval?
         end
         
         function newThis=removeParameter(labels)
