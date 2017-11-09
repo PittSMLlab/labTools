@@ -505,16 +505,19 @@ classdef groupAdaptationData
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
         
         %Checkerboard:
-        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch)
+        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
             
+            if nargin<7 || isempty(flipLR)
+                flipLR=false;
+            end
             %First, get epoch data:
             [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs);
             dataRef=[]; %For argout
             Np=size(labels,1);
-            if nargin>6 && ~isempty(refEpoch)
+            if nargin>5 && ~isempty(refEpoch)
                 [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch);
                 dataE=dataE-dataRef;
             end
@@ -529,7 +532,13 @@ classdef groupAdaptationData
                     ph(i)=subplot(length(epochs),1,i);
                 end
                 ATS=alignedTimeSeries(0,1,reshape(dataS(:,i),Np,length(labelPrefix)),labelPrefix,ones(1,Np),{'sHS','','fTO','','','','fHS','','sTO','','',''});
+                if flipLR
+                    ATS=ATS.flipLR;
+                end
                 ATS.plotCheckerboard(fh,ph(i));
+                axes(ph(i))
+                colorbar off
+                title([epochs.Properties.ObsNames(i)])
             end
             
         end
