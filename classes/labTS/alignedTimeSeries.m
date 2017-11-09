@@ -563,6 +563,36 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
         end
         
+        function this=flipLR(this)
+           %Find the side that has the starting event:
+           alignedSide=this.alignmentLabels{1}(1);
+           switch alignedSide
+               case 'L'
+                    nonAlignedSide= 'R';
+               case 'R'
+                   nonAlignedSide= 'L';
+               case 'f'
+                   nonAlignedSide= 's';
+               case 's'
+                   nonAlignedSide= 'f';
+           end
+           %Flip non-aligned side:
+           lC=this.getLabelsThatMatch(['^' nonAlignedSide]);
+           if ~isempty(lC)
+               [~,iC]=this.isaLabel(lC); %Index for contra-labels
+               aux=regexprep(lC,['^' nonAlignedSide],alignedSide);
+               if ~all(this.isaLabel(aux)) %Labels are not symm, aborting
+                   warning('Asked to flipLR but labels are not symmetrically present.')
+               else
+                   this.Data(:,iC)=fftshift(this.Data(:,iC),1); %This just flips first and second halves of aligned data, no checks performed
+                   this.alignmentLabels=regexprep(this.alignmentLabels,['^' alignedSide],'i');
+                   this.alignmentLabels=regexprep(this.alignmentLabels,['^' nonAlignedSide],'c');
+               end
+           else
+                warning('Asked to flipLR but couldn''t find aligned side.')
+           end
+        end
+        
         function [fh,ph]=plotCheckerboard(this,fh,ph)
            if nargin<2
                fh=figure();
@@ -582,9 +612,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            ax.XTick=[1 1+cumsum(this.alignmentVector)]-.5;
            ax.XTickLabel=this.alignmentLabels;
            %Colormap:
-            ex1=[.85,0,.1];
-            ex2=[0,.1,.6];
-            map=[bsxfun(@plus,ex1,bsxfun(@times,1-ex1,[0:.01:1]'));bsxfun(@plus,ex2,bsxfun(@times,1-ex2,[1:-.01:0]'))].^.5;
+            ex2=[0.2314    0.2980    0.7529];
+            ex1=[0.7255    0.0863    0.1608];
+            gamma=.5;
+            map=[bsxfun(@plus,ex1.^(1/gamma),bsxfun(@times,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@plus,ex2.^(1/gamma),bsxfun(@times,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
+
             colormap(flipud(map))
             caxis([-1 1]*max(abs(m.Data(:))))
             colorbar
