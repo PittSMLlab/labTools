@@ -74,9 +74,9 @@ for i=1:numStrides
     if ~isempty(trialData.angleData) %this if loop is added by Digna in order to bin the angle data
         stridedAngleData{i}=trialData.('angleData').split(initTime(i),endTime(i));
     end
-        
 
-    
+
+
     %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
     stridedEventData{i}=trialData.('gaitEvents').split(initTime(i),endTime(i));
     for j=1:length(eventTypes)
@@ -149,12 +149,19 @@ if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     %nDescription=regexprep(rawEMG.description,'proc','raw');
     %rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
     out=cat(out,rawEMG);
+    N=[2,4,2,4];
+    trialData.EMGData.Quality=[];%Needed to avoid error
+    [DTS,bad]=trialData.EMGData.discretize(trialData.gaitEvents,eventTypes,N);
+    [N,M,P]=size(DTS.Data;)
+    ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
+    EMG_alt= parameterSeries(reshape(DTS.Data,N*M,S)',ll(:),1:S,cell(size(ll(:))));
+    out=cat(out,EMG_alt);
 end
 
 %Angles            this loop is Added by Digna
 if ~isempty(trialData.angleData)
     [angles] = computeAngleParameters(strideEvents,stridedAngleData,s);
-    out=cat(out,angles);    
+    out=cat(out,angles);
 end
 
 %% Force
