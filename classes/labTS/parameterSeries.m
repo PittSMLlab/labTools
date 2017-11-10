@@ -1,6 +1,6 @@
 classdef parameterSeries < labTimeSeries
     %parameterSeries  Extends labTimeSeries to hold adaptation parameters
-    %   
+    %
     %parameterSeries properties:
     %   hiddenTime
     %   bad
@@ -10,10 +10,10 @@ classdef parameterSeries < labTimeSeries
     %
     %parameterSeries methods:
     %   idk
-    %   
-    
+    %
+
     properties
-        hiddenTime        
+        hiddenTime
     end
     properties(Dependent)
        bad
@@ -23,30 +23,30 @@ classdef parameterSeries < labTimeSeries
        trialTypes
     end
     properties(Hidden)
-       description_={}; 
+       description_={};
        trialTypes_={};
        fixedParams=5;
     end
-           
+
     methods
-        function this=parameterSeries(data,labels,times,description,types)            
+        function this=parameterSeries(data,labels,times,description,types)
             this@labTimeSeries(data,1,1,labels);
-            this.hiddenTime=times;            
-            if length(description)==length(labels)                
+            this.hiddenTime=times;
+            if length(description)==length(labels)
                 this.description_=description; %Needs to be cell-array of same length as labels
             else
                 error('paramtereSeries:constructor','Description input needs to be same length as labels')
-            end       
-            if nargin>4 
+            end
+            if nargin>4
                 this.trialTypes_=types;
             end
         end
-        
+
         function this=setTrialTypes(this,types)
             this.trialTypes_=types;
         end
-       
-        
+
+
         %% Getters for dependent variables (this could be made more efficient by fixing the indexes for these parameters ( which is something that already happens in practice) and doing direct indexing to data,
         function vals=get.bad(this)
             if this.isaParameter('bad')
@@ -67,25 +67,25 @@ classdef parameterSeries < labTimeSeries
         end
         function vals=get.description(this)
 %            if isfield(this,'description_')
-              vals=this.description_; 
+              vals=this.description_;
 %            else
-%               vals=cell(size(this.labels)); 
+%               vals=cell(size(this.labels));
 %            end
         end
-        function vals=get.trialTypes(this)  
+        function vals=get.trialTypes(this)
 %             if isfield(this,'trialTypes_')
                vals=this.trialTypes_;
 %             else
 %                 disp('trying to access trialTypes')
-%                vals={}; 
+%                vals={};
 %             end
-        end      
-        
+        end
+
         %% I/O
         function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib
             [bool,idx]=this.isaLabel(labels);
         end
-        
+
         function inds=indsInTrial(this,t)
             if nargin<2 || isempty(t)
                 inds=[];
@@ -96,11 +96,11 @@ classdef parameterSeries < labTimeSeries
                 end
             end
         end
-        
+
         function [data,auxLabel]=getParameter(this,label) %Backwards compat
             [data,~,auxLabel]=this.getDataAsVector(label);
-        end       
-        
+        end
+
         function newThis=incorporateDependentParameters(this,labels)
            ff=load('DependParamRecipes.mat','fieldList');
            fTable=ff.fieldList;
@@ -120,18 +120,18 @@ classdef parameterSeries < labTimeSeries
                newThis=addNewParameter(newThis,acceptedLabels{i},eval(acceptedHandles{i}),acceptedParams{i},acceptedDesc{i});
            end
         end
-       
-  
+
+
         %% Modifiers
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
                 if isempty(this.description)
-                    this.description=cell(size(this.labels));
+                    thisDescription=cell(size(this.labels));
                 end
                 if isempty(other.description)
-                    other.description=cell(size(other.labels));
-                end 
-                newThis=parameterSeries([this.Data other.Data],[this.labels; other.labels],this.hiddenTime,[this.description; other.description],this.trialTypes); 
+                    otherDescription=cell(size(other.labels));
+                end
+                newThis=parameterSeries([this.Data other.Data],[this.labels; other.labels],this.hiddenTime,[thisDescription; otherDescription],this.trialTypes); 
                 %this.Data=[this.Data other.Data];
                 %this.labels=[this.labels; other.labels];
                 %this.description=[this.description; other.description];
@@ -139,13 +139,13 @@ classdef parameterSeries < labTimeSeries
                 error('parameterSeries:cat','Cannot concatenate series with different number of strides');
             end
         end
-        
+
         function newThis=addStrides(this,other)
             %TODO: Check that the labels are actually the same
             if ~isempty(other.Data)
                 aux=other.getDataAsVector(this.labels);
-                if size(this.Data,2)==size(other.Data,2)                    
-                    newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:)); 
+                if size(this.Data,2)==size(other.Data,2)
+                    newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:));
                 else
                     warning('parameterSeries:addStrides','Concatenating parameterSeries with different number of parameters. Merging parameter lists & filling NaNs for missing parameters. You (yes, YOU, the current user) SHOULD FIX THIS. Ask Pablo for guidance.');
                     [bool2,~] = compareLists(this.labels,other.labels); %Labels present in other but NOT in this
@@ -164,7 +164,7 @@ classdef parameterSeries < labTimeSeries
                 newThis=this; %Empty second arg., adding nothing.
             end
         end
-        
+
         function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
            %This function allows to compute new parameters from other existing parameters and have them added to the data.
            %This is useful when trying out new parameters without having to
@@ -189,11 +189,11 @@ classdef parameterSeries < labTimeSeries
            %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
            %This can be implemented as:
            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
-           
+
            [newData]=this.computeNewParameter(newParamLabel,funHandle,inputParameterLabels);
            newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
         end
-        
+
         function newThis=getDataAsPS(this,labels,strides,skipFixedParams)
             if nargin<2 || isempty(labels)
                 labels=this.labels;
@@ -208,11 +208,11 @@ classdef parameterSeries < labTimeSeries
             [bool,idx]=this.isaLabel(extendedLabels);
             idx=idx(bool);
             if nargin<3 || isempty(strides)
-               strides=1:size(this.Data,1); 
+               strides=1:size(this.Data,1);
             end
             newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx));
         end
-        
+
         function newThis=appendData(this,newData,newLabels,newDesc) %For back compat
             if nargin<4 || isempty(newDesc)
                 newDesc=cell(size(newLabels));
@@ -220,10 +220,10 @@ classdef parameterSeries < labTimeSeries
             other=parameterSeries(newData,newLabels,this.hiddenTime,newDesc,this.trialTypes);
             newThis=cat(this,other);
         end
-        
+
         function this=replaceParams(this,other)
            %Replaces existing parameters in this, with parameter data in other
-           
+
           [bool,idx]=this.isaLabel(other.labels); %Finding parameters that already existed
           this.Data(:,idx(bool))=other.Data(:,bool); %Replacing data
           this.description_(idx(bool))=other.description(bool); %Replacing descriptions (is this necessary?)
@@ -233,7 +233,7 @@ classdef parameterSeries < labTimeSeries
              this=this.cat(other.getDataAsPS(other.labels(~bool),[],1));
           end
         end
-        
+
         function newThis=markBadWhenMissingAny(this,labels)
             newThis=this;
             aux=this.getDataAsVector(labels);
@@ -242,7 +242,7 @@ classdef parameterSeries < labTimeSeries
             [~,bg]=this.isaLabel('good');
             newThis.Data(:,bg)=~this.bad;
         end
-        
+
         function newThis=markBadWhenMissingAll(this,labels)
             newThis=this;
             aux=this.getDataAsVector(labels);
@@ -251,26 +251,26 @@ classdef parameterSeries < labTimeSeries
             [~,bg]=this.isaLabel('good');
             newThis.Data(:,bg)=~this.bad;
         end
-        
+
         function newThis=substituteNaNs(this,method)
             if nargin<2 || isempty(method)
                 method='linear';
             end
             newThis=this.substituteNaNs@labTimeSeries(method);
             newThis.Data(:,1:this.fixedParams)=this.Data(:,1:this.fixedParams);
-            
+
         end
-        
+
         function this=markBadStridesAsNan(this)
                 inds=this.bad;
                 this.Data(inds==1,this.fixedParams+1:end)=NaN;
         end
-        
+
         function this=normalizeToBaseline(this,labels,rangeValues)
             warning('parameterSeries:normalizeToBaseline','Deprecated, use linearStretch')
             this=linearStretch(this,labels,rangeValues);
         end
-        
+
         function newThis=linearStretch(this,labels,rangeValues)
            %This normalization transforms the values of the parameters given in labels
            %such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
@@ -282,14 +282,14 @@ classdef parameterSeries < labTimeSeries
                 error('rangeValues has to be a 2 element vector')
             end
 %             [boolFlag,labelIdx]=isaLabel(this,labels);
-%             for i=1:length(labels)              
+%             for i=1:length(labels)
 %                 if boolFlag(i)
 %                     oldDesc=this.description(labelIdx(i));
 %                     newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
 %                     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
 %                     this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);
 %                 end
-%                 
+%
 %             end
             %More efficient:
             N=length(labels);
@@ -303,24 +303,24 @@ classdef parameterSeries < labTimeSeries
             end
             newThis=appendData(this,nD,newL,newDesc);
         end
-        
+
         %% Other functions that need redefining:
         function [F]=fourierTransform(this)
             %error('parameterSeries:fourierTransform','You cannot do that!')
             F=fourierTransform@labTimeSeries(this);
             F.TimeInfo.Units='strides^{-1}';
         end
-        
+
         function newThis=resample(this) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
             error('parameterSeries:resample','You cannot do that!')
             newThis=[];
         end
-        
+
         function newThis=resampleN(this) %Same as resample function, but directly fixing the number of samples instead of TS
             error('parameterSeries:resampleN','You cannot do that!')
             newThis=[];
         end
-        
+
         %% Display
         function [h,h1]=plotAlt(this,h,labels,plotHandles,color)
             if nargin<5
@@ -338,13 +338,13 @@ classdef parameterSeries < labTimeSeries
             [h,h1]=this.plot(h,labels,plotHandles,[],color,1);
             ll=findobj(h,'Type','Line');
             set(ll,'LineStyle','None','Marker','.')
-            linkaxes(h1,'x')  
+            linkaxes(h1,'x')
         end
-        
+
         %% Stats
         function [p,postHocMatrix] = anova(this,params,groupIdxs,dispOpt)
             %Function to perform one-way anova among several groups of
-            %strides, and a post-hoc analysis to 
+            %strides, and a post-hoc analysis to
             if nargin<4 || isempty(dispOpt)
                 dispOpt='off';
             end
@@ -369,6 +369,5 @@ classdef parameterSeries < labTimeSeries
            end
         end
     end
-    
-end
 
+end
