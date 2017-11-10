@@ -128,14 +128,14 @@ classdef parameterSeries < labTimeSeries
                 if isempty(this.description)
                     thisDescription=cell(size(this.labels));
                 else
-                  thisDescription=this.description;
+                  thisDescription=this.description(:);
                 end
                 if isempty(other.description)
                     otherDescription=cell(size(other.labels));
                   else
-                    otherDescription=other.description;
+                    otherDescription=other.description(:);
                 end
-                newThis=parameterSeries([this.Data other.Data],[this.labels; other.labels],this.hiddenTime,[thisDescription; otherDescription],this.trialTypes);
+                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription; otherDescription],this.trialTypes);
                 %this.Data=[this.Data other.Data];
                 %this.labels=[this.labels; other.labels];
                 %this.description=[this.description; other.description];
