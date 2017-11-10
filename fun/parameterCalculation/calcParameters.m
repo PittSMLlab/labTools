@@ -152,9 +152,9 @@ if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     N=[2,4,2,4];
     trialData.EMGData.Quality=[];%Needed to avoid error
     [DTS,bad]=trialData.EMGData.discretize(trialData.gaitEvents,eventTypes,N);
-    [N,M,P]=size(DTS.Data;)
+    [N,M,P]=size(DTS.Data)
     ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
-    EMG_alt= parameterSeries(reshape(DTS.Data,N*M,S)',ll(:),1:S,cell(size(ll(:))));
+    EMG_alt= parameterSeries(reshape(DTS.Data,N*M,P)',ll(:),1:P,cell(size(ll(:))));
     out=cat(out,EMG_alt);
 end
 
