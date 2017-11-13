@@ -188,8 +188,7 @@ classdef processedLabData < labData
             reducedThis=reducedLabData(this.metaData,this.gaitEvents,alignTS,bad,reducedFields,fieldPrefixes,this.adaptParams); %Constructor
             warning('on','labTS:renameLabels:dont')
         end
-        
-           
+                 
         %Getters for dependent properties:
         function expParams=get.experimentalParams(this)
              expParams=calcExperimentalParams(this);
@@ -200,6 +199,9 @@ classdef processedLabData < labData
         end
         
         %Separate into strides!
+        function [arrayedEvents]=getArrayedEvents(this,eventList)
+            arrayedEvents=labTimeSeries.getArrayedEvents(this.gaitEvents,eventList);
+        end
         function [steppedDataArray,initTime,endTime]=separateIntoStrides(this,triggerEvent) %Splitting into single strides!
             %triggerEvent needs to be one of the valid gaitEvent labels  
             
@@ -239,31 +241,47 @@ classdef processedLabData < labData
         end
         
         function [numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent,endEvent)
+            
             if nargin<2 || isempty(triggerEvent)
                 triggerEvent=[this.metaData.refLeg 'HS']; %Using refLeg's HS as default event for striding.
             end
-            refLegEventList=this.getPartialGaitEvents(triggerEvent);
-            refIdxLst=find(refLegEventList==1);
-            auxTime=this.gaitEvents.Time;
-            initTime=auxTime(refIdxLst(1:end-1));
-            numStrides=length(initTime);
+                        %TODO: call onto arrayedEvents, for uniformity:
             if nargin<3 || isempty(endEvent) %using triggerEvent for endEvent
-                endTime=auxTime(refIdxLst(2:end));
-            else %End of interval depends on another event
-                endEventList=this.getPartialGaitEvents(endEvent);
-                endIdxLst=find(endEventList==1);
-                i=0;
-                noEnd=true;
-                while i<numStrides && noEnd %This is an infinite loop...
-                    i=i+1;
-                    aux=auxTime(find(endIdxLst>refIdxLst(i),1,'first')); 
-                    if ~isempty(aux)
-                        endTime(i)=aux;
-                    else
-                        endTime(i)=NaN;
-                    end
+                [arrayedEvents]=getArrayedEvents(this,{triggerEvent});
+                initTime=arrayedEvents(1:end-1,1);
+                endTime=arrayedEvents(2:end,1);
+            else
+                [arrayedEvents]=getArrayedEvents(this,{triggerEvent,endEvent});
+                if ~isnan(arrayedEvents(end,2)) %Last stride is incomplete
+                    arrayedEvents=arrayedEvents(1:end-1,:);
                 end
+                initTime=arrayedEvents(:,1);
+                endTime=arrayedEvents(:,2);
             end
+            numStrides=size(initTime,1);
+            
+%             refLegEventList=this.getPartialGaitEvents(triggerEvent);
+%             refIdxLst=find(refLegEventList==1);
+%             auxTime=this.gaitEvents.Time;
+%             initTime=auxTime(refIdxLst(1:end-1));
+%             numStrides=length(initTime);
+%             if nargin<3 || isempty(endEvent) %using triggerEvent for endEvent
+%                 endTime=auxTime(refIdxLst(2:end));
+%             else %End of interval depends on another event
+%                 endEventList=this.getPartialGaitEvents(endEvent);
+%                 endIdxLst=find(endEventList==1);
+%                 i=0;
+%                 noEnd=true;
+%                 while i<numStrides && noEnd %This is an infinite loop...
+%                     i=i+1;
+%                     aux=auxTime(find(endIdxLst>refIdxLst(i),1,'first')); 
+%                     if ~isempty(aux)
+%                         endTime(i)=aux;
+%                     else
+%                         endTime(i)=NaN;
+%                     end
+%                 end
+%            end
         end
         
         function [numSteps,initTime,endTime,initEventSide]=getStepInfo(this,triggerEvent)
