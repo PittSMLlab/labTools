@@ -504,6 +504,9 @@ classdef labTimeSeries  < timeseries
                timeMargin=0;
            end
 
+           %TODO: this needs to call on getArrayedEvents() to avoid
+           %duplicating the event-finding logic
+           
             refIdxLst=find(auxList==1);
             M=length(refIdxLst)-1;
             auxTime=eventTS.Time;
@@ -899,17 +902,17 @@ classdef labTimeSeries  < timeseries
             %given events, and in turn these can be divided into sub-phases
             if nargin<3 || isempty(eventLabel)
                 eventLabel=eventTS.labels(1);
-                N=10; %10 equal subphases per gait cycle
             end
-            k=10;
-            M=k*N; %re-sampling with 10 samples for each desired sub-phase.
-            [ATS,bad]=align(this,eventTS,eventLabel,M);
-%             newData=cat(1,zeros(1,size(ATS.Data,2),size(ATS.Data,3)), cumsum(ATS.Data,1));
-%             newData=newData(1:k:end,:,:)/k;
-%             newData=diff(newData,[],1);
-%             eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-%             DTS=alignedTimeSeries(0,1,newData,this.labels,N,eventLabel,eventTimes');
-            DTS=ATS.discretize(k*ones(sum(N),1));
+	    %NEw attempt, no alignment:
+	    eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
+        bad=any(isnan(eventTimes(1:end-1,:)),2);
+        expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
+        ee=[expEventTimes(:); eventTimes(end,1)];
+        [slicedTS]=this.sliceTS(ee,0);
+        d=cell2mat(cellfun(@(x) mean(x.Data),slicedTS,'UniformOutput',false)');
+        [M,N1]=size(expEventTimes);        M2=size(d,2);
+        d=permute(reshape(d,sum(N),N1,M2),[1,3,2]);
+        DTS=alignedTimeSeries(0,1,d,this.labels,N,eventLabel,eventTimes');
         end
 
         function newThis=lowPassFilter(this,fcut)
@@ -995,7 +998,7 @@ classdef labTimeSeries  < timeseries
            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
         end
         
-        function [ATS,bad]=align_v2(this,eventTS,eventLabel,N)
+        function [ATS,bad,Data]=align_v2(this,eventTS,eventLabel,N)
             %Efficient & robust substitute for legacy align()
             eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
             expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
@@ -1016,9 +1019,10 @@ classdef labTimeSeries  < timeseries
            end
            %Check needed: is eventList binary?
            N=size(eventList,2); %Number of events & intervals to be found
-           auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
+           %auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
 
-            refIdxLst=find(auxList==1);
+            %refIdxLst=find(auxList==1);
+            refIdxLst=find(eventList(:,1)); %Alt definition, to match what is returned if a single event was provided
             M=length(refIdxLst)-1;
             auxTime=eventTS.Time;
             initTime=auxTime(refIdxLst); %Initial time of each interval identified
@@ -1028,7 +1032,8 @@ classdef labTimeSeries  < timeseries
                 t0=auxTime(refIdxLst(i));
                 lastEventIdx=refIdxLst(i);
                 for j=1:N-1 %Going over events
-                   nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+                   %nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
+                   nextEventIdx=lastEventIdx+find(eventList(lastEventIdx+1:refIdxLst(i+1)-1,j+1),1,'first');
                    t1= auxTime(nextEventIdx); %Look for next event
                    if ~isempty(t1) && ~isempty(t0)
                        eventTimes(i,j+1)=t1;
