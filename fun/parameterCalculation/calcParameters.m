@@ -32,9 +32,9 @@ else
 end
 
 if refLeg == 'R'
-    s = 'R';    f = 'L';
+    s = 'R';    f = 'L'; %TODO: substitute with getOtherLeg()
 elseif refLeg == 'L'
-    s = 'L';    f = 'R';
+    s = 'L';    f = 'R'; %TODO: substitute with getOtherLeg()
 else
     ME=MException('MakeParameters:refLegError','the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.');
     throw(ME);
@@ -49,36 +49,24 @@ triggerEvent=eventTypes{1};
 
 %Initialize:
 [numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
+%arrayedEvents=trialData.getArrayedEvents(eventTypes);
 if numStrides==0
     disp(['Warning: No strides detected in ',file])
     out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
     return
 end
-%stridedProcEMG=cell(numStrides,1);
-stridedRawEMG=cell(numStrides,1);
-%stridedMarkerData=cell(max(strideIdxs),1);
 stridedEventData=cell(numStrides,1);
 stridedAngleData=cell(numStrides,1);
 
 %Stride:
-%steppedDataArray=separateIntoStrides(in,triggerEvent); %This is
-%computationally expensive to do: it calls the split function for every
-%labTS in trialData. If we only care about some fields, we should try
-%calling split independently for those TSs.
 eventTimes=nan(numStrides,length(eventTypes));
 for i=1:numStrides
-    if ~isempty(trialData.procEMGData)
-        %stridedProcEMG{i}=trialData.('procEMGData').split(initTime(i),endTime(i)); %No longer needed
-        stridedRawEMG{i}=trialData.('EMGData').split(initTime(i),endTime(i)).rectify.renameLabels([],trialData.EMGData.labels);
-    end
     if ~isempty(trialData.angleData) %this if loop is added by Digna in order to bin the angle data
-        stridedAngleData{i}=trialData.('angleData').split(initTime(i),endTime(i));
+        stridedAngleData{i}=trialData.angleData.split(initTime(i),endTime(i));
     end
-
-
 
     %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
-    stridedEventData{i}=trialData.('gaitEvents').split(initTime(i),endTime(i));
+    stridedEventData{i}=trialData.gaitEvents.split(initTime(i),endTime(i));
     for j=1:length(eventTypes)
         aux=stridedEventData{i}.getDataAsVector(eventTypes{j});
         aux=find(aux,2,'first'); %Finding next two events of the type %HH: it is pointless to find the next two events, since find will still return a value even if it only finds one.
@@ -127,43 +115,25 @@ end
 
 %% Temporal:
 if any(strcmpi(parameterClasses,'temporal'))
-[temp] = computeTemporalParameters(strideEvents);
-out=cat(out,temp);
+    [temp] = computeTemporalParameters(strideEvents);
+    out=cat(out,temp);
 end
-
 %% Spatial:
 if any(strcmpi(parameterClasses,'spatial')) && ~isempty(trialData.markerData) && (numel(trialData.markerData.labels)~=0)
-[spat] = computeSpatialParameters(strideEvents,trialData.markerData,trialData.angleData,s);
-out=cat(out,spat);
+    [spat] = computeSpatialParameters(strideEvents,trialData.markerData,trialData.angleData,s);
+    out=cat(out,spat);
 end
-
 %% EMG:
-%if any(strcmpi(parameterClasses,'procEMG')) && ~isempty(trialData.procEMGData)
-%    [emg] = computeEMGParameters(strideEvents,stridedProcEMG,s);
-%    out=cat(out,emg);
-%end
-if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
-    rawEMG = computeEMGParameters(strideEvents,stridedRawEMG,s);
-    %Renaming params & descriptions:
-    %nLabels=strcat('RAW',rawEMG.labels);
-    %nDescription=regexprep(rawEMG.description,'proc','raw');
-    %rawEMG=parameterSeries(rawEMG.Data,nLabels,[],nDescription);
-    out=cat(out,rawEMG);
-    N=[2,4,2,4];
-    trialData.EMGData.Quality=[];%Needed to avoid error
-    [DTS,bad]=trialData.EMGData.discretize(trialData.gaitEvents,eventTypes,N);
-    [N,M,P]=size(DTS.Data);
-    ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
-    EMG_alt= parameterSeries(reshape(DTS.Data,N*M,P)',ll(:),1:P,cell(size(ll(:))));
+if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData) 
+    %Classic way:
+    [EMG_alt] = computeEMGParameters(trialData.EMGData,trialData.gaitEvents,s);
     out=cat(out,EMG_alt);
 end
-
-%Angles            this loop is Added by Digna
+%% Angles  
 if ~isempty(trialData.angleData)
     [angles] = computeAngleParameters(strideEvents,stridedAngleData,s);
     out=cat(out,angles);
 end
-
 %% Force
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
@@ -172,7 +142,6 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
         out=cat(out,force);
     end
 end
-
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
 %badStart=bad; %make a copy to compare at the end

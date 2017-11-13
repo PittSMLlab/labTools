@@ -29,7 +29,7 @@ else
     end
     desc2=cell(sum(alignmentVector),1);
 end
-someTS.Quality=[];%Needed to avoid error
+someTS.Quality=[];%Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary
 [DTS,~]=someTS.discretize(gaitEvents,eventTypes,alignmentVector);
 [N,M,P]=size(DTS.Data);
 %Make labels:
@@ -37,13 +37,4 @@ ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),on
 %Make descriptions:
 desc=strcat(strcat(strcat('Average of data in TS ', repmat(DTS.labels,N,1)), ' from '), repmat(desc2,1,M));
 out= parameterSeries(reshape(DTS.Data,N*M,P)',ll(:),1:P,desc(:));
-end
-
-function f=getOtherLeg(s)
-    switch s
-        case 'L'
-            f='R';
-        case 'R'
-            f='L';
-    end
 end

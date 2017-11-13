@@ -196,9 +196,11 @@ classdef labData
             if nargin<2 || isempty(noFilterFlag)
                 noFilterFlag=1;
             end
-            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
+            %warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
             [COPL,FL,~]=computeHemiCOP(this,'L',noFilterFlag);
+            warning('off','orientedLabTimeSeries:computeCOP') %To avoid repeat warnings, which are annoying
             [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
+            warning('on','orientedLabTimeSeries:computeCOP')
             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
             [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
