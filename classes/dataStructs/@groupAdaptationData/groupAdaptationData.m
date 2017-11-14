@@ -568,7 +568,7 @@ classdef groupAdaptationData
             dataE=nan(size(data1,1),size(data1,2),length(this.ID));
             dataE(:,:,1)=data1;
             for i=2:length(this.ID)
-                [dataE(:,:,i),labels]=this.adaptData{i}.getPrefixedEpochData(labelPrefix,epochs);
+                [dataE(:,:,i),labels]=this.adaptData{i}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
             end
         end
 

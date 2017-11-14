@@ -662,7 +662,7 @@ classdef adaptationData
                 padWithNaNFlag=false;
             end
             labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
-            aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '\d+$']); %Assuming same suffix for all
+            aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '[ ]?\d+$']); %Assuming same suffix for all
             if isempty(aux)
                 error('Fail: did not find any parameters with the given prefixes')
                 return
