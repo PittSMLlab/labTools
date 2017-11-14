@@ -505,7 +505,7 @@ classdef groupAdaptationData
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
         
         %Checkerboard:
-        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)
+        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR,summFlag)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
@@ -513,15 +513,22 @@ classdef groupAdaptationData
             if nargin<7 || isempty(flipLR)
                 flipLR=false;
             end
+            
             %First, get epoch data:
             [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs);
-            dataRef=[]; %For argout
             Np=size(labels,1);
+            dataE=reshape(dataE,Np,length(labelPrefix),size(dataE,2),size(dataE,3));
+            dataRef=[]; %For argout
             if nargin>5 && ~isempty(refEpoch)
                 [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch);
+                dataRef=reshape(dataRef,Np,length(labelPrefix),1,size(dataRef,3));
                 dataE=dataE-dataRef;
             end
-            dataS=nanmean(dataE,3); %Mean across subjs
+            if nargin<8 || isempty(summFlag)
+                summFlag='nanmean';
+            end
+            eval(['fun=@(x) ' summFlag '(x,4);']);
+            dataS=fun(dataE);
             
             %Second: use ATS.plotCheckerboard
             if nargin<4 || isempty(fh)
@@ -531,16 +538,23 @@ classdef groupAdaptationData
                 if nargin<5 || isempty(ph) || length(ph)~=length(epochs)
                     ph(i)=subplot(length(epochs),1,i);
                 end
-                ATS=alignedTimeSeries(0,1,reshape(dataS(:,i),Np,length(labelPrefix)),labelPrefix,ones(1,Np),{'sHS','','fTO','','','','fHS','','sTO','','',''});
+                evLabel={'sHS','','fTO','','','','fHS','','sTO','','',''};
+                ATS=alignedTimeSeries(0,1,dataS(:,:,i),labelPrefix,ones(1,Np),evLabel);
                 if flipLR
-                    ATS=ATS.flipLR;
+                    [ATS,iC]=ATS.flipLR;
                 end
                 ATS.plotCheckerboard(fh,ph(i));
                 axes(ph(i))
                 colorbar off
                 title([epochs.Properties.ObsNames(i)])
             end
-            
+            if flipLR %Aligning all returned data if we do L/R flip
+                dataE(:,iC,:,:)=fftshift(dataE(:,iC,:,:),1);
+                if ~isempty(dataRef)
+                    dataRef(:,iC,:,:)=fftshift(dataRef(:,iC,:,:),1);
+                end
+            end
+                
         end
         function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs)
             %See also: adaptationData.getPrefixedEpochData
@@ -774,7 +788,7 @@ classdef groupAdaptationData
             %Do Friedman
             N=size(inds{1},1); %Number of strides per stride group
             M=size(inds{1},2); %Number of stride groups
-            P=length(this.ID); %#subs
+            P=length(this.ID); % num of subs
             if isa(label,'char')
                 label={label};
             end
@@ -839,7 +853,7 @@ classdef groupAdaptationData
             %inds=mat2cell(cell2mat(inds'),N*ones(length(this.ID),1),M);
             N=size(inds{1},1);%Number of strides per stride group
             M=size(inds{1},2);%Number of strideGroups
-            P=length(this.ID); %#subs = size(inds,2)
+            P=length(this.ID); %num of subs = size(inds,2)
             if isa(label,'char')
                 label={label};
             end
