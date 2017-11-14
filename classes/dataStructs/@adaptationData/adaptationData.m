@@ -596,7 +596,7 @@ classdef adaptationData
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
         
-        function [data,validStrides]=getEpochData(this,epochs,labels)
+        function [data,validStrides]=getEpochData(this,epochs,labels,padWithNaNFlag)
            
             %INPUTS:
             %this must be adaptationData object
@@ -609,6 +609,9 @@ classdef adaptationData
             %Manage inputs:
             if isa(labels,'char')
                 labels={labels};
+            end
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
             end
             
             %First: validate epochs:
@@ -625,10 +628,10 @@ classdef adaptationData
             summaryFlag=epochs.summaryMethod;
             for i=1:length(valid) %Each valid epoch
                 if valid(i)
-                    [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i));%Get data
+                    [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i),padWithNaNFlag);%Get data
                     %Summarize it:
                     summFun=str2func(summaryFlag{i});
-                    data(:,i)=squeeze(summFun(dataPoints{1}));
+                    data(:,i)=squeeze(summFun(dataPoints{1},2));
                     validStrides(i)=sum(any(~isnan(dataPoints{1}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
                     %nop
@@ -648,12 +651,15 @@ classdef adaptationData
             end
         end
 
-        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs)
+        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
             if isa(labelPrefix,'char')
                 labelPrefix={labelPrefix};
+            end
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
             end
             labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
             aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '\d+$']); %Assuming same suffix for all
@@ -664,7 +670,7 @@ classdef adaptationData
             Np=length(aux);
             suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,'UniformOutput',false); %Extracting suffixes, I am lazy
             labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
-            dataE=this.getEpochData(epochs,labels(:));
+            dataE=this.getEpochData(epochs,labels(:),padWithNaNFlag);
         end
         
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
@@ -804,7 +810,7 @@ classdef adaptationData
 
         [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)
 
-        [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
+        [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaN)
 
         [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
 

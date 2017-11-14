@@ -362,18 +362,21 @@ classdef groupAdaptationData
             [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
         end
         
-        function [data,validStrides]=getEpochData(this,epochs,labels)
+        function [data,validStrides]=getEpochData(this,epochs,labels,padWithNaNFlag)
             %getEpochData returns data from all subjects for each epoch
             %See also: adaptationData.getEpochData
             
             %Manage inputs:
             if isa(labels,'char')
                 labels={labels};
-            end          
+            end
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
             data=nan(length(labels),length(epochs),length(this.ID));
             validStrides=nan(length(epochs),length(this.ID));
             for i=1:length(this.ID)
-                [data(:,:,i),validStrides(:,i)]=this.adaptData{i}.getEpochData(epochs,labels);
+                [data(:,:,i),validStrides(:,i)]=this.adaptData{i}.getEpochData(epochs,labels,padWithNaNFlag);
             end
         end
 
@@ -515,12 +518,12 @@ classdef groupAdaptationData
             end
             
             %First, get epoch data:
-            [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs);
+            [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs,true); %Padding with NaNs
             Np=size(labels,1);
             dataE=reshape(dataE,Np,length(labelPrefix),size(dataE,2),size(dataE,3));
             dataRef=[]; %For argout
             if nargin>5 && ~isempty(refEpoch)
-                [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch);
+                [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch, true); %Padding with NaNs
                 dataRef=reshape(dataRef,Np,length(labelPrefix),1,size(dataRef,3));
                 dataE=dataE-dataRef;
             end
@@ -556,9 +559,12 @@ classdef groupAdaptationData
             end
                 
         end
-        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs)
+        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %See also: adaptationData.getPrefixedEpochData
-            [data1,labels]=this.adaptData{1}.getPrefixedEpochData(labelPrefix,epochs);
+            if nargin<4 || isempty(padWithNaNFlag)
+                padWithNaNFlag=false;
+            end
+            [data1,labels]=this.adaptData{1}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
             dataE=nan(size(data1,1),size(data1,2),length(this.ID));
             dataE(:,:,1)=data1;
             for i=2:length(this.ID)

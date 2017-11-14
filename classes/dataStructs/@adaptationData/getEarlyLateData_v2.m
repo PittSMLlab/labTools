@@ -1,9 +1,8 @@
-function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)
+function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)
         %obtain the earliest and late data points for conditions
 		%allow to eliminate very late data points 
 		%Predefine values:  
 		%earlyNumber=5
-		%veryEarlyPoints=3
 		%latePoints=20
 		%exemptLast=5
         %exemptFirst=0
@@ -22,16 +21,11 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
 		%
 		%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);
 		
-			earlyPoints=[];
-            veryEarlyPoints=[];
-            latePoints=[];
-            N1=3;%all(cellfun(@(x) isa(x,'char'),conds))
             if isa(conds,'char')
                 conds={conds};
             elseif ~isa(conds,'cell') || ~all(cellfun(@(x) (isa(x,'char') || isa(x,'cell')),conds))
                 error('adaptationData:getEarlyLateData','Conditions must be a string or a cell array containing strings.');
             end
-            nConds=length(conds);
             if nargin<2 
                 labels=[]; %Empty labels interpreted as ALL labels down-stream
             elseif ~isempty(labels) && ( ~(isa(labels,'char') || (isa(labels,'cell') && all(cellfun(@(x) isa(x,'char'),labels)) )))
@@ -40,7 +34,6 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             if nargin<5 || isempty(numberOfStrides)
                 numberOfStrides=[5,-20]; %First 5 and last 20
             end
-            dataPoints=cell(size(numberOfStrides));
             if nargin<6 || isempty(exemptLast)
                 Ne=5;
             else
@@ -56,9 +49,12 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             else
                 %this=adaptData;
             end
+            if nargin<7
+                padWithNaNFlag=false;
+            end
             
             %this=this.removeBadStrides; %Should this be default? Pablo: I don't think we should be changing the # of strides in the middle of a request for data.
-            [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);
+            [inds]=this.getEarlyLateIdxs(conds,numberOfStrides,Ne,Nf);
             switch removeBiasFlag
                 case 1
                     this=this.removeBias;
@@ -69,5 +65,5 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
                 otherwise
                     error('Unexpected value for removeBiasFlag')
             end
-            dataPoints=this.getDataFromInds(inds,labels);
+            dataPoints=this.getDataFromInds(inds,labels,padWithNaNFlag);
         end
