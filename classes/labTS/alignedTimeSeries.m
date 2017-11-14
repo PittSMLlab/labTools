@@ -387,7 +387,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         function [boolFlag,labelIdx]=isaLabel(this,label)
             boolFlag=false(size(label));
             labelIdx=zeros(size(label));
-            [bool,idx] = compareLists(label,this.labels);
+            [bool,idx] = compareListsFast(label,this.labels);
             for j=1:length(label)
                 if any(idx==j)
                     boolFlag(j)=true;
@@ -563,19 +563,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
         end
         
-        function this=flipLR(this)
+        function [this,iC]=flipLR(this)
            %Find the side that has the starting event:
            alignedSide=this.alignmentLabels{1}(1);
-           switch alignedSide
-               case 'L'
-                    nonAlignedSide= 'R';
-               case 'R'
-                   nonAlignedSide= 'L';
-               case 'f'
-                   nonAlignedSide= 's';
-               case 's'
-                   nonAlignedSide= 'f';
-           end
+           nonAlignedSide=getOtherLeg(alignedSide);
            %Flip non-aligned side:
            lC=this.getLabelsThatMatch(['^' nonAlignedSide]);
            if ~isempty(lC)
@@ -590,6 +581,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                end
            else
                 warning('Asked to flipLR but couldn''t find aligned side.')
+                iC=[];
            end
         end
         
