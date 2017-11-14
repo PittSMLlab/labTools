@@ -14,7 +14,7 @@ fastLeg=getOtherLeg(slowLeg);
 lF=EMGData.getLabelsThatMatch(['^' fastLeg]);
 warning('off','labTS:renameLabels:dont') %Silencing renameLabels warning temporarily
 EMGData=EMGData.renameLabels(lS,regexprep(lS,['^' slowLeg],'s'));
-EMGData=EMGData.renameLabels(lS,regexprep(lF,['^' fastLeg],'f'));
+EMGData=EMGData.renameLabels(lF,regexprep(lF,['^' fastLeg],'f'));
 %Get rectified EMG, remove 'abs' suffix:
 newEMG=EMGData.rectify.renameLabels([],EMGData.labels);
 warning('on','labTS:renameLabels:dont')
