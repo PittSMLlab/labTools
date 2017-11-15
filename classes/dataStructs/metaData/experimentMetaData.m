@@ -159,12 +159,12 @@ classdef experimentMetaData
             newThis=this;
             for i=1:length(condList)
                 id=this.getConditionIdxsFromName(condList{i});
-                Nt=newThis.trialsInCondition(id);
-                newCondNames=strcat(newThis.conditionName{id},num2str([1:Nt]'));
-                newDesc=strcat(newThis.conditionDescription{id},', trial ',num2str([1:Nt]'));
-                newThis.condtionName=[newThis.conditionName(1:id-1) newCondNames newThis.conditionName(id+1:end)];
+                Nt=newThis.trialsInCondition{id};
+                newCondNames=mat2cell(strcat(newThis.conditionName{id},num2str([1:numel(Nt)]')),ones(size(Nt')),length(newThis.conditionName{id})+1)';
+                newDesc=mat2cell(strcat(newThis.conditionDescription{id},', trial #',num2str([1:numel(Nt)]')),ones(size(Nt')),length(newThis.conditionDescription{id})+10)';
+                newThis.conditionName=[newThis.conditionName(1:id-1) newCondNames newThis.conditionName(id+1:end)];
                 newThis.conditionDescription=[newThis.conditionDescription(1:id-1) newDesc newThis.conditionDescription(id+1:end)];
-                newThis.trialsInCondition=[newThis.trialsInCondition(1:id-1) mat2cell(newThis.trialsIncondition{id},1,Nt) newThis.trialsInCondition(id+1:end)];
+                newThis.trialsInCondition=[newThis.trialsInCondition(1:id-1) mat2cell(newThis.trialsInCondition{id},1,ones(size(Nt))) newThis.trialsInCondition(id+1:end)];
             end
         end
 

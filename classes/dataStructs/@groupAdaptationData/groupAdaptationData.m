@@ -549,7 +549,7 @@ classdef groupAdaptationData
                 ATS.plotCheckerboard(fh,ph(i));
                 axes(ph(i))
                 colorbar off
-                title([epochs.Properties.ObsNames(i)])
+                title([epochs.Properties.ObsNames{i} '[' num2str(epochs.Stride_No(i)) ']'])
             end
             if flipLR %Aligning all returned data if we do L/R flip
                 dataE(:,iC,:,:)=fftshift(dataE(:,iC,:,:),1);
