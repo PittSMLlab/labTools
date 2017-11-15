@@ -2,7 +2,7 @@ classdef experimentMetaData
 %experimentMetaData   Information describing the experiment as a whole.
 %
 %experimentMetaData Properties:
-%   ID - string containing the subject ID e.g. 'OG90' or 'CGN05' 
+%   ID - string containing the subject ID e.g. 'OG90' or 'CGN05'
 %   date - labDate object containing the date of the experiment
 %   experimenter - string, initials/name of person(s) who ran the experiment
 %   observations - string with overall study observations (observations for individual
@@ -20,32 +20,32 @@ classdef experimentMetaData
 %   similar name to the string(s) entered.
 %
 %See also: labDate
-    
+
     properties
         ID;
         date=labDate.default; %labDate object
-        experimenter='';        
+        experimenter='';
         observations='';
         conditionName={};
         conditionDescription={};
         trialsInCondition={};
-        Ntrials=[];        
-    end   
-   
-    
+        Ntrials=[];
+    end
+
+
     methods
         %Constructor
         function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
-            this.ID=ID;           
+            this.ID=ID;
             if nargin>1
                 this.date=date;
             end
             if nargin>2
                 this.experimenter=experimenter;
-            end            
+            end
             if nargin>3
                 this.observations=obs;
-            end      
+            end
             if nargin>4
                 if length(unique(conds))<length(conds)
                     error('ExperimentMetaData:Constructor','There are repeated condition names, which is not allowed')
@@ -55,17 +55,17 @@ classdef experimentMetaData
                     this.conditionName=conds;
                 end
             end
-            if nargin>5 
+            if nargin>5
                 this.conditionDescription=desc;
-            end            
-            if nargin>6                
+            end
+            if nargin>6
                 this.trialsInCondition=trialLst;
             end
             if nargin>7
-                this.Ntrials=Ntrials; 
-            end            
+                this.Ntrials=Ntrials;
+            end
         end
-        
+
         %% Setters
         function this=set.ID(this,ID)
             if isa(ID,'char') %&& nargin>0
@@ -76,15 +76,15 @@ classdef experimentMetaData
             else
                 ME=MException('experimentMetaData:Constructor','ID is not a string.');
                 throw(ME);
-            end 
-        end        
+            end
+        end
         function this=set.date(this,date)
             if isa(date,'labDate')
                 this.date=date;
             else
                 ME=MException('experimentMetaData:Constructor','date is not labDate object.');
                 throw(ME);
-            end                           
+            end
         end
         function this=set.experimenter(this,experimenter)
             if isa(experimenter,'char');
@@ -104,12 +104,12 @@ classdef experimentMetaData
         end
         function this=set.conditionName(this,conds)
             if ~isempty(conds) && isa(conds,'cell')
-               this.conditionName=conds; 
+               this.conditionName=conds;
             end
         end
         function this=set.conditionDescription(this,desc)
             if ~isempty(desc) && isa(desc,'cell')
-               this.conditionDescription=desc; 
+               this.conditionDescription=desc;
             end
         end
         function this=set.trialsInCondition(this,trialLst)
@@ -119,7 +119,7 @@ classdef experimentMetaData
                 aux=cell2mat(trialLst);
                 aux2=unique(aux);
                 for i=1:length(aux2)
-                   a=find(aux==aux2(i)); 
+                   a=find(aux==aux2(i));
                    if numel(a)>1
                        ME=MException('experimentMetaData:Constructor',['Trial ' num2str(aux2(i)) ' is listed as part of more than one condition.']);
                        throw(ME)
@@ -133,7 +133,7 @@ classdef experimentMetaData
                 this.Ntrials=Ntrials;
             end
         end
-        
+
         %% Other methods
         function condLst=getCondLstPerTrial(this)
            %Returns a vector with length equal to the
@@ -151,27 +151,41 @@ classdef experimentMetaData
                else
                    condLst(i)=cond;
                end
-           end 
+           end
         end
-        
+        function newThis=splitConditionIntoTrials(this,condList)
+            %This function gets a condition list condList, and for each condition on said list
+            %it splits it, assigning a unique condition name to each trial
+            newThis=this;
+            for i=1:length(condList)
+                id=this.getConditionIdxsFromName(condList{i});
+                Nt=newThis.trialsInCondition(id);
+                newCondNames=strcat(newThis.conditionName{id},num2str([1:Nt]'));
+                newDesc=strcat(newThis.conditionDescription{id},', trial ',num2str([1:Nt]'));
+                newThis.condtionName=[newThis.conditionName(1:id-1) newCondNames newThis.conditionName(id+1:end)];
+                newThis.conditionDescription=[newThis.conditionDescription(1:id-1) newDesc newThis.conditionDescription(id+1:end)];
+                newThis.trialsInCondition=[newThis.trialsInCondition(1:id-1) mat2cell(newThis.trialsIncondition{id},1,Nt) newThis.trialsInCondition(id+1:end)];
+            end
+        end
+
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag,ignoreMissingNamesFlag)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
             %
             %Inputs:
-            %ConditionNames -- cell array containing a string or 
-            %another cell array of strings in each of its cells. 
+            %ConditionNames -- cell array containing a string or
+            %another cell array of strings in each of its cells.
             %E.g. conditionNames={'Base','Adap',{'Post','wash'}}
             if nargin<3 || isempty(exactMatchesOnlyFlag)
                 exactMatchesOnlyFlag=0; %Default behavior accepts partial matches
             end
             if nargin<4 || isempty(ignoreMissingNamesFlag)
-                ignoreMissingNamesFlag=0; 
+                ignoreMissingNamesFlag=0;
             end
             if isa(conditionNames,'char')
                 conditionNames={conditionNames};
             end
-            nConds=length(conditionNames); 
+            nConds=length(conditionNames);
             conditionIdxs=NaN(nConds,1);
             for i=1:nConds
                 %First: find if there is a condition with a
@@ -213,7 +227,7 @@ classdef experimentMetaData
                 end
             end
         end
-        
+
         function trialNums=getTrialsInCondition(this,conditionNames)
             %Return trial numbers in each condition
             %
@@ -230,7 +244,7 @@ classdef experimentMetaData
             conditionIdx=this.getConditionIdxsFromName(conditionNames);
             trialNums=cell2mat(this.trialsInCondition(conditionIdx));
         end
-        
+
         function [this,change]=replaceConditionNames(this,currentName,newName)
             %Looks for conditions whose name match the options in
             %currentName & changes them to newName
@@ -245,7 +259,7 @@ classdef experimentMetaData
                end
            end
         end
-        
+
         function [newThis,change]=numerateRepeatedConditionNames(this)
            %This function should (almost) never be used. metaData no longer allows repeated condition names, so this is unnecessary.
            %However, for files created before the prohibition, it may
@@ -261,14 +275,14 @@ classdef experimentMetaData
                        for j=1:length(aux)
                           aaux=this.trialsInCondition{aux(j)} ;
                           %This queries the user for a new name:
-                          
+
                           %disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) '.'])
                           %ss=input(['Please input a new name for this condition: ']);
-                          
+
                           %This assigns a new name by adding a number:
                           ss=[aaa{i} ' ' num2str(j)];
-                          
-                          
+
+
                           this.conditionName{aux(j)}=ss;
                           disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) ', was replaced by ' ss '.'])
                        end
@@ -278,10 +292,10 @@ classdef experimentMetaData
             end
             newThis=this;
         end
-        
+
         function [condNames]=getConditionsThatMatch(this,name,type)
            %Returns condition names that match certain patterns
-           
+
            if nargin<2 || isempty(name) || ~isa(name,'char')
                error('Pattern name to search for needs to be a string')
            end
@@ -294,6 +308,5 @@ classdef experimentMetaData
            condNames=this.conditionName(patternMatches & typeMatches);
         end
     end
-    
-end
 
+end
