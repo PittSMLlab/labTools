@@ -621,8 +621,8 @@ classdef adaptationData
             removeBiasFlag=0;
             conds=epochs.Condition;
             numberOfStrides=epochs.Stride_No .* sign(epochs.EarlyOrLate-.5);
-            exemptLast=epochs.ExemptFirst; %Only if getting late strides
-            exemptFirst=epochs.ExemptLast; %Only if getting early strides
+            exemptLast=epochs.ExemptFirst; 
+            exemptFirst=epochs.ExemptLast;
             data=nan(length(labels),length(epochs));
             validStrides=nan(length(epochs),1);
             summaryFlag=epochs.summaryMethod;
@@ -634,6 +634,7 @@ classdef adaptationData
                     data(:,i)=squeeze(summFun(dataPoints{1},2));
                     validStrides(i)=sum(any(~isnan(dataPoints{1}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
+                    warning('Invalid epoch found, returning NaNs')
                     %nop
                 end
             end
@@ -642,7 +643,7 @@ classdef adaptationData
         function flags=validateEpochs(this,epochs)
             flags=true(length(epochs),1);
             for i=1:length(epochs) %for each epoch
-                if all(this.isaCondition(epochs.Condition)) %all good
+                if this.isaCondition(epochs.Condition(i)) %all good
                     %nop
                 else
                     warning(['Invalid epoch ' epochs.Properties.ObsNames{i} ' for subject ' this.subData.ID])

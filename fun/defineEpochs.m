@@ -1,4 +1,4 @@
-function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod)
+function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)
 %defineEpochs is used to create a dataset object that defines relevant
 %epochs in the analysis of experimental data. It is used by several
 %functions within studyData, groupAdaptationData and adaptationData
@@ -41,7 +41,12 @@ if numel(summaryMethod)==1
     summaryMethod=repmat(summaryMethod,N,1);
 end
 earlyOrLate=sign(strideNo)==1;
+if nargin<7 || isempty(shortName)
+    shortName=cell(size(epochNames));
+elseif numel(shortName)==1
+    shortName=repmat(shortName,N,1);
+end
 
-epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate','summaryMethod'},'ObsNames',epochNames);
+epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate','summaryMethod','shortName'},'ObsNames',epochNames);
 end
 

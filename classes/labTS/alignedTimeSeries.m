@@ -610,8 +610,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             map=[bsxfun(@plus,ex1.^(1/gamma),bsxfun(@times,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@plus,ex2.^(1/gamma),bsxfun(@times,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
 
             colormap(flipud(map))
-            caxis([-1 1]*max(abs(m.Data(:))))
+            try
+            caxis([-1 1]*max(abs(m.Data(:)))) %Fails if plotted data is NaN
             colorbar
+            catch
+                
+            end
             
             %To do: check if the events exist, and add DS/STANCE/DS/SWING labels
         end
