@@ -909,7 +909,7 @@ classdef labTimeSeries  < timeseries
         expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
         ee=[expEventTimes(:); eventTimes(end,1)];
         [slicedTS]=this.sliceTS(ee,0);
-        d=cell2mat(cellfun(@(x) mean(x.Data),slicedTS,'UniformOutput',false)');
+        d=cell2mat(cellfun(@(x) nanmean(x.Data, 1),slicedTS,'UniformOutput',false)'); % This is aletered to do nanmean, only allong the columns so that if we have NAN data, and to account for the odd instance when we only have one row or data in our slicedTS
         [M,N1]=size(expEventTimes);        M2=size(d,2);
         d=permute(reshape(d,sum(N),N1,M2),[1,3,2]);
         DTS=alignedTimeSeries(0,1,d,this.labels,N,eventLabel,eventTimes');

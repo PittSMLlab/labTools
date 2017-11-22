@@ -131,7 +131,7 @@ if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
 end
 %% Angles  
 if ~isempty(trialData.angleData)
-    [angles] = computeAngleParameters(strideEvents,stridedAngleData,s);
+    [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s);
     out=cat(out,angles);
 end
 %% Force
