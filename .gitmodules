@@ -1,6 +1,6 @@
 [submodule "fun/ext/pitools"]
 	path = fun/ext/pitools
 	url = http://github.com/pabloi/pi-tools.git
-[submodule "markerDataCleaning"]
-	path = markerDataCleaning
+[submodule "fun/ext/markerDataCleaning"]
+	path = fun/ext/markerDataCleaning
 	url = https://github.com/pabloi/markerDataCleaning
