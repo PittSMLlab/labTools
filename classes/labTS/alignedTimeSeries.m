@@ -568,10 +568,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            alignedSide=this.alignmentLabels{1}(1);
            nonAlignedSide=getOtherLeg(alignedSide);
            %Flip non-aligned side:
-           lC=this.getLabelsThatMatch(['^' nonAlignedSide]);
+           lC=this.getLabelsThatMatch(['^' nonAlignedSide]); %Get non-aligned side labels
            if ~isempty(lC)
-               [~,iC]=this.isaLabel(lC); %Index for contra-labels
-               aux=regexprep(lC,['^' nonAlignedSide],alignedSide);
+               [~,iC]=this.isaLabel(lC); %Index for non-aligned
+               aux=regexprep(lC,['^' nonAlignedSide],alignedSide); %Getting aligned side labels
                if ~all(this.isaLabel(aux)) %Labels are not symm, aborting
                    warning('Asked to flipLR but labels are not symmetrically present.')
                else
@@ -597,12 +597,15 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                axes(ph);
            end
            m=this.mean;
-           imagesc(m.Data')
+           %imagesc(m.Data')
+           surf([this.Time, 2*this.Time(end)-this.Time(end-1)],[0:size(m.Data,2)],[[m.Data';m.Data(:,end)'],[m.Data(end,:)';0]],'EdgeColor','none')
+           view(2)
            ax=gca;
-           ax.YTick=1:length(this.labels);
+           ax.YTick=[1:length(this.labels)]-.5;
            ax.YTickLabels=this.labels;
            ax.XTick=[1 1+cumsum(this.alignmentVector)]-.5;
            ax.XTickLabel=this.alignmentLabels;
+           axis([this.Time(1) 2*this.Time(end)-this.Time(end-1) 0 size(m.Data,2)])
            %Colormap:
             ex2=[0.2314    0.2980    0.7529];
             ex1=[0.7255    0.0863    0.1608];

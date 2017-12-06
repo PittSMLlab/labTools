@@ -947,7 +947,7 @@ classdef adaptationData
             if nargin<6
                 refEpoch=[];
             end
-           [fh,ph,labels,dataE,dataRef]=this.createSignleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
+           [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
         end
             
         

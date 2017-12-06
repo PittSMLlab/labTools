@@ -542,7 +542,7 @@ classdef groupAdaptationData
                     ph(i)=subplot(length(epochs),1,i);
                 end
                 evLabel={'sHS','','fTO','','','','fHS','','sTO','','',''};
-                ATS=alignedTimeSeries(0,1,dataS(:,:,i),labelPrefix,ones(1,Np),evLabel);
+                ATS=alignedTimeSeries(0,1/numel(evLabel),dataS(:,:,i),labelPrefix,ones(1,Np),evLabel);
                 if flipLR
                     [ATS,iC]=ATS.flipLR;
                 end
