@@ -1,4 +1,4 @@
-function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector)
+function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -29,8 +29,11 @@ else
     end
     desc2=cell(sum(alignmentVector),1);
 end
+if nargin<5
+    summaryFun=[];
+end
 someTS.Quality=[];%Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary
-[DTS,~]=someTS.discretize(gaitEvents,eventTypes,alignmentVector);
+[DTS,~]=someTS.discretize(gaitEvents,eventTypes,alignmentVector,summaryFun);
 [N,M,P]=size(DTS.Data);
 %Make labels:
 ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
