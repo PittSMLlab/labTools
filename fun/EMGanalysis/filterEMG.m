@@ -14,16 +14,24 @@ end
 filterList={};
     
     % Pre-filter:
+    %Some filter design basics:
+    %In what follows we define a 'pass' frequency that we will allow to be
+    %attenuated 1.5dB at most.  Since we do filtfilt (dual-pass), we get at 
+    %most a 3dB fall, which is 1/sqrt(2) in amplitude.
+    %We also define 'stop' frequencies, that we will require are attenuated
+    %at least 10dB. Once again, because of filtfilt, this means 20dB
+    %minimum attenuation for this frequency, which is 1/10 in amplitude.
+    %Stop frequency is defined as passfreq/2 for the high-pass filter
+    %(creating effectively a 20dB/octave fall after filtfilt), and as 20%
+    %higher than the remaining spectrum for low-pass filters.
     % HF noise 
     Wn=2*BW(2)/fs;
-    %lowPassFilter=design(fdesign.lowpass('N,F3dB,Ap,Ast',10,Wn,.5,40));
-    filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),3,10); %Ast=10dB results in a 4th order Butterworth filter (-80dB/dec fall).
+    filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),1.5,20); %Ast=10dB (/octave) results in a 4th order Butterworth filter (-80dB/dec fall).
     lowPassFilter=design(filterList{1},'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.
 
     % LF noise 
     Wn=2*BW(1)/fs;
-    %highPassFilter=design(fdesign.highpass('N,F3dB,Ast,Ap',10,Wn,60,.5)); %Changed Fp to 2*1.1*BW(1)*... from 2*BW(2)*... on 28/5/2014 becuase I think it was not correct.
-    filterList{2}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3); %Ast=10dB results in a 2nd order Butter filter (-40dB/dec), while setting Ast=20dB would result in a 4th order.
+    filterList{2}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,20,1.5); %Ast=10dB (/octave) results in a 2nd order Butter filter (~-40dB/dec), while setting Ast=20dB would result in a 4th order.
     highPassFilter=design(filterList{2},'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 2nd order filter.
     
     % Notch filters for electrical interference.
