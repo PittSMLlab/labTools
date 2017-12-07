@@ -362,7 +362,7 @@ classdef groupAdaptationData
             [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
         end
         
-        function [data,validStrides]=getEpochData(this,epochs,labels,padWithNaNFlag)
+        function [data,validStrides,allData]=getEpochData(this,epochs,labels,padWithNaNFlag)
             %getEpochData returns data from all subjects for each epoch
             %See also: adaptationData.getEpochData
             
@@ -375,8 +375,13 @@ classdef groupAdaptationData
             end
             data=nan(length(labels),length(epochs),length(this.ID));
             validStrides=nan(length(epochs),length(this.ID));
+            allData1=cell(length(epochs),length(this.ID));
             for i=1:length(this.ID)
-                [data(:,:,i),validStrides(:,i)]=this.adaptData{i}.getEpochData(epochs,labels,padWithNaNFlag);
+                [data(:,:,i),validStrides(:,i),allData1(:,i)]=this.adaptData{i}.getEpochData(epochs,labels,padWithNaNFlag);
+            end
+            allData=cell(length(epochs),1);
+            for j=1:length(epochs)
+               allData{j}= reshape(cell2mat(allData1(j,:)),epochs(j).Stride_No,length(labels),length(this.ID));
             end
         end
 
@@ -559,16 +564,21 @@ classdef groupAdaptationData
             end
                 
         end
-        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
+        function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %See also: adaptationData.getPrefixedEpochData
             if nargin<4 || isempty(padWithNaNFlag)
                 padWithNaNFlag=false;
             end
-            [data1,labels]=this.adaptData{1}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
+            allData1=cell(length(epochs),length(this.ID));
+            [data1,labels,allData1(:,1)]=this.adaptData{1}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
             dataE=nan(size(data1,1),size(data1,2),length(this.ID));
             dataE(:,:,1)=data1;
             for i=2:length(this.ID)
-                [dataE(:,:,i),labels]=this.adaptData{i}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
+                [dataE(:,:,i),labels,allData1(:,i)]=this.adaptData{i}.getPrefixedEpochData(labelPrefix,epochs,padWithNaNFlag);
+            end
+            allData=cell(length(epochs),1);
+            for j=1:length(epochs)
+               allData{j}= reshape(cell2mat(allData1(j,:)),epochs.Stride_No(j),numel(labels),length(this.ID));
             end
         end
 

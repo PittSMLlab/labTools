@@ -596,7 +596,7 @@ classdef adaptationData
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
         
-        function [data,validStrides]=getEpochData(this,epochs,labels,padWithNaNFlag)
+        function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)
            
             %INPUTS:
             %this must be adaptationData object
@@ -626,17 +626,22 @@ classdef adaptationData
             data=nan(length(labels),length(epochs));
             validStrides=nan(length(epochs),1);
             summaryFlag=epochs.summaryMethod;
+            allData=cell(length(valid),1);
             for i=1:length(valid) %Each valid epoch
                 if valid(i)
                     [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i),padWithNaNFlag);%Get data
                     %Summarize it:
                     summFun=str2func(summaryFlag{i});
-                    data(:,i)=squeeze(summFun(dataPoints{1},2));
-                    validStrides(i)=sum(any(~isnan(dataPoints{1}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
+                    allData{i}=squeeze(dataPoints{1});
+                    data(:,i)=squeeze(summFun(allData{i},1));
+                    validStrides(i)=sum(any(~isnan(allData{i}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
                     warning('Invalid epoch found, returning NaNs')
                     %nop
                 end
+            end
+            if nargout>2
+                everyStrideData=allData;
             end
         end
         
@@ -652,7 +657,7 @@ classdef adaptationData
             end
         end
 
-        function [dataE,labels]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
+        function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
@@ -671,7 +676,7 @@ classdef adaptationData
             Np=length(aux);
             suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,'UniformOutput',false); %Extracting suffixes, I am lazy
             labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
-            dataE=this.getEpochData(epochs,labels(:),padWithNaNFlag);
+            [dataE,~,allData]=this.getEpochData(epochs,labels(:),padWithNaNFlag);
         end
         
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
