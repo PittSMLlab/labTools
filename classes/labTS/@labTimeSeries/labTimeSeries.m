@@ -859,6 +859,34 @@ classdef labTimeSeries  < timeseries
            colorbar
            caxis([-1 1]*max(dd(:)));
         end
+        
+        function [fh,ph,missing]=assessMissing(this,labels,fh,ph)
+            if nargin<3
+                fh=figure();
+            else
+                figure(fh)
+            end
+            if nargin<4
+                ph=gca;
+            else
+                axes(ph)
+            end
+            if nargin<2
+                labels=this.labels;
+            end
+            data=this.getDataAsVector(labels);
+            missing=isnan(data);
+            miss=missing(:,any(missing));
+            pp=plot(miss,'o');
+            aux=labels(any(missing));
+            for i=1:length(pp)
+                set(pp(i),'DisplayName',[aux{i} ' (' num2str(sum(miss(:,i))) ' frames)'])
+            end
+            legend(pp)
+            title('Missing markers')
+            xlabel('Time (frames)')
+            set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
+        end
 
         %Other
         function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument

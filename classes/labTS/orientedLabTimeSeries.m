@@ -368,6 +368,34 @@ classdef orientedLabTimeSeries  < labTimeSeries
            axis equal
            legend(labelPref)
         end
+        
+        function [fh,ph,missing]=assessMissing(this,labelPrefixes,fh,ph)
+            if nargin<3
+                fh=figure();
+            else
+                figure(fh)
+            end
+            if nargin<4
+                ph=gca;
+            else
+                axes(ph)
+            end
+            if nargin<2
+                labelPrefixes=this.getLabelPrefix;
+            end
+            data=this.getOrientedDataAsVector(labelPrefixes);
+            missing=any(isnan(data),3);
+            miss=missing(:,any(missing));
+            pp=plot(miss,'o');
+            aux=labelPrefixes(any(missing));
+            for i=1:length(pp)
+                set(pp(i),'DisplayName',[aux{i} ' (' num2str(sum(miss(:,i))) ' frames)'])
+            end
+            legend(pp)
+            title('Missing markers')
+            xlabel('Time (frames)')
+            set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
+        end
 
         function mov=animate(this,t0,t1,frameRate,writeFileFlag,filename,mode)
             %This function renders a movie of the 3-D position stored in the orientedLabData object.
