@@ -755,6 +755,11 @@ classdef labTimeSeries  < timeseries
             if nargin<3 || isempty(labels)
                 relData=this.Data;
                 relLabels=this.labels;
+                if ~isempty(this.Quality)
+                    relQual=this.Quality==1;
+                else
+                    relQual=true(size(relData));
+                end
             else
                [relData,~,relLabels]=this.getDataAsVector(labels);
                N=size(relData,2);
@@ -781,6 +786,7 @@ classdef labTimeSeries  < timeseries
                 else
                     pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color);
                 end
+                plot(this.Time(relQual(:,i)),relData(relQual(:,i),i),'rx')
                 uistack(pp,'top')
                 ylabel(relLabels{i})
                 %if i==ceil(N/2)
@@ -861,22 +867,28 @@ classdef labTimeSeries  < timeseries
         end
         
         function [fh,ph,missing]=assessMissing(this,labels,fh,ph)
-            if nargin<3
+            noDisp=false;
+            if nargin<3 || isempty(fh)
                 fh=figure();
+            elseif fh==-1
+                noDisp=true;
             else
                 figure(fh)
+                if nargin<4
+                    ph=gca;
+                else
+                    axes(ph)
             end
-            if nargin<4
-                ph=gca;
-            else
-                axes(ph)
             end
+            
             if nargin<2
                 labels=this.labels;
             end
             data=this.getDataAsVector(labels);
             missing=isnan(data);
             miss=missing(:,any(missing));
+            
+            if ~noDisp
             pp=plot(miss,'o');
             aux=labels(any(missing));
             for i=1:length(pp)
@@ -886,6 +898,39 @@ classdef labTimeSeries  < timeseries
             title('Missing markers')
             xlabel('Time (frames)')
             set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
+            else
+                disp(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames.'])
+                disp(['Avg. number of missing markers per affected frame: ' num2str(sum(missing(:))/sum(any(missing,2)))]);
+          end
+        end
+        
+        function [newThis,logL]=findOutliers(this,model,verbose)
+            %Uses marker model data to assess outliers
+            try %Trying to run as OTS first:
+                [d,l]=this.getOrientedData(model.markerLabels);%This assumes ALL markerLabels are present
+                d=permute(d,[2,3,1]); 
+                [out,logL]=model.outlierDetect(d);
+                [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
+                aux(:,idx(boolF))=(out==1)';
+                this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
+            catch
+                d=this.Data';
+                l=this.labels;
+                [out,logL]=model.outlierDetect(d);
+                [boolF,idx]=this.isaLabel(model.markerLabels);
+                aux(:,idx(boolF))=(out==1)';
+                this.Quality=aux;
+            end
+            
+            if verbose
+                disp(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames.'])
+                disp(['Avg. number of outlier markers per affected frame: ' num2str(sum(out(:))/sum(any(out,1)))]);
+                for j=1:size(out,1)
+                    disp([l{j} ': ' num2str(sum(out(j,:)==1)) ' frames'])
+                end
+                disp(['Outlier data added in Quality field']);
+            end
+            newThis=this;
         end
 
         %Other

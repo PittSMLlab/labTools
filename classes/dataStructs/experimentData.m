@@ -259,9 +259,76 @@ classdef experimentData
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
         
+        function this=checkMarkerHealth(this,refTrial)
+            disp(['Checking marker health...'])
+            if nargin<2 || isempty(refTrial)
+                tryTrials=1:length(this.data);
+            else
+                tryTrials=refTrial;
+            end
+                %First: build models
+                m=cell(length(this.data),1);
+                for trial=tryTrials
+                    if ~isempty(this.data{trial})
+                        aux=this.data{trial}.markerData;
+                        duration=aux.timeRange;  
+                        if duration>10 %At least 10 secs of data with true movement for training
+                            labels=aux.getLabelPrefix;
+                            data=aux.getOrientedData;
+                            iL=cellfun(@(x) ~isempty(x),regexp(labels,'^L*'));
+                            iR=cellfun(@(x) ~isempty(x),regexp(labels,'^R*'));
+                            dL=data(:,iL,:);
+                            lL=labels(iL);
+                            dR=data(:,iR,:);
+                            lR=labels(iR);
+                            [~,idx1]=sort(nanmean(dL(:,:,3)),'ascend');
+                            [~,idx2]=sort(nanmean(dR(:,:,3)),'descend');
+                            labels=[lL(idx1) lR(idx2)];
+                            data=cat(2,dL(:,idx1,:),dR(:,idx2,:));
+                            d=permute(data,[2,3,1]);
+                            m{trial} = naiveDistances.learn(d,labels,true);
+                            %m{trial}.seeModel
+                            if median(m{trial}.getRobustStd(.9))<20 %Static trial most likely
+                                m{trial}=[];
+                            end
+                            
+                        end
+                    end
+                end
+                %Second: select best model
+                aux=nan(size(m));
+                for trial=1:length(this.data)
+                    if ~isempty(m{trial})
+                        aux(trial)=sum(m{trial}.getRobustStd(.9));
+                    end
+                end
+                if ~all(isnan(aux))
+                    [~,refTrial]=min(aux);
+                else
+                    error('Could not find suitable data for model training. Stopping.')
+                end
+                mm=m{refTrial};
+                
+                disp(['Using trial ' num2str(refTrial) ' to train model...'])
+                mm.seeModel
+                
+
+                %Third: run all trials through best model
+                for trial=1:length(this.data)
+                    disp(['Checking trial ' num2str(trial) '...'])
+                    if ~isempty(this.data{trial})
+                        aux=this.data{trial}.markerData;
+                        %3A: check missing data
+                        aux.assessMissing([],-1);
+                        %3B: check data health
+                        aux=aux.findOutliers(mm,true);
+                        this.data{trial}.markerData=aux;
+                    end
+                end
+        end
+        
         
          function this=computeAngles(this)%added by Digna
-           
             for trial=1:length(this.data)
                 disp(['Computing angles for trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})

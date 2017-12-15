@@ -363,6 +363,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
            for i=1:length(labelPref)
                plot3(data(:,i,1),data(:,i,2),data(:,i,3),'.')
+               if ~isempty(this.Quality)
+                   aux=this.Quality(:,i)==1;
+                   plot3(data(aux,i,1),data(aux,i,2),data(aux,i,3),'rx')
+               end
            end
            hold off
            axis equal
@@ -370,22 +374,25 @@ classdef orientedLabTimeSeries  < labTimeSeries
         end
         
         function [fh,ph,missing]=assessMissing(this,labelPrefixes,fh,ph)
-            if nargin<3
+            if nargin<3 || isempty(fh)
                 fh=figure();
+            elseif fh==-1
+                noDisp=true;
             else
                 figure(fh)
+                if nargin<4
+                    ph=gca;
+                else
+                    axes(ph)
             end
-            if nargin<4
-                ph=gca;
-            else
-                axes(ph)
             end
             if nargin<2
                 labelPrefixes=this.getLabelPrefix;
             end
-            data=this.getOrientedDataAsVector(labelPrefixes);
+            data=this.getOrientedData(labelPrefixes);
             missing=any(isnan(data),3);
             miss=missing(:,any(missing));
+            if ~noDisp
             pp=plot(miss,'o');
             aux=labelPrefixes(any(missing));
             for i=1:length(pp)
@@ -395,6 +402,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
             title('Missing markers')
             xlabel('Time (frames)')
             set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
+            else
+                disp(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames.'])
+                disp(['Avg. number of missing markers per affected frame: ' num2str(sum(missing(:))/sum(any(missing,2)))]);
+            end
         end
 
         function mov=animate(this,t0,t1,frameRate,writeFileFlag,filename,mode)
