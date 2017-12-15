@@ -256,6 +256,7 @@ classdef experimentData
                    procData{trial}=[];
                 end
             end
+            this=checkMarkerHealth(this);
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
         
@@ -288,7 +289,7 @@ classdef experimentData
                             d=permute(data,[2,3,1]);
                             m{trial} = naiveDistances.learn(d,labels,true);
                             %m{trial}.seeModel
-                            if median(m{trial}.getRobustStd(.9))<20 %Static trial most likely
+                            if median(m{trial}.getRobustStd(.94))<20 %Static trial most likely
                                 m{trial}=[];
                             end
                             
@@ -299,7 +300,8 @@ classdef experimentData
                 aux=nan(size(m));
                 for trial=1:length(this.data)
                     if ~isempty(m{trial})
-                        aux(trial)=sum(m{trial}.getRobustStd(.9));
+                        ss=m{trial}.getRobustStd(.94);
+                        aux(trial)=median(ss(m{trial}.activeStats));
                     end
                 end
                 if ~all(isnan(aux))

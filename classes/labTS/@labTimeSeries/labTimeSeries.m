@@ -906,21 +906,13 @@ classdef labTimeSeries  < timeseries
         
         function [newThis,logL]=findOutliers(this,model,verbose)
             %Uses marker model data to assess outliers
-            try %Trying to run as OTS first:
-                [d,l]=this.getOrientedData(model.markerLabels);%This assumes ALL markerLabels are present
-                d=permute(d,[2,3,1]); 
-                [out,logL]=model.outlierDetect(d);
-                [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
-                aux(:,idx(boolF))=(out==1)';
-                this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
-            catch
-                d=this.Data';
+                
+                d=this.getDataAsVector(model.markerLabels)';
                 l=this.labels;
-                [out,logL]=model.outlierDetect(d);
+                [out,logL]=model.outlierDetect(d,-4);
                 [boolF,idx]=this.isaLabel(model.markerLabels);
                 aux(:,idx(boolF))=(out==1)';
                 this.Quality=aux;
-            end
             
             if verbose
                 disp(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames.'])
@@ -930,6 +922,18 @@ classdef labTimeSeries  < timeseries
                 end
                 disp(['Outlier data added in Quality field']);
             end
+%             s=naiveDistances.summaryStats(d);
+%             s=s(model.activeStats,:)';
+%             m=model.statMedian;
+%             m=m(model.activeStats);
+%             ss=model.getRobustStd(.94);
+%             ss=3*ss(model.activeStats); %3 standard devs
+%             aux=model.loglikelihood(d)<-4^2/2;
+%             figure; pp=plot(s); axis tight; hold on;
+%             for j=1:size(s,2)
+%                 patch([1 size(s,1) size(s,1) 1],[m(j)-ss(j) m(j)-ss(j) m(j)+ss(j) m(j)+ss(j)],pp(j).Color,'FaceAlpha',.3,'EdgeColor','None')
+%                 plot(find(aux(j,:)),s(aux(j,:),j),'x','Color',pp(j).Color,'MarkerSize',4);
+%             end
             newThis=this;
         end
 
