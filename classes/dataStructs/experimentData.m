@@ -267,8 +267,13 @@ classdef experimentData
             else
                 tryTrials=refTrial;
             end
+            
+               
                 %First: build models
                 m=cell(length(this.data),1);
+                badFlag=false(size(m));
+                modelScore=nan(size(m));
+                modelScore2=nan(size(m));
                 for trial=tryTrials
                     if ~isempty(this.data{trial})
                         aux=this.data{trial}.markerData;
@@ -288,45 +293,54 @@ classdef experimentData
                             data=cat(2,dL(:,idx1,:),dR(:,idx2,:));
                             d=permute(data,[2,3,1]);
                             m{trial} = naiveDistances.learn(d,labels,true);
-                            %m{trial}.seeModel
-                            if median(m{trial}.getRobustStd(.94))<20 %Static trial most likely
-                                m{trial}=[];
+                            [badFlag(trial)] = validateMarkerModel(m{trial},false);
+                            sigma=m{trial}.getRobustStd(.94);
+                            if median(sigma)<20 %Static trial most likely
+                                badFlag(trial)=true;
                             end
-                            
+                            sigma=naiveDistances.stat2Matrix(sigma);
+                            sigma=triu(sigma)-triu(sigma,3);
+                            sigma(sigma==0)=NaN;
+                            modelScore(trial)=nanmax(sigma(:));
+                            modelScore2(trial)=nanmean(sigma(:));
                         end
                     end
                 end
-                %Second: select best model
-                aux=nan(size(m));
-                for trial=1:length(this.data)
-                    if ~isempty(m{trial})
-                        ss=m{trial}.getRobustStd(.94);
-                        aux(trial)=median(ss(m{trial}.activeStats));
-                    end
-                end
-                if ~all(isnan(aux))
-                    [~,refTrial]=min(aux);
-                else
-                    error('Could not find suitable data for model training. Stopping.')
-                end
-                mm=m{refTrial};
                 
-                disp(['Using trial ' num2str(refTrial) ' to train model...'])
-                mm.seeModel
+                %Second: select best model
+                noOutlierTest=false;
+                if ~all(badFlag)
+                    modelScore(badFlag)=Inf;
+                    [~,refTrial]=nanmin(modelScore);
+                    mm=m{refTrial};
+                    fprintf(['Using trial ' num2str(refTrial) ' to train outlier detection model...\n'])
+                    mm.seeModel;
+                else
+                    warning('Could not find suitable data for model training. Not testing for outliers.')
+                    noOutlierTest=true;
+                end
+
                 
 
-                %Third: run all trials through best model
+                %Third: for each trial, get  missing markers, analyze fitted model and  find outliers through best model
                 for trial=1:length(this.data)
                     disp(['Checking trial ' num2str(trial) '...'])
                     if ~isempty(this.data{trial})
                         aux=this.data{trial}.markerData;
-                        %3A: check missing data
+                        %A: check missing data
                         aux.assessMissing([],-1);
-                        %3B: check data health
+                        
+                        %B: analyze fitted models
+                        [~]=validateMarkerModel(m{trial},true);
+                    
+                        %C: find outliers
+                        if ~noOutlierTest
                         aux=aux.findOutliers(mm,true);
                         this.data{trial}.markerData=aux;
+                        end
                     end
                 end
+                disp(['Outlier data added in Quality field']);
         end
         
         

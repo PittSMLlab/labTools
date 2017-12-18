@@ -280,12 +280,12 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
             
             if verbose
-                disp(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames.'])
-                disp(['Avg. number of outlier markers per affected frame: ' num2str(sum(out(:))/sum(any(out,1)))]);
+                fprintf(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames, avg. ' num2str(sum(out(:))/sum(any(out,1))) ' per frame.\n']);
                 for j=1:size(out,1)
+                    if sum(out(j,:)==1)>0
                     disp([l{j} ': ' num2str(sum(out(j,:)==1)) ' frames'])
+                    end
                 end
-                disp(['Outlier data added in Quality field']);
             end
 %             s=naiveDistances.summaryStats(d);
 %             s=s(model.activeStats,:)';
@@ -412,8 +412,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
             xlabel('Time (frames)')
             set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
             else
-                disp(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames.'])
-                disp(['Avg. number of missing markers per affected frame: ' num2str(sum(missing(:))/sum(any(missing,2)))]);
+                fprintf(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames, avg. ' num2str(sum(missing(:))/sum(any(missing,2)),3) ' per frame.\n']);
             end
         end
 
