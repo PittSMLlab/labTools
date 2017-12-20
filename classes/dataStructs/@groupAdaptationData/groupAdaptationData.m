@@ -380,8 +380,13 @@ classdef groupAdaptationData
                 [data(:,:,i),validStrides(:,i),allData1(:,i)]=this.adaptData{i}.getEpochData(epochs,labels,padWithNaNFlag);
             end
             allData=cell(length(epochs),1);
+            
             for j=1:length(epochs)
-               allData{j}= reshape(cell2mat(allData1(j,:)),epochs(j).Stride_No,length(labels),length(this.ID));
+                if length(epochs)==1
+                    allData{j}= reshape(cell2mat(allData1(j,:)),epochs.Stride_No,length(labels),length(this.ID));
+                else
+                    allData{j}= reshape(cell2mat(allData1(j,:)),epochs(j).Stride_No,length(labels),length(this.ID));
+                end
             end
         end
 

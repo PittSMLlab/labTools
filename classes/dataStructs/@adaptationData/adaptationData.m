@@ -633,7 +633,11 @@ classdef adaptationData
                     %Summarize it:
                     summFun=str2func(summaryFlag{i});
                     allData{i}=squeeze(dataPoints{1});
-                    data(:,i)=squeeze(summFun(allData{i},1));
+                    if size(data,1)==1
+                        data(:,i)=squeeze(summFun(allData{i}));%added by Digna to allow data with size 1 by 1
+                    else            
+                        data(:,i)=squeeze(summFun(allData{i},1));
+                    end
                     validStrides(i)=sum(any(~isnan(allData{i}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
                     warning('Invalid epoch found, returning NaNs')
