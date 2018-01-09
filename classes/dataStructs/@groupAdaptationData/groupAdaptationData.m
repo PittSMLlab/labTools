@@ -253,9 +253,12 @@ classdef groupAdaptationData
             end
 
         end
-        function [this]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch)
+        function [this]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch,noMinNormFlag)
+            if nargin<4 || isempty(noMinNormFlag)
+                noMinNormFlag=0;
+            end
             for i=1:length(this.ID)
-                this.adaptData{i}=this.adaptData{i}.normalizeToBaselineEpoch(labelPrefix,baseEpoch);
+                this.adaptData{i}=this.adaptData{i}.normalizeToBaselineEpoch(labelPrefix,baseEpoch,noMinNormFlag);
             end
         end
 
@@ -381,7 +384,7 @@ classdef groupAdaptationData
             end
             allData=cell(length(epochs),1);
             for j=1:length(epochs)
-               allData{j}= reshape(cell2mat(allData1(j,:)),epochs(j).Stride_No,length(labels),length(this.ID));
+               allData{j}= reshape(cell2mat(allData1(j,:)),epochs.Stride_No(j),length(labels),length(this.ID));
             end
         end
 
