@@ -218,7 +218,7 @@ classdef adaptationData
             newThis=this;
         end
         
-        function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch)
+        function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch,noMinNormFlag)
            %This normalization takes the last N strides from a given
            %'baseline' condition and uses it to normalize values of the
            %parameter for the whole experiment.
@@ -232,10 +232,16 @@ classdef adaptationData
             if isa(labelPrefix,'char')
                 labelPrefix={labelPrefix};
             end
+            if nargin<4 || isempty(noMinNormFlag)
+                noMinNormFlag=0;
+            end
             
             [baseData,label]=this.getPrefixedEpochData(labelPrefix,baseEpoch);
             baseData=reshape(baseData,size(label,1),numel(labelPrefix));
             rangeValues=[min(baseData); max(baseData)];
+            if noMinNormFlag==1
+                rangeValues(1,:)=0;
+            end
             for i=1:length(labelPrefix)
                 this.data=this.data.linearStretch(label(:,i),rangeValues(:,i));
             end
@@ -632,16 +638,13 @@ classdef adaptationData
                     [dataPoints]=getEarlyLateData_v2(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i),padWithNaNFlag);%Get data
                     %Summarize it:
                     summFun=str2func(summaryFlag{i});
-                    allData{i}=squeeze(dataPoints{1});
-                    if size(data,1)==1
-                        data(:,i)=squeeze(summFun(allData{i}));%added by Digna to allow data with size 1 by 1
-                    else            
-                        data(:,i)=squeeze(summFun(allData{i},1));
-                    end
+                    allData{i}=reshape(dataPoints{1},abs(numberOfStrides(i)),numel(labels));
+                    data(:,i)=reshape(summFun(allData{i},1),numel(labels),1);
                     validStrides(i)=sum(any(~isnan(allData{i}))); %Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)
                 else
                     warning('Invalid epoch found, returning NaNs')
-                    %nop
+                    data(:,i)=nan(numel(labels),1);
+                    allData{i}=nan(abs(numberOfStrides(i)),numel(labels));
                 end
             end
             if nargout>2

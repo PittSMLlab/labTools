@@ -49,7 +49,7 @@ function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numbe
             else
                 %this=adaptData;
             end
-            if nargin<7
+            if nargin<8
                 padWithNaNFlag=false;
             end
             

@@ -264,6 +264,7 @@ classdef labTimeSeries  < timeseries
 
         %Modifier functions:
         function newThis=resample(this,newTs,newT0,hiddenFlag)
+            this.Quality=[]; %So that Quality is not resample if it exists.
             if nargin<3 || isempty(newT0)
                 error('labTS:resample','Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.')
             end
@@ -786,7 +787,7 @@ classdef labTimeSeries  < timeseries
                 else
                     pp=plot(this.Time,relData(:,i),'LineWidth',lineWidth,'Color',color);
                 end
-                plot(this.Time(relQual(:,i)),relData(relQual(:,i),i),'rx')
+                %plot(this.Time(relQual(:,i)),relData(relQual(:,i),i),'rx')
                 uistack(pp,'top')
                 ylabel(relLabels{i})
                 %if i==ceil(N/2)
