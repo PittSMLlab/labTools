@@ -174,6 +174,40 @@ classdef orientedLabTimeSeries  < labTimeSeries
         function newThis=vectorNorm(this)
            newThis=labTimeSeries(sqrt(sum(this.getOrientedData.^2,3)),this.Time(1),this.sampPeriod,strcat(this.getLabelPrefix,'_2-norm')); 
         end
+        
+        function model=buildNaiveDistancesModel(this)
+            labels=this.getLabelPrefix;
+            data=this.getOrientedData;
+            %Assuming the data is bilateral & sorting L/R and by magnitude
+            %of third component
+            iL=cellfun(@(x) ~isempty(x),regexp(labels,'^L*'));
+            iR=cellfun(@(x) ~isempty(x),regexp(labels,'^R*'));
+            if sum(iL)~=sum(iR) %Can only have paired markers for the model to work
+               if sum(iL)>sum(iR)
+                   aux=regexprep(labels(iR),'^R*','L');
+                   [b,iL]=this.isaLabelPrefix(aux);
+                   iL=iL(b);
+                   [~,iR]=this.isaLabelPrefix(labels(iR));
+                   iR=iR(b);
+               else
+                   aux=regexprep(labels(iL),'^L*','R');
+                   [b,iR]=this.isaLabelPrefix(aux);
+                   iR=iR(b);
+                   [~,iL]=this.isaLabelPrefix(labels(iL));
+                   iL=iL(b);
+               end
+            end
+            dL=data(:,iL,:);
+            lL=labels(iL);
+            dR=data(:,iR,:);
+            lR=labels(iR);
+            [~,idx1]=sort(nanmean(dL(:,:,3)),'ascend');
+            [~,idx2]=sort(nanmean(dR(:,:,3)),'descend');
+            labels=[lL(idx1) lR(idx2)];
+            data=cat(2,dL(:,idx1,:),dR(:,idx2,:));
+            d=permute(data,[2,3,1]);
+            model = naiveDistances.learn(d,labels,true);
+        end
 
         %-------------------
 
@@ -276,10 +310,10 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 d=permute(d,[2,3,1]); 
                 [out,logL]=model.outlierDetect(d);
                 [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
-                aux(:,idx(boolF))=(out==1)';
+                aux(:,idx(boolF))=(out(boolF,:)==1)';
                 this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
             
-            if verbose
+            if nargin>2 && verbose
                 fprintf(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames, avg. ' num2str(sum(out(:))/sum(any(out,1))) ' per frame.\n']);
                 for j=1:size(out,1)
                     if sum(out(j,:)==1)>0
