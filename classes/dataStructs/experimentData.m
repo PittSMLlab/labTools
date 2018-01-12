@@ -262,38 +262,63 @@ classdef experimentData
         
         function this=checkMarkerHealth(this,refTrial)
             disp(['Checking marker health...'])
-            if nargin<2 || isempty(refTrial)
-                tryTrials=1:length(this.data);
-            else
-                tryTrials=refTrial;
-            end
-            
-               
+           
+                noFixFlag=false;
                 %First: build models
                 m=cell(length(this.data),1);
                 badFlag=false(size(m));
                 modelScore=nan(size(m));
                 modelScore2=nan(size(m));
-                for trial=tryTrials
+                permuteList=[];
+                for trial=1:length(this.data)
                     if ~isempty(this.data{trial})
                         aux=this.data{trial}.markerData;
                         duration=aux.timeRange;  
                         if duration>10 %At least 10 secs of data with true movement for training
-                            labels=aux.getLabelPrefix;
-                            data=aux.getOrientedData;
-                            iL=cellfun(@(x) ~isempty(x),regexp(labels,'^L*'));
-                            iR=cellfun(@(x) ~isempty(x),regexp(labels,'^R*'));
-                            dL=data(:,iL,:);
-                            lL=labels(iL);
-                            dR=data(:,iR,:);
-                            lR=labels(iR);
-                            [~,idx1]=sort(nanmean(dL(:,:,3)),'ascend');
-                            [~,idx2]=sort(nanmean(dR(:,:,3)),'descend');
-                            labels=[lL(idx1) lR(idx2)];
-                            data=cat(2,dL(:,idx1,:),dR(:,idx2,:));
-                            d=permute(data,[2,3,1]);
-                            m{trial} = naiveDistances.learn(d,labels,true);
-                            [badFlag(trial)] = validateMarkerModel(m{trial},false);
+                            m{trial} = buildNaiveDistancesModel(aux);
+                            [badFlag(trial),MO,OBO] = validateMarkerModel(m{trial},false);
+                            bF=badFlag(trial);
+                            nB=sum(MO|OBO);
+                            %If bad flag, will try to fix by permuting labels
+                            if bF && ~noFixFlag
+                                if ~isempty(permuteList) && max(permuteList)<=length(MO)%Trying the same fix as the last model
+                                    m2=m{trial}.applyPermutation(permuteList);
+                                    [bF,MO,OBO]=m2.validateMarkerModel(false);
+                                end
+                                if bF %Still not fully fixed
+                                    if sum(MO|OBO)<nB %some improvement so far
+                                        m{trial}=m2;
+                                    else
+                                        permuteList=nan(0,2); %Resetting
+                                    end
+                                    [permuteList2,m2]=m{trial}.permuteModelLabels; %Searching over permutation space
+                                    if size(permuteList2,1)>0
+                                        [bF,MO,OBO]=m2.validateMarkerModel(false);
+                                        permuteList=[permuteList;permuteList2];
+                                    end
+                                end
+                                if sum(MO|OBO)<nB
+                                    fprintf(['For trial ' num2str(trial) ' found switched labels:\n'])
+                                    auxList={'NameA','NameB'};
+                                    for i=1:size(permuteList,1)
+                                        preList=m{trial}.markerLabels(permuteList(i,:));
+                                        fprintf([preList{1} ' - ' preList{2} '\n']) 
+                                        warning('off')
+                                        aux=aux.renameLabels(preList,auxList);
+                                        aux=aux.renameLabels(auxList,preList([2,1]));
+                                        warning('on')
+                                    end
+                                    %Validate fix:
+                                    m{trial} = buildNaiveDistancesModel(aux);
+                                    [badFlag(trial),MO,OBO] = validateMarkerModel(m{trial},false);
+                                    if sum(MO|OBO)>=nB
+                                        error('Something went wrong: tried fixing but failed')
+                                    else
+                                        this.data{trial}.markerData=aux; %Saving RELABELED data into experimentData structure
+                                    end
+                                end
+                            end
+                            
                             sigma=m{trial}.getRobustStd(.94);
                             if median(sigma)<20 %Static trial most likely
                                 badFlag(trial)=true;
@@ -309,30 +334,34 @@ classdef experimentData
                 
                 %Second: select best model
                 noOutlierTest=false;
-                if ~all(badFlag)
+                permuteList=[];
+                if (nargin<2 || isempty(refTrial)) && ~all(badFlag)
                     modelScore(badFlag)=Inf;
                     [~,refTrial]=nanmin(modelScore);
+                elseif all(badFlag) %Undefined refTrial but all trials are bad
+                     warning('Could not find suitable data for model training. Not testing for outliers.')
+                     noOutlierTest=true;
+                end
+                try %If there is a model
                     mm=m{refTrial};
                     fprintf(['Using trial ' num2str(refTrial) ' to train outlier detection model...\n'])
-                    mm.seeModel;
-                else
-                    warning('Could not find suitable data for model training. Not testing for outliers.')
-                    noOutlierTest=true;
+                    mm.seeModel; 
+                catch
+                    %nop
                 end
-
-                
 
                 %Third: for each trial, get  missing markers, analyze fitted model and  find outliers through best model
                 for trial=1:length(this.data)
                     disp(['Checking trial ' num2str(trial) '...'])
                     if ~isempty(this.data{trial})
                         aux=this.data{trial}.markerData;
+                        
                         %A: check missing data
                         aux.assessMissing([],-1);
                         
-                        %B: analyze fitted models
+                        %A: analyze fitted models.
                         [~]=validateMarkerModel(m{trial},true);
-                    
+                        
                         %C: find outliers
                         if ~noOutlierTest
                         aux=aux.findOutliers(mm,true);
