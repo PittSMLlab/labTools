@@ -602,8 +602,7 @@ classdef adaptationData
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
         
-        function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)
-           
+        function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)           
             %INPUTS:
             %this must be adaptationData object
             %epochs must be a dataset created with defineEpochs()
@@ -627,8 +626,8 @@ classdef adaptationData
             removeBiasFlag=0;
             conds=epochs.Condition;
             numberOfStrides=epochs.Stride_No .* sign(epochs.EarlyOrLate-.5);
-            exemptLast=epochs.ExemptFirst; 
-            exemptFirst=epochs.ExemptLast;
+            exemptLast=epochs.ExemptLast;
+            exemptFirst=epochs.ExemptFirst; 
             data=nan(length(labels),length(epochs));
             validStrides=nan(length(epochs),1);
             summaryFlag=epochs.summaryMethod;
