@@ -62,10 +62,24 @@ for t=cell2mat(info.trialnums) %loop through each trial
                         forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
+                        
                     case '4' %Other forceplate, loading just in case
-                        forceLabels{end+1} = ['X',fieldList{j}(end-2:end-1)];
+                        forceLabels{end+1} = ['FP4',fieldList{j}(end-2:end-1)];
                         units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                         relData=[relData,analogs.(fieldList{j})];
+                    case '5' %Other forceplate, loading just in case
+                        forceLabels{end+1} = ['FP5',fieldList{j}(end-2:end-1)];
+                        units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
+                        relData=[relData,analogs.(fieldList{j})];
+                    case '6' %Other forceplate, loading just in case
+                        forceLabels{end+1} = ['FP6',fieldList{j}(end-2:end-1)];
+                        units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
+                        relData=[relData,analogs.(fieldList{j})];
+                    case '7' %Other forceplate, loading just in case
+                        forceLabels{end+1} = ['FP7',fieldList{j}(end-2:end-1)];
+                        units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
+                        relData=[relData,analogs.(fieldList{j})];
+                        
                     otherwise
                         showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output                        
                 end
@@ -123,7 +137,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
                         plot(raw(rel),proc(rel),'.')
                         plot([-.01 .01],([-.01 .01]+offset(j))*gain(j))
                         hold off
-                        a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated offset is ' num2str(differenceInForceUnits(j)) ' ' units '. Please confirm that you want to subtract this offset.']);
+                        %a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated offset is ' num2str(differenceInForceUnits(j)) ' ' units '. Please confirm that you want to subtract this offset.']);
+                        a='No';
                         switch a
                             case 'Yes'
                                 relData(:,k)=gain(j)*(raw -trueOffset(j));
@@ -245,14 +260,20 @@ for t=cell2mat(info.trialnums) %loop through each trial
         end
         
         %Pre-process:
+        [refSync] = clipSignals(refSync(:),.1); %Clipping top & bottom samples (1 out of 1e3!)
         refAux=medfilt1(refSync,20);
+        %refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
         refAux=medfilt1(diff(refAux),10);
         clear auxData*
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=allData(:,syncIdx);
+        
         if ~isempty(sync) %Only proceeding with synchronization if there are sync signals 
+        %Clipping top & bottom 0.1%
+        [sync] = clipSignals(sync,.1);
         N=size(sync,1);
-        aux=medfilt1(sync,20,[],1);
+        aux=medfilt1(sync,20,[],1); %Median filter to remove spikes
+        %aux(aux>(median(aux)+5*iqr(aux)) | aux <(median(aux)-5*iqr(aux)))=median(aux(:)); %Truncating samples outside the median+-5*iqr range
         aux=medfilt1(diff(aux),10,[],1);
         if secondFile
             [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
@@ -276,10 +297,12 @@ for t=cell2mat(info.trialnums) %loop through each trial
         
         %Finding gains through least-squares on high-pass filtered synch
         %signals (why using HPF for gains and not for synch?)
-        refSync=idealHPF(refSync,0);
+        [refSync] = clipSignals(refSync(:),.1);
+        refSync=idealHPF(refSync,0); %Removing DC only
         [allData,refSync]=truncateToSameLength(allData,refSync);
-        syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
-        sync=idealHPF(allData(:,syncIdx),0);
+        sync=allData(:,syncIdx);
+        [sync] = clipSignals(sync,.1);
+        sync=idealHPF(sync,0);
         gain1=refSync'/sync(:,1)';
         E1=sum((refSync(max([lagInSamplesA+1,1]):end)-sync(max([lagInSamplesA+1,1]):end,1)*gain1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
         if secondFile
@@ -295,7 +318,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %Analytic measure of alignment problems 
         disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
         disp(['Sync parameters were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's; sampling mismatch= ' num2str(1-timeScaleFactor,5)]);
-        if E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
+        if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
             warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
             h=figure;
             subplot(2,2,[1:2])
@@ -406,7 +429,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         relData=[];
         idxList=[];
         fieldList=fields(analogs);
-        for j=1:length(fieldList);
+        for j=1:length(fieldList)
             if ~isempty(strfind(fieldList{j},'ACC'))  %Getting fields that start with 'ACC' only
                 idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},'ACC')+4:end));
                 switch fieldList{j}(strfind(fieldList{j},'ACC')+3)
@@ -439,7 +462,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         idxList2=[];
         if secondFile
             fieldList=fields(analogs2);
-            for j=1:length(fieldList);
+            for j=1:length(fieldList)
                 if ~isempty(strfind(fieldList{j},'ACC'))  %Getting fields that start with 'EMG' only
                     idxList2(j)=str2num(fieldList{j}(strfind(fieldList{j},'ACC')+4:end));
                     switch fieldList{j}(strfind(fieldList{j},'ACC')+3)
