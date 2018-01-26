@@ -303,16 +303,14 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
         end
 
-        function [newThis,logL]=findOutliers(this,model,verbose)
+        function [this,logL]=findOutliers(this,model,verbose)
             %Uses marker model data to assess outliers
-
-                [d,l]=this.getOrientedData(model.markerLabels);%This assumes ALL markerLabels are present
-                d=permute(d,[2,3,1]); 
-                [out,logL]=model.outlierDetect(d);
-                [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
-                aux(:,idx(boolF))=(out(boolF,:)==1)';
-                this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
-            
+            [d,l]=this.getOrientedData(model.markerLabels);%This assumes ALL markerLabels are present
+            d=permute(d,[2,3,1]); 
+            [out,logL]=model.outlierDetect(d);
+            [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
+            aux(:,idx(boolF))=(out(boolF,:)==1)';
+            this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
             if nargin>2 && verbose
                 fprintf(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames, avg. ' num2str(sum(out(:))/sum(any(out,1))) ' per frame.\n']);
                 for j=1:size(out,1)
@@ -321,24 +319,11 @@ classdef orientedLabTimeSeries  < labTimeSeries
                     end
                 end
             end
-%             s=naiveDistances.summaryStats(d);
-%             s=s(model.activeStats,:)';
-%             m=model.statMedian;
-%             m=m(model.activeStats);
-%             ss=model.getRobustStd(.94);
-%             ss=3*ss(model.activeStats); %3 standard devs
-%             aux=model.loglikelihood(d)<-4^2/2;
-%             figure; pp=plot(s); axis tight; hold on;
-%             for j=1:size(s,2)
-%                 patch([1 size(s,1) size(s,1) 1],[m(j)-ss(j) m(j)-ss(j) m(j)+ss(j) m(j)+ss(j)],pp(j).Color,'FaceAlpha',.3,'EdgeColor','None')
-%                 plot(find(aux(j,:)),s(aux(j,:),j),'x','Color',pp(j).Color,'MarkerSize',4);
-%             end
-            newThis=this;
         end
 
-        function [newThis]=fillGaps(this,refMarkerData)
-            if nargin<2 || isempty(refMarkerData)
-               refMarkerData=this;
+        function [newThis]=fillGaps(this,model)
+            if nargin<2 || isempty(model)
+               model=this.buildNaiveDistancesModel; %Try to learn from the data itself!
             end
             %Meant to be usedwith markerData only
             %PART 1: model free check
@@ -347,9 +332,20 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
             %PART 2: model dependent
             %Use prior knowledge in a Bayesian setting to fill gaps
+            missingMarkers=this.Quality(:,1:3:end)==-1;
+            for i=1:size(missingMarkers,1) %each frame
+                relevantDistances=model.statMean();
+                missingData=model.invertAndAnchor(ss,anchorFrame,anchorWeights);
+            end
 
             %PART 3: merge the two estimations through mle or something
 
+        end
+        function newThis=removeOutliers(this,model)
+           %Detect:
+           newThis=this.findOutliers(model);
+           %Remove:
+           
         end
 
         function newThis=threshold(this,th)
@@ -416,7 +412,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
            legend(labelPref)
         end
         
-        function [fh,ph,missing]=assessMissing(this,labelPrefixes,fh,ph)
+        function [fh,ph,this]=assessMissing(this,labelPrefixes,fh,ph)
             if nargin<3 || isempty(fh)
                 fh=figure();
             elseif fh==-1
@@ -429,9 +425,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
                     axes(ph)
             end
             end
-            if nargin<2
-                labelPrefixes=this.getLabelPrefix;
-            end
+            %if nargin<2
+                labelPrefixes=this.getLabelPrefix; %Ignoring labelPrefixes input
+            %end
             data=this.getOrientedData(labelPrefixes);
             missing=any(isnan(data),3);
             miss=missing(:,any(missing));
@@ -447,6 +443,14 @@ classdef orientedLabTimeSeries  < labTimeSeries
             set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
             else
                 fprintf(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames, avg. ' num2str(sum(missing(:))/sum(any(missing,2)),3) ' per frame.\n']);
+            end
+            if isempty(this.Quality)
+                this.Quality=sparse(size(this.Data));
+            end
+            Q=sparse(size(missing));
+            Q(missing)=-1;
+            for j=1:3 %x,y,z
+                this.Quality(:,j:3:end)=Q;
             end
         end
 

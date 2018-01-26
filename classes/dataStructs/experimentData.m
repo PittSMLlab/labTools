@@ -356,16 +356,16 @@ classdef experimentData
                     if ~isempty(this.data{trial})
                         aux=this.data{trial}.markerData;
                         
-                        %A: check missing data
-                        aux.assessMissing([],-1);
+                        %A: check missing data & fill gaps
+                        [~,~,missing]=aux.assessMissing([],-1);
                         
-                        %A: analyze fitted models.
+                        %B: analyze fitted models.
                         [~]=validateMarkerModel(m{trial},true);
                         
                         %C: find outliers
                         if ~noOutlierTest
-                        aux=aux.findOutliers(mm,true);
-                        this.data{trial}.markerData=aux;
+                            aux=aux.findOutliers(mm,true);
+                            this.data{trial}.markerData=aux;
                         end
                     end
                 end
