@@ -563,7 +563,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
         end
         
-        function [this,iC]=flipLR(this)
+        function [this,iC,iI]=flipLR(this)
            %Find the side that has the starting event:
            alignedSide=this.alignmentLabels{1}(1);
            nonAlignedSide=getOtherLeg(alignedSide);
@@ -572,7 +572,8 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            if ~isempty(lC)
                [~,iC]=this.isaLabel(lC); %Index for non-aligned
                aux=regexprep(lC,['^' nonAlignedSide],alignedSide); %Getting aligned side labels
-               if ~all(this.isaLabel(aux)) %Labels are not symm, aborting
+               [bI,iI]=this.isaLabel(aux); %Index for aligned
+               if ~all(bI) %Labels are not symm, aborting
                    warning('Asked to flipLR but labels are not symmetrically present.')
                else
                    this.Data(:,iC)=fftshift(this.Data(:,iC),1); %This just flips first and second halves of aligned data, no checks performed
@@ -583,6 +584,13 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 warning('Asked to flipLR but couldn''t find aligned side.')
                 iC=[];
            end
+        end
+        function [this,iC,iI]=getSym(this)
+            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
+            %Then: compute sym/asym data and replace it.
+            this.Data=.5*[this.Data(:,iI)-this.Data(:,iC) this.Data(:,iI)+this.Data(:,iC)];
+            %Update labels:
+            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a') regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'b')];
         end
         
         function [fh,ph]=plotCheckerboard(this,fh,ph)
@@ -603,7 +611,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
            ax=gca;
            ax.YTick=[1:length(this.labels)]-.5;
            ax.YTickLabels=this.labels;
-           ax.XTick=[1 1+cumsum(this.alignmentVector)]-.5;
+           ax.XTick=[.5 .5+cumsum(this.alignmentVector)]/sum(this.alignmentVector) *this.Time(end) ;
            ax.XTickLabel=this.alignmentLabels;
            axis([this.Time(1) 2*this.Time(end)-this.Time(end-1) 0 size(m.Data,2)])
            %Colormap:

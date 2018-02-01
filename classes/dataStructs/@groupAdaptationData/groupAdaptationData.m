@@ -524,6 +524,9 @@ classdef groupAdaptationData
             
             if nargin<7 || isempty(flipLR)
                 flipLR=false;
+            elseif flipLR==2 %Codeword for doing symmetry plot
+                flipLR=false; %FlipLR is implicit in doing a symmetry plot
+                symmetryFlag=true;
             end
             
             %First, get epoch data:
@@ -554,16 +557,24 @@ classdef groupAdaptationData
                 ATS=alignedTimeSeries(0,1/numel(evLabel),dataS(:,:,i),labelPrefix,ones(1,Np),evLabel);
                 if flipLR
                     [ATS,iC]=ATS.flipLR;
+                elseif symmetryFlag
+                    [ATS,iC,iI]=ATS.getSym;
                 end
                 ATS.plotCheckerboard(fh,ph(i));
-                axes(ph(i))
-                colorbar off
-                title([epochs.Properties.ObsNames{i} '[' num2str(epochs.Stride_No(i)) ']'])
+                axes(ph(i));
+                colorbar off;
+                title([epochs.Properties.ObsNames{i} '[' num2str(epochs.Stride_No(i)) ']']);
             end
-            if flipLR %Aligning all returned data if we do L/R flip
+            if flipLR || symmetryFlag %Aligning all returned data if we do L/R flip
                 dataE(:,iC,:,:)=fftshift(dataE(:,iC,:,:),1);
                 if ~isempty(dataRef)
                     dataRef(:,iC,:,:)=fftshift(dataRef(:,iC,:,:),1);
+                end
+            end
+            if symmetryFlag
+                dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+                if ~isempty(dataRef)
+                    dataRef=.5*cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
                 end
             end
                 
