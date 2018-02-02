@@ -963,7 +963,7 @@ classdef adaptationData
             
         
         function gAD=createSingleSubjGroup(this)
-            gAD=groupAdaptationData(this.ID,this,this.ID);
+            gAD=groupAdaptationData({this.subData.ID},{this},this.subData.ID);
         end
     end
 
