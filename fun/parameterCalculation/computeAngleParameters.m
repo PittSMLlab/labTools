@@ -1,4 +1,4 @@
-function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg)
+function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg,eventTypes)
 %This function computes summary parameters per stride based on Angle data.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -22,8 +22,8 @@ warning('on','labTS:renameLabels:dont')
 %keyboard
 
 %% Do:
-[Angles_alt] = computeTSdiscreteParameters(angleData,gaitEvents,slowLeg);
-[Angles_HS] = computeHSparameters(angleData,gaitEvents,slowLeg);
+[Angles_alt] = computeTSdiscreteParameters(angleData,gaitEvents,eventTypes);
+[Angles_HS] = computeHSparameters(angleData,gaitEvents,eventTypes);
 out=cat(Angles_alt,Angles_HS);
    
 end

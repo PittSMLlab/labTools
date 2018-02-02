@@ -1,4 +1,4 @@
-function [out] = computeHSparameters(someTS,gaitEvents,slowleg)
+function [out] = computeHSparameters(someTS,gaitEvents,eventType)
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -16,7 +16,8 @@ function [out] = computeHSparameters(someTS,gaitEvents,slowleg)
 %TODO: this should be a method of labTS
 
 %get slow heel strikes times
-T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
+% T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
+T_HS=labTimeSeries.getArrayedEvents(gaitEvents,eventType);
 nstrides=size(T_HS,1);
 %keyboard
 % iSHS=find(ismember(someTS.Time,T_HS(2:end,1)));

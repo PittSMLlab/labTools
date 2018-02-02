@@ -16,11 +16,17 @@ function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignm
 %TODO: this should be a method of labTS
 
 if nargin<4 || isempty(alignmentVector)
-    if ~isa(eventTypes,'char')
-        error('Bad argument for eventTypes')
+    
+    if ~isa(eventTypes,'cell') %Allow to change the type of event post-processing 
+        
+        if ~isa(eventTypes,'char')
+            error('Bad argument for eventTypes')
+        end
+        
+        s=eventTypes;    f=getOtherLeg(s);
+        eventTypes={[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
     end
-    s=eventTypes;    f=getOtherLeg(s);
-    eventTypes={[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
+  
     alignmentVector=[2,4,2,4];
     desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'}';
 else
