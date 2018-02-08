@@ -444,7 +444,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 %Check alignmentVector & Labels
                 
                 %Check that all eventTimes match
-                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes-other.eventTimes)>1e-9)
+                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes(:)-other.eventTimes(:))>1e-9)
                    ME=MException('ATS:cat','Trying to cat labels, but event times are different');
                    throw(ME);
                 end
