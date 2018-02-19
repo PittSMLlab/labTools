@@ -247,6 +247,17 @@ classdef adaptationData
             end
             newThis=this;
         end
+        
+        function [newThis]=removeBaselineEpoch(this,baseEpoch,labels)
+            if nargin<3 || isempty(labels)
+                %nop
+            else
+                this=this.getPartialParameters(labels);
+            end
+            [baseData]=this.getEpochData([],baseEpoch);
+            this.Data=this.Data-baseData;
+            newThis=this;
+        end
 
         function newThis=removeBadStrides(this,markAsNaNflag)
             if nargin<2 || isempty(markAsNaNflag)
