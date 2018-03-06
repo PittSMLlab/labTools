@@ -307,10 +307,15 @@ classdef orientedLabTimeSeries  < labTimeSeries
             %Uses marker model data to assess outliers
             [d,l]=this.getOrientedData(model.markerLabels);%This assumes ALL markerLabels are present
             d=permute(d,[2,3,1]); 
-            [out,logL]=model.outlierDetect(d);
+            [out]=model.outlierDetectFast(d); %Could also use the non-fast version, but it will take time
             [boolF,idx]=this.isaLabelPrefix(model.markerLabels);
             aux(:,idx(boolF))=(out(boolF,:)==1)';
-            this.Quality=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
+            newQual=reshape(cat(1,aux,aux,aux),size(aux,1),size(aux,2)*3);
+            if ~isempty(this.Quality)
+            this.Quality(newQual~=0)=newQual(newQual~=0); %Replace value for outliers only
+            else
+            this.Quality=newQual;
+            end
             if nargin>2 && verbose
                 fprintf(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames, avg. ' num2str(sum(out(:))/sum(any(out,1))) ' per frame.\n']);
                 for j=1:size(out,1)
@@ -318,6 +323,70 @@ classdef orientedLabTimeSeries  < labTimeSeries
                     disp([l{j} ': ' num2str(sum(out(j,:)==1)) ' frames'])
                     end
                 end
+            end
+        end
+
+        function [this,m,permuteList,modelScore,badFlag,modelScore2]=fixBadLabels(this,permuteList)
+            %error('Unimplemented')
+            if nargin<2 
+                permuteList=[];
+            end
+            aux=this;
+            duration=aux.timeRange;  
+            if duration>10 %At least 10 secs of data with true movement for training
+                m = buildNaiveDistancesModel(aux);
+                [badFlag,MO,OBO] = validateMarkerModel(m,false);
+                bF=badFlag;
+                nB=sum(MO|OBO);
+                %If bad flag, will try to fix by permuting labels
+                if bF
+                    if ~isempty(permuteList) && max(permuteList)<=length(MO)%Trying the same fix as the last model
+                        m2=m.applyPermutation(permuteList);
+                        [bF,MO,OBO]=m2.validateMarkerModel(false);
+                    end
+                    if bF %Still not fully fixed
+                        if sum(MO|OBO)<nB %some improvement so far
+                            m=m2;
+                        else
+                            permuteList=nan(0,2); %Resetting
+                        end
+                        [permuteList2,m2]=m.permuteModelLabels; %Searching over permutation space
+                        if size(permuteList2,1)>0
+                            [bF,MO,OBO]=m2.validateMarkerModel(false);
+                            permuteList=[permuteList;permuteList2];
+                        end
+                    end
+                    if sum(MO|OBO)<nB
+                        fprintf(['Found switched labels:\n'])
+                        auxList={'NameA','NameB'};
+                        for i=1:size(permuteList,1)
+                            preList=m.markerLabels(permuteList(i,:));
+                            fprintf([preList{1} ' - ' preList{2} '\n']) 
+                            warning('off')
+                            aux=aux.renameLabels(preList,auxList);
+                            aux=aux.renameLabels(auxList,preList([2,1]));
+                            warning('on')
+                        end
+                        %Validate fix:
+                        m = buildNaiveDistancesModel(aux);
+                        [badFlag,MO,OBO] = validateMarkerModel(m,false);
+                        if sum(MO|OBO)>=nB
+                            error('Something went wrong: tried fixing but failed')
+                        else
+                            this=aux; %Saving RELABELED data into experimentData structure
+                        end
+                    end
+                end
+
+                sigma=m.getRobustStd(.94);
+                if median(sigma)<20 %Static trial most likely
+                    badFlag=true;
+                end
+                sigma=naiveDistances.stat2Matrix(sigma);
+                sigma=triu(sigma)-triu(sigma,3);
+                sigma(sigma==0)=NaN;
+                modelScore=nanmax(sigma(:));
+                modelScore2=nanmean(sigma(:));
             end
         end
 
@@ -332,20 +401,38 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
             %PART 2: model dependent
             %Use prior knowledge in a Bayesian setting to fill gaps
-            missingMarkers=this.Quality(:,1:3:end)==-1;
-            for i=1:size(missingMarkers,1) %each frame
-                relevantDistances=model.statMean();
-                missingData=model.invertAndAnchor(ss,anchorFrame,anchorWeights);
-            end
+            
+            %bad=(this.Quality(:,1:3:end)~=0); %Working around anything where Quality~=0
+
+            data=this.getOrientedData(model.markerLabels);
+            bad=isnan(data(:,:));
+            data=permute(data,[2,3,1]);
+            idx=any(bad,2);
+            idx=find(idx,50,'last'); %Fixing 50 frames only
+            data=data(:,:,idx); %Data to be fixed
+            D=reshape(nanmedian(this.Data,1),size(data,1),size(data,2));
+            posSTD=1.3*ones(size(data,1),size(data,3)); %For good measurements
+            bad2=bad(idx,1:3:end);
+            data(isnan(data))=0; %NaNs need to be removed
+            posSTD(bad2')=1e3; %For bad ones
+            mleData=model.reconstruct(data,posSTD);
 
             %PART 3: merge the two estimations through mle or something
 
+
+            %Put the data back:
+            newThis=this;
+            mleData=permute(mleData,[3,2,1]);
+            [~,sortedIdx]=this.isaLabelPrefix(model.markerLabels);
+            mleData(:,:,sortedIdx)=mleData;
+            newThis.Data(idx,:)=mleData(:,:);
         end
         function newThis=removeOutliers(this,model)
            %Detect:
            newThis=this.findOutliers(model);
            %Remove:
-           
+           bad=(newThis.Quality==1);
+           newThis.Data(bad)=NaN;
         end
 
         function newThis=threshold(this,th)
@@ -417,6 +504,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 fh=figure();
             elseif fh==-1
                 noDisp=true;
+                ph=[];
             else
                 figure(fh)
                 if nargin<4
@@ -445,9 +533,9 @@ classdef orientedLabTimeSeries  < labTimeSeries
                 fprintf(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames, avg. ' num2str(sum(missing(:))/sum(any(missing,2)),3) ' per frame.\n']);
             end
             if isempty(this.Quality)
-                this.Quality=sparse(size(this.Data));
+                this.Quality=zeros(size(this.Data));
             end
-            Q=sparse(size(missing));
+            Q=zeros(size(missing));
             Q(missing)=-1;
             for j=1:3 %x,y,z
                 this.Quality(:,j:3:end)=Q;

@@ -521,7 +521,7 @@ classdef groupAdaptationData
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
-            
+            symmetryFlag=false;
             if nargin<7 || isempty(flipLR)
                 flipLR=false;
             elseif flipLR==2 %Codeword for doing symmetry plot
