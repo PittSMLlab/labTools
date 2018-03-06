@@ -30,8 +30,10 @@ if nargin<4 || isempty(alignmentVector)
     alignmentVector=[2,4,2,4];
     desc2={'SHS to mid DS1','mid DS1 to FTO', 'FTO to 1/4 fast swing','1/4 to mid fast swing', 'mid fast swing to 3/4','3/4 fast swing to FHS', 'FHS to mid DS2', 'mid DS2 to STO', 'STO to 1/4 slow swing','1/4  to mid slow swing','mid slow swing to 3/4','3/4 slow swing to SHS'}';
 else
-    if length(eventTypes)~=length(alignmentVector)
-        error('Inconsistent sizes of eventTypes and alignmentVector')
+    if length(eventTypes)~=length(alignmentVector) 
+        if ~isempty(alignmentVector)
+            error('Inconsistent sizes of eventTypes and alignmentVector')
+        end
     end
     desc2=cell(sum(alignmentVector),1);
 end

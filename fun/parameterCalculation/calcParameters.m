@@ -126,7 +126,7 @@ end
 %% EMG:
 if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData) 
     %Classic way:
-    [EMG_alt] = computeEMGParameters(trialData.EMGData,trialData.gaitEvents,s);
+    [EMG_alt] = computeEMGParameters(trialData.EMGData,trialData.gaitEvents,s,eventTypes);
     out=cat(out,EMG_alt);
 end
 %% Angles  

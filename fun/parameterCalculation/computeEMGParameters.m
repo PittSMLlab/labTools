@@ -1,4 +1,4 @@
-function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg)
+function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg,eventTypes)
 %This function computes summary parameters per stride based on EMG data.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -20,10 +20,15 @@ newEMG=EMGData.rectify.renameLabels([],EMGData.labels);
 warning('on','labTS:renameLabels:dont')
 
 %% Do:
-arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,[slowLeg 'HS']);
+if strcmp(eventTypes{1},'kinLHS') || strcmp(eventTypes{1},'kinRHS')
+    arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,['kin',slowLeg 'HS']);
+    
+else
+    arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,[slowLeg 'HS']);
+end
 [statEMG] = computeTSstatParameters(EMGData,arrayedEvents); %Stat parameters for raw EMG
-[EMG_alt] = computeTSdiscreteParameters(newEMG,gaitEvents,slowLeg);
-[EMG_alt2] = computeTSdiscreteParameters(newEMG,gaitEvents,slowLeg,[],'nanmedian');
+[EMG_alt] = computeTSdiscreteParameters(newEMG,gaitEvents,eventTypes,[]);
+[EMG_alt2] = computeTSdiscreteParameters(newEMG,gaitEvents,eventTypes,[],'nanmedian');
 EMG_alt2=EMG_alt2.renameLabels(EMG_alt2.labels,strcat('med',EMG_alt2.labels));
 out=cat(statEMG,EMG_alt);   
 out=cat(out,EMG_alt2);

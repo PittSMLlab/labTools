@@ -527,6 +527,7 @@ classdef groupAdaptationData
             elseif flipLR==2 %Codeword for doing symmetry plot
                 flipLR=false; %FlipLR is implicit in doing a symmetry plot
                 symmetryFlag=true;
+            else symmetryFlag=false;
             end
             
             %First, get epoch data:
