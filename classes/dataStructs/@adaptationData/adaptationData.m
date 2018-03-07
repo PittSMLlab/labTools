@@ -1038,7 +1038,60 @@ classdef adaptationData
                 axis([ab(1:2) aa(3:4)])
             end
         end
+        
+        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag);
+        
+            fh=figure;
 
+            M=length(labels);
+            clear ph
+            for i=1:M
+                ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+                ph(i,2)=subplot(M,3,[3]+3*(i-1));
+            end
+
+            %Defaults:
+            if nargin<8 || isempty(colorOrder)
+                colorScheme
+            colorOrder=color_palette;
+            end
+            
+            conds=unique(eps.Condition,'stable');
+            numberOfStrides=eps.Stride_No;
+            for i=1:length(numberOfStrides)
+                if ~eps.EarlyOrLate(i)
+                    numberOfStrides(i)=-1*numberOfStrides(i);%last strides
+                end
+            end
+            plotIndividualsFlag=indivFlag;
+            legendNames=[];
+            significanceThreshold=[]%.05;
+            significancePlotMatrix=[];
+            alignEnd=abs(numberOfStrides(2));
+            signifPlotMatrixConds=[];
+            %exemptFirst=1;
+            %exemptLast=5;
+            
+
+            %Time courses:
+            adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,'UniformOutput',false);
+            fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
+
+            %Add bars:
+            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,legendNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds);
+            for i=1:M
+                subplot(ph(i,2));
+                grid on
+                aa=axis;
+                subplot(ph(i,1));
+                grid on
+                ab=axis;
+                axis([ab(1:2) aa(3:4)])
+            end
+        end
+            
+            
+     
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
 
