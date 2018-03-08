@@ -302,6 +302,7 @@ classdef adaptationData
            %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
            %This can be implemented as:
            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
+          
            newPS=this.data.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
            this.data=newPS;
            newThis=this;
@@ -620,7 +621,7 @@ classdef adaptationData
             %labels is string or cell-array of strings to be used as parameter names
             %OUTPUT:
             %data: length(labels) x length(epochs) matrix containing requested data
-            
+            %Ex:[data,validStrides,everyStrideData]=adaptData.getEpochData(epochs,{'doubleSupportFast'},0);
             
             %Manage inputs:
             if isa(labels,'char')
@@ -734,7 +735,9 @@ classdef adaptationData
         % 1) Multiple groups
 
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+           
             warning('This needs to be moved to studyData or something like that')
+            
             %Post-hoc is Bonferroni corrected t-test
             [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
             for i=1:length(data)
@@ -882,6 +885,8 @@ classdef adaptationData
             %monoLSfitFlag: a value in the [0,3] integer range. 0 plots
             %no fits, 1 plots condition based fit, 2 plots trial based fit,
             %3 plots condition & trial based fits
+            %Ex: adaptData.plotTimeAndBars({'spatialContributionPNorm'},{'TM base'},5,1,[],[],[5 -40],[])
+
 
             fh=figure;
 
@@ -1105,6 +1110,7 @@ classdef adaptationData
      
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
+            %Ex: GroupName=adaptationData.createGroupAdaptData({'X1params','x2params','X3params'})    
 
             %Load and construct object:
             for i=1:length(adaptDataList)

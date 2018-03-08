@@ -27,6 +27,7 @@ classdef groupAdaptationData
     methods
         %% Constructor
         function this=groupAdaptationData(ID,data,groupID)
+            
             if nargin >1 && length(ID)==length(data)
                 boolFlag=false(1,length(data));
                 for i=1:length(data)
@@ -368,6 +369,7 @@ classdef groupAdaptationData
         function [data,validStrides,allData]=getEpochData(this,epochs,labels,padWithNaNFlag)
             %getEpochData returns data from all subjects for each epoch
             %See also: adaptationData.getEpochData
+            %Ex:[data,validStrides,everyStrideData]=getEpochData(studyData,epochs,{'doubleSupportFast'},0);
             
             %Manage inputs:
             if isa(labels,'char')
