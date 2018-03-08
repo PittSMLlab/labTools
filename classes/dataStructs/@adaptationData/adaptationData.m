@@ -1042,6 +1042,7 @@ classdef adaptationData
         function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag);
         
             fh=figure;
+            
 
             M=length(labels);
             clear ph
@@ -1064,7 +1065,6 @@ classdef adaptationData
                 end
             end
             plotIndividualsFlag=indivFlag;
-            legendNames=[];
             significanceThreshold=[]%.05;
             significancePlotMatrix=[];
             alignEnd=abs(numberOfStrides(2));
@@ -1072,13 +1072,19 @@ classdef adaptationData
             %exemptFirst=1;
             %exemptLast=5;
             
-
+            set(ph,'ActivePositionProperty','outerposition')
             %Time courses:
             adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,'UniformOutput',false);
             fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
-
+            for pl=1:size(ph,1)
+                hold(ph(pl,1))
+                title(ph(pl,1),ph(pl,1).YLabel.String);
+                ylabel(ph(pl,1),{''})
+            end
+            
+            %set(ph(:,2),'Clipping','off')
             %Add bars:
-            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,legendNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds);
+            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds);
             for i=1:M
                 subplot(ph(i,2));
                 grid on
@@ -1088,6 +1094,11 @@ classdef adaptationData
                 ab=axis;
                 axis([ab(1:2) aa(3:4)])
             end
+            set(ph,'FontSize',16,'TitleFontSizeMultiplier',1.1,'XGrid','off','YGrid','off');
+            set(ph(1:end-1,:),'XTickLabel',{''})
+            set(fh,'Color',[1 1 1]);
+            %ph(1,1).Legend=ph(end,1).Legend;%ph(end,1).Legend
+            
         end
             
             

@@ -1,5 +1,5 @@
 function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds)
-
+set(plotHandles,'Clipping','off')
 
 if isempty(colors)
     colorScheme
@@ -108,14 +108,16 @@ end
 if isa(eps,'cell')
     set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps{1}.Properties.ObsNames,'FontSize',12)  
 else
-    set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)  
+    set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)  
 end
-title(labels{p});
+title(plotHandles(p),labels{p});
 if p==1
-    legend(legendNames);
+    ll=findobj(plotHandles(p),'Type','Bar');
+    h=legend(ll(fliplr(1:length(ll))),legendNames);    
 end
 
 end
+set(plotHandles,'FontSize',20)
 figHandle=gcf;
 % 
 %     
