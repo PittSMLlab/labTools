@@ -1045,8 +1045,9 @@ classdef adaptationData
         end
         
         function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag);
-        
+             figure('units','normalized','outerposition',[0 0 1 1])
             fh=figure;
+            
             
 
             M=length(labels);
@@ -1070,7 +1071,7 @@ classdef adaptationData
                 end
             end
             plotIndividualsFlag=indivFlag;
-            significanceThreshold=[]%.05;
+            significanceThreshold=[];%.05;
             significancePlotMatrix=[];
             alignEnd=abs(numberOfStrides(2));
             signifPlotMatrixConds=[];
@@ -1135,7 +1136,7 @@ classdef adaptationData
             groupData=groupAdaptationData(ID,data);
         end
 
-        function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
+        function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
 
             if ~(isa(label,'char') || (isa(label,'cell') && length(label)==1 && (isa(label{1},'char'))))
                 error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.'); %This is NOT true (?). Fix.
