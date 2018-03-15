@@ -1,4 +1,9 @@
 function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds)
+%This function replaces plotMultipleGroupBars
+
+%TODO: replace repeated functionality with a call to plotPrettyBars()
+
+%This wil fail if plotHandles is not given -Pablo
 set(plotHandles,'Clipping','off')
 
 if isempty(colors)
@@ -63,6 +68,7 @@ for i=1:length(groups)
         groupOutcomes{i}=groups{i}.getEpochData(eps,labels);% nLabels x neps x nSubjects
     end
    allData(i,1:length(labels),1:nep,1:size(groupOutcomes{i},3))=groupOutcomes{i};%nGroups x nLabels x neps x nSubjects
+    %I think this will fail if different # of epochs are defined for each group
 end
 
 
@@ -119,6 +125,8 @@ end
 end
 set(plotHandles,'FontSize',20)
 figHandle=gcf;
+
+%TO DO: add stats
 % 
 %     
 %     
