@@ -1,4 +1,4 @@
-function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds)
+function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds,removeBaseEpochFlag)
 %This function replaces plotMultipleGroupBars
 
 %TODO: replace repeated functionality with a call to plotPrettyBars()
@@ -51,13 +51,21 @@ if isempty(significancePlotMatrixGroups)
     significancePlotMatrixGroups=ones(M);
 end
 
-
+if isempty(removeBaseEpochFlag)
+    removeBaseEpochFlag=0;
+end
 
 nsubs=NaN(length(groups),1);
 for i=1:length(groups)
     nsubs(i)=length(groups{i}.adaptData);
 end
 nsub=max(nsubs);
+
+if removeBaseEpochFlag==1
+    for i=1:length(groups)
+        groups2{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
+    end
+end
 
 %[figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
 allData=NaN(length(groups),length(labels),nep,nsub);

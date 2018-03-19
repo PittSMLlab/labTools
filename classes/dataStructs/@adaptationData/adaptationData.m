@@ -251,12 +251,20 @@ classdef adaptationData
         function [newThis]=removeBaselineEpoch(this,baseEpoch,labels)
             if nargin<3 || isempty(labels)
                 %nop
+                labels=this.data.labels;
             else
                 this=this.getPartialParameters(labels);
             end
-            [baseData]=this.getEpochData([],baseEpoch);
-            this.Data=this.Data-baseData;
+            [baseData]=this.getEpochData(baseEpoch,labels);
             newThis=this;
+            newThis.data.Data=this.data.Data-baseData';           
+            
+            %fix any parameters that should not have bias removal
+            [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime','direction'});
+            if ~isempty(idxs)
+                newThis.data.Data(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
+            end
+            
         end
 
         function newThis=removeBadStrides(this,markAsNaNflag)
@@ -1044,7 +1052,7 @@ classdef adaptationData
             end
         end
         
-        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag);
+        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag);
              figure('units','normalized','outerposition',[0 0 1 1])
             fh=figure;
             
@@ -1090,7 +1098,7 @@ classdef adaptationData
             
             %set(ph(:,2),'Clipping','off')
             %Add bars:
-            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds);
+            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds,removeBaseEpochFlag);
             for i=1:M
                 subplot(ph(i,2));
                 grid on
