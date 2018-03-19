@@ -1052,8 +1052,8 @@ classdef adaptationData
             end
         end
         
-        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag);
-             figure('units','normalized','outerposition',[0 0 1 1])
+        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd);
+           %  figure('units','normalized','outerposition',[0 0 1 1])
             fh=figure;
             
             
@@ -1072,24 +1072,31 @@ classdef adaptationData
             end
             
             conds=unique(eps.Condition,'stable');
-            numberOfStrides=eps.Stride_No;
-            for i=1:length(numberOfStrides)
-                if ~eps.EarlyOrLate(i)
-                    numberOfStrides(i)=-1*numberOfStrides(i);%last strides
-                end
-            end
+%             numberOfStrides=eps.Stride_No;
+%             for i=1:length(numberOfStrides)
+%                 if ~eps.EarlyOrLate(i)
+%                     numberOfStrides(i)=-1*numberOfStrides(i);%last strides
+%                 end
+%             end
             plotIndividualsFlag=indivFlag;
             significanceThreshold=[];%.05;
             significancePlotMatrix=[];
-            alignEnd=abs(numberOfStrides(2));
+            %alignEnd=abs(numberOfStrides(2));
             signifPlotMatrixConds=[];
             %exemptFirst=1;
             %exemptLast=5;
             
             set(ph,'ActivePositionProperty','outerposition')
             %Time courses:
-            adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,'UniformOutput',false);
-            fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
+            for i=1:length(adaptDataGroups)
+                adaptDataGroups{i}=adaptDataGroups{i}.removeBadStrides;
+            if removeBaseEpochFlag==1             
+                   adaptDataGroups2{i}=adaptDataGroups{i}.removeBaselineEpoch(eps(1,:),[]);
+            end
+               
+            end
+            adaptData=cellfun(@(x) x.adaptData,adaptDataGroups2,'UniformOutput',false);
+           fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
             for pl=1:size(ph,1)
                 hold(ph(pl,1))
                 title(ph(pl,1),ph(pl,1).YLabel.String);

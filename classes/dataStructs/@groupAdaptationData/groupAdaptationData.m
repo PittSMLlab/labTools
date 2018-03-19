@@ -265,7 +265,7 @@ classdef groupAdaptationData
         
         function [this]=removeBaselineEpoch(this,baseEpoch,labels)
             for i=1:length(this.ID)
-                this.adaptdata{i}=this.adaptData{i}.removeBaselineEpoch(baseEpoch,labels);
+                this.adaptData{i}=this.adaptData{i}.removeBaselineEpoch(baseEpoch,labels);
             end
         end
 

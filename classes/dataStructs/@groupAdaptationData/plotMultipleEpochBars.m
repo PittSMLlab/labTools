@@ -61,9 +61,10 @@ for i=1:length(groups)
 end
 nsub=max(nsubs);
 
-if removeBaseEpochFlag==1
+if removeBaseEpochFlag==1%remove baseline epoch for plotting, but not for stats
     for i=1:length(groups)
-        groups2{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
+        group2{i}=groups{i};
+        groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
     end
 end
 
