@@ -262,6 +262,12 @@ classdef groupAdaptationData
                 this.adaptData{i}=this.adaptData{i}.normalizeToBaselineEpoch(labelPrefix,baseEpoch,noMinNormFlag);
             end
         end
+        
+        function [this]=removeBaselineEpoch(this,baseEpoch,labels)
+            for i=1:length(this.ID)
+                this.adaptData{i}=this.adaptData{i}.removeBaselineEpoch(baseEpoch,labels);
+            end
+        end
 
         function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag)
             newThis=this;
@@ -963,7 +969,7 @@ classdef groupAdaptationData
     methods(Static)
        % Several groups visualization
        [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
-       [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds);
+       [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds,removeBaseEpochFlag);
        % Several groups stats
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
           %2-sample t-test comparing behavior of parameters across groups, for a given subset of strides
