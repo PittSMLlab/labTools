@@ -336,12 +336,25 @@ netContributionNorm2=netContribution./Dist;
 %Contributions in absolute frame
 % modified by Digna April 2018 to use rotated markerdata. This allows to
 % use these values for OG trials
-aux=rotatedMarkerDataAbs.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
-spatialContributionP=-1*(-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2)));
+%
+% aux=-1*rotatedMarkerDataAbs.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
+% spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
+% vf=abs((aux(:,SHS2,1)-aux(:,FHS,1)))./tf;
+% vs=abs((aux(:,FHS,2)-aux(:,SHS,2)))./ts;
+% 
+% stepTimeContributionP= .5*(vf + vs).*(ts-tf);
+% velocityContributionP= .5*(vs-vf).*(tf+ts);
+% netContributionP=spatialContributionP+stepTimeContributionP+velocityContributionP;
+
+%Change back to the old version, since PNorm does not work for OG trials
+%anyway
+
+aux=markerData.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
+spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
 vf=(aux(:,SHS2,1)-aux(:,FHS,1))./tf;
 vs=(aux(:,FHS,2)-aux(:,SHS,2))./ts;
-stepTimeContributionP= -1*(.5*(vf + vs).*(ts-tf));
-velocityContributionP= -1*(.5*(vs-vf).*(tf+ts));
+stepTimeContributionP= .5*(vf + vs).*(ts-tf);
+velocityContributionP= .5*(vs-vf).*(tf+ts);
 netContributionP=spatialContributionP+stepTimeContributionP+velocityContributionP;
 
 spatialContributionPNorm=spatialContributionP./Dist;
