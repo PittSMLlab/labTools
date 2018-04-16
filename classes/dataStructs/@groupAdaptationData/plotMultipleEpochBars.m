@@ -21,7 +21,7 @@ end
 if isa(eps,'cell')
     dt=NaN(length(groups,1));
     for i=1:length(groups)
-        dt(i)=size(eps{1},1);        
+        dt(i)=size(eps{1},1);
     end
     nep=max(dt);
 else
@@ -64,8 +64,9 @@ nsub=max(nsubs);
 if removeBaseEpochFlag==1%remove baseline epoch for plotting, but not for stats
     for i=1:length(groups)
         group2{i}=groups{i};
-        groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
+        groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);       
     end
+else group2=groups;
 end
 
 %[figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);
@@ -76,15 +77,14 @@ for i=1:length(groups)
     else
         groupOutcomes{i}=groups{i}.getEpochData(eps,labels);% nLabels x neps x nSubjects
     end
-   allData(i,1:length(labels),1:nep,1:size(groupOutcomes{i},3))=groupOutcomes{i};%nGroups x nLabels x neps x nSubjects
+    allData(i,1:length(labels),1:nep,1:size(groupOutcomes{i},3))=groupOutcomes{i};%nGroups x nLabels x neps x nSubjects
     %I think this will fail if different # of epochs are defined for each group
 end
 
 
 
 
-%generate xlocations
-
+%generate xlocations and matrices to plot
 xData=1:nep+1;xData=xData*(length(groups)+1);xData=xData-length(groups);
 for i=1:length(groups)
     xval(:,i)=xData+(i-1)';
@@ -98,77 +98,113 @@ if medianFlag==0;
     varData=NaN(size(tempVarData));
     for i=1:length(groups)
         varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
-    end    
+    end
 else
     plotData=nanmedian(allData,4);
     tempVarData=nanstd(allData,false,4);
     varData=NaN(size(tempVarData));
     for i=1:length(groups)
         varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
-    end    
-
+    end
+    
 end
 
+%plot each parameter in different axis
 for p=1:length(labels)%each parameter has different axis, eps are plotted in single axis
-hold(plotHandles(p))
-for i=1:length(groups)
-    bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),'FaceColor',colors(i,:),'BarWidth',0.2)
-    errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),'LineStyle','none','color','k','LineWidth',2)
-   if plotIndividualsFlag==1
-     plot(plotHandles(p),xval,allData(i,p,:,:),'.k','MarkerSize',6)
-   end
-end
-   
-
-if isa(eps,'cell')
-    set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps{1}.Properties.ObsNames,'FontSize',12)  
-else
-    set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)  
-end
-title(plotHandles(p),labels{p});
-if p==1
-    ll=findobj(plotHandles(p),'Type','Bar');
-    h=legend(ll(fliplr(1:length(ll))),legendNames);    
-end
-
+    hold(plotHandles(p))
+    for i=1:length(groups)
+        bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),'FaceColor',colors(i,:),'BarWidth',0.2)
+        errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),'LineStyle','none','color','k','LineWidth',2)
+        if plotIndividualsFlag==1
+            plot(plotHandles(p),xval,allData(i,p,:,:),'.k','MarkerSize',6)
+        end
+    end
+    
+    
+    if isa(eps,'cell')
+        set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps{1}.Properties.ObsNames,'FontSize',12)
+    else
+        set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)
+    end
+    title(plotHandles(p),labels{p});
+    if p==1
+        ll=findobj(plotHandles(p),'Type','Bar');
+        h=legend(ll(fliplr(1:length(ll))),legendNames);
+    end
+    
+%     
+%     %perform stats
+%     %first generate a table
+%     t=table;
+%     %create croup variable
+%     for i=1:length(groups)
+%         nsub=length(groups{i}.adaptData);
+%         if i==1
+%             subcodes=cellstr(repmat(legendNames{i},nsub,1));
+%         else
+%             subcodes=[subcodes;cellstr(repmat(legendNames{i},nsub,1))];
+%         end
+%     end
+%     t.group=nominal(subcodes);
+%     epData=[];
+%     for i=1:length(groups)
+%         epData=[epData;transpose(squeeze(group2{i}.getEpochData(eps,labels{p})))];
+%     end
+%     for e = 1:length(eps)
+%         eval(['t.ep',num2str(e),'=epData(:,',num2str(e),');']);
+%     end
+%     Meas = table([1:length(eps)]','VariableNames',{'epoch'});%table for within-subject design
+%     
+%     rm=fitrm(t,['ep1-ep',num2str(length(eps)),'~group'],'WithinDesign',Meas,'WithinModel','epoch');
+%     
+%     
+%     
+%     
+%     if length(groups)==1
+%         %Oneway repeated measures ANOVA
+%     else
+%         %TwoWay repeated measures ANOVA
+%         
+%     end
+    
 end
 set(plotHandles,'FontSize',20)
 figHandle=gcf;
 
 %TO DO: add stats
-% 
-%     
-%     
+%
+%
+%
 %     for e=1:length(eps)
 %         %subplot(nrows,ncols,p*nrows-ncols+e)
 %         %hold on
 %           hold(ha(p,e))
 %         for i = 1:length(groupOrder)
-%           
+%
 %             bar(ha(p,e),xval(i),nanmean(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),'FaceColor',colcodes(groupInd(i),:));
 %             errorbar(ha(p,e),xval(i),nanmean(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),nanstd(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:))./sqrt(10),'LineWidth',2,'Color','k')
 %             if indSubFlag==1;
 %                 plot(ha(p,e),xval(i)+0.2,squeeze(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),'ok')
 %             end
-%             %xorder(i)=groupInd(i);            
+%             %xorder(i)=groupInd(i);
 %         end
 %         if e==1
-%             ylabel(ha(p,e),pars{p})            
+%             ylabel(ha(p,e),pars{p})
 %         end
 %         if p==nrows
 %             xlabel(ha(p,e),eps{e})
 %         end
 %         if p==1 && e==ncols
 %            ll=findobj(ha(p,e),'Type','Bar');
-%            legend(ha(p,e),ll(fliplr(xval)),groupOrder) 
+%            legend(ha(p,e),ll(fliplr(xval)),groupOrder)
 %         end
-%         
+%
 %         if sameScaleFlag==0
 %             lims=get(ha(p,e),'YLim');
 %             set(ha(p,e),'YLim',[min(lims) max(lims)],'YTick',[min(lims) max(lims)]);
 %             set(ha(p,e),'YTickLabel',[min(lims) max(lims)],'XLim',[0.5 length(xval)+0.5],'FontSize',12);
 %         end
-%         
+%
 %     end
 %     %lims=cell2mat(get(ha(p,:),'YLim'));
 %     if sameScaleFlag==1;
@@ -180,8 +216,8 @@ figHandle=gcf;
 %         set(ha(p,1),'YTickLabel',[min(min(lims)) max(max(lims))]);
 %     end
 % end
-% 
-% 
+%
+%
 % %Add bars comparing groups:
 % nGroups=length(groups);
 % if nGroups>1
@@ -193,7 +229,7 @@ figHandle=gcf;
 %             if ~isempty(aux)
 %                 subplot(ch(i))
 %                 hold on
-%                 
+%
 %                 clear XData YData
 %                 b=findobj(ch(i),'Type','Bar');
 %                 if ~isempty(b)
@@ -219,7 +255,7 @@ figHandle=gcf;
 %                     XData=XData(:);
 %                     YData=squeeze(YData(:,1,:));
 %                     YData=YData(:);
-%                     
+%
 %                     counter=0;
 %                     signifPlotMatrixConds=signifPlotMatrixConds==1 | signifPlotMatrixConds'==1;
 %                     M=size(signifPlotMatrixConds,2);
@@ -241,7 +277,7 @@ figHandle=gcf;
 %                             %stats on the given bar plots
 %                             error('Stride group order is different than expected')
 %                         end
-%                         
+%
 %                         %2-sample t-test btw the first two groups:
 %                         if significancePlotMatrixGroups(1,2)==1 || significancePlotMatrixGroups(2,1)==1
 %                             if medianFlag==0
@@ -262,9 +298,9 @@ figHandle=gcf;
 %                         end
 %                         %paired t-tests btw baseline and each other
 %                         %condition for each group
-%                         
+%
 %                         NNN=sum(signifPlotMatrixConds(j,[j+1:end])); %Comparisons for this specific condition
-%                         
+%
 %                         for l=[j+1:M]
 %                             if signifPlotMatrixConds(j,l)==1
 %                                 counter=counter+1;
@@ -290,7 +326,7 @@ figHandle=gcf;
 %                                     end
 %                                 end
 %                             end
-%                             
+%
 %                         end
 %                     end
 %                     aa=axis;
@@ -357,7 +393,7 @@ figHandle=gcf;
 %                     %text(mean(yy(2))-.1*diff(yy),xx-3.5*xx2/8,['Group: F=' num2str(tbl{3,5},2) ', p=' num2str(tbl{3,6},2)],'Fontsize',10,'FontWeight','bold')
 %                     %text(mean(yy(2))-.1*diff(yy),xx-4.25*xx2/8,['Cond: F=' num2str(tbl{2,5},2) ', p=' num2str(tbl{2,6},2)],'Fontsize',10,'FontWeight','bold')
 %                     %text(mean(yy(2))-.1*diff(yy),xx-5*xx2/8,['Interac.: F=' num2str(tbl{4,5},2) ', p=' num2str(tbl{4,6},2)],'Fontsize',10,'FontWeight','bold')
-%                     
+%
 %                     Ncomp=sum(sum(triu(signifPlotMatrixConds),2),1) * length(allData.group); %Number of comparisons being done across eps
 %                     Ncomp2=(.5*length(allData.group)*(length(allData.group)-1))*size(relevantData,1) ;%Number of comparisons being done across groups
 %                     for kk=1:length(allData.group) %all groups
@@ -420,5 +456,5 @@ figHandle=gcf;
 %             end
 %         end
 %     end
-%     
+%
 % end
