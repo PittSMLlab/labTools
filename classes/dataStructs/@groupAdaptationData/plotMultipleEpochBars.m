@@ -132,40 +132,12 @@ for p=1:length(labels)%each parameter has different axis, eps are plotted in sin
         h=legend(ll(fliplr(1:length(ll))),legendNames);
     end
     
-%     
-%     %perform stats
-%     %first generate a table
-%     t=table;
-%     %create croup variable
-%     for i=1:length(groups)
-%         nsub=length(groups{i}.adaptData);
-%         if i==1
-%             subcodes=cellstr(repmat(legendNames{i},nsub,1));
-%         else
-%             subcodes=[subcodes;cellstr(repmat(legendNames{i},nsub,1))];
-%         end
-%     end
-%     t.group=nominal(subcodes);
-%     epData=[];
-%     for i=1:length(groups)
-%         epData=[epData;transpose(squeeze(group2{i}.getEpochData(eps,labels{p})))];
-%     end
-%     for e = 1:length(eps)
-%         eval(['t.ep',num2str(e),'=epData(:,',num2str(e),');']);
-%     end
-%     Meas = table([1:length(eps)]','VariableNames',{'epoch'});%table for within-subject design
-%     
-%     rm=fitrm(t,['ep1-ep',num2str(length(eps)),'~group'],'WithinDesign',Meas,'WithinModel','epoch');
-%     
-%     
-%     
-%     
-%     if length(groups)==1
-%         %Oneway repeated measures ANOVA
-%     else
-%         %TwoWay repeated measures ANOVA
-%         
-%     end
+
+%perform stats
+%stats will be computed in a separate function: AnovaEpochs
+%to  be implemented
+
+
     
 end
 set(plotHandles,'FontSize',20)
