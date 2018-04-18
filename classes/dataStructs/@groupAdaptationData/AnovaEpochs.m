@@ -1,4 +1,4 @@
-function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps)
+function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Performs ANOVA on a parameter in a series of defined epochs    %%
@@ -75,7 +75,7 @@ if length(eps) == 1 %Oneway ANOVA
     posthocGroup.groups1=groupsNames(c(:,1))';posthocGroup.groups2=groupsNames(c(:,2))';%groups to compare
     posthocGroup.meandiff=c(:,4);posthocGroup.lowerbound=c(:,3);posthocGroup.upperbound=c(:,5);posthocGroup.pvalLSD=c(:,6);
     posthocGroup.pvalBonferroni=c2(:,6);posthocGroup.pvalTukey=c3(:,6);
-    [posthocGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(c(:,6),0.05);%FDR of 0.05 seems reasonable; 
+    [posthocGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(c(:,6),significanceThreshold);%FDR of 0.05 seems reasonable; 
     clear F p pval c c2 c3 dt1 dt2; 
     
 elseif length(groups) == 1 %Oneway RM ANOVA
@@ -114,7 +114,7 @@ elseif length(groups) == 1 %Oneway RM ANOVA
             end
         end
     end
-    [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,0.05);clear dt1 dt2
+    [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
      model=rm;
     
     
@@ -152,7 +152,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
             end
         end
     end
-    [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,0.05);clear dt1 dt2
+    [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
     
     %perform pairwise comparisons between groups for each epoch    
     %first create subtable for each group
@@ -183,7 +183,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
             end
         end
     end
-    [posthocGroupByEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocGroupByEpoch.pval,0.05);clear dt1 dt2
+    [posthocGroupByEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocGroupByEpoch.pval,significanceThreshold);clear dt1 dt2
     
     %perform pairwise comparisons between epochs for each group
     ncomp=([length(eps)*(length(eps)-1)]/2)*length(groups);
@@ -208,7 +208,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
             end
         end
     end
-    [posthocEpochByGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpochByGroup.pval,0.05);clear dt1 dt2
+    [posthocEpochByGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpochByGroup.pval,significanceThreshold);clear dt1 dt2
     model=rm;
 end   
     

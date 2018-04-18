@@ -1052,7 +1052,7 @@ classdef adaptationData
             end
         end
         
-        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd);
+        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag);
            %  figure('units','normalized','outerposition',[0 0 1 1])
             fh=figure;
             
@@ -1079,10 +1079,10 @@ classdef adaptationData
 %                 end
 %             end
             plotIndividualsFlag=indivFlag;
-            significanceThreshold=[];%.05;
-            significancePlotMatrix=[];
+           % significanceThreshold=[];%.05;
+            
             %alignEnd=abs(numberOfStrides(2));
-            signifPlotMatrixConds=[];
+            
             %exemptFirst=1;
             %exemptLast=5;
             
@@ -1105,7 +1105,7 @@ classdef adaptationData
             
             %set(ph(:,2),'Clipping','off')
             %Add bars:
-            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,significancePlotMatrix,signifPlotMatrixConds,removeBaseEpochFlag);
+            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag);
             for i=1:M
                 subplot(ph(i,2));
                 grid on
