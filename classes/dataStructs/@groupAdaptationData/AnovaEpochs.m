@@ -1,4 +1,4 @@
-function [model,btab,wtab,anovatab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps)
+function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Performs ANOVA on a parameter in a series of defined epochs    %%
@@ -20,7 +20,6 @@ function [model,btab,wtab,anovatab,maineff,posthocGroup,posthocEpoch,posthocEpoc
 % - model: fitted model                                         %% 
 % - btab: between subjects ANOVA table                          %%
 % - wtab: within subjects ANOVA table                           %%
-% - anovatab: combined table                                    %%
 % - maineff: table with maineff of group and epoch              %%
 % - posthocGroup: table with posthoc results                    %%
 % - posthocEpoch: table with posthoc results                    %%
@@ -58,14 +57,15 @@ end
 
 %%Step 2: perform ANOVA and posthoc tests
 maineff=table;
-
+Meas = table([1:length(eps)]','VariableNames',{'epoch'});%table for within-subject design
+ 
 %determine which type of ANOVA
 if length(eps) == 1 %Oneway ANOVA
    posthocGroup=table;
    
    
     [pval,anovatab,model] = anova1(t.ep1,t.group,'off');
-    wtab=[];btab=[];%these are for repeated measures or mixed ANOVA's;
+    wtab=[];btab=anovatab;%these are for repeated measures or mixed ANOVA's;
     c = multcompare(model,'display','off','CType','lsd');
     c2 = multcompare(model,'display','off','CType','bonferroni');
     c3 = multcompare(model,'display','off','CType','hsd');
@@ -97,6 +97,7 @@ elseif length(groups) == 1 %Oneway RM ANOVA
     
     ncomp=[length(eps)*(length(eps)-1)]/2;
     comp=1;
+    posthocEpoch.ep1=repmat({''},ncomp,1);%this is to initialize the table
     for e=1:length(eps)
         for e2=1:length(eps)
             if e>e2;
@@ -114,7 +115,7 @@ elseif length(groups) == 1 %Oneway RM ANOVA
         end
     end
     [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,0.05);clear dt1 dt2
-     
+     model=rm;
     
     
     
@@ -134,6 +135,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
     %perform pairwise comparisons for epoch    
     ncomp=[length(eps)*(length(eps)-1)]/2;
     comp=1;
+    posthocEpoch.ep1=repmat({''},ncomp,1);%this is to initialize the table
     for e=1:length(eps)
         for e2=1:length(eps)
             if e<e2;
@@ -161,6 +163,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
     
     ncomp=([length(groups)*(length(groups)-1)]/2)*length(eps);
     comp=1;
+    posthocGroupByEpoch.epoch=repmat({''},ncomp,1);%this is to initialize the table
     for e = 1:length(eps)
         for g1 = 1:length(groups)
             for g2 = 1:length(groups)
@@ -185,6 +188,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
     %perform pairwise comparisons between epochs for each group
     ncomp=([length(eps)*(length(eps)-1)]/2)*length(groups);
     comp=1;   
+    posthocEpochByGroup.group=repmat({''},ncomp,1);%this is to initialize the table
     for g = 1:length(groups)
         for e=1:length(eps)
             for e2=1:length(eps)
@@ -205,7 +209,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
         end
     end
     [posthocEpochByGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpochByGroup.pval,0.05);clear dt1 dt2
-    
+    model=rm;
 end   
     
     
