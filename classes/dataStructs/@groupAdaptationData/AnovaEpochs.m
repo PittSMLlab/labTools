@@ -108,7 +108,7 @@ elseif length(groups) == 1 %Oneway RM ANOVA
                 posthocEpoch.lowerbound(comp)=CI(1);
                 posthocEpoch.upperbound(comp)=CI(2);
                 posthocEpoch.pval(comp)=P;
-                posthocEpoch.pvalBonferroni(comp)=P/ncomp;                
+                posthocEpoch.pvalBonferroni(comp)=P*ncomp;                
                 clear H P CI
                 comp=comp+1;
             end
@@ -146,7 +146,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
                 posthocEpoch.lowerbound(comp)=CI(1);
                 posthocEpoch.upperbound(comp)=CI(2);
                 posthocEpoch.pval(comp)=P;
-                posthocEpoch.pvalBonferroni(comp)=P/ncomp;                
+                posthocEpoch.pvalBonferroni(comp)=P*ncomp;                
                 clear H P CI
                 comp=comp+1;
             end
@@ -176,7 +176,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
                     posthocGroupByEpoch.lowerbound(comp)=CI(1);
                     posthocGroupByEpoch.upperbound(comp)=CI(2);
                     posthocGroupByEpoch.pval(comp)=P;
-                    posthocGroupByEpoch.pvalBonferroni(comp)=P/ncomp;                
+                    posthocGroupByEpoch.pvalBonferroni(comp)=P*ncomp;                
                     clear H P CI
                     comp=comp+1;                     
                 end
@@ -201,7 +201,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
                     posthocEpochByGroup.lowerbound(comp)=CI(1);
                     posthocEpochByGroup.upperbound(comp)=CI(2);
                     posthocEpochByGroup.pval(comp)=P;
-                    posthocEpochByGroup.pvalBonferroni(comp)=P/ncomp;
+                    posthocEpochByGroup.pvalBonferroni(comp)=P*ncomp;
                     clear H P CI
                     comp=comp+1;
                 end
