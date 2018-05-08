@@ -196,7 +196,7 @@ elseif length(eps) > 1 || length(groups) > 1 %Two-way RM ANOVA
                     posthocEpochByGroup.group(comp)=groupsNames(g);
                     posthocEpochByGroup.ep1(comp)=eps.Properties.ObsNames(e);
                     posthocEpochByGroup.ep2(comp)=eps.Properties.ObsNames(e2);
-                    [H,P,CI] = ttest(t2{g1}.(['ep',num2str(e)]),t2{g1}.(['ep',num2str(e2)]));
+                    [H,P,CI] = ttest(t2{g}.(['ep',num2str(e)]),t2{g}.(['ep',num2str(e2)]));
                     posthocEpochByGroup.meandiff(comp)=mean(CI);
                     posthocEpochByGroup.lowerbound(comp)=CI(1);
                     posthocEpochByGroup.upperbound(comp)=CI(2);
