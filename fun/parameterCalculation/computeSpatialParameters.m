@@ -70,6 +70,10 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'stepTimeContributionPNorm',     'Same as stepTime, in absolute frame';...
     'velocityContributionPNorm',     'Same as velocityContribution, in absolute frame';...
     'netContributionPNorm',          'Sum of the previous three (should make it identical to netContribution, which is equal to stepLengthAsym)';...
+    'spatialContributionPNorm2',      'Same as spatial contribution Pnorm, corrected for OG walking (using rotated markerdata)';...
+    'stepTimeContributionPNorm2',     'Same as stepTime contribution Pnorm, corrected for OG walking (using rotated markerdata)';...
+    'velocityContributionPNorm2',     'Same as velocityContribution Pnorm, corrected for OG walking (using rotated markerdata)';...
+    'netContributionPNorm2',          'Sum of the previous three';...
     'spatialContributionAlt',     'Spatial contribution divided by stride time, to get velocity units instead of length units';...
     'stepTimeContributionAlt',    'Step time contribution divided by stride time, to get velocity units instead of length units';...
     'velocityContributionAlt',    'Velocity contribution divided by stride time, to get velocity units instead of length units';...
@@ -109,7 +113,8 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'velocityAltContributionAlt' 'velocityAltContribution, normalized by stride time';...
     'velocityAltContributionNorm2' 'velocityAltContribution, normalized by sum of step lengths';...
     'velocityAltContributionP'  'velocityAltContribtuion using absolute lab reference (mm)';...
-    'velocityAltContributionPNorm' 'velocityAltContributionP, normalized to sum of step lengths'
+    'velocityAltContributionPNorm' 'velocityAltContributionP, normalized to sum of step lengths';
+    
 %    'avgRotation',            'Angle that the coordinates were rotated by';...
     }; 
 
@@ -333,22 +338,6 @@ stepTimeContributionNorm2=stepTimeContribution./Dist;
 velocityContributionNorm2=velocityContribution./Dist;
 netContributionNorm2=netContribution./Dist;
 
-%Contributions in absolute frame
-% modified by Digna April 2018 to use rotated markerdata. This allows to
-% use these values for OG trials
-%
-% aux=-1*rotatedMarkerDataAbs.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
-% spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
-% vf=abs((aux(:,SHS2,1)-aux(:,FHS,1)))./tf;
-% vs=abs((aux(:,FHS,2)-aux(:,SHS,2)))./ts;
-% 
-% stepTimeContributionP= .5*(vf + vs).*(ts-tf);
-% velocityContributionP= .5*(vs-vf).*(tf+ts);
-% netContributionP=spatialContributionP+stepTimeContributionP+velocityContributionP;
-
-%Change back to the old version, since PNorm does not work for OG trials
-%anyway
-
 aux=markerData.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
 spatialContributionP=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
 vf=(aux(:,SHS2,1)-aux(:,FHS,1))./tf;
@@ -361,6 +350,22 @@ spatialContributionPNorm=spatialContributionP./Dist;
 stepTimeContributionPNorm=stepTimeContributionP./Dist;
 velocityContributionPNorm=velocityContributionP./Dist;
 netContributionPNorm=netContributionP./Dist;
+
+%Contributions in absolute frame using rotated markerdata
+% modified by Digna April 2018 to use rotated markerdata. This allows to
+% use these values for OG trials
+aux=-1*rotatedMarkerDataAbs.getDataAsTS({[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest'); %Will be Nx8x2
+spatialContributionP2=-(2*aux(:,FHS,1) -aux(:,SHS2,2)-aux(:,SHS,2));
+vf2=abs((aux(:,SHS2,1)-aux(:,FHS,1)))./tf;
+vs2=abs((aux(:,FHS,2)-aux(:,SHS,2)))./ts;
+stepTimeContributionP2= .5*(vf2 + vs2).*(ts-tf);
+velocityContributionP2= .5*(vs2-vf2).*(tf+ts);
+netContributionP2=spatialContributionP2+stepTimeContributionP2+velocityContributionP2;
+
+spatialContributionPNorm2=spatialContributionP2./Dist;
+stepTimeContributionPNorm2=stepTimeContributionP2./Dist;
+velocityContributionPNorm2=velocityContributionP2./Dist;
+netContributionPNorm2=netContributionP2./Dist;
 
 % Contribution error values
 
