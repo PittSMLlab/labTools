@@ -1092,6 +1092,8 @@ classdef adaptationData
                 adaptDataGroups{i}=adaptDataGroups{i}.removeBadStrides;
             if removeBaseEpochFlag==1             
                    adaptDataGroups2{i}=adaptDataGroups{i}.removeBaselineEpoch(eps(1,:),[]);
+            else 
+                 adaptDataGroups2{i}=adaptDataGroups{i};
             end
                
             end
