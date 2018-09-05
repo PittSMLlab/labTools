@@ -169,6 +169,24 @@ classdef groupAdaptationData
             end
         end
         
+        function [nStrides,labels]=getNumStridesInCond(this,conds)
+            nsubs=length(this.ID);
+            if iscell(conds)
+                nconds=length(conds);
+            else
+                nconds=1;
+                conds={conds};
+            end
+            nStrides=NaN(nsubs,nconds);
+            labels=conds;
+            
+            for s=1:nsubs
+                for c=1:nconds
+                    nStrides(s,c)=length(cell2mat(this.adaptData{s}.getIndsInCondition(conds{c})));
+                end
+            end
+        end
+        
         function meanSub=getMeanSubject(this)
             
             error('Unimplemented')
