@@ -1,4 +1,4 @@
-function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames)
+function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)
 %Data is PxMxN, where:
 %M is a number of groups (unpaired factor)
 %N is a number of conditions/epochs/measurements (paired/repeated factor)
@@ -27,8 +27,16 @@ if nargin<6 || isempty(conditionNames) || length(conditionNames)~=M
 end
 
 %PLOT------------
+if nargin<7 || isempty(plotHandle)
 fh=figure('Units','Normalized','OuterPosition',[0 .5 .3 .5]);
+ph=gca;
 hold on
+else
+    axes(plotHandle);
+    ph=gca;
+    fh=gcf;
+    hold on
+end
 %Bars:
 if medianFlag==1
     m=squeeze(nanmedian(data));
@@ -79,5 +87,4 @@ end
 
 legend(groupNames);
 set(gca,'XTick',[1:M],'XTickLabel',conditionNames);
-ph=gca;
 end

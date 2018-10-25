@@ -21,4 +21,4 @@ ex1=[0.7255    0.0863    0.1608];
 
 map=[bsxfun(@plus,ex1.^(1/gamma),bsxfun(@times,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@plus,ex2.^(1/gamma),bsxfun(@times,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
 
-condColors=[.4,.4,.4; 0,.5,.4; .55,0,.65];
+condColors=[.4,.4,.4; 0,.5,.4; .5,.2,.6];
