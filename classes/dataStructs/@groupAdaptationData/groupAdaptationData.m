@@ -192,7 +192,25 @@ classdef groupAdaptationData
               gID=this.ID{1}(1); %Using first char in first subjects' ID as group ID.
             end
         end
-
+        
+        function [nStrides,labels]=getNumStridesInCond(this,conds)
+            nsubs=length(this.ID);
+            if iscell(conds)
+                nconds=length(conds);
+            else
+                nconds=1;
+                conds={conds};
+            end
+            nStrides=NaN(nsubs,nconds);
+            labels=conds;
+            
+            for s=1:nsubs
+                for c=1:nconds
+                    nStrides(s,c)=length(cell2mat(this.adaptData{s}.getIndsInCondition(conds{c})));
+                end
+            end
+        end
+        
         function meanSub=getMeanSubject(this)
 
             error('Unimplemented')
@@ -284,6 +302,12 @@ classdef groupAdaptationData
             end
             for i=1:length(this.ID)
                 this.adaptData{i}=this.adaptData{i}.normalizeToBaselineEpoch(labelPrefix,baseEpoch,noMinNormFlag);
+            end
+        end
+        
+        function [this]=removeBaselineEpoch(this,baseEpoch,labels)
+            for i=1:length(this.ID)
+                this.adaptData{i}=this.adaptData{i}.removeBaselineEpoch(baseEpoch,labels);
             end
         end
 
@@ -987,8 +1011,12 @@ classdef groupAdaptationData
     methods(Static)
        % Several groups visualization
        [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
-       [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,significancePlotMatrixGroups,signifPlotMatrixConds);
+       [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,plothocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag);
+       
        % Several groups stats
+       [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)
+
+       
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
           %2-sample t-test comparing behavior of parameters across groups, for a given subset of strides
            %Check that there are exactly two groups

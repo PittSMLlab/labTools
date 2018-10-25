@@ -243,7 +243,9 @@ if ~isempty(alignEnd)
    newCond(1:2:end)=cond;
    newCond(2:2:end)=strcat(cond,'End');
    catchindx=find(strcmpi(newCond,'catchEnd'));
+   if ~isempty(catchindx);
    newCond{catchindx}=[];
+   end
    newCond=newCond(~cellfun('isempty',newCond));
    cond=newCond;
    cond=newCond;
