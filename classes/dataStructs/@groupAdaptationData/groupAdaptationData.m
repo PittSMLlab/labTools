@@ -48,6 +48,7 @@ classdef groupAdaptationData
             %Check that condition ordering is the same:
             [conditions,nonCommonConditions] = getCommonConditions(this);
             condOrder=this.checkCommonConditionOrder(conditions);
+		%To do: check and display minimum number of strides per common condition
         end
 
         %% Other Functions
@@ -1037,6 +1038,7 @@ classdef groupAdaptationData
              %Retroactive compliance check!
              [conditions,nonCommonConditions] = getCommonConditions(this);
              condOrder=this.checkCommonConditionOrder(conditions);
+		%To do: check and display minimum number of strides per common condition
        end
 
     end
