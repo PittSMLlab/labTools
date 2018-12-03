@@ -57,14 +57,16 @@ end
 DOB = labDate(info.DOBday,info.DOBmonth,info.DOByear);
 
 %age calc 
-age = expDate.year - DOB.year;
-if expDate.month < DOB.month
-    age = age-1;
-elseif expDate.month == DOB.month
-    if expDate.day < DOB.day
-        age = age-1;
-    end
-end
+ageInMonths=round(expDate.timeSince(DOB)); %Rounding to closest month
+age=ageInMonths/12;
+% age = expDate.year - DOB.year;
+% if expDate.month < DOB.month
+%     age = age-1;
+% elseif expDate.month == DOB.month
+%     if expDate.day < DOB.day
+%         age = age-1;
+%     end
+% end
 
 if ~isfield(info,'isStroke') || info.isStroke==0
     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
