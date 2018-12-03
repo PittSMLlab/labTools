@@ -5,7 +5,7 @@ classdef adaptationData
 %   experimentData.makeDataObj
 %
 %adaptationData properties:
-%   metaData - object if the experimentMetaData class
+%   metaData - object of the experimentMetaData class
 %   subData - object of the subjectData class
 %   data - object of the parameterSeries class
 %
@@ -371,17 +371,26 @@ classdef adaptationData
         end
 
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
-            dob=this.subData.dateOfBirth;
-            testData=this.metaData.date;
-            [ageInMonths]=testData.timeSince(dob);
+            if ~isempty(this.subData.age)
+                ageInMonths=this.subData.age*12; %In months
+            elseif ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB','subject metadata contains DOB, this may be a privacy issue.')
+                dob=this.subData.dateOfBirth;
+                testData=this.metaData.date;
+                [ageInMonths]=testData.timeSince(dob);
+            else
+                error('expData:subjectDOB','Could not establish subject age at experiment time.')
+            end
         end
-
+        
         function newThis=medianFilter(this,N)
             newThis=this;
             newThis.data=this.data.medianFilter(N);
         end
 
         function newThis=monoLS(this,trialBased,order,Nregularization)
+            %TODO: check that the submodule containing monoLS is in the
+            %path, or this will fail
             newThis=this;
             %For each condition, or trial:
             if trialBased==1
@@ -399,8 +408,6 @@ classdef adaptationData
                     newThis.data.Data(indData,6:end)=aux;
                 end
             end
-
-
         end
 
         function newThis=substituteNaNs(this,method)
@@ -1122,9 +1129,7 @@ classdef adaptationData
             set(fh,'Color',[1 1 1]);
             %ph(1,1).Legend=ph(end,1).Legend;%ph(end,1).Legend
             
-        end
-            
-            
+        end     
      
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
@@ -1195,6 +1200,15 @@ classdef adaptationData
             end
         end
 
+        function this=loadobj(this)
+            if ~isempty(this.subData.dateOfBirth)
+                warning('adaptData:subjectDOB',['Subject data contains DOB information for subject ' this.subData.ID '. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'])
+                %Determine age (in months):
+                age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
+                %Scrub DOB from subject meta data, save age at experiment time (in years):
+                this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+            end
+        end
         
 %         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
 %

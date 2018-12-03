@@ -89,8 +89,10 @@ classdef groupAdaptationData
             end
             allConditions = getAllConditions(this,subs);
             nonCommonConditions = setdiff(lower(allConditions),lower(conditions));
-            disp(['Warning: found some non common conditions: ' ])
-            disp(nonCommonConditions')
+            if ~isempty(nonCommonConditions)
+                warning('groupAdaptData:nonCommonConds','Found some non-common conditions across subjects')
+                disp(nonCommonConditions')
+            end
         end
 
         function commonOrder=checkCommonConditionOrder(this,conditions)

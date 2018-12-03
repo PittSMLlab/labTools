@@ -176,9 +176,16 @@ classdef experimentData
         end
 
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
-            dob=this.subData.dateOfBirth;
-            testData=this.metaData.date;
-            [ageInMonths]=testData.timeSince(dob);
+            if ~isempty(this.subData.age)
+                ageInMonths=this.subData.age*12; %In months
+            elseif ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB','subject metadata contains DOB, this may be a privacy issue.')
+                dob=this.subData.dateOfBirth;
+                testData=this.metaData.date;
+                [ageInMonths]=testData.timeSince(dob);
+            else
+                error('expData:subjectDOB','Could not establish subject age at experiment time.')
+            end
         end
 
         function slowLeg=getSlowLeg(this)
@@ -643,5 +650,16 @@ classdef experimentData
                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
         end
-	end
+    end
+    methods (Static)
+        function this=loadobj(this)
+            if ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB',['Subject data contains DOB information for subject ' this.subData.ID '. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'])
+                %Determine age (in months):
+                age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
+                %Scrub DOB from subject meta data, save age at experiment time (in years):
+                this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+            end
+        end
+    end
 end
