@@ -263,7 +263,7 @@ classdef experimentData
                    procData{trial}=[];
                 end
             end
-            this=checkMarkerHealth(this);
+            %this=checkMarkerHealth(this);
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
 
