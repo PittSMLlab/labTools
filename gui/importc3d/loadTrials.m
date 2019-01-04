@@ -222,7 +222,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %across Nexus versions:
         fieldNames=fields(analogs);
 
-       refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')),fieldNames)});
+       refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
         
         %Check for frequencies between the two PCs
         if secondFile
@@ -304,10 +304,18 @@ for t=cell2mat(info.trialnums) %loop through each trial
         [sync] = clipSignals(sync,.1);
         sync=idealHPF(sync,0);
         gain1=refSync'/sync(:,1)';
-        E1=sum((refSync(max([lagInSamplesA+1,1]):end)-sync(max([lagInSamplesA+1,1]):end,1)*gain1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
+        reducedRefSync=refSync(max([lagInSamplesA+1,1]):end);
+        reducedSync1=sync(max([lagInSamplesA+1,1]):end,1)*gain1;
+        E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
         if secondFile
             gain2=refSync'/sync(:,2)';
-            E2=sum((refSync(max([lagInSamplesA+1+lagInSamples,1]):end)-sync(max([lagInSamplesA+1+lagInSamples,1]):end,2)*gain2).^2)/sum(refSync.^2);
+            reducedRefSync2=refSync(max([lagInSamplesA+1+lagInSamples,1]):end);
+            reducedSync2=sync(max([lagInSamplesA+1+lagInSamples,1]):end,2)*gain2;
+            E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
+            %Comparing the two bases' synchrony mechanism (not to ref signal):
+            %reducedSync1a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;
+            %reducedSync2a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;
+            %E3=sum((reducedSync1a-reducedSync2a).^2)/sum(refSync.^2);
         else
             E2=0;
             gain2=NaN;
@@ -316,8 +324,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
         end
 
         %Analytic measure of alignment problems 
-        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
-        disp(['Sync parameters were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's; sampling mismatch= ' num2str(1-timeScaleFactor,5)]);
+        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(100*E1,3) ' and ' num2str(100*E2,3) '.'])
+        disp(['Sync parameters to ref. signal were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's']);
+        disp(['Typical sync parameters are: gains= -933.3 +- 0.2 (both); delays= -0.025s +- 0.001, 0.014 +- 0.002'])
+        disp(['Sync parameters between PCs were: gain= ' num2str(gain1/gain2,4) '; delay= ' num2str((lagInSamples)/EMGfrequency,3) 's; sampling mismatch (ppm)= ' num2str(1e6*(1-timeScaleFactor),3)]);
+        disp(['Typical sync parameters are: gain= 1; delay= 0.040s; sampling= 35 ppm'])
         if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
             warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
             h=figure;
@@ -330,7 +341,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
             if secondFile
                 plot(time,sync(:,2)*gain2,'g')
             end
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+            leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
+            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+            legend('refSync',leg1,leg2)
             hold off
             subplot(2,2,3)
             T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
@@ -351,7 +364,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 end
                 hold off
             end
-            s=inputdlg('Please confirm that you want to proceed like this (y/n)','str');
+            s=inputdlg('If sync parameters between signals look fine and mismatch is below 5%, we recommend yes.','Please confirm that you want to proceed like this (y/n).');
             switch s{1}
                 case {'y','Y','yes'}
                      disp(['Using signals in a possibly unsynchronized way!.'])
@@ -369,11 +382,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
         time=[0:length(refSync)-1]*1/EMGfrequency;
         plot(time,refSync)
         plot(time,sync(:,1)*gain1,'r')
+        leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
         if secondFile
             plot(time,sync(:,2)*gain2,'g')
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+            legend('refSync',leg1,leg2)
         else           
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'])
+            legend('refSync',leg1)
         end
         hold off
         subplot(2,2,3)
