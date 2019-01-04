@@ -546,8 +546,13 @@ classdef labTimeSeries  < timeseries
 
         function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)
           %Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints
+          slicedTS=cell(1,length(timeBreakpoints)-1);
           for i=1:length(timeBreakpoints)-1
+              if isnan(timeBreakpoints(i)) || isnan(timeBreakpoints(i+1)) || timeBreakpoints(i+1)<timeBreakpoints(i)
+                  warning('off') %Preventing overload of annoying warnings
+              end
               slicedTS{i}=this.split(timeBreakpoints(i)-timeMargin,timeBreakpoints(i+1)+timeMargin);
+              warning('on')
           end
             initTime=timeBreakpoints(1:end-1)-timeMargin;
             duration=diff(timeBreakpoints)+2*timeMargin;

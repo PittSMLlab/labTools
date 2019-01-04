@@ -448,7 +448,7 @@ classdef labData
             this=this.GRFData;
             fcut=50;
             %Warning: this only works if GRF data is stored here
-            warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
+            warning('orientedLabTimeSeries:computeCOP','COP computation is calibrated only for GRFData obtained from the Bertec instrumented treadmill');
             if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
                 F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
                 M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
