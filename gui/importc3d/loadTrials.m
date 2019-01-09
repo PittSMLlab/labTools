@@ -304,13 +304,17 @@ for t=cell2mat(info.trialnums) %loop through each trial
         [sync] = clipSignals(sync,.1);
         sync=idealHPF(sync,0);
         gain1=refSync'/sync(:,1)';
-        reducedRefSync=refSync(max([lagInSamplesA+1,1]):end);
-        reducedSync1=sync(max([lagInSamplesA+1,1]):end,1)*gain1;
+        indStart=round(max([lagInSamplesA+1,1]));
+        reducedRefSync=refSync(indStart:end);
+        indStart=round(max([lagInSamplesA+1,1]));
+        reducedSync1=sync(indStart:end,1)*gain1;
         E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
         if secondFile
             gain2=refSync'/sync(:,2)';
-            reducedRefSync2=refSync(max([lagInSamplesA+1+lagInSamples,1]):end);
-            reducedSync2=sync(max([lagInSamplesA+1+lagInSamples,1]):end,2)*gain2;
+            indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+            reducedRefSync2=refSync(indStart:end);
+            indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+            reducedSync2=sync(indStart:end,2)*gain2;
             E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
             %Comparing the two bases' synchrony mechanism (not to ref signal):
             %reducedSync1a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;
@@ -567,10 +571,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
             for j=missingLabels
                 %generate menu
                 choice = menu([{['WARNING: the marker label ' mustHaveLabels{j}]},{' was not found, but is necessary for'},...
-                    {'future calculations.Please indicate which'},{[' marker corresponds to the ' mustHaveLabels{j} ' label:']}] ,potentialMatches);
+                    {'future calculations.Please indicate which'},{[' marker corresponds to the ' mustHaveLabels{j} ' label:']}] ,[potentialMatches {'NaN'}]);
                 if choice==0
                     ME=MException('loadTrials:markerDataError','Operation terminated by user while finding names of necessary labels.');
                     throw(ME)
+                elseif choice>length(potentialMatches)
+                    %nop
+                    warning('loadTrials:missingRequiredMarker',['A required marker (' mustHaveLabels{j} ') was missing from the marker list. This will be problematic when computing parameters.'])
                 else
                     %set the label corresponding to choice as one of the must-have labels
                     addMarkerPair(mustHaveLabels{j},potentialMatches{choice})
@@ -578,7 +585,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
         end
         
-        for j=1:length(fieldList);
+        for j=1:length(fieldList)
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
                 relData=[relData,markers.(fieldList{j})];
                 markerLabel=findLabel(fieldList{j});%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)
