@@ -178,7 +178,7 @@ for g=1:ngroups
         if isempty(cellfun(@(x) strcmp(x, 'catch'), adaptData.metaData.conditionName))==0
         % compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)
         adapt1Data=adaptData.getParamInCond(params,'adaptation');
-        tmsteadyBC=[tmsteadyBC; nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:))];
+        tmsteadyBC=[tmsteadyBC; nanmean(adapt1Data((end-5)-steadyNumPts+1:(end-5),:))];
         
         % compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)
         
