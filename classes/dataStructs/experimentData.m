@@ -283,10 +283,10 @@ classdef experimentData
             end
             allTrialModels=m;
         end
-        
+
         function this=checkMarkerHealth(this,refTrial)
             disp(['Checking marker health...'])
-           
+
             %First: build models
             [allTrialModels,modelScore,badFlag]=extractMarkerModels(this);
 
@@ -303,7 +303,7 @@ classdef experimentData
             try %If there is a model
                 mm=allTrialModels{refTrial};
                 fprintf(['Using trial ' num2str(refTrial) ' to train outlier detection model...\n'])
-                mm.seeModel; 
+                mm.seeModel;
             catch
                 %nop
             end
@@ -329,8 +329,8 @@ classdef experimentData
             end
             disp(['Outlier data added in Quality field']);
         end
-        
-        
+
+
          function this=computeAngles(this)%added by Digna
             for trial=1:length(this.data)
                 disp(['Computing angles for trial ' num2str(trial) '...'])
@@ -470,7 +470,7 @@ classdef experimentData
                   this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
-        
+
         function this=flushAndRecomputeParameters(this,eventClass,initEventSide)
         %FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
         %objects in experimentData.data
@@ -493,6 +493,16 @@ classdef experimentData
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
                   this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,[]);
+            end
+        end
+
+        function this=recomputeEvents(this,eventClass,initEventSide)
+        %RECOMPUTEEVENTS recomputes events AND parameters for all trials,
+        %with default options.
+        %See also: processedLabData.recomputeEvents
+            trials=cell2mat(this.metaData.trialsInCondition);
+            for t=trials
+                  this.data{t}=recomputeEvents(this.data{t}); %This recomputes events AND recomputes parameters (otherwise parameters will not correspond to the new events)
             end
         end
 
