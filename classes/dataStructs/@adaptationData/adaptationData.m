@@ -66,7 +66,14 @@ classdef adaptationData
                 throw(ME);
             end
         end
-
+        function this=set.data(this,data)
+          if nargin>1 && (isa(data,'parameterSeries') || isa(data,'paramData'))
+              this.data=data;
+          else
+              ME=MException('adaptationData:setData','Data is not a parameterSeries type object.');
+              throw(ME);
+          end
+        end
         function tT=trialTypes(this)
             if ~isempty(this.data.trialTypes)
                 tT=this.data.trialTypes; %Tries to read from parameterSeries' trialType field, if it was populated, as we expect it to be with newer versions
