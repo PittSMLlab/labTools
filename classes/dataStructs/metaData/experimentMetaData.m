@@ -64,6 +64,10 @@ classdef experimentMetaData
             if nargin>7
                 this.Ntrials=Ntrials;
             end
+            %Check that conditions do not include interleaved or repeated trials:
+            [conditionOrder]=this.validateTrialsInCondition;
+            %Sort conditions according to trial numbers:
+            this=this.sortConditions;
         end
 
         %% Setters
@@ -260,6 +264,60 @@ classdef experimentMetaData
            end
         end
 
+         function conditionOrder=checkConditionOrder(this,conditionNamesInOrder,silentFlag)
+           %Checks that the given conditions appear in order for the subject, according to trial numbering
+           if nargin<2 || isempty(conditionNamesInOrder)
+               conditionNamesInOrder=this.conditionName;
+           end
+           [conditionOrder]=validateTrialsInCondition(this); %Doing validation of trials, and getting conditionOrder
+           conditionIdxsInOrder=this.getConditionIdxsFromName(conditionNamesInOrder);
+           conditionOrder=conditionOrder(conditionIdxsInOrder); %Keeping order of requested conditions only
+           if nargin>2 && ~isempty(silentFlag) && ~silentFlag
+           if any(diff(conditionOrder)<1)
+               badOrder=find(diff(conditionOrder)<1);
+               for i=1:length(badOrder)
+               display(['Conditions provided are not in order: ' conditionNamesInOrder{badOrder(i)} ' precedes ' conditionNamesInOrder{badOrder(i)+1}])
+               end
+           end
+            end
+         end
+
+         function [conditionOrder]=validateTrialsInCondition(this)
+            %Checks that there are no repeated trials, and that conditions do not interleave trials
+            %e.g. that condition 'A' has trials 1 and 3, and condition 'B' has trial 2
+             conditionNamesInOrder=this.conditionName;
+             for i=1:length(conditionNamesInOrder)
+                trialNo{i}=this.getTrialsInCondition(conditionNamesInOrder{i});
+             end
+             allTrials=cell2mat(trialNo);
+             uniqueTrials=unique(allTrials);
+             if numel(uniqueTrials)~=numel(allTrials)
+                 error('Some trials are repeated, in the same or different conditions. This is not allowed. Please review.')
+             end
+             mx=cellfun(@(x) min(x),trialNo);
+             Mx=cellfun(@(x) max(x),trialNo);
+           [mx1,order1]=sort(mx); %Sorting according to first trial in each condition
+           [Mx1,order2]=sort(Mx); %Sorting according to last trial in each condition
+           if all(order1==order2) && all(Mx1(1:end-1)<mx1(2:end))
+               conditionOrder=order1;
+           else %Condition order cannot be established
+               disp(this)
+               error('Trials in conditions appear to be interleaved. This is not allowed. Please rename conditions.')
+           end
+         end
+
+         function newThis=sortConditions(this)
+             %Get order:
+            [conditionOrder]=this.validateTrialsInCondition;
+            %Sort:
+            this.conditionName(conditionOrder)=this.conditionName;
+            this.conditionDescription(conditionOrder)=this.conditionDescription;
+            this.trialsInCondition(conditionOrder)=this.trialsInCondition;
+            %Check ordering:
+            this.checkConditionOrder;
+            newThis=this;
+         end
+
         function [newThis,change]=numerateRepeatedConditionNames(this)
            %This function should (almost) never be used. metaData no longer allows repeated condition names, so this is unnecessary.
            %However, for files created before the prohibition, it may
@@ -325,4 +383,12 @@ classdef experimentMetaData
         end
     end
 
+    methods(Static)
+        %% Loading
+        function this=loadobj(this)
+          %This function was created to retroactively validate trials everytime this is loaded
+          [conditionOrder]=this.validateTrialsInCondition;
+          this=this.sortConditions;
+        end
+    end
 end

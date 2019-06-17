@@ -176,9 +176,16 @@ classdef experimentData
         end
 
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
-            dob=this.subData.dateOfBirth;
-            testData=this.metaData.date;
-            [ageInMonths]=testData.timeSince(dob);
+            if ~isempty(this.subData.age)
+                ageInMonths=this.subData.age*12; %In months
+            elseif ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB','subject metadata contains DOB, this may be a privacy issue.')
+                dob=this.subData.dateOfBirth;
+                testData=this.metaData.date;
+                [ageInMonths]=testData.timeSince(dob);
+            else
+                error('expData:subjectDOB','Could not establish subject age at experiment time.')
+            end
         end
 
         function slowLeg=getSlowLeg(this)
@@ -256,7 +263,7 @@ classdef experimentData
                    procData{trial}=[];
                 end
             end
-            this=checkMarkerHealth(this);
+            %this=checkMarkerHealth(this);
             processedThis=experimentData(this.metaData,this.subData,procData);
         end
 
@@ -276,10 +283,10 @@ classdef experimentData
             end
             allTrialModels=m;
         end
-        
+
         function this=checkMarkerHealth(this,refTrial)
             disp(['Checking marker health...'])
-           
+
             %First: build models
             [allTrialModels,modelScore,badFlag]=extractMarkerModels(this);
 
@@ -296,7 +303,7 @@ classdef experimentData
             try %If there is a model
                 mm=allTrialModels{refTrial};
                 fprintf(['Using trial ' num2str(refTrial) ' to train outlier detection model...\n'])
-                mm.seeModel; 
+                mm.seeModel;
             catch
                 %nop
             end
@@ -322,8 +329,8 @@ classdef experimentData
             end
             disp(['Outlier data added in Quality field']);
         end
-        
-        
+
+
          function this=computeAngles(this)%added by Digna
             for trial=1:length(this.data)
                 disp(['Computing angles for trial ' num2str(trial) '...'])
@@ -463,7 +470,7 @@ classdef experimentData
                   this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
-        
+
         function this=flushAndRecomputeParameters(this,eventClass,initEventSide)
         %FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
         %objects in experimentData.data
@@ -486,6 +493,16 @@ classdef experimentData
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
                   this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,[]);
+            end
+        end
+
+        function this=recomputeEvents(this,eventClass,initEventSide)
+        %RECOMPUTEEVENTS recomputes events AND parameters for all trials,
+        %with default options.
+        %See also: processedLabData.recomputeEvents
+            trials=cell2mat(this.metaData.trialsInCondition);
+            for t=trials
+                  this.data{t}=recomputeEvents(this.data{t}); %This recomputes events AND recomputes parameters (otherwise parameters will not correspond to the new events)
             end
         end
 
@@ -643,5 +660,16 @@ classdef experimentData
                 save([filename 'params.mat'],'adaptData','-v7.3'); %HH edit 2/12 - added 'params' to file name so experimentData file isn't overwritten
             end
         end
-	end
+    end
+    methods (Static)
+        function this=loadobj(this)
+            if ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB',['Subject data contains DOB information for subject ' this.subData.ID '. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'])
+                %Determine age (in months):
+                age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
+                %Scrub DOB from subject meta data, save age at experiment time (in years):
+                this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+            end
+        end
+    end
 end

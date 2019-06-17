@@ -27,7 +27,7 @@ classdef groupAdaptationData
     methods
         %% Constructor
         function this=groupAdaptationData(ID,data,groupID)
-            
+
             if nargin >1 && length(ID)==length(data)
                 boolFlag=false(1,length(data));
                 for i=1:length(data)
@@ -44,13 +44,18 @@ classdef groupAdaptationData
             else
                 hiddenID=groupID;
             end
+
+            %Check that condition ordering is the same:
+            [conditions,nonCommonConditions] = getCommonConditions(this);
+            condOrder=this.checkCommonConditionOrder(conditions);
+		%To do: check and display minimum number of strides per common condition
         end
 
         %% Other Functions
         function out = get.subjectData(this)
             out=this.adaptData;
         end
-        
+
         function [conditions,nonCommonConditions] = getCommonConditions(this,subs)
             if nargin<2 || isempty(subs)
                 subs=1:length(this.ID);
@@ -84,8 +89,30 @@ classdef groupAdaptationData
             end
             allConditions = getAllConditions(this,subs);
             nonCommonConditions = setdiff(lower(allConditions),lower(conditions));
-            disp(['Warning: found some non common conditions: ' ])
-            disp(nonCommonConditions')
+            if ~isempty(nonCommonConditions)
+                warning('groupAdaptData:nonCommonConds','Found some non-common conditions across subjects')
+                disp(nonCommonConditions')
+            end
+        end
+
+        function commonOrder=checkCommonConditionOrder(this,conditions)
+            if nargin<2 || isempty(conditions)
+                conditions=this.getCommonConditions;
+            end
+            for i=1:length(this.adaptData)
+                order(i,:)=this.adaptData{i}.metaData.checkConditionOrder(conditions,true);
+            end
+            commonOrder=median(order);
+            badFlag=false;
+            for i=1:length(this.adaptData)
+                if any(order(i,:)~=commonOrder)
+                    warning(['Conditions are not in the same order for all subjects in the group: subject''s ' num2str(i) ' order is different from the median order. This will be a problem. Fix it.'])
+                    badFlag=true;
+                end
+            end
+            if badFlag
+                commonOrder=[];
+            end
         end
 
         function conditions = getAllConditions(this,subs)
@@ -169,8 +196,26 @@ classdef groupAdaptationData
             end
         end
         
-        function meanSub=getMeanSubject(this)
+        function [nStrides,labels]=getNumStridesInCond(this,conds)
+            nsubs=length(this.ID);
+            if iscell(conds)
+                nconds=length(conds);
+            else
+                nconds=1;
+                conds={conds};
+            end
+            nStrides=NaN(nsubs,nconds);
+            labels=conds;
             
+            for s=1:nsubs
+                for c=1:nconds
+                    nStrides(s,c)=length(cell2mat(this.adaptData{s}.getIndsInCondition(conds{c})));
+                end
+            end
+        end
+        
+        function meanSub=getMeanSubject(this)
+
             error('Unimplemented')
             %This requires finisihing getMinSharedNumberOfStrides
             commonConds=this.getCommonConditions;
@@ -179,7 +224,7 @@ classdef groupAdaptationData
             [data]=getGroupedData(this,commonParams,commonConds,0,numberOfStrides,0,0); %No removal of bias, no exempt strides
             meanSub=adaptationData(this.adaptData{1}.metaData,this.adaptData{1}.subData,data); %Doxy: need to fill meta data and subject data fields appropriately
         end
-        
+
         function minNumStrides=getMinSharedNumberOfStrides(this, conds)
             %This function returns the minimum number of strides ALL
             %subjects have for any given condition(s)
@@ -192,7 +237,7 @@ classdef groupAdaptationData
                minNumStrides(i)=NaN; %Doxy
            end
         end
-        
+
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
             for i=1:length(this.ID)
                ageInMonths(i)=this.adaptData{i}.getSubjectAgeAtExperimentDate;
@@ -243,7 +288,7 @@ classdef groupAdaptationData
             end
 
         end
-        
+
         function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)
             newThis=this;
             if nargin<3
@@ -371,12 +416,12 @@ classdef groupAdaptationData
             [inds,names]=getGroupedInds(this,conds,numberOfStrides,exemptFirst,exemptLast);
             [data]=getGroupedDataFromInds(this,inds,label,padWithNaNFlag);
         end
-        
+
         function [data,validStrides,allData]=getEpochData(this,epochs,labels,padWithNaNFlag)
             %getEpochData returns data from all subjects for each epoch
             %See also: adaptationData.getEpochData
             %Ex:[data,validStrides,everyStrideData]=getEpochData(studyData,epochs,{'doubleSupportFast'},0);
-            
+
             %Manage inputs:
             if isa(labels,'char')
                 labels={labels};
@@ -391,7 +436,7 @@ classdef groupAdaptationData
                 [data(:,:,i),validStrides(:,i),allData1(:,i)]=this.adaptData{i}.getEpochData(epochs,labels,padWithNaNFlag);
             end
             allData=cell(length(epochs),1);
-            
+
             for j=1:length(epochs)
                allData{j}= reshape(cell2mat(allData1(j,:)),epochs.Stride_No(j),length(labels),length(this.ID));
             end
@@ -523,7 +568,7 @@ classdef groupAdaptationData
 
         %Bars
         [figHandle,allData]=plotBars(this,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,signPlotMatrix);
-        
+
         %Checkerboard:
         function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR,summFlag)
             %This is meant to be used with parameters that end in
@@ -537,7 +582,7 @@ classdef groupAdaptationData
                 symmetryFlag=true;
             else symmetryFlag=false;
             end
-            
+
             %First, get epoch data:
             [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs,true); %Padding with NaNs
             Np=size(labels,1);
@@ -553,7 +598,7 @@ classdef groupAdaptationData
             end
             eval(['fun=@(x) ' summFlag '(x,4);']);
             dataS=fun(dataE);
-            
+
             %Second: use ATS.plotCheckerboard
             if nargin<4 || isempty(fh)
                 fh=figure();
@@ -586,7 +631,7 @@ classdef groupAdaptationData
                     dataRef=.5*cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
                 end
             end
-                
+
         end
         function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %See also: adaptationData.getPrefixedEpochData
@@ -947,7 +992,7 @@ classdef groupAdaptationData
            end
         end
 
-        function [Demographic]=GroupDemographics(this) 
+        function [Demographic]=GroupDemographics(this)
             %Calculates number subjects, mean and std of age and number of males
             %Use in conjuction with "GroupDemographics"
             for s=1:length(this.adaptData)
@@ -988,6 +1033,14 @@ classdef groupAdaptationData
                     end
                 end
             end
+       end
+
+       %% Loading
+       function this=loadobj(this)
+             %Retroactive compliance check!
+             [conditions,nonCommonConditions] = getCommonConditions(this);
+             condOrder=this.checkCommonConditionOrder(conditions);
+		%To do: check and display minimum number of strides per common condition
        end
 
     end

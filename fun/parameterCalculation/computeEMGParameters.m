@@ -29,7 +29,9 @@ end
 [statEMG] = computeTSstatParameters(EMGData,arrayedEvents); %Stat parameters for raw EMG
 [EMG_alt] = computeTSdiscreteParameters(newEMG,gaitEvents,eventTypes,[]);
 [EMG_alt2] = computeTSdiscreteParameters(newEMG,gaitEvents,eventTypes,[],'nanmedian');
+warning('off','labTS:renameLabels:dont')
 EMG_alt2=EMG_alt2.renameLabels(EMG_alt2.labels,strcat('med',EMG_alt2.labels));
+warning('on','labTS:renameLabels:dont')
 out=cat(statEMG,EMG_alt);   
 out=cat(out,EMG_alt2);
 end

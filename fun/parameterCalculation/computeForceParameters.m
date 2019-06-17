@@ -1,33 +1,4 @@
 function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
-%function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)
-% %UNTITLED4 Summary of this function goes here
-% %   Detailed explanation goes here
-%[GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
-% %% COP range and symmetry
-% [COP] = computeCOP(GRFDataS,GRFDataF,s,f);
-%         %Mawase's way based on TO and HS
-%         %COPrangeF(step)=COP(2,indFTO)-COP(2,indSHS);
-%         %COPrangeS(step)=COP(2,indSTO)-COP(2,indFHS);
-%         %May way based on TO and HS
-% %         COPrangeF(step)=COP(2,indFTO)-COP(2,indFHS);
-% %         COPrangeS(step)=COP(2,indSTO)-COP(2,indSHS);
-%         %Mawase's ugly way:
-%         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,max([indSHS-100,1]):indFTO));
-%         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indFTO:indSTO));
-%         COPsymM=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);
-%         %My very nice way:
-%         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,indFTO:indSTO));
-%         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indSTO:indFTO2)); 
-%         COPsym=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);
-% 
-% %% Hand holding
-%handHolding=sum(mean(abs(GRFDataH)))>2;
-
-%data=[];
-%labels={};
-%description={};
-%out=parameterSeries(data,labels,[],description); 
-%end
 
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis. 
 % This code is a bit eccentric in the way that identifies the inclination for the TM.
@@ -62,6 +33,16 @@ fFy=Filtered.getDataAsTS([fastleg 'Fy']);
 sFy=Filtered.getDataAsTS([slowleg 'Fy']);
 FastLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
 SlowLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+if Filtered.isaLabel('HFx')
+    handrailData=Filtered.getDataAsTS({'HFy','HFz'});
+elseif Filtered.isaLabel('XFx')
+    handrailData=Filtered.getDataAsTS({'XFy','XFz'});
+    warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
+else
+    handrailData=[];
+    warning('Found no handrail force data.')
+end
+
 for i=1:length(strideEvents.tSHS)-1
         SHS=strideEvents.tSHS(i);
         FTO=strideEvents.tFTO(i);
@@ -83,7 +64,7 @@ for i=1:length(strideEvents.tSHS)-1
 end
 FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
 SlowLegOffSet=round(nanmedian(SlowLegOffSetData), 3);
-display(['Fast Leg Off Set: ' num2str(FastLegOffSet) ', Slow Leg OffSet: ' num2str(SlowLegOffSet)]);
+display(['Fast Leg Offset: ' num2str(FastLegOffSet) ', Slow Leg Offset: ' num2str(SlowLegOffSet)]);
 
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy'])))=Filtered.getDataAsVector([fastleg 'Fy'])-FastLegOffSet;
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getDataAsVector([slowleg 'Fy'])-SlowLegOffSet;
@@ -119,82 +100,37 @@ else
     for i=1:length(strideEvents.tSHS)-1
         filteredSlowStance=Filtered.split(SHS, STO);
         filteredFastStance=Filtered.split(FHS, FTO2);
-        %1.) get the entire stride of interest on BOTH sides (SHS-->SHS2, and
-        %FHS--> FHS2)  Also flip it if declien people
-        %timeGRF=round(GRFData.Time,6);
-        % %         SHS=find(timeGRF==round(strideEvents.tSHS(i),6));
-        % %         FTO=find(timeGRF==round(strideEvents.tFTO(i),6));
-        % %         FHS=find(timeGRF==round(strideEvents.tFHS(i),6));
-        % %         STO=find(timeGRF==round(strideEvents.tSTO(i),6));
-        % %         SHS2=find(timeGRF==round(strideEvents.tSHS2(i),6));
-        % %         FTO2=find(timeGRF==round(strideEvents.tFTO2(i),6));
-        % %         FHS2=find(timeGRF==round(strideEvents.tFHS2(i),6));
+
         SHS=strideEvents.tSHS(i);
         FTO=strideEvents.tFTO(i);
         FHS=strideEvents.tFHS(i);
         STO=strideEvents.tSTO(i);
         FTO2=strideEvents.tFTO2(i);
         SHS2=strideEvents.tSHS2(i);
-        %         striderS=flipIT.*GRFData.Data(SHS:SHS2, find(strcmp(GRFData.labels, [slowleg 'Fy'])))/Normalizer;
-        %         %striderF=flipIT.*GRFData.Data(FHS:FHS2, find(strcmp(GRFData.labels, [fastleg 'Fy'])))/Normalizer;
-        %         striderF=flipIT.*GRFData.Data(FHS:FTO2, find(strcmp(GRFData.labels, [fastleg 'Fy'])))/Normalizer;
-        %         striderS=flipIT.*GRFData.split(strideEvents.tSHS(i), strideEvents.tSTO(i)).getDataAsTS([slowleg 'Fy']).lowPassFilter(20).Data/Normalizer;
-        %         striderF=flipIT.*GRFData.split(strideEvents.tFHS(i), strideEvents.tFTO2(i)).getDataAsTS([fastleg 'Fy']).lowPassFilter(20).Data/Normalizer;
-        if isnan(SHS) || isnan(STO)
+       if isnan(SHS) || isnan(STO)
             striderS=[];
         else %FILTERING
             striderS=flipIT.*filteredSlowStance.getDataAsVector([slowleg 'Fy'])/Normalizer;
-            %striderS=flipIT.*GRFData.lowPassFilter(20).split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;
-            %striderS=flipIT.*GRFData.split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;%
         end
         if isnan(FHS) || isnan(FTO2)
             striderF=[];
         else%FILTERING
             striderF=flipIT.*filteredFastStance.getDataAsVector([fastleg 'Fy'])/Normalizer;
-            %striderF=flipIT.*GRFData.lowPassFilter(20).split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
-            %striderF=flipIT.*GRFData.split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
         end
         
-        %HandrailHolding(i)= .05 < sqrt(nanmean(GRFData.Data(SHS:SHS2, find(strcmp(GRFData.labels, ['HFy']))))^2+nanmean(GRFData.Data(SHS:SHS2, find(strcmp(GRFData.labels, ['HFz']))))^2)/Normalizer;
-        %HandrailHolding(i)= .05 < sqrt(nanmean(Filtered.split(SHS, SHS2).getDataAsTS('HFy').Data).^2+nanmean(GRFData.split(SHS,SHS2).getDataAsTS('HFz').lowPassFilter(20).Data).^2)/Normalizer;
-        if Filtered.isaLabel('HFx')
-            HandrailHolding(i)= .05 < sqrt(nanmean(sum(Filtered.split(SHS, SHS2).getDataAsTS({'HFy','HFz'}).Data.^2,2)))/Normalizer;
-        elseif Filtered.isaLabel('XFx')
-            HandrailHolding(i)= .05 < sqrt(nanmean(sum(Filtered.split(SHS, SHS2).getDataAsTS({'XFy','XFz'}).Data.^2,2)))/Normalizer;
-            warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
+        if ~isempty(handrailData)
+            HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2,2)))/Normalizer;
         else
             HandrailHolding(i)=NaN;
-            warning('Found no handrail force data.')
         end
         
         %Previously the following was part of a funciton called SeperateBP
         if isempty(striderS) || all(striderS==striderS(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
             %This does nothing, as vars are initialized as nan:
-%             impactS(i)=NaN;
-%             SB(i)=NaN;
-%             SP(i)=NaN;
-%             SZ(i)=NaN;
-%             SX(i)=NaN;
-%             SBmax(i)=NaN;
-%             SPmax(i)=NaN;
-%             SZmax(i)=NaN;
-%             SXmax(i)=NaN;
-%             impactSmax(i)=NaN;
         else
             if nanstd(striderS)<0.01 && nanmean(striderS)<0.01 %This is to get rid of places where there is only noise and no data
-%                 impactS(i)=NaN;
-%                 SB(i)=NaN;
-%                 SP(i)=NaN;
-%                 SZ(i)=NaN;
-%                 SX(i)=NaN;
-%                 SBmax(i)=NaN;
-%                 SPmax(i)=NaN;
-%                 SZmax(i)=NaN;
-%                 SXmax(i)=NaN;
-%                 impactSmax(i)=NaN;
+
             else
-%               ns=find((striderS(SHS-SHS+1:STO-SHS+1)-LevelofInterest)<0);%1:65
-%               ps=find((striderS(SHS-SHS+1:STO-SHS+1)-LevelofInterest)>0);
                 ns=find((striderS-LevelofInterest)<0);%1:65
                 ps=find((striderS-LevelofInterest)>0);
        
@@ -208,20 +144,15 @@ else
                 end
                 
                 if isempty(ns)
-%                     SB(i)=NaN;
-%                     SBmax(i)=NaN;
+
                 else
-%                     SB(i)=FlipB.*(nanmean(striderS(ns))-LevelofInterest);
-%                     SBmax(i)=FlipB.*(nanmin(striderS(ns))-LevelofInterest);
+
                     SB(i)=FlipB.*(nanmean(striderS(ns)-LevelofInterest));
                     SBmax(i)=FlipB.*(nanmin(striderS(ns)-LevelofInterest));
                 end
                 if isempty(ps)
-%                     SP(i)=NaN;
-%                     SPmax(i)=NaN;
+
                 else
-%                     SP(i)=nanmean(striderS(ps))-LevelofInterest;
-%                     SPmax(i)=nanmax(striderS(ps))-LevelofInterest;
                     SP(i)=nanmean(striderS(ps)-LevelofInterest);
                     SPmax(i)=nanmax(striderS(ps)-LevelofInterest);
                 end
@@ -248,31 +179,11 @@ SXmax(i)=nanmin(filteredSlowStance.getDataAsVector([slowleg 'Fx']))/Normalizer;
         
         %%Now for the fast leg...
         if isempty(striderF) || all(striderF==striderF(1)) || isempty(FTO) || isempty(STO)
-%             impactF(i)=NaN;
-%             FB(i)=NaN;
-%             FP(i)=NaN;
-%             FZ(i)=NaN;
-%             FX(i)=NaN;
-%             FBmax(i)=NaN;
-%             FPmax(i)=NaN;
-%             FZmax(i)=NaN;
-%             FXmax(i)=NaN;
-%             impactFmax(i)=NaN;
+
         else
             if nanstd(striderF)<0.01 && nanmean(striderF)<0.01 %This is to get rid of places where there is only noise and no data
-%                 impactF(i)=NaN;
-%                 FB(i)=NaN;
-%                 FP(i)=NaN;
-%                 FZ(i)=NaN;
-%                 FX(i)=NaN;
-%                 FBmax(i)=NaN;
-%                 FPmax(i)=NaN;
-%                 FZmax(i)=NaN;
-%                 FXmax(i)=NaN;
-%                 impactFmax(i)=NaN;
+
             else
-%                 nf=find((striderF(FHS-FHS+1:FTO2-FHS+1)-LevelofInterest)<0);%1:65
-%                 pf=find((striderF(FHS-FHS+1:FTO2-FHS+1)-LevelofInterest)>0);
                  nf=find((striderF-LevelofInterest)<0);%1:65
                 pf=find((striderF-LevelofInterest)>0);
                     ImpactMagF=find((striderF-LevelofInterest)==nanmax(striderF(1:75)-LevelofInterest));%1:15
@@ -285,29 +196,25 @@ SXmax(i)=nanmin(filteredSlowStance.getDataAsVector([slowleg 'Fx']))/Normalizer;
                 end
                 
                 if isempty(pf)
-%                     FP(i)=NaN;
-%                     FPmax(i)=NaN;
+
                 else
-%                     FP(i)=nanmean(striderF(pf))-LevelofInterest;
-%                     FPmax(i)=nanmax(striderF(pf))-LevelofInterest;
+
                     FP(i)=nanmean(striderF(pf)-LevelofInterest);
                     FPmax(i)=nanmax(striderF(pf)-LevelofInterest);
                 end
                 if isempty(nf)
-%                     FB(i)=NaN;
-%                     FBmax(i)=NaN;
+
                 else
                     FB(i)=FlipB.*(nanmean(striderF(nf)-LevelofInterest));
                     FBmax(i)=FlipB.*(nanmin(striderF(nf)-LevelofInterest));
                 end
                 
                 if exist('postImpactF')==0 || isempty(postImpactF)==1
-%                     impactF(i)=NaN;
-%                     impactFmax(i)=NaN;
+
                 else
                     impactF(i)=nanmean(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))-LevelofInterest;
                     if isempty(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))
-%                         impactFmax(i)=NaN;
+
                     else
                         impactFmax(i)=nanmax(striderF(find((striderF(FHS-FHS+1: postImpactF)-LevelofInterest)>0)))-LevelofInterest;
                     end
@@ -322,8 +229,6 @@ SXmax(i)=nanmin(filteredSlowStance.getDataAsVector([slowleg 'Fx']))/Normalizer;
 end
 %% COM:
 if false %~isempty(markerData.getLabelsThatMatch('HAT'))
-    %Pablo commented COM calculation out on Oct 5th 2017 because it doesn't run
-    %with main code (as it is in GitHub).
    [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
 else
      outCOM.Data=[];
