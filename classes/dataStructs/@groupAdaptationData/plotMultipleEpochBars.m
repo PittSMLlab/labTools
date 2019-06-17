@@ -126,7 +126,7 @@ for p=1:length(labels)%each parameter has different axis, eps are plotted in sin
     title(plotHandles(p),labels{p});
     
     
-    
+   if  statsFlag==1
     %perform stats
     [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=groupAdaptationData.AnovaEpochs(group2,legendNames,labels(p),eps,significanceThreshold);
     %determine y positions of sign bars
@@ -177,6 +177,7 @@ for p=1:length(labels)%each parameter has different axis, eps are plotted in sin
         ll=findobj(plotHandles(p),'Type','Bar');
         h=legend(ll(fliplr(1:length(ll))),legendNames);
     end
+   end
 end
 set(plotHandles,'FontSize',20)
 figHandle=gcf;
