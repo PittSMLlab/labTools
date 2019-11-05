@@ -61,7 +61,12 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
             if ~isempty(this.eventTimes)
-                newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
+%                newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
+                if size(inds,1)==1 %Changed by DMMO 10/4/2019 the dimmension were not consisten with previous code
+                    newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
+                else
+                    newTimes=this.eventTimes(:,[inds; inds(end)+1]);
+                end
             else
                 newTimes=[];
             end
