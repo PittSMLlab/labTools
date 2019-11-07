@@ -1,4 +1,5 @@
 %Colormap:
+warning('Loading OLD figuresColorMap')
 ex1=[.85,0,.1];
 ex2=[0,.1,.6];
 gamma=.5;
