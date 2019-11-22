@@ -43,6 +43,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
         forceLabels ={};
         units={};
         fieldList=fields(analogs);
+        fL=cellfun(@(x) ~isempty(x),regexp(fieldList,'^Raw'));
+        ttt=fieldList(fL);
+        raws=[];
+        for i=1:length(ttt)
+            raws=[raws analogs.(ttt{i})];
+        end
+        raws=zscore(raws);
         for j=1:length(fieldList);%parse analog channels by force, moment, cop
             %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
             if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
@@ -94,7 +101,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %Sanity check: offset calibration, make sure that force values from
         %analog pins have zero mode, correct scale units etc.
         try
-            map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in 
+            %map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in. -This list is not current. Pablo, 22/11/2019.
             list={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz','HFx','HFy','HFz','HMx','HMy','HMz'};
             offset=nan(size(list));
             gain=nan(size(list));
@@ -106,10 +113,14 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 k=find(strcmp(forceLabels,list{j}));
                 if ~isempty(k)
                     aux=fields(analogs);
-                    iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' num2str(map(k)) '$'])));
+                    %idx=num2str(map(k)); %Hardcoded map of input pins to
+                    %forces/moments. Outdated.
+                    [~,idx]=max(abs(relData(:,k)'*raws));
+                    idx=ttt{idx}(end);
+                    iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' idx '$'])));
                     raw=analogs.(aux{iii});
                     proc=relData(:,k);
-                    %figure; plot(raw,proc,'.')
+                    figure; plot(raw,proc,'.')
                     rel=find(proc~=0);
                     if ~isempty(rel)
                         m(j)=4*prctile(abs(proc(rel)),1); %This can be used for thresholding
@@ -164,7 +175,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
     else
         GRFData=[];
     end
-    clear relData*
+    clear relData* raws
     
     %% EMGData (from 2 files!) & Acceleration data
     if info.EMGs
