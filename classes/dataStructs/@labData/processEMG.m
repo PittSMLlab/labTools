@@ -10,24 +10,33 @@ if isprop(emg,'processingInfo')
 end
 
 if ~isempty(emg)
-    quality=sparse([],[],[],size(emg.Data,1),size(emg.Data,2),round(.01*numel(emg.Data)));%Pre-allocating for 1% spikes total.
-    
+    quality=sparse([],[],[],size(emg.Data,1),size(emg.Data,2),round(.1*numel(emg.Data)));%Pre-allocating for 1% spikes total.
+
     %Step 0: remove samples outside the [-5,5]e-3 range (+- 5mv): this was
     %included on March 12th because P0011 was presenting huge (1e5) spikes
     %that are obviously caused by some data corruption. We may want to go
     %back and re-process from scratch, but it was only in a short time
     %period (~200ms) so decided to clip, issue warning, and add new quality
     %category.
-    aaux=abs(emg.Data)>=5e-3; %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
-    if any(any(aaux))
-        quality(aaux)=4;
-        warning(['Found samples outside the normal range (+-5e-3), sensor '  ' was probably loose.'])
+    aaux=sparse(abs(emg.Data)>=5e-3); %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
+    badSamples=sum(aaux)./size(aaux,1);
+    tt=badSamples>.01;
+    if any(tt) %More than 1% bad samples on single channel, NOT GOOD
+        disp('Channels with more than 1% bad samples (!):')
+        for i=find(tt)
+            disp([emg.labels{i} '(' num2str(round(badSamples(i)*1000)/10) '% bad)'])
+        end
+        %error('Some channels showed more than 1% bad samples, that is NOT GOOD. Please review the data')
     end
-    aaux=abs(emg.Data)>=6e-3; %Delsys claims the sensor range is +-5.5mV, but samples up to 5.9mV do appear
     if any(any(aaux))
-        quality(aaux)=8;
+        quality=4*aaux+quality;
+        warning(['Found samples outside the normal range (+-5e-3 mV), sensor '  ' was probably loose.'])
+    end
+    aaux=sparse(abs(emg.Data)>=6e-3); %Delsys claims the sensor range is +-5.5mV, but samples up to 5.9mV do appear
+    if any(any(aaux))
+        quality=4*aaux+quality;
         emg.Data(aaux)=0;
-        warning('Found samples outside the valid range (+-6e-3). Clipping.')
+        warning('Found samples outside the valid range (+-6e-3 mV). Clipping.')
     end
     
     
