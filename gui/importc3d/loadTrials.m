@@ -43,6 +43,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
         forceLabels ={};
         units={};
         fieldList=fields(analogs);
+        fL=cellfun(@(x) ~isempty(x),regexp(fieldList,'^Raw'));
+        ttt=fieldList(fL);
+        raws=[];
+        for i=1:length(ttt)
+            raws=[raws analogs.(ttt{i})];
+        end
+        raws=zscore(raws);
         for j=1:length(fieldList);%parse analog channels by force, moment, cop
             %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
             if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
@@ -94,7 +101,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %Sanity check: offset calibration, make sure that force values from
         %analog pins have zero mode, correct scale units etc.
         try
-            map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in 
+            %map=[1:6,8:13,46:51]; %Forces and moments to the corresponding pin in. -This list is not current. Pablo, 22/11/2019.
             list={'LFx','LFy','LFz','LMx','LMy','LMz','RFx','RFy','RFz','RMx','RMy','RMz','HFx','HFy','HFz','HMx','HMy','HMz'};
             offset=nan(size(list));
             gain=nan(size(list));
@@ -106,10 +113,14 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 k=find(strcmp(forceLabels,list{j}));
                 if ~isempty(k)
                     aux=fields(analogs);
-                    iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' num2str(map(k)) '$'])));
+                    %idx=num2str(map(k)); %Hardcoded map of input pins to
+                    %forces/moments. Outdated.
+                    [~,idx]=max(abs(relData(:,k)'*raws));
+                    idx=ttt{idx}(end);
+                    iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' idx '$'])));
                     raw=analogs.(aux{iii});
                     proc=relData(:,k);
-                    %figure; plot(raw,proc,'.')
+                    figure; plot(raw,proc,'.')
                     rel=find(proc~=0);
                     if ~isempty(rel)
                         m(j)=4*prctile(abs(proc(rel)),1); %This can be used for thresholding
@@ -164,7 +175,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
     else
         GRFData=[];
     end
-    clear relData*
+    clear relData* raws
     
     %% EMGData (from 2 files!) & Acceleration data
     if info.EMGs
@@ -222,7 +233,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %across Nexus versions:
         fieldNames=fields(analogs);
 
-       refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')),fieldNames)});
+       refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
         
         %Check for frequencies between the two PCs
         if secondFile
@@ -304,10 +315,22 @@ for t=cell2mat(info.trialnums) %loop through each trial
         [sync] = clipSignals(sync,.1);
         sync=idealHPF(sync,0);
         gain1=refSync'/sync(:,1)';
-        E1=sum((refSync(max([lagInSamplesA+1,1]):end)-sync(max([lagInSamplesA+1,1]):end,1)*gain1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
+        indStart=round(max([lagInSamplesA+1,1]));
+        reducedRefSync=refSync(indStart:end);
+        indStart=round(max([lagInSamplesA+1,1]));
+        reducedSync1=sync(indStart:end,1)*gain1;
+        E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
         if secondFile
             gain2=refSync'/sync(:,2)';
-            E2=sum((refSync(max([lagInSamplesA+1+lagInSamples,1]):end)-sync(max([lagInSamplesA+1+lagInSamples,1]):end,2)*gain2).^2)/sum(refSync.^2);
+            indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+            reducedRefSync2=refSync(indStart:end);
+            indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+            reducedSync2=sync(indStart:end,2)*gain2;
+            E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
+            %Comparing the two bases' synchrony mechanism (not to ref signal):
+            %reducedSync1a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;
+            %reducedSync2a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;
+            %E3=sum((reducedSync1a-reducedSync2a).^2)/sum(refSync.^2);
         else
             E2=0;
             gain2=NaN;
@@ -316,8 +339,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
         end
 
         %Analytic measure of alignment problems 
-        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(E1,3) ' and ' num2str(E2,3) '.'])
-        disp(['Sync parameters were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's; sampling mismatch= ' num2str(1-timeScaleFactor,5)]);
+        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(100*E1,3) ' and ' num2str(100*E2,3) '.'])
+        disp(['Sync parameters to ref. signal were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's']);
+        disp(['Typical sync parameters are: gains= -933.3 +- 0.2 (both); delays= -0.025s +- 0.001, 0.014 +- 0.002'])
+        disp(['Sync parameters between PCs were: gain= ' num2str(gain1/gain2,4) '; delay= ' num2str((lagInSamples)/EMGfrequency,3) 's; sampling mismatch (ppm)= ' num2str(1e6*(1-timeScaleFactor),3)]);
+        disp(['Typical sync parameters are: gain= 1; delay= 0.040s; sampling= 35 ppm'])
         if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
             warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
             h=figure;
@@ -330,7 +356,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
             if secondFile
                 plot(time,sync(:,2)*gain2,'g')
             end
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+            leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
+            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+            legend('refSync',leg1,leg2)
             hold off
             subplot(2,2,3)
             T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
@@ -351,7 +379,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 end
                 hold off
             end
-            s=inputdlg('Please confirm that you want to proceed like this (y/n)','str');
+            s=inputdlg('If sync parameters between signals look fine and mismatch is below 5%, we recommend yes.','Please confirm that you want to proceed like this (y/n).');
             switch s{1}
                 case {'y','Y','yes'}
                      disp(['Using signals in a possibly unsynchronized way!.'])
@@ -369,11 +397,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
         time=[0:length(refSync)-1]*1/EMGfrequency;
         plot(time,refSync)
         plot(time,sync(:,1)*gain1,'r')
+        leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
         if secondFile
             plot(time,sync(:,2)*gain2,'g')
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3)  's'])
+            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+            legend('refSync',leg1,leg2)
         else           
-            legend('refSync',['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's'])
+            legend('refSync',leg1)
         end
         hold off
         subplot(2,2,3)
@@ -552,10 +582,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
             for j=missingLabels
                 %generate menu
                 choice = menu([{['WARNING: the marker label ' mustHaveLabels{j}]},{' was not found, but is necessary for'},...
-                    {'future calculations.Please indicate which'},{[' marker corresponds to the ' mustHaveLabels{j} ' label:']}] ,potentialMatches);
+                    {'future calculations.Please indicate which'},{[' marker corresponds to the ' mustHaveLabels{j} ' label:']}] ,[potentialMatches {'NaN'}]);
                 if choice==0
                     ME=MException('loadTrials:markerDataError','Operation terminated by user while finding names of necessary labels.');
                     throw(ME)
+                elseif choice>length(potentialMatches)
+                    %nop
+                    warning('loadTrials:missingRequiredMarker',['A required marker (' mustHaveLabels{j} ') was missing from the marker list. This will be problematic when computing parameters.'])
                 else
                     %set the label corresponding to choice as one of the must-have labels
                     addMarkerPair(mustHaveLabels{j},potentialMatches{choice})
@@ -563,7 +596,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
         end
         
-        for j=1:length(fieldList);
+        for j=1:length(fieldList)
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
                 relData=[relData,markers.(fieldList{j})];
                 markerLabel=findLabel(fieldList{j});%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)

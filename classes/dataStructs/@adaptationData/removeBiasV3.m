@@ -57,39 +57,24 @@ for itype=1:length(types)
     end
     %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
-        switch upper(types{itype})
-            case 'OG'
-                if normalizeFlag==0
-                    try
-                        baseTrials=this.getTrialsInCond(baseCond);
-                        newData(:,:)=removeOGbias(this,allTrials,baseTrials);
-                        baseValues(itype,:)=NaN; %Need to replace this with the value actually extracted from OG trials
-                    catch
-                        error('Failed to remove OG bias. Likely problem is that bias was already removed for this adaptationData object.')
-                    end
-                end %Nop for normalizeBias in OG trials
-
-            otherwise %'TM' and any other
-              %TODO: switch to using getBaseData()
-                base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,10); %Last 40, exempting very last 5 and first 10
-                base=nanmean(squeeze(base{1}));
-                [data, inds]=this.getParamInTrial(labels,allTrials);
-                if normalizeFlag==0
-                    %added lines to ensure that if certain parameters never
-                    %have a baseline to remove the bias, they are not assigned
-                    %as NaN from the bsxfun @minus.
-                    %data(isnan(data))=-100000;
-                    base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
-                    newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
-                    base(base==0)=nan;
-                else
-                    base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
-                    newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
-                    base(base==1)=nan;
-                end
-                %newData(isnan(data))=nan;
-                baseValues(itype,:)=base;
+        % CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline 
+        base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,10); %Last 40, exempting very last 5 and first 10
+        base=nanmean(squeeze(base{1}));
+        [data, inds]=this.getParamInTrial(labels,allTrials);
+        if normalizeFlag==0
+            %added lines to ensure that if certain parameters never
+            %have a baseline to remove the bias, they are not assigned
+            %as NaN from the bsxfun @minus.
+            base(isnan(base))=0;%do not subtract a bias if there is no bias to remove
+            newData(inds,:)=bsxfun(@minus,data,base); %Substracting baseline
+            base(base==0)=nan;
+        else
+            base(isnan(base))=1;%do not subtract a bias if there is no bias to remove
+            newData(inds,:)=bsxfun(@rdivide,data,base); %Dividing by baseline
+            base(base==1)=nan;
         end
+        baseValues(itype,:)=base;
+    
     else
         warning(['No ' types{itype} ' baseline trials detected. Bias not removed from ' types{itype} ' trials.'])
         [~, inds]=this.getParamInTrial(labels,allTrials);

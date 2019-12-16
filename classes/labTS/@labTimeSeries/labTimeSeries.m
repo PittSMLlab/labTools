@@ -358,8 +358,9 @@ classdef labTimeSeries  < timeseries
            finalT=this.Time(end)+eps;
            if ~(t0>= initT && t1<=finalT)
                if (t1<initT) || (t0>=finalT)
-                   ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
-                   throw(ME)
+                   %ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
+                   %throw(ME)
+			 warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is fully outside the timeseries. Padding with NaNs.'])
                else
                    warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is not completely contained in TimeSeries. Padding with NaNs.'])
                end
@@ -368,7 +369,10 @@ classdef labTimeSeries  < timeseries
            %timeseries' time vector (if any).
             i1=find(this.Time>=t0,1);
             i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)
-            if i2<i1
+            if isempty(i1) || isempty(i2) %This happens when the whole timeseries is outside the range
+		i1=1;
+		i2=0;
+	    elseif i2<i1 %When this happens the last included sample precedes the first included one, which happens, because of rounding, when asking for a very small interval (smaller than the sample period).
                 warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] falls completely within two samples: returning empty timeSeries.'])
             end
             %In case the requested time interval is larger than the
@@ -546,8 +550,13 @@ classdef labTimeSeries  < timeseries
 
         function [slicedTS,initTime,duration]=sliceTS(this,timeBreakpoints,timeMargin)
           %Slices a single timeseries into a cell array of smaller timeseries, breaking at the given timeBreakpoints
+          slicedTS=cell(1,length(timeBreakpoints)-1);
           for i=1:length(timeBreakpoints)-1
+              if isnan(timeBreakpoints(i)) || isnan(timeBreakpoints(i+1)) || timeBreakpoints(i+1)<timeBreakpoints(i)
+                  warning('off') %Preventing overload of annoying warnings
+              end
               slicedTS{i}=this.split(timeBreakpoints(i)-timeMargin,timeBreakpoints(i+1)+timeMargin);
+              warning('on')
           end
             initTime=timeBreakpoints(1:end-1)-timeMargin;
             duration=diff(timeBreakpoints)+2*timeMargin;

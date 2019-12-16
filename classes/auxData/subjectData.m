@@ -14,7 +14,7 @@ classdef subjectData
 %See also: labDate, strokeSubjectData
     
     properties (SetAccess=private)
-        dateOfBirth='';
+        dateOfBirth=labDate.default;
         sex='';
         dominantLeg='';
         dominantArm='';
@@ -32,7 +32,7 @@ classdef subjectData
         %constructor
         function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)
             if nargin>0 && ~isempty(DOB)
-                this.dateOfBirth=DOB;
+                warning('subjectData:DOB','Date of birth was provided but will be ignored for privacy.')
             end
             if nargin>1 && ~isempty(sex)
                 this.sex=sex;
@@ -67,6 +67,16 @@ classdef subjectData
         end  
     end
     
+    methods(Static)
+        %% Loading
+        function this=loadobj(this)
+            %This function was created to warn about DOB being present at load time 
+            %DOB is not automatically scrubbed to prevent loss of information
+            if ~isempty(this.dateOfBirth)
+                warning('subjectData:DOB',['Subject data contains DOB for subject ' this.ID ' , which is in violation of HIPAA requirements for sharing data. Do not share until DOB has been scrubbed.'])
+            end
+        end
+    end
          
 end
 

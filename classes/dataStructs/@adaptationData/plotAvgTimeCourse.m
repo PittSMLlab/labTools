@@ -207,7 +207,11 @@ for group=1:Ngroups
                 else
                     numPts.(cond{c}).(['trial' num2str(t)])(s)=nPoints;
                     if ~isempty(alignEnd) %Aligning data to the end, too
-                        numPts.([cond{c} 'End']).(['trial' num2str(t)])(s)=alignEnd+50;
+                        if strcmpi(cond{c},'catch')
+                            numPts.([cond{c}]).(['trial' num2str(t)])(s)=nPoints;
+                        else
+                            numPts.([cond{c} 'End']).(['trial' num2str(t)])(s)=alignEnd+50;
+                        end
                     end
                 end
                 for p=1:length(params)
@@ -215,7 +219,12 @@ for group=1:Ngroups
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M); 
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
                     if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                        if strcmpi(cond{c},'catch')
+                            values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                            values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        else
                         values(group).(params{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
+                        end
                     end
                 end
             end
@@ -233,6 +242,12 @@ if ~isempty(alignEnd)
     newCond=cell(2*length(cond),1);
    newCond(1:2:end)=cond;
    newCond(2:2:end)=strcat(cond,'End');
+   catchindx=find(strcmpi(newCond,'catchEnd'));
+   if ~isempty(catchindx);
+   newCond{catchindx}=[];
+   end
+   newCond=newCond(~cellfun('isempty',newCond));
+   cond=newCond;
    cond=newCond;
    nConds=length(cond);
 end

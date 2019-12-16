@@ -87,6 +87,8 @@ if trialData.markerData.isaLabel('RHEEx') && trialData.markerData.isaLabel('LHEE
     RheelPos2D=trialData.markerData.getDataAsVector({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis]});
     RheelPos2D=[orientation.foreaftSign* RheelPos2D(:,1),orientation.updownSign*RheelPos2D(:,2)];
 else    
+    LheelPos2D=nan(size(LtoePos2D));
+    RheelPos2D=nan(size(RtoePos2D));
     warning(['There are missing heel markers in',file,'. Unable to claculate limb angles']);
    % keyboard
     %angleData=[];

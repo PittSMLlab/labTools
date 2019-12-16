@@ -101,6 +101,14 @@ classdef labDate
               %Returns elapsed time in MONTHS
               timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
         end
+        
+        function flag=isempty(this)
+            flag=timeSince(this,labDate.default)==0; %If date equals default value, considering empty
+        end
+        
+        %function disp(this)
+        %   disp([num2str(this.day) ' ' labDate.monthString(this.month) ' ' num2str(this.year)]) 
+        %end
 
     end
 

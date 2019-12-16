@@ -12,15 +12,19 @@
 info = GetInfoGUI;
 
 %Ask which event class to use
-eventClass={'','kin','force'};%possible methods to determine gait events, 'kin' for over ground, 'force' for treadmill. '' is use trial type or default
-answer=menu('Which events should be used to compute parameters?','default (use force for TM trials, kinematics otherwise)','strictly from kinematics','strictly from forces');
-if answer==0
-    answer=1;
-end
-
-%Do the actual loading
 if ~isempty(info)
-    [expData,rawExpData,adaptData]=loadSubject(info,eventClass{answer});
-end
+    eventClass={'','kin','force'};%possible methods to determine gait events, 'kin' for over ground, 'force' for treadmill. '' is use trial type or default
+    answer=menu('Which events should be used to compute parameters?','default (use force for TM trials, kinematics otherwise)','strictly from kinematics','strictly from forces');
+    if answer==0
+        answer=1;
+    end
 
-clear answer eventClass
+    %Do the actual loading
+    if ~isempty(info)
+        [expData,rawExpData,adaptData]=loadSubject(info,eventClass{answer});
+    end
+
+    clear answer eventClass
+else
+    return
+end

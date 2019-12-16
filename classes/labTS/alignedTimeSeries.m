@@ -60,7 +60,17 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         
         %Other modifiers
         function newThis=getPartialStridesAsATS(this,inds)
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,this.eventTimes(:,[inds inds(end)+1]));
+            if ~isempty(this.eventTimes)
+%                newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
+                if size(inds,1)==1 %Changed by DMMO 10/4/2019 the dimmension were not consisten with previous code
+                    newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
+                else
+                    newTimes=this.eventTimes(:,[inds; inds(end)+1]);
+                end
+            else
+                newTimes=[];
+            end
+            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,newTimes);
         end
         
         function newThis=removeStridesWithNaNs(this)
@@ -430,7 +440,8 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
             
             %Do the cat:
-            newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels);
+            newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels,cat(2,this.eventTimes(:,1:end-1),other.eventTimes));
+            warning('ATS:catStridesLostEvents','Cat-ting strides of alignedTimeSeries, events are no longer consecutive.')
             elseif dim==2 %Cat-ting labels
                 %Check dimensions coincide
                 s1=size(this.Data);

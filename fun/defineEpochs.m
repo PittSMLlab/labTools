@@ -13,6 +13,7 @@ function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemp
 %exemptLast has to be positive
 %summaryMethod is a cell array of strings, with the name of the function
 %used to summarize accross strides, default is 'nanmean'
+%Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)','Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})
 
 N=length(epochNames);
 if isa(condition,'char')

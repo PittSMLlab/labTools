@@ -5,7 +5,7 @@ classdef adaptationData
 %   experimentData.makeDataObj
 %
 %adaptationData properties:
-%   metaData - object if the experimentMetaData class
+%   metaData - object of the experimentMetaData class
 %   subData - object of the subjectData class
 %   data - object of the parameterSeries class
 %
@@ -66,7 +66,14 @@ classdef adaptationData
                 throw(ME);
             end
         end
-
+        function this=set.data(this,data)
+          if nargin>1 && (isa(data,'parameterSeries') || isa(data,'paramData'))
+              this.data=data;
+          else
+              ME=MException('adaptationData:setData','Data is not a parameterSeries type object.');
+              throw(ME);
+          end
+        end
         function tT=trialTypes(this)
             if ~isempty(this.data.trialTypes)
                 tT=this.data.trialTypes; %Tries to read from parameterSeries' trialType field, if it was populated, as we expect it to be with newer versions
@@ -195,7 +202,7 @@ classdef adaptationData
             if isa(labelPrefix,'char')
                 labelPrefix={labelPrefix};
             end
-            
+
             if nargin<2 || isempty(baseConds2)
                 [baseConds,tType]=this.getBaseConditions;
             else
@@ -217,7 +224,7 @@ classdef adaptationData
             end
             newThis=this;
         end
-        
+
         function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch,noMinNormFlag)
            %This normalization takes the last N strides from a given
            %'baseline' condition and uses it to normalize values of the
@@ -235,7 +242,7 @@ classdef adaptationData
             if nargin<4 || isempty(noMinNormFlag)
                 noMinNormFlag=0;
             end
-            
+
             [baseData,label]=this.getPrefixedEpochData(labelPrefix,baseEpoch);
             baseData=reshape(baseData,size(label,1),numel(labelPrefix));
             rangeValues=[min(baseData); max(baseData)];
@@ -247,21 +254,29 @@ classdef adaptationData
             end
             newThis=this;
         end
-        
+
         function [newThis]=removeBaselineEpoch(this,baseEpoch,labels)
             if nargin<3 || isempty(labels)
                 %nop
+                labels=this.data.labels;
             else
                 this=this.getPartialParameters(labels);
             end
-            [baseData]=this.getEpochData([],baseEpoch);
-            this.Data=this.Data-baseData;
+            [baseData]=this.getEpochData(baseEpoch,labels);
             newThis=this;
+            newThis.data.Data=this.data.Data-baseData';
+
+            %fix any parameters that should not have bias removal
+            [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime','direction'});
+            if ~isempty(idxs)
+                newThis.data.Data(:,idxs(idxs>0))=this.data.Data(:,idxs(idxs>0));
+            end
+
         end
 
         function newThis=removeBadStrides(this,markAsNaNflag)
             if nargin<2 || isempty(markAsNaNflag)
-               markAsNaNflag=false; 
+               markAsNaNflag=false;
             end
             if isa(this.data,'paramData') %What does this do?
                 newParamData=this.data;
@@ -302,6 +317,7 @@ classdef adaptationData
            %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
            %This can be implemented as:
            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
+
            newPS=this.data.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
            this.data=newPS;
            newThis=this;
@@ -362,9 +378,16 @@ classdef adaptationData
         end
 
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
-            dob=this.subData.dateOfBirth;
-            testData=this.metaData.date;
-            [ageInMonths]=testData.timeSince(dob);
+            if ~isempty(this.subData.age)
+                ageInMonths=this.subData.age*12; %In months
+            elseif ~isempty(this.subData.dateOfBirth)
+                warning('expData:subjectDOB','subject metadata contains DOB, this may be a privacy issue.')
+                dob=this.subData.dateOfBirth;
+                testData=this.metaData.date;
+                [ageInMonths]=testData.timeSince(dob);
+            else
+                error('expData:subjectDOB','Could not establish subject age at experiment time.')
+            end
         end
 
         function newThis=medianFilter(this,N)
@@ -373,6 +396,8 @@ classdef adaptationData
         end
 
         function newThis=monoLS(this,trialBased,order,Nregularization)
+            %TODO: check that the submodule containing monoLS is in the
+            %path, or this will fail
             newThis=this;
             %For each condition, or trial:
             if trialBased==1
@@ -383,15 +408,14 @@ classdef adaptationData
                     newThis.data.Data(indData,6:end)=aux;
                 end
             else %Condition based
-                t=unique(1:length(this.metaData.trialsInCondition));
-                for i=1:length(t)
-                    [partialData,indData]=this.getParamInCond([],t(i));
-                    aux=monoLS(partialData(:,6:end),[],order,Nregularization);
-                    newThis.data.Data(indData,6:end)=aux;
+                for i=1:length(this.metaData.trialsInCondition)
+                    [partialData,indData]=this.getParamInCond([],i);
+                    if ~isempty(partialData)
+                      aux=monoLS(partialData(:,6:end),[],order,Nregularization);
+                      newThis.data.Data(indData,6:end)=aux;
+                    end
                 end
             end
-
-
         end
 
         function newThis=substituteNaNs(this,method)
@@ -612,16 +636,16 @@ classdef adaptationData
             latePoints=dataPoints{3};
             warning('adaptationData:getEarlyLateData','This function is being deprecated, use getEarlyLateDatav2 instead')
         end
-        
-        function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)           
+
+        function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)
             %INPUTS:
             %this must be adaptationData object
             %epochs must be a dataset created with defineEpochs()
             %labels is string or cell-array of strings to be used as parameter names
             %OUTPUT:
             %data: length(labels) x length(epochs) matrix containing requested data
-            
-            
+            %Ex:[data,validStrides,everyStrideData]=adaptData.getEpochData(epochs,{'doubleSupportFast'},0);
+
             %Manage inputs:
             if isa(labels,'char')
                 labels={labels};
@@ -629,16 +653,16 @@ classdef adaptationData
             if nargin<4 || isempty(padWithNaNFlag)
                 padWithNaNFlag=false;
             end
-            
+
             %First: validate epochs:
             valid=this.validateEpochs(epochs);
-            
+
             %Second: get data
             removeBiasFlag=0;
             conds=epochs.Condition;
             numberOfStrides=epochs.Stride_No .* sign(epochs.EarlyOrLate-.5);
             exemptLast=epochs.ExemptLast;
-            exemptFirst=epochs.ExemptFirst; 
+            exemptFirst=epochs.ExemptFirst;
             data=nan(length(labels),length(epochs));
             validStrides=nan(length(epochs),1);
             summaryFlag=epochs.summaryMethod;
@@ -661,7 +685,7 @@ classdef adaptationData
                 everyStrideData=allData;
             end
         end
-        
+
         function flags=validateEpochs(this,epochs)
             flags=true(length(epochs),1);
             for i=1:length(epochs) %for each epoch
@@ -695,7 +719,7 @@ classdef adaptationData
             labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); %To do
             [dataE,~,allData]=this.getEpochData(epochs,labels(:),padWithNaNFlag);
         end
-        
+
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
@@ -734,7 +758,9 @@ classdef adaptationData
         % 1) Multiple groups
 
         function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)
+
             warning('This needs to be moved to studyData or something like that')
+
             %Post-hoc is Bonferroni corrected t-test
             [data]=getEarlyLateData_v2(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
             for i=1:length(data)
@@ -882,6 +908,8 @@ classdef adaptationData
             %monoLSfitFlag: a value in the [0,3] integer range. 0 plots
             %no fits, 1 plots condition based fit, 2 plots trial based fit,
             %3 plots condition & trial based fits
+            %Ex: adaptData.plotTimeAndBars({'spatialContributionPNorm'},{'TM base'},5,1,[],[],[5 -40],[])
+
 
             fh=figure;
 
@@ -950,13 +978,13 @@ classdef adaptationData
                 ph(i,2).Title.String=labels{i};
             end
         end
-        
+
         function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
             %See also: groupAdaptationData.plotCheckerboards
-            
+
             if nargin<7 || isempty(flipLR)
                 flipLR=false;
             end
@@ -971,8 +999,8 @@ classdef adaptationData
             end
            [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
         end
-            
-        
+
+
         function gAD=createSingleSubjGroup(this)
             gAD=groupAdaptationData({this.subData.ID},{this},this.subData.ID);
         end
@@ -1039,8 +1067,81 @@ classdef adaptationData
             end
         end
 
+        function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag);
+           %  figure('units','normalized','outerposition',[0 0 1 1])
+            fh=figure;
+
+
+
+            M=length(labels);
+            clear ph
+            for i=1:M
+                ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+                ph(i,2)=subplot(M,3,[3]+3*(i-1));
+            end
+
+            %Defaults:
+            if nargin<8 || isempty(colorOrder)
+                colorScheme
+            colorOrder=color_palette;
+            end
+
+            conds=unique(eps.Condition,'stable');
+%             numberOfStrides=eps.Stride_No;
+%             for i=1:length(numberOfStrides)
+%                 if ~eps.EarlyOrLate(i)
+%                     numberOfStrides(i)=-1*numberOfStrides(i);%last strides
+%                 end
+%             end
+            plotIndividualsFlag=indivFlag;
+           % significanceThreshold=[];%.05;
+
+            %alignEnd=abs(numberOfStrides(2));
+
+            %exemptFirst=1;
+            %exemptLast=5;
+
+            set(ph,'ActivePositionProperty','outerposition')
+            %Time courses:
+            for i=1:length(adaptDataGroups)
+                adaptDataGroups{i}=adaptDataGroups{i}.removeBadStrides;
+            if removeBaseEpochFlag==1
+                   adaptDataGroups2{i}=adaptDataGroups{i}.removeBaselineEpoch(eps(1,:),[]);
+            else
+                 adaptDataGroups2{i}=adaptDataGroups{i};
+            end
+
+            end
+            adaptData=cellfun(@(x) x.adaptData,adaptDataGroups2,'UniformOutput',false);
+           fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
+            for pl=1:size(ph,1)
+                hold(ph(pl,1))
+                title(ph(pl,1),ph(pl,1).YLabel.String);
+                ylabel(ph(pl,1),{''})
+            end
+
+            %set(ph(:,2),'Clipping','off')
+            %Add bars:
+            [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag);
+            for i=1:M
+                subplot(ph(i,2));
+                grid on
+                aa=axis;
+                subplot(ph(i,1));
+                grid on
+                ab=axis;
+                axis([ab(1:2) aa(3:4)])
+            end
+            set(ph,'FontSize',16,'TitleFontSizeMultiplier',1.1,'XGrid','off','YGrid','off');
+            set(ph(1:end-1,:),'XTickLabel',{''})
+            set(fh,'Color',[1 1 1]);
+            %ph(1,1).Legend=ph(end,1).Legend;%ph(end,1).Legend
+
+        end
+
         function groupData=createGroupAdaptData(adaptDataList)
             %Check that it is a single cell array of chars (subIDs):
+            %Ex: GroupName=adaptationData.createGroupAdaptData({'X1params','x2params','X3params'})
 
             %Load and construct object:
             for i=1:length(adaptDataList)
@@ -1065,7 +1166,7 @@ classdef adaptationData
             groupData=groupAdaptationData(ID,data);
         end
 
-        function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)
+        function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);
 
             if ~(isa(label,'char') || (isa(label,'cell') && length(label)==1 && (isa(label{1},'char'))))
                 error('adaptationData:getGroupedData','Only one parameter can be retrieved at a time.'); %This is NOT true (?). Fix.
@@ -1107,7 +1208,16 @@ classdef adaptationData
             end
         end
 
-        
+        function this=loadobj(this)
+            if ~isempty(this.subData.dateOfBirth)
+                warning('adaptData:subjectDOB',['Subject data contains DOB information for subject ' this.subData.ID '. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'])
+                %Determine age (in months):
+                age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
+                %Scrub DOB from subject meta data, save age at experiment time (in years):
+                this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+            end
+        end
+
 %         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)
 %
 %             if isa(adaptDataList,'cell')
