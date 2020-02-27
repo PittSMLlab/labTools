@@ -12,7 +12,7 @@ ns=find((striderS-LevelofInterest)<0);
 ps=find((striderS-LevelofInterest)>0);
 
 %From the first 15% of the stride, determin the peak anterior-posterior impact force
-[ImpactMagS, ImpactSWhere]=nanmax(striderS(1:0.15*length(striderS)));
+[ImpactMagS, ImpactSWhere]=nanmax(striderS(1:round(0.15*length(striderS))));
 
 % if there is an impact force, then we do not want the impact behavior to
 % be considered when we are computing braking and propulsion measures.
