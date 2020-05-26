@@ -25,6 +25,14 @@ if ~isempty(emg)
         disp('Channels with more than 1% bad samples (!):')
         for i=find(tt)
             disp([emg.labels{i} '(' num2str(round(badSamples(i)*1000)/10) '% bad)'])
+            if abs(nanmean(emg.Data(:,i)))>0.01
+                warning('Check raw data. non-zero Signal offset. To continue, mean value will be remove mean of the dataß')
+                emg.Data(:,i)=emg.Data(:,i)-nanmean(emg.Data(:,i));
+                aaux2=sparse(abs(emg.Data)>=5e-3); %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
+                badSamples2=sum(aaux2)./size(aaux2,1);
+                tt2=badSamples2>.01;
+                disp([emg.labels{i} '(' num2str(round(badSamples2(i)*1000)/10) '% bad after mean adjustment)'])
+            end
         end
         %error('Some channels showed more than 1% bad samples, that is NOT GOOD. Please review the data')
     end
