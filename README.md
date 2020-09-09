@@ -1,7 +1,7 @@
 labTools
 ========
 
-HMRL-MAR group matlab tools.
+SensoriMotor Learning (SML) group matlab tools.
 
 In order for a bug to be fixed, we need a good description of the problem. Therefore we ask that you follow these steps when reporting a bug:
 
