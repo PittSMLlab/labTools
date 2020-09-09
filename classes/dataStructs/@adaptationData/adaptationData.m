@@ -1277,8 +1277,6 @@ classdef adaptationData
 %
 %         end
 
-%%%%% TEST Dulce 
-
         [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
     end %static methods
 
