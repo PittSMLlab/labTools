@@ -5,4 +5,4 @@
 
 fun/ext/plot2svg-master/
 
-.DS_Store 
+*.DS_Store 
