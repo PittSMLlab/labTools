@@ -1,4 +1,4 @@
-function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, gaitEvents, expData, FyPSat)
+function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)
 % computeForceParameters -- analyzes kinetic treadmill data
 %   inital reprocessing and any reprocessing will again analyze the kinetic
 %   data.  Analysis is mostly focused on the anterior-posterior forces
@@ -70,8 +70,8 @@ if iscell(trial)
 end
 
 % If we identify that subjects are walking decline and thus backwards.
-[ ang ] = DetermineTMAngle( trial );
-if ~isempty(findstr(lower(expData.metaData.ID), 'decline'))% Decline are walking backwards on the treadmill 
+[ ang ] = DetermineTMAngle( trialData );
+if strfind(lower(subData.ID), 'decline')% Decline are walking backwards on the treadmill 
     flipIT=-1;
 else
     flipIT=1;
