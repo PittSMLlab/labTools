@@ -4,7 +4,12 @@ function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,empty
 %needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs 
 % outputs: EMGList relData relData2
 
-
+% 
+% fileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC1/RenameTrials/Trial02';
+% secFileList='/Users/dulcemariscal/Box/11_Research_Projects/EMGworksSync/EMGworks/eMGworks01/DumbTester7/EMGtrial_PC2/RenameTrials/Trial02';
+% info.EMGList1={'LTA','LPER','LRF','LVL','LVM','LADM','LHIP','LTFL','LGLU','LMG','LLG','LSOL','LBF','LSEMT','LSEMB','sync1'};
+% info.EMGList2={'RTA','RPER','RRF','RVL','RVM','RADM','RHIP','RTFL','RGLU','RMG','RLG','RSOL','RBF','RSEMT','RSEMB','sync2'};
+% secondFile=1;
 if ~isempty(infoEMGList2)
 secondFile=true;
 end
@@ -12,15 +17,18 @@ end
  idx1=str2num(NexusfileList(strfind(NexusfileList,'Trial')+5:end));
 
 %% File 1
-
-
+%files=what('./');
+%RawfileList=files.mat;
+%
+%indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));
+% load(RawfileList{indexTrial})\
+r=2;
 if idx1<10
 load([fileList, '/Trial0', num2str(idx1), '.mat'])
 else
 load([fileList, '/Trial', num2str(idx1), '.mat'])
 end
 
-r=2; %rate of downsampling the data 
 Data=Data(:,1:r:end); %Downsampling of the data 
 
 analogs=[];

@@ -663,17 +663,16 @@ if file~=0
         set(handles.force_check,'Value',subInfo.forces);
         set(handles.emg_check,'Value',subInfo.EMGs);
         
-        if  isfield(handles, 'Nexus')
-
-%             set(handles.Nexus,'Value',subInfo.Nexus);
+        if  exist('handles.Nexus')
+            set(handles.Nexus,'Value',subInfo.Nexus);
             if ~handles.Nexus.Value~=0
                 set(handles.Nexus,'enable','on');
             end
             set(handles.Nexus,'enable','off');
         end
         
-        if isfield(handles, 'EMGworks')
-%             set(handles.EMGworks,'Value',subInfo.EMGworks);
+        if exist('handles.EMGworks','var')
+            set(handles.EMGworks,'Value',subInfo.EMGworks);
             if ~handles.EMGworks.Value~=0
                 set(handles.EMGworks,'enable','on');
             end
@@ -686,18 +685,15 @@ if file~=0
         end
         
         
-       if  isfield(handles, 'Nexus')
-
+        
         handles.secfolder_location=subInfo.secdir_location;
         set(handles.secfileloc,'string',handles.secfolder_location)
         if ~isempty(handles.secfileloc.String)
             set(handles.secfileloc,'enable','on')
             set(handles.secfile_browse,'enable','on')
         end
-       end
         
-        
-        if isfield(handles, 'EMGworks') && handles.EMGworks==1
+        if exist('handles.EMGworks','var')
             handles.EMGworksFile_Loc =subInfo.EMGworksdir_location;
             set(handles.EMGworksLocation,'string',handles.EMGworksFile_Loc)
             if ~isempty(handles.EMGworksLocation.String)
