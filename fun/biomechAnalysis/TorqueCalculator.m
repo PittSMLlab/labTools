@@ -22,6 +22,6 @@ end
 if isempty(COMTS) || isempty(COPTS)
     AllMomentsTS = [];
 else
-    [AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, in.markerData, in.GRFData, weight);
+    [AllMomentsTS] = []; % TorqueCalculatorNew(COMTS, COPTS, in.markerData, in.GRFData, weight);
 end
 end
