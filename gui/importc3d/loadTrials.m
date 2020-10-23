@@ -218,7 +218,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
         elseif info.EMGworks==1
             
-            [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t});
+            [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t});
         end
         %Check if names match with expectation, otherwise query user
         for k=1:length(EMGList)

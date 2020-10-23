@@ -1,4 +1,4 @@
-function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2]=getEMGworksdata(infoEMGList1 ,infoEMGList2 ,secFileList,fileList, NexusfileList)
+function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(infoEMGList1 ,infoEMGList2 ,secFileList,fileList, NexusfileList)
 % get EMG from EMGworks
 
 %needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs 
