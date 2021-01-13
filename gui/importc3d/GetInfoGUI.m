@@ -511,6 +511,7 @@ handles.info=errorProofInfo(handles);
 if handles.info.bad
     return
 else
+    handles.info.ok=true;
     guidata(hObject,handles)
     uiresume(handles.figure1);
 end
@@ -585,8 +586,15 @@ if file~=0
         set(handles.kinematic_check,'Value',subInfo.kinematics);
         set(handles.force_check,'Value',subInfo.forces);
         set(handles.emg_check,'Value',subInfo.EMGs);
+        if ~handles.emg_check.Value~=0
+            set(handles.emg_check,'enable','on');
+        end
         handles.secfolder_location=subInfo.secdir_location;
         set(handles.secfileloc,'string',handles.secfolder_location)
+        if ~isempty(handles.secfileloc.String)
+            set(handles.secfileloc,'enable','on')
+            set(handles.secfile_browse,'enable','on')
+        end
         % -- Trial Info
         for c = 1:subInfo.numofconds
             condNum=subInfo.cond(c);
@@ -614,8 +622,14 @@ if file~=0
             for i=1:16
                 aux1=['emg1_' num2str(i)];
                 set(handles.(aux1),'string',subInfo.EMGList1{i});
+                if ~isempty(subInfo.EMGList1{i})
+                    set(handles.(aux1),'enable','on');
+                end
                 aux2=['emg2_' num2str(i)];
                 set(handles.(aux2),'string',subInfo.EMGList2{i});
+                 if ~isempty(subInfo.EMGList2{i})
+                    set(handles.(aux2),'enable','on');
+                end
             end
         end
         % --  save location

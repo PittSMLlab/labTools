@@ -105,10 +105,23 @@ trial=repmat(trial,length(bad),1);
 initTime=extendedEventTimes(:,1); %SHS
 finalTime=extendedEventTimes(:,6); %FTO2
 
+if strcmp(eventClass, '') % to store that type of event detection used for the trial
+    Event=full(trialData.gaitEvents.Data); 
+    if isequal(Event(:,1),Event(:,5))
+      eventType=2*ones(length(finalTime),1);
+    elseif isequal(Event(:,1),Event(:,9))
+       eventType=1*ones(length(finalTime),1); 
+    end
+elseif strcmp(eventClass, 'kin')
+    eventType=1*ones(length(finalTime),1);
+elseif strcmp(eventClass, 'force')
+    eventType=2*ones(length(finalTime),1);
+end
+    
 %Initialize parameterSeries
-data=[bad,~bad,trial,initTime,finalTime];
-labels={'bad','good','trial','initTime','finalTime'};
-description={'True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
+data=[eventType,bad,~bad,trial,initTime,finalTime];
+labels={'eventType','bad','good','trial','initTime','finalTime'};
+description={'1 kinematics, 2 forces','True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
 basic=parameterSeries(data,labels,times,description);
 out=cat(out,basic);
 end
