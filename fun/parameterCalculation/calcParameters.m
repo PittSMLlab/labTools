@@ -150,7 +150,7 @@ if ~isempty(trialData.angleData)
 end
 %% Force
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
-    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
+    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData, subData);
 
     if ~isempty(force.Data)
         out=cat(out,force);
