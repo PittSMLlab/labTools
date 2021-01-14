@@ -151,17 +151,21 @@ end
 %% Force
 %close all
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
+
     %if strcmpi(trialData.metaData.type,'TM')
-        [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
-        if ~isempty(force.Data)
-            out=cat(out,force);
-        end
+   [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData, subData);
+
+    if ~isempty(force.Data)
+        out=cat(out,force);
+    end
     %else
         [force_OGFP] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
         if ~isempty(force_OGFP.Data)
             out=cat(out,force_OGFP);
         end
     %end
+
+
 end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
