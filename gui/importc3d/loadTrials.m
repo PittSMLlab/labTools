@@ -554,7 +554,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             
             [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
             Samplingfrequency=analogsInfo.frequency;
-            accData=orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
+            accData=[];%orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
         end
         clear allData* relData* auxData*
     else
