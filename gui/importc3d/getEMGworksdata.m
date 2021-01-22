@@ -21,7 +21,7 @@ load([fileList, '/Trial', num2str(idx1), '.mat'])
 end
 
 r=2; %rate of downsampling the data 
-Data=Data(:,1:r:end); %Downsampling of the data 
+% Data=Data(:,1:r:end); %Downsampling of the data 
 
 analogs=[];
 analogsInfo=[];
@@ -72,7 +72,7 @@ else
 load([secFileList, '/Trial', num2str(idx1), '.mat'])
 end
 % load([secFileList '.mat'])
-Data=Data(:,1:r:end);
+% Data=Data(:,1:r:end);
 
 analogs2=[];
 analogsInfo2=[];
