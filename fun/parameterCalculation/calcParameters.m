@@ -153,7 +153,7 @@ end
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     %if strcmpi(trialData.metaData.type,'TM')
     
-    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData, subData);
+    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
     if ~isempty(force.Data)
         out=cat(out,force);
     end
