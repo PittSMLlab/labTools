@@ -1,4 +1,4 @@
-function [out] = computeForceParameters_OGFP(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
+function [out] = computeForceParameters_OGFP_aligned(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis.
 % This code is a bit eccentric in the way that identifies the inclination for the TM.
 
@@ -24,10 +24,40 @@ if trialData.metaData.type == 'IN'
     ang = 8.5;
 end
 flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
-Filtered=GRFData.lowPassFilter(20);
+Filtered = GRFData.substituteNaNs.lowPassFilter(20);
+gaitEvents = trialData.gaitEvents;
 FilteredF = Filtered;
 FilteredS = Filtered;
 
+% adding the force-plates data overground
+if trialData.metaData.type == 'OG'
+    Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
+    Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
+else
+    Allz = {'LFz','RFz'};
+    Ally = {'LFy','RFy'};
+end
+
+h_fast = [];
+h_slow = [];    
+
+% 
+%     if strcmp(fastleg,'R')
+%         slowleg = 'L';
+%         f = 'R';
+%         s = 'L';
+%     else
+%         slowleg = 'R';
+%         f = 'L';
+%         s = 'R';
+%     end
+% 
+% eventTypes={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
+% 
+% 
+% arrayedEvents=labTimeSeries.getArrayedEvents(gaitEvents,[slowleg 'HS']);
+% alignmentVector=[2,4,2,4];
+% labTimeSeries.discretize(gaitEvents,eventTypes,alignmentVector,[]);
 
 %~~~~~~~~~~~~~~~~ REMOVE ANY OFFSETS IN THE DATA~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %New 8/5/2016 CJS: It came to my attenion that one of the decline subjects
@@ -52,11 +82,6 @@ else
     warning('Found no handrail force data.')
 end
 
-% adding the force-plates data overground
-Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
-Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
-OGFPy_names = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy'};
-OGFPz_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
 for j = 1:length(Ally)
     if Filtered.isaLabel(Ally{j})
         OGFP.(Ally{j}) = Filtered.getDataAsTS(Ally{j});
@@ -117,16 +142,18 @@ end
 %figure; plot(Filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LevelofInterest = 0.5.*flipIT.*cosd(90-abs(ang)); %The actual angle of the incline
+%LevelofInterest = flipIT.*cosd(90-abs(ang)); %The actual angle of the incline
+
 
 % pre-defining variables
 lenny=length(strideEvents.tSHS)-1;
-impactS_all=NaN(1, lenny); impactF_all=NaN(1, lenny);
-SB_all=NaN(1, lenny); SP_all=NaN(1, lenny); SZ_all=NaN(1, lenny); SX_all=NaN(1, lenny);
-FB_all=NaN(1, lenny); FP_all=NaN(1, lenny); FZ_all=NaN(1, lenny); FX_all=NaN(1, lenny);
+impactS_align=NaN(1, lenny); impactF_align=NaN(1, lenny);
+SB_align=NaN(1, lenny); SP_align=NaN(1, lenny); SZ_align=NaN(1, lenny); SX_align=NaN(1, lenny);
+FB_align=NaN(1, lenny); FP_align=NaN(1, lenny); FZ_align=NaN(1, lenny); FX_align=NaN(1, lenny);
 HandrailHolding=NaN(1, lenny);
-SBmax_all=NaN(1, lenny); SPmax_all=NaN(1, lenny); SZmax_all=NaN(1, lenny); SXmax_all=NaN(1, lenny);
-impactSmax_all=NaN(1, lenny); impactFmax_all=NaN(1, lenny);
-FBmax_all=NaN(1, lenny); FPmax_all=NaN(1, lenny); FZmax_all=NaN(1, lenny); FXmax_all=NaN(1, lenny);
+SBmax_align=NaN(1, lenny); SPmax_align=NaN(1, lenny); SZmax_align=NaN(1, lenny); SXmax_align=NaN(1, lenny);
+impactSmax_align=NaN(1, lenny); impactFmax_align=NaN(1, lenny);
+FBmax_align=NaN(1, lenny); FPmax_align=NaN(1, lenny); FZmax_align=NaN(1, lenny); FXmax_align=NaN(1, lenny);
 
 for j = 1:length(Ally)
     impactS_OGFP.(Ally{j}) = NaN(1, lenny); impactF_OGFP.(Ally{j}) = NaN(1, lenny);
@@ -137,11 +164,42 @@ for j = 1:length(Ally)
     FBmax_OGFP.(Ally{j}) = NaN(1, lenny); FPmax_OGFP.(Ally{j}) = NaN(1, lenny); FZmax_OGFP.(Ally{j}) = NaN(1, lenny);FXmax_OGFP.(Ally{j}) = NaN(1, lenny);
 end
 
+endcutting = 150;
+if strcmp(trialData.metaData.name,'TM slow')
+    slow_frames = 800+endcutting;
+    fast_frames = 800+endcutting;
+elseif strcmp(trialData.metaData.name,'TM fast')
+    slow_frames = 600+endcutting;
+    fast_frames = 600+endcutting;
+elseif strcmp(trialData.metaData.name,'adaptation')
+    slow_frames = 800+endcutting;
+    fast_frames = 600+endcutting;
+elseif strcmp(trialData.metaData.name,'TM base') || strcmp(trialData.metaData.name,'TM post')
+    slow_frames = 700+endcutting;
+    fast_frames = 700+endcutting;
+else
+    slow_frames = 700+endcutting;
+    fast_frames = 700+endcutting;
+end
+
+if trialData.metaData.type == 'OG'
+    filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
+    filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting,:,:);
+    filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.5*fast_frames),floor(0.3*fast_frames)]);
+    filteredFast_align.Data = filteredFast_align.Data(1:fast_frames-endcutting,:,:);
+else
+    filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
+    filteredSlow_align.Data = [filteredSlow_align.Data(slow_frames-19:end,:,:); filteredSlow_align.Data(1:slow_frames-40-endcutting,:,:)];
+    
+    filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.4*fast_frames),floor(0.4*fast_frames)]);
+    filteredFast_align.Data = [filteredFast_align.Data(fast_frames-19:end,:,:); filteredFast_align.Data(1:fast_frames-40-endcutting,:,:)];
+end
+
 i_slow = 0; i_fast = 0;
 SlowCount_force = 0; SlowCount_no_force = 0;
 FastCount_force = 0; FastCount_no_force = 0;
 
-for i=1:length(strideEvents.tSHS)-1
+for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),length(filteredFast_align.Data(1,1,:))])
     % get the filtered data for the slow and fast stance phases
     filteredSlowStance = FilteredS.split(SHS, STO);
     filteredFastStance = FilteredF.split(FHS, FTO2);
@@ -154,13 +212,23 @@ for i=1:length(strideEvents.tSHS)-1
     SHS=strideEvents.tSHS(i); FTO=strideEvents.tFTO(i); FHS=strideEvents.tFHS(i); STO=strideEvents.tSTO(i); SHS2=strideEvents.tSHS2(i); FTO2=strideEvents.tFTO2(i);
     
     if isnan(SHS) || isnan(STO) % make sure the slow events are not empty
-        striderSy_all = []; striderSz_all = [];
+        striderSy_align = []; striderSz_align = [];
         for j = 1:length(Ally)
             striderSy_OGFP.(Ally{j}) = [];
+            striderSy_OGFP_align.(Ally{j}) = [];
             striderSy_OGFP_SS.(Ally{j}) = [];
             
             striderSy_OGFP.(Allz{j}) = [];
+            striderSy_OGFP_align.(Allz{j}) = [];
             striderSy_OGFP_SS.(Allz{j}) = [];
+            
+            striderSz_OGFP.(Ally{j}) = [];
+            striderSz_OGFP_align.(Ally{j}) = [];
+            striderSz_OGFP_SS.(Ally{j}) = [];
+            
+            striderSz_OGFP.(Allz{j}) = [];
+            striderSz_OGFP_align.(Allz{j}) = [];
+            striderSz_OGFP_SS.(Allz{j}) = [];
         end
         striderSy_OGFP_sum = []; striderSz_OGFP_sum = [];
         exist_SlowF(i) = 0;
@@ -173,14 +241,16 @@ for i=1:length(strideEvents.tSHS)-1
             striderSy_OGFP.(Ally{j}) = flipIT.*filteredSlowStance.getDataAsVector(Ally{j})/Normalizer;
             striderSz_OGFP.(Allz{j}) = flipIT.*filteredSlowStance.getDataAsVector(Allz{j})/Normalizer;
             
+            striderSy_OGFP_align.(Ally{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Ally{j}).Data(:,1,i)/Normalizer;
+            striderSz_OGFP_align.(Allz{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Allz{j}).Data(:,1,i)/Normalizer;
+            
             % getting each force-plate value during single stance
             striderSy_OGFP_SS.(Ally{j}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Ally{j})/Normalizer;
             striderSz_OGFP_SS.(Allz{j}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Allz{j})/Normalizer;
             % adding all forces together
             striderSy_OGFP_sum = striderSy_OGFP_sum + striderSy_OGFP_SS.(Ally{j});
             striderSz_OGFP_sum = striderSz_OGFP_sum + striderSz_OGFP_SS.(Allz{j});
-%                         figure()
-%                         plot(striderSy_OGFP.(Ally{j}))
+
         end
         
         if abs(min(striderSz_OGFP_sum)) > bw_th_min
@@ -200,47 +270,68 @@ for i=1:length(strideEvents.tSHS)-1
             exist_SlowF(i) = 0;
         end
         
-        slow_divider = floor(length(striderSz_OGFP.('LFz'))/divideri);
+        slow_divider = floor(length(striderSz_OGFP_align.('LFz'))/divideri);
         good_counter = 0; OGFPy_slow = [];
         for j = 1:length(Allz)
-            if isempty(striderSz_OGFP.(Allz{j})) == 0
-%                 mini_1st.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(1:end)));
-                mini_1st.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(slow_divider:slow_divider*3)));
-                mini_2nd.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(slow_divider*5:slow_divider*7)));
+            if isempty(striderSz_OGFP_align.(Allz{j})) == 0
                 
-                if mini_1st.(Allz{j}) >= bw_th_min && mini_2nd.(Allz{j}) >= bw_th_min && abs(striderSz_OGFP.(Allz{j})(1)) <= early_th && abs(striderSz_OGFP.(Allz{j})(end)) <= end_th
+                mini_1st.(Allz{j}) = abs(min(striderSz_OGFP_align.(Allz{j})(slow_divider:slow_divider*3)));
+                mini_2nd.(Allz{j}) = abs(min(striderSz_OGFP_align.(Allz{j})(slow_divider*5:slow_divider*7)));           
+                
+                if mini_1st.(Allz{j}) >= bw_th_min && mini_2nd.(Allz{j}) >= bw_th_min && abs(striderSz_OGFP_align.(Allz{j})(1)) <= early_th && abs(striderSz_OGFP_align.(Allz{j})(end)) <= end_th
                     OGFPy_slow = Ally{j}; OGFPz_slow = Allz{j}; good_counter = good_counter + 1;
                 end
             end
         end
         
         
+        
         if good_counter == 1 && isempty(OGFPy_slow) == 0 % check if a stride has a good for at least on one of the force-plates
             
-            striderSy_all = flipIT.*filteredSlowStance.getDataAsVector(OGFPy_slow)/Normalizer;
-            striderSz_all = flipIT.*filteredSlowStance.getDataAsVector(OGFPz_slow)/Normalizer;
-
+            %striderSy_align = flipIT.*filteredSlowStance.getDataAsVector(OGFPy_slow)/Normalizer;
+            %striderSz_align = flipIT.*filteredSlowStance.getDataAsVector(OGFPz_slow)/Normalizer;
             
-            if isempty(striderSy_all)
-                striderSz_all = [];
-            elseif max(striderSy_all(slow_divider:slow_divider*3)) > max(striderSy_all(slow_divider*5:slow_divider*7)) 
-                striderSy_all = -striderSy_all;
+            striderSy_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPy_slow).Data(:,1,i)/Normalizer;
+            striderSz_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPz_slow).Data(:,1,i)/Normalizer;
+            
+            slow_divider = floor(length(striderSy_align)/divideri);
+            if isempty(striderSy_align)
+                striderSz_align = [];
+            elseif max(striderSy_align(slow_divider:slow_divider*3)) > max(striderSy_align(slow_divider*5:slow_divider*7)) 
+                striderSy_align = -striderSy_align;
                 striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
                 
-                if strcmp(trialData.metaData.name,'adaptation') && nanmean(striderSy_all) < 0
-                    striderSy_all = -striderSy_all;
+                if strcmp(trialData.metaData.type,'IN') && strcmp(trialData.metaData.name,'adaptation') && nanmean(striderSy_align) < 0
+                    striderSy_align = -striderSy_align;
+                    striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
+                elseif max(striderSy_align(1:slow_divider*4)) > max(striderSy_align(slow_divider*4:end))
+                    striderSy_align = -striderSy_align;
                     striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
                 end
             end
         else
-            striderSy_all=[]; striderSz_all = [];
+            striderSy_align=[]; striderSz_align = [];
         end
     end
     
     if isnan(FHS) || isnan(FTO2) % make sure the slow events are not empty
-        striderFy_all = []; striderFz_all = [];
+        striderFy_align = []; striderFz_align = [];
         for j = 1:length(Ally)
             striderFy_OGFP.(Ally{j}) = [];
+            striderFy_OGFP_align.(Ally{j}) = [];
+            striderFy_OGFP_SS.(Ally{j}) = [];
+            
+            striderFy_OGFP.(Allz{j}) = [];
+            striderFy_OGFP_align.(Allz{j}) = [];
+            striderFy_OGFP_SS.(Allz{j}) = [];
+            
+            striderFz_OGFP.(Ally{j}) = [];
+            striderFz_OGFP_align.(Ally{j}) = [];
+            striderFz_OGFP_SS.(Ally{j}) = [];
+            
+            striderFz_OGFP.(Allz{j}) = [];
+            striderFz_OGFP_align.(Allz{j}) = [];
+            striderFz_OGFP_SS.(Allz{j}) = [];
         end
         striderFy_OGFP_sum = []; striderFz_OGFP_sum = [];
         exist_FastF(i) = 0;
@@ -252,16 +343,15 @@ for i=1:length(strideEvents.tSHS)-1
             striderFy_OGFP.(Ally{j}) = flipIT.*filteredFastStance.getDataAsVector(Ally{j})/Normalizer;
             striderFz_OGFP.(Allz{j}) = flipIT.*filteredFastStance.getDataAsVector(Allz{j})/Normalizer;
             
+            striderFy_OGFP_align.(Ally{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Ally{j}).Data(:,1,i)/Normalizer;
+            striderFz_OGFP_align.(Allz{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Allz{j}).Data(:,1,i)/Normalizer;
+            
             striderFy_OGFP_SS.(Ally{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Ally{j})/Normalizer;
             striderFz_OGFP_SS.(Allz{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Allz{j})/Normalizer;
             
             striderFy_OGFP_sum = striderFy_OGFP_sum + striderFy_OGFP_SS.(Ally{j});
             striderFz_OGFP_sum = striderFz_OGFP_sum + striderFz_OGFP_SS.(Allz{j});
             
-%             [alignedTS,originalDurations] = stridedTSToAlignedTS(filteredFastStance,100) 
-%             
-%             filteredFastStance.stridedTSToAlignedTS(100);
-%             filteredFastStance.align(gaitEvents,{'FHS','SHS2'},[15,30]);
         end
         
         if abs(min(striderFz_OGFP_sum)) > 0.1 % checking if the force is avaliable
@@ -278,15 +368,15 @@ for i=1:length(strideEvents.tSHS)-1
             striderFy_OGFP_sum = []; striderFz_OGFP_sum = [];
         end
         
-        midway_fast = floor(length(striderFz_OGFP.('LFz'))/divideri);
+        midway_fast = floor(length(striderFz_OGFP_align.('LFz'))/divideri);
         good_counter = 0; OGFPy_fast = [];
         for j = 1:length(Allz)
-            if isempty(striderFz_OGFP.(Allz{j})) == 0
-%                 mini_1st.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(1:end)));
-                mini_1st.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(midway_fast:midway_fast*3)));
-                mini_2nd.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(midway_fast*5:midway_fast*7)));
+            if isempty(striderFz_OGFP_align.(Allz{j})) == 0
                 
-                if mini_1st.(Allz{j}) >= bw_th_min && mini_2nd.(Allz{j}) >= bw_th_min && abs(striderFz_OGFP.(Allz{j})(1)) <= early_th && abs(striderFz_OGFP.(Allz{j})(end)) <= end_th
+                mini_1st.(Allz{j}) = abs(min(striderFz_OGFP_align.(Allz{j})(midway_fast:midway_fast*3)));
+                mini_2nd.(Allz{j}) = abs(min(striderFz_OGFP_align.(Allz{j})(midway_fast*5:midway_fast*7)));
+                
+                if mini_1st.(Allz{j}) >= bw_th_min && mini_2nd.(Allz{j}) >= bw_th_min && abs(striderFz_OGFP_align.(Allz{j})(1)) <= early_th && abs(striderFz_OGFP_align.(Allz{j})(end)) <= end_th
                     OGFPy_fast = Ally{j}; OGFPz_fast = Allz{j}; good_counter = good_counter + 1;
                 end
             end
@@ -294,16 +384,28 @@ for i=1:length(strideEvents.tSHS)-1
         
         if good_counter == 1 && isempty(OGFPy_fast) == 0
             
-            striderFy_all = flipIT.*filteredFastStance.getDataAsVector(OGFPy_fast)/Normalizer;
-            striderFz_all = flipIT.*filteredFastStance.getDataAsVector(OGFPz_fast)/Normalizer;
-            if isempty(striderFy_all)
-                striderFz_all = [];
-            elseif max(striderFy_all(midway_fast:midway_fast*3)) > max(striderFy_all(midway_fast*5:midway_fast*7))
-                striderFy_all = -striderFy_all;
+%             striderFy_align = flipIT.*filteredFastStance.getDataAsVector(OGFPy_fast)/Normalizer;
+%             striderFz_align = flipIT.*filteredFastStance.getDataAsVector(OGFPz_fast)/Normalizer;
+            
+            striderFy_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPy_fast).Data(:,1,i)/Normalizer;
+            striderFz_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPz_fast).Data(:,1,i)/Normalizer;
+            
+            if isempty(striderFy_align)
+                striderFz_align = [];
+            elseif max(striderFy_align(midway_fast:midway_fast*3)) > max(striderFy_align(midway_fast*5:midway_fast*7))
+                striderFy_align = -striderFy_align;
                 striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
+                
+                if strcmp(trialData.metaData.type,'IN') && strcmp(trialData.metaData.name,'adaptation') && nanmean(striderFy_align) < 0
+                    striderFy_align = -striderFy_align;
+                    striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
+                elseif max(striderFy_align(1:midway_fast*4)) > max(striderFy_align(midway_fast*4:end))
+                     striderFy_align = -striderFy_align;
+                    striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
+                end
             end
         else
-            striderFy_all = []; striderFz_all = [];
+            striderFy_align = []; striderFz_align = [];
         end
     end
     
@@ -317,94 +419,94 @@ for i=1:length(strideEvents.tSHS)-1
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for the force plate that a good stance occures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if isempty(striderSy_all) || all(striderSy_all==striderSy_all(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
+    if isempty(striderSy_align) || all(striderSy_align==striderSy_align(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
         %This does nothing, as vars are initialized as nan:
     else
-        if nanstd(striderSy_all)<0.01 && nanmean(striderSy_all)<0.01 %This is to get rid of places where there is only noise and no data
+        if nanstd(striderSy_align)<0.01 && nanmean(striderSy_align)<0.01 %This is to get rid of places where there is only noise and no data
             
         else
-            ns_all = find((striderSy_all-LevelofInterest)<0.1);%1:65
-            ps_all = find((striderSy_all-LevelofInterest)>0);
+            ns_align = find((striderSy_align-LevelofInterest)<0.1);%1:65
+            ps_align = find((striderSy_align-LevelofInterest)>0);
             
 %             if strcmp(trialData.metaData.name,'adaptation')
-%                 ns_all(find(ns_all>=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-%                 ps_all(find(ps_all<=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+%                 ns_align(find(ns_align>=0.2*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+%                 ps_align(find(ps_align<=0.5*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %                 
-%                 ns_all(find(ns_all<=0.05*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-%                 ps_all(find(ps_all>=0.95*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+%                 ns_align(find(ns_align<=0.05*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+%                 ps_align(find(ps_align>=0.95*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %                 
 %             else
                 
                 
-                ns_all(find(ns_all>=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-                ps_all(find(ps_all<=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+                ns_align(find(ns_align>=0.5*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+                ps_align(find(ps_align<=0.5*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
                 
-                ns_all(find(ns_all<=0.12*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-                ps_all(find(ps_all>=0.95*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+                ns_align(find(ns_align<=0.12*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+                ps_align(find(ps_align>=0.95*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %             end
             
-            ImpactMagS_all = find((striderSy_all-LevelofInterest)==nanmax(striderSy_all(1:75)-LevelofInterest));%no longer percent of stride
-            if isempty(ImpactMagS_all)%~=1
-                postImpactS_all = ns_all(find(ns_all>ImpactMagS_all(end), 1, 'first'));
-                if isempty(postImpactS_all)%~=1
-                    ps_all(find(ps_all<postImpactS_all))=[];
-                    ns_all(find(ns_all<postImpactS_all))=[];
+            ImpactMagS_align = find((striderSy_align-LevelofInterest)==nanmax(striderSy_align(1:75)-LevelofInterest));%no longer percent of stride
+            if isempty(ImpactMagS_align)%~=1
+                postImpactS_align = ns_align(find(ns_align>ImpactMagS_align(end), 1, 'first'));
+                if isempty(postImpactS_align)%~=1
+                    ps_align(find(ps_align<postImpactS_align))=[];
+                    ns_align(find(ns_align<postImpactS_align))=[];
                 end
             end
             
-            if isempty(ns_all)
+            if isempty(ns_align)
                 
             else
-                SB_all(i) = FlipB.*(nanmean(striderSy_all(ns_all)-LevelofInterest));
-                SBmax_all(i) = FlipB.*(nanmin(striderSy_all(ns_all)-LevelofInterest));
+                SB_align(i) = FlipB.*(nanmean(striderSy_align(ns_align)-LevelofInterest));
+                SBmax_align(i) = FlipB.*(nanmin(striderSy_align(ns_align)-LevelofInterest));
             end
-            if isempty(ps_all)
+            if isempty(ps_align)
                 
             else
-                SP_all(i)=nanmean(striderSy_all(ps_all)-LevelofInterest);
-                SPmax_all(i)=nanmax(striderSy_all(ps_all)-LevelofInterest);
+                SP_align(i)=nanmean(striderSy_align(ps_align)-LevelofInterest);
+                SPmax_align(i)=nanmax(striderSy_align(ps_align)-LevelofInterest);
             end
             
-            if exist('postImpactS_all')==0 || isempty(postImpactS_all)==1
+            if exist('postImpactS_align')==0 || isempty(postImpactS_align)==1
                 %                     impactS(i)=NaN;
                 %                     impactSmax(i)=NaN;
             else
-                impactS_all(i)=nanmean(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
-                if isempty(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))
+                impactS_align(i)=nanmean(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)))-LevelofInterest;
+                if isempty(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)))
                     %impactSmax(i)=NaN;
                 else
-                    impactSmax_all(i)=nanmax(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
+                    impactSmax_align(i)=nanmax(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)))-LevelofInterest;
                 end
             end
             
             i_slow = i_slow+1;
             OGFPy_slowi(i_slow) = {OGFPy_slow};
             OGFPz_slowi(i_slow) = {OGFPz_slow};
-            str_striderSy.([OGFPy_slow num2str(i_slow)]) = striderSy_all;
-            str_striderSz.([OGFPz_slow num2str(i_slow)]) = striderSz_all;
+            str_striderSy.([OGFPy_slow num2str(i_slow)]) = striderSy_align;
+            str_striderSz.([OGFPz_slow num2str(i_slow)]) = striderSz_align;
             
 
 
 
             
-%             figure (trialData.metaData.condition*10-8)
-%             hold on
-%             plot(striderSy_all-LevelofInterest,'b')
-%             if isempty(SBmax_all(i)) == 0 && isempty(SPmax_all(i)) == 0
-%                 if  isempty(find(striderSy_all-LevelofInterest == SBmax_all(i))) || isempty(find(striderSy_all-LevelofInterest == SPmax_all(i)))
-%                 else
-%                     SBmax_ind(i_slow) = find(striderSy_all-LevelofInterest == SBmax_all(i));
-%                     plot(SBmax_ind(i_slow),SBmax_all(i),'k*')
-%                     SPmax_ind(i_slow) = find(striderSy_all-LevelofInterest == SPmax_all(i));
-%                     plot(SPmax_ind(i_slow),SPmax_all(i),'k*')
-%                 end
-%             end
-%             title(['Slow Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
+            h_slow = figure (trialData.metaData.condition*10-9)
+            hold on
+            plot(striderSy_align-LevelofInterest,'b')
+            if isempty(SBmax_align(i)) == 0 && isempty(SPmax_align(i)) == 0
+                if  isempty(find(striderSy_align-LevelofInterest == SBmax_align(i))) || isempty(find(striderSy_align-LevelofInterest == SPmax_align(i)))
+                else
+                    SBmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SBmax_align(i));
+                    plot(SBmax_ind(i_slow),SBmax_align(i),'k*')
+                    SPmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SPmax_align(i));
+                    plot(SPmax_ind(i_slow),SPmax_align(i),'k*')
+                end
+            end
+            title(['Slow Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
             
 %             if isempty(striderSy_OGFP_SS.(OGFPy_slow)) == 0
-%             if  isempty(find(striderSy_all == striderSy_OGFP_SS.(OGFPy_slow)(1)))
+%             if  isempty(find(striderSy_align == striderSy_OGFP_SS.(OGFPy_slow)(1)))
 %             else
-%                 slow_SS_ind(i_slow) = find(striderSy_all == striderSy_OGFP_SS.(OGFPy_slow)(1));
+%                 slow_SS_ind(i_slow) = find(striderSy_align == striderSy_OGFP_SS.(OGFPy_slow)(1));
 %                 plot(slow_SS_ind(i_slow):slow_SS_ind(i_slow)+length(striderSy_OGFP_SS.(OGFPy_slow))-1,striderSy_OGFP_SS.(OGFPy_slow),'r*')
 %                 hold off
 %                 title(['Slow Single Stance Overlapped' '     ' trialData.metaData.name])
@@ -418,106 +520,120 @@ for i=1:length(strideEvents.tSHS)-1
 %             end
 
         end
-        SZ_all(i)=-1*nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']))/Normalizer;
-        SX_all(i)=nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']))/Normalizer;
-        SZmax_all(i)=-1*nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']))/Normalizer;
-        SXmax_all(i)=nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']))/Normalizer;
+%         SZ_align(i)=-1*nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']))/Normalizer;
+%         SX_align(i)=nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']))/Normalizer;
+%         SZmax_align(i)=-1*nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']))/Normalizer;
+%         SXmax_align(i)=nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']))/Normalizer;
+
+        SZ_align(i)=-1*nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:,1,i))/Normalizer;
+        SX_align(i)=nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        SZmax_align(i)=-1*nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:,1,i))/Normalizer;
+        SXmax_align(i)=nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        
+        
+        
     end
     
     %%Now for the fast leg...
-    if isempty(striderFy_all) || all(striderFy_all==striderFy_all(1)) || isempty(FTO) || isempty(STO)
+    if isempty(striderFy_align) || all(striderFy_align==striderFy_align(1)) || isempty(FTO) || isempty(STO)
         
     else
-        if nanstd(striderFy_all)<0.01 && nanmean(striderFy_all)<0.01 %This is to get rid of places where there is only noise and no data
+        if nanstd(striderFy_align)<0.01 && nanmean(striderFy_align)<0.01 %This is to get rid of places where there is only noise and no data
             
         else
-            nf_all=find((striderFy_all-LevelofInterest)<0.1);%1:65
-            pf_all=find((striderFy_all-LevelofInterest)>0);
+            nf_align=find((striderFy_align-LevelofInterest)<0.1);%1:65
+            pf_align=find((striderFy_align-LevelofInterest)>0);
             
 %             if strcmp(trialData.metaData.name,'adaptation')
-%                 nf_all(find(nf_all>=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-%                 pf_all(find(pf_all<=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+%                 nf_align(find(nf_align>=0.5*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+%                 pf_align(find(pf_align<=0.5*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %                 
-%                 nf_all(find(nf_all<=0.12*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-%                 pf_all(find(pf_all>=0.95*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+%                 nf_align(find(nf_align<=0.12*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+%                 pf_align(find(pf_align>=0.95*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %                 
 %             else
                 
                 
-                nf_all(find(nf_all>=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-                pf_all(find(pf_all<=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+                nf_align(find(nf_align>=0.5*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+                pf_align(find(pf_align<=0.5*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
                 
-                nf_all(find(nf_all<=0.12*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-                pf_all(find(pf_all>=0.95*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
+                nf_align(find(nf_align<=0.12*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+                pf_align(find(pf_align>=0.95*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
 %             end
             
-            ImpactMagF_all=find((striderFy_all-LevelofInterest)==nanmax(striderFy_all(1:75)-LevelofInterest));%1:15
-            if isempty(ImpactMagF_all)%~=1
-                postImpactF_all=nf_all(find(nf_all>ImpactMagF_all(end), 1, 'first'));
-                if isempty(postImpactF_all)%~=1
-                    pf_all(find(pf_all<postImpactF_all))=[];
-                    nf_all(find(nf_all<postImpactF_all))=[];
+            ImpactMagF_align=find((striderFy_align-LevelofInterest)==nanmax(striderFy_align(1:75)-LevelofInterest));%1:15
+            if isempty(ImpactMagF_align)%~=1
+                postImpactF_align=nf_align(find(nf_align>ImpactMagF_align(end), 1, 'first'));
+                if isempty(postImpactF_align)%~=1
+                    pf_align(find(pf_align<postImpactF_align))=[];
+                    nf_align(find(nf_align<postImpactF_align))=[];
                 end
             end
             
-            if isempty(pf_all)
+            if isempty(pf_align)
                 
             else
-                FP_all(i)=nanmean(striderFy_all(pf_all)-LevelofInterest);
-                FPmax_all(i)=nanmax(striderFy_all(pf_all)-LevelofInterest);
+                FP_align(i)=nanmean(striderFy_align(pf_align)-LevelofInterest);
+                FPmax_align(i)=nanmax(striderFy_align(pf_align)-LevelofInterest);
             end
-            if isempty(nf_all)
+            if isempty(nf_align)
                 
             else
-                FB_all(i)=FlipB.*(nanmean(striderFy_all(nf_all)-LevelofInterest));
-                FBmax_all(i)=FlipB.*(nanmin(striderFy_all(nf_all)-LevelofInterest));
+                FB_align(i)=FlipB.*(nanmean(striderFy_align(nf_align)-LevelofInterest));
+                FBmax_align(i)=FlipB.*(nanmin(striderFy_align(nf_align)-LevelofInterest));
             end
             
-            if exist('postImpactF_all')==0 || isempty(postImpactF_all)==1
+            if exist('postImpactF_align')==0 || isempty(postImpactF_align)==1
                 
             else
-                impactF_all(i)=nanmean(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)))-LevelofInterest;
-                if isempty(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)))
+                impactF_align(i)=nanmean(striderFy_align(find((striderFy_align(FHS-FHS+1: postImpactF_align)-LevelofInterest)>0)))-LevelofInterest;
+                if isempty(striderFy_align(find((striderFy_align(FHS-FHS+1: postImpactF_align)-LevelofInterest)>0)))
                     
                 else
-                    impactFmax_all(i)=nanmax(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)))-LevelofInterest;
+                    impactFmax_align(i)=nanmax(striderFy_align(find((striderFy_align(FHS-FHS+1: postImpactF_align)-LevelofInterest)>0)))-LevelofInterest;
                 end
             end
             
             i_fast = i_fast+1;
             OGFPy_fasti(i_fast) = {OGFPy_fast};
             OGFPz_fasti(i_fast) = {OGFPz_fast};
-            str_striderFy.([OGFPy_fast num2str(i_fast)]) = striderFy_all;
-            str_striderFz.([OGFPz_fast num2str(i_fast)]) = striderFz_all;
+            str_striderFy.([OGFPy_fast num2str(i_fast)]) = striderFy_align;
+            str_striderFz.([OGFPz_fast num2str(i_fast)]) = striderFz_align;
 
-%             figure (trialData.metaData.condition*10-6)
+            h_fast = figure (trialData.metaData.condition*10-7)
+            hold on
+            plot(striderFy_align-LevelofInterest,'r')
+            if isempty(FBmax_align(i)) == 0 && isempty(FPmax_align(i)) == 0
+                if  isempty(find(striderFy_align-LevelofInterest == FBmax_align(i))) || isempty(find(striderFy_align-LevelofInterest == FPmax_align(i)))
+                else
+                    FBmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FBmax_align(i));
+                    plot(FBmax_ind(i_fast),FBmax_align(i),'k*')
+                    FPmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FPmax_align(i));
+                    plot(FPmax_ind(i_fast),FPmax_align(i),'k*')
+                end
+            end
+            title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
 %             hold on
-%             plot(striderFy_all-LevelofInterest,'r')
-%             if isempty(FBmax_all(i)) == 0 && isempty(FPmax_all(i)) == 0
-%                 if  isempty(find(striderFy_all-LevelofInterest == FBmax_all(i))) || isempty(find(striderFy_all-LevelofInterest == FPmax_all(i)))
-%                 else
-%                     FBmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FBmax_all(i));
-%                     plot(FBmax_ind(i_fast),FBmax_all(i),'k*')
-%                     FPmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FPmax_all(i));
-%                     plot(FPmax_ind(i_fast),FPmax_all(i),'k*')
-%                 end
-%             end
-%             title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
-%             hold on
-%             plot(striderFy_all,'b')
-%             if  isempty(find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1)))
+%             plot(striderFy_align,'b')
+%             if  isempty(find(striderFy_align == striderFy_OGFP_SS.(OGFPy_fast)(1)))
 %             else
-%                 fast_SS_ind(i_fast) = find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1));
+%                 fast_SS_ind(i_fast) = find(striderFy_align == striderFy_OGFP_SS.(OGFPy_fast)(1));
 %                 plot(fast_SS_ind(i_fast):fast_SS_ind(i_fast)+length(striderFy_OGFP_SS.(OGFPy_fast))-1,striderFy_OGFP_SS.(OGFPy_fast),'r*')
 %                 hold off
 %                 title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])
 %                 saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')
 %             end
         end
-        FZ_all(i)=-1*nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']))/Normalizer; %%[OGFPy_fast(1:end-1) 'z']
-        FX_all(i)=nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']))/Normalizer;
-        FZmax_all(i)=-1*nanmin(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']))/Normalizer;
-        FXmax_all(i)=nanmax(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']))/Normalizer;
+%         FZ_align(i)=-1*nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']))/Normalizer; %%[OGFPy_fast(1:end-1) 'z']
+%         FX_align(i)=nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']))/Normalizer;
+%         FZmax_align(i)=-1*nanmin(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']))/Normalizer;
+%         FXmax_align(i)=nanmax(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']))/Normalizer;
+        
+        FZ_align(i)=-1*nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:,1,i))/Normalizer;
+        FX_align(i)=nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        FZmax_align(i)=-1*nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:,1,i))/Normalizer;
+        FXmax_align(i)=nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for adding all forces toghether %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -807,7 +923,7 @@ end
 
 % figure (trialData.metaData.condition*4-3)
 % hold on
-% plot(striderSy_all)
+% plot(striderSy_align)
 % hold off
 % title('Slow AP')
 % saveas(gcf,['Slow AP' num2str(trialData.metaData.condition)],'png')
@@ -821,7 +937,7 @@ end
 %
 % figure (trialData.metaData.condition*4-1)
 % hold on
-% plot(striderFy_all)
+% plot(striderFy_align)
 % hold off
 % title('Fast AP')
 % saveas(gcf,['Fast AP' num2str(trialData.metaData.condition)],'png')
@@ -833,6 +949,13 @@ end
 % title('Fast Z')
 % saveas(gcf,['Fast Z' num2str(trialData.metaData.condition)],'png')
 
+if isempty(h_slow) || isempty(h_fast)
+    
+else
+
+saveas(h_slow,['Aligned_Slow_v2' trialData.metaData.name],'png')
+saveas(h_fast,['Aligned_Fast_v2' trialData.metaData.name],'png')
+end
 
 %% COM:
 if false %~isempty(markerData.getLabelsThatMatch('HAT'))
@@ -873,25 +996,25 @@ outCOP.description=[];
 
 %description_OGFP_sum = {'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion','GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};
 
-data_all = [[impactS_all NaN]' [SB_all NaN]' [SP_all NaN]' [impactF_all NaN]' [FB_all NaN]' [FP_all NaN]' [FB_all-SB_all NaN]' [FP_all-SP_all NaN]' [SX_all NaN]' [SZ_all NaN]' [FX_all NaN]' [FZ_all NaN]' ...
-    [impactSmax_all NaN]' [SBmax_all NaN]' [SPmax_all NaN]' [impactFmax_all NaN]' [FBmax_all NaN]' [FPmax_all NaN]' [SXmax_all NaN]' [SZmax_all NaN]' [FXmax_all NaN]' [FZmax_all NaN]' [exist_SlowF NaN]' [exist_FastF NaN]'];
+data_align = [[impactS_align NaN]' [SB_align NaN]' [SP_align NaN]' [impactF_align NaN]' [FB_align NaN]' [FP_align NaN]' [FB_align-SB_align NaN]' [FP_align-SP_align NaN]' [(FB_align-SB_align)./(FB_align+SB_align) NaN]' [(FP_align-SP_align)./(FP_align+SP_align) NaN]' [SX_align NaN]' [SZ_align NaN]' [FX_align NaN]' [FZ_align NaN]' ...
+   [impactSmax_align NaN]' [SBmax_align NaN]' [SPmax_align NaN]' [impactFmax_align NaN]' [FBmax_align NaN]' [FPmax_align NaN]' [SXmax_align NaN]' [SZmax_align NaN]' [FXmax_align NaN]' [FZmax_align NaN]'];
 
-labels_all = {'FyImpactS_all', 'FyBS_all', 'FyPS_all', 'FyImpactF_all', 'FyBF_all', 'FyPF_all','FyBSym_all', 'FyPSym_all', 'FxS_all', 'FzS_all', 'FxF_all', 'FzF_all', 'FyImpactSmax_all', 'FyBSmax_all', 'FyPSmax_all', 'FyImpactFmax_all', 'FyBFmax_all', 'FyPFmax_all', 'FxSmax_all', 'FzSmax_all', 'FxFmax_all', 'FzFmax_all','exist_SlowF','exist_FastF'};
+labels_align = {'FyImpactS_align', 'FyBS_align', 'FyPS_align', 'FyImpactF_align', 'FyBF_align', 'FyPF_align','FyBSym_align', 'FyPSym_align','FyBSym_norm_align', 'FyPSym_norm_align', 'FxS_align', 'FzS_align', 'FxF_align', 'FzF_align', 'FyImpactSmax_align', 'FyBSmax_align', 'FyPSmax_align', 'FyImpactFmax_align', 'FyBFmax_align', 'FyPFmax_align', 'FxSmax_align', 'FzSmax_align', 'FxFmax_align', 'FzFmax_align'};
 % Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'
 
-description_all = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
+description_align = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
     'GRF-FYf average signed impact force', 'GRF-FYf average signed braking', 'GRF-FYf average signed propulsion', ...
     'GRF-FYs average signed Symmetry braking', 'GRF-FYs average signed Symmetry propulsion',...
+    'GRF-FYs average signed Symmetry braking normalized by sum', 'GRF-FYs average signed Symmetry propulsion normalized by sum',...
     'GRF-Fxs average force', 'GRF-Fzs average force', 'GRF-Fxf average force', 'GRF-Fzf average force', ...
     'GRF-FYs max signed impact force', 'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion',...
     'GRF-FYf max signed impact force', 'GRF-FYf max signed braking', 'GRF-FYf max signed propulsion', ...
-    'GRF-Fxs max force', 'GRF-Fzs max force', 'GRF-Fxf max force', 'GRF-Fzf max force', 'Slow stance force more than 10% of the bw exists on one of the FP', 'Fast stance force more than 10% of the bw exist on one of the FP'};
+    'GRF-Fxs max force', 'GRF-Fzs max force', 'GRF-Fxf max force', 'GRF-Fzf max force'};
 
 
-% data_all = [data_all data_OGFP_sum];
-% labels_all = [labels_all labels_OGFP_sum];
-% description_all = [description_all description_OGFP_sum];
-
+% data_align = [data_align data_OGFP_sum];
+% labels_align = [labels_align labels_OGFP_sum];
+% description_align = [description_align description_OGFP_sum];
 
 data_OGFP = [];
 labels_OGFP = [];
@@ -900,7 +1023,7 @@ description_OGFP = [];
 for j = 1:length(Ally)
     
     data_OGFP_temp = [[SBmax_OGFP.(Ally{j}) NaN]' [SPmax_OGFP.(Ally{j}) NaN]' [FBmax_OGFP.(Ally{j}) NaN]' [FPmax_OGFP.(Ally{j}) NaN]'];
-    labels_OGFP_temp = {['FyBSmax_' Ally{j}], ['FyPSmax_' Ally{j}], ['FyBFmax_' Ally{j}], ['FyPFmax_' Ally{j}]};
+    labels_OGFP_temp = {['FyBSmax_align_' Ally{j}], ['FyPSmax_align_' Ally{j}], ['FyBFmax_align_' Ally{j}], ['FyPFmax_align_' Ally{j}]};
     description_OGFP_temp = {[Ally{j} 'GRF-FYs max signed braking'], [Ally{j} 'GRF-FYs max signed propulsion'], [Ally{j} 'GRF-FYf max signed braking'], [Ally{j} 'GRF-FYf max signed propulsion']};
     
     %     data_OGFP = [data_OGFP data_OGFP_temp];
@@ -909,21 +1032,21 @@ for j = 1:length(Ally)
     
     wannaAddOGFP = 1;
     if wannaAddOGFP == 1
-        data_all = [data_all data_OGFP_temp];
-        labels_all = [labels_all labels_OGFP_temp];
-        description_all = [description_all description_OGFP_temp];
+        data_align = [data_align data_OGFP_temp];
+        labels_align = [labels_align labels_OGFP_temp];
+        description_align = [description_align description_OGFP_temp];
     end
     
 end
 
 if isempty(markerData.getLabelsThatMatch('Hat'))
-    data_all = [data_all outCOM.Data outCOP.Data];
-    labels_all=[labels_all outCOM.labels outCOP.labels];
-    description_all=[description_all outCOM.description outCOP.description];
+    data_align = [data_align outCOM.Data outCOP.Data];
+    labels_align=[labels_align outCOM.labels outCOP.labels];
+    description_align=[description_align outCOM.description outCOP.description];
 end
 
 %out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);
-out = parameterSeries(data_all,labels_all,[],description_all);
+out = parameterSeries(data_align,labels_align,[],description_align);
 
 %% Labels and descriptions:
 % aux={'impactS',               'GRF-FYs average signed impact force';...
