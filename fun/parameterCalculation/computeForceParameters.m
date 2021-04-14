@@ -71,6 +71,7 @@ end
 
 % If we identify that subjects are walking decline and thus backwards.
 [ ang ] = DetermineTMAngle( trialData );
+
 if strfind(lower(subData.ID), 'decline')% Decline are walking backwards on the treadmill DUM and MGR 2020
     flipIT=-1;
 else
