@@ -4,6 +4,3 @@
 *.m~
 
 fun/ext/plot2svg-master/
-
-*.DS_Store 
-gui/.DS_Store
