@@ -64,7 +64,7 @@ for i=1:numStrides
     if ~isempty(trialData.angleData) %this if loop is added by Digna in order to bin the angle data
         stridedAngleData{i}=trialData.angleData.split(initTime(i),endTime(i));
     end
-    
+
     %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
     stridedEventData{i}=trialData.gaitEvents.split(initTime(i),endTime(i));
     for j=1:length(eventTypes)
@@ -91,26 +91,39 @@ bad=any(isnan(extendedEventTimes),2) | any(diff(extendedEventTimes,1,2)<0,2) | (
 
 %% basic parameters to save & initialize parameterSeries
 if any(strcmpi(parameterClasses,'basic'))
-    
-    %initialize trial number
-    try
-        trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); %Need to FIX, but this data is not currently available on trialMetaData
-    catch
-        warning('calcParametersNew:gettingTrialNumber','Could not determine trial number from metaData, setting to NaN.');
-        trial=nan;
+
+%initialize trial number
+try
+    trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); %Need to FIX, but this data is not currently available on trialMetaData
+catch
+    warning('calcParametersNew:gettingTrialNumber','Could not determine trial number from metaData, setting to NaN.');
+    trial=nan;
+end
+trial=repmat(trial,length(bad),1);
+
+%Initialize initTime
+initTime=extendedEventTimes(:,1); %SHS
+finalTime=extendedEventTimes(:,6); %FTO2
+
+if strcmp(eventClass, '') % to store that type of event detection used for the trial
+    Event=full(trialData.gaitEvents.Data); 
+    if isequal(Event(:,1),Event(:,5))
+      eventType=2*ones(length(finalTime),1);
+    elseif isequal(Event(:,1),Event(:,9))
+       eventType=1*ones(length(finalTime),1); 
     end
-    trial=repmat(trial,length(bad),1);
+elseif strcmp(eventClass, 'kin')
+    eventType=1*ones(length(finalTime),1);
+elseif strcmp(eventClass, 'force')
+    eventType=2*ones(length(finalTime),1);
+end
     
-    %Initialize initTime
-    initTime=extendedEventTimes(:,1); %SHS
-    finalTime=extendedEventTimes(:,6); %FTO2
-    
-    %Initialize parameterSeries
-    data=[bad,~bad,trial,initTime,finalTime];
-    labels={'bad','good','trial','initTime','finalTime'};
-    description={'True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
-    basic=parameterSeries(data,labels,times,description);
-    out=cat(out,basic);
+%Initialize parameterSeries
+data=[eventType,bad,~bad,trial,initTime,finalTime];
+labels={'eventType','bad','good','trial','initTime','finalTime'};
+description={'1 kinematics, 2 forces','True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
+basic=parameterSeries(data,labels,times,description);
+out=cat(out,basic);
 end
 
 %% Temporal:
@@ -158,65 +171,65 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
 end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
-    %badStart=bad; %make a copy to compare at the end
-    %TODO: make this process generalized so that it can filter any parameter
-    %TODO: make this into a method of parameterSeries or labTimeSeries
-    %should also consider a different method of filtering...
-    %paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
-    %Pablo block-commented on MAr 13th 2017, because this part of code was
-    %doing nothing anyway (only defined the variable named 'aux', which wasn't
-    %used downstream
-    % for i=1:length(paramsToFilter)
-    %     aux=out.getDataAsVector(paramsToFilter{i});
-    %     if ~isempty(aux) %In case any of these parameters does not exist
-    %     aux=aux-runAvg(aux,50); % remove effects of adaptation
-    %     % mark strides bad if values for SL or alpha are larger than 3x the
-    %     % interquartile range away from the median.
-    %     %Criteria 1: anything outside +-3.5 interquartile ranges
-    %     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
-    %
-    %     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
-    %     %5 strides of any trial.
-    %     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-    %     %    inds=inds(inds>5);
-    %     %    bad(inds)=true;
-    %     end
-    %
-    % end
-    %Remove outliers according to new values of 'bad':
-    %[~,idxs]=out.isaParameter({'bad','good'});
-    %out.Data(:,idxs)=[bad,~bad];
-    %outlierStrides=find(bad & ~badStart);
-    %disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
-    
-    %----------REMOVE STOP/START STRIDES-------------
-    badStart=bad; %make a copy to compare at the end
-    %Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
-    %(stopping/starting trials)
-    if strcmp(trialData.metaData.type,'TM')
-        aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
-        if ~isempty(aux)
-            bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
-        end
+%badStart=bad; %make a copy to compare at the end
+%TODO: make this process generalized so that it can filter any parameter
+%TODO: make this into a method of parameterSeries or labTimeSeries
+%should also consider a different method of filtering...
+%paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
+%Pablo block-commented on MAr 13th 2017, because this part of code was
+%doing nothing anyway (only defined the variable named 'aux', which wasn't
+%used downstream
+% for i=1:length(paramsToFilter)
+%     aux=out.getDataAsVector(paramsToFilter{i});
+%     if ~isempty(aux) %In case any of these parameters does not exist
+%     aux=aux-runAvg(aux,50); % remove effects of adaptation
+%     % mark strides bad if values for SL or alpha are larger than 3x the
+%     % interquartile range away from the median.
+%     %Criteria 1: anything outside +-3.5 interquartile ranges
+%     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+%
+%     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
+%     %5 strides of any trial.
+%     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+%     %    inds=inds(inds>5);
+%     %    bad(inds)=true;
+%     end
+%
+% end
+%Remove outliers according to new values of 'bad':
+%[~,idxs]=out.isaParameter({'bad','good'});
+%out.Data(:,idxs)=[bad,~bad];
+%outlierStrides=find(bad & ~badStart);
+%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
+
+%----------REMOVE STOP/START STRIDES-------------
+badStart=bad; %make a copy to compare at the end
+%Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
+%(stopping/starting trials)
+if strcmp(trialData.metaData.type,'TM')
+    aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
+    if ~isempty(aux)
+        bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
     end
-    
-    %Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
-    %on kids!
-    if strcmp(trialData.metaData.type,'OG')
-        %To be implemented
-    end
-    
-    %Remove outliers according to new values of 'bad':
-    [~,idxs]=out.isaParameter({'bad','good'});
-    out.Data(:,idxs)=[bad,~bad];
-    outlierStrides=find(bad & ~badStart);
-    disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
-    
-    % Issue bad strides warning
-    if any(bad)
-        disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])
-    end
-    
+end
+
+%Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
+%on kids!
+if strcmp(trialData.metaData.type,'OG')
+    %To be implemented
+end
+
+%Remove outliers according to new values of 'bad':
+[~,idxs]=out.isaParameter({'bad','good'});
+out.Data(:,idxs)=[bad,~bad];
+outlierStrides=find(bad & ~badStart);
+disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
+
+% Issue bad strides warning
+if any(bad)
+    disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])
+end
+
 end
 
 %% Use 'bad' as mask (necessary?)
