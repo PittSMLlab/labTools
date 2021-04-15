@@ -57,12 +57,28 @@ out.numofconds = str2double(get(handles.numofconds,'string'));
 out.kinematics = get(handles.kinematic_check,'Value');
 out.forces = get(handles.force_check,'Value');
 out.EMGs = get(handles.emg_check,'Value');
-if isfield(handles,'secfolder_location')
+out.Nexus = get(handles.Nexus,'Value');
+out.EMGworks = get(handles.EMGworks,'Value');
+
+
+if isfield(handles,'secfolder_location') && out.Nexus==1
     out.secdir_location = handles.secfolder_location;
 else
     out.secdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
 end
 
+
+if isfield(handles,'EMGworksFile_Loc')
+    out.EMGworksdir_location = handles.EMGworksFile_Loc;
+else
+    out.EMGworksdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+end
+
+if isfield(handles,'EMGworksFile2Loc')
+    out.secEMGworksdir_location = handles.EMGworksFile2Loc;
+else
+    out.secEMGworksdir_location= ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+end
 % -- Trial Info
 Nconds=str2double(get(handles.numofconds,'string'));
 if ~isnan(Nconds) && Nconds>0
@@ -189,9 +205,11 @@ if ~(nargin>1 && ignoreErrors)
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.c3dlocation)
-        out.bad=true; return
+        out.bad=true; 
+        return
     end
     if ~isempty(out.secdir_location) && ~exist(out.secdir_location,'dir')
+   % if ~isempty(out.secdir_location)
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.secfileloc)
@@ -199,6 +217,21 @@ if ~(nargin>1 && ignoreErrors)
         return
     end
     
+    if ~isempty(out.EMGworksdir_location) && ~exist(out.EMGworksdir_location,'dir')
+        h_error=errordlg('Please enter a folder that exists','Directory Error');
+        waitfor(h_error)
+        uicontrol(handles.EMGworksLocation)
+        out.bad=1;
+        return
+    end
+    
+    if ~isempty(out.secEMGworksdir_location) && ~exist(out.secEMGworksdir_location,'dir')
+        h_error=errordlg('Please enter a folder that exists','Directory Error');
+        waitfor(h_error)
+        uicontrol(handles.SecondEMGworksLocation)
+        out.bad=1;
+        return
+    end
     % -- Trial Info
     for t=trials
         if t<10
@@ -245,7 +278,37 @@ if ~(nargin>1 && ignoreErrors)
                 out.bad=true; return
             end
         end
-   end
+    end
+   %%%%%%%%%%%%%% DMMO for EMGworks 
+    if ~isempty(out.EMGworksdir_location)
+        if t<10
+            filename3 = [out.EMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
+        else
+            filename3 = [out.EMGworksdir_location filesep out.basename num2str(t) '.mat'];
+        end
+        if ~exist(filename3,'file')
+            h_error=errordlg(['The file ',filename3,' does not exist.'],'File Name Error');
+            waitfor(h_error)
+            uicontrol(handles.basefile)
+            out.bad=true; return
+        end
+    end
+    
+        if ~isempty(out.secEMGworksdir_location)
+        if t<10
+            filename4 = [out.secEMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
+        else
+            filename4 = [out.secEMGworksdir_location filesep out.basename num2str(t) '.mat'];
+        end
+        if ~exist(filename4,'file')
+            h_error=errordlg(['The file ',filename4,' does not exist.'],'File Name Error');
+            waitfor(h_error)
+            uicontrol(handles.basefile)
+            out.bad=true; return
+        end
+        end
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
 %     
 %     % -- EMG data
 %     if isfield(handles,'emg1_1')
