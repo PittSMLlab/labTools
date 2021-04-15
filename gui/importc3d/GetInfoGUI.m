@@ -1,11 +1,11 @@
 function varargout = GetInfoGUI(varargin)
 % GETINFOGUI  Graphical user interface used to collect information regarding
 %             a single experiment conducted in the HMRL. Refer to help text
-%             in GUI by hovering mouse over a given field.
+%             in GUI by hovering mouse over a given field.      
 %
 % See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 18-Mar-2020 13:45:02
+% Last Modified by GUIDE v2.5 16-Jun-2015 14:33:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -46,7 +46,7 @@ guidata(hObject, handles);
 
 %Set GUI position to middle of screen
 % left, bottom, width, height
-scrsz = get(0,'ScreenSize');
+scrsz = get(0,'ScreenSize'); 
 set(gcf,'Units','pixels');
 guiPos = get(hObject,'Position');
 set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
@@ -55,9 +55,9 @@ set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3
 %Set text that pops up when fields of GUI are hovered over. Note: sprintf
 %used to allow line breaks in tool tip string.
 %------------------------Experiment Info---------------------------------%
-set(handles.description_edit,'TooltipString',sprintf(['Describes the experiment that was performed, in general terms\n',...
-    'Intended to categorize groups of subjects that all performed the same experiment. When a description is selected,\n'...
-    'the Condition Info should be automatically populated. See "Adding an Experiment Description" in the User guide.']));
+set(handles.description_edit,'TooltipString',sprintf(['Describes the experiment that was performed, in general terms\n',... 
+'Intended to categorize groups of subjects that all performed the same experiment. When a description is selected,\n'...
+'the Condition Info should be automatically populated. See "Adding an Experiment Description" in the User guide.']));
 set(handles.name_edit,'TooltipString','The person(s) who ran the experiment.');
 set(handles.month_list,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
 set(handles.day_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
@@ -76,7 +76,7 @@ set(handles.height_edit,'TooltipString','Height of subject as measured in the la
 set(handles.weight_edit,'TooltipString','Weight of subject as measured in the lab (in Kg)');
 
 % UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
-uiwait(handles.figure1);
+ uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -88,28 +88,28 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 
 if ~(isfield(handles,'noSave') && handles.noSave)
     info=handles.info;
-    
+
     %Forcing save before the rest of the things are done (so, if it fails, we
     %don't lose it).
     if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
         choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
-        if strcmp(choice,'No')
+        if strcmp(choice,'No')            
             info.ID = [info.ID '_' date];
             h=msgbox(['Saving as ' info.ID],'');
-            waitfor(h)
-        end
+            waitfor(h)          
+        end                
     end
     save([info.save_folder filesep info.ID 'info'],'info')
-    
+
     %ask user if there are observations for individual trials
     answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
-    
+
     %make sure the correct response is entered
     while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
         disp('Error: you must enter either "y" or "n"')
         answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
     end
-    
+
     %create a menu to choose any trial
     expTrials = cell2mat(info.trialnums);
     numTrials = length(expTrials);
@@ -117,7 +117,7 @@ if ~(isfield(handles,'noSave') && handles.noSave)
         %if a subject wasn't loaded
         info.trialObs{1,info.numoftrials} = '';
     end
-    if strcmpi(answer{1},'y')
+    if strcmpi(answer{1},'y')    
         trialstr = [];
         %create trial string
         for t = expTrials
@@ -130,9 +130,9 @@ if ~(isfield(handles,'noSave') && handles.noSave)
             obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
             info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
             eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-        end
+        end   
     end
-    
+
     varargout{1}=info;
     save([info.save_folder filesep info.ID 'info'],'info')
 else
@@ -164,7 +164,7 @@ if exist([path filesep expFile '.mat'],'file')>0
         set(handles.(['trialnum',num2str(conds)]),'string','');
         set(handles.(['type',num2str(conds)]),'string','');
     end
-    
+
     %second, populate feilds based on experiment description entered.
     a=load([path filesep expFile]);
     aux=fields(a);
@@ -306,10 +306,8 @@ function emg_check_Callback(hObject, eventdata, handles)
 state = get(hObject,'Value');
 
 if state
-    set(handles.Nexus,'enable','on')
-    set(handles.EMGworks,'enable','on')
-    %     set(handles.secfile_browse,'enable','on')
-    %     set(handles.secfileloc,'enable','on')
+    set(handles.secfile_browse,'enable','on')
+    set(handles.secfileloc,'enable','on')
     for i=1:16
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
@@ -317,51 +315,12 @@ if state
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
     end
 else
-    set(handles.Nexus,'enable','off')
-    set(handles.EMGworks,'enable','off')
     set(handles.secfile_browse,'enable','off')
     set(handles.secfileloc,'enable','off')
     for i=1:16
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
     end
-end
-guidata(hObject,handles);
-
-
-function Nexus_Callback(hObject, eventdata, handles)
-% hObject    handle to Nexus (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% Hint: get(hObject,'Value') returns toggle state of Nexus
-
-state = get(hObject,'Value');
-if state
-    set(handles.secfile_browse,'enable','on')
-    set(handles.secfileloc,'enable','on')
-else
-    set(handles.secfile_browse,'enable','off')
-    set(handles.secfileloc,'enable','off')
-end
-guidata(hObject,handles);
-
-
-% --- Executes on button press in EMGworks.
-function EMGworks_Callback(hObject, eventdata, handles)
-% hObject    handle to EMGworks (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-state = get(hObject,'Value');
-if state
-    set(handles.EMGworksFile1_search,'enable','on')
-    set(handles.EMGworksLocation,'enable','on')
-    set(handles.SecFileSearchEMGworks,'enable','on')
-    set(handles.SecondEMGworksLocation,'enable','on')
-else
-    set(handles.EMGworksFile1_search,'enable','off')
-    set(handles.EMGworksLocation,'enable','off')
-    set(handles.SecFileSearchEMGworks,'enable','on')
-    set(handles.SecondEMGworksLocation,'enable','on')
 end
 guidata(hObject,handles);
 
@@ -376,38 +335,6 @@ guidata(hObject,handles);
 function secfileloc_Callback(hObject, eventdata, handles) %runs if folder is input manually by subject
 handles.secfolder_location = get(hObject,'string');
 guidata(hObject,handles)
-
-
-%%%%%%%%%%%%%% DMMO for EMGworks
-% --- Executes on button press in EMGworksFile1_search.
-function EMGworksFile1_search_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.EMGworksFile_Loc==0
-    set(handles.EMGworksLocation,'string',handles.EMGworksFile_Loc)
-end
-guidata(hObject,handles);
-
-function EMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = get(hObject,'string');
-guidata(hObject,handles)
-
-function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.EMGworksFile2Loc ==0
-    set(handles.SecondEMGworksLocation,'string',handles.EMGworksFile2Loc)
-end
-guidata(hObject,handles);
-
-
-function SecondEMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = get(hObject,'string');
-guidata(hObject,handles)
-
-
-%%%%%%%%%%%%%% DMMO for EMGworks
-%%%%%%%%%%%%%%
-
-% Hint: get(hObject,'Value') returns toggle state of EMGworks
 
 % ------------------------Condition Info-------------------------------%
 
@@ -535,13 +462,13 @@ for i=1:handles.lines
         expDes.(['type' num2str(i)])=type;
     end
 end
-expDes.numofconds=c;
+expDes.numofconds=c;  
 
 answer = inputdlg('Enter name of new experiment description: ','Experiment Description Name');
 if ~isempty(answer)
     answer = char(answer);
     expDes.group=answer;
-    answer=answer(ismember(answer,['A':'Z' 'a':'z' '0':'9'])); %remove non-alphanumeric characters
+    answer=answer(ismember(answer,['A':'Z' 'a':'z' '0':'9'])); %remove non-alphanumeric characters        
     path=which('GetInfoGUI');
     path=strrep(path,'GetInfoGUI.m','ExpDetails');
     if exist([path filesep answer '.mat'],'file')>0
@@ -550,7 +477,7 @@ if ~isempty(answer)
             h=msgbox('Experiment description was not saved.','');
             waitfor(h)
             return
-        end
+        end                
     end
     save([path filesep answer],'expDes')
     description_edit_CreateFcn(handles.description_edit, eventdata, handles)
@@ -627,7 +554,6 @@ if file~=0
         set(handles.day_edit,'string',subInfo.day);
         set(handles.year_edit,'string',subInfo.year);
         set(handles.note_edit,'string',subInfo.exp_obs);
-        
         % -- Subject Info
         set(handles.subID_edit,'string',subInfo.ID);
         DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
@@ -642,7 +568,6 @@ if file~=0
         set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
         set(handles.height_edit,'string',subInfo.height);
         set(handles.weight_edit,'string',subInfo.weight);
-        
         if isfield(subInfo,'isStroke') %for subject processed before 11/2014
             set(handles.strokeCheck,'Value',subInfo.isStroke);
         else %Case of old info files, prior support for stroke subjects
@@ -657,58 +582,19 @@ if file~=0
         set(handles.c3dlocation,'string',handles.folder_location);
         set(handles.basefile,'string',subInfo.basename);
         set(handles.numofconds,'string',subInfo.numofconds);
-        
         numofconds_Callback(handles.numofconds,eventdata,handles)
         set(handles.kinematic_check,'Value',subInfo.kinematics);
         set(handles.force_check,'Value',subInfo.forces);
         set(handles.emg_check,'Value',subInfo.EMGs);
-        
-        if  exist('handles.Nexus')
-            set(handles.Nexus,'Value',subInfo.Nexus);
-            if ~handles.Nexus.Value~=0
-                set(handles.Nexus,'enable','on');
-            end
-            set(handles.Nexus,'enable','off');
-        end
-        
-        if exist('handles.EMGworks','var')
-            set(handles.EMGworks,'Value',subInfo.EMGworks);
-            if ~handles.EMGworks.Value~=0
-                set(handles.EMGworks,'enable','on');
-            end
-        else
-            set(handles.EMGworks,'enable','off');
-        end
-        
         if ~handles.emg_check.Value~=0
             set(handles.emg_check,'enable','on');
         end
-        
-        
-        
         handles.secfolder_location=subInfo.secdir_location;
         set(handles.secfileloc,'string',handles.secfolder_location)
         if ~isempty(handles.secfileloc.String)
             set(handles.secfileloc,'enable','on')
             set(handles.secfile_browse,'enable','on')
         end
-        
-        if exist('handles.EMGworks','var')
-            handles.EMGworksFile_Loc =subInfo.EMGworksdir_location;
-            set(handles.EMGworksLocation,'string',handles.EMGworksFile_Loc)
-            if ~isempty(handles.EMGworksLocation.String)
-                set(handles.EMGworksLocation,'enable','on')
-                set(handles.EMGworksFile1_search,'enable','on')
-            end
-            handles.EMGworksFile2Loc=subInfo.secEMGworksdir_location;
-            set(handles.SecondEMGworksLocation,'string',handles.EMGworksFile2Loc)
-            if ~isempty(handles.SecondEMGworksLocation.String)
-                set(handles.SecondEMGworksLocation,'enable','on')
-                set(handles.SecFileSearchEMGworks,'enable','on')
-            end
-        end
-        
-        
         % -- Trial Info
         for c = 1:subInfo.numofconds
             condNum=subInfo.cond(c);
@@ -741,7 +627,7 @@ if file~=0
                 end
                 aux2=['emg2_' num2str(i)];
                 set(handles.(aux2),'string',subInfo.EMGList2{i});
-                if ~isempty(subInfo.EMGList2{i})
+                 if ~isempty(subInfo.EMGList2{i})
                     set(handles.(aux2),'enable','on');
                 end
             end
@@ -765,8 +651,8 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 choice = questdlg('Do you want to save changes?', ...
-    'GetInfoGUI', ...
-    'Save','Don''t Save','Cancel','Cancel');
+'GetInfoGUI', ...
+'Save','Don''t Save','Cancel','Cancel');
 switch choice
     case 'Save'
         %check info
@@ -1174,17 +1060,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-function SecondEMGworksLocation_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-function EMGworksLocation_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------ButtonDownFcns-----------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1370,11 +1245,3 @@ function emg2_15_CreateFcn(hObject, eventdata, handles)
 function emg2_16_Callback(hObject, eventdata, handles)
 
 function emg2_16_CreateFcn(hObject, eventdata, handles)
-
-
-% --- Executes on button press in Nexus.
-
-
-
-
-
