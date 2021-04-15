@@ -15,7 +15,7 @@ if iscell(trial)
 end
 
 % (~iscell(regexp(trial, 'deg')) && ~iscell(cell2mat(regexp(trial, 'deg'))))|| ~iscell(regexp(trial, '8.5')) %~isempty(cell2mat(regexp(trial, 'deg'))) || ~isempty(cell2mat(regexp(trial, '8.5'))) 
-failRead=false;
+failRead=false; 
 if ~isempty(findstr(trial, 'deg'))%( ~iscell(cell2mat(regexp(trial, 'deg'))))|| ~iscell(cell2mat(regexp(trial, '8.5'))) %~isempty(cell2mat(regexp(trial, 'deg'))) || ~isempty(cell2mat(regexp(trial, '8.5'))) 
 %     if ~isempty(findstr(trial, '8.5 deg incline')) || ~isempty(findstr(trial, '8.5 deg uphill')) %(~iscell(regexp(trial, '8.5 deg incline')) && ~isempty(cell2mat(regexp(trial, '8.5 deg incline')))) || (~iscell(regexp(trial, '8.5 deg uphill')) && ~isempty(cell2mat(regexp(trial, '8.5 deg uphill')))) %~isempty(cell2mat(regexp(trial, '8.5 deg incline'))) || ~isempty(cell2mat(regexp(trial, '8.5 deg uphill'))) %|| (~isempty(regexp(trial, '8.5 deg'))
 %         ang=8.5;
