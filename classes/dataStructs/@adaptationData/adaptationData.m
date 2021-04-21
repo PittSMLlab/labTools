@@ -759,7 +759,11 @@ classdef adaptationData
             trialNums=this.metaData.getTrialsInCondition(conditionNames);
         end
 
-
+        function newThis=reduce(this, parametersToKeep)
+            newThis=this;
+            newThis.data=newThis.data.getDataAsPS(parametersToKeep);
+        end
+	
         %Stats testing:
         % 1) Multiple groups
 
