@@ -39,6 +39,8 @@ classdef adaptationData
     properties(Hidden)
         TMbias_=[];
         OGbias_=[];
+        INbias_=[];
+        NIMbias_=[];
     end
 
     methods
@@ -93,6 +95,8 @@ classdef adaptationData
                     tT{i}='OG';
                    elseif ~isempty(strfind(this.metaData.conditionName{condInd},'incline')) || ~isempty(strfind(this.metaData.conditionName{condInd},'hill'))
                        tT{i}='IN';
+                   elseif ~isempty(strfind(this.metaData.conditionName{condInd},'NIM'))
+                       tT{i}='NIM';
                    else
                        tT{i}='TM';
                    end
@@ -130,6 +134,8 @@ classdef adaptationData
             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
             newThis.TMbias_=baseValues(strcmp(typeList,'TM'),:);
             newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
+            newThis.INbias_=baseValues(strcmp(typeList,'IN'),:);
+            newThis.NIMbias_=baseValues(strcmp(typeList,'NIM'),:);
         end
 
         function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag,removeBadFlag)
@@ -263,8 +269,8 @@ classdef adaptationData
                 this=this.getPartialParameters(labels);
             end
             [baseData]=this.getEpochData(baseEpoch,labels);
-            newThis=this;
-            newThis.data.Data=this.data.Data-baseData';
+            newThis=this.removeBias;
+            %newThis.data.Data=this.data.Data-baseData';
 
             %fix any parameters that should not have bias removal
             [~,idxs]=this.data.isaParameter({'bad','good','trial','initTime','finalTime','direction'});
@@ -752,12 +758,12 @@ classdef adaptationData
         function trialNums=getTrialsInCond(this,conditionNames)
             trialNums=this.metaData.getTrialsInCondition(conditionNames);
         end
-        
+
         function newThis=reduce(this, parametersToKeep)
             newThis=this;
             newThis.data=newThis.data.getDataAsPS(parametersToKeep);
         end
-
+	
         %Stats testing:
         % 1) Multiple groups
 
