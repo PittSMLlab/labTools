@@ -50,7 +50,7 @@ classdef trialMetaData
                 this.rawDataFilename=filename;
             end
             if nargin>6 && (isa(type,'char'))
-                if strcmpi(type,'TM') || strcmpi(type,'OG')
+                if strcmpi(type,'TM') || strcmpi(type,'OG') || strcmpi(type,'NIM') || strcmpi(type,'IN')
                     this.type=type;
                 else
                     ME = MException('labMetaData:Constructor','type must be either ''OG'' or ''TM''.');
