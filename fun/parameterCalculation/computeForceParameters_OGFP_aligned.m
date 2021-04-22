@@ -20,7 +20,7 @@ end
 
 
 [ ang ] = DetermineTMAngle( trialData.metaData );
-if trialData.metaData.type == 'IN'
+if strcmp(trialData.metaData.type, 'IN')
     ang = 8.5;
 end
 flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
@@ -30,7 +30,7 @@ FilteredF = Filtered;
 FilteredS = Filtered;
 
 % adding the force-plates data overground
-if trialData.metaData.type == 'OG'
+if strcmp(trialData.metaData.type,'OG')
     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
 else
