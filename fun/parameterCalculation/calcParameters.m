@@ -137,37 +137,35 @@ if any(strcmpi(parameterClasses,'spatial')) && ~isempty(trialData.markerData) &&
     out=cat(out,spat);
 end
 %% EMG:
-if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
+if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData) 
     %Classic way:
     [EMG_alt] = computeEMGParameters(trialData.EMGData,trialData.gaitEvents,s,eventTypes);
     out=cat(out,EMG_alt);
 end
-%% Angles
+%% Angles  
 if ~isempty(trialData.angleData)
-    %     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s);
+%     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s);
     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s,eventTypes);
     out=cat(out,angles);
 end
 %% Force
-%close all
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
-    %if strcmpi(trialData.metaData.type,'TM')
-    
-    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData);
+    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData, subData);
+
     if ~isempty(force.Data)
         out=cat(out,force);
     end
-    %else
-    [force_OGFP] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
+    
+        [force_OGFP] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP.Data)
         out=cat(out,force_OGFP);
     end
-    
+
     [force_OGFP_aligned] = computeForceParameters_OGFP_aligned(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP_aligned.Data)
         out=cat(out,force_OGFP_aligned);
     end
-    %end
+    
 end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
