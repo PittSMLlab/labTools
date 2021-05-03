@@ -20,7 +20,7 @@ end
 
 
 [ ang ] = DetermineTMAngle( trialData.metaData );
-if trialData.metaData.type == 'IN'
+if strcmpi(trialData.metaData.type,'IN')
     ang = 8.5;
 end
 flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
@@ -30,7 +30,7 @@ FilteredF = Filtered;
 FilteredS = Filtered;
 
 % adding the force-plates data overground
-if trialData.metaData.type == 'OG'
+if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM')
     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
 else
@@ -182,7 +182,7 @@ else
     fast_frames = 700+endcutting;
 end
 
-if trialData.metaData.type == 'OG'
+if strcmp(trialData.metaData.type,'OG') || strcmp(trialData.metaData.type,'NIM')
     filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
     filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting,:,:);
     filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.5*fast_frames),floor(0.3*fast_frames)]);
@@ -301,7 +301,7 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
                 striderSy_align = -striderSy_align;
                 striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
                 
-                if strcmp(trialData.metaData.type,'IN') && strcmp(trialData.metaData.name,'adaptation') && nanmean(striderSy_align) < 0
+                if strcmpi(trialData.metaData.type,'IN') && strcmpi(trialData.metaData.name,'adaptation') && nanmean(striderSy_align) < 0
                     striderSy_align = -striderSy_align;
                     striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
                 elseif max(striderSy_align(1:slow_divider*4)) > max(striderSy_align(slow_divider*4:end))
@@ -396,7 +396,7 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
                 striderFy_align = -striderFy_align;
                 striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
                 
-                if strcmp(trialData.metaData.type,'IN') && strcmp(trialData.metaData.name,'adaptation') && nanmean(striderFy_align) < 0
+                if strcmpi(trialData.metaData.type,'IN') && strcmpi(trialData.metaData.name,'adaptation') && nanmean(striderFy_align) < 0
                     striderFy_align = -striderFy_align;
                     striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
                 elseif max(striderFy_align(1:midway_fast*4)) > max(striderFy_align(midway_fast*4:end))
@@ -489,19 +489,19 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
 
 
             
-            h_slow = figure (trialData.metaData.condition*10-9)
-            hold on
-            plot(striderSy_align-LevelofInterest,'b')
-            if isempty(SBmax_align(i)) == 0 && isempty(SPmax_align(i)) == 0
-                if  isempty(find(striderSy_align-LevelofInterest == SBmax_align(i))) || isempty(find(striderSy_align-LevelofInterest == SPmax_align(i)))
-                else
-                    SBmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SBmax_align(i));
-                    plot(SBmax_ind(i_slow),SBmax_align(i),'k*')
-                    SPmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SPmax_align(i));
-                    plot(SPmax_ind(i_slow),SPmax_align(i),'k*')
-                end
-            end
-            title(['Slow Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
+%             h_slow = figure (trialData.metaData.condition*10-9)
+%             hold on
+%             plot(striderSy_align-LevelofInterest,'b')
+%             if isempty(SBmax_align(i)) == 0 && isempty(SPmax_align(i)) == 0
+%                 if  isempty(find(striderSy_align-LevelofInterest == SBmax_align(i))) || isempty(find(striderSy_align-LevelofInterest == SPmax_align(i)))
+%                 else
+%                     SBmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SBmax_align(i));
+%                     plot(SBmax_ind(i_slow),SBmax_align(i),'k*')
+%                     SPmax_ind(i_slow) = find(striderSy_align-LevelofInterest == SPmax_align(i));
+%                     plot(SPmax_ind(i_slow),SPmax_align(i),'k*')
+%                 end
+%             end
+%             title(['Slow Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
             
 %             if isempty(striderSy_OGFP_SS.(OGFPy_slow)) == 0
 %             if  isempty(find(striderSy_align == striderSy_OGFP_SS.(OGFPy_slow)(1)))
@@ -600,19 +600,19 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
             str_striderFy.([OGFPy_fast num2str(i_fast)]) = striderFy_align;
             str_striderFz.([OGFPz_fast num2str(i_fast)]) = striderFz_align;
 
-            h_fast = figure (trialData.metaData.condition*10-7)
-            hold on
-            plot(striderFy_align-LevelofInterest,'r')
-            if isempty(FBmax_align(i)) == 0 && isempty(FPmax_align(i)) == 0
-                if  isempty(find(striderFy_align-LevelofInterest == FBmax_align(i))) || isempty(find(striderFy_align-LevelofInterest == FPmax_align(i)))
-                else
-                    FBmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FBmax_align(i));
-                    plot(FBmax_ind(i_fast),FBmax_align(i),'k*')
-                    FPmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FPmax_align(i));
-                    plot(FPmax_ind(i_fast),FPmax_align(i),'k*')
-                end
-            end
-            title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
+%             h_fast = figure (trialData.metaData.condition*10-7)
+%             hold on
+%             plot(striderFy_align-LevelofInterest,'r')
+%             if isempty(FBmax_align(i)) == 0 && isempty(FPmax_align(i)) == 0
+%                 if  isempty(find(striderFy_align-LevelofInterest == FBmax_align(i))) || isempty(find(striderFy_align-LevelofInterest == FPmax_align(i)))
+%                 else
+%                     FBmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FBmax_align(i));
+%                     plot(FBmax_ind(i_fast),FBmax_align(i),'k*')
+%                     FPmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FPmax_align(i));
+%                     plot(FPmax_ind(i_fast),FPmax_align(i),'k*')
+%                 end
+%             end
+%             title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
 %             hold on
 %             plot(striderFy_align,'b')
 %             if  isempty(find(striderFy_align == striderFy_OGFP_SS.(OGFPy_fast)(1)))
@@ -949,13 +949,13 @@ end
 % title('Fast Z')
 % saveas(gcf,['Fast Z' num2str(trialData.metaData.condition)],'png')
 
-if isempty(h_slow) || isempty(h_fast)
-    
-else
-
-saveas(h_slow,['Aligned_Slow_v2' trialData.metaData.name],'png')
-saveas(h_fast,['Aligned_Fast_v2' trialData.metaData.name],'png')
-end
+% if isempty(h_slow) || isempty(h_fast)
+%     
+% else
+% 
+% saveas(h_slow,['Aligned_Slow_v2' trialData.metaData.name],'png')
+% saveas(h_fast,['Aligned_Fast_v2' trialData.metaData.name],'png')
+% end
 
 %% COM:
 if false %~isempty(markerData.getLabelsThatMatch('HAT'))
