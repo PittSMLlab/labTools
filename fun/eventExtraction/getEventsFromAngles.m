@@ -8,7 +8,7 @@ nsamples = trialData.markerData.Length;
 rdata = angleData.getDataAsVector({'RLimb'});
 ldata = angleData.getDataAsVector({'LLimb'});
 
-if strcmpi(trialData.metaData.type,'OG')
+if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM')
     %Get fore-aft hip positions
     newMarkerData = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['LHIP' orientation.foreaftAxis]});
     rhip=newMarkerData(:,1);
@@ -40,8 +40,9 @@ if strcmpi(trialData.metaData.type,'OG')
         return
     end
 else
-    StartStop= [1 length(rdata)];
+     StartStop= [1 length(rdata)];
 end
+
 
 RightTO = [];
 RightHS = [];
@@ -62,6 +63,15 @@ for i = 1:2:(length(StartStop))
         ldata(start:stop) = -ldata(start:stop);
     end
     
+     if strcmpi(trialData.metaData.type,'NIM') && median(HipVel(start:stop))>0 % in our lab, walking towards door
+        % Reverse angles for walking towards lab door (this is to make angle
+        % maximums HS and minimums TO, as they are when on treadmill)
+        rdata(start:stop) = -rdata(start:stop);
+        ldata(start:stop) = -ldata(start:stop);
+    end
+    
+    
+    
     startHS = start;
     startTO  = start;
     
@@ -79,8 +89,8 @@ for i = 1:2:(length(StartStop))
         startTO = RTO+1;
     end
     
-    RightTO(RightTO == start | RightTO == stop) = [];
-    RightHS(RightHS == start | RightHS == stop) = [];
+     RightTO(RightTO == start | RightTO == stop) = [];
+     RightHS(RightHS == start | RightHS == stop) = [];
     
     %% find HS/TO for left leg
     startHS = start;
@@ -100,8 +110,8 @@ for i = 1:2:(length(StartStop))
         startTO = LTO+pad;
     end
     
-    LeftTO(LeftTO == start | LeftTO == stop)=[];
-    LeftHS(LeftHS == start | LeftHS == stop)=[];
+     LeftTO(LeftTO == start | LeftTO == stop)=[];
+     LeftHS(LeftHS == start | LeftHS == stop)=[];
 end
 
 % Remove any events due to marker dropouts
@@ -110,11 +120,52 @@ RightHS(rdata(RightHS)==0)=[];
 LeftTO(rdata(LeftTO)==0)=[];
 LeftHS(rdata(LeftHS)==0)=[];
 
+%% added by Yashar on 10/8/2019 to remove the end of OG walking based on
+% global postion in the right Hip y direction
+
+RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
+LeftHip = trialData.markerData.getDataAsVector({'LHIPy'});
+body_yPos = (RightHip+LeftHip)/2;
+
+isDataNewLab = 1;
+if isDataNewLab == 1
+    y_max = 4500;
+    y_min = -2500;
+else
+    y_max = 7000;
+    y_min = 0;
+end
+y_up_ind = find(body_yPos >= y_max);
+y_low_ind = find(body_yPos <= y_min);
+
+
+RightTO_up = ismember(RightTO,intersect(RightTO,y_up_ind));
+RightTO(RightTO_up)=[];
+RightHS_up = ismember(RightHS,intersect(RightHS,y_up_ind));
+RightHS(RightHS_up)=[];
+LeftTO_up = ismember(LeftTO,intersect(LeftTO,y_up_ind));
+LeftTO(LeftTO_up)=[];
+LeftHS_up = ismember(LeftHS,intersect(LeftHS,y_up_ind));
+LeftHS(LeftHS_up)=[];
+
+
+
+RightTO_low = ismember(RightTO,intersect(RightTO,y_low_ind));
+RightTO(RightTO_low)=[];
+RightHS_low = ismember(RightHS,intersect(RightHS,y_low_ind));
+RightHS(RightHS_low)=[];
+LeftTO_low = ismember(LeftTO,intersect(LeftTO,y_low_ind));
+LeftTO(LeftTO_low)=[];
+LeftHS_low = ismember(LeftHS,intersect(LeftHS,y_low_ind));
+LeftHS(LeftHS_low)=[];
+%%
+
 % Remove any events that don't make sense
 RightTO(rdata(RightTO)>5 | abs(rdata(RightTO))>40)=[];
 RightHS(rdata(RightHS)<0 | abs(rdata(RightHS))>40)=[];
 LeftTO(ldata(LeftTO)>5 | abs(ldata(LeftTO))>40)=[];
 LeftHS(ldata(LeftHS)<0 | abs(ldata(LeftHS))>40)=[];
+
 
 LHSevent(LeftHS)=true;
 RTOevent(RightTO)=true;
