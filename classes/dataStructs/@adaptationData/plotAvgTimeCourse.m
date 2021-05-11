@@ -152,7 +152,7 @@ legendStr=cell(1);
 % Set colors order
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
     poster_colors;
-    colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0]];
+    colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
 end
 
 lineOrder={'-','--','-.',':'};
