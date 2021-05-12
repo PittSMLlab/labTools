@@ -30,12 +30,13 @@ classdef experimentMetaData
         conditionDescription={};
         trialsInCondition={};
         Ntrials=[];
+        SchenleyPlace = [];
     end
 
 
     methods
         %Constructor
-        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials,SchenleyPlace)
             this.ID=ID;
             if nargin>1
                 this.date=date;
@@ -64,6 +65,13 @@ classdef experimentMetaData
             if nargin>7
                 this.Ntrials=Ntrials;
             end
+            
+            if nargin>8
+                
+                this.SchenleyPlace = SchenleyPlace;
+                
+            end
+            
             %Check that conditions do not include interleaved or repeated trials:
             [conditionOrder]=this.validateTrialsInCondition;
             %Sort conditions according to trial numbers:
@@ -135,6 +143,12 @@ classdef experimentMetaData
         function this=set.Ntrials(this,Ntrials)
             if isa(Ntrials,'double')
                 this.Ntrials=Ntrials;
+            end
+        end
+        
+        function this=set.SchenleyPlace(this,SchenleyPlace)
+            if isa(SchenleyPlace,'double')
+                this.SchenleyPlace=SchenleyPlace;
             end
         end
 

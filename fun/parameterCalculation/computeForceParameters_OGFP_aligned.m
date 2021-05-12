@@ -30,9 +30,15 @@ FilteredF = Filtered;
 FilteredS = Filtered;
 
 % adding the force-plates data overground
-if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM')
-    Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
-    Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
+
+forces = GRFData.labels(~contains(GRFData.labels , 'M'));
+forces = forces(~contains(forces , 'H')); %Remove the handrail from the data
+
+if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM') 
+    Allz = forces(contains(forces , 'z'));
+    Ally = forces(contains(forces , 'y'));
+%     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
+%     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
 else
     Allz = {'LFz','RFz'};
     Ally = {'LFy','RFy'};
@@ -182,7 +188,7 @@ else
     fast_frames = 700+endcutting;
 end
 
-if if strcmp(trialData.metaData.type,'OG') || strcmp(trialData.metaData.type,'NIM')
+if  strcmp(trialData.metaData.type,'OG') || strcmp(trialData.metaData.type,'NIM')
     filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
     filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting,:,:);
     filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.5*fast_frames),floor(0.3*fast_frames)]);

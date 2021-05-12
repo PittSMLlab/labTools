@@ -19,13 +19,14 @@ classdef trialMetaData
         condition=[];
         rawDataFilename=''; %string or cell array of strings, if there are many files
         type='';
+        schenleyLab='';
     end
 
     
     methods
         %Constructor
         %trialMetaData(desc,obs,refLeg,cond,filename,type)
-        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)                  
+        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab)                  
             if isa(name,'char')
                 this.name=name;
             end
@@ -53,13 +54,21 @@ classdef trialMetaData
                 if strcmpi(type,'TM') || strcmpi(type,'OG') || strcmpi(type,'NIM') || strcmpi(type,'IN')
                     this.type=type;
                 else
-                    ME = MException('labMetaData:Constructor','type must be either ''OG'' or ''TM''.');
+                    ME = MException('labMetaData:Constructor','type must be either ''OG'' or ''TM'' , ''NIM'' or ''IN''.');
                     throw(ME);
                 end
             else
                 this.type='TM';
                 warning('Assuming trial is conducted on the treadmill')
             end
+            
+            if nargin>7 && (isa(schenleyLab,'double'))
+                this.schenleyLab=schenleyLab;
+            else
+                this.schenleyLab=0;
+                warning('Assuming this data was not collected on Schenley lab. This will only affect overground trial turn removal.')
+            end
+            
         end
         
     end

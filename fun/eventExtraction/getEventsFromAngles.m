@@ -25,6 +25,7 @@ if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM
     %Use hip velocity to determine when subject is walking
     midHipVel = nanmedian(abs(HipVel));
     walking = abs(HipVel)>0.5*midHipVel;
+    
     % Eliminate walking or turn around phases shorter than 0.25 seconds
     [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.25);
     
@@ -127,8 +128,7 @@ RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
 LeftHip = trialData.markerData.getDataAsVector({'LHIPy'});
 body_yPos = (RightHip+LeftHip)/2;
 
-isDataNewLab = 1;
-if isDataNewLab == 1
+if trialData.metaData.schenleyLab == 1
     y_max = 4500;
     y_min = -2500;
 else
