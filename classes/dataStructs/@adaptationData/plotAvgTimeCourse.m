@@ -94,7 +94,7 @@ end
                      %end
 % end
 if nargin<10 || isempty(removeBiasFlag)
-    removeBiasFlag=1;
+    removeBiasFlag=0;
 end
 
 if nargin<12 || isempty(filterFlag)
