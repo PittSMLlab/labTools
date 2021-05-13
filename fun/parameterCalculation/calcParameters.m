@@ -156,7 +156,7 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
         out=cat(out,force);
     end
     
-        [force_OGFP] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
+    [force_OGFP] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP.Data)
         out=cat(out,force_OGFP);
     end

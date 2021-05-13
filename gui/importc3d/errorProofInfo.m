@@ -59,6 +59,7 @@ out.forces = get(handles.force_check,'Value');
 out.EMGs = get(handles.emg_check,'Value');
 out.Nexus = get(handles.Nexus,'Value');
 out.EMGworks = get(handles.EMGworks,'Value');
+out.schenleyLab =  get(handles.schenleyLab,'Value');
 
 
 if isfield(handles,'secfolder_location') && out.Nexus==1
@@ -79,6 +80,7 @@ if isfield(handles,'EMGworksFile2Loc')
 else
     out.secEMGworksdir_location= ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
 end
+
 % -- Trial Info
 Nconds=str2double(get(handles.numofconds,'string'));
 if ~isnan(Nconds) && Nconds>0
@@ -223,7 +225,8 @@ if ~(nargin>1 && ignoreErrors)
         uicontrol(handles.EMGworksLocation)
         out.bad=1;
         return
-    end
+    end   
+    
     
     if ~isempty(out.secEMGworksdir_location) && ~exist(out.secEMGworksdir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
@@ -232,6 +235,8 @@ if ~(nargin>1 && ignoreErrors)
         out.bad=1;
         return
     end
+    
+       
     % -- Trial Info
     for t=trials
         if t<10

@@ -105,6 +105,7 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'singleStanceSpeedFastAbsANK',    'Absolute speed of fast ankle during contralateral swing';...
     'stepSpeedSlow',            'Ankle relative to hip, from iHS to cHS';...
     'stepSpeedFast',            'Ankle relative to hip, from iHS to cHS';...
+    'stepSpeedAvg',            'Average speed of the ankle relative to the hip between slow and fast leg';...
     'stanceSpeedSlow',          'Ankle relative to hip, during ipsilateral stance';...
     'stanceSpeedFast',          'Ankle relative to hip, during ipsilateral stance';...
     'alphaTemp_fromAvgHip',     'Ankle placement of slow leg at SHS (realtive to avg hip marker and avg hip postion during time) (in mm)';...
@@ -435,7 +436,6 @@ for i=1:T
     end
 end
 
-
 stanceSpeedSlow=abs(sAnkFwd(:,STO)-sAnkFwd(:,SHS))./(timeSTO-timeSHS); %Ankle relative to hip, during ipsilateral stance
 stanceSpeedFast=abs(fAnkFwd(:,FTO2)-fAnkFwd(:,FHS))./(timeFTO2-timeFHS); %Ankle relative to hip, during ipsilateral stance
 
@@ -444,6 +444,7 @@ stanceSpeedFast=abs(fAnkFwd(:,FTO2)-fAnkFwd(:,FHS))./(timeFTO2-timeFHS); %Ankle 
 stepSpeedSlow=dispSlow./ts; %Ankle relative to hip, from iHS to cHS
 stepSpeedFast=dispFast./tf; %Ankle relative to hip, from iHS to cHS
 
+stepSpeedAvg = nanmean([stepSpeedSlow stepSpeedFast],2);
 
 %Rotate coordinates back to original so there are not
 %disconinuities within next stride
