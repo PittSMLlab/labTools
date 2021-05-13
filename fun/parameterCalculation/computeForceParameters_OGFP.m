@@ -53,10 +53,26 @@ else
 end
 
 % adding the force-plates data overground
+
+% forces = GRFData.labels(~contains(GRFData.labels , 'M'))
+% forces = forces(~contains(forces , 'H')) %Remove the handrail from the data
+% 
+% if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM') 
+%     Allz = forces(contains(forces , 'z'));
+%     Ally = forces(contains(forces , 'y'));
+% %     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
+% %     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
+% else
+%     Allz = {'LFz','RFz'};
+%     Ally = {'LFy','RFy'};
+% end
+
 Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
 Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
 OGFPy_names = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy'};
 OGFPz_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
+
+
 for j = 1:length(Ally)
     if Filtered.isaLabel(Ally{j})
         OGFP.(Ally{j}) = Filtered.getDataAsTS(Ally{j});

@@ -5,7 +5,7 @@ function varargout = GetInfoGUI(varargin)
 %
 % See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 18-Mar-2020 13:45:02
+% Last Modified by GUIDE v2.5 06-May-2021 11:11:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,6 +64,8 @@ set(handles.day_edit,'TooltipString','Date the experiment was performed (NOT the
 set(handles.year_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
 set(handles.note_edit,'TooltipString',sprintf(['Notes about the experiment as a whole. If a comment is specific to a trial,\n'...
     'do not enter it here (there will be a chance later on to comment on individual trials).']));
+%set(handles.schenleyLab,'TooltipString','Was the data collect on Schenley Place?');
+
 %--------------------------Subject Info----------------------------------%
 set(handles.subID_edit,'TooltipString','Coded value used to identify subject. DO NOT use the subjec''s name!');
 set(handles.DOBmonth_list,'TooltipString','Month subject was born');
@@ -74,6 +76,9 @@ set(handles.domleg_list,'TooltipString','Dominant leg of subject');
 set(handles.domhand_list,'TooltipString','Dominant hand/arm of subject');
 set(handles.height_edit,'TooltipString','Height of subject as measured in the lab (in cm)');
 set(handles.weight_edit,'TooltipString','Weight of subject as measured in the lab (in Kg)');
+
+
+
 
 % UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
 uiwait(handles.figure1);
@@ -299,6 +304,15 @@ function kinematic_check_Callback(hObject, eventdata, handles)
 % --- Executes on button press in force_check.
 function force_check_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of force_check
+
+% --- Executes on button press in new lab (Schenley place).
+function  schenleyLab_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of force_check
+% set(handles.schenleyLab,'enable','on')
+% guidata(hObject,handles);
+
+
+
 
 % --- Executes on button press in emg_check.
 function emg_check_Callback(hObject, eventdata, handles)
@@ -652,6 +666,9 @@ if file~=0
             set(handles.popupAffected,'Enable','On');
             set(handles.popupAffected,'Value',subInfo.affectedValue);
         end
+        
+        
+        
         % -- Data Info
         handles.folder_location=subInfo.dir_location;
         set(handles.c3dlocation,'string',handles.folder_location);
@@ -661,10 +678,16 @@ if file~=0
         numofconds_Callback(handles.numofconds,eventdata,handles)
         set(handles.kinematic_check,'Value',subInfo.kinematics);
         set(handles.force_check,'Value',subInfo.forces);
-        set(handles.emg_check,'Value',subInfo.EMGs);
+        set(handles.emg_check,'Value',subInfo.EMGs);   
+        
+        if isfield(subInfo, 'schenleyLab')
+            set(handles.schenleyLab,'Value',subInfo.schenleyLab);
+        else 
+           subInfo.schenleyLab = 0;
+           set(handles.schenleyLab,'Value',subInfo.schenleyLab);
+        end
         
         if  isfield(handles, 'Nexus')
-
 %             set(handles.Nexus,'Value',subInfo.Nexus);
             if ~handles.Nexus.Value~=0
                 set(handles.Nexus,'enable','on');
@@ -1189,6 +1212,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --- Executes on button press in schenleyLab.
+function schenleyLab_CreateFcn(hObject, eventdata, handles)
+% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+%     set(hObject,'BackgroundColor','white');
+% end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------ButtonDownFcns-----------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1244,6 +1273,8 @@ set(hObject, 'Enable', 'On');
 set(hObject,'String',[])
 % Create UI control
 uicontrol(handles.DOByear_edit);
+
+
 
 
 
@@ -1376,9 +1407,28 @@ function emg2_16_Callback(hObject, eventdata, handles)
 function emg2_16_CreateFcn(hObject, eventdata, handles)
 
 
-% --- Executes on button press in Nexus.
 
 
+% --- Executes during object creation, after setting all properties.
+function force_check_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to force_check (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
 
 
+% --- Executes on key press with focus on force_check and none of its controls.
+function force_check_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to force_check (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
 
+% --- Executes on key press with focus on force_check and none of its controls.
+function schenleyLab_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to scheleyLab check
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)

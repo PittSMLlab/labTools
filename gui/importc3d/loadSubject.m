@@ -25,7 +25,7 @@ expDate = labDate(info.day,info.month,info.year);%labDate is a labTools class
 %% Experiment info
 
 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-    info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+    info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
 %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
 
 %% Subject info

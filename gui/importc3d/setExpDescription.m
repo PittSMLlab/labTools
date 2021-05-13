@@ -24,7 +24,7 @@ for i = 1:handles.lines
     %set trial types
     if isfield(expDes,['type' num2str(i)])
         set(handles.(['type' num2str(i)]),'string',expDes.(['type' num2str(i)]))
-    end   
+    end       
 end
 if isfield(expDes, 'numofconds')
     set(handles.numofconds,'string',expDes.numofconds)

@@ -50,6 +50,7 @@ for cond = sort(info.cond)
         end
         % constructor: (name,desc,obs,refLeg,cond,filename,type)
         trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-            info.trialObs{t},info.refLeg,cond,filename,info.type{cond});        
-    end    
+            info.trialObs{t},info.refLeg,cond,filename,info.type{cond}, info.schenleyLab);        
+    end 
+   
 end
