@@ -59,9 +59,14 @@ description=aux(:,2);
 %Get the trial description because this has info on inclination
 trial=trialData.description;
 
-%If I want all the forces to be unitless then set this to 9.81*BW, else set it
-%to 1*BW
-Normalizer=9.81*BW;
+
+if strcmpi(trialData.type,'NIM') 
+    Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
+else
+    Normalizer=9.81*BW;
+end
+
+% Normalizer=9.81*BW;
 
 FlipB=1; %7/21/2016, nevermind, making 1 8/1/2016 -- May want to change if you want braking magnitudes
 
