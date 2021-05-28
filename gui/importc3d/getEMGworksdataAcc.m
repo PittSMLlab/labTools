@@ -55,7 +55,8 @@ for j=1:length(fieldList)
         else
             idxList(j)=str2num(fieldList{j}(strfind(fieldList{j},'sensor')+7:strfind(fieldList{j},'sensor')+8));
         end
-        switch fieldList{j}(strfind(fieldList{j},'ACC')+4)
+        switch fieldList{j}(strfind(fieldList{j},'Acc')+4)
+            %         switch fieldList{j}(end)
             case 'X'
                 aux=1;
             case 'Y'
@@ -64,6 +65,19 @@ for j=1:length(fieldList)
                 aux=3;
                 
         end
+        
+        if ~exist('aux')
+            switch fieldList{j}(end)
+                case 'X'
+                    aux=1;
+                case 'Y'
+                    aux=2;
+                case 'Z'
+                    aux=3;
+                    
+            end
+        end
+        
         eval(['relData(:,idxList(j),aux)=analogs.' fieldList{j} ';']);
         analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
         analogsInfo.frequency=Fs(j);
@@ -81,9 +95,22 @@ for j=1:length(fieldList)
                 
         end
         
+        if  ~exist('aux')
+            switch fieldList{j}(end)
+                case 'A'
+                    aux=1;
+                case 'B'
+                    aux=2;
+                case 'C'
+                    aux=3;
+                    
+            end
+        end
+        
+        
         eval(['relData(:,idxList(j),aux)=analogs.' fieldList{j} ';']);
         analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
- 
+        
         
     end
     
@@ -142,6 +169,18 @@ if secondFile
                 case 'Z'
                     aux=3;
             end
+            
+            if  ~exist('aux')
+                switch fieldList{j}(end)
+                    case 'X'
+                        aux=1;
+                    case 'Y'
+                        aux=2;
+                    case 'Z'
+                        aux=3;
+                        
+                end
+            end
             eval(['relData2(:,idxList2(j),aux)=analogs2.' fieldList{j} ';']);
             analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
         elseif contains(fieldList{j},'adapter','IgnoreCase', true)
@@ -155,6 +194,18 @@ if secondFile
                 case 'C'
                     aux=3;
                     
+            end
+            
+            if  ~exist('aux')
+                switch fieldList{j}(end)
+                    case 'A'
+                        aux=1;
+                    case 'B'
+                        aux=2;
+                    case 'C'
+                        aux=3;
+                        
+                end
             end
             
             eval(['relData2(:,idxList2(j),aux)=analogs2.' fieldList{j} ';']);
