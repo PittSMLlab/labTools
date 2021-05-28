@@ -64,12 +64,12 @@ else
     
     warning(['There are missing knee markers in',file,'. Unable to claculate limb angles']);
     
-    %Marcela temporal fix
-    temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
-    LkneePos2D = nan*ones(size(temp));
-    RkneePos2D = nan*ones(size(temp));
+%     %Marcela temporal fix
+%     temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
+%     LkneePos2D = nan*ones(size(temp));
+%     RkneePos2D = nan*ones(size(temp));
 %    % angleData=[];
-%     return
+    return
 end
 
 % get toe position in fore-aft and up-down axes

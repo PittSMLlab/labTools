@@ -6,7 +6,13 @@ function [out] = computeForceParameters_OGFP_aligned(strideEvents,GRFData,slowle
 trial=trialData.metaData.description;
 %If I want all the forces to be unitless then set this to 9.81*BW, else set it
 %to 1*BW
-Normalizer=9.81*BW;
+
+if strcmpi(trialData.metaData.type,'NIM') 
+    Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
+else
+    Normalizer=9.81*BW;
+end
+
 bw_th_min = 0.8;
 early_th = 0.2;
 end_th = 0.2;
@@ -467,6 +473,7 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
                 SB_align(i) = FlipB.*(nanmean(striderSy_align(ns_align)-LevelofInterest));
                 SBmax_align(i) = FlipB.*(nanmin(striderSy_align(ns_align)-LevelofInterest));
             end
+            
             if isempty(ps_align)
                 
             else
