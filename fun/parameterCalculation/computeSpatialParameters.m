@@ -120,10 +120,13 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'velocityAltContributionAlt' 'velocityAltContribution, normalized by stride time';...
     'velocityAltContributionNorm2' 'velocityAltContribution, normalized by sum of step lengths';...
     'velocityAltContributionP'  'velocityAltContribtuion using absolute lab reference (mm)';...
-    'velocityAltContributionPNorm' 'velocityAltContributionP, normalized to sum of step lengths';
-    
+    'velocityAltContributionPNorm' 'velocityAltContributionP, normalized to sum of step lengths';...
+    'singleStanceSpeedSlow',     'Single stance speed for ankle relative to the hip for the slow leg during contralateral swing';...
+    'singleStanceSpeedFast',     'Single stance speed for ankle relative to the hip for the fast leg during contralateral swing';...
+    'singleStanceSpeedAvg',     'Single stance speed for ankle relative to the hip averaged accross the legs';...
+    'singleStanceSpeedDiff',    'Single stance speed difference, fast single stance speed minus slow single stance speed (ankle relative to the hip)';...
 %    'avgRotation',            'Angle that the coordinates were rotated by';...
-    }; 
+   }; 
 
 paramLabels=aux(:,1);
 description=aux(:,2);
@@ -360,6 +363,17 @@ spatialContributionPNorm=spatialContributionP./Dist;
 stepTimeContributionPNorm=stepTimeContributionP./Dist;
 velocityContributionPNorm=velocityContributionP./Dist;
 netContributionPNorm=netContributionP./Dist;
+
+%Added by Marcela 06/01/2021
+
+dispS=abs(sAnkFwd(:,FHS)-sAnkFwd(:,FTO)); %displacement for single stance %FIXME: This SHOULD NOT use an abs(), if the sign is supposed to be the opposite one, just make it so. Abs() makes it murky to know what this quantity means.
+dispF=abs(fAnkFwd(:,SHS2)-fAnkFwd(:,STO));
+
+singleStanceSpeedSlow=dispS./(timeFHS-timeFTO);
+singleStanceSpeedFast=dispF./(timeSHS2-timeSTO);
+
+singleStanceSpeedAvg=mean([singleStanceSpeedSlow singleStanceSpeedFast],2); %I dont want to do nan mean because it will not be good for the split conditions
+singleStanceSpeedDiff=singleStanceSpeedFast- singleStanceSpeedSlow;
 
 %Contributions in absolute frame using rotated markerdata
 % modified by Digna April 2018 to use rotated markerdata. This allows to
