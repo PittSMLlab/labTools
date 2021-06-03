@@ -14,13 +14,15 @@ classdef parameterSeries < labTimeSeries
 
     properties
         hiddenTime
+        trialTypes
+
     end
     properties(Dependent)
        bad
        stridesTrial
        stridesInitTime
        description
-       trialTypes
+
     end
     properties(Hidden)
        description_={};
