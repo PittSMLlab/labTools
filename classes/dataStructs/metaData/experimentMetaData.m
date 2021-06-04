@@ -372,17 +372,20 @@ classdef experimentMetaData
                error('Pattern name to search for needs to be a string')
            end
            
-                   ccNames=this.conditionName;
+           ccNames=this.conditionName;
            idx=cellfun(@(x) isempty(x),ccNames);
            if sum(idx)>=1
-            r=find(idx==1);
-            for q=1:length(r)
-           ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
-            end
+               r=find(idx==1);
+               for q=1:length(r)
+                   ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
+               end
            end
            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
            if nargin>2 && ~isempty(type) && isa(type,'char')
                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
+               if sum(typeMatches)==0 %Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
+                   typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
+               end
            else
                typeMatches=true(size(patternMatches));
            end
