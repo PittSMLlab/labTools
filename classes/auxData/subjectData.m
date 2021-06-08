@@ -21,11 +21,12 @@ classdef subjectData
         height=[]; %centimeters
         weight=[]; %kgs
         age=[]; %in years, at time of experiment
-        ID=[]; %experimental ID assigned
+     
     end
     
     properties %other
         cognitiveScores
+        ID=[]; %experimental ID assigned
     end
     
     methods
