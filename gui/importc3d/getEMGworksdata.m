@@ -31,6 +31,11 @@ B(j) = regexprep(B(j),'\W*[: .]',' ');
 B(j) = regexprep(B(j),'\s','_');
 B(j) =deblank(B(j));
 C(j) = cellstr(B(j));
+if contains(B(j),'_(IM)')
+   B(j) = strrep(B(j),'_(IM)','');
+elseif contains(B(j),'_IM__')
+    B(j) = strrep(B(j),'_IM__','');
+end
 analogs.(B{j})=Data(j,:)';
 end
 
@@ -41,13 +46,25 @@ idxList=[];
 for j=1:length(fieldList)
 if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
-    idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));
+    if ~isempty(str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end)))
+         idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));    
+    elseif  ~isempty(str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end)))
+         idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
+    else
+         idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end-1));
+    end
     analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
     analogsInfo.frequency=Fs(j)/r;
     analogsInfo.units.(fieldList{j})='V';
 elseif  ~isempty(strfind(fieldList{j},'Analog_16_A'))
     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
     idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'Analog_16')+7:end-2));
+    analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+    analogsInfo.frequency= Fs(j)/r;
+    analogsInfo.units.(fieldList{j})='V';
+elseif  ~isempty(strfind(fieldList{j},'Analog16_A'))
+    relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+    idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'Analog16')+6:end-2));
     analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
     analogsInfo.frequency= Fs(j)/r;
     analogsInfo.units.(fieldList{j})='V';
@@ -82,6 +99,11 @@ for j=1:length(Channels)
     B(j) = regexprep(B(j),'\s','_');
     B(j) =deblank(B(j));
     C(j) = cellstr(B(j));
+    if contains(B(j),'_(IM)')
+        B(j) = strrep(B(j),'_(IM)','');
+    elseif contains(B(j),'_IM__')
+        B(j) = strrep(B(j),'_IM__','');
+    end
     analogs2.(B{j})=Data(j,:)';
 end
 fieldList=fields(analogs2);
@@ -90,7 +112,14 @@ idxList2=[];
 for j=1:length(fieldList);
     if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
         relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
-        idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));
+        if ~isempty(str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end)))
+            idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));
+        elseif  ~isempty(str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end)))
+            idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
+        else
+            idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end-1));
+        end
+%         idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));
         analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
         analogsInfo2.frequency= Fs(j)/r;
         analogsInfo2.units.(fieldList{j})='V';
@@ -100,6 +129,13 @@ for j=1:length(fieldList);
         analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
         analogsInfo2.frequency=Fs(j)/r;
         analogsInfo2.units.(fieldList{j})='V';
+    elseif  ~isempty(strfind(fieldList{j},'Analog16_A'))
+        relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+        idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'Analog16')+6:end-2));
+        analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
+        analogsInfo2.frequency= Fs(j)/r;
+        analogsInfo2.units.(fieldList{j})='V';
+    
     end
 end
 emptyChannels2=cellfun(@(x) isempty(x),infoEMGList2);
