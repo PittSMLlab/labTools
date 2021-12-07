@@ -87,11 +87,11 @@ end
 
 % if nargin<9
     maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
-                     %otherwise, the subject with the fewest strides in a particular trial/condition
-                     %determines the number of strides plotted.
-                     %if ~isempty(alignEnd)
-                     %    maxNumPts=true;
-                     %end
+    %                      otherwise, the subject with the fewest strides in a particular trial/condition
+    %                      determines the number of strides plotted.
+%     if ~isempty(alignEnd)
+%         maxNumPts=true;
+%     end
 % end
 if nargin<10 || isempty(removeBiasFlag)
     removeBiasFlag=0;
@@ -153,6 +153,7 @@ legendStr=cell(1);
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
     poster_colors;
     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
+     colorOrder=[ colorOrder;  colorOrder];
 end
 
 lineOrder={'-','--','-.',':'};
