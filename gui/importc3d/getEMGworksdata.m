@@ -135,6 +135,13 @@ for j=1:length(fieldList);
         analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
         analogsInfo2.frequency= Fs(j)/r;
         analogsInfo2.units.(fieldList{j})='V';
+    elseif  ~isempty(strfind(fieldList{j},'Analog_A16'))
+        relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+        idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'Analog_A')+8:end));
+        analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
+        analogsInfo2.frequency= Fs(j)/r;
+        analogsInfo2.units.(fieldList{j})='V';
+        
     
     end
 end
