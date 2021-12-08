@@ -415,9 +415,9 @@ classdef experimentMetaData
            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
            if nargin>2 && ~isempty(type) && isa(type,'char')
                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
-               if sum(typeMatches)==0 || strcmp(type,'TM') %Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
-                   typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
-               end
+%                if sum(typeMatches)==0 || strcmp(type,'TM') %Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
+%                    typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
+%                end
            else
                typeMatches=true(size(patternMatches));
            end
@@ -428,7 +428,13 @@ classdef experimentMetaData
 %            else
 %                typeMatches=true(size(patternMatches));
 %            end
-           condNames=this.conditionName(patternMatches & typeMatches);
+            condNames=this.conditionName(patternMatches & typeMatches);
+            
+            if isempty(condNames) &&  strcmp(type,'NIM') %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
+                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
+                condNames=this.conditionName(patternMatches & typeMatches);
+
+            end
         end
         
         
