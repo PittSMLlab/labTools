@@ -14,13 +14,14 @@ classdef parameterSeries < labTimeSeries
 
     properties
         hiddenTime
+        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
     end
     properties(Dependent)
        bad
        stridesTrial
        stridesInitTime
        description
-       trialTypes
+%        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
     end
     properties(Hidden)
        description_={};
