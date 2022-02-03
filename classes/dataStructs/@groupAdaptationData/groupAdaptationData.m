@@ -643,7 +643,7 @@
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
             symmetryFlag=false;
-            if nargin<7 || isempty(flipLR)
+            if nargin<5 || isempty(flipLR)
                 flipLR=false;
                 normalize=false;
             elseif flipLR==2 %Codeword for doing symmetry plot
@@ -658,13 +658,13 @@
             dataE=reshape(dataE,Np,length(labelPrefix),size(dataE,2),size(dataE,3));
 
             dataRef=[]; %For argout
-            if nargin>5 && ~isempty(refEpoch)
+            if nargin>4 && ~isempty(refEpoch)
                 [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch, true); %Padding with NaNs
                 dataRef=reshape(dataRef,Np,length(labelPrefix),1,size(dataRef,3));
                 dataE=dataE-dataRef;
             end
 
-            if nargin<8 || isempty(summFlag)
+            if nargin<6 || isempty(summFlag)
                 summFlag='nanmean';
             end
             eval(['fun=@(x) ' summFlag '(x,4);']);
