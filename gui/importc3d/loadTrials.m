@@ -552,7 +552,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             % orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.
         elseif info.EMGworks==1
             
-            [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
+%             [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
             Samplingfrequency=analogsInfo.frequency;
             accData=[];%orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
         end

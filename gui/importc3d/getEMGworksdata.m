@@ -4,9 +4,11 @@ function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,empty
 %needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs 
 % outputs: EMGList relData relData2
 
-
-if ~isempty(infoEMGList2)
-secondFile=true;
+% secondFile=false;
+if isempty(secFileList)
+    secondFile=false;
+else
+    secondFile=true;
 end
 
  idx1=str2num(NexusfileList(strfind(NexusfileList,'Trial')+5:end));
@@ -76,6 +78,10 @@ relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count tha
 relData=relData(:,~emptyChannels1);
 EMGList=EMGList1;
 %% File 2
+analogsInfo2=[];
+emptyChannels2=[];
+EMGList2=[];
+relData2=[];
 if secondFile
 %  secFileList{t}
 % files=what('./');
@@ -92,7 +98,7 @@ end
 % Data=Data(:,1:r:end);
 
 analogs2=[];
-analogsInfo2=[];
+% analogsInfo2=[];
 for j=1:length(Channels)
     B(j) = convertCharsToStrings(Channels(j,:));
     B(j) = regexprep(B(j),'\W*[: .]',' ');
