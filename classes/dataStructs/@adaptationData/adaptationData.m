@@ -107,9 +107,9 @@ classdef adaptationData
 
         [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag) %Going to deprecate in favor of removeBiasV3's simpler code
         [newThis,baseValues,typeList]=removeBiasV3(this,conditions,normalizeFlag)
-        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag)
+        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag,padWithNaNFlag)
 
-        function [newThis,baseValues,typeList]=removeBias(this,conditions)
+        function [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)
         % Removes baseline value for all parameters.
         % removeBias('condition') or removeBias({'Condition1','Condition2',...})
         % removes the median value of every parameter from each trial of the
@@ -132,9 +132,13 @@ classdef adaptationData
             if nargin<2
                 conditions=[];
             end
-%             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
-%             %Marcela Commented this for the R01
-            [newThis,baseValues,typeList]=removeBiasV4(this,conditions);
+            
+            if nargin<3
+                padWithNaNFlag=false;
+            end
+            %             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
+            %             %Marcela Commented this for the R01
+            [newThis,baseValues,typeList]=removeBiasV4(this,conditions,[],padWithNaNFlag);
             newThis.TMbias_=baseValues(strcmp(typeList,'TM'),:);
             newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
             newThis.INbias_=baseValues(strcmp(typeList,'IN'),:);
