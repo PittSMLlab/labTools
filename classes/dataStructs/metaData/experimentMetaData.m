@@ -430,7 +430,7 @@ classdef experimentMetaData
 %            end
             condNames=this.conditionName(patternMatches & typeMatches);
             
-            if isempty(condNames) &&  strcmp(type,'NIM') %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
+            if isempty(condNames) &&  strcmp(type,'NIM') ||  isempty(condNames) && strcmp(type,'TM') %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
                 typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
                 condNames=this.conditionName(patternMatches & typeMatches);
 
