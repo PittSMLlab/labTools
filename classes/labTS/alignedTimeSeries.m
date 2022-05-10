@@ -609,7 +609,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         function [this,iC,iI]=getaSym(this)
             [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
             %Then: compute asym data and replace it.
-            this.Data=[this.Data(:,iI)-this.Data(:,iC) ];
+            this.Data=[this.Data(:,iI)-this.Data(:,iC)]; %we do slow - fast here
             %Update labels:
             this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a')];
             
