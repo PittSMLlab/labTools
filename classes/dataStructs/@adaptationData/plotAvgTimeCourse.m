@@ -152,8 +152,8 @@ legendStr=cell(1);
 % Set colors order
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
     poster_colors;
-    colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
-     colorOrder=[ colorOrder;  colorOrder];
+    colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1];p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
+     colorOrder=[ colorOrder; colorOrder;colorOrder];
 end
 
 lineOrder={'-','--','-.',':'};
@@ -200,6 +200,7 @@ for group=1:Ngroups
                     end
                 else
                     dataPts=adaptData.getParamInTrial(params,trials{t});
+%                     dataPts=dataPts(2:end-5);
                 end
                 nPoints=size(dataPts,1);
                 M=2000; %this assumes that the max number of data points that could exist in a single conition or trial is M
@@ -537,7 +538,7 @@ for group=1:Ngroups
                 else
                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
                 end
-                set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
+%                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
                 %h=refline(0,0);
                 %set(h,'color','k')
             end            
@@ -550,7 +551,11 @@ end
 %linkaxes(ah,'x')
 %set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
-legend([Li{:}],[legendStr{:}])
+    if length(legendStr{:})>10
+        legend([Li{:}],[legendStr{:}],'NumColumns',3)
+    else
+        legend([Li{:}],[legendStr{:}])
+    end
 else
 labels={labels}';
 legend([Li{:}],[labels{:}])
