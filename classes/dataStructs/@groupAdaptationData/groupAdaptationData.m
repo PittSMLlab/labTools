@@ -638,7 +638,7 @@
         end
 
 
-        function [dataE,dataRef,labels]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR,summFlag)
+        function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR,summFlag)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
@@ -680,6 +680,7 @@
                 elseif symmetryFlag
                     [ATS,iC,iI]=ATS.getaSym;
                 end
+                groups=ATS.Data;
             end
             if flipLR || symmetryFlag %Aligning all returned data if we do L/R flip
                 dataE(:,iC,:,:)=fftshift(dataE(:,iC,:,:),1);
