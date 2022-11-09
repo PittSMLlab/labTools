@@ -1013,7 +1013,7 @@ classdef adaptationData
            [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
         end
         
-        function [dataE,dataRef,labels]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)
+        function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
@@ -1026,7 +1026,7 @@ classdef adaptationData
             if nargin<4
                 refEpoch=[];
             end
-            [dataE,dataRef,labels]=this.createSingleSubjGroup.getCheckerboardsData(labelPrefix,epochs,refEpoch,flipLR); %Call onto groupAdaptData method
+            [dataE,dataRef,labels,groups]=this.createSingleSubjGroup.getCheckerboardsData(labelPrefix,epochs,refEpoch,flipLR); %Call onto groupAdaptData method
         end
 
 
