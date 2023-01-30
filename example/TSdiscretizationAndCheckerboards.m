@@ -1,5 +1,5 @@
 %% Load some data:
-mList={'TA','PER','SOL','MG','LG','SEMT','SEMB','BF','VM','VL','RF','ADM','HIP','GLU','TFL'};
+mList={'TA','PER','SOL','MG','LG','SEMT','SEMB','BF','VM','VL','RF','HIP','GLU','TFL'};
 mList=mList(end:-1:1);
 labels=[strcat('R',mList) strcat('L',mList)];
 labels1=[strcat('F',mList) strcat('S',mList)];
