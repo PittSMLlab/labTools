@@ -195,7 +195,7 @@ classdef groupAdaptationData
               gID=this.ID{1}(1); %Using first char in first subjects' ID as group ID.
             end
         end
-        
+
         function [nStrides,labels]=getNumStridesInCond(this,conds)
             nsubs=length(this.ID);
             if iscell(conds)
@@ -206,14 +206,14 @@ classdef groupAdaptationData
             end
             nStrides=NaN(nsubs,nconds);
             labels=conds;
-            
+
             for s=1:nsubs
                 for c=1:nconds
                     nStrides(s,c)=length(cell2mat(this.adaptData{s}.getIndsInCondition(conds{c})));
                 end
             end
         end
-        
+
         function meanSub=getMeanSubject(this)
 
             error('Unimplemented')
@@ -307,7 +307,7 @@ classdef groupAdaptationData
                 this.adaptData{i}=this.adaptData{i}.normalizeToBaselineEpoch(labelPrefix,baseEpoch,noMinNormFlag);
             end
         end
-        
+
         function [this]=removeBaselineEpoch(this,baseEpoch,labels)
             for i=1:length(this.ID)
                 this.adaptData{i}=this.adaptData{i}.removeBaselineEpoch(baseEpoch,labels);
@@ -626,13 +626,75 @@ classdef groupAdaptationData
                 end
             end
             if symmetryFlag
-                dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+%                 dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+                dataE=[dataE(:,iI,:,:)-dataE(:,iC,:,:)];
                 if ~isempty(dataRef)
                     dataRef=.5*cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
                 end
             end
 
         end
+
+
+        function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR,summFlag)
+            %This is meant to be used with parameters that end in
+            %'s1...s12' as are computed for EMG and angles. The 's' must be
+            %included in the labelPrefixes (to allow for other options too)
+            symmetryFlag=false;
+            if nargin<5 || isempty(flipLR)
+                flipLR=false;
+                normalize=false;
+            elseif flipLR==2 %Codeword for doing symmetry plot
+                flipLR=false; %FlipLR is implicit in doing a symmetry plot
+                symmetryFlag=true;
+            else symmetryFlag=false;
+            end
+
+            %First, get epoch data:
+            [dataE,labels]=this.getPrefixedEpochData(labelPrefix,epochs,true); %Padding with NaNs
+            Np=size(labels,1);
+            dataE=reshape(dataE,Np,length(labelPrefix),size(dataE,2),size(dataE,3));
+
+            dataRef=[]; %For argout
+            if nargin>4 && ~isempty(refEpoch)
+                [dataRef]=this.getPrefixedEpochData(labelPrefix,refEpoch, true); %Padding with NaNs
+                dataRef=reshape(dataRef,Np,length(labelPrefix),1,size(dataRef,3));
+                dataE=dataE-dataRef;
+            end
+
+            if nargin<6 || isempty(summFlag)
+                summFlag='nanmean';
+            end
+            eval(['fun=@(x) ' summFlag '(x,4);']);
+            dataS=fun(dataE);
+
+
+            for i=1:length(epochs)
+
+                evLabel={'sHS','','fTO','','','','fHS','','sTO','','',''};
+                ATS=alignedTimeSeries(0,1/numel(evLabel),dataS(:,:,i),labelPrefix,ones(1,Np),evLabel);
+                if flipLR
+                    [ATS,iC]=ATS.flipLR;
+                elseif symmetryFlag
+                    [ATS,iC,iI]=ATS.getaSym;
+                end
+                groups=ATS.Data;
+            end
+            if flipLR || symmetryFlag %Aligning all returned data if we do L/R flip
+                dataE(:,iC,:,:)=fftshift(dataE(:,iC,:,:),1);
+                if ~isempty(dataRef)
+                    dataRef(:,iC,:,:)=fftshift(dataRef(:,iC,:,:),1);
+                end
+            end
+            if symmetryFlag
+                dataE=cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+                if ~isempty(dataRef)
+                    dataRef=cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
+                end
+            end
+
+        end
+
         function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)
             %See also: adaptationData.getPrefixedEpochData
             if nargin<4 || isempty(padWithNaNFlag)
@@ -1015,11 +1077,11 @@ classdef groupAdaptationData
        % Several groups visualization
        [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
        [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,plothocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag);
-       
+
        % Several groups stats
        [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)
 
-       
+
        function [p]=compareMultipleGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast)
           %2-sample t-test comparing behavior of parameters across groups, for a given subset of strides
            %Check that there are exactly two groups

@@ -38,11 +38,11 @@ if isa(params,'char')
 end
 
 % check condition input %TO DO: allow for condition numbers
-if nargin>2    
+if nargin>2
     if isa(conditions,'char')
         conditions={conditions};
     end
-else   
+else
     if ~legacyVersion
         conditions=adaptDataList{1}{1}.metaData.conditionName; %default
     else
@@ -69,20 +69,20 @@ end
 
 if nargin<5 || length(trialMarkerFlag)~=length(cond)
     trialMarkerFlag=false(1,length(cond));
-end     
+end
 
 if nargin<6 || isempty(indivFlag)
     indivFlag=false;
 end
 
-if nargin>6    
+if nargin>6
     if isa(indivSubs,'cell') && ~isempty(indivSubs)
         if ~isa(indivSubs{1},'cell')
             indivSubs{1}=indivSubs;
         end
     elseif isa(indivSubs,'char')
         indivSubs{1}={indivSubs};
-    end  
+    end
 end
 
 % if nargin<9
@@ -150,7 +150,7 @@ end
 legendStr=cell(1);
 
 % Set colors order
-if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3    
+if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3
     poster_colors;
     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
      colorOrder=[ colorOrder;  colorOrder];
@@ -174,14 +174,14 @@ for group=1:Ngroups
         elseif removeBiasFlag==2
             adaptData = adaptData.normalizeBias;
         end
-            
+
         for c=1:nConds
             if trialMarkerFlag(c)
                 trials=num2cell(adaptData.getTrialsInCond({conditions{c}}));
             else
                 trials={adaptData.getTrialsInCond({conditions{c}})}; %all trials in the condition are one "trial"
             end
-            
+
             for t=1:length(trials) %length(trials) is always 1
                 %Check
                 if ~all(adaptData.data.isaParameter(params))
@@ -216,8 +216,8 @@ for group=1:Ngroups
                     end
                 end
                 for p=1:length(params)
-                    %initialize so there are no inconsistant dimensions or out of bounds errors 
-                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M); 
+                    %initialize so there are no inconsistant dimensions or out of bounds errors
+                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
                     values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
                     if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
                         if strcmpi(cond{c},'catch')
@@ -255,10 +255,10 @@ end
 
 for group=1:Ngroups
     Xstart=1;
-    lineX=0;    
+    lineX=0;
     for c=1:nConds
         for t=1:length(fields(values(group).(params{p}).(cond{c})));
-            
+
             % 1) find the length of each trial
             if maxNumPts
                 %to plot the MAX number of pts in each trial:
@@ -280,10 +280,10 @@ for group=1:Ngroups
                 if maxPts==0
                     continue
                 end
-            end            
-            
-            for p=1:length(params)                
-                
+            end
+
+            for p=1:length(params)
+
                 if ~isnan(maxPts)%do not try to plot if maxPts is NaN, this indicates that there is no c3d for this trial
                     allValues=values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,1:maxPts);
                 else
@@ -303,12 +303,12 @@ for group=1:Ngroups
                     t1 = start(i);
                     t2 = stop(i);
                     bin = allValues(:,t1:t2);
-                    
+
                     if length(adaptDataList{group})>1 %Several subjects
                         %errors calculated as standard error of averaged subject points
                         if medianFilter==0
                             subBin=nanmean(bin,2); %Mean across time
-                        else 
+                        else
                             subBin=nanmedian(bin,2); %Median across  time
                         end
                         if medianFlag==0
@@ -328,7 +328,7 @@ for group=1:Ngroups
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
                         else
                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
-                            indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmedian(bin,2); 
+                            indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmedian(bin,2);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidth);
                         end
                     end
@@ -343,20 +343,20 @@ for group=1:Ngroups
                         legStr=params(p);
                     else
                         if ~legacyVersion
-                            if length(adaptDataList{group})>1                            
+                            if length(adaptDataList{group})>1
                                 legStr={[params{p} ' ' adaptDataList{group}{1}.metaData.ID]};
                             else
-                                legStr={[params{p} ' ' adaptDataList{group}{1}.subData.ID]};                            
+                                legStr={[params{p} ' ' adaptDataList{group}{1}.subData.ID]};
                             end
                         else
-                            if length(adaptDataList{group})>1                            
+                            if length(adaptDataList{group})>1
                                 legStr={[params{p} ' ' adaptDataList{group}{1}]};
                             else
-                                legStr={[params{p} ' ' adaptDataList{group}{1}]};                            
+                                legStr={[params{p} ' ' adaptDataList{group}{1}]};
                             end
 
                         end
-                        
+
                     end
                 else
                     axes(ah(p))
@@ -369,7 +369,7 @@ for group=1:Ngroups
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
 %                 condLength=length(y);
 %                 x=Xstart:Xstart+condLength-1;
-                
+
                 if isempty(alignIni) %DULCE
                     condLength=length(y);
                     x=Xstart:Xstart+condLength-1;
@@ -382,9 +382,9 @@ for group=1:Ngroups
                     E=E(1:length(x));
                     condLength=length(y);
                 end
-                         
+
                 %Biofeedback
-                if nargin>8 && ~isempty(biofeedback)                    
+                if nargin>8 && ~isempty(biofeedback)
                     if biofeedback==1 && strcmp(params{p},'alphaFast')
                         w=adaptData{group}{1}.getParamInCond('TargetHitR',conditions{c});
                     elseif biofeedback==1 &&  strcmp(params{p},'alphaSlow')
@@ -392,12 +392,12 @@ for group=1:Ngroups
                     elseif biofeedback==0
                         biofeedback=[];
                     else
-                        w=adaptData.getParamInCond('TargetHit',conditions{c});                        
+                        w=adaptData.getParamInCond('TargetHit',conditions{c});
                     end
                 else
                     biofeedback=[];
                 end
-                
+
                 if indivFlag %plotting all individual subjects
                     nSubs=length(adaptDataList{group});
                     subjects=cell(1,nSubs);
@@ -434,8 +434,8 @@ for group=1:Ngroups
                     %plot average of group if there is more than one person
                     %in the group
                     if length(adaptDataList{group})>1
-                        Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',5,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);                    
-                        legendStr{group}(length(subsToPlot)+1)={['Average ' adaptDataList{group}{1}.metaData.ID]};                                               
+                        Li{group}(length(subsToPlot)+1)=plot(x,y,'o','MarkerSize',5,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0.7 0.7 0.7].^group);
+                        legendStr{group}(length(subsToPlot)+1)={['Average ' adaptDataList{group}{1}.metaData.ID]};
                     end
                 else %only plot group averages
                      if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
@@ -464,20 +464,20 @@ for group=1:Ngroups
                                 legendStr{g}={adaptDataList{g}{1}.metaData.ID};
                             else
                                 legendStr{g}={adaptDataList{g}{1}.subData.ID};
-                            end      
+                            end
                         else
                             if length(adaptDataList{g})>1
                                 legendStr{g}={adaptDataList{g}{1}};
                             else
                                 legendStr{g}={adaptDataList{g}{1}};
-                            end      
+                            end
 
                         end
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
                         color=colorOrder(g,:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
                         %set(Li{g},'Clipping','off')
-                        H=get(Li{g},'Parent');                        
+                        H=get(Li{g},'Parent');
                         group=adaptData{g}{1}.subData.ID;
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
@@ -500,9 +500,9 @@ for group=1:Ngroups
                     set(H,'Layer','top')
                 end
             end
-          Xstart=Xstart+condLength;       
+          Xstart=Xstart+condLength;
         end
-        
+
         if c==nConds && group==Ngroups
             %on last iteration of conditions loop, add title and
             %vertical lines to seperate conditions
@@ -521,10 +521,10 @@ for group=1:Ngroups
                 %    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')
                 %end
                 xticks=lineX+diff([lineX Xstart])./2;
-                
+
                 %set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))
                 if ~isempty(alignEnd)
-                    
+
                     xticks=[[0 lineX(3:2:end)];xticks(1:2:end)];
                     xticks=xticks(:);
                     xtl=[adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))];
@@ -533,24 +533,30 @@ for group=1:Ngroups
                     %xtl=cond;
                     %xtl(1:2:end)=strcat(xtl(1:2:end),'Early');
                     %xticks(2:2:end)=xticks(2:2:end)+25;
-                    
+
                 else
                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
                 end
                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
                 %h=refline(0,0);
                 %set(h,'color','k')
-            end            
+            end
             hold off
         end
-        lineX(end+1)=Xstart-0.5;        
+        lineX(end+1)=Xstart-0.5;
     end
 end
 
 %linkaxes(ah,'x')
 %set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
-legend([Li{:}],[legendStr{:}])
+
+    if length(legendStr)>10
+        legend([Li{:}],[legendStr{:}],'NumColumns',3)
+    else
+        legend([Li{:}],[legendStr{:}])
+    end
+
 else
 labels={labels}';
 legend([Li{:}],[labels{:}])

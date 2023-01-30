@@ -60,7 +60,7 @@ for itype=1:length(types)
     end
     %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
-        % CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline 
+        % CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline
         base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,1,padWithNaNFlag); %Last 40, exempting very last 5 and first 10
         base=nanmean(squeeze(base{1}));
         [data, inds]=this.getParamInTrial(labels,allTrials);
@@ -77,7 +77,7 @@ for itype=1:length(types)
             base(base==1)=nan;
         end
         baseValues(itype,:)=base;
-    
+
     else
         warning(['No ' types{itype} ' baseline trials detected. Bias not removed from ' types{itype} ' trials.'])
         [~, inds]=this.getParamInTrial(labels,allTrials);
