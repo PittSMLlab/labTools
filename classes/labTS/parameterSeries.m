@@ -15,14 +15,14 @@ classdef parameterSeries < labTimeSeries
 
     properties
         hiddenTime
-        trialTypes
+        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
     end
     properties(Dependent)
        bad
        stridesTrial
        stridesInitTime
        description
-%        trialTypes
+%        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
     end
     properties(Hidden)
        description_={};
@@ -309,9 +309,9 @@ classdef parameterSeries < labTimeSeries
             end
             newThis=appendData(this,nD,newL,newDesc);
         end
-        
+
 %         function newThis=EMGnormAllData(this,labels,rangeValues)
-%             %This get the stride by stide norm 
+%             %This get the stride by stide norm
 %             %It creates NEW parameters with the same name, and the 'Norm' prefix.
 %             %This will generate collisions if run multiple times for the
 %             %same parameters
@@ -320,23 +320,23 @@ classdef parameterSeries < labTimeSeries
 % %                 error('rangeValues has to be a 2 element vector')
 %                 rangeValues=0;
 %             end
-% 
+%
 %             %More efficient:
 %             N=length(labels);
 %             newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
 %             newL=cell(N,1);
 %             nD=zeros(size(this.Data,1),N);
-% 
+%
 % %             for i=1:N
 %                 %                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-%                 
+%
 % %                 funHandle=@(x) vecnorm(x'-rangeValues);
 % %                 newL=strcat('NormEMG',labels);
 % %                 nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
 % %             end
 %             newThis=appendData(this,nD,newL,newDesc);
 %         end
-        
+
 
         %% Other functions that need redefining:
         function [F]=fourierTransform(this)

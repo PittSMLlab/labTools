@@ -629,7 +629,8 @@
                 end
             end
             if symmetryFlag
-                dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+%                 dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+                dataE=[dataE(:,iI,:,:)-dataE(:,iC,:,:)];
                 if ~isempty(dataRef)
                     dataRef=.5*cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
                 end
@@ -689,9 +690,9 @@
                 end
             end
             if symmetryFlag
-                dataE=.5*cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
+                dataE=cat(2,dataE(:,iI,:,:)-dataE(:,iC,:,:),dataE(:,iI,:,:)+dataE(:,iC,:,:));
                 if ~isempty(dataRef)
-                    dataRef=.5*cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
+                    dataRef=cat(2,dataRef(:,iI,:,:)-dataRef(:,iC,:,:),dataRef(:,iI,:,:)+dataRef(:,iC,:,:));
                 end
             end
 
