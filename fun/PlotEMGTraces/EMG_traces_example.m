@@ -1,135 +1,44 @@
 %%Traces from example subject to show how data is summarized
-%% Load data
-% load('/Volumes/Users/Dulce/R01_Nimbus2021/VROG_Devon/VrG_Devon.mat')
-% subID = 'CTR_01';
-% scriptDir = fileparts(matlab.desktop.editor.getActiveFilename); 
-% load([scriptDir '/data/' subID])
+
+%You can update this script to your data set 
+%Important is to load a ID.mat file
+%Choose the conditions that you want to plot 
+%Hoe many strides you want to plot 
+%IF you want to plot the early or the late part of the conditions 
+% IF you want to ignore stides at the early part of the conditon
 
 %% Set muscle to plot
-
-% muscle={ 'GLU','HIP','BF', 'SEMB', 'SEMT', 'VM', 'VL', 'RF','SOL', 'LG', 'MG','TA', 'PER'};
-muscle={ 'TFL', 'GLU','HIP', 'SEMB', 'SEMT','BF', 'VM', 'VL', 'RF','SOL', 'LG', 'MG','TA', 'PER'};
+muscle={ 'TFL', 'GLU','HIP', 'SEMB', 'SEMT','BF', 'VM', 'VL', 'RF','SOL', 'LG', 'MG','TA', 'PER'}; %muscles that you want to plot 
 normalize = 1;  % 1 to normalize data
-normCond = {'TM mid 1'};
-
+normCond = {'TM mid 1'}; % Condition that you want to use to normalize the data 
 %%
-%% Baseline condtions 
-conds={'TM mid 1'};
-late=[1 1 1];
-strides=[40 40 40];
-IgnoreStridesEarly=[1 1 1] ; 
+%% Baseline condtions
+% Here we are plotting treadmill baseline for references 
+conds={'TM base'};
+late=[1 1 1];  %0 average of initial strides 1 average of the last strides
+strides=[40 40 40]; % Number of strides that you are going to average 
+IgnoreStridesEarly=[1 1 1] ;  %number of strides that you are going to ignore at the beginning
 
-% fh=figure(1)
+%plotting function
 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
 
-%% Baseline condtions 
-conds={'TM mid 1','TM fast','TM slow'};
-late=[1 1 1];
-strides=[40 40 40];
-IgnoreStridesEarly=[1 1 1] ;
-% fh=figure(1)
+%% Baseline condtions for the 3 usual speeds 
+% Here we are okitting the late part of the different baseline conditions 
+conds={'TM base','TM fast','TM slow', 'OG base'};
+late=[1 1 1];  %0 average of initial strides 1 average of the last strides
+strides=[40 40 40]; % Number of strides that you are going to average 
+IgnoreStridesEarly=[1 1 1] ; %number of strides that you are going to ignore at the beginning
 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
 
-%%
-conds={'TM mid 1','Adaptation','Adaptation','Post 1'};
-late=[1 0 1 0];
-strides=[40 40 40 30];
-IgnoreStridesEarly=[1 50 1 1];
-plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
 
-%% 
-conds={'TM mid 1','Adaptation','Adaptation','Adaptation','Adaptation','Adaptation','Adaptation'};
-late=[0 0  0 0 0 0 1 ];
-strides=[40 40 40 40 40 40 40];
-IgnoreStridesEarly=[1 50 100 200 300 400 1];
+%%  Baseline plus early and late adaptation 
+% Here we are plotting treadmill baseline, early adaptation and late
+% adaptation 
+
+conds={'TM base','Adaptation','Adaptation'};
+late=[1 0  1 ];  %0 average of initial strides 1 average of the last strides
+strides=[40 40 40]; % Number of strides that you are going to average 
+IgnoreStridesEarly=[1 1 0]; %number of strides that you are going to ignore at the beginning
 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly); 
 
 
-%% 
-conds={'TM mid 1','Adaptation','Adaptation'};
-late=[1 0  1 ];
-strides=[40  40 40];
-IgnoreStridesEarly=[1 1 400 ];
-plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly); 
-%% Baseline condtions 
-conds={'TM mid 1','OG base','Post 1','Post 2'};
-late=1*ones(1,length(conds));
-strides=40*ones(1,length(conds)); 
-
-IgnoreStridesEarly=0*ones(1,length(conds));
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-%% Late condition 
-conds={'TM mid 1','OG base','TM fast',...
-    'Adaptation',...
-    'Post 1','Post 2'};
-late=1*ones(1,length(conds));
-strides=40*ones(1,length(conds));
-IgnoreStridesEarly=zeros(1,length(conds));
-
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-
-%% Early conditions 
-conds={'Pos short',...
-    'Neg Short','Adaptation',...
-    'Post 1','Post 2'};
-late=0*ones(1,length(conds));
-strides=30*ones(1,length(conds));
-IgnoreStridesEarly=50*ones(1,length(conds));
-
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-%% Early conditions 
-conds={'Pos short',...
-    'Neg Short','Adaptation',...
-        };
-late=0*ones(1,length(conds));
-strides=10*ones(1,length(conds));
-IgnoreStridesEarly=50*ones(1,length(conds));
-
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-%% Late condition 
-conds={'Adaptation',...
-    'Multiple Pos Shorts Splits'};
-late=1*ones(1,length(conds));
-strides=40*ones(1,length(conds));
-IgnoreStridesEarly=zeros(1,length(conds));
-
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-%%
-
-conds={'Pos short',...
-   'Pos Short Ramp','Adaptation',...
-        };
-late=[0 1 0];
-strides=[10 40 10];
-IgnoreStridesEarly=[50 0 50];
-
-fh=plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-
-
-%%
-conds={'TM mid 1','Pos Short','Neg Short'};
-late=[1 1 0];
-strides=[40 40 40];
-IgnoreStridesEarly=[1 1 50] ; 
-
-% fh=figure(1)
-plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
-
-
-
-%% save figures
-% if late
-%     if baseOnly
-%         saveas(fh, [scriptDir '/EMGTraces/' subID '_BaseLate.png']);
-%     else
-%         saveas(fh, [scriptDir '/EMGTraces/' subID '_Late.png']);
-%     end
-% else
-%     saveas(fh, [scriptDir '/EMGTraces/' subID '_Early.png']);
-% end
