@@ -113,7 +113,7 @@ for p=1:length(labels)%each parameter has different axis, eps are plotted in sin
         bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),'FaceColor',colors(i,:),'BarWidth',0.2)
         errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),'LineStyle','none','color','k','LineWidth',2)
         if plotIndividualsFlag==1
-            plot(plotHandles(p),xval,allData(i,p,:,:),'.k','MarkerSize',6)
+             plot(plotHandles(p),xval(:,i),squeeze(allData(i,p,:,:)),'.','MarkerSize', 15, 'Color',[150 150 150]./255)
         end
     end
     
