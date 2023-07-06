@@ -65,13 +65,13 @@ classdef experimentMetaData
             if nargin>7
                 this.Ntrials=Ntrials;
             end
-            
+
             if nargin>8
-                
+
                 this.SchenleyPlace = SchenleyPlace;
-                
+
             end
-            
+
             %Check that conditions do not include interleaved or repeated trials:
             [conditionOrder]=this.validateTrialsInCondition;
             %Sort conditions according to trial numbers:
@@ -145,7 +145,7 @@ classdef experimentMetaData
                 this.Ntrials=Ntrials;
             end
         end
-        
+
         function this=set.SchenleyPlace(this,SchenleyPlace)
             if isa(SchenleyPlace,'double')
                 this.SchenleyPlace=SchenleyPlace;
@@ -371,7 +371,7 @@ classdef experimentMetaData
            if nargin<2 || isempty(name) || ~isa(name,'char')
                error('Pattern name to search for needs to be a string')
            end
-           
+
            ccNames=this.conditionName;
            idx=cellfun(@(x) isempty(x),ccNames);
            if sum(idx)>=1
@@ -382,11 +382,11 @@ classdef experimentMetaData
            end
            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
            if nargin>2 && ~isempty(type) && isa(type,'char')
-               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));              
+               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
            else
                typeMatches=true(size(patternMatches));
            end
-           
+
 %            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
 %            if nargin>2 && ~isempty(type) && isa(type,'char')
 %                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
@@ -395,7 +395,7 @@ classdef experimentMetaData
 %            end
            condNames=this.conditionName(patternMatches & typeMatches);
         end
-        
+
         function [condNames]=getConditionsThatMatchV2(this,name,type)
            %Returns condition names that match certain patterns, but when
            %its empty it will look for a "training" or "TR" base condition
@@ -403,7 +403,7 @@ classdef experimentMetaData
            if nargin<2 || isempty(name) || ~isa(name,'char')
                error('Pattern name to search for needs to be a string')
            end
-           
+
            ccNames=this.conditionName;
            idx=cellfun(@(x) isempty(x),ccNames);
            if sum(idx)>=1
@@ -421,23 +421,24 @@ classdef experimentMetaData
            else
                typeMatches=true(size(patternMatches));
            end
-           
+
 %            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
 %            if nargin>2 && ~isempty(type) && isa(type,'char')
 %                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
 %            else
 %                typeMatches=true(size(patternMatches));
 %            end
-           condNames=this.conditionName(patternMatches & typeMatches);
-           if (isempty(condNames) && (strcmp(type,'NIM'))) || (isempty(condNames) && strcmp(type,'TM')) %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
-               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
-               condNames=this.conditionName(patternMatches & typeMatches);    
-           end
+            condNames=this.conditionName(patternMatches & typeMatches);
 
+            if isempty(condNames) &&  strcmp(type,'NIM') ||  isempty(condNames) && strcmp(type,'TM') %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
+                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
+                condNames=this.conditionName(patternMatches & typeMatches);
+
+            end
         end
-        
-        
-        
+
+
+
     end
 
     methods(Static)

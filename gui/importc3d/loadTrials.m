@@ -35,7 +35,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         [analogs2,analogsInfo2]=btkGetAnalogs(H2);
         secondFile=true;
     end
-    
+
     %% GRFData
     if info.forces %check to see if there are GRF forces in the trial
         showWarning = false;%must define or else error is thrown when otherwise case is skipped
@@ -69,7 +69,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                             forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
                             units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                             relData=[relData,analogs.(fieldList{j})];
-                            
+
                         case '4' %Other forceplate, loading just in case
                             forceLabels{end+1} = ['FP4',fieldList{j}(end-2:end-1)];
                             units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
@@ -86,7 +86,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                             forceLabels{end+1} = ['FP7',fieldList{j}(end-2:end-1)];
                             units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                             relData=[relData,analogs.(fieldList{j})];
-                            
+
                         otherwise
                             showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output
                     end
@@ -97,7 +97,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         if showWarning
             warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
         end
-        
+
         %Sanity check: offset calibration, make sure that force values from
         %analog pins have zero mode, correct scale units etc.
         try
@@ -165,7 +165,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         catch ME
             warning('loadTrials:GRFs','Could not perform offset check. Proceeding with data as is.')
         end
-        
+
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
         if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
             warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(t)])
@@ -176,7 +176,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         GRFData=[];
     end
     clear relData* raws
-    
+
     %% EMGData (from 2 files!) & Acceleration data
     if info.EMGs
         %Primary file (PC)
@@ -197,7 +197,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
             relData=relData(:,~emptyChannels1);
             EMGList=EMGList1;
-            
+
             %Secondary file (PC)
             relDataTemp2=[];
             idxList2=[];
@@ -217,7 +217,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 EMGList=[EMGList1,EMGList2];
             end
         elseif info.EMGworks==1
-            
+
             [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t});
         end
         %Check if names match with expectation, otherwise query user
@@ -232,13 +232,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 EMGList{k}=aux{1};
             end
         end
-        
+
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
         fieldNames=fields(analogs);
-        
+
         refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
-        
+
         %Check for frequencies between the two PCs
         if secondFile
             if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
@@ -266,7 +266,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         else
             EMGfrequency=analogsInfo.frequency;
         end
-        
+
         %Only keeping matrices of same size to one another:
         if secondFile
             [auxData, auxData2] = truncateToSameLength(relData,relData2);
@@ -275,17 +275,17 @@ for t=cell2mat(info.trialnums) %loop through each trial
         else
             allData=relData;
         end
-        
+
         %Pre-process:
         [refSync] = clipSignals(refSync(:),.1); %Clipping top & bottom samples (1 out of 1e3!)
         refAux=medfilt1(refSync,20);
         %refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
         refAux=medfilt1(diff(refAux),10);
         clear auxData*
-        
+
         syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
         sync=allData(:,syncIdx);
-        
+
         if ~isempty(sync) %Only proceeding with synchronization if there are sync signals
             %Clipping top & bottom 0.1%
             [sync] = clipSignals(sync,.1);
@@ -295,14 +295,18 @@ for t=cell2mat(info.trialnums) %loop through each trial
             aux=medfilt1(diff(aux),10,[],1);
             if secondFile
                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
+%                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2));
                 newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
             end
             [~,timeScaleFactorA,lagInSamplesA,~] = matchSignals(refAux,aux(:,1));
             newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
             if secondFile
                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
+%                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
+%                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
+% %
             end
-            
+
             %Only keeping matrices of same size to one another:
             if secondFile
                 [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
@@ -312,7 +316,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             else
                 allData=newRelData;
             end
-            
+
             %Finding gains through least-squares on high-pass filtered synch
             %signals (why using HPF for gains and not for synch?)
             [refSync] = clipSignals(refSync(:),.1);
@@ -344,7 +348,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 timeScaleFactor=NaN;
                 lagInSamples=NaN;
             end
-            
+
             %Analytic measure of alignment problems
             disp(['Sync complete: mismatch signal energy (as %) was ' num2str(100*E1,3) ' and ' num2str(100*E2,3) '.'])
             disp(['Sync parameters to ref. signal were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's']);
@@ -395,7 +399,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                         error('loadTrials:EMGCouldNotBeSynched','Could not synchronize EMG data, stopping data loading.')
                 end
             end
-            
+
             %Plot to CONFIRM VISUALLY if alignment worked:
             h=figure;
             subplot(2,2,[1:2])
@@ -439,8 +443,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
         else
             warning('No sync signals were present, using data as-is.')
         end
-        
-        
+
+
         %Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
         orderedIndexes=zeros(length(orderedEMGList),1);
         for j=1:length(orderedEMGList)
@@ -460,11 +464,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
         allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
         clear allData* relData* auxData*
-        
+
         %% AccData (from 2 files too!)
         %Primary file
         if info.Nexus==1
-            
+
             relData=[];
             idxList=[];
             fieldList=fields(analogs);
@@ -494,8 +498,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
             if ~isempty(sync)
                 relData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
             end
-            
-            
+
+
             %Secondary file
             relData2=[];
             idxList2=[];
@@ -537,9 +541,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
             else
                 allData=relData;
             end
-            
+
             %Throwing away empty fields (same that were thrown on EMG data)
-            
+
             % Assign names:
             ACCList={};
             for j=1:length(EMGList)
@@ -547,13 +551,13 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 ACCList{end+1}=[EMGList{j} 'y'];
                 ACCList{end+1}=[EMGList{j} 'z'];
             end
-            
+
             accData=orientedLabTimeSeries(allData(1:13:end,:),0,13/EMGfrequency,ACCList,orientation); %Downsampling to ~150Hz, which is much closer to the original 148Hz sampling rate (where does this get upsampled? why?)
             % orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.
         elseif info.EMGworks==1
-            
+
 %             [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
-            Samplingfrequency=analogsInfo.frequency;
+%             Samplingfrequency=analogsInfo.frequency;
             accData=[];%orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
         end
         clear allData* relData* auxData*
@@ -561,7 +565,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         EMGData=[];
         accData=[];
     end
-    
+
     %% MarkerData
     clear analogs* %Save memory space, no longer need analog data, it was already loaded
     if info.kinematics %check to see if there is kinematic data
@@ -569,7 +573,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         relData=[];
         fieldList=fields(markers);
         markerList={};
-        
+
         %Check marker labels are good in .c3d files
         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really
         labelPresent=false(1,length(mustHaveLabels));
@@ -577,7 +581,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             newFieldList{i}=findLabel(fieldList{i});
             labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
         end
-        
+
         %         %if any of the must-have labels are not present, terminate script
         %         %and throw warning.
         %         if any(~labelPresent)
@@ -589,7 +593,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %             ME=MException('loadTrials:markerDataError',['Marker data does not contain:' str '. Edit ''findLabel'' code to fix.']);
         %             throw(ME)
         %         end
-        
+
         %atlernatively,
         if any(~labelPresent)
             missingLabels=find(~labelPresent);
@@ -610,7 +614,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 end
             end
         end
-        
+
         for j=1:length(fieldList)
             if length(fieldList{j})>2 && ~strcmp(fieldList{j}(1:2),'C_')  %Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)
                 relData=[relData,markers.(fieldList{j})];
@@ -628,10 +632,10 @@ for t=cell2mat(info.trialnums) %loop through each trial
     else
         markerData=[];
     end
-    
+
     %% Construct trialData
-    
+
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
     trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);%organize trial data into organized object of class rawTrialData
-    
+
 end

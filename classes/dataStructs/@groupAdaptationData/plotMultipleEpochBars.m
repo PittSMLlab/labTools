@@ -61,6 +61,7 @@ nsub=max(nsubs);
 if removeBaseEpochFlag==1%remove baseline epoch for plotting, but not for stats
     for i=1:length(groups)
         group2{i}=groups{i};
+        groups{i}=groups{i}.removeBadStrides;
         groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
     end
 else group2=groups;
@@ -85,7 +86,7 @@ end
 xData=1:nep+1;xData=xData*(length(groups)+1);xData=xData-length(groups);
 for i=1:length(groups)
     xval(:,i)=xData+(i-1)';
-    
+
 end
 xval=xval(1:end-1,:);
 
@@ -103,7 +104,7 @@ else
     for i=1:length(groups)
         varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
     end
-    
+
 end
 
 %plot each parameter in different axis
@@ -113,26 +114,26 @@ for p=1:length(labels)%each parameter has different axis, eps are plotted in sin
         bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),'FaceColor',colors(i,:),'BarWidth',0.2)
         errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),'LineStyle','none','color','k','LineWidth',2)
         if plotIndividualsFlag==1
-            plot(plotHandles(p),xval,allData(i,p,:,:),'.k','MarkerSize',6)
+            plot(plotHandles(p),xval(:,i)-.3,squeeze(allData(i,p,:,:)),'.','MarkerSize', 15, 'Color',[150 150 150]./255)
         end
     end
-    
-    
+
+
     if isa(eps,'cell')
         set(plotHandles(p),'XTick',mean(xval,1),'XTickLabels',eps{1}.Properties.ObsNames,'FontSize',12)
     else
         set(plotHandles(p),'XTick',mean(xval,2),'XTickLabels',eps.Properties.ObsNames,'FontSize',12)
     end
     title(plotHandles(p),labels{p});
-    
-    
+
+
    if  statsFlag==1
     %perform stats
     [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=groupAdaptationData.AnovaEpochs(group2,legendNames,labels(p),eps,significanceThreshold);
     %determine y positions of sign bars
     yrange=get(gca,'Ylim');
     delta=abs(yrange(1)-yrange(2))/20;
-    
+
     if posthocGroupFlag==1
     elseif posthocEpochFlag==1 && maineff.p(2)<significanceThreshold%indicate signficant differences between epochs for the groups combined
         ymax=max(yrange)+delta;

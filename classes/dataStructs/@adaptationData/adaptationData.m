@@ -719,7 +719,7 @@ classdef adaptationData
                 labelPrefix={labelPrefix};
             end
             if nargin<4 || isempty(padWithNaNFlag)
-                padWithNaNFlag=false;
+                padWithNaNFlag=false; %DMMO 
             end
             labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); %Putting in row form
             aux=this.data.getLabelsThatMatch(['^' labelPrefix{1} '[ ]?\d+$']); %Assuming same suffix for all
@@ -890,7 +890,7 @@ classdef adaptationData
                 data=this.data.getDataAsVector(labels);
             end
             if nargin<4 || isempty(padWithNaNFlag)
-               padWithNaNFlag=false;
+               padWithNaNFlag=true;
             end
             nConds=size(inds{1},2);
             nLabels=size(data,2);
@@ -1015,6 +1015,22 @@ classdef adaptationData
                 refEpoch=[];
             end
            [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
+        end
+        
+        function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)
+            %This is meant to be used with parameters that end in
+            %'s1...s12' as are computed for EMG and angles. The 's' must be
+            %included in the labelPrefixes (to allow for other options too)
+            %See also: groupAdaptationData.getCheckerboardsData
+            
+            if nargin<5 || isempty(flipLR)
+                flipLR=false;
+            end
+         
+            if nargin<4
+                refEpoch=[];
+            end
+            [dataE,dataRef,labels,groups]=this.createSingleSubjGroup.getCheckerboardsData(labelPrefix,epochs,refEpoch,flipLR); %Call onto groupAdaptData method
         end
 
 
