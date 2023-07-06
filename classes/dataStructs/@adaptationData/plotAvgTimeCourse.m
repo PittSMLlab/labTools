@@ -552,7 +552,9 @@ end
 set(gcf,'color','w');
 set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
-    if length(legendStr{:})>10
+
+    if size(legendStr(:),2)>10
+
         legend([Li{:}],[legendStr{:}],'NumColumns',3)
     else
         legend([Li{:}],[legendStr{:}])

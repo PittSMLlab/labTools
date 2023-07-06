@@ -596,6 +596,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 iC=[];
            end
         end
+        
         function [this,iC,iI]=getSym(this)
             [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
             %Then: compute sym/asym data and replace it.
