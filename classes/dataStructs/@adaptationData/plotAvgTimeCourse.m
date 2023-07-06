@@ -153,7 +153,7 @@ legendStr=cell(1);
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3
     poster_colors;
     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
-     colorOrder=[ colorOrder;  colorOrder];
+     colorOrder=[ colorOrder;  colorOrder;colorOrder;  colorOrder;colorOrder;  colorOrder];
 end
 
 lineOrder={'-','--','-.',':'};
@@ -548,7 +548,8 @@ for group=1:Ngroups
 end
 
 %linkaxes(ah,'x')
-%set(gcf,'Renderer','painters');
+set(gcf,'color','w');
+set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
 
     if length(legendStr)>10
