@@ -45,7 +45,7 @@ description=aux(:,2);
         %swing times
         swingTimeSlow=timeSHS2-timeSTO;
         swingTimeFast=timeFHS-timeFTO;
-        %stance times
+        %stance times (includes double supports)
         stanceTimeSlow=timeSTO-timeSHS;
         stanceTimeFast=timeFTO2-timeFHS;
         %double support times
