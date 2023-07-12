@@ -1,4 +1,6 @@
 %PLOTHELPER helper function with static functions to make common plots
+% Input arguments that are OPTIONAL can be skipped or provided by [] or nan.
+%
 % Current support: 1. correlation plot: scatter plots with a best fit
 % regression line (y=mx + b) and text printout of the pearson and spearman
 % correlation results
@@ -32,6 +34,8 @@ classdef PlotHelper
         %compute correlations and plot a figure with subplots of correlations
         %between each columns in x and y data.
         % 
+        % [Example] f = computeAndPlotCorrelations(xs, ys, {'S01','S01'},'Title x and y correlations', {'xlabelColumn1','xlabelColumn12'...},{'ylabelRow1','ylabelRow2',...},true,'C:/Documents/myfigure.png', true)
+        %
         % [OUTPUTARGS]: f, the fingure handle; typically a full figure
         % with subplots.
         % InputArgs: - xData: 2D matrix of data, subjects x columns
@@ -64,10 +68,10 @@ classdef PlotHelper
         %               plotting residual diagnostics of the fitted
         %               regressions.     
 
-            if nargin <=12 %no performKws given
+            if nargin <=12 || isnan(performKws) || isempty(performKws) %no performKws given
                 performKws = false;
             end
-            if nargin <=13 %no performKws given
+            if nargin <=13 || isnan(plotDiagnostic) || isempty(performKws) %no plotDiagnostic given
                 plotDiagnostic = false;
             end
             % calclulate partial corr if controlVar is provided, otherwise regular
@@ -79,11 +83,11 @@ classdef PlotHelper
             if nargin >=10 && ~isempty(controlVar) && ~any(isnan(controlVar),'all')
                 [rho,p] = partialcorr(xData, yData,controlVar,'Rows','complete'); %resulting size x by y
                 [rhoSpearman,pSpearman] = partialcorr(xData, yData,controlVar,'Type','Spearman','Rows','complete');
-                if nargin>=11 && ~isnan(controlVarXIdx) %the variable controlled is part of the xData.
+                if nargin>=11 && ~isempty(controlVarXIdx) && ~any(isnan(controlVarXIdx),'all') %the variable controlled is part of the xData.
                     [rho(controlVarXIdx,:),p(controlVarXIdx,:)] = corr(controlVar, yData,'Rows','complete');
                     [rhoSpearman(controlVarXIdx,:),pSpearman(controlVarXIdx,:)] = corr(controlVar, yData,'Type','Spearman','Rows','complete');
                 end
-                if nargin>=12 && ~isnan(controlVarYIdx) %the variable controlled is part of the yData.
+                if nargin>=12 && ~isempty(controlVarYIdx) && ~any(isnan(controlVarYIdx),'all') %the variable controlled is part of the yData.
                     [rho(:,controlVarYIdx),p(:,controlVarYIdx)] = corr(xData, controlVar,'Rows','complete');
                     [rhoSpearman(:,controlVarYIdx),pSpearman(:,controlVarYIdx)] = corr(xData, controlVar,'Type','Spearman','Rows','complete');
                 end
@@ -95,9 +99,15 @@ classdef PlotHelper
         end
         
         function f = plotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly,rho, p, rhoSpearman, pSpearman, performKws, plotDiagnostic)
-        % plot correlations. the pearson and spearman correlations are
-        % computed ahead of time. 
-        % 
+        % plot correlations (usually when x and y are more than 1dimensional).
+        % if want to plot 1 correlation only, see PlotHelper.plotSingleCorrelation
+        % the pearson and spearman correlations need to be computed and
+        % given as input here. If want the code to compute the
+        % correlations for you, see PlotHelper.computeAndPlotCorrelations
+        %
+        % [Example] f = plotCorrelations(xs, ys, {'S01','S01'},'Title x and y correlations', {'xlabel1','label2'...},{'ylabel','label2',...},true,'C:/Documents/myfigure.png',...
+        %                               true,rhoMatrix, pMatrix, rhoSpearmanMatrix, pSpearmanMatrix)
+        %
         % [OUTPUTARGS]: f, the fingure handle; typically a full figure
         % with subplots.
         %
@@ -121,10 +131,10 @@ classdef PlotHelper
         %            - plotDiagnostic: OPTIONAL. Default False. boolean flag. True if
         %               plotting residual diagnostics of the fitted
         %               regressions. 
-            if nargin <=13 %no performKws given
+            if nargin <=13 || isnan(performKws) || isempty(performKws) %no performKws given
                 performKws = false;
             end
-            if nargin <= 14 %no plotDiagnostic given
+            if nargin <= 14 || isnan(plotDiagnostic) || isempty(plotDiagnostic)%no plotDiagnostic given
                 plotDiagnostic = false;
             end
             colorOrder = PlotHelper.colorOrder; %load colorOrder
@@ -277,6 +287,8 @@ classdef PlotHelper
         %Plot on the current figure (a subplot should have 
         %been opened and configured before calling this function) correlations
         %between x and yToPlot
+        %
+        % [Example]: plotSingleCorrelation(xRow, yRow, {'S01','S02',...})
         % 
         % [OUTPUTARGS]: none, this function simply draws on existing
         % figure.
@@ -332,6 +344,10 @@ classdef PlotHelper
         %connectLine is true or default). Plot on existing figure if a
         %figure is given; otherwise create a new figure.
         % 
+        % [Examples]: barPlotWithIndiv(data,{'S01','S02',...},{'xtickLabel1','tick2'...},'ylabel','title',true,'C:/document/saveMyFig.png')
+        % If want to add jitter to points and not connect them:
+        %      barPlotWithIndiv(data,{'S01','S02',...},'xlabel','ylabel','title',true,'C:/document/saveMyFig.png',figureHandle, true, [], false)
+        %
         % [OUTPUTARGS]: none.
         %
         % [InputArgs]: - dataToPlot: 2d matrix in columns(bars) x subjects
@@ -419,6 +435,12 @@ classdef PlotHelper
         %This function doesn't create a blank figure canvas, plots on the
         %current focused figure.
         % 
+        % [Example] plotCI(xValue, yColumn, 'YDataName', false, true) 
+        % if want to plot multiple CIs in 1 figure:
+        %     for i = 1:10
+        %         plotCI(i, yMatrix(:,i), labels{i}, false, true)
+        %     end
+        %
         % [OUTPUTARGS]: none. 
         % [InputArgs]:    
         %           - x: an integer/double of where along the x-axis to
@@ -434,7 +456,7 @@ classdef PlotHelper
         %           - colorNonZeroRed: OPTIONAL boolean flag to indicate if
         %           CI that doesn't contain 0 should be colored red
         %           (ignoring the given line color command). Default false.
-            if nargin < 6 || ~exist('colorNonZeroRed','var') || isnan(colorNonZeroRed)
+            if nargin < 6 || ~exist('colorNonZeroRed','var') || any(isnan(colorNonZeroRed)) || isempty(colorNonZeroRed)
                 colorNonZeroRed = false;
             end
             hold on;
@@ -468,6 +490,8 @@ classdef PlotHelper
         %variance across all y values). Bottom right: fitted vs actual y to
         %evalute the fit results.
         % 
+        % [Example]: plotRegressionDiagnostics(linearModel, ys, true, 'C:/Documents/saveMyData.png')
+        %
         % [OUTPUTARGS]: none. 
         % [InputArgs]:    
         %           - mdl: a LinearModel object from matlab (regression output)
@@ -514,12 +538,16 @@ classdef PlotHelper
             %Bottom: 95%CI, mean and each bootstrapped value of rho
             %For each pairs of x and y column, get 1 column of 2 figures (2rows). E.g., xData column 2 and yData column 3 will
             %have 2 plots in (5:6,2)
+            %
+            % [Examples]: plotBootStrapCorrSpearman(x,y,{'xlabel1','label2',...},{'ylabel1','ylabel2',...},'title',true,'C:/Documents/saveFolder/myFig.png')
+            %
             % [OUTPUTARGS]: none. 
             % [InputArgs]:    
             %    - xData: 2D matrix of data, subjects x columns
             %    - yData: 2D matrix of data to plot on the yaxis, subjects x columns
             %    - xlabels: cell array of strings for xlabel (per column)
             %    - ylabels: cell aray of strings for ylabel (per row)
+            %    - titleStr: a string for plot title (overall title)
             %    - saveResAndFigure: boolean whether or not to save the
             %            figure
             %    - savePath: the full path (directory and name) to save
@@ -536,9 +564,9 @@ classdef PlotHelper
             %            controlled variable is part of the yData, corresponding
             %            data columns in xData that's the contrlled var. Pass
             %            NaN or omit the arg if the controlled var is not part of the yData.
-            %   - controlVarYIdx: OPTIONAL. figure handle. If not
+            %   - f: OPTIONAL. figure handle. If not
             %   provided, or provide empty, create a new one.
-            if nargin < 8 || isempty(iterations) %iterations default.
+            if nargin < 8 || isempty(iterations) || any(isnan(iterations))%iterations default.
                 iterations = 1000;
             end
             if nargin >= 9 && ~isempty(controlVar) && ~any(isnan(controlVar),'all')%partial correlation
@@ -546,7 +574,7 @@ classdef PlotHelper
             else %regular correlation
                 bootStrpStatement = "bootstat = bootstrp(iterations, @(x,y)corr(x,y,'Type','Spearman','Rows','complete'),xToPlot,yToPlot);";
             end
-            if nargin < 12 || isempty(f)
+            if nargin < 12 || isempty(f) || any(isnan(f))
                 f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
             end
             for rowIdx = 1:size(yData,2) %row
@@ -583,6 +611,8 @@ classdef PlotHelper
         
         function [SigMdlSum] = compileModelSummaries(mdl, SigMdlSum)
             % Generate and save summaries for linear models into SigMdlSum.
+            %
+            % [Example[ [modelSumCell] = compileModelSummaries(newMdl,modelSumCell)
             %
             % [OUTPUTARGS]: SigMdlSum: a cell array of model summaries with
             % table header in the first row. 
@@ -628,6 +658,8 @@ classdef PlotHelper
         
         function tightMargin(ax)
             % Decrease the margin size of the given figure. Adapted from https://www.mathworks.com/matlabcentral/answers/369399-removing-the-grey-margin-of-a-plot
+            %
+            % [Example]: tightMargin(gca)
             %
             % [OUTPUTARGS]: none
             %
