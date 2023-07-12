@@ -1043,24 +1043,17 @@ classdef adaptationData
             %This is a function that change the values of the "bad" muscle to NaN.
             
             %This code was developed by SL and updated by DMMO
-
+ 
             badSubj = this;
             
             for i = 1:numel(badMuscles)
                 
-                
-                badDataIdx=find(contains(badSubj.data.labels, [badMuscles{i},' ']));
-                
+                badDataIdx=find(cellfun(@(x) ~isempty(x),regexp(badSubj.data.labels,['^' badMuscles{i} '[ ]?\d+$'])));
+                        
                 if isempty(badDataIdx)
-                    warning('No muscles were removed. Make sure that you normalize the data first')
+                    warning('Label not found. No muscle removed. Make sure that you normalize the data first')
                     return
                 end
-                
-                if length(badDataIdx)<12
-                    badDataIdxlast=badDataIdx(end)+[1:3];
-                    badDataIdx= [badDataIdx; badDataIdxlast'];
-                end
-                
                 
                 badSubj.data.Data(:,badDataIdx) = nan;
                 
@@ -1069,9 +1062,7 @@ classdef adaptationData
             end
             
         end
-        
-        
-        
+                
     end
 
 

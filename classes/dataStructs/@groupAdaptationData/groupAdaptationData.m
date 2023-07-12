@@ -1099,21 +1099,14 @@
                     badSubj = subjectsToPlot{end}.adaptData{subjIdx};
                     
                     for i = 1:numel(badMuscles{idxToRemove})
-                        
-                        
-                        badDataIdx=find(contains(badSubj.data.labels, {[badMuscles{idxToRemove}{i},' ']}));
+ 
+                        badDataIdx=find(cellfun(@(x) ~isempty(x),regexp(badSubj.data.labels,['^' badMuscles{idxToRemove}{i} '[ ]?\d+$'])));
                         
                         if isempty(badDataIdx)
-                            warning('No muscles were removed. Make sure that you normalize the data first')
+                            warning('Label not found. No muscle removed. Make sure that you normalize the data first')
                             return
                         end
-                        
-                        if length(badDataIdx)<12
-                            badDataIdxlast=badDataIdx(end)+[1:3];
-                            badDataIdx= [badDataIdx; badDataIdxlast'];
-                        end
-                        
-                        
+                       
                         badSubj.data.Data(:,badDataIdx) = nan;
                         
                         disp(['Removing (Setting NaN) of ' badMuscles{idxToRemove}{i} ' from Subject: ' badSubj.subData.ID])
@@ -1127,8 +1120,8 @@
             RemovedData=subjectsToPlot{1}; % from SL code
             
         end
-
     end
+    
     methods(Static)
         % Several groups visualization
         [figHandle,allData]=plotMultipleGroupsBars(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
