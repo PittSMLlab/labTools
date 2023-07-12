@@ -156,6 +156,10 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
         out=cat(out,force);
     end
     
+    %%
+    % If you encounter a bug with a line of code in this section (e.g.,
+    % indexing array out of bounds), comment it out, which will prevent the
+    % overground forces from being processed and output.
     [force_OGFP.Data] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP.Data)
         out=cat(out,force_OGFP);
@@ -165,7 +169,7 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     if ~isempty(force_OGFP_aligned.Data)
         out=cat(out,force_OGFP_aligned);
     end
-    
+    %%%
 end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
