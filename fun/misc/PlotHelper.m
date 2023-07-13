@@ -435,6 +435,7 @@ classdef PlotHelper
         %This function doesn't create a blank figure canvas, plots on the
         %current focused figure.
         % Adapted from: https://www.mathworks.com/matlabcentral/answers/159417-how-to-calculate-the-confidence-interval
+        % Alternative approach see: https://www.mathworks.com/help/stats/prob.normaldistribution.paramci.html
         %
         % [Example] plotCI(xValue, yColumn, 'YDataName', false, true) 
         % if want to plot multiple CIs in 1 figure:
