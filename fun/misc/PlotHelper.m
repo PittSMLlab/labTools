@@ -434,7 +434,8 @@ classdef PlotHelper
         %max), mean, and 95%CI.
         %This function doesn't create a blank figure canvas, plots on the
         %current focused figure.
-        % 
+        % Adapted from: https://www.mathworks.com/matlabcentral/answers/159417-how-to-calculate-the-confidence-interval
+        %
         % [Example] plotCI(xValue, yColumn, 'YDataName', false, true) 
         % if want to plot multiple CIs in 1 figure:
         %     for i = 1:10
@@ -462,7 +463,7 @@ classdef PlotHelper
             hold on;
             N = length(y);
             yMean = mean(y);
-            ySEM = std(y);
+            ySEM = std(y)/sqrt(N);
             CI95 = tinv([0.025 0.975], N-1);                    % Calculate 95% Probability Intervals Of t-Distribution
             yCI95 = bsxfun(@times, ySEM, CI95(:));
             yCI95 = yCI95 + yMean;
