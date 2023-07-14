@@ -70,6 +70,12 @@ elseif  ~isempty(strfind(fieldList{j},'Analog16_A'))
     analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
     analogsInfo.frequency= Fs(j)/r;
     analogsInfo.units.(fieldList{j})='V';
+elseif  ~isempty(strfind(fieldList{j},'Analog_A16'))
+    relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+    idxList(end+1)=str2num((fieldList{j}(strfind(fieldList{j},'Analog_A16')+8:end)));
+    analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+    analogsInfo.frequency= Fs(j)/r;
+    analogsInfo.units.(fieldList{j})='V';
 end
 end
 emptyChannels1=cellfun(@(x) isempty(x),infoEMGList1);
