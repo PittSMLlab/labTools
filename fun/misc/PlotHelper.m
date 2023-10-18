@@ -194,7 +194,7 @@ classdef PlotHelper
                         text(plotFitX(1),txtY(2)-range(txtY)*0.35,sprintf('K-W p=%.4f',kws),'FontSize',40,'Color',textColorKws)
                     end
                     %0.15, 25 for top; 7 and .8 for btm
-                    text(plotFitX(1),txtY(2)-range(txtY)*0.65,sprintf('RobustR=%.2f',linFit.Rsquared.Ordinary^0.5),'FontSize',40,'Color',textColorPearson)
+%                     text(plotFitX(1),txtY(2)-range(txtY)*0.65,sprintf('RobustR=%.2f',linFit.Rsquared.Ordinary^0.5),'FontSize',40,'Color',textColorPearson)
                     text(plotFitX(1),txtY(2)-range(txtY)*0.75,sprintf('P:r=%.3f,p=%.4f',rho(colIdx, rowIdx),p(colIdx, rowIdx)),'FontSize',40,'Color',textColorPearson)
                     text(plotFitX(1),txtY(2)-range(txtY)*0.85,sprintf('S:\\rho=%.3f,p=%.4f',rhoSpearman(colIdx, rowIdx),pSpearman(colIdx, rowIdx)),'FontSize',40,'Color',textColorSpearman)
                     xlim(plotFitX)
@@ -272,7 +272,7 @@ classdef PlotHelper
                 figure(f)
                 set(gcf,'renderer','painters')
                 saveas(f, [savePath '.fig'])
-                s = findobj('type','legend'); delete(s)
+%                 s = findobj('type','legend'); delete(s)
                 saveas(f, [savePath '.png'])
                 if plotDiagnostic
                     figure(fDiagnostic)
@@ -350,7 +350,7 @@ classdef PlotHelper
         %
         % [OUTPUTARGS]: none.
         %
-        % [InputArgs]: - dataToPlot: 2d matrix in columns(bars) x subjects
+        % [InputArgs]: - dataToPlot: 2d matrix in bars(category to plot) x subjects
         %              - subjectIDs: cell array of strings of subject IDs used in
         %              legend
         %              - xlabelStrings: cell array of the xtick labels.
@@ -371,16 +371,16 @@ classdef PlotHelper
         %              see MATLAB documentation). Default rotate through PlotHelper.colorOrder
         %              - connectLine: OPTIONAL. Default true. Connect the
         %              dots from the same subjects with a line across bars.
-            if nargin < 8 || isempty(f) || isnan(f) %no figure handle provided, create a new figure; if figure is provided, simply plot
+            if nargin < 8 || isempty(f) || isnan(double(f)) %no figure handle provided, create a new figure; if figure is provided, simply plot
                 f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
             end
             if nargin < 9 || isempty(addJitter) || isnan(addJitter)
                 addJitter = false;
             end
             if nargin < 11 || isempty(connectLine) || isnan(connectLine) || connectLine
-                markerSymbol = 'o-'; %default connect line
+                markerSymbol = '.-'; %default connect line
             else %specified not connect line, plot symbol only.
-                markerSymbol = 'o'; 
+                markerSymbol = '.'; 
             end
             colorOrder = PlotHelper.colorOrder;
             colorLength = size(colorOrder, 1);
@@ -401,9 +401,9 @@ classdef PlotHelper
                     jitter = 0.1;
                 end
                 if nargin >= 10 && ~any(isnan(MarkerColor)) && ~isempty(MarkerColor)
-                    plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',MarkerColor,'LineWidth',2.5,'MarkerSize',10,'DisplayName',subjectIDs{dIdx});
+                    plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',MarkerColor,'LineWidth',2.5,'MarkerSize',17,'DisplayName',subjectIDs{dIdx});
                 else
-                    plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',colorOrder(mod(dIdx-1, colorLength)+1,:),'LineWidth',2.5,'MarkerSize',10,'DisplayName',subjectIDs{dIdx});
+                    plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',colorOrder(mod(dIdx-1, colorLength)+1,:),'LineWidth',2.5,'MarkerSize',17,'DisplayName',subjectIDs{dIdx});
                 end
             end
             legend();%,'Location','bestoutside') %legend on 2nd plot only
@@ -429,7 +429,7 @@ classdef PlotHelper
             end
         end
         
-        function plotCI(x, y, lineColor, dataLabel, showMeanCILegend, colorNonZeroRed)
+        function plotCI(x, y, lineColor, dataLabel, showMeanCILegend, colorNonZeroRed, typeOfCI)
         %Plot confidence interval of the y, and printout the y range (min,
         %max), mean, and 95%CI.
         %This function doesn't create a blank figure canvas, plots on the
@@ -440,7 +440,9 @@ classdef PlotHelper
         % [Example] plotCI(xValue, yColumn, 'YDataName', false, true) 
         % if want to plot multiple CIs in 1 figure:
         %     for i = 1:10
-        %         plotCI(i, yMatrix(:,i), labels{i}, false, true)
+        %         plotCI(i, yMatrix(:,i), labels{i}, false, true,'95data')
+        %         %this plots the 95% of the data (e.g. applicable if you just
+        %         ran a bootstrapping analysis)
         %     end
         %
         % [OUTPUTARGS]: none. 
@@ -458,16 +460,35 @@ classdef PlotHelper
         %           - colorNonZeroRed: OPTIONAL boolean flag to indicate if
         %           CI that doesn't contain 0 should be colored red
         %           (ignoring the given line color command). Default false.
+        %           if want to skip, use nan or [].
+        %           - typeOfCI: OPTIONAL string argument of what kind of CI
+        %           we want to plot. Accepted args: 'tinv','95data'
+        %           (words need to be exact, it would be nice if matlab has
+        %           enum type)
+        %           default plot 95% interval calculated from
+        %           the data (Using tinv). Notice that if it's data from
+        %           bootstrapping, the CI is 95% of the data without the
+        %           need for tinv again. 
             if nargin < 6 || ~exist('colorNonZeroRed','var') || any(isnan(colorNonZeroRed)) || isempty(colorNonZeroRed)
                 colorNonZeroRed = false;
+            end
+            if nargin < 7 || ~exist('typeOfCI','var') || any(isnan(typeOfCI)) || isempty(typeOfCI)
+                typeOfCI = 'tinv';
             end
             hold on;
             N = length(y);
             yMean = mean(y);
-            ySEM = std(y)/sqrt(N);
-            CI95 = tinv([0.025 0.975], N-1);                    % Calculate 95% Probability Intervals Of t-Distribution
-            yCI95 = bsxfun(@times, ySEM, CI95(:));
-            yCI95 = yCI95 + yMean;
+            if strcmp(typeOfCI,'tinv') %this is the default 95% of CI computed from the data and its spread
+                ySEM = std(y)/sqrt(N);
+                CI95 = tinv([0.025 0.975], N-1);                    % Calculate 95% Probability Intervals Of t-Distribution
+                yCI95 = bsxfun(@times, ySEM, CI95(:));
+                yCI95 = yCI95 + yMean;
+            elseif strcmp(typeOfCI,'95data')
+                yCI95 = prctile(y, [2.5 97.5]);
+            else
+                error('\nInvalid typeOfCI plotted. Only tinv or 95data is accepted.\n')
+            end
+%             yCI95 = mean(y) + [-std(y), std(y)]; %temp to plot std
             if colorNonZeroRed && (yCI95(1) > 0 || yCI95(2) < 0)
                 lineColor = 'r';
             end
@@ -626,7 +647,7 @@ classdef PlotHelper
             alpha = 0.05;
 %             trendingThreshold = 0.1;
             if nargin < 2 %no existing mdlSum array provided, intialize, first row is header.
-                SigMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','CogVarBeta','pValue','ResidualAbnormal(0Normal)','LackOfFit(1lack)','Model'};
+                SigMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','CogVarBeta','pValue','AIC','BIC','ResidualAbnormal(0Normal)','LackOfFit(1lack)','RobustOpt','NumSub','Model'};
             end
 %             if nargin < 3 %no existing mdlSum array provided, intialize, first row is header.
 %                 trendingMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','ResidualAbnormal(0Normal)'};
@@ -645,9 +666,14 @@ classdef PlotHelper
             coefPVal = mdl.Coefficients.pValue;
             sigCoef = mdl.CoefficientNames(coefPVal<= alpha);
             sigCoef = strjoin(sigCoef);
-%             [h,~] = kstest(mdl.Residuals.Studentized);
-            h=nan;
-            cogVarIdx = contains(mdl.CoefficientNames,{'traila','trailb','MMSE_total'});
+            try
+                [h,~] = kstest(mdl.Residuals.Studentized);
+            catch
+                warning('\nCannot compute normality test on residual, reporting NaN.')
+                mdl.Formula
+                h=nan;
+            end
+            cogVarIdx = contains(mdl.CoefficientNames,{'TMTBMinusTMTA','traila','trailb','MMSE_total'});
             if any(cogVarIdx)
                 cogVarBeta = mdl.Coefficients{mdl.CoefficientNames(cogVarIdx),'Estimate'};
             else
@@ -655,7 +681,7 @@ classdef PlotHelper
             end
             
             SigMdlSum(end+1,:) = {mdl.Formula.ResponseName,mdl.Formula.LinearPredictor,sigCoef,mdl.Rsquared.Ordinary,mdl.Rsquared.Adjusted,...
-                cogVarBeta,mdlStats{'Model','pValue'},h,lackOfFit,mdl};
+                cogVarBeta,mdlStats{'Model','pValue'},mdl.ModelCriterion.AIC, mdl.ModelCriterion.BIC,h,lackOfFit,mdl.Robust,mdl.NumObservations,mdl};
         end
         
         function tightMargin(ax)
