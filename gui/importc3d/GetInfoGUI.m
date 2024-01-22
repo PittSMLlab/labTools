@@ -322,8 +322,6 @@ state = get(hObject,'Value');
 if state
     set(handles.Nexus,'enable','on')
     set(handles.EMGworks,'enable','on')
-    %     set(handles.secfile_browse,'enable','on')
-    %     set(handles.secfileloc,'enable','on')
     for i=1:16
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
@@ -369,11 +367,13 @@ state = get(hObject,'Value');
 if state
     set(handles.EMGworksFile1_search,'enable','on')
     set(handles.EMGworksLocation,'enable','on')
+    
     set(handles.SecFileSearchEMGworks,'enable','on')
     set(handles.SecondEMGworksLocation,'enable','on')
 else
     set(handles.EMGworksFile1_search,'enable','off')
     set(handles.EMGworksLocation,'enable','off')
+ 
     set(handles.SecFileSearchEMGworks,'enable','on')
     set(handles.SecondEMGworksLocation,'enable','on')
 end
@@ -716,8 +716,19 @@ if file~=0
            set(handles.schenleyLab,'Value',subInfo.schenleyLab);
         end
         
+        if isfield(subInfo, 'emg_check')
+            set(handles.emg_check,'Value',subInfo.EMGs);
+        else
+            set(handles.emg_check,'Value',subInfo.EMGs);
+        end
+
+%         if ~handles.emg_check.Value~=0
+%             set(handles.emg_check,'enable','on');
+%         end
+
+
         if  isfield(handles, 'Nexus')
-%             set(handles.Nexus,'Value',subInfo.Nexus);
+            set(handles.Nexus,'Value',subInfo.Nexus);
             if ~handles.Nexus.Value~=0
                 set(handles.Nexus,'enable','on');
             end
@@ -725,16 +736,12 @@ if file~=0
         end
         
         if isfield(handles, 'EMGworks')
-%             set(handles.EMGworks,'Value',subInfo.EMGworks);
+            set(handles.EMGworks,'Value',subInfo.EMGworks);
             if ~handles.EMGworks.Value~=0
                 set(handles.EMGworks,'enable','on');
             end
         else
             set(handles.EMGworks,'enable','off');
-        end
-        
-        if ~handles.emg_check.Value~=0
-            set(handles.emg_check,'enable','on');
         end
         
         
@@ -1547,9 +1554,6 @@ function schenleyLab_KeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-
-
-
 
 % % --- Executes during object creation, after setting all properties.
 function type16_CreateFcn(hObject, eventdata, handles)

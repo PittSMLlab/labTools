@@ -228,7 +228,7 @@ if ~(nargin>1 && ignoreErrors)
     end   
     
     
-    if ~isempty(out.secEMGworksdir_location) && ~exist(out.secEMGworksdir_location,'dir')
+    if ~isempty(out.secEMGworksdir_location) && out.secEMGworksdir_location~=0 && ~exist(out.secEMGworksdir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.SecondEMGworksLocation)
