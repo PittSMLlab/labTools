@@ -20,13 +20,15 @@ classdef trialMetaData
         rawDataFilename=''; %string or cell array of strings, if there are many files
         type='';
         schenleyLab='';
+        perceptualTasks='';
+        datlog='';
     end
 
     
     methods
         %Constructor
         %trialMetaData(desc,obs,refLeg,cond,filename,type)
-        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab)                  
+        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab,perceptualTasks,datlog)                  
             if isa(name,'char')
                 this.name=name;
             end
@@ -67,6 +69,19 @@ classdef trialMetaData
             else
                 this.schenleyLab=0;
                 warning('Assuming this data was not collected on Schenley lab. This will only affect overground trial turn removal.')
+            end
+            if nargin>8 && (isa(perceptualTasks,'double'))
+                this.perceptualTasks=perceptualTasks;
+            else
+                this.perceptualTasks=0;
+                warning('Assuming this experiment does not have any perceptual tasks (2AFC tasks).')
+            end
+            if nargin>9 && (isa(datlog,'struct'))
+                this.datlog = datlog;
+                this.datlog = this.datlog.datlog;
+            else
+                this.datlog='';
+    
             end
             
         end

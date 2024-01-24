@@ -60,7 +60,7 @@ out.EMGs = get(handles.emg_check,'Value');
 out.Nexus = get(handles.Nexus,'Value');
 out.EMGworks = get(handles.EMGworks,'Value');
 out.schenleyLab =  get(handles.schenleyLab,'Value');
-
+out.perceptualTasks =  get(handles.perceptualTasks,'Value');
 
 if isfield(handles,'secfolder_location') && out.Nexus==1
     out.secdir_location = handles.secfolder_location;

@@ -31,12 +31,14 @@ classdef experimentMetaData
         trialsInCondition={};
         Ntrials=[];
         SchenleyPlace = [];
+        PerceptualTasks = [];
+        datlog;
     end
 
 
     methods
         %Constructor
-        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials,SchenleyPlace)
+        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials,SchenleyPlace,PerceptualTasks,datlog)
             this.ID=ID;
             if nargin>1
                 this.date=date;
@@ -67,11 +69,17 @@ classdef experimentMetaData
             end
 
             if nargin>8
-
                 this.SchenleyPlace = SchenleyPlace;
-
             end
 
+            if nargin>9
+                this.PerceptualTasks = PerceptualTasks;
+            end   
+
+            if nargin>10
+                this.datlog = datlog;
+            end     
+         
             %Check that conditions do not include interleaved or repeated trials:
             [conditionOrder]=this.validateTrialsInCondition;
             %Sort conditions according to trial numbers:
@@ -149,6 +157,18 @@ classdef experimentMetaData
         function this=set.SchenleyPlace(this,SchenleyPlace)
             if isa(SchenleyPlace,'double')
                 this.SchenleyPlace=SchenleyPlace;
+            end
+        end
+
+        function this=set.PerceptualTasks(this,PerceptualTasks)
+            if isa(PerceptualTasks,'double')
+                this.PerceptualTasks=PerceptualTasks;
+            end
+        end
+
+        function this=set.datlog(this,datlog)
+            if isa(datlog,'cell')
+                this.datlog=datlog;
             end
         end
 

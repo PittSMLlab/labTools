@@ -120,7 +120,8 @@ for t=cell2mat(info.trialnums) %loop through each trial
                     iii=find(cellfun(@(x) ~isempty(x),regexp(aux,['Pin_' idx '$'])));
                     raw=analogs.(aux{iii});
                     proc=relData(:,k);
-                    figure; plot(raw,proc,'.')
+                    % figure; plot(raw,proc,'.') % Finally found were the
+                    % plots in the c3d2mat process were coming from
                     rel=find(proc~=0);
                     if ~isempty(rel)
                         m(j)=4*prctile(abs(proc(rel)),1); %This can be used for thresholding
@@ -143,11 +144,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
                             error('');
                     end
                     if differenceInForceUnits(j)>ttol
-                        figure
-                        hold on
-                        plot(raw(rel),proc(rel),'.')
-                        plot([-.01 .01],([-.01 .01]+offset(j))*gain(j))
-                        hold off
+                        % figure % Commented out by MGR 01/24/24
+                        % hold on
+                        % plot(raw(rel),proc(rel),'.')
+                        % plot([-.01 .01],([-.01 .01]+offset(j))*gain(j))
+                        % hold off
                         %a=questdlg(['When loading ' list{j} ' there appears to be a non-zero mode (offset). Calculated offset is ' num2str(differenceInForceUnits(j)) ' ' units '. Please confirm that you want to subtract this offset.']);
                         a='No';
                         switch a
@@ -633,6 +634,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         markerData=[];
     end
 
+    
     %% Construct trialData
 
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
