@@ -1,4 +1,4 @@
-function events = getEvents(trialData,angleData)
+function events = getEvents(trialData,angleData,perceptualFlag)
 
 file=getSimpleFileName(trialData.metaData.rawDataFilename);
 
@@ -119,9 +119,49 @@ else %Treadmill trial
         RHSeventKin(round((find(kinRHS)-1)*CF+1))=true;
         LTOeventKin(round((find(kinLTO)-1)*CF+1))=true;
         RTOeventKin(round((find(kinRTO)-1)*CF+1))=true;
+
+        if perceptualFlag == 1 % If your code is breaking, I am iterating so just comment this out
+
+            infoLHSevent = find(LHSeventForce==1)./trialData.GRFData.sampFreq; %This has information on the time of each even so its possible to compare to datalog information
+            infoRHSevent = find(RHSeventForce==1)./trialData.GRFData.sampFreq;
+
+            [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
+
+            % Actual frame number for the stride whose time is closer to
+            % the perceptual trial start and end cues
+            infoLHSevent = find(LHSeventForce==1); 
+            infoRHSevent = find(RHSeventForce==1);
+            frameLHSstartCue =  infoLHSevent(LHSstartCue ~= 0)';
+            frameLHSendCue =  infoLHSevent(LHSstopCue ~= 0)';
+            frameRHSstartCue =  infoRHSevent(RHSstartCue ~= 0)';
+            frameRHSendCue =  infoRHSevent(RHSstopCue ~= 0)';
+
+            % Initialize the matrices in zeros
+            percStartCueL = zeros(1, length(LHSeventForce));
+            percStartCueR = zeros(1, length(LHSeventForce));
+            percEndCueL = zeros(1, length(LHSeventForce));
+            percEndCueR = zeros(1, length(LHSeventForce));
+
+            % Add logical value where there is an event related to the cues
+
+            percStartCueL(frameLHSstartCue) = true;
+            percStartCueR(frameRHSstartCue) = true;
+            percEndCueL(frameLHSendCue) = true;
+            percEndCueR(frameRHSendCue) = true;                    
+
+
+        end
+
+
+
     end
 end
 
-events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])...
+if perceptualFlag == 1
+    events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin,percStartCueL',percEndCueL',percStartCueR',percEndCueR'])...
+    ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO','percStartL','percEndL','percStartR','percEndR'});
+else
+    events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])...
     ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO'});
+end
 

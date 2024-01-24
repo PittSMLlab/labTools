@@ -12,7 +12,6 @@ function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)
 %rawExpData: an unprocessed instance of the experimentData class
 %
 %See also: getTrialMetaData, experimentData, experimentData.process
-
 if nargin<2 || isempty(eventClass)
     eventClass='';%default, will choose based on trial type TM or OG
 end
@@ -22,11 +21,12 @@ diaryFileName=[info.save_folder filesep info.ID 'loading.log'];
 diary(diaryFileName)
 %% Determine Experiment Date
 expDate = labDate(info.day,info.month,info.year);%labDate is a labTools class
-%% Experiment info
 
-expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-    info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
-%Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+% %% Experiment info
+% 
+% expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
+%     info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+% %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
 
 %% Subject info
 
@@ -83,6 +83,24 @@ end
 
 % Load trials
 rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
+
+if info.perceptualTasks == 1
+    datlog = {{}};
+    for trial=1:length(rawTrialData)
+        if ~isempty(rawTrialData{trial})
+            datlog{trial}=rawTrialData{trial}.metaData.datlog;
+        else
+            datlog{trial}={};
+        end    
+    end
+    expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
+    info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks, datlog);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+else
+    % Experiment info
+    expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
+        info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+    %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+end
 
 rawExpData=experimentData(expMD,subData,rawTrialData);
 

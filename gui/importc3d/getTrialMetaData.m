@@ -28,8 +28,18 @@ for cond = sort(info.cond)
         %basename11,...
         if t<10
             filename = [dirStr filesep basename  '0' num2str(t)];
+            if info.perceptualTasks ==1
+                filenameDatlog = [info.dir_location '\datlogs\Trial'  '0' num2str(t)];
+                % Upload the datalog for the specifica condition   
+                info.datlog{cond} = load([filenameDatlog '.mat']);
+            end
         else
             filename = [dirStr filesep basename num2str(t)];
+            if info.perceptualTasks ==1
+                filenameDatlog = [info.dir_location '\datlogs\Trial' num2str(t)];
+                % Upload the datalog for the specifica condition   
+                info.datlog{cond} = load([filenameDatlog '.mat']);
+            end
         end
         
         fileList{t}=filename;
@@ -48,9 +58,10 @@ for cond = sort(info.cond)
         if ~isfield(info,'trialObs')
             info.trialObs=cell(info.numoftrials,1);
         end
-        % constructor: (name,desc,obs,refLeg,cond,filename,type)
+
+               % constructor: (name,desc,obs,refLeg,cond,filename,type)
         trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-            info.trialObs{t},info.refLeg,cond,filename,info.type{cond}, info.schenleyLab);        
+            info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.datlog{cond});    
     end 
    
 end

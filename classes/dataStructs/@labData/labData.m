@@ -245,7 +245,7 @@ classdef labData
             angleData = calcLimbAngles(this);
             
             % 4) Calculate events from kinematics or force if available
-            events = getEvents(this,angleData);
+            events = getEvents(this,angleData,this.metaData.perceptualTasks); % Last argument is the perceptual task flag
             
             % 5) If 'beltSpeedReadData' is empty, try to generate it
             % from foot markers, if existent
