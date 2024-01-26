@@ -146,14 +146,21 @@ else %Treadmill trial
 
             percStartCueL(frameLHSstartCue) = true;
             percStartCueR(frameRHSstartCue) = true;
+            % percEndCueL(frameLHSendCue) = true; % Commented out by MGR
+            % 01/25/2024 because I do not want exactly the time of the end
+            % cue, but after the ramp down
+            % percEndCueR(frameRHSendCue) = true;  
+
+            for i=1:length(frameLHSendCue) % I want this frames to be shifted to 4 strides after given the ramp down after the perceptual task
+                idx=find(LHSeventForce(frameLHSendCue(i):end)==1,4);
+                frameLHSendCue(i) = frameLHSendCue(i)+idx(end)-1;
+                idx2=find(RHSeventForce(frameRHSendCue(i):end)==1,4);
+                frameRHSendCue(i) = frameRHSendCue(i)+idx2(end)-1;
+
+            end
             percEndCueL(frameLHSendCue) = true;
-            percEndCueR(frameRHSendCue) = true;                    
-
-
+            percEndCueR(frameRHSendCue) = true;  
         end
-
-
-
     end
 end
 

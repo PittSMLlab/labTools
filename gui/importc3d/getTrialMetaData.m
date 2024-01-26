@@ -58,10 +58,15 @@ for cond = sort(info.cond)
         if ~isfield(info,'trialObs')
             info.trialObs=cell(info.numoftrials,1);
         end
-
+        
+         if info.perceptualTasks ==1
                % constructor: (name,desc,obs,refLeg,cond,filename,type)
-        trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-            info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.datlog{cond});    
+            trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
+                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.datlog{cond});   
+         else
+            trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
+                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks); 
+         end
     end 
    
 end
