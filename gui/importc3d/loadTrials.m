@@ -18,7 +18,7 @@ function trials=loadTrials(trialMD,fileList,secFileList,info)
 orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs! For use in biomechanics calculations
 
 %Create list of expected/accepted muscles:
-orderedMuscleList={'PER','TA','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
+orderedMuscleList={'PER','TA','TAP','TAD','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
 orderedEMGList={};
 for j=1:length(orderedMuscleList)
     orderedEMGList{end+1}=['R' orderedMuscleList{j}];
