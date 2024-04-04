@@ -52,8 +52,8 @@ classdef processedLabData < labData
     methods
 
         %Constructor:
-        function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData) %All arguments are mandatory
-            if nargin<15 %metaData does not get replaced!
+        function this=processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin) %All arguments are mandatory
+            if nargin<16 %metaData does not get replaced!
                markerData=[];
                EMGData=[];
                GRFData=[];
@@ -68,8 +68,9 @@ classdef processedLabData < labData
                COPData=[];
                COMData=[];
                jointMomentsData=[];
+               HreflexPin=[];
             end
-            this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches);
+            this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin);
             this.gaitEvents=events;
             this.procEMGData=procEMG;
             this.angleData=angleData;
