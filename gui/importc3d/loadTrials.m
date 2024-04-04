@@ -566,8 +566,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
         EMGData=[];
         accData=[];
     end
-
-    
+   
     %% Add H-Reflex Stimulator Pin if exists (new expeirmental feature introduced in April 2024)
     relData=[];
     stimLabels ={};
@@ -587,7 +586,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
 
         %sanity check, the # of frames should match GRF data
         if (GRFData.Length ~= HreflexStimPinData.Length)
-            warning(['Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.'])
+            error('Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.')
         end
     else
         %This is needed to work with expeirments that doesn't have this pin.
