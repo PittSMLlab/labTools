@@ -6,7 +6,7 @@
   <meta name="keywords" content="removeBiasV3">
   <meta name="description" content="removeBias('condition') or removeBias({'Condition1','Condition2',...})">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../../m2html.css">
 </head>
@@ -46,7 +46,7 @@ trialType is accepted</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li></ul>
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
@@ -73,7 +73,7 @@ This function is called by:
 0016 
 0017 conds=this.metaData.conditionName;
 0018 <span class="keyword">if</span> nargin&lt;2 || isempty(refConditions)
-0019     warning(<span class="string">'No condition names passed to removeBiasV2, will find reference conditions by name search.'</span>)
+0019     warning(<span class="string">'No condition names passed to removeBiasV3, will find reference conditions by name search.'</span>)
 0020     refConditions=[];
 0021 <span class="keyword">end</span>
 0022 <span class="comment">%if nargin&gt;1 &amp;&amp; ~isempty(conditions) %Ideally, number of conditions given should be the same as the amount of types that exist (i.e. one for OG, one for TM, ...)</span>
@@ -106,61 +106,54 @@ This function is called by:
 0049     <span class="keyword">else</span>
 0050         baseCond=refConditions{itype};
 0051     <span class="keyword">end</span>
-0052     <span class="comment">%Remove baseline tendencies from all itype trials</span>
-0053     <span class="keyword">if</span> ~isempty(baseCond)
-0054         <span class="keyword">switch</span> upper(types{itype})
-0055             <span class="keyword">case</span> <span class="string">'OG'</span>
-0056                 <span class="keyword">if</span> normalizeFlag==0
-0057                     <span class="keyword">try</span>
-0058                         baseTrials=this.getTrialsInCond(baseCond);
-0059                         newData(:,:)=removeOGbias(this,allTrials,baseTrials);
-0060                         baseValues(itype,:)=NaN; <span class="comment">%Need to replace this with the value actually extracted from OG trials</span>
-0061                     <span class="keyword">catch</span>
-0062                         error(<span class="string">'Failed to remove OG bias. Likely problem is that bias was already removed for this adaptationData object.'</span>)
-0063                     <span class="keyword">end</span>
-0064                 <span class="keyword">end</span> <span class="comment">%Nop for normalizeBias in OG trials</span>
-0065             
-0066             <span class="keyword">otherwise</span> <span class="comment">%'TM' and any other</span>
-0067                 base=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateData_v2</a>(this.removeBadStrides,labels,baseCond,0,-40,5,10); <span class="comment">%Last 40, exempting very last 5 and first 10</span>
-0068                 base=nanmean(squeeze(base{1}));
-0069                 [data, inds]=this.getParamInTrial(labels,allTrials);
-0070                 <span class="keyword">if</span> normalizeFlag==0
-0071                     <span class="comment">%added lines to ensure that if certain parameters never</span>
-0072                     <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
-0073                     <span class="comment">%as NaN from the bsxfun @minus.</span>
-0074                     <span class="comment">%data(isnan(data))=-100000;</span>
-0075                     base(isnan(base))=0;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
-0076                     newData(inds,:)=bsxfun(@minus,data,base); <span class="comment">%Substracting baseline</span>
-0077                 <span class="keyword">else</span>
-0078                     base(isnan(base))=1;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
-0079                     newData(inds,:)=bsxfun(@rdivide,data,base); <span class="comment">%Dividing by baseline</span>
-0080                 <span class="keyword">end</span>
-0081                 newData(isnan(data))=nan;
-0082                 base(base==0)=nan;
-0083                 baseValues(itype,:)=base;
-0084         <span class="keyword">end</span>
-0085     <span class="keyword">else</span>
-0086         warning([<span class="string">'No '</span> types{itype} <span class="string">' baseline trials detected. Bias not removed from '</span> types{itype} <span class="string">' trials.'</span>])
-0087         [~, inds]=this.getParamInTrial(labels,allTrials);
-0088         newData(inds,:)=this.data.Data(inds,:);
-0089     <span class="keyword">end</span>
-0090 <span class="keyword">end</span>
-0091 <span class="comment">%fix any parameters that should not have bias removal</span>
-0092 [~,idxs]=this.data.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>,<span class="string">'direction'</span>});
-0093 <span class="keyword">if</span> ~isempty(idxs)
-0094     newData(:,idxs(idxs&gt;0))=this.data.Data(:,idxs(idxs&gt;0));
+0052     <span class="keyword">if</span> length(baseCond)&gt;1
+0053         warning(<span class="string">'More than one base condition was provided/found. Using only the first one.'</span>)
+0054         disp(<span class="string">'List of baseline conditions provided:'</span>)
+0055         disp(baseCond)
+0056         baseCond=baseCond{1};
+0057     <span class="keyword">end</span>
+0058     <span class="comment">%Remove baseline tendencies from all itype trials</span>
+0059     <span class="keyword">if</span> ~isempty(baseCond)
+0060         <span class="comment">% CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline</span>
+0061         base=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this.removeBadStrides,labels,baseCond,0,-40,5,10); <span class="comment">%Last 40, exempting very last 5 and first 10</span>
+0062         base=nanmean(squeeze(base{1}));
+0063         [data, inds]=this.getParamInTrial(labels,allTrials);
+0064         <span class="keyword">if</span> normalizeFlag==0
+0065             <span class="comment">%added lines to ensure that if certain parameters never</span>
+0066             <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
+0067             <span class="comment">%as NaN from the bsxfun @minus.</span>
+0068             base(isnan(base))=0;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0069             newData(inds,:)=bsxfun(@minus,data,base); <span class="comment">%Substracting baseline</span>
+0070             base(base==0)=nan;
+0071         <span class="keyword">else</span>
+0072             base(isnan(base))=1;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0073             newData(inds,:)=bsxfun(@rdivide,data,base); <span class="comment">%Dividing by baseline</span>
+0074             base(base==1)=nan;
+0075         <span class="keyword">end</span>
+0076         baseValues(itype,:)=base;
+0077     
+0078     <span class="keyword">else</span>
+0079         warning([<span class="string">'No '</span> types{itype} <span class="string">' baseline trials detected. Bias not removed from '</span> types{itype} <span class="string">' trials.'</span>])
+0080         [~, inds]=this.getParamInTrial(labels,allTrials);
+0081         newData(inds,:)=this.data.Data(inds,:);
+0082     <span class="keyword">end</span>
+0083 <span class="keyword">end</span>
+0084 <span class="comment">%fix any parameters that should not have bias removal</span>
+0085 [~,idxs]=this.data.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>,<span class="string">'direction'</span>});
+0086 <span class="keyword">if</span> ~isempty(idxs)
+0087     newData(:,idxs(idxs&gt;0))=this.data.Data(:,idxs(idxs&gt;0));
+0088 <span class="keyword">end</span>
+0089 
+0090 <span class="comment">%Construct parameterSeries and maintain backwards compatibility:</span>
+0091 <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>)
+0092     newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
+0093 <span class="keyword">else</span>
+0094     newParamData=parameterSeries(newData,labels,this.data.hiddenTime,this.data.description);
 0095 <span class="keyword">end</span>
-0096 
-0097 <span class="comment">%Construct parameterSeries and maintain backwards compatibility:</span>
-0098 <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>)
-0099     newParamData=paramData(newData,labels,this.data.indsInTrial,this.data.trialTypes);
-0100 <span class="keyword">else</span>
-0101     newParamData=parameterSeries(newData,labels,this.data.hiddenTime,this.data.description);
-0102 <span class="keyword">end</span>
-0103 newThis=<a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
-0104 typeList=types;
-0105 
-0106 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0096 newThis=<a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
+0097 typeList=types;
+0098 
+0099 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

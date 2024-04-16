@@ -6,7 +6,7 @@
   <meta name="keywords" content="processedTrialData">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -41,7 +41,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData);</a></li></ul>
+<li><a href="#_sub1" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin);</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="processedTrialData.html" class="code" title="">processedTrialData</a> &lt; processedLabData
@@ -60,9 +60,9 @@ This function is called by:
 0014     methods
 0015         
 0016         <span class="comment">%Constructor:</span>
-0017         <a name="_sub0" href="#_subfunctions" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData); </a><span class="comment">%All arguments are mandatory</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function this=processedTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin); </a><span class="comment">%All arguments are mandatory</span>
 0018             
-0019             <span class="keyword">if</span> nargin&lt;15 <span class="comment">%metaData does not get replaced.</span>
+0019             <span class="keyword">if</span> nargin&lt;16 <span class="comment">%metaData does not get replaced.</span>
 0020                markerData=[];
 0021                EMGData=[];
 0022                GRFData=[];
@@ -77,13 +77,13 @@ This function is called by:
 0031                COPData=[];
 0032                COMData=[];
 0033                jointMomentsData=[];
-0034                
+0034                HreflexPin = [];
 0035             <span class="keyword">end</span>
 0036             <span class="keyword">if</span> ~isa(metaData,<span class="string">'trialMetaData'</span>) &amp;&amp; ~isa(metaData,<span class="string">'derivedMetaData'</span>) &amp;&amp; ~isempty(metaData)
 0037                 ME=MException(<span class="string">'processedTrialData:Constructor'</span>,<span class="string">'First argument is not a trialMetaData object.'</span>);
 0038                 throw(ME);
 0039             <span class="keyword">end</span>
-0040             this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData)
+0040             this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG,angleData,COPData,COMData,jointMomentsData,HreflexPin)
 0041         <span class="keyword">end</span>
 0042         
 0043 <span class="comment">%         function calcParams(this)</span>
@@ -95,6 +95,6 @@ This function is called by:
 0049     
 0050 <span class="keyword">end</span>
 0051</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

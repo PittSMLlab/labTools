@@ -6,7 +6,7 @@
   <meta name="keywords" content="labData">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../../m2html.css">
 </head>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(trialData)">calcLimbAngles</a>	calcLimbAngles  Calculates angles using marker data</li><li><a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>	</li><li><a href="getEvents.html" class="code" title="function events = getEvents(trialData,angleData)">getEvents</a>	</li><li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="processEMG.html" class="code" title="function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)">processEMG</a>	</li></ul>
+<li><a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(trialData)">calcLimbAngles</a>	calcLimbAngles  Calculates angles using marker data</li><li><a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>	</li><li><a href="getEvents.html" class="code" title="function events = getEvents(trialData,angleData,perceptualFlag)">getEvents</a>	</li><li><a href="labData.html" class="code" title="">labData</a>	</li><li><a href="processEMG.html" class="code" title="function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)">processEMG</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
@@ -41,7 +41,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)</a></li><li><a href="#_sub2" class="code">function partialMarkerData= getMarkerData(this,markerName)</a></li><li><a href="#_sub3" class="code">function list=getMarkerList(this)</a></li><li><a href="#_sub4" class="code">function partialEMGData=getEMGData(this,muscleName)</a></li><li><a href="#_sub5" class="code">function list=getEMGList(this)</a></li><li><a href="#_sub6" class="code">function partialEEGData=getEEGData(this,positionName)</a></li><li><a href="#_sub7" class="code">function list=getEEGList(this)</a></li><li><a href="#_sub8" class="code">function partialGRFData=getGRFData(this,label)</a></li><li><a href="#_sub9" class="code">function list=getGRFList(this)</a></li><li><a href="#_sub10" class="code">function specificForce=getForce(this,side,axis)</a></li><li><a href="#_sub11" class="code">function specificMoment=getMoment(this,side,axis)</a></li><li><a href="#_sub12" class="code">function beltSp=getBeltSpeed(this,side)</a></li><li><a href="#_sub13" class="code">function processedData=process(this,subData,eventClass)</a></li><li><a href="#_sub14" class="code">function checkMarkerDataHealth(this)</a></li><li><a href="#_sub15" class="code">function newThis=split(this,t0,t1,newClass)</a></li><li><a href="#_sub16" class="code">function newThis=alignAllTS(this, alignmentVector)</a></li><li><a href="#_sub17" class="code">function partialData=getPartialData(this,fieldName,labels)</a></li><li><a href="#_sub18" class="code">function list=getLabelList(this,fieldName)</a></li></ul>
+<li><a href="#_sub1" class="code">function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)</a></li><li><a href="#_sub2" class="code">function COPData=computeCOP(this)</a></li><li><a href="#_sub3" class="code">function COMData=computeCOM(this)</a></li><li><a href="#_sub4" class="code">function [COPData,COPL,COPR]=computeCOPAlt(this,noFilterFlag)</a></li><li><a href="#_sub5" class="code">function [momentData,COP,COM]=computeTorques(this,subjectWeight)</a></li><li><a href="#_sub6" class="code">function bodyWeight=estimateSubjectBodyWeight(this)</a></li><li><a href="#_sub7" class="code">function processedData=process(this,subData,eventClass)</a></li><li><a href="#_sub8" class="code">function newThis=recomputeEvents(this)</a></li><li><a href="#_sub9" class="code">function checkMarkerDataHealth(this)</a></li><li><a href="#_sub10" class="code">function newThis=split(this,t0,t1,newClass)</a></li><li><a href="#_sub11" class="code">function newThis=alignAllTS(this, alignmentVector)</a></li><li><a href="#_sub12" class="code">function partialData=getPartialData(this,fieldName,labels)</a></li><li><a href="#_sub13" class="code">function list=getLabelList(this,fieldName)</a></li><li><a href="#_sub14" class="code">function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)</a></li><li><a href="#_sub15" class="code">function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="labData.html" class="code" title="">labData</a>
@@ -58,336 +58,498 @@ This function is called by:
 0012 <span class="comment">%   beltSpeedSetData - labTS with commands sent to treadmill</span>
 0013 <span class="comment">%   beltSpeedReadData - labTS with speed read from treadmill</span>
 0014 <span class="comment">%   footSwitchData - labTS with data from foot switches</span>
-0015 <span class="comment">%</span>
-0016 <span class="comment">%labData methods:</span>
-0017 <span class="comment">%   getMarkerData - accessor method for marker data</span>
-0018 <span class="comment">%   getMarkerList - returns a list of marker labels</span>
-0019 <span class="comment">%   getEMGData - accessor for EMG data</span>
-0020 <span class="comment">%   getEMGList - returns a list of EMG labels</span>
-0021 <span class="comment">%   getEEGData - accessor</span>
-0022 <span class="comment">%   getEEGList - reutrns list of labels</span>
-0023 <span class="comment">%   getGRFList - returns list of force labels</span>
-0024 <span class="comment">%   getForce - accessor for forces (from GRFData)</span>
-0025 <span class="comment">%   getMoment - accessor for moments (from GRFData)</span>
-0026 <span class="comment">%   getBeltSpeed - accessor for beltSpeedReadData</span>
-0027 <span class="comment">%   PROCESS - processes raw data to find angles, events, and adaptation</span>
-0028 <span class="comment">%   parameters and to clean up EMG and marker data. Returns a</span>
-0029 <span class="comment">%   processedTrialData object</span>
-0030 <span class="comment">%   split - returns ?</span>
-0031 <span class="comment">%</span>
-0032 <span class="comment">%See also: labMetaData, orientedLabTimeSeries, labTimeSeries</span>
-0033     
-0034     
-0035     <span class="comment">%%</span>
-0036     properties <span class="comment">%(SetAccess=private)</span>
-0037         metaData <span class="comment">%labMetaData object</span>
-0038         markerData <span class="comment">%orientedLabTS</span>
-0039         EMGData <span class="comment">%labTS</span>
-0040         EEGData <span class="comment">%labTS</span>
-0041         GRFData <span class="comment">%orientedLabTS</span>
-0042         accData <span class="comment">%orientedLabTS</span>
-0043         beltSpeedSetData <span class="comment">%labTS, sent commands to treadmill</span>
-0044         beltSpeedReadData <span class="comment">%labTS, speed read from treadmill</span>
-0045         footSwitchData <span class="comment">%labTS</span>
-0046     <span class="keyword">end</span>
-0047     
-0048     <span class="comment">%%</span>
-0049     methods
-0050         
-0051         <span class="comment">%Constructor:</span>
-0052         <a name="_sub0" href="#_subfunctions" class="code">function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)</a>
-0053             <span class="comment">%----------------</span>
-0054             
-0055             <span class="comment">%if nargin&lt;1 || isempty(metaData)</span>
-0056             <span class="comment">%    this.metaData=labMetaData(); %I think this should be mandatory and fail instead of putting an empty metaData.</span>
-0057             <span class="comment">%end</span>
-0058             <span class="comment">%if isa(metaData,'trialMetaData') %Had to comment this on</span>
-0059             <span class="comment">%10/7/2014, because trialMetaData and experimentMetaData are no</span>
-0060             <span class="comment">%longer labMetaData objects. -Pablo</span>
-0061             this.metaData=metaData;
-0062             <span class="comment">%else</span>
-0063             <span class="comment">%    ME=MException('labData:Constructor','First argument (metaData) should be a labMetaData object.');</span>
-0064             <span class="comment">%    throw(ME)</span>
-0065             <span class="comment">%end</span>
-0066             <span class="keyword">if</span> nargin&lt;2 || isempty(markerData)
-0067                 this.markerData=[];
-0068             <span class="keyword">elseif</span> isa(markerData,<span class="string">'orientedLabTimeSeries'</span>)
-0069                 this.markerData=markerData; <span class="comment">%Needs to be empty or have labels {'Lxxx*', 'Rxxx*'}, where 'xxx' is a 2 or 3-letter abbreviation from the list: {'ANK','TOE','HEE','KNE','TIB','THI','PEL','HIP','SHO','ELB','WRI'} or {'HEA*'}</span>
-0070             <span class="keyword">else</span>
-0071                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Second argument (markerData) should be an orientedLabTimeSeries object.'</span>);
-0072                 throw(ME);
-0073             <span class="keyword">end</span>
-0074             <span class="keyword">if</span> nargin&lt;3 || isempty(EMGData)
-0075                 this.EMGData=[];
-0076             <span class="keyword">elseif</span> isa(EMGData,<span class="string">'labTimeSeries'</span>)
-0077                 this.EMGData=EMGData; <span class="comment">%Needs to be empty or have labels {'Lxxx', 'Rxxx'}, where 'xxx' is a 2 or 3-letter abbreviation from the list: {'TA','PER','SOL','MG','BF','RF','VM','TFL','GLU'}</span>
-0078             <span class="keyword">else</span>
-0079                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Third argument (EMGData) should be a labTimeSeries object.'</span>);
-0080                 throw(ME);
-0081             <span class="keyword">end</span>
-0082             <span class="keyword">if</span> nargin&lt;4 || isempty(GRFData)
-0083                 this.GRFData=[];
-0084             <span class="keyword">elseif</span> isa(GRFData,<span class="string">'orientedLabTimeSeries'</span>)
-0085                 this.GRFData=GRFData; <span class="comment">%Needs to be empty or have labels {'F*L','F*R','M*R','M*L'}, where '*' is either 'x', 'y' or 'z'</span>
-0086             <span class="keyword">else</span>
-0087                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Fourth argument (GRFData) should be an orientedLabTimeSeries object.'</span>);
-0088                 throw(ME);
-0089             <span class="keyword">end</span>
-0090             <span class="keyword">if</span> nargin&lt;5 || isempty(beltSpeedSetData)
-0091                 this.beltSpeedSetData=[];
-0092             <span class="keyword">elseif</span> isa(beltSpeedSetData,<span class="string">'labTimeSeries'</span>)
-0093                 this.beltSpeedSetData=beltSpeedSetData; <span class="comment">%Empty or labels 'L' and 'R'</span>
-0094             <span class="keyword">else</span>
-0095                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Fifth argument (beltSpeedSetData) should be a LabTimeSeries object.'</span>);
-0096                 throw(ME);
-0097             <span class="keyword">end</span>
-0098             <span class="keyword">if</span> nargin&lt;6 || isempty(beltSpeedReadData)
-0099                 this.beltSpeedReadData=[];
-0100             <span class="keyword">elseif</span> isa(beltSpeedReadData,<span class="string">'labTimeSeries'</span>)
-0101                 this.beltSpeedReadData=beltSpeedReadData; <span class="comment">%Empty or labels 'L' and 'R'</span>
-0102             <span class="keyword">else</span>
-0103                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Sixth argument (beltSpeadReadData) should be a LabTimeSeries object.'</span>);
-0104                 throw(ME);
-0105             <span class="keyword">end</span>
-0106             <span class="keyword">if</span> nargin&lt;7 || isempty(accData)
-0107                 this.accData=[];
-0108             <span class="keyword">elseif</span> isa(accData,<span class="string">'orientedLabTimeSeries'</span>)
-0109                 this.accData=accData;
-0110             <span class="keyword">else</span>
-0111                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Seventh argument (accData) should be an orientedLabTimeSeries object.'</span>);
-0112                 throw(ME);
-0113             <span class="keyword">end</span>
-0114             <span class="keyword">if</span> nargin&lt;8 || isempty(EEGData)
-0115                 this.EEGData=[];
-0116             <span class="keyword">elseif</span> isa(EEGData,<span class="string">'labTimeSeries'</span>)
-0117                 this.EEGData=EEGData; <span class="comment">%Needs to be empty or have labels in the international 10-20 system.</span>
-0118             <span class="keyword">else</span>
-0119                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Eigth argument (EEGData) should be a LabTimeSeries object.'</span>);
-0120                 throw(ME);
-0121             <span class="keyword">end</span>
-0122             <span class="keyword">if</span> nargin&lt;9 || isempty(footSwitches)
-0123                 this.footSwitchData=[];
-0124             <span class="keyword">elseif</span> isa(footSwitches,<span class="string">'labTimeSeries'</span>)
-0125                 this.footSwitchData=footSwitches; <span class="comment">%Empty or labels 'L' and 'R'</span>
-0126             <span class="keyword">else</span>
-0127                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Ninth argument (footSwitches) should be a LabTimeSeries object.'</span>);
-0128                 throw(ME);
-0129             <span class="keyword">end</span>
-0130             
-0131             <span class="comment">%---------------</span>
-0132             <span class="comment">%Check that all data is from the same time interval: To Do!</span>
-0133             <span class="comment">%---------------</span>
-0134             
-0135             
-0136         <span class="keyword">end</span>
-0137         
-0138         
-0139         
-0140         <span class="comment">%Other I/O:</span>
-0141         <a name="_sub1" href="#_subfunctions" class="code">function partialMarkerData= getMarkerData(this,markerName)</a>
-0142             <span class="comment">%returns marker data for input markername</span>
-0143             partialMarkerData=this.getPartialData(<span class="string">'markerData'</span>,markerName);
-0144         <span class="keyword">end</span>
-0145         
-0146         <a name="_sub2" href="#_subfunctions" class="code">function list=getMarkerList(this)</a>
-0147             <span class="comment">%returns list of available marker names</span>
-0148             list=this.getLabelList(<span class="string">'markerData'</span>);
-0149         <span class="keyword">end</span>
-0150         
-0151         <a name="_sub3" href="#_subfunctions" class="code">function partialEMGData=getEMGData(this,muscleName)</a>
-0152             partialEMGData=this.getPartialData(<span class="string">'EMGData'</span>,muscleName);
-0153         <span class="keyword">end</span>
-0154         
-0155         <a name="_sub4" href="#_subfunctions" class="code">function list=getEMGList(this)</a>
-0156             list=this.getLabelList(<span class="string">'EMGData'</span>);
-0157         <span class="keyword">end</span>
-0158         
-0159         <a name="_sub5" href="#_subfunctions" class="code">function partialEEGData=getEEGData(this,positionName) </a><span class="comment">%Standard 10-20 nomenclature</span>
-0160             partialEEGData=this.getPartialData(<span class="string">'EEGData'</span>,positionName);
-0161         <span class="keyword">end</span>
-0162         
-0163         <a name="_sub6" href="#_subfunctions" class="code">function list=getEEGList(this)</a>
-0164             list=this.getLabelList(<span class="string">'EEGData'</span>);
-0165         <span class="keyword">end</span>
-0166         
-0167         <a name="_sub7" href="#_subfunctions" class="code">function partialGRFData=getGRFData(this,label)</a>
-0168             partialGRFData=this.getPartialData(<span class="string">'GRFData'</span>,label);
-0169         <span class="keyword">end</span>
-0170         
-0171         <a name="_sub8" href="#_subfunctions" class="code">function list=getGRFList(this)</a>
-0172             list=this.getLabelList(<span class="string">'GRFData'</span>);
-0173         <span class="keyword">end</span>
-0174         
-0175         <a name="_sub9" href="#_subfunctions" class="code">function specificForce=getForce(this,side,axis)</a>
-0176             specificForce=this.getGRFData([side <span class="string">'F'</span> axis]); <span class="comment">%Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...</span>
-0177         <span class="keyword">end</span>
-0178         
-0179         <a name="_sub10" href="#_subfunctions" class="code">function specificMoment=getMoment(this,side,axis)</a>
-0180             specificMoment=this.getGRFData([side <span class="string">'M'</span> axis]);
-0181         <span class="keyword">end</span>
-0182         
-0183         <a name="_sub11" href="#_subfunctions" class="code">function beltSp=getBeltSpeed(this,side)</a>
-0184             beltSp=this.getPartialData(<span class="string">'beltSpeedReadData'</span>,side);
-0185         <span class="keyword">end</span>
-0186         
-0187         
-0188         <span class="comment">% Process data method</span>
-0189         <a name="_sub12" href="#_subfunctions" class="code">function processedData=process(this,subData,eventClass)</a>
-0190             <span class="keyword">if</span> nargin&lt;3 || isempty(eventClass)
-0191                 eventClass=[];
-0192             <span class="keyword">end</span>
-0193             
-0194             
-0195             <span class="comment">% 1) Extract amplitude from emg data if present</span>
-0196             spikeRemovalFlag=0;
-0197             [procEMGData,filteredEMGData] = <a href="processEMG.html" class="code" title="function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)">processEMG</a>(this,spikeRemovalFlag);
-0198             
-0199             <span class="comment">% 2) Attempt to interpolate marker data if there is missing data</span>
-0200             <span class="comment">% (make into function once we have a method to do this)</span>
-0201             markers=this.markerData;
-0202             <span class="keyword">if</span> ~isempty(markers)
-0203                 <span class="comment">%function goes here: check marker data health</span>
-0204             <span class="keyword">end</span>
-0205             
-0206             <span class="comment">% 3) Calculate limb angles</span>
-0207             angleData = <a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(trialData)">calcLimbAngles</a>(this);
-0208             
-0209             <span class="comment">% 4) Calculate events from kinematics or force if available</span>
-0210             events = <a href="getEvents.html" class="code" title="function events = getEvents(trialData,angleData)">getEvents</a>(this,angleData);
-0211             
-0212             <span class="comment">% 5) If 'beltSpeedReadData' is empty, try to generate it</span>
-0213             <span class="comment">% from foot markers, if existent</span>
-0214             <span class="keyword">if</span> isempty(this.beltSpeedReadData)
-0215                 this.beltSpeedReadData = <a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>(this,events);
-0216             <span class="keyword">end</span>
-0217             
-0218             <span class="comment">%6) Get COP, COM and joint torque data.</span>
-0219             [jointMomentsData,COPData,COMData] = TorqueCalculator(this, subData.weight);
-0220             
-0221             <span class="comment">% 7) Generate processedTrial object</span>
-0222             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
-0223             
-0224             <span class="comment">% 8) Calculate adaptation parameters - to be</span>
-0225             <span class="comment">% recalculated later!!</span>
-0226             processedData.adaptParams=calcParameters(processedData,subData,eventClass);
-0227             
-0228             
-0229             
-0230         <span class="keyword">end</span>
-0231         
-0232         <a name="_sub13" href="#_subfunctions" class="code">function checkMarkerDataHealth(this)</a>
-0233             ts=this.markerData;
-0234             <span class="comment">%Check for missing samples (and do nothing?):</span>
-0235             ll=ts.getLabelPrefix;
-0236             dd=ts.getOrientedData;
-0237             <span class="keyword">for</span> i=1:length(ll)
-0238                 l=ll{i};
-0239                 aux=any(isnan(dd(:,i,:)),3);
-0240                 <span class="keyword">if</span> any(aux)
-0241                     warning(<span class="string">'labData:checkMarkerDataHealth'</span>,[<span class="string">'Marker '</span> l <span class="string">' is missing for '</span> num2str(sum(aux)*ts.sampPeriod) <span class="string">' secs.'</span>])
-0242                     <span class="keyword">for</span> j=1:3
-0243                         dd(aux,i,j)=nanmean(dd(:,i,j)); <span class="comment">%Filling gaps just for healthCheck purposes</span>
-0244                     <span class="keyword">end</span>
-0245                 <span class="keyword">end</span>
-0246             <span class="keyword">end</span>
-0247             
-0248             <span class="comment">%Check for outliers:</span>
-0249             <span class="comment">%Do a data translation:</span>
-0250             <span class="comment">%refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist</span>
-0251             <span class="comment">%Do a label-agnostic data translation:</span>
-0252             refMarker=squeeze(nanmean(dd,2));
-0253             newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); <span class="comment">%Assuming z is a known fixed axis</span>
-0254             <span class="comment">%Not agnostic rotation:</span>
-0255             <span class="comment">%relData=squeeze(markerData.getOrientedData('RHIP'));</span>
-0256             <span class="comment">%Label agnostic data rotation:</span>
-0257             newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
-0258             medianTS=newTS.median; <span class="comment">%Gets the median skeleton of the markers</span>
+0015 <span class="comment">%   HreflexPin - labTS with a analog signal with a spike once in a while representing time when an</span>
+0016 <span class="comment">%               H-reflex stimulation is being delivered.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%labData methods:</span>
+0019 <span class="comment">%   getMarkerData - accessor method for marker data</span>
+0020 <span class="comment">%   getMarkerList - returns a list of marker labels</span>
+0021 <span class="comment">%   getEMGData - accessor for EMG data</span>
+0022 <span class="comment">%   getEMGList - returns a list of EMG labels</span>
+0023 <span class="comment">%   getEEGData - accessor</span>
+0024 <span class="comment">%   getEEGList - reutrns list of labels</span>
+0025 <span class="comment">%   getGRFList - returns list of force labels</span>
+0026 <span class="comment">%   getForce - accessor for forces (from GRFData)</span>
+0027 <span class="comment">%   getMoment - accessor for moments (from GRFData)</span>
+0028 <span class="comment">%   getBeltSpeed - accessor for beltSpeedReadData</span>
+0029 <span class="comment">%   PROCESS - processes raw data to find angles, events, and adaptation</span>
+0030 <span class="comment">%   parameters and to clean up EMG and marker data. Returns a</span>
+0031 <span class="comment">%   processedTrialData object</span>
+0032 <span class="comment">%   split - returns ?</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%See also: labMetaData, orientedLabTimeSeries, labTimeSeries</span>
+0035     
+0036     
+0037     <span class="comment">%%</span>
+0038     properties <span class="comment">%(SetAccess=private)</span>
+0039         metaData <span class="comment">%labMetaData object</span>
+0040         markerData <span class="comment">%orientedLabTS</span>
+0041         EMGData <span class="comment">%labTS</span>
+0042         EEGData <span class="comment">%labTS</span>
+0043         GRFData <span class="comment">%orientedLabTS</span>
+0044         accData <span class="comment">%orientedLabTS</span>
+0045         beltSpeedSetData <span class="comment">%labTS, sent commands to treadmill</span>
+0046         beltSpeedReadData <span class="comment">%labTS, speed read from treadmill</span>
+0047         footSwitchData <span class="comment">%labTS</span>
+0048         HreflexPin <span class="comment">%labTS, this should contain pin readings for left and right leg, it's a sync signal that shows a spike once in a while when an H reflex stimulus is being delivered.</span>
+0049     <span class="keyword">end</span>
+0050     
+0051     <span class="comment">%%</span>
+0052     methods
+0053         
+0054         <span class="comment">%Constructor:</span>
+0055         <a name="_sub0" href="#_subfunctions" class="code">function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)</a>
+0056             <span class="comment">%----------------</span>
+0057             
+0058             <span class="comment">%if nargin&lt;1 || isempty(metaData)</span>
+0059             <span class="comment">%    this.metaData=labMetaData(); %I think this should be mandatory and fail instead of putting an empty metaData.</span>
+0060             <span class="comment">%end</span>
+0061             <span class="comment">%if isa(metaData,'trialMetaData') %Had to comment this on</span>
+0062             <span class="comment">%10/7/2014, because trialMetaData and experimentMetaData are no</span>
+0063             <span class="comment">%longer labMetaData objects. -Pablo</span>
+0064             this.metaData=metaData;
+0065             <span class="comment">%else</span>
+0066             <span class="comment">%    ME=MException('labData:Constructor','First argument (metaData) should be a labMetaData object.');</span>
+0067             <span class="comment">%    throw(ME)</span>
+0068             <span class="comment">%end</span>
+0069             <span class="keyword">if</span> nargin&lt;2 || isempty(markerData)
+0070                 this.markerData=[];
+0071             <span class="keyword">elseif</span> isa(markerData,<span class="string">'orientedLabTimeSeries'</span>)
+0072                 this.markerData=markerData; <span class="comment">%Needs to be empty or have labels {'Lxxx*', 'Rxxx*'}, where 'xxx' is a 2 or 3-letter abbreviation from the list: {'ANK','TOE','HEE','KNE','TIB','THI','PEL','HIP','SHO','ELB','WRI'} or {'HEA*'}</span>
+0073             <span class="keyword">else</span>
+0074                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Second argument (markerData) should be an orientedLabTimeSeries object.'</span>);
+0075                 throw(ME);
+0076             <span class="keyword">end</span>
+0077             <span class="keyword">if</span> nargin&lt;3 || isempty(EMGData)
+0078                 this.EMGData=[];
+0079             <span class="keyword">elseif</span> isa(EMGData,<span class="string">'labTimeSeries'</span>)
+0080                 this.EMGData=EMGData; <span class="comment">%Needs to be empty or have labels {'Lxxx', 'Rxxx'}, where 'xxx' is a 2 or 3-letter abbreviation from the list: {'TA','PER','SOL','MG','BF','RF','VM','TFL','GLU'}</span>
+0081             <span class="keyword">else</span>
+0082                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Third argument (EMGData) should be a labTimeSeries object.'</span>);
+0083                 throw(ME);
+0084             <span class="keyword">end</span>
+0085             <span class="keyword">if</span> nargin&lt;4 || isempty(GRFData)
+0086                 this.GRFData=[];
+0087             <span class="keyword">elseif</span> isa(GRFData,<span class="string">'orientedLabTimeSeries'</span>)
+0088                 this.GRFData=GRFData; <span class="comment">%Needs to be empty or have labels {'F*L','F*R','M*R','M*L'}, where '*' is either 'x', 'y' or 'z'</span>
+0089             <span class="keyword">else</span>
+0090                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Fourth argument (GRFData) should be an orientedLabTimeSeries object.'</span>);
+0091                 throw(ME);
+0092             <span class="keyword">end</span>
+0093             <span class="keyword">if</span> nargin&lt;5 || isempty(beltSpeedSetData)
+0094                 this.beltSpeedSetData=[];
+0095             <span class="keyword">elseif</span> isa(beltSpeedSetData,<span class="string">'labTimeSeries'</span>)
+0096                 this.beltSpeedSetData=beltSpeedSetData; <span class="comment">%Empty or labels 'L' and 'R'</span>
+0097             <span class="keyword">else</span>
+0098                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Fifth argument (beltSpeedSetData) should be a LabTimeSeries object.'</span>);
+0099                 throw(ME);
+0100             <span class="keyword">end</span>
+0101             <span class="keyword">if</span> nargin&lt;6 || isempty(beltSpeedReadData)
+0102                 this.beltSpeedReadData=[];
+0103             <span class="keyword">elseif</span> isa(beltSpeedReadData,<span class="string">'labTimeSeries'</span>)
+0104                 this.beltSpeedReadData=beltSpeedReadData; <span class="comment">%Empty or labels 'L' and 'R'</span>
+0105             <span class="keyword">else</span>
+0106                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Sixth argument (beltSpeadReadData) should be a LabTimeSeries object.'</span>);
+0107                 throw(ME);
+0108             <span class="keyword">end</span>
+0109             <span class="keyword">if</span> nargin&lt;7 || isempty(accData)
+0110                 this.accData=[];
+0111             <span class="keyword">elseif</span> isa(accData,<span class="string">'orientedLabTimeSeries'</span>)
+0112                 this.accData=accData;
+0113             <span class="keyword">else</span>
+0114                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Seventh argument (accData) should be an orientedLabTimeSeries object.'</span>);
+0115                 throw(ME);
+0116             <span class="keyword">end</span>
+0117             <span class="keyword">if</span> nargin&lt;8 || isempty(EEGData)
+0118                 this.EEGData=[];
+0119             <span class="keyword">elseif</span> isa(EEGData,<span class="string">'labTimeSeries'</span>)
+0120                 this.EEGData=EEGData; <span class="comment">%Needs to be empty or have labels in the international 10-20 system.</span>
+0121             <span class="keyword">else</span>
+0122                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Eigth argument (EEGData) should be a LabTimeSeries object.'</span>);
+0123                 throw(ME);
+0124             <span class="keyword">end</span>
+0125             <span class="keyword">if</span> nargin&lt;9 || isempty(footSwitches)
+0126                 this.footSwitchData=[];
+0127             <span class="keyword">elseif</span> isa(footSwitches,<span class="string">'labTimeSeries'</span>)
+0128                 this.footSwitchData=footSwitches; <span class="comment">%Empty or labels 'L' and 'R'</span>
+0129             <span class="keyword">else</span>
+0130                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Ninth argument (footSwitches) should be a LabTimeSeries object.'</span>);
+0131                 throw(ME);
+0132             <span class="keyword">end</span>
+0133             <span class="keyword">if</span> nargin&lt;10 || isempty(HreflexPin)
+0134                 this.HreflexPin=[];
+0135             <span class="keyword">elseif</span> isa(HreflexPin,<span class="string">'labTimeSeries'</span>)
+0136                 this.HreflexPin=HreflexPin; <span class="comment">%Empty or labels 'L' and 'R'</span>
+0137             <span class="keyword">else</span>
+0138                 ME=MException(<span class="string">'labData:Constructor'</span>,<span class="string">'Tenth argument (HreflexPin) should be a LabTimeSeries object.'</span>);
+0139                 throw(ME);
+0140             <span class="keyword">end</span>
+0141             <span class="comment">%---------------</span>
+0142             <span class="comment">%Check that all data is from the same time interval: To Do!</span>
+0143             <span class="comment">%---------------</span>
+0144             
+0145             
+0146         <span class="keyword">end</span>
+0147         
+0148         
+0149         
+0150         <span class="comment">%Other I/O:</span>
+0151 <span class="comment">%         function partialMarkerData= getMarkerData(this,markerName)</span>
+0152 <span class="comment">%             %returns marker data for input markername</span>
+0153 <span class="comment">%             partialMarkerData=this.getPartialData('markerData',markerName);</span>
+0154 <span class="comment">%         end</span>
+0155 <span class="comment">%</span>
+0156 <span class="comment">%         function list=getMarkerList(this)</span>
+0157 <span class="comment">%             %returns list of available marker names</span>
+0158 <span class="comment">%             list=this.getLabelList('markerData');</span>
+0159 <span class="comment">%         end</span>
+0160 <span class="comment">%</span>
+0161 <span class="comment">%         function partialEMGData=getEMGData(this,muscleName)</span>
+0162 <span class="comment">%             partialEMGData=this.getPartialData('EMGData',muscleName);</span>
+0163 <span class="comment">%         end</span>
+0164 <span class="comment">%</span>
+0165 <span class="comment">%         function list=getEMGList(this)</span>
+0166 <span class="comment">%             list=this.getLabelList('EMGData');</span>
+0167 <span class="comment">%         end</span>
+0168 <span class="comment">%</span>
+0169 <span class="comment">%         function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature</span>
+0170 <span class="comment">%             partialEEGData=this.getPartialData('EEGData',positionName);</span>
+0171 <span class="comment">%         end</span>
+0172 <span class="comment">%</span>
+0173 <span class="comment">%         function list=getEEGList(this)</span>
+0174 <span class="comment">%             list=this.getLabelList('EEGData');</span>
+0175 <span class="comment">%         end</span>
+0176 <span class="comment">%</span>
+0177 <span class="comment">%         function partialGRFData=getGRFData(this,label)</span>
+0178 <span class="comment">%             partialGRFData=this.getPartialData('GRFData',label);</span>
+0179 <span class="comment">%         end</span>
+0180 <span class="comment">%</span>
+0181 <span class="comment">%         function list=getGRFList(this)</span>
+0182 <span class="comment">%             list=this.getLabelList('GRFData');</span>
+0183 <span class="comment">%         end</span>
+0184 <span class="comment">%</span>
+0185 <span class="comment">%         function specificForce=getForce(this,side,axis)</span>
+0186 <span class="comment">%             specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...</span>
+0187 <span class="comment">%         end</span>
+0188 <span class="comment">%</span>
+0189 <span class="comment">%         function specificMoment=getMoment(this,side,axis)</span>
+0190 <span class="comment">%             specificMoment=this.getGRFData([side 'M' axis]);</span>
+0191 <span class="comment">%         end</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">%         function beltSp=getBeltSpeed(this,side)</span>
+0194 <span class="comment">%             beltSp=this.getPartialData('beltSpeedReadData',side);</span>
+0195 <span class="comment">%         end</span>
+0196         
+0197         <a name="_sub1" href="#_subfunctions" class="code">function COPData=computeCOP(this)</a>
+0198             COPData=COPCalculator(this.GRFData);
+0199         <span class="keyword">end</span>
+0200         
+0201         <a name="_sub2" href="#_subfunctions" class="code">function COMData=computeCOM(this)</a>
+0202             [COMData] = COMCalculator(this.markerData);
+0203         <span class="keyword">end</span>
+0204         
+0205         <a name="_sub3" href="#_subfunctions" class="code">function [COPData,COPL,COPR]=computeCOPAlt(this,noFilterFlag)</a>
+0206             <span class="keyword">if</span> nargin&lt;2 || isempty(noFilterFlag)
+0207                 noFilterFlag=1;
+0208             <span class="keyword">end</span>
+0209             <span class="comment">%warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');</span>
+0210             [COPL,FL,~]=<a href="#_sub14" class="code" title="subfunction [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)">computeHemiCOP</a>(this,<span class="string">'L'</span>,noFilterFlag);
+0211             warning(<span class="string">'off'</span>,<span class="string">'orientedLabTimeSeries:computeCOP'</span>) <span class="comment">%To avoid repeat warnings, which are annoying</span>
+0212             [COPR,FR,~]=<a href="#_sub14" class="code" title="subfunction [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)">computeHemiCOP</a>(this,<span class="string">'R'</span>,noFilterFlag);
+0213             warning(<span class="string">'on'</span>,<span class="string">'orientedLabTimeSeries:computeCOP'</span>)
+0214             COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
+0215             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
+0216             [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
+0217         <span class="keyword">end</span>
+0218         
+0219         <a name="_sub4" href="#_subfunctions" class="code">function [momentData,COP,COM]=computeTorques(this,subjectWeight)</a>
+0220             <span class="keyword">if</span> nargin&lt;2 || isempty(subjectWeight)
+0221                 warning(<span class="string">'Subject weight not given, estimating from GRFs. This will fail miserably if z-axis force is not representative of weight.'</span>)
+0222                 subjectWeight=<a href="#_sub6" class="code" title="subfunction bodyWeight=estimateSubjectBodyWeight(this)">estimateSubjectBodyWeight</a>(this);
+0223             <span class="keyword">end</span>
+0224            [ momentData,COP,COM ] = TorqueCalculator(this, subjectWeight); 
+0225         <span class="keyword">end</span>
+0226         
+0227         <a name="_sub5" href="#_subfunctions" class="code">function bodyWeight=estimateSubjectBodyWeight(this)</a>
+0228             bodyWeight=-nanmean(sum(this.GRFData.getDataAsVector({<span class="string">'LFz'</span>,<span class="string">'RFz'</span>}),2))/9.8; <span class="comment">%Taking forces in z-axis and averaging to estimate subject weight</span>
+0229         <span class="keyword">end</span>
+0230         
+0231         <span class="comment">% Process data method</span>
+0232         <a name="_sub6" href="#_subfunctions" class="code">function processedData=process(this,subData,eventClass)</a>
+0233             
+0234             <span class="comment">%To all coders: this function HAS TO BE idempotent, ie:</span>
+0235             <span class="comment">%labData.process.process = labData.process</span>
+0236             <span class="comment">%Otherwise re-processing data may lead to double or triple</span>
+0237             <span class="comment">%filtering.</span>
+0238             <span class="keyword">if</span> nargin&lt;3 || isempty(eventClass)
+0239                 eventClass=[];
+0240             <span class="keyword">end</span>
+0241             
+0242             
+0243             <span class="comment">% 1) Extract amplitude from emg data if present</span>
+0244             spikeRemovalFlag=0;
+0245             [procEMGData,filteredEMGData] = <a href="processEMG.html" class="code" title="function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)">processEMG</a>(this,spikeRemovalFlag);
+0246             
+0247             <span class="comment">% 2) Attempt to interpolate marker data if there is missing data</span>
+0248             <span class="comment">% (make into function once we have a method to do this)</span>
+0249             markers=this.markerData;
+0250             <span class="keyword">if</span> ~isempty(markers)
+0251                 <span class="comment">%function goes here: check marker data health</span>
+0252             <span class="keyword">end</span>
+0253             
+0254             <span class="comment">% 3) Calculate limb angles</span>
+0255             angleData = <a href="calcLimbAngles.html" class="code" title="function angleData = calcLimbAngles(trialData)">calcLimbAngles</a>(this);
+0256             
+0257             <span class="comment">% 4) Calculate events from kinematics or force if available</span>
+0258             events = <a href="getEvents.html" class="code" title="function events = getEvents(trialData,angleData,perceptualFlag)">getEvents</a>(this,angleData,this.metaData.perceptualTasks); <span class="comment">% Last argument is the perceptual task flag</span>
 0259             
-0260             <span class="comment">%With this median skeleton, a minimization can be done to find</span>
-0261             <span class="comment">%another label agnostic data rotation that does not depend on</span>
-0262             <span class="comment">%estimating the translation velocity:</span>
-0263             
-0264             <span class="comment">%Another attempt at label agnostic rotation (not using</span>
-0265             <span class="comment">%velocity, but actually some info about the skeleton having</span>
-0266             <span class="comment">%Left and Right)</span>
-0267             <span class="comment">%l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);</span>
-0268             <span class="comment">%l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);</span>
-0269             <span class="comment">%relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));</span>
-0270             <span class="comment">%relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this</span>
-0271             
-0272             
-0273                       
-0274             <span class="comment">%Try to fit a 2-cluster model, to see if some marker labels are</span>
-0275             <span class="comment">%switched at some point during experiment</span>
-0276             
-0277             <span class="comment">%Assuming single mode/cluster, find outliers by getting stats</span>
-0278             <span class="comment">%on distribution of positions/distance and velocities.</span>
-0279         <span class="keyword">end</span>
-0280         
-0281         <a name="_sub14" href="#_subfunctions" class="code">function newThis=split(this,t0,t1,newClass) </a><span class="comment">%Returns an object of the same type, unless newClass is specified (it needs to be a subclass)</span>
-0282             newThis=[]; <span class="comment">%Just to avoid Matlab saying this is not defined</span>
-0283             cname=class(this);
-0284             <span class="keyword">if</span> nargin&lt;4
-0285                 <span class="comment">%(ID,date,experimenter,desc,obs,refLeg,parentMeta)</span>
-0286                 metaData=derivedMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'labData.split'</span>,[<span class="string">'Splice of '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData.refLeg,this.metaData); <span class="comment">%HH removed 'Partial Interval' after labdata.split since 'type' propery was eliminated.</span>
-0287                 eval([<span class="string">'newThis='</span> cname <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
-0288             <span class="keyword">else</span>
-0289                 metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'labData.split'</span>,[<span class="string">'Splice of '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData.refLeg,this.metaData); <span class="comment">%Should I call a different metaData constructor</span>
-0290                 eval([<span class="string">'newThis='</span> newClass <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
-0291             <span class="keyword">end</span>
-0292             auxLst=properties(cname);
-0293             <span class="keyword">for</span> i=1:length(auxLst)
-0294                 eval([<span class="string">'oldVal=this.'</span> auxLst{i} <span class="string">';'</span>]) <span class="comment">%Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need</span>
-0295                 <span class="keyword">if</span> isa(oldVal,<span class="string">'labTimeSeries'</span>) &amp;&amp; ~isa(oldVal,<span class="string">'parameterSeries'</span>)
-0296                     newVal=oldVal.split(t0,t1); <span class="comment">%Calling labTS.split (or one of the subclass' implementation)</span>
-0297                 <span class="keyword">elseif</span> ~isa(oldVal,<span class="string">'labMetaData'</span>)
-0298                     newVal=oldVal; <span class="comment">%Not a labTS object, not splitting</span>
-0299                 <span class="keyword">end</span>
-0300                 <span class="keyword">try</span>
-0301                     eval([<span class="string">'newThis.'</span> auxLst{i} <span class="string">'=newVal;'</span>]) <span class="comment">%If this fails is because the property is not settable</span>
-0302                 <span class="keyword">catch</span>
-0303                     
-0304                 <span class="keyword">end</span>
-0305             <span class="keyword">end</span>
-0306             newThis.metaData=metaData;
-0307             
-0308         <span class="keyword">end</span>
-0309         
-0310         <a name="_sub15" href="#_subfunctions" class="code">function newThis=alignAllTS(this, alignmentVector)</a>
-0311             error(<span class="string">'Unimplemented'</span>)
-0312             newThis=[];
-0313         <span class="keyword">end</span>
-0314         
-0315     <span class="keyword">end</span>
-0316     
-0317     <span class="comment">%% Protected methods:</span>
-0318     methods (Access=protected)
-0319         
-0320         <a name="_sub16" href="#_subfunctions" class="code">function partialData=getPartialData(this,fieldName,labels)</a>
-0321             <span class="comment">%returns requested data</span>
-0322             <span class="comment">%</span>
-0323             <span class="comment">%inputs:</span>
-0324             <span class="comment">%fieldName -- looks for property of the instance (see top of</span>
-0325             <span class="comment">%file for list of properties)</span>
-0326             <span class="comment">%</span>
-0327             <span class="comment">%labels --</span>
-0328             
-0329             <span class="keyword">if</span> nargin&lt;3 || isempty(labels)
-0330                 eval([<span class="string">'partialData=this.'</span> fieldName <span class="string">';'</span>]);
-0331             <span class="keyword">else</span>
-0332                 eval([<span class="string">'partialData=this.'</span> fieldName <span class="string">'.getDataAsVector(labels);'</span>]); <span class="comment">%Should I return this as labTS?</span>
-0333             <span class="keyword">end</span>
-0334         <span class="keyword">end</span>
-0335         
-0336         <a name="_sub17" href="#_subfunctions" class="code">function list=getLabelList(this,fieldName)</a>
-0337             eval([<span class="string">'list = this.'</span> fieldName <span class="string">'.labels;'</span>]);
-0338         <span class="keyword">end</span>
-0339         
-0340     <span class="keyword">end</span>
-0341     
-0342     
-0343 <span class="keyword">end</span>
-0344</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0260             <span class="comment">% 5) If 'beltSpeedReadData' is empty, try to generate it</span>
+0261             <span class="comment">% from foot markers, if existent</span>
+0262             <span class="keyword">if</span> isempty(this.beltSpeedReadData)
+0263                 this.beltSpeedReadData = <a href="getBeltSpeedsFromFootMarkers.html" class="code" title="function beltSpeedReadData = getBeltSpeedsFromFootMarkers(trialData,events)">getBeltSpeedsFromFootMarkers</a>(this,events);
+0264             <span class="keyword">end</span>
+0265             
+0266             <span class="comment">%6) Get COP, COM and joint torque data.</span>
+0267             [jointMomentsData,~,COMData] = this.computeTorques(subData.weight);
+0268             COPData=this.computeCOPAlt; <span class="comment">%Replacing COPData with alternative computation</span>
+0269             <span class="comment">%COMDATA=this.CarlysCOMData; %CJS: you should do this!</span>
+0270             
+0271             <span class="comment">% 7) Generate processedTrial object</span>
+0272             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData,this.HreflexPin);
+0273             
+0274             <span class="comment">% 8) Calculate adaptation parameters - to be</span>
+0275             <span class="comment">% recalculated later!!</span>
+0276             processedData.adaptParams=calcParameters(processedData,subData,eventClass);
+0277             
+0278             
+0279             
+0280         <span class="keyword">end</span>
+0281         
+0282         <a name="_sub7" href="#_subfunctions" class="code">function newThis=recomputeEvents(this)</a>
+0283             events = <a href="getEvents.html" class="code" title="function events = getEvents(trialData,angleData,perceptualFlag)">getEvents</a>(this,this.angleData);
+0284             this.gaitEvents=events;
+0285             newThis=this;
+0286         <span class="keyword">end</span>
+0287         
+0288         <a name="_sub8" href="#_subfunctions" class="code">function checkMarkerDataHealth(this)</a>
+0289             ts=this.markerData;
+0290             
+0291             <span class="comment">%First: diagnose missing markers</span>
+0292             ll=ts.getLabelPrefix;
+0293             dd=ts.getOrientedData;
+0294             aux=zeros(size(dd,1),size(dd,2));
+0295             <span class="keyword">for</span> i=1:length(ll)
+0296                 l=ll{i};
+0297                 aux(:,i)=any(isnan(dd(:,i,:)),3);
+0298                 <span class="keyword">if</span> any(aux(i,:))
+0299                     warning(<span class="string">'labData:checkMarkerDataHealth'</span>,[<span class="string">'Marker '</span> l <span class="string">' is missing for '</span> num2str(sum(aux)*ts.sampPeriod) <span class="string">' secs.'</span>])
+0300                     <span class="keyword">for</span> j=1:3
+0301                         dd(aux,i,j)=nanmean(dd(:,i,j)); <span class="comment">%Filling gaps just for healthCheck purposes</span>
+0302                     <span class="keyword">end</span>
+0303                 <span class="keyword">end</span>
+0304             <span class="keyword">end</span>
+0305             figure
+0306             subplot(2,2,1) <span class="comment">% Missing frames as % of total</span>
+0307             hold on
+0308             c=sum(aux,1)/size(aux,1);
+0309             bar(c)
+0310             set(gca,<span class="string">'XTick'</span>,1:numel(ll),<span class="string">'XTickLabel'</span>,ll,<span class="string">'XTickLabelRotation'</span>,90)
+0311             ylabel(<span class="string">'Missing frames (%)'</span>)
+0312             
+0313             subplot(2,2,2) <span class="comment">%Distribution of gap lengths</span>
+0314             hold on
+0315             h=[];
+0316             s={};
+0317             <span class="keyword">for</span> i=1:length(ll)
+0318                 <span class="keyword">if</span> c(i)&gt;.01
+0319                  w= [ 0; aux(:,i); 0 ]; <span class="comment">% auxiliary vector</span>
+0320                  runs_ones = find(diff(w)==-1)-find(diff(w)==1); 
+0321                  h(end+1)=histogram(runs_ones,[.5:1:50],<span class="string">'DisplayName'</span>,ll{i});
+0322                  s{end+1}=ll{i};
+0323                 <span class="keyword">end</span>
+0324             <span class="keyword">end</span>
+0325             legend(h,s)
+0326             title(<span class="string">'Distribution of gap lenghts'</span>)
+0327             ylabel(<span class="string">'Gap count'</span>)
+0328             xlabel(<span class="string">'Gap length'</span>)
+0329             axis tight
+0330             
+0331             subplot(2,2,3)
+0332             hold on
+0333             d=sum(aux,2);
+0334             histogram(d,[-.5:1:5.5],<span class="string">'Normalization'</span>,<span class="string">'probability'</span>)
+0335             title(<span class="string">'Distribution of # missing in each frame'</span>)
+0336             ylabel(<span class="string">'% of frames with missing markers'</span>)
+0337             xlabel(<span class="string">'# missing markers'</span>)
+0338             axis tight
+0339             
+0340             
+0341             <span class="comment">%Two: create a model to determine if outliers are present</span>
+0342             dd=permute(dd,[2,3,1]);
+0343             [D,sD] = createZeroModel(dd);
+0344             [lp,~] = determineLikelihoodFromZeroModel(dd,D,sD);
+0345             subplot(2,2,4)
+0346             hold on
+0347             minLike=min(lp,[],1);
+0348             plot(minLike)
+0349             medLike=nanmedian(lp,1);
+0350             plot(medLike,<span class="string">'r'</span>)
+0351             legend(ll)
+0352             ii=find(medLike&lt;-1);
+0353             <span class="keyword">for</span> j=1:length(ii)
+0354                figure
+0355                plot3(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),<span class="string">'o'</span>)
+0356                text(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),ll)
+0357                hold on
+0358                [~,zz]=min(lp(:,ii(j)));
+0359                plot3(dd(zz,1,ii(j)),dd(zz,2,ii(j)),dd(zz,3,ii(j)),<span class="string">'ro'</span>)
+0360                title([<span class="string">'median likeli='</span> num2str(medLike(ii(j))) <span class="string">', frame '</span> num2str(ii(j))])
+0361                pause
+0362             <span class="keyword">end</span>
+0363             
+0364 <span class="comment">%             %Check for outliers:</span>
+0365 <span class="comment">%             %Do a data translation:</span>
+0366 <span class="comment">%             %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist</span>
+0367 <span class="comment">%             %Do a label-agnostic data translation:</span>
+0368 <span class="comment">%             refMarker=squeeze(nanmean(dd,2));</span>
+0369 <span class="comment">%             newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis</span>
+0370 <span class="comment">%             %Not agnostic rotation:</span>
+0371 <span class="comment">%             %relData=squeeze(markerData.getOrientedData('RHIP'));</span>
+0372 <span class="comment">%             %Label agnostic data rotation:</span>
+0373 <span class="comment">%             newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);</span>
+0374 <span class="comment">%             medianTS=newTS.median; %Gets the median skeleton of the markers</span>
+0375 <span class="comment">%</span>
+0376 <span class="comment">%             %With this median skeleton, a minimization can be done to find</span>
+0377 <span class="comment">%             %another label agnostic data rotation that does not depend on</span>
+0378 <span class="comment">%             %estimating the translation velocity:</span>
+0379 <span class="comment">%</span>
+0380 <span class="comment">%             %Another attempt at label agnostic rotation (not using</span>
+0381 <span class="comment">%             %velocity, but actually some info about the skeleton having</span>
+0382 <span class="comment">%             %Left and Right)</span>
+0383 <span class="comment">%             %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);</span>
+0384 <span class="comment">%             %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);</span>
+0385 <span class="comment">%             %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));</span>
+0386 <span class="comment">%             %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this</span>
+0387 <span class="comment">%</span>
+0388 <span class="comment">%</span>
+0389 <span class="comment">%</span>
+0390 <span class="comment">%             %Try to fit a 2-cluster model, to see if some marker labels are</span>
+0391 <span class="comment">%             %switched at some point during experiment</span>
+0392 <span class="comment">%</span>
+0393 <span class="comment">%             %Assuming single mode/cluster, find outliers by getting stats</span>
+0394 <span class="comment">%             %on distribution of positions/distance and velocities.</span>
+0395         <span class="keyword">end</span>
+0396         
+0397         <a name="_sub9" href="#_subfunctions" class="code">function newThis=split(this,t0,t1,newClass) </a><span class="comment">%Returns an object of the same type, unless newClass is specified (it needs to be a subclass)</span>
+0398             newThis=[]; <span class="comment">%Just to avoid Matlab saying this is not defined</span>
+0399             cname=class(this);
+0400             <span class="keyword">if</span> nargin&lt;4
+0401                 <span class="comment">%(ID,date,experimenter,desc,obs,refLeg,parentMeta)</span>
+0402                 metaData=derivedMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'labData.split'</span>,[<span class="string">'Splice of '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData.refLeg,this.metaData); <span class="comment">%HH removed 'Partial Interval' after labdata.split since 'type' propery was eliminated.</span>
+0403                 eval([<span class="string">'newThis='</span> cname <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
+0404             <span class="keyword">else</span>
+0405                 metaData=strideMetaData(labDate.genIDFromClock,labDate.getCurrent,<span class="string">'labData.split'</span>,[<span class="string">'Splice of '</span> this.metaData.description],<span class="string">'Auto-generated'</span>,this.metaData.refLeg,this.metaData); <span class="comment">%Should I call a different metaData constructor</span>
+0406                 eval([<span class="string">'newThis='</span> newClass <span class="string">'(metaData);'</span>]); <span class="comment">%Call empty constructor of same class</span>
+0407             <span class="keyword">end</span>
+0408             auxLst=properties(cname);
+0409             <span class="keyword">for</span> i=1:length(auxLst)
+0410                 eval([<span class="string">'oldVal=this.'</span> auxLst{i} <span class="string">';'</span>]) <span class="comment">%Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need</span>
+0411                 <span class="keyword">if</span> isa(oldVal,<span class="string">'labTimeSeries'</span>) &amp;&amp; ~isa(oldVal,<span class="string">'parameterSeries'</span>)
+0412                     newVal=oldVal.split(t0,t1); <span class="comment">%Calling labTS.split (or one of the subclass' implementation)</span>
+0413                 <span class="keyword">elseif</span> ~isa(oldVal,<span class="string">'labMetaData'</span>)
+0414                     newVal=oldVal; <span class="comment">%Not a labTS object, not splitting</span>
+0415                 <span class="keyword">end</span>
+0416                 <span class="keyword">try</span>
+0417                     eval([<span class="string">'newThis.'</span> auxLst{i} <span class="string">'=newVal;'</span>]) <span class="comment">%If this fails is because the property is not settable</span>
+0418                 <span class="keyword">catch</span>
+0419                     
+0420                 <span class="keyword">end</span>
+0421             <span class="keyword">end</span>
+0422             newThis.metaData=metaData;
+0423             
+0424         <span class="keyword">end</span>
+0425         
+0426         <a name="_sub10" href="#_subfunctions" class="code">function newThis=alignAllTS(this, alignmentVector)</a>
+0427             error(<span class="string">'Unimplemented'</span>)
+0428             newThis=[];
+0429         <span class="keyword">end</span>
+0430         
+0431     <span class="keyword">end</span>
+0432     
+0433     <span class="comment">%% Protected methods:</span>
+0434     methods (Access=protected)
+0435         
+0436         <a name="_sub11" href="#_subfunctions" class="code">function partialData=getPartialData(this,fieldName,labels)</a>
+0437             <span class="comment">%returns requested data</span>
+0438             <span class="comment">%</span>
+0439             <span class="comment">%inputs:</span>
+0440             <span class="comment">%fieldName -- looks for property of the instance (see top of</span>
+0441             <span class="comment">%file for list of properties)</span>
+0442             <span class="comment">%</span>
+0443             <span class="comment">%labels --</span>
+0444             
+0445             <span class="keyword">if</span> nargin&lt;3 || isempty(labels)
+0446                 partialData=this.(fieldName);
+0447             <span class="keyword">else</span>
+0448                 partialData=this.(fieldName).getDataAsVector(labels);
+0449             <span class="keyword">end</span>
+0450         <span class="keyword">end</span>
+0451         
+0452         <a name="_sub12" href="#_subfunctions" class="code">function list=getLabelList(this,fieldName)</a>
+0453             list=this.(fieldName).labels;
+0454         <span class="keyword">end</span>
+0455         
+0456         <span class="comment">%COP calculation as used by the ALTERNATIVE version</span>
+0457         <a name="_sub13" href="#_subfunctions" class="code">function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)</a>
+0458             this=this.GRFData;
+0459             fcut=50;
+0460             <span class="comment">%Warning: this only works if GRF data is stored here</span>
+0461             warning(<span class="string">'orientedLabTimeSeries:computeCOP'</span>,<span class="string">'COP computation is calibrated only for GRFData obtained from the Bertec instrumented treadmill'</span>);
+0462             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(noFilterFlag) &amp;&amp; noFilterFlag==1
+0463                 F=squeeze(this.getDataAsOTS([side <span class="string">'F'</span>]).getOrientedData);
+0464                 M=squeeze(this.getDataAsOTS([side <span class="string">'M'</span>]).getOrientedData);
+0465             <span class="keyword">else</span>
+0466             F=this.getDataAsOTS([side <span class="string">'F'</span>]).medianFilter(5).substituteNaNs;
+0467             F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side <span class="string">'Fz'</span>],1);
+0468             F=squeeze(F.getOrientedData);
+0469             M=this.getDataAsOTS([side <span class="string">'M'</span>]).medianFilter(5).substituteNaNs;
+0470             M=M.lowPassFilter(fcut);
+0471             M=squeeze(M.getOrientedData);
+0472             F(abs(F(:,3))&lt;100,:)=0; <span class="comment">%Thresholding to avoid artifacts</span>
+0473             <span class="keyword">end</span>
+0474             <span class="comment">%I believe this should work for all forceplates in the world:</span>
+0475             <span class="comment">%aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));</span>
+0476             <span class="comment">%t=-aux(:,3)./F(:,3);</span>
+0477             <span class="comment">%COP=orientedLabTimeSeries(aux+t.*F,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);</span>
+0478             <span class="comment">%This is Bertec Treadmill specific:</span>
+0479             aux(:,1)=(-15*F(:,1)-M(:,2))./F(:,3);
+0480             aux(:,2)=(15*F(:,2)+M(:,1))./F(:,3);
+0481             aux(:,3)=0;
+0482             <span class="keyword">if</span> strcmp(side,<span class="string">'R'</span>)
+0483                 aux(:,1)=aux(:,1)-977.9; <span class="comment">%Flipping and offsetting to match reference axis of L-forceplate</span>
+0484             <span class="keyword">end</span>
+0485             aux(:,2)=-aux(:,2)+1619.25; <span class="comment">%Flipping &amp; adding offset to match lab's reference axis sign</span>
+0486             aux(:,1)=aux(:,1)+25.4; <span class="comment">%Adding offset to lab's reference origin</span>
+0487             COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side <span class="string">'COP'</span>]),this.orientation);
+0488            
+0489         <span class="keyword">end</span>
+0490     <span class="keyword">end</span>
+0491     
+0492     methods (Static)
+0493        <a name="_sub14" href="#_subfunctions" class="code">function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)</a>
+0494            <span class="keyword">if</span> noFilterFlag==1
+0495             COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
+0496             COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+0497            <span class="keyword">end</span>
+0498             newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
+0499             COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix([<span class="string">'COP'</span>]),COPL.orientation);
+0500             COP=COP.cat(COPL).cat(COPR);
+0501        <span class="keyword">end</span>
+0502     <span class="keyword">end</span>
+0503     
+0504     
+0505 <span class="keyword">end</span>
+0506</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

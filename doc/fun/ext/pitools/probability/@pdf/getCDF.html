@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getCDF</title>
+  <meta name="keywords" content="getCDF">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">probability</a> &gt; <a href="index.html">@pdf</a> &gt; getCDF.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/probability/@pdf&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>getCDF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [cdf,coordinates]=getCDF(this) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="pdf.html" class="code" title="">pdf</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cdf,coordinates]=getCDF(this)</a>
+0002            <span class="keyword">if</span> length(this.coordinates)&gt;1
+0003                error(<span class="string">'High-dim CDFs not supported yet'</span>);
+0004            <span class="keyword">else</span>
+0005                <span class="comment">%Inefficient but elegant way:</span>
+0006                <span class="comment">%for i=1:length(this.coordinates{1})</span>
+0007                <span class="comment">%    cdf(i,1)=this.getCumulativeProbability(this.coordinates{1}(i));</span>
+0008                <span class="comment">%end</span>
+0009                <span class="comment">%Efficient way:</span>
+0010                cdf=zeros(size(this.pValues));
+0011                cdf(2:end)=cumsum(diff(this.coordinates{1}).*(this.pValues(1:end-1)+.5*diff(this.pValues))); <span class="comment">%Similar to trapz</span>
+0012                cdf=cdf/cdf(end); <span class="comment">%Forcing 1 as exactly the max value</span>
+0013            <span class="keyword">end</span>
+0014            coordinates=this.coordinates;
+0015         <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

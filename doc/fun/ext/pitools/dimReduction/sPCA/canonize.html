@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of canonize</title>
+  <meta name="keywords" content="canonize">
+  <meta name="description" content="Canonize returns the canonical form of the linear system given by">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">sPCA</a> &gt; canonize.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/dimReduction/sPCA&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>canonize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>Canonize returns the canonical form of the linear system given by</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [J,B,C,X,V] = canonize(A,B,C,X) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Canonize returns the canonical form of the linear system given by
+A,B,C,D,X</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [J,B,C,X,V] = canonize(A,B,C,X)</a>
+0002 <span class="comment">%Canonize returns the canonical form of the linear system given by</span>
+0003 <span class="comment">%A,B,C,D,X</span>
+0004 
+0005 <span class="comment">%% Find linear transformation to Jordan's canonical form</span>
+0006 [V,J] = jordan(A); <span class="comment">%J=V\A*V; %V*X'=X -&gt; V*X'_+1 = X_+1 = (A*X +B*u) = A*V*X' +B*u =&gt; J*X' + B'*u</span>
+0007 <span class="comment">% Deal with complex solutions:</span>
+0008 a=imag(diag(J)); b=real(diag(J));
+0009 <span class="keyword">if</span> any(abs(a./b)&gt;1e-15) <span class="comment">%If there are (truly) complex eigen-values, will transform to the real-jordan form</span>
+0010     [~,J] = cdf2rdf(V,J);
+0011 <span class="keyword">else</span> <span class="comment">%This is to avoid numerical errors from negligible imaginary parts</span>
+0012     J=real(J);
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">%% Estimate X: arbitrary scaling: (there has to be a more efficient way to do it)</span>
+0016 <span class="comment">%Doing X1=V\X doesn't work well</span>
+0017 X1=ones(size(X)); <span class="comment">%A different initial condition will be needed if one of the true states has 0 initial value, and J is not diagonal.</span>
+0018 <span class="keyword">for</span> i=2:size(X1,2)
+0019     X1(:,i)=J*X1(:,i-1);
+0020 <span class="keyword">end</span>
+0021 
+0022 
+0023 <span class="comment">%% Re-estimate C,B</span>
+0024 B=V\B;
+0025 C=(C*X)/X1; 
+0026 X=X1;
+0027 
+0028 
+0029 <span class="keyword">end</span>
+0030</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

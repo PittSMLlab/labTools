@@ -6,7 +6,7 @@
   <meta name="keywords" content="extractMuscleActivityFromEMG">
   <meta name="description" content="Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>	Estimation of amplitude of a given EMG signal (envelope detection).</li><li><a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li></ul>
+<li><a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
 </ul>
@@ -58,10 +58,10 @@ This function is called by:
 0014 
 0015     [filteredData,filterList] = <a href="filterEMG.html" class="code" title="function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)">filterEMG</a>(data,fs,BW,notchList); <span class="comment">%Does a band-pass filter of the data, and removes some specific frequencies through notch-filters</span>
 0016     
-0017     [procData,procList]=<a href="amp_estim.html" class="code" title="function [ amplitude,procList ] = amp_estim(signal,fs,mod_ord,cutoff)">amp_estim</a>(filteredData,fs,1,f_cut); <span class="comment">%Amplitude estimation. 3rd argument defines order of estimation.</span>
+0017     [procData,procList]=amp_estim(filteredData,fs,1,f_cut); <span class="comment">%Amplitude estimation. 3rd argument defines order of estimation.</span>
 0018     
 0019 <span class="keyword">end</span>
 0020</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

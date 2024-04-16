@@ -1,0 +1,1034 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeForceParameters_OGFP</title>
+  <meta name="keywords" content="computeForceParameters_OGFP">
+  <meta name="description" content="CJS 2017: Here I am including the code that I have been using for the incline decline analysis.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeForceParameters_OGFP.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>computeForceParameters_OGFP
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CJS 2017: Here I am including the code that I have been using for the incline decline analysis.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeForceParameters_OGFP(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CJS 2017: Here I am including the code that I have been using for the incline decline analysis.
+ This code is a bit eccentric in the way that identifies the inclination for the TM.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DetermineTMAngle.html" class="code" title="function [ ang ] = DetermineTMAngle( trialData )">DetermineTMAngle</a>	UNTITLED This function determines what angle a trial was run at based on</li><li><a href="computeCOM.html" class="code" title="function [ out ] = computeCOM( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT )">computeCOM</a>	UNTITLED2 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeForceParameters_OGFP(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)</a>
+0002 <span class="comment">% CJS 2017: Here I am including the code that I have been using for the incline decline analysis.</span>
+0003 <span class="comment">% This code is a bit eccentric in the way that identifies the inclination for the TM.</span>
+0004 
+0005 <span class="comment">%~~~~~~~ Here is where I am putting real stuffs ~~~~~~~~</span>
+0006 trial=trialData.metaData.description;
+0007 <span class="comment">%If I want all the forces to be unitless then set this to 9.81*BW, else set it</span>
+0008 <span class="comment">%to 1*BW</span>
+0009 
+0010 <span class="keyword">if</span> strcmpi(trialData.metaData.type,<span class="string">'NIM'</span>) 
+0011     Normalizer=9.81*(BW+3.4); <span class="comment">%3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified</span>
+0012 <span class="keyword">else</span>
+0013     Normalizer=9.81*BW;
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="comment">% Normalizer=9.81*BW;</span>
+0017 bw_th_min = 0.8;
+0018 early_th = 0.2;
+0019 end_th = 0.2;
+0020 divideri = 8;
+0021 trialNum = str2double(trialData.metaData.rawDataFilename(end-1:end));
+0022 FlipB=1; <span class="comment">%7/21/2016, nevermind, making 1 8/1/2016</span>
+0023 
+0024 <span class="keyword">if</span> iscell(trial)
+0025     trial=trial{1};
+0026 <span class="keyword">end</span>
+0027 
+0028 
+0029 [ ang ] = <a href="DetermineTMAngle.html" class="code" title="function [ ang ] = DetermineTMAngle( trialData )">DetermineTMAngle</a>( trialData.metaData );
+0030 <span class="keyword">if</span> strcmp(trialData.metaData.type, <span class="string">'IN'</span>)
+0031     ang = 8.5;
+0032 <span class="keyword">end</span>
+0033 flipIT= 2.*(ang &gt;= 0)-1; <span class="comment">%This will be -1 when it was a decline study, 1 otherwise</span>
+0034 Filtered=GRFData.lowPassFilter(20);
+0035 FilteredF = Filtered;
+0036 FilteredS = Filtered;
+0037 
+0038 
+0039 <span class="comment">%~~~~~~~~~~~~~~~~ REMOVE ANY OFFSETS IN THE DATA~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0040 <span class="comment">%New 8/5/2016 CJS: It came to my attenion that one of the decline subjects</span>
+0041 <span class="comment">%(LD30) one of the force plates was not properly zeroed.  Here I am</span>
+0042 <span class="comment">%manually shifting the forces.  I am assuming that the vertical forces have</span>
+0043 <span class="comment">%been properly been shifted during the c3d2mat process, otherwise the</span>
+0044 <span class="comment">%events are wrong and these lines of code will not save you. rats</span>
+0045 
+0046 <span class="comment">%figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');</span>
+0047 fFy = Filtered.getDataAsTS([fastleg <span class="string">'Fy'</span>]);
+0048 sFy = Filtered.getDataAsTS([slowleg <span class="string">'Fy'</span>]);
+0049 
+0050 FastLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+0051 SlowLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+0052 <span class="keyword">if</span> Filtered.isaLabel(<span class="string">'HFx'</span>)
+0053     handrailData=Filtered.getDataAsTS({<span class="string">'HFy'</span>,<span class="string">'HFz'</span>});
+0054 <span class="keyword">elseif</span> Filtered.isaLabel(<span class="string">'XFx'</span>)
+0055     handrailData=Filtered.getDataAsTS({<span class="string">'XFy'</span>,<span class="string">'XFz'</span>});
+0056     warning(<span class="string">'Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).'</span>)
+0057 <span class="keyword">else</span>
+0058     handrailData=[];
+0059     warning(<span class="string">'Found no handrail force data.'</span>)
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="comment">% adding the force-plates data overground</span>
+0063 
+0064 <span class="comment">% forces = GRFData.labels(~contains(GRFData.labels , 'M'))</span>
+0065 <span class="comment">% forces = forces(~contains(forces , 'H')) %Remove the handrail from the data</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">% if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM')</span>
+0068 <span class="comment">%     Allz = forces(contains(forces , 'z'));</span>
+0069 <span class="comment">%     Ally = forces(contains(forces , 'y'));</span>
+0070 <span class="comment">% %     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};</span>
+0071 <span class="comment">% %     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};</span>
+0072 <span class="comment">% else</span>
+0073 <span class="comment">%     Allz = {'LFz','RFz'};</span>
+0074 <span class="comment">%     Ally = {'LFy','RFy'};</span>
+0075 <span class="comment">% end</span>
+0076 
+0077 Allz = {<span class="string">'FP4Fz'</span>,<span class="string">'FP5Fz'</span>,<span class="string">'FP6Fz'</span>,<span class="string">'FP7Fz'</span>,<span class="string">'LFz'</span>,<span class="string">'RFz'</span>};
+0078 Ally = {<span class="string">'FP4Fy'</span>,<span class="string">'FP5Fy'</span>,<span class="string">'FP6Fy'</span>,<span class="string">'FP7Fy'</span>,<span class="string">'LFy'</span>,<span class="string">'RFy'</span>};
+0079 OGFPy_names = {<span class="string">'FP4Fy'</span>,<span class="string">'FP5Fy'</span>,<span class="string">'FP6Fy'</span>,<span class="string">'FP7Fy'</span>};
+0080 OGFPz_names = {<span class="string">'FP4Fz'</span>,<span class="string">'FP5Fz'</span>,<span class="string">'FP6Fz'</span>,<span class="string">'FP7Fz'</span>};
+0081 
+0082 
+0083 <span class="keyword">for</span> j = 1:length(Ally)
+0084     <span class="keyword">if</span> Filtered.isaLabel(Ally{j})
+0085         OGFP.(Ally{j}) = Filtered.getDataAsTS(Ally{j});
+0086         FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+0087         SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+0088     <span class="keyword">else</span>
+0089         OGFP.(Ally{j}) = [];
+0090         FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+0091         SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="keyword">for</span> i=1:length(strideEvents.tSHS)-1
+0096     SHS=strideEvents.tSHS(i);
+0097     FTO=strideEvents.tFTO(i);
+0098     FHS=strideEvents.tFHS(i);
+0099     STO=strideEvents.tSTO(i);
+0100     FTO2=strideEvents.tFTO2(i);
+0101     SHS2=strideEvents.tSHS2(i);
+0102     
+0103     <span class="keyword">if</span> isnan(FTO) || isnan(FHS) || FTO&gt;FHS
+0104         <span class="comment">%nop</span>
+0105     <span class="keyword">else</span>
+0106         FastLegOffSetData(i)=nanmedian(fFy.split(FTO, FHS).Data);
+0107     <span class="keyword">end</span>
+0108     <span class="keyword">if</span> isnan(STO) || isnan(SHS2)
+0109         <span class="comment">%nop</span>
+0110     <span class="keyword">else</span>
+0111         SlowLegOffSetData(i)=nanmedian(sFy.split(STO, SHS2).Data);
+0112     <span class="keyword">end</span>
+0113     
+0114     <span class="keyword">for</span> j = 1:length(Ally)
+0115         <span class="keyword">if</span> Filtered.isaLabel(Ally{j})
+0116         FastLegOffSetData_OGFP.(Ally{j})(i) = nanmedian(OGFP.(Ally{j}).split(FTO, FHS).Data);
+0117         SlowLegOffSetData_OGFP.(Ally{j})(i) = nanmedian(OGFP.(Ally{j}).split(STO, SHS2).Data);
+0118         <span class="keyword">end</span>
+0119     <span class="keyword">end</span>
+0120 <span class="keyword">end</span>
+0121 FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
+0122 SlowLegOffSet=round(nanmedian(SlowLegOffSetData), 3);
+0123 display([<span class="string">'Fast Leg Offset: '</span> num2str(FastLegOffSet) <span class="string">', Slow Leg Offset: '</span> num2str(SlowLegOffSet)]);
+0124 
+0125 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg <span class="string">'Fy'</span>]))) = Filtered.getDataAsVector([fastleg <span class="string">'Fy'</span>]) - FastLegOffSet;
+0126 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg <span class="string">'Fy'</span>]))) = Filtered.getDataAsVector([slowleg <span class="string">'Fy'</span>]) - SlowLegOffSet;
+0127 
+0128 
+0129 <span class="keyword">for</span> j = 1:length(Ally)
+0130     
+0131     FastLegOffSet_OGFP.(Ally{j}) = round(nanmedian(FastLegOffSetData_OGFP.(Ally{j})), 3);
+0132     FilteredF.Data(:, find(strcmp(FilteredF.getLabels,Ally{j}))) = FilteredF.getDataAsVector(Ally{j}) - FastLegOffSet_OGFP.(Ally{j});
+0133     
+0134     SlowLegOffSet_OGFP.(Ally{j}) = round(nanmedian(SlowLegOffSetData_OGFP.(Ally{j})), 3);
+0135     FilteredS.Data(:, find(strcmp(FilteredS.getLabels,Ally{j}))) = FilteredS.getDataAsVector(Ally{j}) - SlowLegOffSet_OGFP.(Ally{j});
+0136     
+0137 <span class="keyword">end</span>
+0138 
+0139 
+0140 <span class="comment">%figure; plot(Filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])</span>
+0141 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0142 LevelofInterest = 0.5.*flipIT.*cosd(90-abs(ang)); <span class="comment">%The actual angle of the incline</span>
+0143 
+0144 <span class="comment">% pre-defining variables</span>
+0145 lenny=length(strideEvents.tSHS)-1;
+0146 impactS_all=NaN(1, lenny); impactF_all=NaN(1, lenny);
+0147 SB_all=NaN(1, lenny); SP_all=NaN(1, lenny); SZ_all=NaN(1, lenny); SX_all=NaN(1, lenny);
+0148 FB_all=NaN(1, lenny); FP_all=NaN(1, lenny); FZ_all=NaN(1, lenny); FX_all=NaN(1, lenny);
+0149 HandrailHolding=NaN(1, lenny);
+0150 SBmax_all=NaN(1, lenny); SPmax_all=NaN(1, lenny); SZmax_all=NaN(1, lenny); SXmax_all=NaN(1, lenny);
+0151 impactSmax_all=NaN(1, lenny); impactFmax_all=NaN(1, lenny);
+0152 FBmax_all=NaN(1, lenny); FPmax_all=NaN(1, lenny); FZmax_all=NaN(1, lenny); FXmax_all=NaN(1, lenny);
+0153 
+0154 <span class="keyword">for</span> j = 1:length(Ally)
+0155     impactS_OGFP.(Ally{j}) = NaN(1, lenny); impactF_OGFP.(Ally{j}) = NaN(1, lenny);
+0156     SB_OGFP.(Ally{j}) = NaN(1, lenny); SP_OGFP.(Ally{j}) = NaN(1, lenny); SZ_OGFP.(Ally{j}) = NaN(1, lenny); SX_OGFP.(Ally{j}) = NaN(1, lenny);
+0157     FB_OGFP.(Ally{j}) = NaN(1, lenny); FP_OGFP.(Ally{j}) = NaN(1, lenny); FZ_OGFP.(Ally{j}) = NaN(1, lenny); FX_OGFP.(Ally{j}) = NaN(1, lenny);
+0158     SBmax_OGFP.(Ally{j}) = NaN(1, lenny); SPmax_OGFP.(Ally{j}) = NaN(1, lenny); SZmax_OGFP.(Ally{j}) = NaN(1, lenny); SXmax_OGFP.(Ally{j}) = NaN(1, lenny);
+0159     impactSmax_OGFP.(Ally{j}) = NaN(1, lenny); impactFmax_OGFP.(Ally{j}) = NaN(1, lenny);
+0160     FBmax_OGFP.(Ally{j}) = NaN(1, lenny); FPmax_OGFP.(Ally{j}) = NaN(1, lenny); FZmax_OGFP.(Ally{j}) = NaN(1, lenny);FXmax_OGFP.(Ally{j}) = NaN(1, lenny);
+0161 <span class="keyword">end</span>
+0162 
+0163 i_slow = 0; i_fast = 0;
+0164 SlowCount_force = 0; SlowCount_no_force = 0;
+0165 FastCount_force = 0; FastCount_no_force = 0;
+0166 
+0167 <span class="keyword">for</span> i=1:length(strideEvents.tSHS)-1
+0168     <span class="comment">% get the filtered data for the slow and fast stance phases</span>
+0169     filteredSlowStance = FilteredS.split(SHS, STO);
+0170     filteredFastStance = FilteredF.split(FHS, FTO2);
+0171 
+0172     <span class="comment">% get the filtered data for the slow and fast single stance phases</span>
+0173     filteredSlowSingleStance = FilteredS.split(FTO, FHS);
+0174     filteredFastSingleStance = FilteredF.split(STO, SHS2);
+0175     
+0176     <span class="comment">% Getting the events</span>
+0177     SHS=strideEvents.tSHS(i); FTO=strideEvents.tFTO(i); FHS=strideEvents.tFHS(i); STO=strideEvents.tSTO(i); SHS2=strideEvents.tSHS2(i); FTO2=strideEvents.tFTO2(i);
+0178     
+0179     <span class="keyword">if</span> isnan(SHS) || isnan(STO) <span class="comment">% make sure the slow events are not empty</span>
+0180         striderSy_all = []; striderSz_all = [];
+0181         <span class="keyword">for</span> j = 1:length(Ally)
+0182             striderSy_OGFP.(Ally{j}) = [];
+0183             striderSy_OGFP_SS.(Ally{j}) = [];
+0184             
+0185             striderSy_OGFP.(Allz{j}) = [];
+0186             striderSy_OGFP_SS.(Allz{j}) = [];
+0187         <span class="keyword">end</span>
+0188         striderSy_OGFP_sum = []; striderSz_OGFP_sum = [];
+0189         exist_SlowF(i) = 0;
+0190         
+0191     <span class="keyword">else</span> <span class="comment">%FILTERING</span>
+0192         striderSy_OGFP_sum = 0; striderSz_OGFP_sum = 0;
+0193         
+0194         <span class="keyword">for</span> j = 1:length(Ally)
+0195             <span class="comment">% getting each force-plate value during stance</span>
+0196             striderSy_OGFP.(Ally{j}) = flipIT.*filteredSlowStance.getDataAsVector(Ally{j})/Normalizer;
+0197             striderSz_OGFP.(Allz{j}) = flipIT.*filteredSlowStance.getDataAsVector(Allz{j})/Normalizer;
+0198             
+0199             <span class="comment">% getting each force-plate value during single stance</span>
+0200             striderSy_OGFP_SS.(Ally{j}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Ally{j})/Normalizer;
+0201             striderSz_OGFP_SS.(Allz{j}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Allz{j})/Normalizer;
+0202             <span class="comment">% adding all forces together</span>
+0203             striderSy_OGFP_sum = striderSy_OGFP_sum + striderSy_OGFP_SS.(Ally{j});
+0204             striderSz_OGFP_sum = striderSz_OGFP_sum + striderSz_OGFP_SS.(Allz{j});
+0205 <span class="comment">%                         figure()</span>
+0206 <span class="comment">%                         plot(striderSy_OGFP.(Ally{j}))</span>
+0207         <span class="keyword">end</span>
+0208         
+0209         <span class="keyword">if</span> abs(min(striderSz_OGFP_sum)) &gt; bw_th_min
+0210             sum_l = floor(length(striderSy_OGFP_sum)/2);
+0211             <span class="keyword">if</span> max(striderSy_OGFP_sum(1:sum_l)) &gt; max(striderSy_OGFP_sum(sum_l:end))
+0212                 striderSy_OGFP_sum = -striderSy_OGFP_sum;
+0213             <span class="keyword">end</span>
+0214         <span class="keyword">else</span>
+0215             striderSy_OGFP_sum = []; striderSz_OGFP_sum = [];
+0216         <span class="keyword">end</span>
+0217         
+0218         <span class="keyword">if</span> abs(min(striderSz_OGFP_sum)) &gt; 0.1 <span class="comment">% checking if the force is avaliable</span>
+0219             SlowCount_force = SlowCount_force + 1;
+0220             exist_SlowF(i) = 1;
+0221         <span class="keyword">else</span>
+0222             SlowCount_no_force = SlowCount_no_force + 1;
+0223             exist_SlowF(i) = 0;
+0224         <span class="keyword">end</span>
+0225         
+0226         slow_divider = floor(length(striderSz_OGFP.(<span class="string">'LFz'</span>))/divideri);
+0227         good_counter = 0; OGFPy_slow = [];
+0228         <span class="keyword">for</span> j = 1:length(Allz)
+0229             <span class="keyword">if</span> isempty(striderSz_OGFP.(Allz{j})) == 0
+0230 <span class="comment">%                 mini_1st.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(1:end)));</span>
+0231                 mini_1st.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(slow_divider:slow_divider*3)));
+0232                 mini_2nd.(Allz{j}) = abs(min(striderSz_OGFP.(Allz{j})(slow_divider*5:slow_divider*7)));
+0233                 
+0234                 <span class="keyword">if</span> mini_1st.(Allz{j}) &gt;= bw_th_min &amp;&amp; mini_2nd.(Allz{j}) &gt;= bw_th_min &amp;&amp; abs(striderSz_OGFP.(Allz{j})(1)) &lt;= early_th &amp;&amp; abs(striderSz_OGFP.(Allz{j})(end)) &lt;= end_th
+0235                     OGFPy_slow = Ally{j}; OGFPz_slow = Allz{j}; good_counter = good_counter + 1;
+0236                 <span class="keyword">end</span>
+0237             <span class="keyword">end</span>
+0238         <span class="keyword">end</span>
+0239         
+0240         
+0241         <span class="keyword">if</span> good_counter == 1 &amp;&amp; isempty(OGFPy_slow) == 0 <span class="comment">% check if a stride has a good for at least on one of the force-plates</span>
+0242             
+0243             striderSy_all = flipIT.*filteredSlowStance.getDataAsVector(OGFPy_slow)/Normalizer;
+0244             striderSz_all = flipIT.*filteredSlowStance.getDataAsVector(OGFPz_slow)/Normalizer;
+0245 
+0246             
+0247             <span class="keyword">if</span> isempty(striderSy_all)
+0248                 striderSz_all = [];
+0249             <span class="keyword">elseif</span> max(striderSy_all(slow_divider:slow_divider*3)) &gt; max(striderSy_all(slow_divider*5:slow_divider*7)) 
+0250                 striderSy_all = -striderSy_all;
+0251                 striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
+0252                 
+0253                 <span class="keyword">if</span> strcmp(trialData.metaData.name,<span class="string">'adaptation'</span>) &amp;&amp; nanmean(striderSy_all) &lt; 0
+0254                     striderSy_all = -striderSy_all;
+0255                     striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
+0256                 <span class="keyword">end</span>
+0257             <span class="keyword">end</span>
+0258         <span class="keyword">else</span>
+0259             striderSy_all=[]; striderSz_all = [];
+0260         <span class="keyword">end</span>
+0261     <span class="keyword">end</span>
+0262     
+0263     <span class="keyword">if</span> isnan(FHS) || isnan(FTO2) <span class="comment">% make sure the slow events are not empty</span>
+0264         striderFy_all = []; striderFz_all = [];
+0265         <span class="keyword">for</span> j = 1:length(Ally)
+0266             striderFy_OGFP.(Ally{j}) = [];
+0267         <span class="keyword">end</span>
+0268         striderFy_OGFP_sum = []; striderFz_OGFP_sum = [];
+0269         exist_FastF(i) = 0;
+0270     <span class="keyword">else</span> <span class="comment">%FILTERING</span>
+0271         striderFy_OGFP_sum = 0; striderFz_OGFP_sum = 0;
+0272         
+0273         <span class="keyword">for</span> j = 1:length(Ally)
+0274             
+0275             striderFy_OGFP.(Ally{j}) = flipIT.*filteredFastStance.getDataAsVector(Ally{j})/Normalizer;
+0276             striderFz_OGFP.(Allz{j}) = flipIT.*filteredFastStance.getDataAsVector(Allz{j})/Normalizer;
+0277             
+0278             striderFy_OGFP_SS.(Ally{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Ally{j})/Normalizer;
+0279             striderFz_OGFP_SS.(Allz{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Allz{j})/Normalizer;
+0280             
+0281             striderFy_OGFP_sum = striderFy_OGFP_sum + striderFy_OGFP_SS.(Ally{j});
+0282             striderFz_OGFP_sum = striderFz_OGFP_sum + striderFz_OGFP_SS.(Allz{j});
+0283             
+0284 <span class="comment">%             [alignedTS,originalDurations] = stridedTSToAlignedTS(filteredFastStance,100)</span>
+0285 <span class="comment">%</span>
+0286 <span class="comment">%             filteredFastStance.stridedTSToAlignedTS(100);</span>
+0287 <span class="comment">%             filteredFastStance.align(gaitEvents,{'FHS','SHS2'},[15,30]);</span>
+0288         <span class="keyword">end</span>
+0289         
+0290         <span class="keyword">if</span> abs(min(striderFz_OGFP_sum)) &gt; 0.1 <span class="comment">% checking if the force is avaliable</span>
+0291             FastCount_force = FastCount_force + 1;
+0292             exist_FastF(i) = 1;
+0293             
+0294             sum_l = floor(length(striderFy_OGFP_sum)/2);
+0295             <span class="keyword">if</span> max(striderFy_OGFP_sum(1:sum_l)) &gt; max(striderFy_OGFP_sum(sum_l:end))
+0296                 striderFy_OGFP_sum = -striderFy_OGFP_sum;
+0297             <span class="keyword">end</span>
+0298         <span class="keyword">else</span>
+0299             FastCount_no_force = FastCount_no_force + 1;
+0300             exist_FastF(i) = 0;
+0301             striderFy_OGFP_sum = []; striderFz_OGFP_sum = [];
+0302         <span class="keyword">end</span>
+0303         
+0304         midway_fast = floor(length(striderFz_OGFP.(<span class="string">'LFz'</span>))/divideri);
+0305         good_counter = 0; OGFPy_fast = [];
+0306         <span class="keyword">for</span> j = 1:length(Allz)
+0307             <span class="keyword">if</span> isempty(striderFz_OGFP.(Allz{j})) == 0
+0308 <span class="comment">%                 mini_1st.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(1:end)));</span>
+0309                 mini_1st.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(midway_fast:midway_fast*3)));
+0310                 mini_2nd.(Allz{j}) = abs(min(striderFz_OGFP.(Allz{j})(midway_fast*5:midway_fast*7)));
+0311                 
+0312                 <span class="keyword">if</span> mini_1st.(Allz{j}) &gt;= bw_th_min &amp;&amp; mini_2nd.(Allz{j}) &gt;= bw_th_min &amp;&amp; abs(striderFz_OGFP.(Allz{j})(1)) &lt;= early_th &amp;&amp; abs(striderFz_OGFP.(Allz{j})(end)) &lt;= end_th
+0313                     OGFPy_fast = Ally{j}; OGFPz_fast = Allz{j}; good_counter = good_counter + 1;
+0314                 <span class="keyword">end</span>
+0315             <span class="keyword">end</span>
+0316         <span class="keyword">end</span>
+0317         
+0318         <span class="keyword">if</span> good_counter == 1 &amp;&amp; isempty(OGFPy_fast) == 0
+0319             
+0320             striderFy_all = flipIT.*filteredFastStance.getDataAsVector(OGFPy_fast)/Normalizer;
+0321             striderFz_all = flipIT.*filteredFastStance.getDataAsVector(OGFPz_fast)/Normalizer;
+0322             <span class="keyword">if</span> isempty(striderFy_all)
+0323                 striderFz_all = [];
+0324             <span class="keyword">elseif</span> max(striderFy_all(midway_fast:midway_fast*3)) &gt; max(striderFy_all(midway_fast*5:midway_fast*7))
+0325                 striderFy_all = -striderFy_all;
+0326                 striderFy_OGFP_SS.(OGFPy_fast) = -striderFy_OGFP_SS.(OGFPy_fast);
+0327             <span class="keyword">end</span>
+0328         <span class="keyword">else</span>
+0329             striderFy_all = []; striderFz_all = [];
+0330         <span class="keyword">end</span>
+0331     <span class="keyword">end</span>
+0332     
+0333     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check if the participant is holding the handrail %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0334 
+0335     <span class="keyword">if</span> ~isempty(handrailData)
+0336         HandrailHolding(i)= .05 &lt; sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2,2)))/Normalizer;
+0337     <span class="keyword">else</span>
+0338         HandrailHolding(i)=NaN;
+0339     <span class="keyword">end</span>
+0340     
+0341     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for the force plate that a good stance occures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0342     
+0343     <span class="keyword">if</span> isempty(striderSy_all) || all(striderSy_all==striderSy_all(1)) || isempty(FTO) || isempty(STO)<span class="comment">% So if there is some sort of problem with the GRF, set everything to NaN</span>
+0344         <span class="comment">%This does nothing, as vars are initialized as nan:</span>
+0345     <span class="keyword">else</span>
+0346         <span class="keyword">if</span> nanstd(striderSy_all)&lt;0.01 &amp;&amp; nanmean(striderSy_all)&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0347             
+0348         <span class="keyword">else</span>
+0349             ns_all = find((striderSy_all-LevelofInterest)&lt;0.1);<span class="comment">%1:65</span>
+0350             ps_all = find((striderSy_all-LevelofInterest)&gt;0);
+0351             
+0352 <span class="comment">%             if strcmp(trialData.metaData.name,'adaptation')</span>
+0353 <span class="comment">%                 ns_all(find(ns_all&gt;=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0354 <span class="comment">%                 ps_all(find(ps_all&lt;=0.5*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0355 <span class="comment">%</span>
+0356 <span class="comment">%                 ns_all(find(ns_all&lt;=0.05*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0357 <span class="comment">%                 ps_all(find(ps_all&gt;=0.95*length(striderSy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0358 <span class="comment">%</span>
+0359 <span class="comment">%             else</span>
+0360                 
+0361                 
+0362                 ns_all(find(ns_all&gt;=0.5*length(striderSy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0363                 ps_all(find(ps_all&lt;=0.5*length(striderSy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0364                 
+0365                 ns_all(find(ns_all&lt;=0.12*length(striderSy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0366                 ps_all(find(ps_all&gt;=0.95*length(striderSy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0367 <span class="comment">%             end</span>
+0368             
+0369             ImpactMagS_all = find((striderSy_all-LevelofInterest)==nanmax(striderSy_all(1:75)-LevelofInterest));<span class="comment">%no longer percent of stride</span>
+0370             <span class="keyword">if</span> isempty(ImpactMagS_all)<span class="comment">%~=1</span>
+0371                 postImpactS_all = ns_all(find(ns_all&gt;ImpactMagS_all(end), 1, <span class="string">'first'</span>));
+0372                 <span class="keyword">if</span> isempty(postImpactS_all)<span class="comment">%~=1</span>
+0373                     ps_all(find(ps_all&lt;postImpactS_all))=[];
+0374                     ns_all(find(ns_all&lt;postImpactS_all))=[];
+0375                 <span class="keyword">end</span>
+0376             <span class="keyword">end</span>
+0377             
+0378             <span class="keyword">if</span> isempty(ns_all)
+0379                 
+0380             <span class="keyword">else</span>
+0381                 SB_all(i) = FlipB.*(nanmean(striderSy_all(ns_all)-LevelofInterest));
+0382                 SBmax_all(i) = FlipB.*(nanmin(striderSy_all(ns_all)-LevelofInterest));
+0383             <span class="keyword">end</span>
+0384             <span class="keyword">if</span> isempty(ps_all)
+0385                 
+0386             <span class="keyword">else</span>
+0387                 SP_all(i)=nanmean(striderSy_all(ps_all)-LevelofInterest);
+0388                 SPmax_all(i)=nanmax(striderSy_all(ps_all)-LevelofInterest);
+0389             <span class="keyword">end</span>
+0390             
+0391             <span class="keyword">if</span> exist(<span class="string">'postImpactS_all'</span>)==0 || isempty(postImpactS_all)==1
+0392                 <span class="comment">%                     impactS(i)=NaN;</span>
+0393                 <span class="comment">%                     impactSmax(i)=NaN;</span>
+0394             <span class="keyword">else</span>
+0395                 impactS_all(i)=nanmean(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)&gt;0)))-LevelofInterest;
+0396                 <span class="keyword">if</span> isempty(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)&gt;0)))
+0397                     <span class="comment">%impactSmax(i)=NaN;</span>
+0398                 <span class="keyword">else</span>
+0399                     impactSmax_all(i)=nanmax(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)&gt;0)))-LevelofInterest;
+0400                 <span class="keyword">end</span>
+0401             <span class="keyword">end</span>
+0402             
+0403             i_slow = i_slow+1;
+0404             OGFPy_slowi(i_slow) = {OGFPy_slow};
+0405             OGFPz_slowi(i_slow) = {OGFPz_slow};
+0406             str_striderSy.([OGFPy_slow num2str(i_slow)]) = striderSy_all;
+0407             str_striderSz.([OGFPz_slow num2str(i_slow)]) = striderSz_all;
+0408             
+0409 
+0410 
+0411 
+0412             
+0413 <span class="comment">%             figure (trialData.metaData.condition*10-8)</span>
+0414 <span class="comment">%             hold on</span>
+0415 <span class="comment">%             plot(striderSy_all-LevelofInterest,'b')</span>
+0416 <span class="comment">%             if isempty(SBmax_all(i)) == 0 &amp;&amp; isempty(SPmax_all(i)) == 0</span>
+0417 <span class="comment">%                 if  isempty(find(striderSy_all-LevelofInterest == SBmax_all(i))) || isempty(find(striderSy_all-LevelofInterest == SPmax_all(i)))</span>
+0418 <span class="comment">%                 else</span>
+0419 <span class="comment">%                     SBmax_ind(i_slow) = find(striderSy_all-LevelofInterest == SBmax_all(i));</span>
+0420 <span class="comment">%                     plot(SBmax_ind(i_slow),SBmax_all(i),'k*')</span>
+0421 <span class="comment">%                     SPmax_ind(i_slow) = find(striderSy_all-LevelofInterest == SPmax_all(i));</span>
+0422 <span class="comment">%                     plot(SPmax_ind(i_slow),SPmax_all(i),'k*')</span>
+0423 <span class="comment">%                 end</span>
+0424 <span class="comment">%             end</span>
+0425 <span class="comment">%             title(['Slow Ground reaction Forces with Peaks' '     ' trialData.metaData.name])</span>
+0426             
+0427 <span class="comment">%             if isempty(striderSy_OGFP_SS.(OGFPy_slow)) == 0</span>
+0428 <span class="comment">%             if  isempty(find(striderSy_all == striderSy_OGFP_SS.(OGFPy_slow)(1)))</span>
+0429 <span class="comment">%             else</span>
+0430 <span class="comment">%                 slow_SS_ind(i_slow) = find(striderSy_all == striderSy_OGFP_SS.(OGFPy_slow)(1));</span>
+0431 <span class="comment">%                 plot(slow_SS_ind(i_slow):slow_SS_ind(i_slow)+length(striderSy_OGFP_SS.(OGFPy_slow))-1,striderSy_OGFP_SS.(OGFPy_slow),'r*')</span>
+0432 <span class="comment">%                 hold off</span>
+0433 <span class="comment">%                 title(['Slow Single Stance Overlapped' '     ' trialData.metaData.name])</span>
+0434 <span class="comment">%                 saveas(gcf,['SlowOverlapped_' trialData.metaData.name],'png')</span>
+0435 <span class="comment">%             end</span>
+0436 <span class="comment">%             end</span>
+0437 <span class="comment">%             figure (trialData.metaData.condition*10-7)</span>
+0438 <span class="comment">%             plot(str_striderSz.([OGFPz_slowi{i_slow} num2str(i_slow)]),'Color',[1,0,0])</span>
+0439 <span class="comment">%             for yo=1:8</span>
+0440 <span class="comment">%                 line([yo*slow_divider yo*slow_divider], get(gca, 'ylim'),'Color',[0 0 0])</span>
+0441 <span class="comment">%             end</span>
+0442 
+0443         <span class="keyword">end</span>
+0444         SZ_all(i)=-1*nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0445         SX_all(i)=nanmean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0446         SZmax_all(i)=-1*nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0447         SXmax_all(i)=nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0448     <span class="keyword">end</span>
+0449     
+0450     <span class="comment">%%Now for the fast leg...</span>
+0451     <span class="keyword">if</span> isempty(striderFy_all) || all(striderFy_all==striderFy_all(1)) || isempty(FTO) || isempty(STO)
+0452         
+0453     <span class="keyword">else</span>
+0454         <span class="keyword">if</span> nanstd(striderFy_all)&lt;0.01 &amp;&amp; nanmean(striderFy_all)&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0455             
+0456         <span class="keyword">else</span>
+0457             nf_all=find((striderFy_all-LevelofInterest)&lt;0.1);<span class="comment">%1:65</span>
+0458             pf_all=find((striderFy_all-LevelofInterest)&gt;0);
+0459             
+0460 <span class="comment">%             if strcmp(trialData.metaData.name,'adaptation')</span>
+0461 <span class="comment">%                 nf_all(find(nf_all&gt;=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0462 <span class="comment">%                 pf_all(find(pf_all&lt;=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0463 <span class="comment">%</span>
+0464 <span class="comment">%                 nf_all(find(nf_all&lt;=0.12*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0465 <span class="comment">%                 pf_all(find(pf_all&gt;=0.95*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0466 <span class="comment">%</span>
+0467 <span class="comment">%             else</span>
+0468                 
+0469                 
+0470                 nf_all(find(nf_all&gt;=0.5*length(striderFy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0471                 pf_all(find(pf_all&lt;=0.5*length(striderFy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0472                 
+0473                 nf_all(find(nf_all&lt;=0.12*length(striderFy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS</span>
+0474                 pf_all(find(pf_all&gt;=0.95*length(striderFy_all)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0475 <span class="comment">%             end</span>
+0476             
+0477             ImpactMagF_all=find((striderFy_all-LevelofInterest)==nanmax(striderFy_all(1:75)-LevelofInterest));<span class="comment">%1:15</span>
+0478             <span class="keyword">if</span> isempty(ImpactMagF_all)<span class="comment">%~=1</span>
+0479                 postImpactF_all=nf_all(find(nf_all&gt;ImpactMagF_all(end), 1, <span class="string">'first'</span>));
+0480                 <span class="keyword">if</span> isempty(postImpactF_all)<span class="comment">%~=1</span>
+0481                     pf_all(find(pf_all&lt;postImpactF_all))=[];
+0482                     nf_all(find(nf_all&lt;postImpactF_all))=[];
+0483                 <span class="keyword">end</span>
+0484             <span class="keyword">end</span>
+0485             
+0486             <span class="keyword">if</span> isempty(pf_all)
+0487                 
+0488             <span class="keyword">else</span>
+0489                 FP_all(i)=nanmean(striderFy_all(pf_all)-LevelofInterest);
+0490                 FPmax_all(i)=nanmax(striderFy_all(pf_all)-LevelofInterest);
+0491             <span class="keyword">end</span>
+0492             <span class="keyword">if</span> isempty(nf_all)
+0493                 
+0494             <span class="keyword">else</span>
+0495                 FB_all(i)=FlipB.*(nanmean(striderFy_all(nf_all)-LevelofInterest));
+0496                 FBmax_all(i)=FlipB.*(nanmin(striderFy_all(nf_all)-LevelofInterest));
+0497             <span class="keyword">end</span>
+0498             
+0499             <span class="keyword">if</span> exist(<span class="string">'postImpactF_all'</span>)==0 || isempty(postImpactF_all)==1
+0500                 
+0501             <span class="keyword">else</span>
+0502                 impactF_all(i)=nanmean(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)&gt;0)))-LevelofInterest;
+0503                 <span class="keyword">if</span> isempty(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)&gt;0)))
+0504                     
+0505                 <span class="keyword">else</span>
+0506                     impactFmax_all(i)=nanmax(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)&gt;0)))-LevelofInterest;
+0507                 <span class="keyword">end</span>
+0508             <span class="keyword">end</span>
+0509             
+0510             i_fast = i_fast+1;
+0511             OGFPy_fasti(i_fast) = {OGFPy_fast};
+0512             OGFPz_fasti(i_fast) = {OGFPz_fast};
+0513             str_striderFy.([OGFPy_fast num2str(i_fast)]) = striderFy_all;
+0514             str_striderFz.([OGFPz_fast num2str(i_fast)]) = striderFz_all;
+0515 
+0516 <span class="comment">%             figure (trialData.metaData.condition*10-6)</span>
+0517 <span class="comment">%             hold on</span>
+0518 <span class="comment">%             plot(striderFy_all-LevelofInterest,'r')</span>
+0519 <span class="comment">%             if isempty(FBmax_all(i)) == 0 &amp;&amp; isempty(FPmax_all(i)) == 0</span>
+0520 <span class="comment">%                 if  isempty(find(striderFy_all-LevelofInterest == FBmax_all(i))) || isempty(find(striderFy_all-LevelofInterest == FPmax_all(i)))</span>
+0521 <span class="comment">%                 else</span>
+0522 <span class="comment">%                     FBmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FBmax_all(i));</span>
+0523 <span class="comment">%                     plot(FBmax_ind(i_fast),FBmax_all(i),'k*')</span>
+0524 <span class="comment">%                     FPmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FPmax_all(i));</span>
+0525 <span class="comment">%                     plot(FPmax_ind(i_fast),FPmax_all(i),'k*')</span>
+0526 <span class="comment">%                 end</span>
+0527 <span class="comment">%             end</span>
+0528 <span class="comment">%             title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])</span>
+0529 <span class="comment">%             hold on</span>
+0530 <span class="comment">%             plot(striderFy_all,'b')</span>
+0531 <span class="comment">%             if  isempty(find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1)))</span>
+0532 <span class="comment">%             else</span>
+0533 <span class="comment">%                 fast_SS_ind(i_fast) = find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1));</span>
+0534 <span class="comment">%                 plot(fast_SS_ind(i_fast):fast_SS_ind(i_fast)+length(striderFy_OGFP_SS.(OGFPy_fast))-1,striderFy_OGFP_SS.(OGFPy_fast),'r*')</span>
+0535 <span class="comment">%                 hold off</span>
+0536 <span class="comment">%                 title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])</span>
+0537 <span class="comment">%                 saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')</span>
+0538 <span class="comment">%             end</span>
+0539         <span class="keyword">end</span>
+0540         FZ_all(i)=-1*nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) <span class="string">'z'</span>]))/Normalizer; <span class="comment">%%[OGFPy_fast(1:end-1) 'z']</span>
+0541         FX_all(i)=nanmean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0542         FZmax_all(i)=-1*nanmin(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0543         FXmax_all(i)=nanmax(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0544     <span class="keyword">end</span>
+0545     
+0546     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for adding all forces toghether %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0547 
+0548     <span class="keyword">if</span> isempty(striderSy_OGFP_sum) || all(striderSy_OGFP_sum==striderSy_OGFP_sum(1)) || isempty(FTO) || isempty(STO)<span class="comment">% So if there is some sort of problem with the GRF, set everything to NaN</span>
+0549         <span class="comment">%This does nothing, as vars are initialized as nan:</span>
+0550         SBmax_OGFP_sum(i) = NaN;
+0551         SPmax_OGFP_sum(i) = NaN;
+0552     <span class="keyword">else</span>
+0553         <span class="keyword">if</span> nanstd(striderSy_OGFP_sum)&lt;0.01 &amp;&amp; nanmean(striderSy_OGFP_sum)&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0554             
+0555         <span class="keyword">else</span>
+0556             ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)&lt;0);<span class="comment">%1:65</span>
+0557             ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)&gt;0);
+0558             
+0559             <span class="comment">%             ImpactMagS_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)==nanmax(striderSy_OGFP_sum(1:75)-LevelofInterest));%no longer percent of stride</span>
+0560             <span class="comment">%             if isempty(ImpactMagS_OGFP_sum)~=1</span>
+0561             <span class="comment">%                 postImpactS_OGFP_sum = ns_OGFP_sum(find(ns_OGFP_sum&gt;ImpactMagS_OGFP_sum(end), 1, 'first'));</span>
+0562             <span class="comment">%                 if isempty(postImpactS_OGFP_sum)~=1</span>
+0563             <span class="comment">%                     ps_OGFP_sum(find(ps_OGFP_sum&lt;postImpactS_OGFP_sum))=[];</span>
+0564             <span class="comment">%                     ns_OGFP_sum(find(ns_OGFP_sum&lt;postImpactS_OGFP_sum))=[];</span>
+0565             <span class="comment">%                 end</span>
+0566             <span class="comment">%             end</span>
+0567             
+0568             <span class="keyword">if</span> isempty(ns_OGFP_sum)
+0569                 SBmax_OGFP_sum(i) = NaN;
+0570             <span class="keyword">else</span>
+0571                 SB_OGFP_sum(i) = FlipB.*(nanmean(striderSy_OGFP_sum(ns_OGFP_sum)-LevelofInterest));
+0572                 SBmax_OGFP_sum(i) = FlipB.*(nanmin(striderSy_OGFP_sum(ns_OGFP_sum)-LevelofInterest));
+0573             <span class="keyword">end</span>
+0574             <span class="keyword">if</span> isempty(ps_OGFP_sum)
+0575                 SPmax_OGFP_sum(i)= NaN;
+0576             <span class="keyword">else</span>
+0577                 SP_OGFP_sum(i)=nanmean(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest);
+0578                 SPmax_OGFP_sum(i)=nanmax(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest);
+0579             <span class="keyword">end</span>
+0580             
+0581             <span class="keyword">if</span> exist(<span class="string">'postImpactS_OGFP_sum'</span>)==0 || isempty(postImpactS_OGFP_sum)==1 || isnan(SHS)
+0582                 <span class="comment">%                     impactS(i)=NaN;</span>
+0583                 <span class="comment">%                     impactSmax(i)=NaN;</span>
+0584                 impactSmax_OGFP_sum(i)= NaN;
+0585             <span class="keyword">else</span>
+0586                 impactS_OGFP_sum(i)=nanmean(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)&gt;0)))-LevelofInterest;
+0587                 <span class="keyword">if</span> isempty(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)&gt;0)))
+0588                     <span class="comment">%impactSmax(i)=NaN;</span>
+0589                 <span class="keyword">else</span>
+0590                     impactSmax_OGFP_sum(i)=nanmax(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)&gt;0)))-LevelofInterest;
+0591                 <span class="keyword">end</span>
+0592             <span class="keyword">end</span>
+0593             
+0594 <span class="comment">%             figure(trialData.metaData.condition*10-5)</span>
+0595 <span class="comment">%             hold on</span>
+0596 <span class="comment">%             plot(striderSz_OGFP_sum)</span>
+0597 <span class="comment">%             figure (trialData.metaData.condition*10-4)</span>
+0598 <span class="comment">%             hold on</span>
+0599 <span class="comment">%             plot(striderSy_OGFP_sum)</span>
+0600             
+0601         <span class="keyword">end</span>
+0602     <span class="keyword">end</span>
+0603     
+0604     <span class="comment">%%Now for the fast leg...</span>
+0605     <span class="keyword">if</span> isempty(striderFy_OGFP_sum) || all(striderFy_OGFP_sum==striderFy_OGFP_sum(1)) || isempty(FTO) || isempty(STO)
+0606         FBmax_OGFP_sum(i) = NaN;
+0607         FPmax_OGFP_sum(i) = NaN;
+0608     <span class="keyword">else</span>
+0609         <span class="keyword">if</span> nanstd(striderFy_OGFP_sum)&lt;0.01 &amp;&amp; nanmean(striderFy_OGFP_sum)&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0610             
+0611         <span class="keyword">else</span>
+0612             nf_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)&lt;0);<span class="comment">%1:65</span>
+0613             pf_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)&gt;0);
+0614             <span class="comment">%             ImpactMagF_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)==nanmax(striderFy_OGFP_sum(1:75)-LevelofInterest));%1:15</span>
+0615             <span class="comment">%             if isempty(ImpactMagF_OGFP_sum)~=1</span>
+0616             <span class="comment">%                 postImpactF_OGFP_sum=nf_OGFP_sum(find(nf_OGFP_sum&gt;ImpactMagF_OGFP_sum(end), 1, 'first'));</span>
+0617             <span class="comment">%                 if isempty(postImpactF_OGFP_sum)~=1</span>
+0618             <span class="comment">%                     pf_OGFP_sum(find(pf_OGFP_sum&lt;postImpactF_OGFP_sum))=[];</span>
+0619             <span class="comment">%                     nf_OGFP_sum(find(nf_OGFP_sum&lt;postImpactF_OGFP_sum))=[];</span>
+0620             <span class="comment">%                 end</span>
+0621             <span class="comment">%             end</span>
+0622             
+0623             <span class="keyword">if</span> isempty(pf_OGFP_sum)
+0624                 FPmax_OGFP_sum(i)= NaN;
+0625             <span class="keyword">else</span>
+0626                 FP_OGFP_sum(i)=nanmean(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest);
+0627                 FPmax_OGFP_sum(i)=nanmax(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest);
+0628             <span class="keyword">end</span>
+0629             <span class="keyword">if</span> isempty(nf_OGFP_sum)
+0630                 FBmax_OGFP_sum(i)= NaN;
+0631             <span class="keyword">else</span>
+0632                 FB_OGFP_sum(i)=FlipB.*(nanmean(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest));
+0633                 FBmax_OGFP_sum(i)=FlipB.*(nanmin(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest));
+0634             <span class="keyword">end</span>
+0635             
+0636             <span class="keyword">if</span> exist(<span class="string">'postImpactF_OGFP_sum'</span>)==0 || isempty(postImpactF_OGFP_sum)==1 || isnan(FHS)==1
+0637                 impactFmax_OGFP_sum(i) = NaN;
+0638             <span class="keyword">else</span>
+0639                 impactF_OGFP_sum(i)=nanmean(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)&gt;0)))-LevelofInterest;
+0640                 <span class="keyword">if</span> isempty(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)&gt;0)))
+0641                     
+0642                 <span class="keyword">else</span>
+0643                     impactFmax_OGFP_sum(i)=nanmax(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)&gt;0)))-LevelofInterest;
+0644                 <span class="keyword">end</span>
+0645             <span class="keyword">end</span>
+0646             
+0647         <span class="keyword">end</span>
+0648         
+0649     <span class="keyword">end</span>
+0650     
+0651     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for each of the overground force-plates %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0652     
+0653     <span class="keyword">for</span> j = 1:length(Ally)
+0654         <span class="keyword">if</span> isempty(striderSy_OGFP.(Ally{j})) || all(striderSy_OGFP.(Ally{j})==striderSy_OGFP.(Ally{j})(1)) || isempty(FTO) || isempty(STO)<span class="comment">% So if there is some sort of problem with the GRF, set everything to NaN</span>
+0655             <span class="comment">%This does nothing, as vars are initialized as nan:</span>
+0656         <span class="keyword">else</span>
+0657             <span class="keyword">if</span> nanstd(striderSy_OGFP.(Ally{j}))&lt;0.01 &amp;&amp; nanmean(striderSy_OGFP.(Ally{j}))&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0658                 
+0659             <span class="keyword">else</span>
+0660                 ns_OGFP.(Ally{j}) = find((striderSy_OGFP.(Ally{j})-LevelofInterest)&lt;0);<span class="comment">%1:65</span>
+0661                 ps_OGFP.(Ally{j}) = find((striderSy_OGFP.(Ally{j})-LevelofInterest)&gt;0);
+0662                 
+0663                 ImpactMagS_OGFP.(Ally{j}) = find((striderSy_OGFP.(Ally{j})-LevelofInterest)==nanmax(striderSy_OGFP.(Ally{j})(1:75)-LevelofInterest));<span class="comment">%no longer percent of stride</span>
+0664                 <span class="keyword">if</span> isempty(ImpactMagS_OGFP.(Ally{j})) ~= 1
+0665                     postImpactS_OGFP.(Ally{j})=ns_OGFP.(Ally{j})(find(ns_OGFP.(Ally{j}) &gt; ImpactMagS_OGFP.(Ally{j})(end), 1, <span class="string">'first'</span>));
+0666                     <span class="keyword">if</span> isempty(postImpactS_OGFP.(Ally{j}))~=1
+0667                         ps_OGFP.(Ally{j})(find(ps_OGFP.(Ally{j})&lt;postImpactS_OGFP.(Ally{j})))=[];
+0668                         ns_OGFP.(Ally{j})(find(ns_OGFP.(Ally{j})&lt;postImpactS_OGFP.(Ally{j})))=[];
+0669                     <span class="keyword">end</span>
+0670                 <span class="keyword">end</span>
+0671                 
+0672                 <span class="keyword">if</span> isempty(ns_OGFP.(Ally{j}))
+0673                     
+0674                 <span class="keyword">else</span>
+0675                     SB_OGFP.(Ally{j})(i)=FlipB.*(nanmean(striderSy_OGFP.(Ally{j})(ns_OGFP.(Ally{j}))-LevelofInterest));
+0676                     SBmax_OGFP.(Ally{j})(i)=FlipB.*(nanmin(striderSy_OGFP.(Ally{j})(ns_OGFP.(Ally{j}))-LevelofInterest));
+0677                 <span class="keyword">end</span>
+0678                 <span class="keyword">if</span> isempty(ps_OGFP.(Ally{j}))
+0679                     
+0680                 <span class="keyword">else</span>
+0681                     SP_OGFP.(Ally{j})(i)=nanmean(striderSy_OGFP.(Ally{j})(ps_OGFP.(Ally{j}))-LevelofInterest);
+0682                     SPmax_OGFP.(Ally{j})(i)=nanmax(striderSy_OGFP.(Ally{j})(ps_OGFP.(Ally{j}))-LevelofInterest);
+0683                 <span class="keyword">end</span>
+0684                 
+0685                 <span class="keyword">if</span> exist([<span class="string">'postImpactS_OGFP.'</span> Ally{j}])==0 || isempty(postImpactS_OGFP.(Ally{j}))==1
+0686                     <span class="comment">%                     impactS(i)=NaN;</span>
+0687                     <span class="comment">%                     impactSmax(i)=NaN;</span>
+0688                 <span class="keyword">else</span>
+0689                     impactS_OGFP.(Ally{j})(i)=nanmean(striderSy_OGFP.(Ally{j})(find((striderSy_OGFP.(Ally{j})(SHS-SHS+1: postImpactS_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))-LevelofInterest;
+0690                     <span class="keyword">if</span> isempty(striderSy_OGFP.(Ally{j})(find((striderSy_OGFP.(Ally{j})(SHS-SHS+1: postImpactS_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))
+0691                         <span class="comment">%impactSmax(i)=NaN;</span>
+0692                     <span class="keyword">else</span>
+0693                         impactSmax_OGFP.(Ally{j})(i)=nanmax(striderSy_OGFP.(Ally{j})(find((striderSy_OGFP.(Ally{j})(SHS-SHS+1: postImpactS_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))-LevelofInterest;
+0694                     <span class="keyword">end</span>
+0695                 <span class="keyword">end</span>
+0696             <span class="keyword">end</span>
+0697             SZ_OGFP.(Ally{j})(i)=-1*nanmean(filteredSlowStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0698             SX_OGFP.(Ally{j})(i)=nanmean(filteredSlowStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0699             SZmax_OGFP.(Ally{j})(i)=-1*nanmin(filteredSlowStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0700             SXmax_OGFP.(Ally{j})(i)=nanmin(filteredSlowStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0701         <span class="keyword">end</span>
+0702         
+0703         <span class="comment">%%Now for the fast leg...</span>
+0704         <span class="keyword">if</span> isempty(striderFy_OGFP.(Ally{j})) || all(striderFy_OGFP.(Ally{j})==striderFy_OGFP.(Ally{j})(1)) || isempty(FTO) || isempty(STO)
+0705             
+0706         <span class="keyword">else</span>
+0707             <span class="keyword">if</span> nanstd(striderFy_OGFP.(Ally{j}))&lt;0.01 &amp;&amp; nanmean(striderFy_OGFP.(Ally{j}))&lt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0708                 
+0709             <span class="keyword">else</span>
+0710                 nf_OGFP.(Ally{j}) = find((striderFy_OGFP.(Ally{j})-LevelofInterest)&lt;0);<span class="comment">%1:65</span>
+0711                 pf_OGFP.(Ally{j}) = find((striderFy_OGFP.(Ally{j})-LevelofInterest)&gt;0);
+0712                 ImpactMagF_OGFP.(Ally{j}) = find((striderFy_OGFP.(Ally{j})-LevelofInterest)==nanmax(striderFy_OGFP.(Ally{j})(1:75)-LevelofInterest));<span class="comment">%1:15</span>
+0713                 <span class="keyword">if</span> isempty(ImpactMagF_OGFP.(Ally{j}))~=1
+0714                     postImpactF_OGFP.(Ally{j}) = nf_OGFP.(Ally{j})(find(nf_OGFP.(Ally{j})&gt;ImpactMagF_OGFP.(Ally{j})(end), 1, <span class="string">'first'</span>));
+0715                     <span class="keyword">if</span> isempty(postImpactF_OGFP.(Ally{j}))~=1
+0716                         pf_OGFP.(Ally{j})(find(pf_OGFP.(Ally{j}) &lt; postImpactF_OGFP.(Ally{j})))=[];
+0717                         nf_OGFP.(Ally{j})(find(nf_OGFP.(Ally{j}) &lt; postImpactF_OGFP.(Ally{j})))=[];
+0718                     <span class="keyword">end</span>
+0719                 <span class="keyword">end</span>
+0720                 
+0721                 <span class="keyword">if</span> isempty(pf_OGFP.(Ally{j}))
+0722                     
+0723                 <span class="keyword">else</span>
+0724                     FP_OGFP.(Ally{j})(i)=nanmean(striderFy_OGFP.(Ally{j})(pf_OGFP.(Ally{j}))-LevelofInterest);
+0725                     FPmax_OGFP.(Ally{j})(i)=nanmax(striderFy_OGFP.(Ally{j})(pf_OGFP.(Ally{j}))-LevelofInterest);
+0726                 <span class="keyword">end</span>
+0727                 <span class="keyword">if</span> isempty(nf_OGFP.(Ally{j}))
+0728                     
+0729                 <span class="keyword">else</span>
+0730                     FB_OGFP.(Ally{j})(i)=FlipB.*(nanmean(striderFy_OGFP.(Ally{j})(nf_OGFP.(Ally{j}))-LevelofInterest));
+0731                     FBmax_OGFP.(Ally{j})(i)=FlipB.*(nanmin(striderFy_OGFP.(Ally{j})(nf_OGFP.(Ally{j}))-LevelofInterest));
+0732                 <span class="keyword">end</span>
+0733                 
+0734                 <span class="keyword">if</span> exist([<span class="string">'postImpactF_OGFP.'</span> Ally{j}])==0 || isempty(postImpactF_OGFP.(Ally{j}))==1
+0735                     
+0736                 <span class="keyword">else</span>
+0737                     impactF_OGFP.(Ally{j})(i)=nanmean(striderFy_OGFP.(Ally{j})(find((striderFy_OGFP.(Ally{j})(FHS-FHS+1: postImpactF_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))-LevelofInterest;
+0738                     <span class="keyword">if</span> isempty(striderFy_OGFP.(Ally{j})(find((striderFy_OGFP.(Ally{j})(FHS-FHS+1: postImpactF_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))
+0739                         
+0740                     <span class="keyword">else</span>
+0741                         impactFmax_OGFP.(Ally{j})(i)=nanmax(striderFy_OGFP.(Ally{j})(find((striderFy_OGFP.(Ally{j})(FHS-FHS+1: postImpactF_OGFP.(Ally{j}))-LevelofInterest)&gt;0)))-LevelofInterest;
+0742                     <span class="keyword">end</span>
+0743                 <span class="keyword">end</span>
+0744             <span class="keyword">end</span>
+0745             FZ_OGFP.(Ally{j})(i)=-1*nanmean(filteredFastStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0746             FX_OGFP.(Ally{j})(i)=nanmean(filteredFastStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0747             FZmax_OGFP.(Ally{j})(i)=-1*nanmin(filteredFastStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'z'</span>]))/Normalizer;
+0748             FXmax_OGFP.(Ally{j})(i)=nanmax(filteredFastStance.getDataAsVector([Ally{j}(1:end-1) <span class="string">'x'</span>]))/Normalizer;
+0749         <span class="keyword">end</span>
+0750     <span class="keyword">end</span>
+0751 <span class="keyword">end</span>
+0752 <span class="comment">% title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])</span>
+0753 <span class="comment">% saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')</span>
+0754 <span class="comment">% SlowCount_force</span>
+0755 <span class="comment">% SlowCount_no_force</span>
+0756 <span class="comment">% SlowCount_force/(SlowCount_force+SlowCount_no_force)</span>
+0757 <span class="comment">% FastCount_force</span>
+0758 <span class="comment">% FastCount_no_force</span>
+0759 <span class="comment">% FastCount_force/(FastCount_force+FastCount_no_force)</span>
+0760 
+0761 <span class="comment">% figure (trialData.metaData.condition*10-3)</span>
+0762 <span class="comment">% hold on</span>
+0763 <span class="comment">% for i = 1:i_slow</span>
+0764 <span class="comment">%     %     if i&lt;= i_slow/2</span>
+0765 <span class="comment">%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',(255-i)/255*[i/255,i/255,1])</span>
+0766 <span class="comment">%     %     elseif i &gt; i_slow/2 &amp;&amp; i_slow &lt; 2*255</span>
+0767 <span class="comment">%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',(255-i_slow+i)/255*[1,i/255,i/255])</span>
+0768 <span class="comment">%     %     else</span>
+0769 <span class="comment">%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',[0,0,0])</span>
+0770 <span class="comment">%     %     end</span>
+0771 <span class="comment">%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i&lt;= i_slow/2</span>
+0772 <span class="comment">%         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',[0,0,1])</span>
+0773 <span class="comment">%     elseif trialNum == 3 || trialNum == 6 || trialNum == 10 || trialNum == 13</span>
+0774 <span class="comment">%         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',[1,0,0])</span>
+0775 <span class="comment">%     else</span>
+0776 <span class="comment">%         plot(str_striderSy.([OGFPy_slowi{i} num2str(i)]),'Color',[0,0,0])</span>
+0777 <span class="comment">%     end</span>
+0778 <span class="comment">%</span>
+0779 <span class="comment">% end</span>
+0780 <span class="comment">% hold off</span>
+0781 <span class="comment">% %legend(OGFPy_slowi)</span>
+0782 <span class="comment">% title(['Slow AP' '     ' trialData.metaData.name])</span>
+0783 <span class="comment">% saveas(gcf,['Slow AP_' trialData.metaData.name],'png')</span>
+0784 <span class="comment">%</span>
+0785 <span class="comment">%</span>
+0786 <span class="comment">% figure (trialData.metaData.condition*10-2)</span>
+0787 <span class="comment">% hold on</span>
+0788 <span class="comment">% for i = 1:i_slow</span>
+0789 <span class="comment">%     if i&lt;= i_slow/2</span>
+0790 <span class="comment">%         plot(str_striderSz.([OGFPz_slowi{i} num2str(i)]),'k')</span>
+0791 <span class="comment">%     else</span>
+0792 <span class="comment">%         plot(str_striderSz.([OGFPz_slowi{i} num2str(i)]),'k')</span>
+0793 <span class="comment">%     end</span>
+0794 <span class="comment">% end</span>
+0795 <span class="comment">% hold off</span>
+0796 <span class="comment">% %legend(OGFPy_slowi)</span>
+0797 <span class="comment">% title(['Slow Z' '     ' trialData.metaData.name])</span>
+0798 <span class="comment">% saveas(gcf,['Slow Z_' trialData.metaData.name],'png')</span>
+0799 <span class="comment">%</span>
+0800 <span class="comment">% figure (trialData.metaData.condition*10-1)</span>
+0801 <span class="comment">% hold on</span>
+0802 <span class="comment">% for i = 1:i_fast</span>
+0803 <span class="comment">%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i&lt;= i_fast/2</span>
+0804 <span class="comment">%         plot(str_striderFy.([OGFPy_fasti{i} num2str(i)]),'b')</span>
+0805 <span class="comment">%     elseif trialNum == 3 || trialNum == 6 || trialNum == 10 || trialNum == 13</span>
+0806 <span class="comment">%         plot(str_striderFy.([OGFPy_fasti{i} num2str(i)]),'r')</span>
+0807 <span class="comment">%     else</span>
+0808 <span class="comment">%         plot(str_striderFy.([OGFPy_fasti{i} num2str(i)]),'k')</span>
+0809 <span class="comment">%     end</span>
+0810 <span class="comment">% end</span>
+0811 <span class="comment">% hold off</span>
+0812 <span class="comment">% title(['Fast AP' '     ' trialData.metaData.name])</span>
+0813 <span class="comment">% saveas(gcf,['Fast AP_' trialData.metaData.name],'png')</span>
+0814 <span class="comment">%</span>
+0815 <span class="comment">%</span>
+0816 <span class="comment">% figure (trialData.metaData.condition*10)</span>
+0817 <span class="comment">% hold on</span>
+0818 <span class="comment">% for i = 1:i_fast</span>
+0819 <span class="comment">%     if i&lt;= i_fast/2</span>
+0820 <span class="comment">%         plot(str_striderFz.([OGFPz_fasti{i} num2str(i)]),'b')</span>
+0821 <span class="comment">%     else</span>
+0822 <span class="comment">%         plot(str_striderFz.([OGFPz_fasti{i} num2str(i)]),'r')</span>
+0823 <span class="comment">%     end</span>
+0824 <span class="comment">% end</span>
+0825 <span class="comment">% hold off</span>
+0826 <span class="comment">% %legend(OGFPy_fasti)</span>
+0827 <span class="comment">% title(['Fast Z' '     ' trialData.metaData.name])</span>
+0828 <span class="comment">% saveas(gcf,['Fast Z_' trialData.metaData.name],'png')</span>
+0829 
+0830 
+0831 <span class="comment">% figure (trialData.metaData.condition*4-3)</span>
+0832 <span class="comment">% hold on</span>
+0833 <span class="comment">% plot(striderSy_all)</span>
+0834 <span class="comment">% hold off</span>
+0835 <span class="comment">% title('Slow AP')</span>
+0836 <span class="comment">% saveas(gcf,['Slow AP' num2str(trialData.metaData.condition)],'png')</span>
+0837 <span class="comment">%</span>
+0838 <span class="comment">% figure (trialData.metaData.condition*4-2)</span>
+0839 <span class="comment">% hold on</span>
+0840 <span class="comment">% plot(striderSz)</span>
+0841 <span class="comment">% hold off</span>
+0842 <span class="comment">% title('Slow Z')</span>
+0843 <span class="comment">% saveas(gcf,['Slow Z' num2str(trialData.metaData.condition)],'png')</span>
+0844 <span class="comment">%</span>
+0845 <span class="comment">% figure (trialData.metaData.condition*4-1)</span>
+0846 <span class="comment">% hold on</span>
+0847 <span class="comment">% plot(striderFy_all)</span>
+0848 <span class="comment">% hold off</span>
+0849 <span class="comment">% title('Fast AP')</span>
+0850 <span class="comment">% saveas(gcf,['Fast AP' num2str(trialData.metaData.condition)],'png')</span>
+0851 <span class="comment">%</span>
+0852 <span class="comment">% figure (trialData.metaData.condition*4)</span>
+0853 <span class="comment">% hold on</span>
+0854 <span class="comment">% plot(striderFz)</span>
+0855 <span class="comment">% hold off</span>
+0856 <span class="comment">% title('Fast Z')</span>
+0857 <span class="comment">% saveas(gcf,['Fast Z' num2str(trialData.metaData.condition)],'png')</span>
+0858 
+0859 
+0860 <span class="comment">%% COM:</span>
+0861 <span class="keyword">if</span> false <span class="comment">%~isempty(markerData.getLabelsThatMatch('HAT'))</span>
+0862     [ outCOM ] = <a href="computeCOM.html" class="code" title="function [ out ] = computeCOM( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT )">computeCOM</a>(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
+0863 <span class="keyword">else</span>
+0864     outCOM.Data=[];
+0865     outCOM.labels=[];
+0866     outCOM.description=[];
+0867 <span class="keyword">end</span>
+0868 
+0869 <span class="comment">%% COP: not ready for real life</span>
+0870 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('LCOP'))</span>
+0871 <span class="comment">%     [outCOP] = computeCOPParams( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents );</span>
+0872 <span class="comment">% else</span>
+0873 outCOP.Data=[];
+0874 outCOP.labels=[];
+0875 outCOP.description=[];
+0876 <span class="comment">% end</span>
+0877 
+0878 <span class="comment">%% Compile</span>
+0879 <span class="comment">% data_OGFP_sum = [[impactS_OGFP_sum NaN]' [SB_OGFP_sum NaN]' [SP_OGFP_sum NaN]' [impactF_OGFP_sum NaN]' [FB_OGFP_sum NaN]' [FP_OGFP_sum NaN]' [FB_OGFP_sum-SB_OGFP_sum NaN]' [FP_OGFP_sum-SP_OGFP_sum NaN]'...</span>
+0880 <span class="comment">%     [impactSmax_OGFP_sum NaN]' [SBmax_OGFP_sum NaN]' [SPmax_OGFP_sum NaN]' [impactFmax_OGFP_sum NaN]' [FBmax_OGFP_sum NaN]' [FPmax_OGFP_sum NaN]'];</span>
+0881 <span class="comment">%</span>
+0882 <span class="comment">% labels_OGFP_sum = {'FyImpactS_OGFP_sum', 'FyBS_OGFP_sum', 'FyPS_OGFP_sum', 'FyImpactF_OGFP_sum', 'FyBF_OGFP_sum', 'FyPF_OGFP_sum','FyBSym_OGFP_sum', 'FyPSym_OGFP_sum', 'FyImpactSmax_OGFP_sum', 'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyImpactFmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};</span>
+0883 <span class="comment">% % Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'</span>
+0884 <span class="comment">%</span>
+0885 <span class="comment">% description_OGFP_sum = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...</span>
+0886 <span class="comment">%     'GRF-FYf average signed impact force', 'GRF-FYf average signed braking', 'GRF-FYf average signed propulsion', ...</span>
+0887 <span class="comment">%     'GRF-FYs average signed Symmetry braking', 'GRF-FYs average signed Symmetry propulsion',...</span>
+0888 <span class="comment">%     'GRF-FYs max signed impact force', 'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion',...</span>
+0889 <span class="comment">%     'GRF-FYf max signed impact force', 'GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};</span>
+0890 
+0891 
+0892 <span class="comment">%data_OGFP_sum = [[SBmax_OGFP_sum NaN]' [SPmax_OGFP_sum NaN]' [FBmax_OGFP_sum NaN]' [FPmax_OGFP_sum NaN]'];</span>
+0893 
+0894 <span class="comment">%labels_OGFP_sum = {'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};</span>
+0895 <span class="comment">% Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'</span>
+0896 
+0897 <span class="comment">%description_OGFP_sum = {'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion','GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};</span>
+0898 
+0899 data_all = [[impactS_all NaN]' [SB_all NaN]' [SP_all NaN]' [impactF_all NaN]' [FB_all NaN]' [FP_all NaN]' [FB_all-SB_all NaN]' [FP_all-SP_all NaN]' [SX_all NaN]' [SZ_all NaN]' [FX_all NaN]' [FZ_all NaN]' <span class="keyword">...</span>
+0900     [impactSmax_all NaN]' [SBmax_all NaN]' [SPmax_all NaN]' [impactFmax_all NaN]' [FBmax_all NaN]' [FPmax_all NaN]' [SXmax_all NaN]' [SZmax_all NaN]' [FXmax_all NaN]' [FZmax_all NaN]' [exist_SlowF NaN]' [exist_FastF NaN]'];
+0901 
+0902 labels_all = {<span class="string">'FyImpactS_all'</span>, <span class="string">'FyBS_all'</span>, <span class="string">'FyPS_all'</span>, <span class="string">'FyImpactF_all'</span>, <span class="string">'FyBF_all'</span>, <span class="string">'FyPF_all'</span>,<span class="string">'FyBSym_all'</span>, <span class="string">'FyPSym_all'</span>, <span class="string">'FxS_all'</span>, <span class="string">'FzS_all'</span>, <span class="string">'FxF_all'</span>, <span class="string">'FzF_all'</span>, <span class="string">'FyImpactSmax_all'</span>, <span class="string">'FyBSmax_all'</span>, <span class="string">'FyPSmax_all'</span>, <span class="string">'FyImpactFmax_all'</span>, <span class="string">'FyBFmax_all'</span>, <span class="string">'FyPFmax_all'</span>, <span class="string">'FxSmax_all'</span>, <span class="string">'FzSmax_all'</span>, <span class="string">'FxFmax_all'</span>, <span class="string">'FzFmax_all'</span>,<span class="string">'exist_SlowF'</span>,<span class="string">'exist_FastF'</span>};
+0903 <span class="comment">% Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'</span>
+0904 
+0905 description_all = {<span class="string">'GRF-FYs average signed impact force'</span>, <span class="string">'GRF-FYs average signed braking'</span>, <span class="string">'GRF-FYs average signed propulsion'</span>,<span class="keyword">...</span>
+0906     <span class="string">'GRF-FYf average signed impact force'</span>, <span class="string">'GRF-FYf average signed braking'</span>, <span class="string">'GRF-FYf average signed propulsion'</span>, <span class="keyword">...</span>
+0907     <span class="string">'GRF-FYs average signed Symmetry braking'</span>, <span class="string">'GRF-FYs average signed Symmetry propulsion'</span>,<span class="keyword">...</span>
+0908     <span class="string">'GRF-Fxs average force'</span>, <span class="string">'GRF-Fzs average force'</span>, <span class="string">'GRF-Fxf average force'</span>, <span class="string">'GRF-Fzf average force'</span>, <span class="keyword">...</span>
+0909     <span class="string">'GRF-FYs max signed impact force'</span>, <span class="string">'GRF-FYs max signed braking'</span>, <span class="string">'GRF-FYs max signed propulsion'</span>,<span class="keyword">...</span>
+0910     <span class="string">'GRF-FYf max signed impact force'</span>, <span class="string">'GRF-FYf max signed braking'</span>, <span class="string">'GRF-FYf max signed propulsion'</span>, <span class="keyword">...</span>
+0911     <span class="string">'GRF-Fxs max force'</span>, <span class="string">'GRF-Fzs max force'</span>, <span class="string">'GRF-Fxf max force'</span>, <span class="string">'GRF-Fzf max force'</span>, <span class="string">'Slow stance force more than 10% of the bw exists on one of the FP'</span>, <span class="string">'Fast stance force more than 10% of the bw exist on one of the FP'</span>};
+0912 
+0913 
+0914 <span class="comment">% data_all = [data_all data_OGFP_sum];</span>
+0915 <span class="comment">% labels_all = [labels_all labels_OGFP_sum];</span>
+0916 <span class="comment">% description_all = [description_all description_OGFP_sum];</span>
+0917 
+0918 
+0919 data_OGFP = [];
+0920 labels_OGFP = [];
+0921 description_OGFP = [];
+0922 
+0923 <span class="keyword">for</span> j = 1:length(Ally)
+0924     
+0925     data_OGFP_temp = [[SBmax_OGFP.(Ally{j}) NaN]' [SPmax_OGFP.(Ally{j}) NaN]' [FBmax_OGFP.(Ally{j}) NaN]' [FPmax_OGFP.(Ally{j}) NaN]'];
+0926     labels_OGFP_temp = {[<span class="string">'FyBSmax_'</span> Ally{j}], [<span class="string">'FyPSmax_'</span> Ally{j}], [<span class="string">'FyBFmax_'</span> Ally{j}], [<span class="string">'FyPFmax_'</span> Ally{j}]};
+0927     description_OGFP_temp = {[Ally{j} <span class="string">'GRF-FYs max signed braking'</span>], [Ally{j} <span class="string">'GRF-FYs max signed propulsion'</span>], [Ally{j} <span class="string">'GRF-FYf max signed braking'</span>], [Ally{j} <span class="string">'GRF-FYf max signed propulsion'</span>]};
+0928     
+0929     <span class="comment">%     data_OGFP = [data_OGFP data_OGFP_temp];</span>
+0930     <span class="comment">%     labels_OGFP = [labels_OGFP labels_OGFP_temp];</span>
+0931     <span class="comment">%     description_OGFP = [description_OGFP description_OGFP_temp];</span>
+0932     
+0933     wannaAddOGFP = 1;
+0934     <span class="keyword">if</span> wannaAddOGFP == 1
+0935         data_all = [data_all data_OGFP_temp];
+0936         labels_all = [labels_all labels_OGFP_temp];
+0937         description_all = [description_all description_OGFP_temp];
+0938     <span class="keyword">end</span>
+0939     
+0940 <span class="keyword">end</span>
+0941 
+0942 <span class="keyword">if</span> isempty(markerData.getLabelsThatMatch(<span class="string">'Hat'</span>))
+0943     data_all = [data_all outCOM.Data outCOP.Data];
+0944     labels_all=[labels_all outCOM.labels outCOP.labels];
+0945     description_all=[description_all outCOM.description outCOP.description];
+0946 <span class="keyword">end</span>
+0947 
+0948 <span class="comment">%out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);</span>
+0949 out = parameterSeries(data_all,labels_all,[],description_all);
+0950 
+0951 <span class="comment">%% Labels and descriptions:</span>
+0952 <span class="comment">% aux={'impactS',               'GRF-FYs average signed impact force';...</span>
+0953 <span class="comment">%     'SB',                   'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)';...</span>
+0954 <span class="comment">%     'SP',           'distance between ankle markers at SHS2 (in mm)';...</span>
+0955 <span class="comment">%     'impactF',           'distance between ankle markers at FHS (in mm)';...</span>
+0956 <span class="comment">%     'FB',        'sAnkle position, with respect to fAnkle at STO (in mm)';...</span>
+0957 <span class="comment">%     'FB-SB',        'fAnkle position with respect to sAnkle at FTO (in mm)';...</span>
+0958 <span class="comment">%     'FP-SP',                'ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)';...</span>
+0959 <span class="comment">%     'SX',                'ankle placement of slow leg at SHS (realtive to avg hip marker) (in mm)';...</span>
+0960 <span class="comment">%     'SZ',                'ankle placement of fast leg at FHS (in mm)';...</span>
+0961 <span class="comment">%     'FX',                 'alphaFast-alphaSlow';...</span>
+0962 <span class="comment">%     'FZ',                 '(alphaFast-alphaSlow)/(SLf+SLs)';...</span>
+0963 <span class="comment">%     'HandrailHolding',             'slow leg angle (hip to ankle with respect to vertical) at SHS2 (in deg)';...</span>
+0964 <span class="comment">%     'impactSmax',             'fast leg angle at FHS (in deg)';...</span>
+0965 <span class="comment">%     'SBmax',                 'ankle placement of slow leg at STO (relative avg hip marker) (in mm)';...</span>
+0966 <span class="comment">%     'SPmax',                 'ankle placement of fast leg at FTO2 (in mm)';...</span>
+0967 <span class="comment">%     'impactFmax',                    'ankle postion of the slow leg @FHS (in mm)';...</span>
+0968 <span class="comment">%     'FBmax',                    'ankle position of Fast leg @SHS (in mm)';...</span>
+0969 <span class="comment">%     'FPmax',                     'Xdiff Fast - Slow';...</span>
+0970 <span class="comment">%     'SXmax',                     'Xdiff/(SLf+SLs)';...</span>
+0971 <span class="comment">%     'SZmax',                 'Ratio of FTO/FHS';...</span>
+0972 <span class="comment">%     'FXmax',                 'Ratio of STO/SHS';...</span>
+0973 <span class="comment">%     'FZmax',              'Ratio of fank@SHS/FHS';...</span>
+0974 <span class="comment">%     };</span>
+0975 <span class="comment">%</span>
+0976 <span class="comment">% paramLabels=aux(:,1);</span>
+0977 <span class="comment">% description=aux(:,2);</span>
+0978 <span class="comment">% % Assign parameters to data matrix</span>
+0979 <span class="comment">% data = nan(lenny,length(paramLabels));</span>
+0980 <span class="comment">% for i=1:length(paramLabels)</span>
+0981 <span class="comment">%     eval(['data(:,i)=' paramLabels{i} ';'])</span>
+0982 <span class="comment">% end</span>
+0983 <span class="comment">% % Create parameterSeries</span>
+0984 <span class="comment">% out=parameterSeries(data,paramLabels,[],description);</span>
+0985 
+0986 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

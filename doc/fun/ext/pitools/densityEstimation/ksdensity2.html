@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ksdensity2</title>
+  <meta name="keywords" content="ksdensity2">
+  <meta name="description" content="ksdensity2 estimates a probaiblity density from 2-D data points in">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">densityEstimation</a> &gt; ksdensity2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/densityEstimation&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>ksdensity2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>ksdensity2 estimates a probaiblity density from 2-D data points in</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [p] = ksdensity2(data,binsC,bandwidth) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ksdensity2 estimates a probaiblity density from 2-D data points in
+data. Estimation is done by convolving with a gaussian kernel.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p] = ksdensity2(data,binsC,bandwidth)</a>
+0002 <span class="comment">%ksdensity2 estimates a probaiblity density from 2-D data points in</span>
+0003 <span class="comment">%data. Estimation is done by convolving with a gaussian kernel.</span>
+0004 
+0005 <span class="comment">%INPUTS:</span>
+0006 <span class="comment">%'data' need not be uni-dimensional. Estimated probability will have</span>
+0007 <span class="comment">%dimension equal to the number of columns in the data matrix (currently it is only supported up to 2).</span>
+0008 <span class="comment">%'binsC' specifies the centers of the points in which the probability density</span>
+0009 <span class="comment">%is to be sampled (HAS to be a uniform rectangular grid). Bins is a cell array such that bins{i} = vector of</span>
+0010 <span class="comment">%desired centers in the i-th dimension.</span>
+0011 <span class="comment">%'bandwidth' is the n x n matrix that determines the covariance matrix for the kernel (where n is the dimension of the data, or its number of columns). If not</span>
+0012 <span class="comment">%given, it will be taken to be (4/(d+2))^(1/(d+4))*n^(-1/(d+4))*M, donde M es la matriz de covarianza de los datos (Thanks Wikipedia!)</span>
+0013 
+0014 <span class="comment">%Check:</span>
+0015 <span class="keyword">if</span> size(data,1)&lt;=size(data,2)
+0016     data=data';
+0017 <span class="keyword">end</span>
+0018 
+0019 d=size(data,2); <span class="comment">%Dimension of data (&lt;3)</span>
+0020 n=size(data,1); <span class="comment">%Number of observations</span>
+0021 M=cov(data); <span class="comment">%Covariance matrix</span>
+0022 
+0023 <span class="comment">%Method choice: fft is more efficient, but slightly less precise</span>
+0024 method=<span class="string">'fft'</span>;
+0025 
+0026 <span class="keyword">if</span> nargin&lt;3
+0027     bandwidth=(4/(d+2))^(1/(d+4))*n^(-1/(d+4))*M;
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="keyword">if</span> d==1
+0031     p=ksdensity(data,binsC);
+0032 <span class="keyword">else</span> <span class="comment">%d=2</span>
+0033     T(1)=length(binsC{1});
+0034     T(2)=length(binsC{2});
+0035     bins1=reshape(binsC{1},T(1),1);
+0036     bins2=reshape(binsC{2},1,T(2));
+0037     grid=zeros(T(1),T(2),2);
+0038     
+0039     <span class="keyword">if</span> strcmp(method,<span class="string">'conv'</span>) <span class="comment">%Direct method: actually do the convolution</span>
+0040     grid(:,:,1)=repmat(bins1,1,T(2));
+0041     grid(:,:,2)=repmat(bins2,T(1),1);
+0042     coord=reshape(grid,T(1)*T(2),2);
+0043     aux=zeros(size(grid(:,:,1)));
+0044     <span class="keyword">for</span> i=1:n
+0045         newCoord=(coord'-repmat(data(i,:)',1,T(1)*T(2)));
+0046         convKernel=1/sqrt(det(bandwidth)) * exp(-sum(newCoord'.*(bandwidth\newCoord)',2));
+0047         convKernel=reshape(convKernel,T(1),T(2));
+0048         aux=aux+convKernel;
+0049     <span class="keyword">end</span>
+0050     p=aux;
+0051     
+0052     <span class="keyword">elseif</span> strcmp(method,<span class="string">'fft'</span>) <span class="comment">%Indirect: do it in Fourier space, and rounding some stuff</span>
+0053         aux2=zeros(size(grid(:,:,1)));
+0054         <span class="keyword">for</span> i=1:n
+0055             [m,t1]=min(abs(binsC{1}-data(i,1)));
+0056             [m,t2]=min(abs(binsC{2}-data(i,2)));
+0057             aux2(t1,t2)=aux2(t1,t2)+1;
+0058         <span class="keyword">end</span>
+0059         grid(:,:,1)=repmat(bins1-mean(bins1),1,T(2));
+0060         grid(:,:,2)=repmat(bins2-mean(bins2),T(1),1);
+0061         coord=reshape(grid,T(1)*T(2),2);
+0062         kernel=1/sqrt(det(bandwidth)) * exp(-sum(coord.*(inv(bandwidth)*coord')',2));
+0063         kernel=reshape(kernel,T(1),T(2));
+0064         kernel=fftshift(kernel);
+0065         p=real(ifft2(fft2(aux2).*fft2(kernel))); <span class="comment">%Avoid numerical errors that give rise to small imaginary parts</span>
+0066         p(p&lt;0)=0; <span class="comment">%Avoid numerical errors that give rise to small negative real parts</span>
+0067     <span class="keyword">end</span>
+0068     <span class="comment">%Normalization:</span>
+0069     p=p/sum(p(:));
+0070 <span class="keyword">end</span>
+0071 
+0072 
+0073 
+0074 
+0075 
+0076 
+0077 
+0078     
+0079 
+0080 
+0081 
+0082 <span class="keyword">end</span>
+0083</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

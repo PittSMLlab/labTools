@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of btkGetLastFrame</title>
+  <meta name="keywords" content="btkGetLastFrame">
+  <meta name="description" content="BTKGETLASTFRAME Returns acquisition's last frame index.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">BTK</a> &gt; <a href="index.html">matlab</a> &gt; btkGetLastFrame.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/BTK/matlab&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>btkGetLastFrame
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>BTKGETLASTFRAME Returns acquisition's last frame index.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function lf = btkGetLastFrame(h) %#ok </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">BTKGETLASTFRAME Returns acquisition's last frame index.
+ 
+  LF = BTKGETLASTFRAME(H) returns the last frame index of the acquisition.
+  The acquistion is represented by the handle H, obtained by the use of a 
+  btk* function.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="btkCropAcquisition.html" class="code" title="function btkCropAcquisition(h, startAt, numFrames)">btkCropAcquisition</a>	BTKCROPACQUISITION Crop the acquisition and adapt the events' frame/time.</li><li><a href="btkEmulateC3Dserver.html" class="code" title="function itf = btkEmulateC3Dserver()">btkEmulateC3Dserver</a>	BTKEMULATEC3DSERVER Creates an emulated COM object for C3Dserver.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function lf = btkGetLastFrame(h) </a><span class="comment">%#ok</span>
+0002 <span class="comment">%BTKGETLASTFRAME Returns acquisition's last frame index.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  LF = BTKGETLASTFRAME(H) returns the last frame index of the acquisition.</span>
+0005 <span class="comment">%  The acquistion is represented by the handle H, obtained by the use of a</span>
+0006 <span class="comment">%  btk* function.</span>
+0007 
+0008 <span class="comment">%  Author: A. Barré</span>
+0009 <span class="comment">%  Copyright 2009-2013 Biomechanical ToolKit (BTK).</span>
+0010 
+0011 lf = btkGetFirstFrame(h) + btkGetPointFrameNumber(h) - 1;
+0012 
+0013 <span class="comment">% [EOF] btkGetFirstFrame.m</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

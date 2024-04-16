@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of defineEpochs</title>
+  <meta name="keywords" content="defineEpochs">
+  <meta name="description" content="defineEpochs is used to create a dataset object that defines relevant">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">fun</a> &gt; defineEpochs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>defineEpochs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>defineEpochs is used to create a dataset object that defines relevant</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">defineEpochs is used to create a dataset object that defines relevant
+epochs in the analysis of experimental data. It is used by several
+functions within studyData, groupAdaptationData and adaptationData
+epochNames has to be a Nx1 cell array of strings.
+condition, strideNo and exemptStrides can be Nx1 or scalars. If scalars,
+the same value is applied to all conditions.
+condition has to be cell array of strings, or string
+strideNo has to be a non-zero integer array: negative numbers are interpreted as
+'last M strides' while positive numbers are interpreted as 'first M
+strides'
+exemptFirst has to be positive
+exemptLast has to be positive
+summaryMethod is a cell array of strings, with the name of the function
+used to summarize accross strides, default is 'nanmean'
+Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)','Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [epochs] = defineEpochs(epochNames,condition,strideNo,exemptFirst,exemptLast,summaryMethod,shortName)</a>
+0002 <span class="comment">%defineEpochs is used to create a dataset object that defines relevant</span>
+0003 <span class="comment">%epochs in the analysis of experimental data. It is used by several</span>
+0004 <span class="comment">%functions within studyData, groupAdaptationData and adaptationData</span>
+0005 <span class="comment">%epochNames has to be a Nx1 cell array of strings.</span>
+0006 <span class="comment">%condition, strideNo and exemptStrides can be Nx1 or scalars. If scalars,</span>
+0007 <span class="comment">%the same value is applied to all conditions.</span>
+0008 <span class="comment">%condition has to be cell array of strings, or string</span>
+0009 <span class="comment">%strideNo has to be a non-zero integer array: negative numbers are interpreted as</span>
+0010 <span class="comment">%'last M strides' while positive numbers are interpreted as 'first M</span>
+0011 <span class="comment">%strides'</span>
+0012 <span class="comment">%exemptFirst has to be positive</span>
+0013 <span class="comment">%exemptLast has to be positive</span>
+0014 <span class="comment">%summaryMethod is a cell array of strings, with the name of the function</span>
+0015 <span class="comment">%used to summarize accross strides, default is 'nanmean'</span>
+0016 <span class="comment">%Ex: [epochs] = defineEpochs({'Initial_A1','Last_A1','Initial_A2','Last_A2'},{'Adaptation 1','Adaptation 1','Adaptation 1(2nd time)','Adaptation 1(2nd time)'},[5 -40 5 -40],5,5,{'nanmean'})</span>
+0017 
+0018 N=length(epochNames);
+0019 <span class="keyword">if</span> isa(condition,<span class="string">'char'</span>)
+0020     condition={condtion};
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;6 || isempty(summaryMethod)
+0023     summaryMethod=<span class="string">'nanmean'</span>;
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="keyword">if</span> isa(summaryMethod,<span class="string">'char'</span>) <span class="comment">%To allow for summaryMethod to be given as string directly</span>
+0027     summaryMethod={summaryMethod};
+0028 <span class="keyword">end</span>
+0029 <span class="keyword">if</span> numel(condition)==1
+0030     condition=repmat(condition,N,1);
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> numel(strideNo)==1
+0033     strideNo=repmat(strideNo,N,1);
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">if</span> numel(exemptFirst)==1
+0036     exemptFirst=repmat(exemptFirst,N,1);
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">if</span> numel(exemptLast)==1
+0039     exemptLast=repmat(exemptLast,N,1);
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">if</span> numel(summaryMethod)==1
+0042     summaryMethod=repmat(summaryMethod,N,1);
+0043 <span class="keyword">end</span>
+0044 earlyOrLate=sign(strideNo)==1;
+0045 <span class="keyword">if</span> nargin&lt;7 || isempty(shortName)
+0046     shortName=cell(size(epochNames));
+0047 <span class="keyword">elseif</span> numel(shortName)==1
+0048     shortName=repmat(shortName,N,1);
+0049 <span class="keyword">end</span>
+0050 
+0051 epochs=dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),<span class="string">'VarNames'</span>,{<span class="string">'Condition'</span>,<span class="string">'Stride_No'</span>,<span class="string">'ExemptFirst'</span>,<span class="string">'ExemptLast'</span>,<span class="string">'EarlyOrLate'</span>,<span class="string">'summaryMethod'</span>,<span class="string">'shortName'</span>},<span class="string">'ObsNames'</span>,epochNames);
+0052 <span class="keyword">end</span>
+0053</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prettyBarPlot</title>
+  <meta name="keywords" content="prettyBarPlot">
+  <meta name="description" content="Data is PxMxN, where:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">plotting</a> &gt; prettyBarPlot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/plotting&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>prettyBarPlot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Data is PxMxN, where:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Data is PxMxN, where:
+M is a number of groups (unpaired factor)
+N is a number of conditions/epochs/measurements (paired/repeated factor)
+P is the number of datapoints in each group/condition</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="figuresColorMap.html" class="code" title="">figuresColorMap</a>	Colormap:</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)</a>
+0002 <span class="comment">%Data is PxMxN, where:</span>
+0003 <span class="comment">%M is a number of groups (unpaired factor)</span>
+0004 <span class="comment">%N is a number of conditions/epochs/measurements (paired/repeated factor)</span>
+0005 <span class="comment">%P is the number of datapoints in each group/condition</span>
+0006 
+0007 P=size(data,1); <span class="comment">%#datapoints</span>
+0008 M=size(data,2); <span class="comment">%Conditions (x spacing)</span>
+0009 N=size(data,3); <span class="comment">%Groups (colored)</span>
+0010 
+0011 <span class="comment">%Parse input:</span>
+0012 <span class="keyword">if</span> nargin&lt;2 || isempty(colors)
+0013     <a href="figuresColorMap.html" class="code" title="">figuresColorMap</a>
+0014     colors=condColors;
+0015 <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;3 || isempty(medianFlag)
+0017    medianFlag=1; <span class="comment">%Median +- iqr as plot default</span>
+0018 <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;4 || isempty(pairingLines)
+0020     pairingLines=2; <span class="comment">%Individual datapoints as default</span>
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;5 || isempty(groupNames) || length(groupNames)~=N
+0023     groupNames=strcat(<span class="string">'Group '</span>, num2str([1:N]'));
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin&lt;6 || isempty(conditionNames) || length(conditionNames)~=M
+0026     conditionNames=strcat(<span class="string">'Condition '</span>, num2str([1:M]'));
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">%PLOT------------</span>
+0030 <span class="keyword">if</span> nargin&lt;7 || isempty(plotHandle)
+0031 fh=figure(<span class="string">'Units'</span>,<span class="string">'Normalized'</span>,<span class="string">'OuterPosition'</span>,[0 .5 .3 .5]);
+0032 ph=gca;
+0033 hold on
+0034 <span class="keyword">else</span>
+0035     axes(plotHandle);
+0036     ph=gca;
+0037     fh=gcf;
+0038     hold on
+0039 <span class="keyword">end</span>
+0040 <span class="comment">%Bars:</span>
+0041 <span class="keyword">if</span> medianFlag==1
+0042     m=squeeze(nanmedian(data));
+0043     s=squeeze(iqr(data));
+0044 <span class="keyword">else</span>
+0045     m=squeeze(nanmean(data));
+0046     s=squeeze(nanstd(data));
+0047 <span class="keyword">end</span>
+0048 bb=bar(m,<span class="string">'FaceAlpha'</span>,.6,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0049 pause(.1) <span class="comment">%Without this the graphics engine doesnt return proper handles</span>
+0050 xo=nan(N,1);
+0051 <span class="keyword">for</span> i=1:length(bb) <span class="comment">%length(bb) should be N</span>
+0052     xo(i)=get(bb(i),<span class="string">'xoffset'</span>);
+0053     bb(i).FaceColor=colors(i,:);
+0054 <span class="keyword">end</span>
+0055 <span class="comment">%Add mean and std of pop:</span>
+0056 <span class="comment">%errorbar(reshape(.15*[-1 1]+[1; 2],4,1),mean(data),std(data),'Color','k','LineWidth',2,'LineStyle','none')</span>
+0057 <span class="keyword">for</span> i=1:N
+0058     errorbar(xo(i)+[1:M]',m(:,i),[],s(:,i),<span class="string">'Color'</span>,colors(i,:),<span class="string">'LineWidth'</span>,2,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>)
+0059 <span class="keyword">end</span>
+0060 
+0061 <span class="comment">%Add individual datapoints:</span>
+0062 <span class="keyword">switch</span> pairingLines
+0063     <span class="keyword">case</span> 0
+0064         <span class="comment">%nop</span>
+0065     <span class="keyword">case</span> 1 <span class="comment">%pairing lines (this is for side-by-side bars, corresponding to the same condition in two groups)</span>
+0066         <span class="keyword">for</span> i=1:M
+0067             pp1=plot(i+xo-.05*sign(xo),squeeze(data(:,i,:)),<span class="string">'k'</span>);
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">case</span> 2 <span class="comment">%single datapoints</span>
+0070         <span class="keyword">for</span> i=1:N
+0071             <span class="comment">%Optional: hide half of the bars</span>
+0072             dX=mean(diff(xo))/2;
+0073             <span class="keyword">for</span> j=1:M
+0074                 <span class="comment">%rectangle((xo(i)+j)+[0,dX,dX,0],[0 0 1 1]*bb(i).YData(j));</span>
+0075                 h=bb(i).YData(j);
+0076                 <span class="keyword">if</span> h&gt;=0
+0077                     rectangle(<span class="string">'Position'</span>,[xo(i)+j+.01 0 dX h],<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>,<span class="string">'FaceColor'</span>,<span class="string">'w'</span>);
+0078                 <span class="keyword">else</span>
+0079                     rectangle(<span class="string">'Position'</span>,[xo(i)+j+.01 h dX -h],<span class="string">'EdgeColor'</span>,<span class="string">'None'</span>,<span class="string">'FaceColor'</span>,<span class="string">'w'</span>);
+0080                 <span class="keyword">end</span>
+0081                 scatter(xo(i)+j+.01*randn(size(data,1),1)+dX/2,squeeze(data(:,j,i)),50,colors(i,:),<span class="string">'filled'</span>,<span class="string">'MarkerFaceAlpha'</span>,.6);
+0082             <span class="keyword">end</span>
+0083             <span class="comment">%pp1=plot(xo(i)+[1:M]+.01*randn(size(data,1),1)+dX/2,squeeze(data(:,:,i)),'o','MarkerFaceColor',colors(i,:),'MarkerEdgeColor','none');</span>
+0084             
+0085         <span class="keyword">end</span>
+0086 <span class="keyword">end</span>
+0087 
+0088 legend(groupNames);
+0089 set(gca,<span class="string">'XTick'</span>,[1:M],<span class="string">'XTickLabel'</span>,conditionNames);
+0090 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -6,7 +6,7 @@
   <meta name="keywords" content="getStanceFromForces">
   <meta name="description" content="%% If Fz is sampled &gt;2000Hz, downsample to somewhere in the [1000-2000)Hz">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -74,7 +74,7 @@ This function is called by:
 0022 forces=medfilt1(Fz,N1);
 0023 forces=medfilt1(forces,N); 
 0024 <span class="comment">%forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly</span>
-0025 forceSign=sign(mean(Fz));
+0025 forceSign=sign(nanmean(Fz));
 0026 forces=forces*forceSign; <span class="comment">%Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)</span>
 0027 
 0028 stance=forces&gt;threshold;
@@ -96,6 +96,6 @@ This function is called by:
 0044 
 0045 <span class="keyword">end</span>
 0046</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

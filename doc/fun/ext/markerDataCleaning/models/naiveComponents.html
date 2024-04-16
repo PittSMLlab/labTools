@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of naiveComponents</title>
+  <meta name="keywords" content="naiveComponents">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">models</a> &gt; naiveComponents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/models&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>naiveComponents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naiveComponents.html" class="code" title="">naiveComponents</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="naiveComponents.html" class="code" title="">naiveComponents</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = naiveComponents(statMean,statStd)</a></li><li><a href="#_sub2" class="code">function logL = loglikelihood(this,data)</a></li><li><a href="#_sub3" class="code">function [ss,g] = summaryStats(data)</a></li><li><a href="#_sub4" class="code">function i = indicatrix(M)</a></li><li><a href="#_sub5" class="code">function this = learn(data)</a></li><li><a href="#_sub6" class="code">function mleData=invert(ss)</a></li><li><a href="#_sub7" class="code">function [dataFrame,params]=invertAndAnchor(ss,anchorFrame,anchorWeights)</a></li><li><a href="#_sub8" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="naiveComponents.html" class="code" title="">naiveComponents</a> &lt; <a href="markerModel.html" class="code" title="">markerModel</a>
+0002     <span class="comment">%summary stats: pair-wise component differences</span>
+0003     <span class="comment">%model: independent normals</span>
+0004     
+0005     properties(Hidden)
+0006         statMean
+0007         statStd
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         <a name="_sub0" href="#_subfunctions" class="code">function this = naiveComponents(statMean,statStd)</a>
+0012             this.statMean=statMean;
+0013             this.statStd=statStd;
+0014         <span class="keyword">end</span>
+0015         <a name="_sub1" href="#_subfunctions" class="code">function logL = loglikelihood(this,data)</a>
+0016             ss=this.summaryStats(data);
+0017             logL=markerModel.normalLogL(ss,this.statMean,this.statStd);
+0018         <span class="keyword">end</span>
+0019     <span class="keyword">end</span>
+0020     methods(Static)
+0021         <a name="_sub2" href="#_subfunctions" class="code">function [ss,g] = summaryStats(data)</a>
+0022            ss=computeDifferenceMatrix(data); <span class="comment">%Mx3xMxN</span>
+0023            [M,~,N]=size(data);
+0024            <span class="comment">%TODO</span>
+0025         <span class="keyword">end</span>
+0026         <a name="_sub3" href="#_subfunctions" class="code">function i = indicatrix(M) </a><span class="comment">%MxP</span>
+0027             i=[]; <span class="comment">%TODO</span>
+0028         <span class="keyword">end</span>
+0029         <a name="_sub4" href="#_subfunctions" class="code">function this = learn(data)</a>
+0030             ss=<a href="#_sub3" class="code" title="subfunction [ss,g] = summaryStats(data)">summaryStats</a>(data);
+0031             m=mean(ss,2);
+0032             s=std(ss,[],2);
+0033             this=<a href="naiveComponents.html" class="code" title="">naiveComponents</a>(m,s);
+0034         <span class="keyword">end</span>
+0035         <a name="_sub5" href="#_subfunctions" class="code">function mleData=invert(ss)</a>
+0036             mleData=[];<span class="comment">%TODO</span>
+0037         <span class="keyword">end</span>
+0038         <a name="_sub6" href="#_subfunctions" class="code">function [dataFrame,params]=invertAndAnchor(ss,anchorFrame,anchorWeights) </a>
+0039            dataFrame=[]; <span class="comment">%TODO</span>
+0040            params=[];
+0041         <span class="keyword">end</span>
+0042         <a name="_sub7" href="#_subfunctions" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights) </a><span class="comment">%This needs to be model-specific, not all models require 6DoF transformation</span>
+0043            <span class="comment">%For a single frame:</span>
+0044            params.t=mean(anchorFrame)-mean(dataFrame);
+0045            newDataFrame=dataFrame+params.t;
+0046         <span class="keyword">end</span>
+0047     <span class="keyword">end</span>
+0048 <span class="keyword">end</span>
+0049</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

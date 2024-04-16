@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of diverging_map</title>
+  <meta name="keywords" content="diverging_map">
+  <meta name="description" content="This function is based on Kenneth Moreland's code for greating Diverging">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">usefulCode</a> &gt; diverging_map.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/usefulCode&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>diverging_map
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This function is based on Kenneth Moreland's code for greating Diverging</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function[map] = diverging_map(s,rgb1,rgb2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function is based on Kenneth Moreland's code for greating Diverging
+Colormaps.  Created by Andy Stein.
+
+s is a vector that goes between zero and one</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function[result] = diverging_map_1val(s, rgb1, rgb2)</a></li><li><a href="#_sub2" class="code">function[Msh] = LabToMsh(Lab)</a></li><li><a href="#_sub3" class="code">function[Lab] = MshToLab(Msh)</a></li><li><a href="#_sub4" class="code">function[adiff] = AngleDiff(a1, a2)</a></li><li><a href="#_sub5" class="code">function[h] = AdjustHue(msh, unsatM)</a></li><li><a href="#_sub6" class="code">function [xyz] = LabToXYZ(Lab)</a></li><li><a href="#_sub7" class="code">function[Lab] = XYZToLab(xyz)</a></li><li><a href="#_sub8" class="code">function[rgb] = XYZToRGB(xyz)</a></li><li><a href="#_sub9" class="code">function[xyz] = RGBToXYZ(rgb)</a></li><li><a href="#_sub10" class="code">function[rgb] = LabToRGB(Lab)</a></li><li><a href="#_sub11" class="code">function[Lab] = RGBToLab(rgb)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function[map] = diverging_map(s,rgb1,rgb2)</a>
+0002 <span class="comment">%This function is based on Kenneth Moreland's code for greating Diverging</span>
+0003 <span class="comment">%Colormaps.  Created by Andy Stein.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%s is a vector that goes between zero and one</span>
+0006 
+0007 map = zeros(length(s),3);
+0008 <span class="keyword">for</span> i=1:length(s)
+0009     map(i,:) = <a href="#_sub1" class="code" title="subfunction[result] = diverging_map_1val(s, rgb1, rgb2)">diverging_map_1val</a>(s(i),rgb1,rgb2);
+0010 <span class="keyword">end</span>
+0011 <span class="keyword">end</span>
+0012 
+0013 <span class="comment">% Interpolate a diverging color map.</span>
+0014     <a name="_sub1" href="#_subfunctions" class="code">function[result] = diverging_map_1val(s, rgb1, rgb2)</a>
+0015     <span class="comment">%s1 is a number between 0 and 1</span>
+0016 
+0017         lab1 = <a href="#_sub11" class="code" title="subfunction[Lab] = RGBToLab(rgb)">RGBToLab</a>(rgb1);
+0018         lab2 = <a href="#_sub11" class="code" title="subfunction[Lab] = RGBToLab(rgb)">RGBToLab</a>(rgb2);
+0019   
+0020         msh1 = <a href="#_sub2" class="code" title="subfunction[Msh] = LabToMsh(Lab)">LabToMsh</a>(lab1);
+0021         msh2 = <a href="#_sub2" class="code" title="subfunction[Msh] = LabToMsh(Lab)">LabToMsh</a>(lab2);
+0022 
+0023         <span class="comment">% If the endpoints are distinct saturated colors, then place white in between</span>
+0024         <span class="comment">% them.</span>
+0025         <span class="keyword">if</span> msh1(2) &gt; 0.05 &amp;&amp; msh2(2) &gt; 0.05 &amp;&amp; <a href="#_sub4" class="code" title="subfunction[adiff] = AngleDiff(a1, a2)">AngleDiff</a>(msh1(3),msh2(3)) &gt; 0.33*pi    
+0026             <span class="comment">% Insert the white midpoint by setting one end to white and adjusting the</span>
+0027             <span class="comment">% scalar value.</span>
+0028             Mmid = max(msh1(1), msh2(1));
+0029             Mmid = max(88.0, Mmid);
+0030             <span class="keyword">if</span> (s &lt; 0.5)
+0031                 msh2(1) = Mmid;  msh2(2) = 0.0;  msh2(3) = 0.0;
+0032                 s = 2.0*s;
+0033             <span class="keyword">else</span>
+0034                 msh1(1) = Mmid;  msh1(2) = 0.0;  msh1(3) = 0.0;
+0035                 s = 2.0*s - 1.0;
+0036             <span class="keyword">end</span>
+0037         <span class="keyword">end</span>
+0038 
+0039         <span class="comment">% If one color has no saturation, then its hue value is invalid.  In this</span>
+0040         <span class="comment">% case, we want to set it to something logical so that the interpolation of</span>
+0041         <span class="comment">% hue makes sense.</span>
+0042         <span class="keyword">if</span> ((msh1(2) &lt; 0.05) &amp;&amp; (msh2(2) &gt; 0.05))
+0043             msh1(3) = <a href="#_sub5" class="code" title="subfunction[h] = AdjustHue(msh, unsatM)">AdjustHue</a>(msh2, msh1(1));
+0044         <span class="keyword">elseif</span> ((msh2(2) &lt; 0.05) &amp;&amp; (msh1(2) &gt; 0.05))
+0045             msh2(3) = <a href="#_sub5" class="code" title="subfunction[h] = AdjustHue(msh, unsatM)">AdjustHue</a>(msh1, msh2(1));
+0046         <span class="keyword">end</span>
+0047 
+0048         mshTmp(1) = (1-s)*msh1(1) + s*msh2(1);
+0049         mshTmp(2) = (1-s)*msh1(2) + s*msh2(2);
+0050         mshTmp(3) = (1-s)*msh1(3) + s*msh2(3);
+0051 
+0052         <span class="comment">% Now convert back to RGB</span>
+0053         labTmp = <a href="#_sub3" class="code" title="subfunction[Lab] = MshToLab(Msh)">MshToLab</a>(mshTmp);
+0054         result = <a href="#_sub10" class="code" title="subfunction[rgb] = LabToRGB(Lab)">LabToRGB</a>(labTmp);
+0055         1;
+0056     <span class="keyword">end</span>
+0057 
+0058 
+0059 <span class="comment">%Convert to and from a special polar version of CIELAB (useful for creating</span>
+0060 <span class="comment">%continuous diverging color maps).</span>
+0061     <a name="_sub2" href="#_subfunctions" class="code">function[Msh] = LabToMsh(Lab)  </a>
+0062         L = Lab(1);
+0063         a = Lab(2);
+0064         b = Lab(3);
+0065 
+0066         M = sqrt(L*L + a*a + b*b);
+0067         s = (M &gt; 0.001) * acos(L/M);
+0068         h = (s &gt; 0.001) * atan2(b,a);
+0069 
+0070         Msh = [M s h];
+0071     <span class="keyword">end</span>
+0072 
+0073     <a name="_sub3" href="#_subfunctions" class="code">function[Lab] = MshToLab(Msh)</a>
+0074         M = Msh(1);
+0075         s = Msh(2);
+0076         h = Msh(3);
+0077 
+0078         L = M*cos(s);
+0079         a = M*sin(s)*cos(h);
+0080         b = M*sin(s)*sin(h);
+0081 
+0082         Lab = [L a b];
+0083     <span class="keyword">end</span>
+0084 
+0085 <span class="comment">%Given two angular orientations, returns the smallest angle between the two.</span>
+0086     <a name="_sub4" href="#_subfunctions" class="code">function[adiff] = AngleDiff(a1, a2)</a>
+0087         v1    = [cos(a1) sin(a1)];
+0088         v2    = [cos(a2) sin(a2)];        
+0089         adiff = acos(dot(v1,v2));
+0090     <span class="keyword">end</span>
+0091         
+0092 <span class="comment">%% For the case when interpolating from a saturated color to an unsaturated</span>
+0093 <span class="comment">%% color, find a hue for the unsaturated color that makes sense.</span>
+0094     <a name="_sub5" href="#_subfunctions" class="code">function[h] = AdjustHue(msh, unsatM)</a>
+0095 
+0096         <span class="keyword">if</span> msh(1) &gt;= unsatM-0.1                    
+0097             <span class="comment">%%The best we can do is hold hue constant.</span>
+0098             h = msh(3);
+0099         <span class="keyword">else</span>
+0100             <span class="comment">% This equation is designed to make the perceptual change of the</span>
+0101             <span class="comment">% interpolation to be close to constant.</span>
+0102             hueSpin = (msh(2)*sqrt(unsatM^2 - msh(1)^2)/(msh(1)*sin(msh(2))));
+0103     
+0104             <span class="comment">% Spin hue away from 0 except in purple hues.</span>
+0105             <span class="keyword">if</span> (msh(3) &gt; -0.3*pi)
+0106                 h = msh(3) + hueSpin;
+0107             <span class="keyword">else</span>
+0108                 h = msh(3) - hueSpin;
+0109             <span class="keyword">end</span>
+0110         <span class="keyword">end</span>
+0111     <span class="keyword">end</span>
+0112 
+0113     <a name="_sub6" href="#_subfunctions" class="code">function [xyz] = LabToXYZ(Lab)</a>
+0114         <span class="comment">%LAB to XYZ</span>
+0115         L = Lab(1); a = Lab(2); b = Lab(3);
+0116 
+0117         var_Y = ( L + 16 ) / 116;
+0118         var_X = a / 500 + var_Y;
+0119         var_Z = var_Y - b / 200;
+0120 
+0121         <span class="keyword">if</span> ( var_Y^3 &gt; 0.008856 ) 
+0122           var_Y = var_Y^3;
+0123         <span class="keyword">else</span>
+0124           var_Y = ( var_Y - 16.0 / 116.0 ) / 7.787;
+0125         <span class="keyword">end</span>
+0126         <span class="keyword">if</span> ( var_X^3 &gt; 0.008856 ) 
+0127           var_X = var_X^3;
+0128         <span class="keyword">else</span>
+0129           var_X = ( var_X - 16.0 / 116.0 ) / 7.787;
+0130         <span class="keyword">end</span>
+0131         <span class="keyword">if</span> ( var_Z^3) &gt; 0.008856 
+0132           var_Z = var_Z^3;
+0133         <span class="keyword">else</span>
+0134           var_Z = ( var_Z - 16.0 / 116.0 ) / 7.787;
+0135         <span class="keyword">end</span>
+0136 
+0137         ref_X = 0.9505;
+0138         ref_Y = 1.000;
+0139         ref_Z = 1.089;
+0140 
+0141 
+0142         x = ref_X * var_X;     <span class="comment">%ref_X = 0.9505  Observer= 2 deg Illuminant= D65</span>
+0143         y = ref_Y * var_Y;     <span class="comment">%ref_Y = 1.000</span>
+0144         z = ref_Z * var_Z;     <span class="comment">%ref_Z = 1.089</span>
+0145 
+0146         xyz = [x y z];
+0147     <span class="keyword">end</span>
+0148 
+0149     <a name="_sub7" href="#_subfunctions" class="code">function[Lab] = XYZToLab(xyz)</a>
+0150         x = xyz(1); y = xyz(2); z = xyz(3);
+0151 
+0152         ref_X = 0.9505;
+0153         ref_Y = 1.000;
+0154         ref_Z = 1.089;
+0155         var_X = x / ref_X;  <span class="comment">%ref_X = 0.9505  Observer= 2 deg, Illuminant= D65</span>
+0156         var_Y = y / ref_Y;  <span class="comment">%ref_Y = 1.000</span>
+0157         var_Z = z / ref_Z;  <span class="comment">%ref_Z = 1.089</span>
+0158 
+0159         <span class="keyword">if</span> ( var_X &gt; 0.008856 ), var_X = var_X^(1/3);
+0160         <span class="keyword">else</span>                     var_X = ( 7.787 * var_X ) + ( 16.0 / 116.0 ); <span class="keyword">end</span>
+0161         <span class="keyword">if</span> ( var_Y &gt; 0.008856 ), var_Y = var_Y^(1/3);
+0162         <span class="keyword">else</span>                     var_Y = ( 7.787 * var_Y ) + ( 16.0 / 116.0 ); <span class="keyword">end</span>
+0163         <span class="keyword">if</span> ( var_Z &gt; 0.008856 ), var_Z = var_Z^(1/3);
+0164         <span class="keyword">else</span>                     var_Z = ( 7.787 * var_Z ) + ( 16.0 / 116.0 ); <span class="keyword">end</span>
+0165 
+0166         L = ( 116 * var_Y ) - 16;
+0167         a = 500 * ( var_X - var_Y );
+0168         b = 200 * ( var_Y - var_Z );
+0169 
+0170         Lab = [L a b];
+0171     <span class="keyword">end</span>
+0172 
+0173 <a name="_sub8" href="#_subfunctions" class="code">function[rgb] = XYZToRGB(xyz)</a>
+0174   
+0175   <span class="comment">%ref_X = 0.9505;        %Observer = 2 deg Illuminant = D65</span>
+0176   <span class="comment">%ref_Y = 1.000;</span>
+0177   <span class="comment">%ref_Z = 1.089;</span>
+0178   
+0179   x = xyz(1); y = xyz(2); z = xyz(3);
+0180   r = x *  3.2406 + y * -1.5372 + z * -0.4986;
+0181   g = x * -0.9689 + y *  1.8758 + z *  0.0415;
+0182   b = x *  0.0557 + y * -0.2040 + z *  1.0570;
+0183 
+0184   <span class="comment">% The following performs a &quot;gamma correction&quot; specified by the sRGB color</span>
+0185   <span class="comment">% space.  sRGB is defined by a canonical definition of a display monitor and</span>
+0186   <span class="comment">% has been standardized by the International Electrotechnical Commission (IEC</span>
+0187   <span class="comment">% 61966-2-1).  The nonlinearity of the correction is designed to make the</span>
+0188   <span class="comment">% colors more perceptually uniform.  This color space has been adopted by</span>
+0189   <span class="comment">% several applications including Adobe Photoshop and Microsoft Windows color</span>
+0190   <span class="comment">% management.  OpenGL is agnostic on its RGB color space, but it is reasonable</span>
+0191   <span class="comment">% to assume it is close to this one.</span>
+0192   <span class="keyword">if</span> (r &gt; 0.0031308), r = 1.055 * r^( 1 / 2.4 ) - 0.055;
+0193   <span class="keyword">else</span> r = 12.92 * (r); <span class="keyword">end</span>
+0194   <span class="keyword">if</span> (g &gt; 0.0031308), g = 1.055 * g^( 1 / 2.4 ) - 0.055;
+0195   <span class="keyword">else</span>  g = 12.92 * (g); <span class="keyword">end</span>
+0196   <span class="keyword">if</span> (b &gt; 0.0031308), b = 1.055 * b^( 1 / 2.4 ) - 0.055;
+0197   <span class="keyword">else</span> b = 12.92 * (b); <span class="keyword">end</span>
+0198 
+0199   <span class="comment">% Clip colors. ideally we would do something that is perceptually closest</span>
+0200   <span class="comment">% (since we can see colors outside of the display gamut), but this seems to</span>
+0201   <span class="comment">% work well enough.</span>
+0202   maxVal = r;
+0203   <span class="keyword">if</span> (maxVal &lt; g), maxVal = g; <span class="keyword">end</span>
+0204   <span class="keyword">if</span> (maxVal &lt; b), maxVal = b; <span class="keyword">end</span>
+0205   <span class="keyword">if</span> (maxVal &gt; 1.0)    
+0206     r = r/maxVal;
+0207     g = g/maxVal;
+0208     b = b/maxVal;
+0209   <span class="keyword">end</span>
+0210   <span class="keyword">if</span> (r&lt;0), r=0; <span class="keyword">end</span>
+0211   <span class="keyword">if</span> (g&lt;0), g=0; <span class="keyword">end</span>
+0212   <span class="keyword">if</span> (b&lt;0), b=0; <span class="keyword">end</span>
+0213   
+0214   rgb = [r g b];
+0215 <span class="keyword">end</span>
+0216 
+0217 <span class="comment">%-----------------------------------------------------------------------------</span>
+0218 <a name="_sub9" href="#_subfunctions" class="code">function[xyz] = RGBToXYZ(rgb)</a>
+0219 
+0220   r = rgb(1); g = rgb(2); b = rgb(3);
+0221 
+0222   <span class="comment">% The following performs a &quot;gamma correction&quot; specified by the sRGB color</span>
+0223   <span class="comment">% space.  sRGB is defined by a canonical definition of a display monitor and</span>
+0224   <span class="comment">% has been standardized by the International Electrotechnical Commission (IEC</span>
+0225   <span class="comment">% 61966-2-1).  The nonlinearity of the correction is designed to make the</span>
+0226   <span class="comment">% colors more perceptually uniform.  This color space has been adopted by</span>
+0227   <span class="comment">% several applications including Adobe Photoshop and Microsoft Windows color</span>
+0228   <span class="comment">% management.  OpenGL is agnostic on its RGB color space, but it is reasonable</span>
+0229   <span class="comment">% to assume it is close to this one.</span>
+0230   <span class="keyword">if</span> ( r &gt; 0.04045 ), r = (( r + 0.055 ) / 1.055)^2.4;
+0231   <span class="keyword">else</span>                r = r / 12.92; <span class="keyword">end</span>
+0232   <span class="keyword">if</span> ( g &gt; 0.04045 ), g = (( g + 0.055 ) / 1.055)^2.4;
+0233   <span class="keyword">else</span>                g = g / 12.92; <span class="keyword">end</span>
+0234   <span class="keyword">if</span> ( b &gt; 0.04045 ), b = (( b + 0.055 ) / 1.055)^2.4;
+0235   <span class="keyword">else</span>                b = b / 12.92; <span class="keyword">end</span>
+0236 
+0237   <span class="comment">%Observer. = 2 deg, Illuminant = D65</span>
+0238   x = r * 0.4124 + g * 0.3576 + b * 0.1805;
+0239   y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+0240   z = r * 0.0193 + g * 0.1192 + b * 0.9505;
+0241   
+0242   xyz = [x y z];
+0243 <span class="keyword">end</span>
+0244 
+0245 <a name="_sub10" href="#_subfunctions" class="code">function[rgb] = LabToRGB(Lab)</a>
+0246   xyz = <a href="#_sub6" class="code" title="subfunction [xyz] = LabToXYZ(Lab)">LabToXYZ</a>(Lab);
+0247   rgb = <a href="#_sub8" class="code" title="subfunction[rgb] = XYZToRGB(xyz)">XYZToRGB</a>(xyz);
+0248 <span class="keyword">end</span>
+0249 
+0250 <a name="_sub11" href="#_subfunctions" class="code">function[Lab] = RGBToLab(rgb)</a>
+0251   xyz = <a href="#_sub9" class="code" title="subfunction[xyz] = RGBToXYZ(rgb)">RGBToXYZ</a>(rgb);
+0252   Lab = <a href="#_sub7" class="code" title="subfunction[Lab] = XYZToLab(xyz)">XYZToLab</a>(xyz);
+0253 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

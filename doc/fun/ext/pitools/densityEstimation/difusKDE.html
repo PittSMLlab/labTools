@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of difusKDE</title>
+  <meta name="keywords" content="difusKDE">
+  <meta name="description" content="difusKDE Computing density estimation by diffusion (extending the work of">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">densityEstimation</a> &gt; difusKDE.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/densityEstimation&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>difusKDE
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>difusKDE Computing density estimation by diffusion (extending the work of</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [density] = difusKDE(samples,xmesh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">difusKDE Computing density estimation by diffusion (extending the work of
+Botev, kde.m). This function allows for multi-dimensional data, and
+inhomogeneous and anisotropic difussion (i.e. variable non-spherical
+gaussian kernels). However, it is not as efficient in its computation.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function y=divergence(x)</a></li><li><a href="#_sub2" class="code">function x=gradient(y)</a></li><li><a href="#_sub3" class="code">function z=tensorProduct(x,y)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [density] = difusKDE(samples,xmesh)</a>
+0002 <span class="comment">%difusKDE Computing density estimation by diffusion (extending the work of</span>
+0003 <span class="comment">%Botev, kde.m). This function allows for multi-dimensional data, and</span>
+0004 <span class="comment">%inhomogeneous and anisotropic difussion (i.e. variable non-spherical</span>
+0005 <span class="comment">%gaussian kernels). However, it is not as efficient in its computation.</span>
+0006 
+0007 <span class="comment">%Inputs:</span>
+0008 <span class="comment">%samples: NxM matrix, containing N samples of M-dimensional data.</span>
+0009 <span class="comment">%xmesh: cell-array of length M, each cell containing a vector. The i-th</span>
+0010 <span class="comment">%vector represents the coordinates of the grid in the i-th dimension (grid</span>
+0011 <span class="comment">%is rectangular).</span>
+0012 
+0013 t_end=1; <span class="comment">%Diffusion time. This is probably a parameter the user would like control over.</span>
+0014 dt=.001; <span class="comment">%Time-step length for discrete simulation of the diffusion equation.</span>
+0015 N=round(t_end/dt); <span class="comment">%Number of steps in the simulation.</span>
+0016 
+0017 M=size(samples,2); <span class="comment">%Dimensionality of the data.</span>
+0018 gridSize=cellfun(<span class="string">'length'</span>,xmesh); 
+0019 Ngrid=prod(gridSize); <span class="comment">%total number of grid points to evaluate at.</span>
+0020 
+0021 <span class="comment">%% Compute conductivity at each point of the grid (gridSize x MxM matrix)</span>
+0022 conductivity=
+0023 
+0024 <span class="comment">%% Initial guess at the density: spread each sample proportionally among the 2^M closest grid-points</span>
+0025 density=
+0026 
+0027 <span class="comment">%% Iterate</span>
+0028 <span class="keyword">for</span> step=1:N
+0029     <a href="#_sub2" class="code" title="subfunction x=gradient(y)">gradient</a>= <span class="comment">%gridSize x M matrix, representing the M-dimensional gradient in each of the Ngrid points.</span>
+0030     density=density+dt*<a href="#_sub1" class="code" title="subfunction y=divergence(x)">divergence</a>(<a href="#_sub3" class="code" title="subfunction z=tensorProduct(x,y)">tensorProduct</a>(conductivity,<a href="#_sub2" class="code" title="subfunction x=gradient(y)">gradient</a>));
+0031 <span class="keyword">end</span>
+0032 
+0033 
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%% Aux functions:</span>
+0037 <a name="_sub1" href="#_subfunctions" class="code">function y=divergence(x)</a>
+0038 
+0039 <span class="keyword">end</span>
+0040 
+0041 <a name="_sub2" href="#_subfunctions" class="code">function x=gradient(y)</a>
+0042 
+0043 <span class="keyword">end</span>
+0044 
+0045 <a name="_sub3" href="#_subfunctions" class="code">function z=tensorProduct(x,y)</a>
+0046 sX=size(x);
+0047 sY=size(y);
+0048 <span class="keyword">if</span> sX(end)~=sY(1)
+0049     throw(MException(<span class="string">'tensorProduct:BadSize'</span>,<span class="string">'Tensor sizes do not match.'</span>));
+0050     <span class="keyword">return</span>
+0051 <span class="keyword">end</span>
+0052 newX=reshape(x,sX(1:end-1),sX(end));
+0053 newY=y(:,:);
+0054 newZ=newX*newY;
+0055 z=reshape(newZ,sX(1:end-1),sY(2:end));
+0056 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

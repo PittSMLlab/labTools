@@ -6,7 +6,7 @@
   <meta name="keywords" content="labDate">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -41,7 +41,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=labDate(dd,mm,year)</a></li><li><a href="#_sub2" class="code">function this=set.day(this,dd)</a></li><li><a href="#_sub3" class="code">function this=set.year(this,year)</a></li><li><a href="#_sub4" class="code">function str=monthString(a)</a></li><li><a href="#_sub5" class="code">function id=genIDFromClock()</a></li><li><a href="#_sub6" class="code">function d=getCurrent()</a></li><li><a href="#_sub7" class="code">function d=default()</a></li></ul>
+<li><a href="#_sub1" class="code">function this=labDate(dd,mm,year)</a></li><li><a href="#_sub2" class="code">function this=set.day(this,dd)</a></li><li><a href="#_sub3" class="code">function this=set.year(this,year)</a></li><li><a href="#_sub4" class="code">function [timeInMonths]=timeSince(this,other)</a></li><li><a href="#_sub5" class="code">function flag=isempty(this)</a></li><li><a href="#_sub6" class="code">function str=monthString(a)</a></li><li><a href="#_sub7" class="code">function id=genIDFromClock()</a></li><li><a href="#_sub8" class="code">function d=getCurrent()</a></li><li><a href="#_sub9" class="code">function d=default()</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="labDate.html" class="code" title="">labDate</a>
@@ -57,13 +57,13 @@ This function is called by:
 0011     <span class="comment">%   genIDFromClock</span>
 0012     <span class="comment">%   getCurrent</span>
 0013     <span class="comment">%   default - generates default date (Jan 1, 1900)</span>
-0014     
+0014 
 0015     properties
 0016         day; <span class="comment">%a day (ex: 27)</span>
 0017         month; <span class="comment">%a month (ex: 4)</span>
 0018         year;<span class="comment">% a year (ex: 2015)</span>
 0019     <span class="keyword">end</span>
-0020     
+0020 
 0021     methods
 0022 
 0023         <a name="_sub0" href="#_subfunctions" class="code">function this=labDate(dd,mm,year)</a>
@@ -77,7 +77,7 @@ This function is called by:
 0031             <span class="comment">%'jan' or 'dec'</span>
 0032             <span class="comment">%</span>
 0033             <span class="comment">%yyyy must be 4 digit double</span>
-0034             
+0034 
 0035             this.day=dd;
 0036             <span class="keyword">if</span> isa(mm,<span class="string">'char'</span>) &amp;&amp; length(mm)==3
 0037                 <span class="keyword">switch</span> lower(mm)
@@ -114,10 +114,10 @@ This function is called by:
 0068            <span class="keyword">else</span>
 0069                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Month parameter is not a 3-letter string or a valid numerical value.'</span>);
 0070                 throw(ME);
-0071            <span class="keyword">end</span> 
+0071            <span class="keyword">end</span>
 0072             this.year=year;
 0073         <span class="keyword">end</span>
-0074         
+0074 
 0075         <span class="comment">%Setters</span>
 0076         <a name="_sub1" href="#_subfunctions" class="code">function this=set.day(this,dd)</a>
 0077             <span class="keyword">if</span> dd&lt;32 &amp;&amp; dd&gt;0 &amp;&amp; rem(dd,1)==0
@@ -126,8 +126,8 @@ This function is called by:
 0080                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Day parameter is not an integer in the [1,31] range.'</span>);
 0081                 throw(ME);
 0082             <span class="keyword">end</span>
-0083         <span class="keyword">end</span>        
-0084         
+0083         <span class="keyword">end</span>
+0084 
 0085         <span class="comment">% HH: no setter for month because it was mis-behaving</span>
 0086 <span class="comment">%         function this=set.month(this,mm)</span>
 0087 <span class="comment">%</span>
@@ -138,85 +138,98 @@ This function is called by:
 0092             <span class="keyword">else</span>
 0093                 ME=MException(<span class="string">'labDate:Constructor'</span>,<span class="string">'Year parameter is not an integer.'</span>);
 0094                 throw(ME);
-0095            <span class="keyword">end</span> 
+0095            <span class="keyword">end</span>
 0096         <span class="keyword">end</span>
-0097     <span class="keyword">end</span> 
-0098     
-0099     
-0100     <span class="comment">%Suggested method: find number of years/months/days that separate two</span>
-0101     <span class="comment">%dates. The method could be called like</span>
-0102     <span class="comment">%[days,months,years]=labDate1.timeSince(labDate2)</span>
-0103     
-0104     methods(Static)
-0105         
-0106         <a name="_sub3" href="#_subfunctions" class="code">function str=monthString(a)</a>
-0107         <span class="comment">% monthString  turns numeric month value into a string</span>
-0108         <span class="comment">%   str=monthString(a) outputs a three-character string for an</span>
-0109         <span class="comment">%   integer between 1 and 12 (inclusive).</span>
-0110         <span class="comment">%   example:</span>
-0111         <span class="comment">%       monthString(1) returns 'jan'.</span>
-0112             <span class="keyword">switch</span> a
-0113                 <span class="keyword">case</span> 1
-0114                     str=<span class="string">'jan'</span>;
-0115                 <span class="keyword">case</span> 2
-0116                     str=<span class="string">'feb'</span>;
-0117                 <span class="keyword">case</span> 3
-0118                     str=<span class="string">'mar'</span>;
-0119                 <span class="keyword">case</span> 4
-0120                     str=<span class="string">'apr'</span>;
-0121                 <span class="keyword">case</span> 5
-0122                     str=<span class="string">'may'</span>;
-0123                 <span class="keyword">case</span> 6
-0124                     str=<span class="string">'jun'</span>;
-0125                 <span class="keyword">case</span> 7
-0126                     str=<span class="string">'jul'</span>;
-0127                 <span class="keyword">case</span> 8
-0128                     str=<span class="string">'aug'</span>;
-0129                 <span class="keyword">case</span> 9
-0130                     str=<span class="string">'sep'</span>;
-0131                 <span class="keyword">case</span> 10
-0132                     str=<span class="string">'oct'</span>;
-0133                 <span class="keyword">case</span> 11
-0134                     str=<span class="string">'nov'</span>;
-0135                 <span class="keyword">case</span> 12
-0136                     str=<span class="string">'dec'</span>;
-0137                 <span class="keyword">otherwise</span>
-0138                     str=<span class="string">''</span>;
-0139             <span class="keyword">end</span>
-0140         <span class="keyword">end</span>
-0141         
-0142         <a name="_sub4" href="#_subfunctions" class="code">function id=genIDFromClock()</a>
-0143             <span class="comment">%get the current time and convert it to date ID: yyyymmddhhmmss</span>
-0144             <span class="comment">%</span>
-0145             <span class="comment">%example:</span>
-0146             <span class="comment">%id = genIDFromClock()</span>
-0147             <span class="comment">%id = 20150821111631</span>
-0148            aux=clock;
-0149            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
-0150         <span class="keyword">end</span>
-0151         
-0152         <a name="_sub5" href="#_subfunctions" class="code">function d=getCurrent()</a>
-0153             <span class="comment">%create labDate instance d as the current time and date</span>
-0154             <span class="comment">%</span>
-0155             <span class="comment">%example:</span>
-0156             <span class="comment">%d = getCurrent()</span>
-0157             <span class="comment">%             d =</span>
-0158             <span class="comment">%labDate with properties:</span>
-0159             <span class="comment">%day: 21</span>
-0160             <span class="comment">%month: 8</span>
-0161             <span class="comment">%year: 2015</span>
-0162             aux=clock;
-0163             d=<a href="labDate.html" class="code" title="">labDate</a>(aux(3),labDate.monthString(aux(2)),aux(1));
+0097         
+0098             <span class="comment">%Suggested method: find number of years/months/days that separate two</span>
+0099         <span class="comment">%dates. The method could be called like</span>
+0100         <a name="_sub3" href="#_subfunctions" class="code">function [timeInMonths]=timeSince(this,other)</a>
+0101               <span class="comment">%Returns elapsed time in MONTHS</span>
+0102               timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
+0103         <span class="keyword">end</span>
+0104         
+0105         <a name="_sub4" href="#_subfunctions" class="code">function flag=isempty(this)</a>
+0106             flag=<a href="#_sub4" class="code" title="subfunction [timeInMonths]=timeSince(this,other)">timeSince</a>(this,labDate.default)==0; <span class="comment">%If date equals default value, considering empty</span>
+0107         <span class="keyword">end</span>
+0108         
+0109         <span class="comment">%function disp(this)</span>
+0110         <span class="comment">%   disp([num2str(this.day) ' ' labDate.monthString(this.month) ' ' num2str(this.year)])</span>
+0111         <span class="comment">%end</span>
+0112 
+0113     <span class="keyword">end</span>
+0114 
+0115 
+0116 
+0117 
+0118     methods(Static)
+0119 
+0120         <a name="_sub5" href="#_subfunctions" class="code">function str=monthString(a)</a>
+0121         <span class="comment">% monthString  turns numeric month value into a string</span>
+0122         <span class="comment">%   str=monthString(a) outputs a three-character string for an</span>
+0123         <span class="comment">%   integer between 1 and 12 (inclusive).</span>
+0124         <span class="comment">%   example:</span>
+0125         <span class="comment">%       monthString(1) returns 'jan'.</span>
+0126             <span class="keyword">switch</span> a
+0127                 <span class="keyword">case</span> 1
+0128                     str=<span class="string">'jan'</span>;
+0129                 <span class="keyword">case</span> 2
+0130                     str=<span class="string">'feb'</span>;
+0131                 <span class="keyword">case</span> 3
+0132                     str=<span class="string">'mar'</span>;
+0133                 <span class="keyword">case</span> 4
+0134                     str=<span class="string">'apr'</span>;
+0135                 <span class="keyword">case</span> 5
+0136                     str=<span class="string">'may'</span>;
+0137                 <span class="keyword">case</span> 6
+0138                     str=<span class="string">'jun'</span>;
+0139                 <span class="keyword">case</span> 7
+0140                     str=<span class="string">'jul'</span>;
+0141                 <span class="keyword">case</span> 8
+0142                     str=<span class="string">'aug'</span>;
+0143                 <span class="keyword">case</span> 9
+0144                     str=<span class="string">'sep'</span>;
+0145                 <span class="keyword">case</span> 10
+0146                     str=<span class="string">'oct'</span>;
+0147                 <span class="keyword">case</span> 11
+0148                     str=<span class="string">'nov'</span>;
+0149                 <span class="keyword">case</span> 12
+0150                     str=<span class="string">'dec'</span>;
+0151                 <span class="keyword">otherwise</span>
+0152                     str=<span class="string">''</span>;
+0153             <span class="keyword">end</span>
+0154         <span class="keyword">end</span>
+0155 
+0156         <a name="_sub6" href="#_subfunctions" class="code">function id=genIDFromClock()</a>
+0157             <span class="comment">%get the current time and convert it to date ID: yyyymmddhhmmss</span>
+0158             <span class="comment">%</span>
+0159             <span class="comment">%example:</span>
+0160             <span class="comment">%id = genIDFromClock()</span>
+0161             <span class="comment">%id = 20150821111631</span>
+0162            aux=clock;
+0163            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
 0164         <span class="keyword">end</span>
-0165         
-0166         <a name="_sub6" href="#_subfunctions" class="code">function d=default()</a>
-0167             <span class="comment">%set date to 1 Jan 1900</span>
-0168             d=<a href="labDate.html" class="code" title="">labDate</a>(1,<span class="string">'jan'</span>,1900);
-0169         <span class="keyword">end</span>
-0170     <span class="keyword">end</span>
-0171     
-0172 <span class="keyword">end</span>
-0173</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0165 
+0166         <a name="_sub7" href="#_subfunctions" class="code">function d=getCurrent()</a>
+0167             <span class="comment">%create labDate instance d as the current time and date</span>
+0168             <span class="comment">%</span>
+0169             <span class="comment">%example:</span>
+0170             <span class="comment">%d = getCurrent()</span>
+0171             <span class="comment">%             d =</span>
+0172             <span class="comment">%labDate with properties:</span>
+0173             <span class="comment">%day: 21</span>
+0174             <span class="comment">%month: 8</span>
+0175             <span class="comment">%year: 2015</span>
+0176             aux=clock;
+0177             d=<a href="labDate.html" class="code" title="">labDate</a>(aux(3),labDate.monthString(aux(2)),aux(1));
+0178         <span class="keyword">end</span>
+0179 
+0180         <a name="_sub8" href="#_subfunctions" class="code">function d=default()</a>
+0181             <span class="comment">%set date to 1 Jan 1900</span>
+0182             d=<a href="labDate.html" class="code" title="">labDate</a>(1,<span class="string">'jan'</span>,1900);
+0183         <span class="keyword">end</span>
+0184     <span class="keyword">end</span>
+0185 
+0186 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

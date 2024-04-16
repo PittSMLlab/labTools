@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of testNaiveDistances</title>
+  <meta name="keywords" content="testNaiveDistances">
+  <meta name="description" content="Test distance model:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">test</a> &gt; testNaiveDistances.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/test&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>testNaiveDistances
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Test distance model:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Test distance model:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Test distance model:</span>
+0002 
+0003 <span class="comment">%% Load data</span>
+0004 clearvars
+0005 
+0006 load ./data/C0001MarkerData.mat
+0007 data2=M{7};
+0008 labels2=labels;
+0009 
+0010 load ./data/LI16_Trial9_expData.mat <span class="comment">%processedTrialData</span>
+0011 labels=LI16_Trial9_expData.markerData.getLabelPrefix;
+0012 data=LI16_Trial9_expData.markerData.getOrientedData(labels);
+0013 
+0014 iL=cellfun(@(x) ~isempty(x),regexp(labels,<span class="string">'^L*'</span>));
+0015 iR=cellfun(@(x) ~isempty(x),regexp(labels,<span class="string">'^R*'</span>));
+0016 dL=data(:,iL,:);
+0017 lL=labels(iL);
+0018 dR=data(:,iR,:);
+0019 lR=labels(iR);
+0020 [~,idx1]=sort(nanmean(dL(:,:,3)),<span class="string">'ascend'</span>);
+0021 [~,idx2]=sort(nanmean(dR(:,:,3)),<span class="string">'descend'</span>);
+0022 labels=[lL(idx1) lR(idx2)];
+0023 data=cat(2,dL(:,idx1,:),dR(:,idx2,:));
+0024 
+0025 <span class="comment">%%</span>
+0026 missing=any(isnan(data),3);
+0027 figure
+0028 miss=missing(:,any(missing));
+0029 pp=plot(miss,<span class="string">'o'</span>);
+0030 aux=labels(any(missing));
+0031 <span class="keyword">for</span> i=1:length(pp)
+0032     set(pp(i),<span class="string">'DisplayName'</span>,[aux{i} <span class="string">' ('</span> num2str(sum(miss(:,i))) <span class="string">' frames)'</span>])
+0033 <span class="keyword">end</span>
+0034 legend(pp)
+0035 title(<span class="string">'Missing markers'</span>)
+0036 xlabel(<span class="string">'Time (frames)'</span>)
+0037 set(gca,<span class="string">'YTick'</span>,[0 1],<span class="string">'YTickLabel'</span>,{<span class="string">'Present'</span>,<span class="string">'Missing'</span>})
+0038 
+0039 <span class="comment">%% Learn a model</span>
+0040 d=permute(data,[2,3,1]);
+0041 mm = naiveDistances.learn(d,labels);
+0042 mm2 = naivePositions.learn(d,labels);
+0043 mmZ = naivePositions.learn(d,labels,3);
+0044 L1=mm.scoreMarkers(d);
+0045 L5=mm.scoreMarkersNaive(d2);
+0046 L2=mm.scoreMarkersFast(d2);
+0047 L3=mm.scoreMarkersMedian(d2);
+0048 L4=mm.scoreMarkersRanked(d2,2);
+0049 L6=mm.scoreMarkersRanked(d2,1);
+0050 <span class="keyword">for</span> j=1:6 <span class="comment">%Defining threshold as twice the distance between the 10-th and 50th percentile below the 50th percentile</span>
+0051     eval([<span class="string">'aux=prctile(L'</span> num2str(j) <span class="string">',[5,50],2);'</span>]);
+0052     eval([<span class="string">'th'</span> num2str(j) <span class="string">'=aux(:,2)-2*(aux(:,2)-aux(:,1));'</span>]);
+0053 <span class="keyword">end</span>
+0054 LB1=mm2.scoreMarkers(d);
+0055 <span class="comment">%% Assess likelihood of individual frames</span>
+0056 inds=[16500:18000];
+0057 dd=d(:,:,inds);
+0058 d2=dd;
+0059 d2(7,1,580+[0:50])=d(7,1,580+[0:50])+30; <span class="comment">%1mm displacement</span>
+0060 
+0061 ll1=mm.scoreMarkers(d2);
+0062 ll5=mm.scoreMarkersNaive(d2);
+0063 ll2=mm.scoreMarkersFast(d2);
+0064 ll3=mm.scoreMarkersMedian(d2);
+0065 ll4=mm.scoreMarkersRanked(d2,2);
+0066 ll6=mm.scoreMarkersRanked(d2,1);
+0067 
+0068 th5=-2;
+0069 th4=-(3.4)^2/2;
+0070 th4=-(3.4)^2/2;
+0071 th6=-(3.6)^2/2;
+0072 oo5=ll5&lt;th5;
+0073 oo4=ll4&lt;th4;
+0074 oo6=ll6&lt;th6;
+0075 oo1=ll1&lt;-(3.6)^2/2;
+0076 
+0077 <span class="comment">% ll5=L2;</span>
+0078 <span class="comment">% ll=mm2.scoreMarkersNaive(d);</span>
+0079 <span class="comment">% ll2=mm2.scoreMarkersFast(d);</span>
+0080 <span class="comment">% ll3=mm2.scoreMarkersMedian(d);</span>
+0081 <span class="comment">% ll4=mm2.scoreMarkersRanked(d,3);</span>
+0082 <span class="comment">% ll6=mm2.scoreMarkersRanked(d,1);</span>
+0083 <span class="comment">%%</span>
+0084 figure; 
+0085 ph(1)=subplot(4,2,1); imagesc(ll5); caxis([-5 0]); title(<span class="string">'Naive Likelihood'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0086 ph(2)=subplot(4,2,3); imagesc(ll4); caxis([-5 0]); title(<span class="string">'Ranked 3rd'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0087 ph(3)=subplot(4,2,5); imagesc(ll6); caxis([-5 0]); title(<span class="string">'Ranked 1st'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0088 ph(4)=subplot(4,2,7); imagesc(ll1); caxis([-5 0]); title(<span class="string">'Sophisticated'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0089 
+0090 
+0091 ph(5)=subplot(4,2,2); imagesc(oo5); caxis([0 1]); title(<span class="string">'Naive outliers'</span>); colorbar;set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0092 ph(6)=subplot(4,2,4); imagesc(oo4); caxis([0 1]); title(<span class="string">'Ranked 3rd'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0093 ph(7)=subplot(4,2,6); imagesc(oo6); caxis([0 1]); title(<span class="string">'Ranked 1st'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0094 ph(8)=subplot(4,2,8); imagesc(oo1); caxis([0 1]); title(<span class="string">'Sophisticated'</span>); colorbar; set(gca,<span class="string">'YTickLabels'</span>,labels,<span class="string">'YTick'</span>,1:length(labels))
+0095 
+0096 linkaxes(ph,<span class="string">'xy'</span>)
+0097 <span class="comment">%%</span>
+0098 oo1=mm.outlierDetectFast(dd);
+0099 oo2=mm.outlierDetect(dd);
+0100 oo3=ll5&lt;2*prctile(L',3)';
+0101 
+0102 
+0103 <span class="comment">%% Compare scoring:</span>
+0104 figure()
+0105 bad=[311:316];<span class="comment">% + 100;</span>
+0106 mbad=any(ll(:,bad)&lt;-10,2);<span class="comment">%bad markers on those frames</span>
+0107 hold on
+0108 <span class="keyword">for</span> i=1:length(mbad)
+0109     <span class="keyword">if</span> mbad(i)
+0110         p1=plot(inds,ll1(i,:)');
+0111         plot(inds,ll2(i,:)',<span class="string">'-.'</span>,<span class="string">'Color'</span>,p1.Color)
+0112         plot(inds,ll3(i,:)',<span class="string">'.-'</span>,<span class="string">'Color'</span>,p1.Color)
+0113         plot(inds,ll4(i,:)',<span class="string">'--'</span>,<span class="string">'Color'</span>,p1.Color)
+0114         plot(inds,ll5(i,:)',<span class="string">'x-'</span>,<span class="string">'Color'</span>,p1.Color)
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117 legend(<span class="string">'Naive'</span>,<span class="string">'Ind'</span>,<span class="string">'Median'</span>,<span class="string">'ranked'</span>)
+0118 
+0119 figure;
+0120 subplot(1,2,1)
+0121 hold on
+0122 p1=plot(inds,ll');
+0123 <span class="comment">%axis([300 350 -100 0])</span>
+0124 bad=any(ll&lt;-10,1); <span class="comment">%bad frames</span>
+0125 bad=[311:316];<span class="comment">% + 100;</span>
+0126 mbad=any(ll(:,bad)&lt;-10,2);<span class="comment">%bad markers on those frames</span>
+0127 ooo1=nan(size(oo1));
+0128 ooo2=nan(size(oo2));
+0129 ooo3=nan(size(oo3));
+0130 ooo1(oo1)=1;
+0131 ooo2(oo2~=0)=1;
+0132 ooo3(oo3~=0)=2;
+0133 set(gca,<span class="string">'ColorOrderIndex'</span>,1)
+0134 plot(inds,ooo1,<span class="string">'o'</span>)
+0135 set(gca,<span class="string">'ColorOrderIndex'</span>,1)
+0136 plot(inds,ooo2,<span class="string">'x'</span>)
+0137 set(gca,<span class="string">'ColorOrderIndex'</span>,1)
+0138 plot(inds,ooo3,<span class="string">'o'</span>)
+0139 legend(p1,mm.markerLabels)
+0140 subplot(1,2,2)
+0141 hold on
+0142 DD=nanmean(d(:,:,16570),3);
+0143 plot3(DD(:,1),DD(:,2),DD(:,3),<span class="string">'o'</span>,<span class="string">'LineWidth'</span>,4)
+0144 text(DD(:,1),DD(:,2),DD(:,3),mm.markerLabels)
+0145 <span class="comment">%plot3(DD(mbad,1),DD(mbad,2),DD(mbad,3),'o','LineWidth',4)</span>
+0146 axis equal
+0147 view(3)
+0148 
+0149 
+0150</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
