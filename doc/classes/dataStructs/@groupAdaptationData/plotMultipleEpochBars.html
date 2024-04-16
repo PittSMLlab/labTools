@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotMultipleEpochBars</title>
+  <meta name="keywords" content="plotMultipleEpochBars">
+  <meta name="description" content="This function replaces plotMultipleGroupBars">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; plotMultipleEpochBars.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotMultipleEpochBars
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function replaces plotMultipleGroupBars</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function replaces plotMultipleGroupBars</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotMultipleEpochBars(groups,labels,eps,plotIndividualsFlag,legendNames,plotHandles,colors,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag)</a>
+0002 
+0003 
+0004 
+0005 <span class="comment">%This function replaces plotMultipleGroupBars</span>
+0006 
+0007 <span class="comment">%TODO: replace repeated functionality with a call to plotPrettyBars()</span>
+0008 
+0009 <span class="comment">%This wil fail if plotHandles is not given -Pablo</span>
+0010 set(plotHandles,<span class="string">'Clipping'</span>,<span class="string">'off'</span>)
+0011 
+0012 <span class="keyword">if</span> isempty(colors)
+0013     colorScheme
+0014     colors=color_palette;
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">%make doing stats optimal</span>
+0018 <span class="keyword">if</span> isempty(significanceThreshold)
+0019     statsFlag=0;
+0020 <span class="keyword">else</span>
+0021     statsFlag=1;
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> isa(eps,<span class="string">'cell'</span>)
+0025     dt=NaN(length(groups,1));
+0026     <span class="keyword">for</span> i=1:length(groups)
+0027         dt(i)=size(eps{1},1);
+0028     <span class="keyword">end</span>
+0029     nep=max(dt);
+0030 <span class="keyword">else</span>
+0031     nep=size(eps,1);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="keyword">if</span> isempty(medianFlag)
+0035     medianFlag=0;
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="keyword">if</span> isa(groups,<span class="string">'struct'</span>)
+0039     ff=fields(groups);
+0040     aux=cell(size(ff));
+0041     <span class="keyword">for</span> i=1:length(ff)
+0042         aux{i}=getfield(groups,ff{i});
+0043     <span class="keyword">end</span>
+0044     groups=aux;
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">if</span> ~isa(groups,<span class="string">'cell'</span>) || ~isa(groups{1},<span class="string">'groupAdaptationData'</span>)
+0047     error(<span class="string">'First argument needs to be a cell array of groupAdaptationData objects'</span>)
+0048 <span class="keyword">end</span>
+0049 
+0050 
+0051 <span class="keyword">if</span> isempty(removeBaseEpochFlag)
+0052     removeBaseEpochFlag=0;
+0053 <span class="keyword">end</span>
+0054 
+0055 nsubs=NaN(length(groups),1);
+0056 <span class="keyword">for</span> i=1:length(groups)
+0057     nsubs(i)=length(groups{i}.adaptData);
+0058 <span class="keyword">end</span>
+0059 nsub=max(nsubs);
+0060 
+0061 <span class="keyword">if</span> removeBaseEpochFlag==1<span class="comment">%remove baseline epoch for plotting, but not for stats</span>
+0062     <span class="keyword">for</span> i=1:length(groups)
+0063         group2{i}=groups{i};
+0064         groups{i}=groups{i}.removeBadStrides;
+0065         groups{i}=groups{i}.removeBaselineEpoch(eps(1,:),[]);
+0066     <span class="keyword">end</span>
+0067 <span class="keyword">else</span> group2=groups;
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%[figHandle,allData]=adaptationData.plotGroupedSubjectsBarsv2(groups,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,[],plotHandles,colors,medianFlag);</span>
+0071 allData=NaN(length(groups),length(labels),nep,nsub);
+0072 <span class="keyword">for</span> i=1:length(groups)
+0073     <span class="keyword">if</span> isa(eps,<span class="string">'cell'</span>)<span class="comment">%this allows for different eps for each group</span>
+0074         groupOutcomes{i}=groups{i}.getEpochData(eps{i},labels);<span class="comment">% nLabels x neps x nSubjects</span>
+0075     <span class="keyword">else</span>
+0076         groupOutcomes{i}=groups{i}.getEpochData(eps,labels);<span class="comment">% nLabels x neps x nSubjects</span>
+0077     <span class="keyword">end</span>
+0078     allData(i,1:length(labels),1:nep,1:size(groupOutcomes{i},3))=groupOutcomes{i};<span class="comment">%nGroups x nLabels x neps x nSubjects</span>
+0079     <span class="comment">%I think this will fail if different # of epochs are defined for each group</span>
+0080 <span class="keyword">end</span>
+0081 
+0082 
+0083 
+0084 
+0085 <span class="comment">%generate xlocations and matrices to plot</span>
+0086 xData=1:nep+1;xData=xData*(length(groups)+1);xData=xData-length(groups);
+0087 <span class="keyword">for</span> i=1:length(groups)
+0088     xval(:,i)=xData+(i-1)';
+0089 
+0090 <span class="keyword">end</span>
+0091 xval=xval(1:end-1,:);
+0092 
+0093 <span class="keyword">if</span> medianFlag==0;
+0094     plotData=nanmean(allData,4);
+0095     tempVarData=nanstd(allData,false,4);
+0096     varData=NaN(size(tempVarData));
+0097     <span class="keyword">for</span> i=1:length(groups)
+0098         varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
+0099     <span class="keyword">end</span>
+0100 <span class="keyword">else</span>
+0101     plotData=nanmedian(allData,4);
+0102     tempVarData=nanstd(allData,false,4);
+0103     varData=NaN(size(tempVarData));
+0104     <span class="keyword">for</span> i=1:length(groups)
+0105         varData(i,:,:)=tempVarData(i,:,:)./sqrt(size(groupOutcomes{i},3));
+0106     <span class="keyword">end</span>
+0107 
+0108 <span class="keyword">end</span>
+0109 
+0110 <span class="comment">%plot each parameter in different axis</span>
+0111 <span class="keyword">for</span> p=1:length(labels)<span class="comment">%each parameter has different axis, eps are plotted in single axis</span>
+0112     hold(plotHandles(p))
+0113     <span class="keyword">for</span> i=1:length(groups)
+0114         bar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),<span class="string">'FaceColor'</span>,colors(i,:),<span class="string">'BarWidth'</span>,0.2)
+0115         errorbar(plotHandles(p),xval(:,i),squeeze(plotData(i,p,:)),squeeze(varData(i,p,:)),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'color'</span>,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
+0116         <span class="keyword">if</span> plotIndividualsFlag==1
+0117             plot(plotHandles(p),xval(:,i)-.3,squeeze(allData(i,p,:,:)),<span class="string">'.'</span>,<span class="string">'MarkerSize'</span>, 15, <span class="string">'Color'</span>,[150 150 150]./255)
+0118         <span class="keyword">end</span>
+0119     <span class="keyword">end</span>
+0120 
+0121 
+0122     <span class="keyword">if</span> isa(eps,<span class="string">'cell'</span>)
+0123         set(plotHandles(p),<span class="string">'XTick'</span>,mean(xval,1),<span class="string">'XTickLabels'</span>,eps{1}.Properties.ObsNames,<span class="string">'FontSize'</span>,12)
+0124     <span class="keyword">else</span>
+0125         set(plotHandles(p),<span class="string">'XTick'</span>,mean(xval,2),<span class="string">'XTickLabels'</span>,eps.Properties.ObsNames,<span class="string">'FontSize'</span>,12)
+0126     <span class="keyword">end</span>
+0127     title(plotHandles(p),labels{p});
+0128 
+0129 
+0130    <span class="keyword">if</span>  statsFlag==1
+0131     <span class="comment">%perform stats</span>
+0132     [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=groupAdaptationData.AnovaEpochs(group2,legendNames,labels(p),eps,significanceThreshold);
+0133     <span class="comment">%determine y positions of sign bars</span>
+0134     yrange=get(gca,<span class="string">'Ylim'</span>);
+0135     delta=abs(yrange(1)-yrange(2))/20;
+0136 
+0137     <span class="keyword">if</span> posthocGroupFlag==1
+0138     <span class="keyword">elseif</span> posthocEpochFlag==1 &amp;&amp; maineff.p(2)&lt;significanceThreshold<span class="comment">%indicate signficant differences between epochs for the groups combined</span>
+0139         ymax=max(yrange)+delta;
+0140         <span class="comment">% find comparison of interest and check for significance</span>
+0141         <span class="keyword">for</span> c=1:size(posthocEpoch,1)
+0142             <span class="keyword">if</span> posthocEpoch.pvalBonferroni(c)&lt;significanceThreshold
+0143                 ep1=find(not(cellfun(<span class="string">'isempty'</span>,regexp(eps.Properties.ObsNames,[<span class="string">'^'</span>,posthocEpoch.ep1{c}]))));
+0144                 ep2=find(not(cellfun(<span class="string">'isempty'</span>,regexp(eps.Properties.ObsNames,[<span class="string">'^'</span>,posthocEpoch.ep2{c}]))));
+0145                 plot(plotHandles(p),[mean(xval(ep1,:)) mean(xval(ep2,:))],[ymax,ymax],<span class="string">'Color'</span>,[0.5 0.5 0.5],<span class="string">'LineWidth'</span>,2)
+0146                 ymax=ymax+delta;
+0147             <span class="keyword">end</span>
+0148         <span class="keyword">end</span>
+0149     <span class="keyword">elseif</span> posthocEpochByGroupFlag==1 (maineff.p(2)&lt;significanceThreshold || maineff.p(3)&lt;significanceThreshold)<span class="comment">%indicate significant differences between epochs per group</span>
+0150         ymax=max(yrange)+0.5*delta;
+0151         <span class="comment">% find comparison of interest and check for significance</span>
+0152         <span class="keyword">for</span> c=1:size(posthocEpochByGroup,1)
+0153             <span class="keyword">if</span> posthocEpochByGroup.pvalBonferroni(c)&lt;significanceThreshold
+0154                 ep1=find(not(cellfun(<span class="string">'isempty'</span>,regexp(eps.Properties.ObsNames,[<span class="string">'^'</span>,posthocEpochByGroup.ep1{c}]))));
+0155                 ep2=find(not(cellfun(<span class="string">'isempty'</span>,regexp(eps.Properties.ObsNames,[<span class="string">'^'</span>,posthocEpochByGroup.ep2{c}]))));
+0156                 g=find(not(cellfun(<span class="string">'isempty'</span>,regexp(legendNames,[<span class="string">'^'</span>,posthocEpochByGroup.group{c}]))));
+0157                 plot(plotHandles(p),[xval(ep1,g),xval(ep2,g)],[ymax,ymax],<span class="string">'Color'</span>,colors(g,:))
+0158                 ymax=ymax+0.5*delta;
+0159             <span class="keyword">end</span>
+0160         <span class="keyword">end</span>
+0161     <span class="keyword">elseif</span> posthocGroupByEpochFlag==1 &amp;&amp; (maineff.p(1)&lt;significanceThreshold || maineff.p(3)&lt;significanceThreshold)<span class="comment">%indicate significant differences between groups by epoch</span>
+0162         prevEpoch=0;ymax=max(yrange);
+0163         <span class="keyword">for</span> c=1:size(posthocGroupByEpoch,1)
+0164             epoch=find(not(cellfun(<span class="string">'isempty'</span>,regexp(eps.Properties.ObsNames,[<span class="string">'^'</span>,posthocGroupByEpoch.epoch{c}]))));
+0165             <span class="keyword">if</span> epoch&gt;prevEpoch;
+0166                 ymax=max(yrange);
+0167             <span class="keyword">end</span>
+0168             <span class="keyword">if</span> posthocGroupByEpoch.pvalBonferroni(c)&lt;significanceThreshold
+0169                 g1=find(not(cellfun(<span class="string">'isempty'</span>,regexp(legendNames,[<span class="string">'^'</span>,posthocGroupByEpoch.group_1{c}]))));
+0170                 g2=find(not(cellfun(<span class="string">'isempty'</span>,regexp(legendNames,[<span class="string">'^'</span>,posthocGroupByEpoch.group_2{c}]))));
+0171                 plot(plotHandles(p),[xval(epoch,g1), xval(epoch,g2)],[ymax,ymax],<span class="string">'Color'</span>,[0.5 0.5 0.5],<span class="string">'LineWidth'</span>,2)
+0172                 ymax=ymax+delta;
+0173             <span class="keyword">end</span>
+0174             prevEpoch=epoch;
+0175         <span class="keyword">end</span>
+0176     <span class="keyword">end</span>
+0177     <span class="keyword">if</span> p==1
+0178         ll=findobj(plotHandles(p),<span class="string">'Type'</span>,<span class="string">'Bar'</span>);
+0179         h=legend(ll(fliplr(1:length(ll))),legendNames);
+0180     <span class="keyword">end</span>
+0181    <span class="keyword">end</span>
+0182 <span class="keyword">end</span>
+0183 set(plotHandles,<span class="string">'FontSize'</span>,20)
+0184 figHandle=gcf;
+0185 
+0186 <span class="comment">%TO DO: add stats</span>
+0187 <span class="comment">%</span>
+0188 <span class="comment">%</span>
+0189 <span class="comment">%</span>
+0190 <span class="comment">%     for e=1:length(eps)</span>
+0191 <span class="comment">%         %subplot(nrows,ncols,p*nrows-ncols+e)</span>
+0192 <span class="comment">%         %hold on</span>
+0193 <span class="comment">%           hold(ha(p,e))</span>
+0194 <span class="comment">%         for i = 1:length(groupOrder)</span>
+0195 <span class="comment">%</span>
+0196 <span class="comment">%             bar(ha(p,e),xval(i),nanmean(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),'FaceColor',colcodes(groupInd(i),:));</span>
+0197 <span class="comment">%             errorbar(ha(p,e),xval(i),nanmean(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),nanstd(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:))./sqrt(10),'LineWidth',2,'Color','k')</span>
+0198 <span class="comment">%             if indSubFlag==1;</span>
+0199 <span class="comment">%                 plot(ha(p,e),xval(i)+0.2,squeeze(groupOutcomes{groupInd(i)}(ParInd(p),epInd(e),:)),'ok')</span>
+0200 <span class="comment">%             end</span>
+0201 <span class="comment">%             %xorder(i)=groupInd(i);</span>
+0202 <span class="comment">%         end</span>
+0203 <span class="comment">%         if e==1</span>
+0204 <span class="comment">%             ylabel(ha(p,e),pars{p})</span>
+0205 <span class="comment">%         end</span>
+0206 <span class="comment">%         if p==nrows</span>
+0207 <span class="comment">%             xlabel(ha(p,e),eps{e})</span>
+0208 <span class="comment">%         end</span>
+0209 <span class="comment">%         if p==1 &amp;&amp; e==ncols</span>
+0210 <span class="comment">%            ll=findobj(ha(p,e),'Type','Bar');</span>
+0211 <span class="comment">%            legend(ha(p,e),ll(fliplr(xval)),groupOrder)</span>
+0212 <span class="comment">%         end</span>
+0213 <span class="comment">%</span>
+0214 <span class="comment">%         if sameScaleFlag==0</span>
+0215 <span class="comment">%             lims=get(ha(p,e),'YLim');</span>
+0216 <span class="comment">%             set(ha(p,e),'YLim',[min(lims) max(lims)],'YTick',[min(lims) max(lims)]);</span>
+0217 <span class="comment">%             set(ha(p,e),'YTickLabel',[min(lims) max(lims)],'XLim',[0.5 length(xval)+0.5],'FontSize',12);</span>
+0218 <span class="comment">%         end</span>
+0219 <span class="comment">%</span>
+0220 <span class="comment">%     end</span>
+0221 <span class="comment">%     %lims=cell2mat(get(ha(p,:),'YLim'));</span>
+0222 <span class="comment">%     if sameScaleFlag==1;</span>
+0223 <span class="comment">%         lims=get(ha(p,:),'YLim');</span>
+0224 <span class="comment">%         if length(eps)&gt;1</span>
+0225 <span class="comment">%             lims=cell2mat(lims);</span>
+0226 <span class="comment">%         end</span>
+0227 <span class="comment">%         set(ha(p,:),'YLim',[min(min(lims)) max(max(lims))],'YTick',[min(min(lims)) max(max(lims))],'XLim',[0.5 length(xval)+0.5],'FontSize',12);</span>
+0228 <span class="comment">%         set(ha(p,1),'YTickLabel',[min(min(lims)) max(max(lims))]);</span>
+0229 <span class="comment">%     end</span>
+0230 <span class="comment">% end</span>
+0231 <span class="comment">%</span>
+0232 <span class="comment">%</span>
+0233 <span class="comment">% %Add bars comparing groups:</span>
+0234 <span class="comment">% nGroups=length(groups);</span>
+0235 <span class="comment">% if nGroups&gt;1</span>
+0236 <span class="comment">%     %[p]=compareTwoGroups(groups,label,condition,numberOfStrides,exemptFirst,exemptLast);</span>
+0237 <span class="comment">%     if ~isempty(significanceThreshold)</span>
+0238 <span class="comment">%         ch=findobj(figHandle,'Type','Axes');</span>
+0239 <span class="comment">%         for i=1:length(ch)</span>
+0240 <span class="comment">%             aux=find(strcmp(label,ch(i).Title.String));</span>
+0241 <span class="comment">%             if ~isempty(aux)</span>
+0242 <span class="comment">%                 subplot(ch(i))</span>
+0243 <span class="comment">%                 hold on</span>
+0244 <span class="comment">%</span>
+0245 <span class="comment">%                 clear XData YData</span>
+0246 <span class="comment">%                 b=findobj(ch(i),'Type','Bar');</span>
+0247 <span class="comment">%                 if ~isempty(b)</span>
+0248 <span class="comment">%                     for j=1:length(b)</span>
+0249 <span class="comment">%                         XData(j,:)=b(end-j+1).XData;</span>
+0250 <span class="comment">%                         YData(j,:)=b(end-j+1).YData;</span>
+0251 <span class="comment">%                     end</span>
+0252 <span class="comment">%                     try</span>
+0253 <span class="comment">%                         XData=reshape(XData,[length(numberOfStrides),nGroups,length(condList)]);</span>
+0254 <span class="comment">%                         YData=reshape(YData,[length(numberOfStrides),nGroups,length(condList)]);</span>
+0255 <span class="comment">%                     catch %For back compatibility with bar command</span>
+0256 <span class="comment">%                         XData=reshape(XData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);</span>
+0257 <span class="comment">%                         YData=reshape(YData(1:2:end,:),[length(numberOfStrides),nGroups,length(condList)]);</span>
+0258 <span class="comment">%                     end</span>
+0259 <span class="comment">%                     %yRef=.1*(max(YData(:))-min(YData(:)));</span>
+0260 <span class="comment">%                     %yRef=.5*std(YData(:));</span>
+0261 <span class="comment">%                     aa=axis;</span>
+0262 <span class="comment">%                     yOff=max([max(YData(:)) aa(4)]);</span>
+0263 <span class="comment">%                     yOff2=min([min(YData(:)) aa(3)]);</span>
+0264 <span class="comment">%                     yRef=.05*(yOff-yOff2);</span>
+0265 <span class="comment">%                     yOff2=yOff2+5*yRef;</span>
+0266 <span class="comment">%                     XData=squeeze(XData(:,1,:));</span>
+0267 <span class="comment">%                     XData=XData(:);</span>
+0268 <span class="comment">%                     YData=squeeze(YData(:,1,:));</span>
+0269 <span class="comment">%                     YData=YData(:);</span>
+0270 <span class="comment">%</span>
+0271 <span class="comment">%                     counter=0;</span>
+0272 <span class="comment">%                     signifPlotMatrixConds=signifPlotMatrixConds==1 | signifPlotMatrixConds'==1;</span>
+0273 <span class="comment">%                     M=size(signifPlotMatrixConds,2);</span>
+0274 <span class="comment">%                     NN=sum(signifPlotMatrixConds(:)==1)/2; %Total number of comparisons to be made</span>
+0275 <span class="comment">%                     for j=1:length(XData) %For each condition</span>
+0276 <span class="comment">%                         [a1,a2]=ind2sub([size(allData.group{1},2),size(allData.group{1},1)],j);</span>
+0277 <span class="comment">%                         data1=squeeze(allData.group{1}(a2,a1,aux,:));</span>
+0278 <span class="comment">%                         [b1,b2]=ind2sub([size(allData.group{2},2),size(allData.group{1},1)],j);</span>
+0279 <span class="comment">%                         data2=squeeze(allData.group{2}(b2,b1,aux,:));</span>
+0280 <span class="comment">%                         %Sanity check:</span>
+0281 <span class="comment">%                         if medianFlag==0</span>
+0282 <span class="comment">%                             sData=nanmean(data1);</span>
+0283 <span class="comment">%                         else</span>
+0284 <span class="comment">%                             sData=nanmedian(data1);</span>
+0285 <span class="comment">%                         end</span>
+0286 <span class="comment">%                         if sData~=YData(j) %data2 is the data I believe is plotted in the bar positioned in x=XData(k), and should have height y=YData(k)</span>
+0287 <span class="comment">%                             %Mismatch means that I am wrong, and</span>
+0288 <span class="comment">%                             %therefore should not be overlaying the</span>
+0289 <span class="comment">%                             %stats on the given bar plots</span>
+0290 <span class="comment">%                             error('Stride group order is different than expected')</span>
+0291 <span class="comment">%                         end</span>
+0292 <span class="comment">%</span>
+0293 <span class="comment">%                         %2-sample t-test btw the first two groups:</span>
+0294 <span class="comment">%                         if significancePlotMatrixGroups(1,2)==1 || significancePlotMatrixGroups(2,1)==1</span>
+0295 <span class="comment">%                             if medianFlag==0</span>
+0296 <span class="comment">%                                 [~,pp]=ttest2(data1,data2); %Use ttest2 to do independent 2-sample t-test</span>
+0297 <span class="comment">%                             else</span>
+0298 <span class="comment">%                                 [pp]=ranksum(data1,data2); %Use ranksum 2 to do independent 2-sample non-param testing</span>
+0299 <span class="comment">%                             end</span>
+0300 <span class="comment">%                             if pp&lt;significanceThreshold%/(length(numberOfStrides)*length(condList))</span>
+0301 <span class="comment">%                                 lh=plot(XData(j)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2);</span>
+0302 <span class="comment">%                                 lh.Annotation.LegendInformation.IconDisplayStyle='off';</span>
+0303 <span class="comment">%                                 %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')</span>
+0304 <span class="comment">%                                 if pp&gt;significanceThreshold/10</span>
+0305 <span class="comment">%                                     text(XData(j)+.25,yOff+yRef*1.4,['*'],'Color','m')</span>
+0306 <span class="comment">%                                 else</span>
+0307 <span class="comment">%                                     text(XData(j)+.25,yOff+yRef*1.4,['**'],'Color','m')</span>
+0308 <span class="comment">%                                 end</span>
+0309 <span class="comment">%                             end</span>
+0310 <span class="comment">%                         end</span>
+0311 <span class="comment">%                         %paired t-tests btw baseline and each other</span>
+0312 <span class="comment">%                         %condition for each group</span>
+0313 <span class="comment">%</span>
+0314 <span class="comment">%                         NNN=sum(signifPlotMatrixConds(j,[j+1:end])); %Comparisons for this specific condition</span>
+0315 <span class="comment">%</span>
+0316 <span class="comment">%                         for l=[j+1:M]</span>
+0317 <span class="comment">%                             if signifPlotMatrixConds(j,l)==1</span>
+0318 <span class="comment">%                                 counter=counter+1;</span>
+0319 <span class="comment">%                                 for k=1:length(allData.group)</span>
+0320 <span class="comment">%                                     [a1,a2]=ind2sub([size(allData.group{k},2),size(allData.group{k},1)],l);</span>
+0321 <span class="comment">%                                     data1=squeeze(allData.group{k}(a2,a1,aux,:));</span>
+0322 <span class="comment">%                                     [b1,b2]=ind2sub([size(allData.group{k},2),size(allData.group{k},1)],j);</span>
+0323 <span class="comment">%                                     data2=squeeze(allData.group{k}(b2,b1,aux,:));</span>
+0324 <span class="comment">%                                     if medianFlag==0</span>
+0325 <span class="comment">%                                         [~,pp]=ttest(data1,data2); %Use ttest to do paired t-test</span>
+0326 <span class="comment">%                                     else</span>
+0327 <span class="comment">%                                         [pp]=signrank(data1,data2); %Use signrank to paired non-param testing</span>
+0328 <span class="comment">%                                     end</span>
+0329 <span class="comment">%                                     if pp&lt;significanceThreshold%/(length(numberOfStrides)*length(condList))</span>
+0330 <span class="comment">%                                         %    plot([XData(l) XData(j)]+(k-1),yOff2-yRef*[1,1]*4*(k + (counter-1)/NN),'Color','k','LineWidth',1)</span>
+0331 <span class="comment">%                                         %    %text(XData(l)-1.5,yOff2-yRef*4*(k + (counter-1.5)/NN),[num2str(pp,'%1.1g')],'Color',colors(k,:))</span>
+0332 <span class="comment">%                                         %    if pp&gt;significanceThreshold/10</span>
+0333 <span class="comment">%                                         %        text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['o'],'Color',colors(mod(k-1,length(colors))+1,:))</span>
+0334 <span class="comment">%                                         %    else</span>
+0335 <span class="comment">%                                         %        text(XData(l)-1.5+(k-1),yOff2-yRef*4*(k + (counter-1.5)/NN),['oo'],'Color',colors(mod(k-1,length(colors))+1,:))</span>
+0336 <span class="comment">%                                         %    end</span>
+0337 <span class="comment">%                                         %end</span>
+0338 <span class="comment">%                                     end</span>
+0339 <span class="comment">%                                 end</span>
+0340 <span class="comment">%                             end</span>
+0341 <span class="comment">%</span>
+0342 <span class="comment">%                         end</span>
+0343 <span class="comment">%                     end</span>
+0344 <span class="comment">%                     aa=axis;</span>
+0345 <span class="comment">%                     try</span>
+0346 <span class="comment">%                         axis([aa(1:2) min([yOff2-yRef*4*(length(allData.group)+1) aa(3)]) max([yOff+2*yRef aa(4)])])</span>
+0347 <span class="comment">%                     catch</span>
+0348 <span class="comment">%                         axis tight</span>
+0349 <span class="comment">%                     end</span>
+0350 <span class="comment">%                     %Alt way - using RM stats (works with only two groups</span>
+0351 <span class="comment">%                     %so far!)</span>
+0352 <span class="comment">%                     relevantData=reshape(permute(allData.group{1}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{1}.ID));</span>
+0353 <span class="comment">%                     groupMembership=ones(length(groups{1}.ID),1);</span>
+0354 <span class="comment">%                     IDs=repmat(groups{1}.ID(1),length(groups{1}.ID),1);</span>
+0355 <span class="comment">%                     %Cat all groups:</span>
+0356 <span class="comment">%                     for kk=2:length(allData.group)</span>
+0357 <span class="comment">%                         relevantData=cat(2,relevantData,reshape(permute(allData.group{kk}(:,:,aux,:),[2,1,3,4]),length(condList)*2,length(groups{kk}.ID)));</span>
+0358 <span class="comment">%                         groupMembership=[groupMembership; kk*ones(length(groups{kk}.ID),1)];</span>
+0359 <span class="comment">%                         IDs=[IDs; repmat(groups{kk}.ID(1),length(groups{kk}.ID),1)]; %Each group gets assigned the ID of the first member</span>
+0360 <span class="comment">%                     end</span>
+0361 <span class="comment">%                     dim1Names=[strcat('Early',condList);strcat('Late',condList)];</span>
+0362 <span class="comment">%                     %dim1Names=[strcat('Early',condList)';strcat('Late',condList)']; %Order in which XData is indexed;</span>
+0363 <span class="comment">%                     dim1Names=dim1Names(:);</span>
+0364 <span class="comment">%                     dim1Names=cellfun(@(x)  regexprep(x,'[^\w'']',''),dim1Names(1:end),'UniformOutput',false);</span>
+0365 <span class="comment">%                     Groups=IDs;</span>
+0366 <span class="comment">%                     auxStr=['t = table(IDs,Groups'];</span>
+0367 <span class="comment">%                     auxStr2=[];</span>
+0368 <span class="comment">%                     for aauxCounter=1:size(relevantData,1)</span>
+0369 <span class="comment">%                         auxStr=[auxStr ',relevantData(' num2str(aauxCounter) ',:)'''];</span>
+0370 <span class="comment">%                         auxStr2=[auxStr2 ',''t' num2str(aauxCounter-1) ''''];</span>
+0371 <span class="comment">%                     end</span>
+0372 <span class="comment">%                     auxStr=[auxStr ',''VariableNames'',{''ID'',''Group''' auxStr2 '});'];</span>
+0373 <span class="comment">%                     eval(auxStr)</span>
+0374 <span class="comment">%                     wt=table(dim1Names,'VariableNames',{'Condition'});</span>
+0375 <span class="comment">%                     rm = fitrm(t,['t0-t' num2str(size(relevantData,1)-1) ' ~ Group'],'WithinDesign',wt,'WithinModel','Condition');</span>
+0376 <span class="comment">%                     ra=ranova(rm);</span>
+0377 <span class="comment">%                     aa=anova(rm);</span>
+0378 <span class="comment">%                     %[~,tbl]=anova2(relevantData',size(allData.group{1},4),'off'); %This fails for imbalanced groups</span>
+0379 <span class="comment">%                     phoc=rm.multcompare('Condition','By','Group','ComparisonType','lsd'); %Unpaired t-tests; this is NOT fine, conditions are naturally paired</span>
+0380 <span class="comment">%                     phoc2=rm.multcompare('Group','By','Condition','ComparisonType','lsd'); %Unpaired t-tests; this is fine</span>
+0381 <span class="comment">%                     xx=get(gca,'YLim');</span>
+0382 <span class="comment">%                     xx2=diff(xx);</span>
+0383 <span class="comment">%                     xx=mean(xx);</span>
+0384 <span class="comment">%                     yy=get(gca,'XLim');</span>
+0385 <span class="comment">%                     yk=-.01;</span>
+0386 <span class="comment">%                     text(mean(yy(2))-yk*diff(yy),xx+1.75*xx2/8,'Mauchly:','FontWeight','bold')</span>
+0387 <span class="comment">%                     if rm.mauchly.pValue&gt;.05</span>
+0388 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)])</span>
+0389 <span class="comment">%                     else</span>
+0390 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx+1*xx2/8,['p= ' num2str(rm.mauchly.pValue)],'Color','b')</span>
+0391 <span class="comment">%                     end</span>
+0392 <span class="comment">%                     text(mean(yy(2))-yk*diff(yy),xx+.25*xx2/8,'RM-ANOVA stats:','FontWeight','bold')</span>
+0393 <span class="comment">%                     text(mean(yy(2))-yk*diff(yy),xx-.5*xx2/8,['Group: F=' num2str(aa.F(2),2) ', p=' num2str(aa.pValue(2),2)],'Fontsize',10)</span>
+0394 <span class="comment">%                     if rm.mauchly.pValue&gt;.05</span>
+0395 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', p=' num2str(ra.pValue(1),2)],'Fontsize',10)</span>
+0396 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', p=' num2str(ra.pValue(2),2)],'Fontsize',10)</span>
+0397 <span class="comment">%                     else</span>
+0398 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx-1.25*xx2/8,['Cond: F=' num2str(ra.F(1),2) ', pGG=' num2str(ra.pValueGG(1),2)],'Fontsize',10,'Color','b')</span>
+0399 <span class="comment">%                         text(mean(yy(2))-yk*diff(yy),xx-2*xx2/8,['Interac.: F=' num2str(ra.F(2),2) ', pGG=' num2str(ra.pValueGG(2),2)],'Fontsize',10,'Color','b')</span>
+0400 <span class="comment">%                     end</span>
+0401 <span class="comment">%                     text(mean(yy(2))-yk*diff(yy),xx-2.75*xx2/8,['Post-hoc (unpr.):'],'Fontsize',10,'FontWeight','bold')</span>
+0402 <span class="comment">%                     text(mean(yy(2)),xx-3.5*xx2/8,['* p&lt;.05'],'Fontsize',10)</span>
+0403 <span class="comment">%                     text(mean(yy(2)),xx-4.25*xx2/8,['** p&lt;Bonferroni'],'Fontsize',10)</span>
+0404 <span class="comment">%                     %text(mean(yy(2))-.1*diff(yy),xx-2.75*xx2/8,'2-ANOVA stats:')</span>
+0405 <span class="comment">%                     %text(mean(yy(2))-.1*diff(yy),xx-3.5*xx2/8,['Group: F=' num2str(tbl{3,5},2) ', p=' num2str(tbl{3,6},2)],'Fontsize',10,'FontWeight','bold')</span>
+0406 <span class="comment">%                     %text(mean(yy(2))-.1*diff(yy),xx-4.25*xx2/8,['Cond: F=' num2str(tbl{2,5},2) ', p=' num2str(tbl{2,6},2)],'Fontsize',10,'FontWeight','bold')</span>
+0407 <span class="comment">%                     %text(mean(yy(2))-.1*diff(yy),xx-5*xx2/8,['Interac.: F=' num2str(tbl{4,5},2) ', p=' num2str(tbl{4,6},2)],'Fontsize',10,'FontWeight','bold')</span>
+0408 <span class="comment">%</span>
+0409 <span class="comment">%                     Ncomp=sum(sum(triu(signifPlotMatrixConds),2),1) * length(allData.group); %Number of comparisons being done across eps</span>
+0410 <span class="comment">%                     Ncomp2=(.5*length(allData.group)*(length(allData.group)-1))*size(relevantData,1) ;%Number of comparisons being done across groups</span>
+0411 <span class="comment">%                     for kk=1:length(allData.group) %all groups</span>
+0412 <span class="comment">%                         counter=0;</span>
+0413 <span class="comment">%                         for ii=1:M %Each epoch</span>
+0414 <span class="comment">%                             for ll=[kk+1:length(allData.group)] %All the other groups</span>
+0415 <span class="comment">%                                 [~,pp3]=ttest2(relevantData(ii,groupMembership==kk),relevantData(ii,groupMembership==ll),'VarType','Unequal'); %Use ttest2 to do unpaired t-test</span>
+0416 <span class="comment">%                                 if medianFlag==1</span>
+0417 <span class="comment">%                                     [pp3]=ranksum(relevantData(ii,groupMembership==kk),relevantData(ii,groupMembership==ll)); %Use ranksum to paired non-param testing</span>
+0418 <span class="comment">%                                 end</span>
+0419 <span class="comment">%                                 c1=strcmp(dim1Names{ii},phoc2.Condition); %Finding comparisons that relate to condition ii</span>
+0420 <span class="comment">%                                 c2=strcmp(groups{kk}.ID{1},phoc2.Group_1);</span>
+0421 <span class="comment">%                                 c3=strcmp(groups{ll}.ID{1},phoc2.Group_2);</span>
+0422 <span class="comment">%                                 pp=phoc2.pValue(c1 &amp; c2 &amp; c3);%This is the same as using pp3</span>
+0423 <span class="comment">%                                 %disp(['post-hoc=' num2str(pp) ', t-test (unp)=' num2str(pp3) ', ranksum=' num2str(pp2)]) %This is to check that the post-hoc is indeed an unpaired t-test</span>
+0424 <span class="comment">%                                 if pp3&lt;significanceThreshold</span>
+0425 <span class="comment">%                                     lh=plot(XData(ii)+[0,1],yOff+yRef*[1,1],'m','LineWidth',2);</span>
+0426 <span class="comment">%                                     lh.Annotation.LegendInformation.IconDisplayStyle='off';</span>
+0427 <span class="comment">%                                     %text(XData(j)-.25,yOff+yRef*1.8,[num2str(pp,'%1.1g')],'Color','m')</span>
+0428 <span class="comment">%                                     if pp&gt;(significanceThreshold/Ncomp2) %Bonferroni threshold</span>
+0429 <span class="comment">%                                         text(XData(ii)+.25,yOff+yRef*1.4,['*'],'Color','m')</span>
+0430 <span class="comment">%                                     else</span>
+0431 <span class="comment">%                                         text(XData(ii)+.25,yOff+yRef*1.4,['**'],'Color','m')</span>
+0432 <span class="comment">%                                     end</span>
+0433 <span class="comment">%                                 end</span>
+0434 <span class="comment">%                             end</span>
+0435 <span class="comment">%                             for jj=[ii+1:M]</span>
+0436 <span class="comment">%                                 if signifPlotMatrixConds(ii,jj)==1</span>
+0437 <span class="comment">%                                     counter=counter+1;</span>
+0438 <span class="comment">%                                     %error('This doesnt work, figure it out')</span>
+0439 <span class="comment">%                                     [~,pp1]=ttest(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use ttest to do paired t-test</span>
+0440 <span class="comment">%                                     [~,pp3]=ttest2(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use ttest2 to do unpaired t-test. Should we use 'Vartype','unequal' ?</span>
+0441 <span class="comment">%                                     if medianFlag==1</span>
+0442 <span class="comment">%                                         [pp1]=signrank(relevantData(ii,groupMembership==kk),relevantData(jj,groupMembership==kk)); %Use signrank to paired non-param testing</span>
+0443 <span class="comment">%                                     end</span>
+0444 <span class="comment">%                                     c1=strcmp(dim1Names{ii},phoc.Condition_1); %Finding comparisons that relate to condition ii</span>
+0445 <span class="comment">%                                     c2=strcmp(dim1Names{jj},phoc.Condition_2);</span>
+0446 <span class="comment">%                                     c3=strcmp(groups{kk}.ID{1},phoc.Group);</span>
+0447 <span class="comment">%                                     pp=phoc.pValue(c1 &amp; c2 &amp; c3);</span>
+0448 <span class="comment">%                                     %disp(['post-hoc=' num2str(pp) ', t-test (paired)=' num2str(pp1) ', t-test (unp)=' num2str(pp3) ', signrank=' num2str(pp2)])</span>
+0449 <span class="comment">%                                     if pp1&lt;(significanceThreshold)</span>
+0450 <span class="comment">%                                         lh=plot([XData(ii) XData(jj)]+(kk-1),yOff2-yRef*[1,1]*5*(kk + (counter-1.5)/NN),'Color',colors(mod(kk-1,length(colors))+1,:),'LineWidth',2);</span>
+0451 <span class="comment">%                                         lh.Annotation.LegendInformation.IconDisplayStyle='off';</span>
+0452 <span class="comment">%                                         if pp1&gt;(significanceThreshold/(.5*Ncomp)) %Does not pass Bonferroni's criteria for significance</span>
+0453 <span class="comment">%                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['*'],'Color',colors(mod(kk-1,length(colors))+1,:))</span>
+0454 <span class="comment">%                                         else %Passes Bonferroni criteria</span>
+0455 <span class="comment">%                                             text(XData(jj)+kk-1,yOff2-yRef*5*(kk + (counter-1.5)/NN),['**'],'Color',colors(mod(kk-1,length(colors))+1,:))</span>
+0456 <span class="comment">%                                         end</span>
+0457 <span class="comment">%                                     end</span>
+0458 <span class="comment">%                                 end</span>
+0459 <span class="comment">%                             end</span>
+0460 <span class="comment">%                         end</span>
+0461 <span class="comment">%                     end</span>
+0462 <span class="comment">%                     aa=axis;</span>
+0463 <span class="comment">%                     axis tight</span>
+0464 <span class="comment">%                     bb=axis;</span>
+0465 <span class="comment">%                     axis([aa(1:2) bb(3) aa(4)])</span>
+0466 <span class="comment">%                     hold off</span>
+0467 <span class="comment">%                 end</span>
+0468 <span class="comment">%             end</span>
+0469 <span class="comment">%         end</span>
+0470 <span class="comment">%     end</span>
+0471 <span class="comment">%</span>
+0472 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

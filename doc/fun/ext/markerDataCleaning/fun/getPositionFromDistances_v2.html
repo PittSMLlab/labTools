@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPositionFromDistances_v2</title>
+  <meta name="keywords" content="getPositionFromDistances_v2">
+  <meta name="description" content="v2 allos for many pos to be estimated simultaneously">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">fun</a> &gt; getPositionFromDistances_v2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/fun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getPositionFromDistances_v2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>v2 allos for many pos to be estimated simultaneously</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [pos] = getPositionFromDistances_v2(knownPositions,knownDistances,distWeights,initGuess) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">v2 allos for many pos to be estimated simultaneously
+INPUT:
+knownPositions: N x D  matrix, D being dimension of space
+knownDistances: N x M matrix containing distances from unknown points to
+weights: N x M vector to weigh the distances in the regression (larger
+weights means the distance is better preserved)
+OUTPUT:
+pos: M x D matrix containing D-dimensional positions for M points</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="pos2Dist.html" class="code" title="function [D,g,h]=pos2Dist(x,y)">pos2Dist</a>	x is Nxdim</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [f,g]=distanceDistanceAll(x,kP,kD,w)</a></li><li><a href="#_sub2" class="code">function [f,g]=distanceDistanceAllNew(x,kP,kD,w)</a></li><li><a href="#_sub3" class="code">function [D,gx]=pos2Dist(x,y)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pos] = getPositionFromDistances_v2(knownPositions,knownDistances,distWeights,initGuess)</a>
+0002 <span class="comment">%v2 allos for many pos to be estimated simultaneously</span>
+0003 <span class="comment">%INPUT:</span>
+0004 <span class="comment">%knownPositions: N x D  matrix, D being dimension of space</span>
+0005 <span class="comment">%knownDistances: N x M matrix containing distances from unknown points to</span>
+0006 <span class="comment">%weights: N x M vector to weigh the distances in the regression (larger</span>
+0007 <span class="comment">%weights means the distance is better preserved)</span>
+0008 <span class="comment">%OUTPUT:</span>
+0009 <span class="comment">%pos: M x D matrix containing D-dimensional positions for M points</span>
+0010 
+0011 [N,dim]=size(knownPositions);
+0012 [N1,M]=size(knownDistances);
+0013 <span class="keyword">if</span> nargin&lt;3 || isempty(distWeights)
+0014     distWeights=ones(size(knownDistances));
+0015 <span class="keyword">elseif</span> size(distWeights,1)~=N
+0016     error(<span class="string">'Weight dimensions mismatch'</span>)
+0017 <span class="keyword">end</span>
+0018 distWeights=distWeights/sum(distWeights); <span class="comment">%Normalizing to 1</span>
+0019 
+0020 <span class="keyword">if</span> nargin&lt;4 || isempty(initGuess)
+0021     initGuess=mean(knownPositions);
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> size(knownDistances,1)~=N
+0025     error(<span class="string">'Provided distances dimension mismatch. Check that the number of distances is the same as the numer of known positions'</span>)
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%Option 1:</span>
+0029 <span class="comment">%Do a least-squares regression:</span>
+0030 opts = optimoptions(<span class="string">'fminunc'</span>,<span class="string">'Algorithm'</span>,<span class="string">'trust-region'</span>,<span class="string">'SpecifyObjectiveGradient'</span>,true,<span class="string">'Display'</span>,<span class="string">'off'</span>);
+0031 pos=fminunc(@(x) <a href="#_sub2" class="code" title="subfunction [f,g]=distanceDistanceAllNew(x,kP,kD,w)">distanceDistanceAllNew</a>(reshape(x,M,dim),knownPositions,knownDistances,distWeights),initGuess(:),opts);
+0032 
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%Old: (cuadratic weighing of distances)</span>
+0036 <span class="comment">%Only considers distances from the unknown markers to the known ones, but</span>
+0037 <span class="comment">%not between the unknown ones (where arguably we can also have priors)</span>
+0038 <a name="_sub1" href="#_subfunctions" class="code">function [f,g]=distanceDistanceAll(x,kP,kD,w)</a>
+0039     [M,dim]=size(x);
+0040     [N,dim]=size(kP);
+0041     [nD,gx]=<a href="pos2Dist.html" class="code" title="function [D,g,h]=pos2Dist(x,y)">pos2Dist</a>(x,kP);
+0042     f=sum(sum((w'.*(nD-kD')).^2)); <span class="comment">%scalar</span>
+0043     g=reshape(2*sum(w'.^2.*(nD-kD').*gx,2),M,dim); <span class="comment">%Gradient with respect to x</span>
+0044     g=g(:);
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">%New: (linear weighing of distances</span>
+0048 <a name="_sub2" href="#_subfunctions" class="code">function [f,g]=distanceDistanceAllNew(x,kP,kD,w)</a>
+0049     [M,dim]=size(x);
+0050     [N,dim]=size(kP);
+0051     [nD,gx]=<a href="pos2Dist.html" class="code" title="function [D,g,h]=pos2Dist(x,y)">pos2Dist</a>(x,kP);
+0052     f=sum(sum((w'.*abs(nD-kD')))); <span class="comment">%scalar</span>
+0053     g=reshape(sum(w'.*sign(nD-kD').*gx,2),M,dim); <span class="comment">%Gradient with respect to x</span>
+0054     g=g(:);
+0055 <span class="keyword">end</span>
+0056 
+0057 <a name="_sub3" href="#_subfunctions" class="code">function [D,gx]=pos2Dist(x,y)</a>
+0058     <span class="comment">%x is Nxdim</span>
+0059     <span class="comment">%y is Mxdim</span>
+0060     <span class="comment">%D is NxM matrix containing distances</span>
+0061     <span class="keyword">if</span> nargin&lt;2 || isempty(y)
+0062         y=x;
+0063     <span class="keyword">end</span>
+0064     [N,dim]=size(x);
+0065     [M,dim]=size(y);
+0066     xx=bsxfun(@minus,x,reshape(y',1,dim,M)); <span class="comment">%N x dim x M</span>
+0067     xx=permute(xx,[1,3,2]); <span class="comment">%NxMxdim</span>
+0068     D=sqrt(sum(xx.^2,3)); <span class="comment">%NxM</span>
+0069     <span class="keyword">if</span> nargout&gt;1 <span class="comment">%Computing gradients too</span>
+0070                 D1=D;
+0071         D1(D==0)=1;
+0072         gx=bsxfun(@rdivide,xx,D1); <span class="comment">%NxMxdim -&gt; This gradient is wrong if nargin==1</span>
+0073         <span class="comment">%gx=xx./d; %allowed in R2017a and newer</span>
+0074         <span class="comment">%gy=-gx; -&gt; Gradients are opposite to one another if we preserve the shape</span>
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

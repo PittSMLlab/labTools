@@ -1,0 +1,580 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pdf</title>
+  <meta name="keywords" content="pdf">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">probability</a> &gt; <a href="index.html">@pdf</a> &gt; pdf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/probability/@pdf&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>pdf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="average.html" class="code" title="function newDensity=average(this,N) %Computes the pdf for an average of N iid samples drawn from this distribution">average</a>	Force uniform sampling</li><li><a href="getCDF.html" class="code" title="function [cdf,coordinates]=getCDF(this)">getCDF</a>	</li><li><a href="getMarginalDistribution.html" class="code" title="function marginalDensityDistr=getMarginalDistribution(this,dim,name) %Compute the marginal density distribution with respect to dimension dim. It returns a pdf object with one dimension less than the original object">getMarginalDistribution</a>	</li><li><a href="pdf.html" class="code" title="">pdf</a>	</li><li><a href="resample.html" class="code" title="function newDensityDistr=resample(this,newCoordinates)">resample</a>	</li><li><a href="resampleUniform.html" class="code" title="function [newThis,delta]=resampleUniform(this,size) %Force uniform sampling with sample size = "size"">resampleUniform</a>	</li><li><a href="sum.html" class="code" title="function newDensity=sum(this,other,name) %returns de pdf of the sum of two variables with pdfs this & other">sum</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="average.html" class="code" title="function newDensity=average(this,N) %Computes the pdf for an average of N iid samples drawn from this distribution">average</a>	Force uniform sampling</li><li><a href="getMarginalDistribution.html" class="code" title="function marginalDensityDistr=getMarginalDistribution(this,dim,name) %Compute the marginal density distribution with respect to dimension dim. It returns a pdf object with one dimension less than the original object">getMarginalDistribution</a>	</li><li><a href="pdf.html" class="code" title="">pdf</a>	</li><li><a href="resample.html" class="code" title="function newDensityDistr=resample(this,newCoordinates)">resample</a>	</li><li><a href="sum.html" class="code" title="function newDensity=sum(this,other,name) %returns de pdf of the sum of two variables with pdfs this & other">sum</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=pdf(pValues,coordinates,name)</a></li><li><a href="#_sub2" class="code">function limits=get.supportRegionLimits(this)</a></li><li><a href="#_sub3" class="code">function dim=get.dimension(this)</a></li><li><a href="#_sub4" class="code">function alpha=getCumulativeProbability(this,X)</a></li><li><a href="#_sub5" class="code">function X=getInvCDF(this,alpha)</a></li><li><a href="#_sub6" class="code">function condDistr=getConditionalDistribution(this,dim)</a></li><li><a href="#_sub7" class="code">function mu=getMean(this)</a></li><li><a href="#_sub8" class="code">function sigma=getStddev(this)</a></li><li><a href="#_sub9" class="code">function nu=getMedian(this)</a></li><li><a href="#_sub10" class="code">function nu=getMode(this)</a></li><li><a href="#_sub11" class="code">function S=getEntropy(this)</a></li><li><a href="#_sub12" class="code">function S=getDiscreteEntropy(this)</a></li><li><a href="#_sub13" class="code">function I=getMutualInfo(this,inds1)</a></li><li><a href="#_sub14" class="code">function samples=drawSample(this,N)</a></li><li><a href="#_sub15" class="code">function newDensityDistr=permute(this,newOrder)</a></li><li><a href="#_sub16" class="code">function newDensityDistr=squeeze(this)</a></li><li><a href="#_sub17" class="code">function [figHandle,axesHandles]=plot(this,figHandle,axesHandle,samples)</a></li><li><a href="#_sub18" class="code">function integral=fullIntegration(pValues,coordinates)</a></li><li><a href="#_sub19" class="code">function newP=normalize(pValues,coordinates)</a></li><li><a href="#_sub20" class="code">function isSane=checkIntegration(pValues,coordinates)</a></li><li><a href="#_sub21" class="code">function [newP,newC]=getMarginalValues(pValues,coordinates,dim)</a></li><li><a href="#_sub22" class="code">function newP=getSummedpValues(pValues1,pValues2,delta)</a></li><li><a href="#_sub23" class="code">function S=entropy(pValues,coordinates)</a></li><li><a href="#_sub24" class="code">function newDist=kernelEstimation(sampleCoordinates,evalCoord)</a></li><li><a href="#_sub25" class="code">function newDist=unimodalEstimation(sampleCoordinates,evalCoord);</a></li><li><a href="#_sub26" class="code">function [newDist]=empiricPDF(sample)</a></li><li><a href="#_sub27" class="code">function [cdf,coordinates]=empiricCDF(sample)</a></li><li><a href="#_sub28" class="code">function D=DKL(pdf1,pdf2)</a></li><li><a href="#_sub29" class="code">function newDist=product(pdf1,pdf2)</a></li><li><a href="#_sub30" class="code">function newF=integrateWithRespectToPDF(f,pdf1)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="pdf.html" class="code" title="">pdf</a>
+0002     <span class="comment">%pdf Summary of this class goes here</span>
+0003 
+0004     <span class="comment">%%</span>
+0005     properties
+0006        pValues=[]; <span class="comment">%Where the values of p(x) are stored</span>
+0007        coordinates=[]; <span class="comment">%The coordinates of the points x where p is evaluated</span>
+0008        name=[<span class="string">'Unnamed'</span>];
+0009     <span class="keyword">end</span>
+0010     <span class="comment">%%</span>
+0011     properties(Dependent)
+0012        supportRegionLimits
+0013        dimension
+0014     <span class="keyword">end</span>
+0015     <span class="comment">%%</span>
+0016     properties(GetAccess=private, SetAccess=private)
+0017         build=1;
+0018     <span class="keyword">end</span>
+0019     
+0020     <span class="comment">%%</span>
+0021     methods
+0022         <span class="comment">%Constructor:</span>
+0023         <a name="_sub0" href="#_subfunctions" class="code">function this=pdf(pValues,coordinates,name) </a><span class="comment">%Constructor</span>
+0024             <span class="comment">%INPUTS:</span>
+0025             <span class="comment">%pValues an n-dimensional matrix which contains the density</span>
+0026             <span class="comment">%evaluated in a given grid (grid must be rectangular)</span>
+0027             <span class="comment">%Coordinates: a cell array of length n, with each cell</span>
+0028             <span class="comment">%containing a vector which specifies the evaluation points of</span>
+0029             <span class="comment">%the grid for a given dimension</span>
+0030             <span class="comment">%Example: pdf(ones(5,10),{[1:5],[0:10:90]})</span>
+0031             <span class="comment">%returns a uniform 2D distribution in the region given by</span>
+0032             <span class="comment">%[1,5]x[10,90] (and zero outside that region).</span>
+0033             
+0034             <span class="comment">%Check that dimension of pValues coincides with length of</span>
+0035             <span class="comment">%coordinates</span>
+0036             <span class="keyword">if</span> nargin&lt;2
+0037                 ME = MException(<span class="string">'pdf:MissingArguments'</span>,<span class="string">'Either the values or the coordinates are missing.'</span>);
+0038                 throw(ME);
+0039             <span class="keyword">end</span>
+0040             n=ndims(pValues);
+0041             <span class="keyword">if</span> length(pValues)==numel(pValues)
+0042                 n=1;
+0043             <span class="keyword">end</span>
+0044             <span class="keyword">if</span> n~=length(coordinates)
+0045                 ME = MException(<span class="string">'pdf:InconsistentArguments'</span>,<span class="string">'The dimension of the pValues and coordinates are not consistent.'</span>);
+0046                 throw(ME);
+0047             <span class="keyword">end</span>
+0048             
+0049             <span class="comment">%Check that it integrates to 1, if not, normalize</span>
+0050             <span class="keyword">if</span> ~strcmp(this.name,<span class="string">'nonorm'</span>) &amp;&amp; ~pdf.checkIntegration(pValues,coordinates) <span class="comment">%Secret name 'nonorm' avoids normalization step, should never be used.</span>
+0051                 warning(<span class="string">'pdf:Constructor'</span>, [<span class="string">'Attempting to create pdf that integrates to '</span> num2str(pdf.fullIntegration(pValues,coordinates)) <span class="string">', normalizing.'</span>])
+0052                 pValues=pdf.normalize(pValues,coordinates);
+0053             <span class="keyword">end</span>
+0054             <span class="keyword">if</span> ~strcmp(this.name,<span class="string">'nonorm'</span>) &amp;&amp; ~pdf.checkIntegration(pValues,coordinates)
+0055                 warning(<span class="string">'Normalization did not work.'</span>)
+0056             <span class="keyword">end</span>
+0057             
+0058             <span class="comment">%Assign properties</span>
+0059             <span class="keyword">if</span> size(pValues,2)==numel(pValues) <span class="comment">%Row vector</span>
+0060                 pValues=pValues';
+0061             <span class="keyword">end</span>
+0062             this.pValues=pValues;
+0063             auxSize=size(pValues);
+0064             <span class="keyword">for</span> i=1:length(coordinates)
+0065                 <span class="keyword">if</span> length(coordinates{i})==auxSize(i);
+0066                     this.coordinates{i}=coordinates{i}(:);
+0067                 <span class="keyword">else</span>
+0068                     ME = MException(<span class="string">'pdf:InconsistentArguments'</span>,<span class="string">'The coordinate vectors do not have the same size as the provided pValues.'</span>);
+0069                     throw(ME);
+0070                 <span class="keyword">end</span>
+0071             <span class="keyword">end</span>
+0072             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(name,<span class="string">'char'</span>)
+0073                 this.name=name;
+0074             <span class="keyword">end</span>
+0075 
+0076         <span class="keyword">end</span>
+0077         
+0078         <span class="comment">%Dependent properties:</span>
+0079         <a name="_sub1" href="#_subfunctions" class="code">function limits=get.supportRegionLimits(this)</a>
+0080            <span class="keyword">for</span> i=1:length(this.coordinates)
+0081                limits(1,i)=this.coordinates{i}(1);
+0082                limits(2,i)=this.coordinates{i}(end);
+0083            <span class="keyword">end</span>
+0084         <span class="keyword">end</span>
+0085         
+0086         <a name="_sub2" href="#_subfunctions" class="code">function dim=get.dimension(this)</a>
+0087             dim=length(this.coordinates);
+0088         <span class="keyword">end</span>
+0089         
+0090         <span class="comment">%Useful properties/derived distributions:</span>
+0091         <a name="_sub3" href="#_subfunctions" class="code">function alpha=getCumulativeProbability(this,X) </a><span class="comment">%Gets the integrated value of the density from -inf to X(i) in each of the dimensions</span>
+0092             <span class="comment">%Check length(X) is the same as length(this.coordinates)</span>
+0093             auxStr=[];
+0094             auxStr2=[];
+0095             <span class="keyword">for</span> i=1:length(X)
+0096                 aaux= find((this.coordinates{i}-X(i))&lt;=0,1,<span class="string">'last'</span>);
+0097                 <span class="keyword">if</span> ~isempty(aaux)
+0098                     ind(i)= aaux;
+0099                 <span class="keyword">else</span>
+0100                     ind(i)=0;
+0101                 <span class="keyword">end</span>
+0102                 auxStr2=[auxStr2 <span class="string">'1:ind('</span> num2str(i) <span class="string">'),'</span>];
+0103                 partialCoordinates{i}=this.coordinates{i}(1:ind(i));
+0104             <span class="keyword">end</span>
+0105             eval([<span class="string">'partialCell=this.pValues('</span> auxStr2(1:end-1) <span class="string">');'</span>]);
+0106             alpha=pdf.fullIntegration(partialCell,partialCoordinates);
+0107             <span class="comment">%auxDist=pdf(partialCell,partialCoordinates,'nonorm');</span>
+0108             <span class="comment">%alpha=auxDist.fullIntegration; %This is a first order (no interpolation) aproximation, which is always lower than the actual value</span>
+0109         <span class="keyword">end</span>
+0110         
+0111         <a name="_sub4" href="#_subfunctions" class="code">function X=getInvCDF(this,alpha) </a><span class="comment">%Essentially the inverse of the previous function</span>
+0112             <span class="keyword">if</span> this.dimension&gt;1
+0113                  error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0114             <span class="keyword">else</span>
+0115                 <span class="keyword">if</span> abs(alpha-.5)&gt;.5
+0116                     error(<span class="string">'Alpha value is not in the [0,1] interval.'</span>)
+0117                 <span class="keyword">else</span>
+0118                     [cdf,coordinates]=<a href="getCDF.html" class="code" title="function [cdf,coordinates]=getCDF(this)">getCDF</a>(this);
+0119                     [~,i]=min(abs(cdf-alpha));
+0120                     X=coordinates{1}(i);
+0121                 <span class="keyword">end</span>
+0122             <span class="keyword">end</span>
+0123         <span class="keyword">end</span>
+0124         
+0125         [cdf,coordinates]=<a href="getCDF.html" class="code" title="function [cdf,coordinates]=getCDF(this)">getCDF</a>(this)
+0126         
+0127         marginalDensityDistr=<a href="getMarginalDistribution.html" class="code" title="function marginalDensityDistr=getMarginalDistribution(this,dim,name) %Compute the marginal density distribution with respect to dimension dim. It returns a pdf object with one dimension less than the original object">getMarginalDistribution</a>(this,dim,name) <span class="comment">%Compute the marginal density distribution with respect to dimension dim. It returns a pdf object with one dimension less than the original object</span>
+0128         
+0129         <a name="_sub5" href="#_subfunctions" class="code">function condDistr=getConditionalDistribution(this,dim) </a><span class="comment">%Essentially returns the same, but normalized across dimension dim so for each value along that dimension, you would have a probability distribution</span>
+0130             auxP=<a href="#_sub15" class="code" title="subfunction newDensityDistr=permute(this,newOrder)">permute</a>(this.pValues,[dim, 1:dim-1,dim+1:this.dimension]);
+0131             sizeTmp=size(auxP);
+0132             <span class="keyword">for</span> i=1:length(this.coordinates{dim})
+0133                 <span class="keyword">if</span> length(sizeTmp)&gt;2
+0134                     tmp=reshape(auxP(i,:),sizeTmp(2:end)); <span class="comment">%This might not work properly if the resulting pdf is one-dimensional.</span>
+0135                 <span class="keyword">else</span>
+0136                     tmp=<a href="#_sub16" class="code" title="subfunction newDensityDistr=squeeze(this)">squeeze</a>(auxP(i,:)); <span class="comment">%This works for the 1-D case.</span>
+0137                 <span class="keyword">end</span>
+0138                 condDistr{i}.pdf=<a href="pdf.html" class="code" title="">pdf</a>(tmp,this.coordinates([1:dim-1,dim+1:this.dimension])); 
+0139                 condDistr{i}.coordinate=this.coordinates{dim}(i);
+0140             <span class="keyword">end</span>
+0141         <span class="keyword">end</span>
+0142         
+0143         <span class="comment">%Statistics:</span>
+0144         <a name="_sub6" href="#_subfunctions" class="code">function mu=getMean(this)</a>
+0145             <span class="keyword">if</span> this.dimension&gt;1
+0146                  error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0147             <span class="keyword">else</span>
+0148                 aux=this.pValues .* this.coordinates{1}(:);
+0149                 mu=pdf.fullIntegration(aux,this.coordinates);
+0150             <span class="keyword">end</span>
+0151         <span class="keyword">end</span>
+0152         
+0153         <a name="_sub7" href="#_subfunctions" class="code">function sigma=getStddev(this)</a>
+0154            <span class="keyword">if</span> this.dimension&gt;1
+0155                  error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0156            <span class="keyword">else</span>
+0157                 mu=this.getMean;
+0158                 aux=this.pValues .* (this.coordinates{1}(:)-mu).^2;
+0159                 sigma=sqrt(pdf.fullIntegration(aux,this.coordinates));
+0160             <span class="keyword">end</span> 
+0161         <span class="keyword">end</span>
+0162         
+0163         <a name="_sub8" href="#_subfunctions" class="code">function nu=getMedian(this)</a>
+0164             <span class="keyword">if</span> this.dimension&gt;1
+0165                 error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0166             <span class="keyword">else</span>
+0167                 [cdf,coordinates]=this.getCDF;
+0168                 [~,j]=min((cdf-.5).^2);
+0169                 nu=coordinates{1}(j);
+0170             <span class="keyword">end</span>
+0171         <span class="keyword">end</span>
+0172         
+0173         <a name="_sub9" href="#_subfunctions" class="code">function nu=getMode(this)</a>
+0174             <span class="keyword">if</span> this.dimension&gt;1
+0175                 error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0176             <span class="keyword">else</span>
+0177                 [~,j]=max(this.pValues);
+0178                 nu=this.coordinates{1}(j);
+0179             <span class="keyword">end</span>
+0180         <span class="keyword">end</span>
+0181         
+0182         <a name="_sub10" href="#_subfunctions" class="code">function S=getEntropy(this) </a><span class="comment">%Computes the differential entropy</span>
+0183             S=pdf.integrateWithRespectToPDF(-log2(this.pValues),this);
+0184         <span class="keyword">end</span>
+0185         
+0186         <a name="_sub11" href="#_subfunctions" class="code">function S=getDiscreteEntropy(this) </a><span class="comment">%Computes the entropy of the quantized distribution, assuming uniform sampling.</span>
+0187             S=<a href="#_sub11" class="code" title="subfunction S=getEntropy(this) ">getEntropy</a>(this);
+0188             <span class="keyword">for</span> i=1:this.dimension
+0189                 S=S-log2(median(diff(this.coordinates{i})));
+0190             <span class="keyword">end</span>
+0191         <span class="keyword">end</span>
+0192         
+0193         <a name="_sub12" href="#_subfunctions" class="code">function I=getMutualInfo(this,inds1) </a><span class="comment">%computes mutual info of the variables refered on inds1, with respect to the remaining ones</span>
+0194               <span class="comment">%S1=getEntropy(this);</span>
+0195               <span class="comment">%pdf1=this.getMarginalDistribution(inds1); %Function only of the remaining variables variables</span>
+0196                 I=NaN;
+0197         <span class="keyword">end</span>
+0198         
+0199         <a name="_sub13" href="#_subfunctions" class="code">function samples=drawSample(this,N) </a><span class="comment">%Draws a random sample of N elements from this distribution</span>
+0200             <span class="keyword">if</span> this.dimension&gt;1
+0201                 error(<span class="string">'High-dim pdfs are not supported yet.'</span>)
+0202             <span class="keyword">else</span>
+0203                 R=rand(N);
+0204                 [cdf,coordinates]=this.getCDF;
+0205                 <span class="keyword">for</span> i=1:N
+0206                     [~,j]=min((cdf-R(i)).^2); <span class="comment">%Essentially applying cdf^{-1} (x), where x ~U[0,1]</span>
+0207                     samples(i)=coordinates{1}(j);
+0208                 <span class="keyword">end</span>
+0209             <span class="keyword">end</span>
+0210         <span class="keyword">end</span>
+0211         
+0212 
+0213         <span class="comment">%Modifications:</span>
+0214         <a name="_sub14" href="#_subfunctions" class="code">function newDensityDistr=permute(this,newOrder)</a>
+0215             <span class="keyword">if</span> length(newOrder)==this.dimension
+0216                 newP=<a href="#_sub15" class="code" title="subfunction newDensityDistr=permute(this,newOrder)">permute</a>(this.pValues,newOrder);
+0217                 newC=this.coordinates(newOrder);
+0218                 newDensityDistr=<a href="pdf.html" class="code" title="">pdf</a>(newP,newC);
+0219             <span class="keyword">else</span>
+0220                 throw(MException(<span class="string">'pdf:permute'</span>,<span class="string">'New order vector is not of length equal to pdf dimension.'</span>))
+0221             <span class="keyword">end</span>
+0222         <span class="keyword">end</span>
+0223         
+0224         <a name="_sub15" href="#_subfunctions" class="code">function newDensityDistr=squeeze(this)</a>
+0225             newC={};
+0226             <span class="keyword">for</span> i=1:this.dimension
+0227                 <span class="keyword">if</span> length(this.coordinates{i})&gt;1
+0228                     newC{end+1}=this.coordinates{i};
+0229                 <span class="keyword">end</span>
+0230             <span class="keyword">end</span>
+0231             newP=<a href="#_sub16" class="code" title="subfunction newDensityDistr=squeeze(this)">squeeze</a>(this.pValues);
+0232             newDensityDistr=<a href="pdf.html" class="code" title="">pdf</a>(newP,newC);
+0233         <span class="keyword">end</span>
+0234         
+0235         newDensityDistr=smooth(this) 
+0236         
+0237         newDensityDistr=<a href="resample.html" class="code" title="function newDensityDistr=resample(this,newCoordinates)">resample</a>(this,newCoordinates)
+0238 
+0239         
+0240         [newThis,delta]=<a href="resampleUniform.html" class="code" title="function [newThis,delta]=resampleUniform(this,size) %Force uniform sampling with sample size = "size"">resampleUniform</a>(this,size) <span class="comment">%Force uniform sampling with sample size = &quot;size&quot;</span>
+0241 
+0242 
+0243         <span class="comment">%Simple math derived distributions:</span>
+0244         newDensity=<a href="sum.html" class="code" title="function newDensity=sum(this,other,name) %returns de pdf of the sum of two variables with pdfs this & other">sum</a>(this,other,name) <span class="comment">%returns de pdf of the sum of two variables with pdfs this &amp; other</span>
+0245         
+0246         newDensity=<a href="average.html" class="code" title="function newDensity=average(this,N) %Computes the pdf for an average of N iid samples drawn from this distribution">average</a>(this,N) <span class="comment">%Computes the pdf for an average of N iid samples drawn from this distribution</span>
+0247         
+0248         newDensity=funct(this,functionName) <span class="comment">%Computes the pdf for y=f(x), where f is the functionname given. f must be monotonic, and the syntax y=functionName(x) needs to work in Matlab.</span>
+0249         
+0250         newDensity=log(this) <span class="comment">%Special case of the function before, with functionName='log'</span>
+0251         
+0252         newDensity=exp(this) <span class="comment">%Special case of funct, with functionName='exp', is inverse of previous function</span>
+0253         
+0254         newDensity=prod(this,other) <span class="comment">%Computes the pdf of the product of two distributions, implemented as the exponential of the sum of the log variables</span>
+0255         
+0256         <span class="comment">%Approximation to continuous function:</span>
+0257         polyCoefs=approximateByPolinomial(this,tol) <span class="comment">%only if dimension=1</span>
+0258         
+0259         <span class="comment">%Display:</span>
+0260         <a name="_sub16" href="#_subfunctions" class="code">function [figHandle,axesHandles]=plot(this,figHandle,axesHandle,samples) </a><span class="comment">%only if dim in {1,2}</span>
+0261             <span class="keyword">if</span> nargin&lt;2 || isempty(figHandle)
+0262                 figHandle=figure;
+0263             <span class="keyword">else</span>
+0264                 figure(figHandle);
+0265             <span class="keyword">end</span>
+0266             <span class="keyword">if</span> this.dimension==1
+0267                 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(axesHandle)
+0268                     axes(axesHandle);
+0269                 <span class="keyword">else</span>
+0270                     axes;
+0271                 <span class="keyword">end</span>
+0272                 hold on
+0273                 <a href="#_sub17" class="code" title="subfunction [figHandle,axesHandles]=plot(this,figHandle,axesHandle,samples) ">plot</a>(this.coordinates{1},this.pValues,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+0274                 axis([min(this.coordinates{1}) max(this.coordinates{1}) 0 1.1*max(this.pValues)])
+0275                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0276                    <span class="comment">%</span>
+0277                    bins=length(samples)/2;
+0278                    [h,c]=hist(samples,linspace(this.coordinates{1}(1),this.coordinates{1}(end),bins));
+0279                    H=h/(<a href="sum.html" class="code" title="function newDensity=sum(this,other,name) %returns de pdf of the sum of two variables with pdfs this & other">sum</a>(h)*median(diff(c)));
+0280                    bar(c,H,1)
+0281                    <a href="#_sub17" class="code" title="subfunction [figHandle,axesHandles]=plot(this,figHandle,axesHandle,samples) ">plot</a>(samples,.01*max(this.pValues)*ones(size(samples)),<span class="string">'.'</span>,<span class="string">'LineWidth'</span>,2',<span class="string">'Color'</span>,[1,1,1]); 
+0282                    axis([min(this.coordinates{1}) max(this.coordinates{1}) 0 1.1*max(H)])
+0283                 <span class="keyword">end</span>
+0284                 hold off
+0285             <span class="keyword">elseif</span> this.dimension==2
+0286                 <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(axesHandle)
+0287                     axes(axesHandle);
+0288                 <span class="keyword">else</span>
+0289                     axes;
+0290                 <span class="keyword">end</span>
+0291                 hold on
+0292                 surf(this.coordinates{1},this.coordinates{2},this.pValues',<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>)
+0293                 view(2)
+0294                 axis tight
+0295                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0296                    plot3(samples(:,1),samples(:,2),2*max(this.pValues(:))*ones(size(samples(:,1))),<span class="string">'wx'</span>,<span class="string">'LineWidth'</span>,2) 
+0297                 <span class="keyword">end</span>
+0298                 hold off
+0299             <span class="keyword">elseif</span> this.dimension==3
+0300                 <span class="comment">%Do three plots of the marginals distributions</span>
+0301                 <span class="comment">%warning('Dimensionality not currently supported (yet!). Not plotting.')</span>
+0302                 axesHandles(1)=subplot(7,7,[1:3,8:10,15:17]);
+0303                 hold on
+0304                 title(<span class="string">'Marginal distribution for dimensions 2 and 3'</span>)
+0305                 partialSamples=[];
+0306                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0307                    partialSamples=samples(:,[3,2]); 
+0308                 <span class="keyword">end</span>
+0309                 this.getMarginalDistribution(1).permute([2,1]).plot(figHandle,axesHandles(1),partialSamples);
+0310                 <span class="comment">%xlabel('Dim 3')</span>
+0311                 ylabel(<span class="string">'Dim 2'</span>)
+0312                 hold off
+0313                 axesHandles(2)=subplot(7,7,28+[1:3,8:10,15:17]);
+0314                 hold on
+0315                 <span class="comment">%title('Marginal distribution for dimensions 1 and 3')</span>
+0316                 partialSamples=[];
+0317                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0318                    partialSamples=samples(:,[3,1]); 
+0319                 <span class="keyword">end</span>
+0320                 this.getMarginalDistribution(2).permute([2,1]).plot(figHandle,axesHandles(2),partialSamples);
+0321                 xlabel(<span class="string">'Dim 3'</span>)
+0322                 ylabel(<span class="string">'Dim 1'</span>)
+0323                 hold off
+0324                 axesHandles(3)=subplot(7,7,4+[1:3,8:10,15:17]);
+0325                 hold on
+0326                 title(<span class="string">'Marginal distribution for dimensions 1 and 2'</span>)
+0327                 partialSamples=[];
+0328                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0329                    partialSamples=samples(:,1:2); 
+0330                 <span class="keyword">end</span>
+0331                 this.getMarginalDistribution(3).plot(figHandle,axesHandles(3),partialSamples);
+0332                 <span class="comment">%xlabel('Dim 1')</span>
+0333                 <span class="comment">%ylabel('Dim 2')</span>
+0334                 hold off
+0335                 axesHandles(4)=subplot(7,7,[22:24]);
+0336                 hold on
+0337                 partialSamples=[];
+0338                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0339                    partialSamples=samples(:,3); 
+0340                 <span class="keyword">end</span>
+0341                 this.getMarginalDistribution(1).getMarginalDistribution(1).plot(figHandle,axesHandles(4),partialSamples);
+0342                 hold off
+0343                 axesHandles(5)=subplot(7,7,[4,11,18]);
+0344                 hold on
+0345                 <span class="comment">%aux=this.getMarginalDistribution(3).getMarginalDistribution(1);</span>
+0346                 <span class="comment">%plot(aux.pValues,aux.coordinates{1});</span>
+0347                 partialSamples=[];
+0348                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0349                    partialSamples=samples(:,2); 
+0350                 <span class="keyword">end</span>
+0351                 this.getMarginalDistribution(3).getMarginalDistribution(1).plot(figHandle,axesHandles(5),partialSamples);
+0352                 <span class="comment">%plot(.1*max(aux.pValues)*ones(size(partialSamples)),partialSamples,'x','LineWidth',2','Color',[0,0,0]);</span>
+0353                 view(-90,90)
+0354                 hold off
+0355                 axesHandles(6)=subplot(7,7,4+[22:24]);
+0356                 xlabel(<span class="string">'Dim 1'</span>)
+0357                 hold on
+0358                 partialSamples=[];
+0359                 <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(samples)
+0360                    partialSamples=samples(:,1); 
+0361                 <span class="keyword">end</span>
+0362                 this.getMarginalDistribution(3).getMarginalDistribution(2).plot(figHandle,axesHandles(6),partialSamples);
+0363                 hold off
+0364             <span class="keyword">else</span>
+0365                 warning(<span class="string">'Dimensionality too high. Cannot plot.'</span>)
+0366             <span class="keyword">end</span>
+0367         <span class="keyword">end</span>
+0368         <span class="comment">%display(this) %only if dim=1</span>
+0369 
+0370     <span class="keyword">end</span>
+0371     
+0372     <span class="comment">%% Useful methods that should never be used by end-user</span>
+0373     methods(Access=private, Static)
+0374         
+0375         <a name="_sub17" href="#_subfunctions" class="code">function integral=fullIntegration(pValues,coordinates)</a>
+0376             newP=pValues;
+0377             newC=coordinates;
+0378             <span class="keyword">for</span> i=length(coordinates):-1:2
+0379                 [newP,newC]=pdf.getMarginalValues(newP,newC,i);
+0380             <span class="keyword">end</span>
+0381             <span class="keyword">if</span> length(newC{1})==1
+0382                 integral=0;
+0383             <span class="keyword">else</span>
+0384                 integral=trapz(newC{1},newP);
+0385             <span class="keyword">end</span>
+0386         <span class="keyword">end</span>
+0387         
+0388         <a name="_sub18" href="#_subfunctions" class="code">function newP=normalize(pValues,coordinates)</a>
+0389             newP=pValues/pdf.fullIntegration(pValues,coordinates);
+0390         <span class="keyword">end</span>
+0391         
+0392         <a name="_sub19" href="#_subfunctions" class="code">function isSane=checkIntegration(pValues,coordinates)</a>
+0393             isSane = abs(pdf.fullIntegration(pValues,coordinates)-1)&lt;.00001; <span class="comment">%0.001% errror in normalization tolerated</span>
+0394         <span class="keyword">end</span>
+0395         
+0396         <a name="_sub20" href="#_subfunctions" class="code">function [newP,newC]=getMarginalValues(pValues,coordinates,dim)</a>
+0397             dimension=length(coordinates);
+0398             <span class="keyword">if</span> length(coordinates{dim})&gt;1
+0399                 newP=trapz(coordinates{dim},<a href="#_sub15" class="code" title="subfunction newDensityDistr=permute(this,newOrder)">permute</a>(pValues,[dim,1:dim-1,dim+1:dimension]));
+0400                 auxS=size(pValues);
+0401                 newP=reshape(newP,[auxS(1:dim-1),1,auxS(dim+1:dimension)]);
+0402             <span class="keyword">else</span>
+0403                 newP=pValues;
+0404             <span class="keyword">end</span>
+0405             newC=coordinates;
+0406             <span class="keyword">if</span> dim==dimension <span class="comment">%This is necessary because if the trailing dimension is singleton (case in which we are marginalizing on the last dimension) matlab forces newP to have dim-1 (i.e. a MxNx1 matrix is just a n MxN matrix)</span>
+0407                 newC=newC(1:dim-1);
+0408             <span class="keyword">else</span>
+0409                 newC{dim}=0;
+0410             <span class="keyword">end</span>
+0411             <span class="comment">%newC=coordinates([1:dim-1,dim+1:end]);</span>
+0412         <span class="keyword">end</span>
+0413         
+0414         <a name="_sub21" href="#_subfunctions" class="code">function newP=getSummedpValues(pValues1,pValues2,delta)</a>
+0415             <span class="comment">%This assumes uniform and equal spacing of samples for pValues1</span>
+0416             <span class="comment">%and 2</span>
+0417             newP=prod(delta)*convn(pValues1,pValues2,<span class="string">'full'</span>); <span class="comment">%This is pretty efficient as is!</span>
+0418         <span class="keyword">end</span>
+0419 
+0420         <a name="_sub22" href="#_subfunctions" class="code">function S=entropy(pValues,coordinates) </a><span class="comment">%Computes the entropy</span>
+0421            aux=pValues;
+0422            v=-aux.*log2(aux);
+0423            v(aux==0)=0; <span class="comment">%Avoids NaNs</span>
+0424            S=pdf.fullIntegration(v,coordinates);
+0425         <span class="keyword">end</span>
+0426     <span class="keyword">end</span>
+0427     
+0428     <span class="comment">%%</span>
+0429     methods(Static)
+0430         <span class="comment">%Alternative constructions from sample data:</span>
+0431        <a name="_sub23" href="#_subfunctions" class="code">function newDist=kernelEstimation(sampleCoordinates,evalCoord)</a>
+0432             <span class="comment">%sampleCoordinates should be a N x M matrix, where the lesser</span>
+0433             <span class="comment">%of [M,N] represents the dimensionality of the data.</span>
+0434             <span class="keyword">if</span> size(sampleCoordinates,2)&lt;size(sampleCoordinates,1)
+0435                 sampleCoordinates=sampleCoordinates.';
+0436             <span class="keyword">end</span>
+0437              <span class="keyword">if</span> nargin&lt;2
+0438                 <span class="keyword">for</span> i=1:size(sampleCoordinates,1)
+0439                     N=1024;
+0440                     range=max(sampleCoordinates(i,:))-min(sampleCoordinates(i,:));
+0441                     evalCoord{i}=min(sampleCoordinates(i,:)):range/(N-1):max(sampleCoordinates(i,:));
+0442                 <span class="keyword">end</span>
+0443             <span class="keyword">end</span>
+0444             <span class="comment">%[p,xmesh,~]=densityEstimation(sampleCoordinates,evalCoord,[]);</span>
+0445             <span class="comment">%p=abs(p); %This correction is necessary because the external kde function returns some high-freq oscillations (I guess because of a 'real(fft)' that is in the code, when the result should be real before taking the real part). This oscillations are small, so it is no problem to take abs()</span>
+0446             weights=1./max(abs(sampleCoordinates')); <span class="comment">%This weights distances by their relative factor to the biggest possible value of the variable. Another option would be weights equal to std.</span>
+0447             <span class="comment">%weights=1./std(sampleCoordinates');</span>
+0448             <span class="comment">%p=ksdensityn(sampleCoordinates,evalCoord,'varconv',[],weights);</span>
+0449             p=ksdensityn(sampleCoordinates,evalCoord,<span class="string">'conv'</span>);
+0450             newDist=<a href="pdf.html" class="code" title="">pdf</a>(p,evalCoord);
+0451        <span class="keyword">end</span>
+0452         
+0453        <span class="comment">%newDist=histEstimation(sampleCoordinates,evalCoord);</span>
+0454        
+0455        <a name="_sub24" href="#_subfunctions" class="code">function newDist=unimodalEstimation(sampleCoordinates,evalCoord); </a><span class="comment">%This would be</span>
+0456        <span class="comment">%something like a MLE with a regularization term to avoid a spiky</span>
+0457        <span class="comment">%solution. The regularization term might be in terms of distribution</span>
+0458        <span class="comment">%entropy, power spectrum or some condition on the derivatives (TBD).</span>
+0459        <span class="keyword">if</span> length(evalCoord)&gt;1
+0460             error(<span class="string">'High-dim prob. densities not yet supported'</span>);
+0461        <span class="keyword">else</span>
+0462            aux=diff(evalCoord{1});
+0463            aux2=(.5*[aux;0]+.5*[0;aux])';
+0464            aux3=.5*aux(1:end-1)+.5*aux(2:end);
+0465             p0=ones(length(evalCoord{1}),1)/<a href="sum.html" class="code" title="function newDensity=sum(this,other,name) %returns de pdf of the sum of two variables with pdfs this & other">sum</a>(aux);
+0466             alpha=.004;
+0467             N=length(sampleCoordinates);
+0468             Maux=zeros(N,length(p0));
+0469             <span class="keyword">for</span> i=1:length(sampleCoordinates)
+0470                 aa=find((sampleCoordinates(i)-evalCoord{1})&gt;0,1,<span class="string">'last'</span>);
+0471                 Maux(i,aa)= (sampleCoordinates(i)-evalCoord{1}(aa))./(evalCoord{1}(aa+1)-evalCoord{1}(aa));
+0472                 Maux(i,aa+1)= 1-Maux(i,aa);
+0473             <span class="keyword">end</span>
+0474            p=fmincon(@(p) -prod((Maux*p).^(1/N))+alpha*pdf.entropy(p,evalCoord),p0,[],[],aux2,1,zeros(size(p0)),[]);
+0475        <span class="keyword">end</span>
+0476        newDist=<a href="pdf.html" class="code" title="">pdf</a>(p,evalCoord);
+0477        <span class="keyword">end</span>
+0478        
+0479        <a name="_sub25" href="#_subfunctions" class="code">function [newDist]=empiricPDF(sample)</a>
+0480            <span class="comment">%[cdf,coordinates]=pdf.empiricCDF(sample);</span>
+0481             <span class="comment">%p=diff(cdf)'./diff(coordinates{1});</span>
+0482             
+0483             [p,c]=hist(sample,round(length(sample)/100));
+0484             newDist=<a href="pdf.html" class="code" title="">pdf</a>(p',{c'}); <span class="comment">%Middle point assignments</span>
+0485        <span class="keyword">end</span>
+0486        
+0487        <span class="comment">%Others</span>
+0488        <a name="_sub26" href="#_subfunctions" class="code">function [cdf,coordinates]=empiricCDF(sample)</a>
+0489           N=size(sample,1);
+0490           <span class="keyword">if</span> size(sample,2)&gt;1
+0491               error(<span class="string">'High-dim samples not yet supported.'</span>)
+0492           <span class="keyword">else</span>
+0493               coordinates{1}=[min(sample)-.1;sort(sample,<span class="string">'ascend'</span>)];
+0494               cdf=[0:N]/N;
+0495           <span class="keyword">end</span>
+0496        <span class="keyword">end</span>
+0497        
+0498        <a name="_sub27" href="#_subfunctions" class="code">function D=DKL(pdf1,pdf2) </a><span class="comment">%Computes the Kullbach-Leibler divergence</span>
+0499            flag=false;
+0500            <span class="keyword">for</span> i=1:pdf1.dimension
+0501                 flag=flag || any(pdf1.coordinates{i}~=pdf2.coordinates{i})
+0502            <span class="keyword">end</span>
+0503            <span class="keyword">if</span> flag
+0504                throw(MException(<span class="string">'pdf:DKL'</span>,<span class="string">'Given pdfs are not sampled in the same space. Cannot compute.'</span>));
+0505            <span class="keyword">end</span>
+0506            aux=pdf1.pValues;
+0507            aux(aux==0)=eps;
+0508            aux2=pdf2.pValues;
+0509            aux2(aux2==0)=eps;
+0510            v=aux.*log2(aux.*aux2);
+0511            v(aux==0);
+0512            D=pdf.fullIntegration(v,pdf1.coordinates);
+0513        <span class="keyword">end</span>
+0514        
+0515        <a name="_sub28" href="#_subfunctions" class="code">function newDist=product(pdf1,pdf2)</a>
+0516            <span class="comment">%...TO DO</span>
+0517 
+0518        <span class="keyword">end</span>
+0519        
+0520        <a name="_sub29" href="#_subfunctions" class="code">function newF=integrateWithRespectToPDF(f,pdf1)</a>
+0521            <span class="keyword">if</span> any(size(pdf1.pValues) ~= size(f))
+0522                throw(MException(<span class="string">'integrateWithRespectToPDF::InconsistentArguments'</span>,<span class="string">'Provided arguments have to be of equal sizes.'</span>))
+0523            <span class="keyword">end</span>
+0524            v=pdf1.pValues.*f;
+0525            v(pdf1.pValues==0)=0; <span class="comment">%Avoiding indeterminacies.</span>
+0526            newF=pdf.fullIntegration(v,pdf1.coordinates);
+0527        <span class="keyword">end</span>
+0528     <span class="keyword">end</span>
+0529     
+0530 <span class="keyword">end</span>
+0531</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

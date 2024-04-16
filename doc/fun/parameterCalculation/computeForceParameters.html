@@ -4,9 +4,9 @@
 <head>
   <title>Description of computeForceParameters</title>
   <meta name="keywords" content="computeForceParameters">
-  <meta name="description" content="%UNTITLED4 Summary of this function goes here">
+  <meta name="description" content="computeForceParameters -- analyzes kinetic treadmill data">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -21,78 +21,309 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>%UNTITLED4 Summary of this function goes here</strong></div>
+<div class="box"><strong>computeForceParameters -- analyzes kinetic treadmill data</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="box"><strong>function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2) </strong></div>
+<div class="box"><strong>function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> %UNTITLED4 Summary of this function goes here
- %   Detailed explanation goes here
- [GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);    
- %% COP range and symmetry
- [COP] = computeCOP(GRFDataS,GRFDataF,s,f);
-         %Mawase's way based on TO and HS
-         %COPrangeF(step)=COP(2,indFTO)-COP(2,indSHS);
-         %COPrangeS(step)=COP(2,indSTO)-COP(2,indFHS);
-         %May way based on TO and HS
- %         COPrangeF(step)=COP(2,indFTO)-COP(2,indFHS);
- %         COPrangeS(step)=COP(2,indSTO)-COP(2,indSHS);
-         %Mawase's ugly way:
-         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,max([indSHS-100,1]):indFTO));
-         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indFTO:indSTO));
-         COPsymM=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);
-         %My very nice way:
-         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,indFTO:indSTO));
-         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indSTO:indFTO2)); 
-         COPsym=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);
- 
- %% Hand holding
-         handHolding=sum(mean(abs(GRFDataH)))&gt;2;</pre></div>
+<div class="fragment"><pre class="comment"> computeForceParameters -- analyzes kinetic treadmill data
+   inital reprocessing and any reprocessing will again analyze the kinetic
+   data.  Analysis is mostly focused on the anterior-posterior forces
+   which is the focus of the (Sombric et al. 2019) and (Sombric et. al
+   2020) papers.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-</ul>
+<li><a href="ComputeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT)">ComputeLegForceParameters</a>	UNTITLED2 Summary of this function goes here</li><li><a href="DetermineTMAngle.html" class="code" title="function [ ang ] = DetermineTMAngle( trialData )">DetermineTMAngle</a>	UNTITLED This function determines what angle a trial was run at based on</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeForceParameters(GRFData,s,f,indSHS,indSTO,indFHS,indFTO,indSHS2,indFTO2)</a>
-0002 <span class="comment">% %UNTITLED4 Summary of this function goes here</span>
-0003 <span class="comment">% %   Detailed explanation goes here</span>
-0004 <span class="comment">% [GRFDataF, GRFDataS, GRFDataH] = getGRFs(GRFData,s,f);</span>
-0005 <span class="comment">% %% COP range and symmetry</span>
-0006 <span class="comment">% [COP] = computeCOP(GRFDataS,GRFDataF,s,f);</span>
-0007 <span class="comment">%         %Mawase's way based on TO and HS</span>
-0008 <span class="comment">%         %COPrangeF(step)=COP(2,indFTO)-COP(2,indSHS);</span>
-0009 <span class="comment">%         %COPrangeS(step)=COP(2,indSTO)-COP(2,indFHS);</span>
-0010 <span class="comment">%         %May way based on TO and HS</span>
-0011 <span class="comment">% %         COPrangeF(step)=COP(2,indFTO)-COP(2,indFHS);</span>
-0012 <span class="comment">% %         COPrangeS(step)=COP(2,indSTO)-COP(2,indSHS);</span>
-0013 <span class="comment">%         %Mawase's ugly way:</span>
-0014 <span class="comment">%         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,max([indSHS-100,1]):indFTO));</span>
-0015 <span class="comment">%         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indFTO:indSTO));</span>
-0016 <span class="comment">%         COPsymM=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);</span>
-0017 <span class="comment">%         %My very nice way:</span>
-0018 <span class="comment">%         COPrangeF=min(COP(2,indSHS:indFHS))-max(COP(2,indFTO:indSTO));</span>
-0019 <span class="comment">%         COPrangeS=min(COP(2,indFHS:indSHS2))-max(COP(2,indSTO:indFTO2));</span>
-0020 <span class="comment">%         COPsym=(COPrangeF-COPrangeS)/(COPrangeF+COPrangeS);</span>
-0021 <span class="comment">%</span>
-0022 <span class="comment">% %% Hand holding</span>
-0023 <span class="comment">%         handHolding=sum(mean(abs(GRFDataH)))&gt;2;</span>
-0024 
-0025 data=[];
-0026 labels={};
-0027 description={};
-0028 out=parameterSeries(data,labels,[],description); 
-0029 <span class="keyword">end</span>
-0030</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)</a>
+0002 <span class="comment">% computeForceParameters -- analyzes kinetic treadmill data</span>
+0003 <span class="comment">%   inital reprocessing and any reprocessing will again analyze the kinetic</span>
+0004 <span class="comment">%   data.  Analysis is mostly focused on the anterior-posterior forces</span>
+0005 <span class="comment">%   which is the focus of the (Sombric et al. 2019) and (Sombric et. al</span>
+0006 <span class="comment">%   2020) papers.</span>
+0007     
+0008 <span class="comment">%% Labels and descriptions:</span>
+0009 aux={<span class="string">'TMAngle'</span>,             <span class="string">'Angle I think the study was run at'</span>;<span class="keyword">...</span>
+0010     <span class="string">'WalkingDirection'</span>,     <span class="string">'Identified as a decline trial with subjects walking backwards'</span>;<span class="keyword">...</span>
+0011     <span class="string">'FyBS'</span>,                 <span class="string">'GRF-FYs average signed braking'</span>;<span class="keyword">...</span>
+0012     <span class="string">'FyPS'</span>,                 <span class="string">'GRF-FYs average signed propulsion'</span>;<span class="keyword">...</span>
+0013     <span class="string">'FyBF'</span>,                 <span class="string">'GRF-FYf average signed braking'</span>;<span class="keyword">...</span>
+0014     <span class="string">'FyPF'</span>,                 <span class="string">'GRF-FYf average signed propulsion'</span>;<span class="keyword">...</span>
+0015     <span class="string">'FyBSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry braking'</span>;<span class="keyword">...</span>
+0016     <span class="string">'FyPSym'</span>,               <span class="string">'GRF-FYs average signed Symmetry propulsion'</span>;<span class="keyword">...</span>
+0017     <span class="string">'FxS'</span>,                  <span class="string">'GRF-Fxs average force'</span>;<span class="keyword">...</span>
+0018     <span class="string">'FzS'</span>,                  <span class="string">'GRF-Fzs average force'</span>;<span class="keyword">...</span>
+0019     <span class="string">'FxF'</span>,                  <span class="string">'GRF-Fxf average force'</span>;<span class="keyword">...</span>
+0020     <span class="string">'FzF'</span>,                  <span class="string">'GRF-Fzf average force'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0021     <span class="string">'HandrailHolding'</span>,      <span class="string">'Handrail was being held onto'</span>;<span class="keyword">...</span>
+0022     <span class="string">'ImpactMagS'</span>,           <span class="string">'Max anterior-posterior impact force of the slow leg'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0023     <span class="string">'ImpactMagF'</span>,           <span class="string">'Max anterior-posterior impact force of the fast leg'</span>;<span class="keyword">...</span>
+0024     <span class="string">'FyBSmax'</span>,              <span class="string">'GRF-FYs max signed braking'</span>;<span class="keyword">...</span>
+0025     <span class="string">'FyPSmax'</span>,              <span class="string">'GRF-FYs max signed propulsion'</span>;<span class="keyword">...</span>
+0026     <span class="string">'FyBFmax'</span>,              <span class="string">'GRF-FYf max signed braking'</span>;<span class="keyword">...</span>
+0027     <span class="string">'FyPFmax'</span>,              <span class="string">'GRF-FYf max signed propulsion'</span>;<span class="keyword">...</span>
+0028     <span class="string">'FyBmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry braking (fast-slow)'</span>;<span class="keyword">...</span>
+0029     <span class="string">'FyPmaxSym'</span>,            <span class="string">'GRF-FYs max signed Symmetry propulsion (fast-slow)'</span>;<span class="keyword">...</span>
+0030     <span class="string">'FyBmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio braking (s/f)'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0031     <span class="string">'FyPmaxRatio'</span>,          <span class="string">'GRF-FYs max signed Ratio propulsion (s/f)'</span>;<span class="keyword">...</span>
+0032     <span class="string">'FyBmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio braking (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0033     <span class="string">'FyPmaxSymNorm'</span>,        <span class="string">'GRF-FYs max signed Normalized Ratio propulsion (abs(fast)-abs(slow))/(abs(fast)+abs(slow))'</span>;<span class="keyword">...</span>
+0034     <span class="string">'FyBFmaxPer'</span>,             <span class="string">'Fast max Braking Percent'</span>;<span class="keyword">...</span>
+0035     <span class="string">'FyBSmaxPer'</span>,             <span class="string">'Slow max Braking Percent'</span>;<span class="keyword">...</span>
+0036     <span class="string">'FyPFmaxPer'</span>,             <span class="string">'Fast max Propulsion Percent'</span>;<span class="keyword">...</span>
+0037     <span class="string">'FyPSmaxPer'</span>,             <span class="string">'Slow max Propulsion Percent'</span>;<span class="keyword">...</span>
+0038     <span class="string">'Slow_Ipsi_FySym'</span>,      <span class="string">'[FyBSmax+FyPSmax]'</span>;<span class="keyword">...</span>
+0039     <span class="string">'Fast_Ipsi_FySym'</span>,      <span class="string">'[FyBFmax+FyPFmax]'</span>;<span class="keyword">...</span>
+0040     <span class="string">'SlowB_Contra_FySym'</span>,   <span class="string">'[FyBSmax+FyPFmax]'</span>;<span class="keyword">...</span>
+0041     <span class="string">'FastB_Contra_FySym'</span>,   <span class="string">'[FyBFmax+FyPSmax]'</span>;<span class="keyword">...</span>
+0042     <span class="string">'FyPSsum'</span>,                <span class="string">'Summed time normalized slow propulsion force'</span>;<span class="keyword">...</span>
+0043     <span class="string">'FyPFsum'</span>,                <span class="string">'Summed time normalized fast propulsion force'</span>;<span class="keyword">...</span>
+0044     <span class="string">'FyBSsum'</span>,                <span class="string">'Summed slow braking'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0045     <span class="string">'FyBFsum'</span>,                <span class="string">'Summed Fast braking'</span>;<span class="keyword">...</span>
+0046     <span class="string">'FxSmax'</span>,               <span class="string">'GRF-Fxs max force'</span>;<span class="keyword">...</span><span class="comment"> </span>
+0047     <span class="string">'FzSmax'</span>,               <span class="string">'GRF-Fzs max force'</span>;<span class="keyword">...</span>
+0048     <span class="string">'FxFmax'</span>,               <span class="string">'GRF-Fxf max force'</span>;<span class="keyword">...</span>
+0049     <span class="string">'FzFmax'</span>,               <span class="string">'GRF-Fzf max force'</span>;<span class="keyword">...</span>
+0050     <span class="string">'FyBFmax_ABS'</span>,            <span class="string">'FyBFmax_ABS'</span>;<span class="keyword">...</span>
+0051     <span class="string">'FyBSmax_ABS'</span>,            <span class="string">'FyBSmax_ABS'</span>;<span class="keyword">...</span>
+0052     }; 
+0053  
+0054 paramLabels=aux(:,1);
+0055 description=aux(:,2);
+0056     
+0057 <span class="comment">%% Gather initial information on the trial and do a preliminary filtering of the data</span>
+0058 
+0059 <span class="comment">%Get the trial description because this has info on inclination</span>
+0060 trial=trialData.description;
+0061 
+0062 
+0063 <span class="keyword">if</span> strcmpi(trialData.type,<span class="string">'NIM'</span>) 
+0064     Normalizer=9.81*(BW+3.4); <span class="comment">%3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified</span>
+0065 <span class="keyword">else</span>
+0066     Normalizer=9.81*BW;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="comment">% Normalizer=9.81*BW;</span>
+0070 
+0071 FlipB=1; <span class="comment">%7/21/2016, nevermind, making 1 8/1/2016 -- May want to change if you want braking magnitudes</span>
+0072 
+0073 <span class="keyword">if</span> iscell(trial)
+0074     trial=trial{1};
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">% If we identify that subjects are walking decline and thus backwards.</span>
+0078 [ ang ] = <a href="DetermineTMAngle.html" class="code" title="function [ ang ] = DetermineTMAngle( trialData )">DetermineTMAngle</a>( trialData );
+0079 <span class="keyword">if</span> strfind(lower(subData.ID), <span class="string">'decline'</span>)<span class="comment">% Decline are walking backwards on the treadmill</span>
+0080     flipIT=-1;
+0081 <span class="keyword">else</span>
+0082     flipIT=1;
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">%Filter forces a bit before we get started</span>
+0086 Filtered=GRFData.lowPassFilter(20);
+0087 
+0088 <span class="comment">%~~~~~~~~~~~~~~~~ REMOVE ANY OFFSETS IN THE DATA~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0089 <span class="comment">%New 8/5/2016 CJS: It came to my attenion that one of the decline subjects</span>
+0090 <span class="comment">%(LD30) one of the force plates was not properly zeroed.  Here I am</span>
+0091 <span class="comment">%manually shifting the forces.  I am assuming that the vertical forces have</span>
+0092 <span class="comment">%been properly been shifted during the c3d2mat process, otherwise the</span>
+0093 <span class="comment">%events are wrong and these lines of code will not save you. rats</span>
+0094 
+0095 <span class="comment">%figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');</span>
+0096 <span class="keyword">for</span> i=1:length(strideEvents.tSHS)-1
+0097     timeGRF=round(Filtered.Time,6);
+0098     SHS=strideEvents.tSHS(i);
+0099     FTO=strideEvents.tFTO(i);
+0100     FHS=strideEvents.tFHS(i);
+0101     STO=strideEvents.tSTO(i);
+0102     FTO2=strideEvents.tFTO2(i);
+0103     SHS2=strideEvents.tSHS2(i);
+0104     
+0105     <span class="keyword">if</span> isnan(FTO) || isnan(FHS) ||FTO&gt;FHS
+0106         <span class="comment">%keyboard</span>
+0107         FastLegOffSetData(i)=NaN;
+0108     <span class="keyword">else</span>
+0109         FastLegOffSetData(i)=nanmedian(Filtered.split(FTO, FHS).getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data);
+0110     <span class="keyword">end</span>
+0111     <span class="keyword">if</span> isnan(STO) || isnan(SHS2)
+0112         SlowLegOffSetData(i)=NaN;
+0113     <span class="keyword">else</span>
+0114         SlowLegOffSetData(i)=nanmedian(Filtered.split(STO, SHS2).getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data);
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117 FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
+0118 SlowLegOffSet=round(nanmedian(SlowLegOffSetData), 3);
+0119 display([<span class="string">'Fast Leg Off Set: '</span> num2str(FastLegOffSet) <span class="string">', Slow Leg OffSet: '</span> num2str(SlowLegOffSet)]);
+0120 
+0121 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg <span class="string">'Fy'</span>])))=Filtered.getDataAsVector([fastleg <span class="string">'Fy'</span>])-FastLegOffSet;
+0122 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg <span class="string">'Fy'</span>])))=Filtered.getDataAsVector([slowleg <span class="string">'Fy'</span>])-SlowLegOffSet;
+0123 <span class="comment">%figure; plot(Filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])</span>
+0124 
+0125 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0126 LevelofInterest=0.5.*flipIT.*cosd(90-abs(ang)); <span class="comment">%The actual angle of the incline</span>
+0127 
+0128 <span class="comment">%Initalize data objects</span>
+0129 lenny=length(strideEvents.tSHS);
+0130 TMAngle=repmat(ang, 1, lenny);
+0131 WalkingDirection=repmat(flipIT, 1,  lenny);
+0132 FyBS=NaN.*ones(1, lenny);
+0133 FyPS=NaN.*ones(1, lenny);
+0134 FzS=NaN.*ones(1, lenny);
+0135 FxS=NaN.*ones(1, lenny);
+0136 FyBF=NaN.*ones(1, lenny);
+0137 FyPF=NaN.*ones(1, lenny);
+0138 FzF=NaN.*ones(1, lenny);
+0139 FxF=NaN.*ones(1, lenny);
+0140 HandrailHolding=NaN.*ones(1, lenny);
+0141 FyBSmax=NaN.*ones(1, lenny);
+0142 FyPSmax=NaN.*ones(1, lenny);
+0143 FzSmax=NaN.*ones(1, lenny);
+0144 FxSmax=NaN.*ones(1, lenny);
+0145 FyBFmax=NaN.*ones(1, lenny);
+0146 FyPFmax=NaN.*ones(1, lenny);
+0147 FzFmax=NaN.*ones(1, lenny);
+0148 FxFmax=NaN.*ones(1, lenny);
+0149 FxFmax=NaN.*ones(1, lenny);
+0150 FyPSsum=NaN.*ones(1, lenny);
+0151 FyPFsum=NaN.*ones(1, lenny);
+0152 FyBSsum=NaN.*ones(1, lenny);
+0153 FyBFsum=NaN.*ones(1, lenny);
+0154 FyBSmax_ABS=NaN.*ones(1, lenny);
+0155 FyBFmax_ABS=NaN.*ones(1, lenny);
+0156 ImpactMagS=NaN.*ones(1, lenny);
+0157 ImpactMagF=NaN.*ones(1, lenny);
+0158 
+0159 <span class="keyword">if</span> ~isempty(regexp(trialData.type, <span class="string">'TM'</span>)) <span class="comment">%If overground (i.e., OG) then there will not be any forces to analyze</span>
+0160     <span class="keyword">for</span> i=1:length(strideEvents.tSHS)-1
+0161         <span class="comment">%Get the entire stride of interest on BOTH sides (SHS--&gt;SHS2, and</span>
+0162         <span class="comment">%FHS--&gt; FHS2)  Also flip it if decline people</span>
+0163         timeGRF=round(GRFData.Time,6);
+0164         SHS=strideEvents.tSHS(i);
+0165         FTO=strideEvents.tFTO(i);
+0166         FHS=strideEvents.tFHS(i);
+0167         STO=strideEvents.tSTO(i);
+0168         FTO2=strideEvents.tFTO2(i);
+0169         SHS2=strideEvents.tSHS2(i);
+0170         
+0171         <span class="comment">% Get the slow step for this stride</span>
+0172         <span class="keyword">if</span> isnan(SHS) || isnan(STO)
+0173             striderS=[];
+0174         <span class="keyword">else</span> 
+0175             striderS=flipIT.*Filtered.split(SHS, STO).getDataAsTS([slowleg <span class="string">'Fy'</span>]).Data/Normalizer;
+0176         <span class="keyword">end</span>
+0177         
+0178         <span class="comment">% Get the fast step for this strides</span>
+0179         <span class="keyword">if</span> isnan(FHS) || isnan(FTO2)
+0180             striderF=[];
+0181         <span class="keyword">else</span>
+0182             striderF=flipIT.*Filtered.split(FHS, FTO2).getDataAsTS([fastleg <span class="string">'Fy'</span>]).Data/Normalizer;
+0183         <span class="keyword">end</span>
+0184         
+0185         <span class="comment">% Get the handrail data</span>
+0186         <span class="comment">%Currently not defining handrail data because data integrity is</span>
+0187         <span class="comment">%poor unless experimenter explictly collected this data.</span>
+0188         <span class="comment">%HandrailHolding(i)= NaN;</span>
+0189         
+0190         <span class="comment">%% Slow Leg --  Compute some measures of anterior-posterior forces</span>
+0191         <span class="comment">%Previously the following was part of a funciton called SeperateBP</span>
+0192         <span class="keyword">if</span> ~isempty(striderS) &amp;&amp; ~all(striderS==striderS(1)) &amp;&amp; ~isempty(FTO) &amp;&amp; ~isempty(STO) <span class="comment">% Make sure there are no problems with the GRF</span>
+0193            <span class="keyword">if</span> nanstd(striderS)&gt;0.01 &amp;&amp; nanmean(striderS)&gt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0194 
+0195                 [FyBS(i), FyBSsum(i), FyPS(i), FyPSsum(i), FyBSmax(i), FyBSmax_ABS(i),<span class="keyword">...</span>
+0196                     FyBSmaxQS(i), FyPSmax(i), FyPSmaxQS(i), ImpactMagS(i)] <span class="keyword">...</span>
+0197                     = <a href="ComputeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT)">ComputeLegForceParameters</a>(striderS,  LevelofInterest, FlipB, [<span class="string">'Epoch: '</span> trialData.name, <span class="string">'; Stide#:'</span> num2str(i) <span class="string">'; SlowLeg'</span>]);
+0198            <span class="keyword">end</span>
+0199             
+0200             <span class="comment">% Compute some measures of the vertical and medial-lateral forces</span>
+0201             FzS(i)=-1*nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data)/Normalizer;
+0202             FxS(i)=nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data)/Normalizer;
+0203             FzSmax(i)=-1*nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg <span class="string">'Fz'</span>]).Data)/Normalizer;
+0204             FxSmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg <span class="string">'Fx'</span>]).Data)/Normalizer;
+0205         <span class="keyword">end</span>
+0206         
+0207 
+0208         <span class="comment">%% Fast Leg -- Compute some measures of anterior-posterior forces</span>
+0209         <span class="keyword">if</span> ~isempty(striderF) &amp;&amp; ~all(striderF==striderF(1)) &amp;&amp; ~isempty(FTO) &amp;&amp; ~isempty(STO)
+0210              <span class="keyword">if</span> nanstd(striderF)&gt;0.01 || nanmean(striderF)&gt;0.01 <span class="comment">%This is to get rid of places where there is only noise and no data</span>
+0211                 [FyBF(i), FyBFsum(i), FyPF(i), FyPFsum(i), FyBFmax(i), FyBFmax_ABS(i),<span class="keyword">...</span>
+0212                     FyBFmaxQS(i), FyPFmax(i),  FyPFmaxQS(i), ImpactMagF(i)] <span class="keyword">...</span>
+0213                     = <a href="ComputeLegForceParameters.html" class="code" title="function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT)">ComputeLegForceParameters</a>(striderF,  LevelofInterest, FlipB, [<span class="string">'Epoch: '</span> trialData.name, <span class="string">'; Stide#:'</span> num2str(i) <span class="string">'; FastLeg'</span>]);
+0214              <span class="keyword">end</span>
+0215             
+0216             <span class="comment">% Compute some measures of the vertical and medial-lateral forces</span>
+0217             FzF(i)=-1*nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data)/Normalizer;
+0218             FxF(i)=nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data)/Normalizer;
+0219             FzFmax(i)=-1*nanmin(Filtered.split(FHS, FTO2).getDataAsTS([fastleg <span class="string">'Fz'</span>]).Data)/Normalizer;
+0220             FxFmax(i)=nanmax(Filtered.split(FHS, FTO2).getDataAsTS([fastleg <span class="string">'Fx'</span>]).Data)/Normalizer;
+0221         <span class="keyword">end</span>
+0222     <span class="keyword">end</span>
+0223 <span class="keyword">end</span>
+0224 
+0225 <span class="comment">%% Kinetic Symmetry Measures</span>
+0226 FyBSym=FyBF-FyBS;
+0227 FyPSym=FyPF-FyPS;
+0228 FyBmaxSym=FyBFmax-FyBSmax;
+0229 FyPmaxSym=FyPFmax-FyPSmax;
+0230 FyBmaxRatio= FyBSmax./FyBFmax;
+0231 FyPmaxRatio=FyPSmax./FyPFmax;
+0232 FyBmaxSymNorm=(abs(FyBFmax)-abs(FyBSmax))./(abs(FyBFmax)+abs(FyBSmax));
+0233 FyPmaxSymNorm=(abs(FyPFmax)-abs(FyPSmax))./(abs(FyPFmax)+abs(FyPSmax));
+0234 FyBFmaxPer=(abs(FyBFmax))./(abs(FyBFmax)+abs(FyBSmax));
+0235 FyBSmaxPer=(abs(FyBSmax))./(abs(FyBFmax)+abs(FyBSmax));
+0236 FyPFmaxPer=(abs(FyPFmax))./(abs(FyPFmax)+abs(FyPSmax));
+0237 FyPSmaxPer=(abs(FyPSmax))./(abs(FyPFmax)+abs(FyPSmax));
+0238 Slow_Ipsi_FySym=FyBSmax+FyPSmax;
+0239 Fast_Ipsi_FySym=FyBFmax+FyPFmax;
+0240 SlowB_Contra_FySym=FyBSmax+FyPFmax;
+0241 FastB_Contra_FySym= FyBFmax+FyPSmax;
+0242 
+0243 <span class="comment">%% COM and COP -- Not robust enough for general code</span>
+0244 <span class="comment">%%COM:</span>
+0245 <span class="comment">%if ~isempty(markerData.getLabelsThatMatch('HAT'))</span>
+0246 <span class="comment">%    [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT, FyPSat );</span>
+0247 <span class="comment">% else</span>
+0248 outCOM.Data=[];
+0249 outCOM.labels=[];
+0250 outCOM.description=[];
+0251 <span class="comment">% end</span>
+0252 
+0253 <span class="comment">%%COP: not ready for real life</span>
+0254 <span class="comment">% if ~isempty(markerData.getLabelsThatMatch('LCOP'))</span>
+0255 <span class="comment">%     [outCOP] = computeCOPParams( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents );</span>
+0256 <span class="comment">% else</span>
+0257 outCOP.Data=[];
+0258 outCOP.labels=[];
+0259 outCOP.description=[];
+0260 <span class="comment">% end</span>
+0261 
+0262 <span class="comment">% if isempty(markerData.getLabelsThatMatch('Hat'))</span>
+0263 <span class="comment">%     labels=[labels outCOM.labels outCOP.labels];</span>
+0264 <span class="comment">%     description=[description outCOM.description outCOP.description];</span>
+0265 <span class="comment">% end</span>
+0266 
+0267 <span class="comment">%% Assign parameters to data matrix</span>
+0268 data=nan(lenny,length(paramLabels));
+0269 <span class="keyword">for</span> i=1:length(paramLabels)
+0270     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
+0271 <span class="keyword">end</span>
+0272 
+0273 <span class="comment">%% Create parameterSeries</span>
+0274 out=parameterSeries(data,paramLabels,[],description);        
+0275 
+0276 
+0277 <span class="keyword">end</span>
+0278</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

@@ -6,7 +6,7 @@
   <meta name="keywords" content="bin_dataV1">
   <meta name="description" content="writen based on bin_data">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -51,14 +51,14 @@ This function is called by:
 0004 <span class="comment">% binwidth indicates the duration of each time bin</span>
 0005 <span class="comment">%writen by GTO April 14th 2009</span>
 0006 
-0007 <span class="keyword">if</span> ~isempty(x)
+0007 <span class="keyword">if</span> size(x,1)&gt;=binwidth
 0008     <span class="keyword">if</span> binwidth==1
 0009         xnew=x;
 0010         xnewstd=zeros(size(x,1),size(x,2));
 0011     <span class="keyword">else</span>
-0012         bstart=[1:size(x,1)-(binwidth-1)];
-0013         bend=[bstart+binwidth-1];
-0014         bend(find(bend&gt;size(x,1)))=size(x,1);
+0012         bstart=[1:size(x,1)-(binwidth-1)]; <span class="comment">%First value to be considered,</span>
+0013         bend=[bstart+binwidth-1]; <span class="comment">%Last value to be considered in the window for each element</span>
+0014         bend((bend&gt;size(x,1)))=size(x,1); <span class="comment">%This should do nothing. Changed to logical indexing 9/16/16. Pablo</span>
 0015 
 0016         <span class="keyword">for</span>  l=1:length(bstart)
 0017             t1 = bstart(l);
@@ -76,10 +76,20 @@ This function is called by:
 0029             <span class="keyword">end</span>
 0030         <span class="keyword">end</span>
 0031     <span class="keyword">end</span>
-0032 <span class="keyword">else</span>
-0033     xnew=[];
-0034     xnewstd=[];
-0035 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0032 <span class="keyword">else</span> <span class="comment">%Averaging how ever many strides we have even if it is very few</span>
+0033     warning([<span class="string">'Running average could not use the provided binwidth ('</span> num2str(binwidth) <span class="string">') because of too little strides ('</span> num2str(size(x,1)) <span class="string">'). Using available strides only.'</span>])
+0034     xnew=nanmean(x);
+0035     xnewstd=nanstd(x);
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">%Alt function:</span>
+0039 <span class="comment">%Computes running average along the first dimension of x, but doesn't deal</span>
+0040 <span class="comment">%with NaNs</span>
+0041 <span class="comment">%if size(x,1)&gt;=binwidth %We can do it!</span>
+0042 <span class="comment">%   N=binwidth;</span>
+0043 <span class="comment">%   xnew=conv2(x,ones(N,1)/N,'valid');</span>
+0044 <span class="comment">%   xnewstd=conv2(x.^2,ones(N,1)/N,'valid') -xnew.^2;</span>
+0045 <span class="comment">%end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

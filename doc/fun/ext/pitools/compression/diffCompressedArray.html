@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of diffCompressedArray</title>
+  <meta name="keywords" content="diffCompressedArray">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">compression</a> &gt; diffCompressedArray.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/compression&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>diffCompressedArray
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="compressedArray.html" class="code" title="">compressedArray</a>	</li><li><a href="diffCompressedArray.html" class="code" title="">diffCompressedArray</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="diffCompressedArray.html" class="code" title="">diffCompressedArray</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=diffCompressedArray(compressedData,originalSize,compressionDim,codeTable)</a></li><li><a href="#_sub2" class="code">function array=decompress(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="diffCompressedArray.html" class="code" title="">diffCompressedArray</a> &lt;  <a href="compressedArray.html" class="code" title="">compressedArray</a>
+0002     <span class="comment">%subclass of compressedArray. Compression is done first by computing</span>
+0003     <span class="comment">%the diff of the array along one of its dimensions. The first slice</span>
+0004     <span class="comment">%along that dimension is stored as-is, and for the following slices the</span>
+0005     <span class="comment">%data is compressed according to simpleCodedArray.</span>
+0006     
+0007     <span class="comment">%In the future could implement storing more than just the first slice</span>
+0008     <span class="comment">%as is, to minimize computation time if the matrix is to be restored</span>
+0009     <span class="comment">%only partially.</span>
+0010     <span class="comment">%Because of the diff, there is a double exponential default codeTable.</span>
+0011     
+0012     properties
+0013     <span class="keyword">end</span>
+0014     properties(Constant)
+0015         compressionMethod=<span class="string">'diff'</span>;
+0016     <span class="keyword">end</span>
+0017     properties(Hidden)
+0018         codeTable
+0019         compressionDim
+0020     <span class="keyword">end</span>
+0021         
+0022     
+0023     methods
+0024         <a name="_sub0" href="#_subfunctions" class="code">function this=diffCompressedArray(compressedData,originalSize,compressionDim,codeTable)</a>
+0025            this@<a href="compressedArray.html" class="code" title="">compressedArray</a>(compressedData,originalSize,<span class="string">'diff'</span>);
+0026            this.compressionDim=compressionDim;
+0027            this.codeTable=codeTable; <span class="comment">%Needs to be an empty array in the case that the default code table is used (default: first bit is sign, [magnitude-1] (needs to be integer) is stored in # of trailing 1's, 0 is closing bit.</span>
+0028         <span class="keyword">end</span>
+0029         
+0030         <a name="_sub1" href="#_subfunctions" class="code">function array=decompress(this)</a>
+0031             permutedSize=[this.originalSize(this.compressionDim) this.originalSize([[1:this.compressionDim-1],[this.compressionDim+1:length(this.originalSize)]])];
+0032             array=zeros(permutedSize);
+0033             array(1,:)=this.compressedData(1,:);
+0034             <span class="keyword">if</span> isempty(this.codeTable)
+0035                 <span class="keyword">for</span> i=2:permutedSize(1)
+0036                    array(i,:)=array(i-1,:)+<span class="keyword">...</span><span class="comment"> </span>
+0037                 <span class="keyword">end</span>
+0038             <span class="keyword">else</span>
+0039                 
+0040             <span class="keyword">end</span>
+0041             
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044     
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

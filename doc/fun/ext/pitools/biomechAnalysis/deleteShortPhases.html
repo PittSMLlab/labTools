@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of deleteShortPhases</title>
+  <meta name="keywords" content="deleteShortPhases">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">biomechAnalysis</a> &gt; deleteShortPhases.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/biomechAnalysis&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>deleteShortPhases
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [stance] = deleteShortPhases(stance,fsample,minDuration) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="getStanceFromForces.html" class="code" title="function [stance] = getStanceFromForces(Fz, threshold, fsample)">getStanceFromForces</a>	Get stance from acceleration</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [stance] = deleteShortPhases(stance,fsample,minDuration)</a>
+0002 
+0003 N=ceil(minDuration*fsample);
+0004 
+0005 <span class="comment">%%Dilate stance, and erode</span>
+0006 <span class="comment">%dilStance=conv(double(stance),ones(N,1),'same')&gt;0;</span>
+0007 <span class="comment">%eroStance=conv(double(dilStance),ones(N,1),'same')&gt;=N;</span>
+0008 
+0009 <span class="comment">%Dilate swing, and erode</span>
+0010 <span class="comment">%dilSwing=conv(double(~eroStance),ones(N,1),'same')&gt;0;</span>
+0011 <span class="comment">%eroSwing=conv(double(dilSwing),ones(N,1),'same')&gt;=N;</span>
+0012 
+0013 <span class="comment">%stance=~eroSwing;</span>
+0014 
+0015 <span class="keyword">for</span> i=1:N
+0016     stance=conv(double(stance),ones(2*i+1,1),<span class="string">'same'</span>)&gt;i;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

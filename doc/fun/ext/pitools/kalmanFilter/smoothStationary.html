@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of smoothStationary</title>
+  <meta name="keywords" content="smoothStationary">
+  <meta name="description" content="Init missing params:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">kalmanFilter</a> &gt; smoothStationary.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/kalmanFilter&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>smoothStationary
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Init missing params:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [Xs,Ps,X,P,Xp,Pp,rejSamples]=smoothStationary(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag,constFun) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Init missing params:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="filterStationary.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary(Y,A,C,Q,R,x0,P0,B,D,U,outlierRejection)">filterStationary</a>	filterStationary implements a Kalman filter assuming</li><li><a href="filterStationary_wConstraint.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary_wConstraint(Y,A,C,Q,R,x0,P0,B,D,U,constFun)">filterStationary_wConstraint</a>	Same as filterStationary but allowing for a generic constraint model for the states.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="mainTestConstraints.html" class="code" title="">mainTestConstraints</a>	% Generate data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Xs,Ps,X,P,Xp,Pp,rejSamples]=smoothStationary(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag,constFun)</a>
+0002 
+0003   <span class="comment">%Init missing params:</span>
+0004   <span class="keyword">if</span> nargin&lt;6 || isempty(x0)
+0005     x0=zeros(size(A,1),1); <span class="comment">%Column vector</span>
+0006   <span class="keyword">end</span>
+0007   <span class="keyword">if</span> nargin&lt;7 || isempty(P0)
+0008     P0=1e8 * eye(size(A));
+0009   <span class="keyword">end</span>
+0010   <span class="keyword">if</span> nargin&lt;8 || isempty(B)
+0011     B=0;
+0012   <span class="keyword">end</span>
+0013   <span class="keyword">if</span> nargin&lt;9 || isempty(D)
+0014     D=0;
+0015   <span class="keyword">end</span>
+0016   <span class="keyword">if</span> nargin&lt;10 || isempty(U)
+0017      U=zeros(1,size(X,2)); 
+0018   <span class="keyword">end</span>
+0019   <span class="keyword">if</span> nargin&lt;11 || isempty(outRejFlag)
+0020       outRejFlag=0;
+0021   <span class="keyword">end</span>
+0022   <span class="keyword">if</span> nargin&lt;12 || isempty(constFun)
+0023       constFunFlag=0;
+0024   <span class="keyword">else</span>
+0025       constFunFlag=1;
+0026   <span class="keyword">end</span>
+0027 
+0028   <span class="comment">%Size checks:</span>
+0029   <span class="comment">%TODO</span>
+0030 
+0031 <span class="comment">%Step 1: forward filter</span>
+0032 <span class="keyword">if</span> constFunFlag==0
+0033     [X,P,Xp,Pp,rejSamples]=<a href="filterStationary.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary(Y,A,C,Q,R,x0,P0,B,D,U,outlierRejection)">filterStationary</a>(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag);
+0034 <span class="keyword">else</span>
+0035     [X,P,Xp,Pp,rejSamples]=<a href="filterStationary_wConstraint.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary_wConstraint(Y,A,C,Q,R,x0,P0,B,D,U,constFun)">filterStationary_wConstraint</a>(Y,A,C,Q,R,x0,P0,B,D,U,constFun);  
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">%Step 2: backward pass:</span>
+0039 Xs=X;
+0040 Ps=P;
+0041 prevXs=X(:,end);
+0042 prevPs=P(:,:,end);
+0043 S=pinv(Q)*A;
+0044 
+0045 <span class="keyword">for</span> i=(size(Y,2)-1):-1:1
+0046   H= pinv(P(:,:,i)) + A'*S;
+0047   invH=pinv(H);
+0048   newK=invH*S';
+0049   <span class="comment">%Equivalent tp:</span>
+0050   <span class="comment">%newK=P(:,:,i)*A'/Pp(:,:,i+1);</span>
+0051   prevXs=X(:,i) + newK*(prevXs-A*X(:,i));
+0052   Xs(:,i)=prevXs;
+0053   prevPs=invH + newK*pinv(prevPs)*newK';
+0054   Ps(:,:,i)=prevPs;
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

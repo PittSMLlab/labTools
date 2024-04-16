@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPerceptualEventsFromCues</title>
+  <meta name="keywords" content="getPerceptualEventsFromCues">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">eventExtraction</a> &gt; getPerceptualEventsFromCues.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/eventExtraction&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getPerceptualEventsFromCues
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) </a>
+0002  
+0003 startCue = datlog.audioCues.start;
+0004 stopCue = datlog.audioCues.stop;
+0005 
+0006 <span class="comment">%% Compare the start and stop cue times to the events data to match the start and stop of perceptual trial</span>
+0007 LHSstartCue = zeros(length(infoLHSevent),1); 
+0008 RHSstartCue = zeros(length(infoRHSevent),1); 
+0009 LHSstopCue = zeros(length(infoLHSevent),1); 
+0010 RHSstopCue = zeros(length(infoRHSevent),1); 
+0011 
+0012     <span class="keyword">for</span> t=1:length(startCue)
+0013     
+0014         [~,LidxI]=min(abs(infoLHSevent - startCue(t)));
+0015         [~,LidxF]=min(abs(infoLHSevent - stopCue(t)));
+0016         LHSstartCue(LidxI) = infoLHSevent(LidxI);
+0017         LHSstopCue(LidxF) = infoLHSevent(LidxF);
+0018     
+0019         [~,RidxI]=min(abs(infoRHSevent - startCue(t)));
+0020         [~,RidxF]=min(abs(infoRHSevent - stopCue(t)));
+0021         RHSstartCue(RidxI) =  infoRHSevent(RidxI);
+0022         RHSstopCue(RidxF) = infoRHSevent(RidxF);
+0023     
+0024     <span class="keyword">end</span>
+0025 
+0026 <span class="keyword">end</span>
+0027</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

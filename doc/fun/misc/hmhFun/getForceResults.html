@@ -1,0 +1,554 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getForceResults</title>
+  <meta name="keywords" content="getForceResults">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getForceResults.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getForceResults
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function results = getForceResults( SMatrix,params,groups,maxPerturb,plotFlag,indivFlag, removeBias ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here
+ define number of points to use for calculating values</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getForceResults( SMatrix,params,groups,maxPerturb,plotFlag,indivFlag, removeBias )</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 <span class="comment">% define number of points to use for calculating values</span>
+0005 catchNumPts = 3; <span class="comment">%catch</span>
+0006 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0007 transientNumPts = 5; <span class="comment">%OG and Washout</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0010     groups=fields(SMatrix);  <span class="comment">%default</span>
+0011 <span class="keyword">end</span>
+0012 ngroups=length(groups);
+0013 
+0014 <span class="comment">% Initialize values to calculate</span>
+0015 results.DelFAdapt.avg=[];
+0016 results.DelFAdapt.se=[];
+0017 
+0018 results.DelFDeAdapt.avg=[];
+0019 results.DelFDeAdapt.se=[];
+0020 
+0021 results.TMSteady.avg=[];
+0022 results.TMSteady.se=[];
+0023 
+0024 results.TMafter.avg=[];
+0025 results.TMafter.se=[];
+0026 
+0027 results.TMSteadyWBias.avg=[];
+0028 results.TMSteadyWBias.se=[];
+0029 
+0030 results.TMafterWBias.avg=[];
+0031 results.TMafterWBias.se=[];
+0032 
+0033 results.SlowBase.avg=[];
+0034 results.SlowBase.se=[];
+0035 
+0036 results.FastBase.avg=[];
+0037 results.FastBase.se=[];
+0038 
+0039 results.MidBase.avg=[];
+0040 results.MidBase.se=[];
+0041 
+0042 results.BaseAdapDiscont.avg=[];
+0043 results.BaseAdapDiscont.se=[];
+0044 
+0045 results.BasePADiscont.avg=[];
+0046 results.BasePADiscont.se=[];
+0047 
+0048 results.SpeedAdapDiscont.avg=[];
+0049 results.SpeedAdapDiscont.se=[];
+0050 
+0051 results.SpeedSSDiscont.avg=[];
+0052 results.SpeedSSDiscont.se=[];
+0053 
+0054 results.SpeedPADiscont.avg=[];
+0055 results.SpeedPADiscont.se=[];
+0056 
+0057 results.EarlyA.avg=[];
+0058 results.EarlyA.se=[];
+0059 
+0060 results.LateP.avg=[];
+0061 results.LateP.se=[];
+0062 
+0063 results.Washout2.avg=[];
+0064 results.Washout2.se=[];
+0065 
+0066 results.FlatWash.avg=[];
+0067 results.FlatWash.se=[];
+0068 
+0069 results.PLearn.avg=[];
+0070 results.PLearn.se=[];
+0071 
+0072 results.lenA.avg=[];
+0073 results.lenA.se=[];
+0074 
+0075 <span class="keyword">for</span> g=1:ngroups
+0076     
+0077     <span class="comment">% get subjects in group</span>
+0078     subjects=SMatrix.(groups{g}).ID;
+0079     
+0080     DelFAdapt=[];
+0081     DelFDeAdapt=[];
+0082     FBase=[];
+0083     SBase=[];
+0084     MBase=[];
+0085     TMSteady=[];
+0086     tmafter=[];
+0087     BaseAdapDiscont=[];
+0088     BasePADiscont=[];
+0089     TMSteadyWBias=[];
+0090     tmafterWBias=[];
+0091     SpeedAdapDiscont=[];
+0092     SpeedPADiscont=[];
+0093     EarlyA=[];
+0094     LateP=[];
+0095     washout2=[];
+0096     FlatWash=[];
+0097     plearn=[];
+0098     lenA=[];
+0099     SpeedSSDiscont=[];
+0100     <span class="keyword">for</span> s=1:length(subjects)
+0101         <span class="comment">% load subject</span>
+0102         adaptData=SMatrix.(groups{g}).adaptData{s};
+0103         
+0104         <span class="comment">% remove baseline bias</span>
+0105         adaptData=adaptData.removeBadStrides;
+0106                 <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0107 <span class="comment">% %         if  ~exist('removeBias') || removeBias==1</span>
+0108 <span class="comment">% %             adaptData=adaptData.removeBiasV3;</span>
+0109 <span class="comment">% %         end</span>
+0110         nSubs=length(subjects);
+0111         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0112         
+0113         <span class="comment">%%Calculate Params</span>
+0114         <span class="comment">%Paramerters with the BIAS included~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0115         AANamesWBias=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 1, <span class="string">'first'</span>));
+0116         ADataWBias=adaptData.getParamInCond(params, AANamesWBias);
+0117         
+0118      
+0119         
+0120         <span class="keyword">if</span> strcmp(groups(g), <span class="string">'InclineStroke'</span>)
+0121             EarlyPANamesWBias=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'catch'</span>)))));
+0122             LatePANamesWBias=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'TM base'</span>)))));
+0123             PDataEarlyWBias=adaptData.getParamInCond(params,EarlyPANamesWBias);
+0124             PDataLateWBias=adaptData.getParamInCond(params,LatePANamesWBias);
+0125         <span class="keyword">else</span>
+0126             PANamesWBias=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 1, <span class="string">'first'</span>)+1);
+0127             <span class="keyword">if</span> strcmp(PANamesWBias, <span class="string">'catch'</span>)
+0128                 PANamesWBias=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 2, <span class="string">'first'</span>)+1);
+0129             <span class="keyword">end</span>
+0130             PDataWBias=adaptData.getParamInCond(params,PANamesWBias);
+0131         <span class="keyword">end</span>
+0132 <span class="comment">% %         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0133 <span class="comment">%         if  ~exist('removeBias') || removeBias==1</span>
+0134 <span class="comment">%             adaptData=adaptData.removeBiasV3;</span>
+0135 <span class="comment">%         end</span>
+0136 <span class="comment">%         nSubs=length(subjects);</span>
+0137 <span class="comment">%         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0138         
+0139         <span class="keyword">if</span> isempty(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'fast'</span>)))))
+0140             FBaseData=NaN*ones(1,length(params));
+0141         <span class="keyword">else</span>
+0142             FBaseData=adaptData.getParamInCond(params,<span class="string">'fast'</span>);
+0143         <span class="keyword">end</span>
+0144         
+0145         <span class="keyword">if</span> isempty(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'slow'</span>)))))
+0146             SBaseData=NaN*ones(1,length(params));
+0147         <span class="keyword">else</span>
+0148             SBaseData=adaptData.getParamInCond(params,<span class="string">'slow'</span>);
+0149         <span class="keyword">end</span>
+0150         
+0151         <span class="keyword">if</span> isempty(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'tm base'</span>)))))
+0152             MBaseData=NaN*ones(1,length(params));
+0153         <span class="keyword">else</span>
+0154             MBaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
+0155         <span class="keyword">end</span>
+0156         
+0157         
+0158 <span class="comment">% % %         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0159         <span class="keyword">if</span>  ~exist(<span class="string">'removeBias'</span>) || removeBias==1
+0160             adaptData=adaptData.removeBiasV3;
+0161         <span class="keyword">end</span>
+0162         nSubs=length(subjects);
+0163 <span class="comment">% % %</span>
+0164 <span class="comment">% % %         %%Calculate Params</span>
+0165         
+0166         <span class="comment">%Adaptation Paramerters~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0167         AANames=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 1, <span class="string">'first'</span>));
+0168         AData=adaptData.getParamInCond(params, AANames);
+0169         EarlyA=[EarlyA; nanmean(AData(1:20,:))];<span class="comment">%New WAY</span>
+0170         <span class="comment">%EarlyA=[EarlyA; nanmean(AData(1:5,:))];%NORMAL WAY</span>
+0171         <span class="comment">%tempTT=adaptData.getParamInCond(params,'TM base');</span>
+0172 lenA=[lenA; length(AData).*ones(1, length(params))];
+0173         <span class="comment">%          %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0174 <span class="comment">%         EarlyAtemp=[]; %New and probably temporary!</span>
+0175 <span class="comment">%         figure</span>
+0176 <span class="comment">%         for cat=1:length(params)</span>
+0177 <span class="comment">%             MedData=medfilt1(AData(:, cat), 10);</span>
+0178 <span class="comment">%             if strcmp(params(cat), 'FyBF')==1 || (strcmp(params(cat), 'FyPS')==1 &amp;&amp; strcmp(groups{g}, 'DeclineYoungAbrupt')==1) || (strcmp(params(cat), 'FyPS')==1 &amp;&amp; strcmp(groups{g}, 'FlatYoungAbrupt')==1)</span>
+0179 <span class="comment">% %                 subplot(2, 2, cat);</span>
+0180 <span class="comment">% %                 line([0 700],[nanmean(AData((end-5)-steadyNumPts+1:(end-5),cat)) nanmean(AData((end-5)-steadyNumPts+1:(end-5),cat))], 'Color', 'g', 'LineWidth', 5); hold on;</span>
+0181 <span class="comment">% %                 plot(AData(:, cat), '.k');</span>
+0182 <span class="comment">% %                 plot(MedData, 'r');</span>
+0183 <span class="comment">%                 EarlyAtemp=[EarlyAtemp max(MedData(5:100))];</span>
+0184 <span class="comment">% %                 line([0 700],[max(MedData(5:100)) max(MedData(5:100))],'Color', 'b');</span>
+0185 <span class="comment">% %                 line([0 700],[nanmean(AData(1:20,cat)) nanmean(AData(1:20,cat))],'Color', 'k', 'LineStyle',':');</span>
+0186 <span class="comment">% %                 title([subjects{s} params(cat) 'maxed'])</span>
+0187 <span class="comment">% %                 legend({'SS', 'Raw', 'Median filtered', 'Early', 'old Early'})</span>
+0188 <span class="comment">%             elseif strcmp(params(cat), 'FyBS')==1  || strcmp(params(cat), 'FyPF')==1 || (strcmp(params(cat), 'FyPS')==1 &amp;&amp; strcmp(groups{g}, 'InclineYoungAbrupt')==1)</span>
+0189 <span class="comment">% %                 subplot(2, 2, cat);line([0 700],[nanmean(AData((end-5)-steadyNumPts+1:(end-5),cat)) nanmean(AData((end-5)-steadyNumPts+1:(end-5),cat))], 'Color', 'g', 'LineWidth', 5); hold on;</span>
+0190 <span class="comment">% %                 plot(AData(:, cat), '.k');</span>
+0191 <span class="comment">% %                 plot(MedData, 'r');</span>
+0192 <span class="comment">%                 EarlyAtemp=[EarlyAtemp min(MedData(5:100))];</span>
+0193 <span class="comment">% %                 line([0 700],[min(MedData(5:100)) min(MedData(5:100))],'Color', 'b');</span>
+0194 <span class="comment">% %                 line([0 700],[nanmean(AData(1:20,cat)) nanmean(AData(1:20,cat))],'Color', 'k', 'LineStyle',':');</span>
+0195 <span class="comment">% %                 title([subjects{s} params(cat) 'mined'])</span>
+0196 <span class="comment">%             end</span>
+0197 <span class="comment">%</span>
+0198 <span class="comment">%             clear MedData</span>
+0199 <span class="comment">%         end</span>
+0200 <span class="comment">%         EarlyA=[EarlyA; EarlyAtemp];</span>
+0201 <span class="comment">%         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0202 <span class="comment">%          %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0203 <span class="comment">%         EarlyAtemp=[]; %New and probably temporary!</span>
+0204 <span class="comment">%         for cat=1:length(params)</span>
+0205 <span class="comment">%             EarlyAtemp=[EarlyAtemp smoothedMin(abs(AData(1:50, cat)),transientNumPts )];%NOT REALLY SURE IF THIS SHOULD ALWAYS BE MIN</span>
+0206 <span class="comment">%         end</span>
+0207 <span class="comment">%         EarlyA=[EarlyA; EarlyAtemp];</span>
+0208 <span class="comment">%         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0209         <span class="comment">%AData=adaptData.getParamInCond(params,'adaptation');</span>
+0210         <span class="comment">%DelFAdapt=[DelFAdapt; nanmean(AData((end-5)-steadyNumPts+1:(end-5),:))-nanmean(AData(6:6+transientNumPts,:))];</span>
+0211         <span class="comment">%DelFAdapt=[DelFAdapt; nanmean(AData(end-44:end-5, :))-nanmean(AData(1:5,:))];%OLD</span>
+0212         <span class="comment">%DelFAdapt=[DelFAdapt; nanmean(AData(end-44:end-5, :))-EarlyA(s, :)];%NEW</span>
+0213         <span class="comment">%TMSteady=[TMSteady; nanmean(AData(end-44:end-5, :))];%OROGNOAL</span>
+0214         
+0215         TMSteady=[TMSteady; nanmean(AData((end-5)-steadyNumPts+1:(end-5),:))];
+0216         <span class="comment">%DelFAdapt=[DelFAdapt; nanmean(AData((end-5)-steadyNumPts+1:(end-5),:))-EarlyA(s, :)];%NEW</span>
+0217         DelFAdapt=[DelFAdapt; TMSteady(s, :)-EarlyA(s, :)];<span class="comment">%NEW</span>
+0218         TMSteadyWBias=[TMSteadyWBias; nanmean(ADataWBias(end-44:end-5, :))];
+0219        
+0220 
+0221         
+0222         <span class="comment">%Post-Adaptation Paramerters~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0223         <span class="keyword">if</span> strcmp(groups(g), <span class="string">'InclineStroke'</span>)
+0224             EarlyPANames=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'catch'</span>)))));
+0225             LatePANames=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'TM base'</span>)))));
+0226             <span class="comment">%CJS --&gt; Where I ought to code transfer if I want to look at</span>
+0227             <span class="comment">%this...</span>
+0228             PDataEarly=adaptData.getParamInCond(params,EarlyPANames);
+0229             PDataLate=adaptData.getParamInCond(params,LatePANames);
+0230             DelFDeAdapt=[DelFDeAdapt; nanmean(PDataLate(end-44:end-5, :))-nanmean(PDataEarly(1:5,:))];
+0231             <span class="comment">%DelFDeAdapt=[DelFDeAdapt; nanmean(PDataLate(end-44:end-5, :))-nanmean(PDataEarly(1:20,:))];</span>
+0232 <span class="comment">% %             DelFDeAdapt=[DelFDeAdapt; nanmean(PDataLate(6:end-4, :))-nanmean(PDataEarly(1:5,:))];</span>
+0233 <span class="comment">% %             %DelFDeAdapt=[DelFDeAdapt; nanmean(PDataLate(6:end-4, :))-nanmean(PDataEarly(1:20,:))];</span>
+0234         <span class="keyword">else</span>
+0235             PANames=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 1, <span class="string">'first'</span>)+1);
+0236             <span class="keyword">if</span> strcmp(PANames, <span class="string">'catch'</span>)
+0237                 PANames=adaptData.metaData.conditionName(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), <span class="string">'ada'</span>))), 2, <span class="string">'first'</span>)+1);
+0238             <span class="keyword">end</span>
+0239             PData=adaptData.getParamInCond(params,PANames);
+0240             <span class="comment">%PData=adaptData.getParamInCond(params,'TM post');</span>
+0241             DelFDeAdapt=[DelFDeAdapt; nanmean(PData(end-44:end-5, :))-nanmean(PData(1:5,:))];
+0242             <span class="comment">%DelFDeAdapt=[DelFDeAdapt; nanmean(PData(end-44:end-5, :))-nanmean(PData(1:20,:))];</span>
+0243         <span class="keyword">end</span>
+0244         tmafter=[tmafter; nanmean(PData(1:5, :))];<span class="comment">%NORMAL WAY</span>
+0245 <span class="comment">% %         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0246 <span class="comment">%         tmaftertemp=[]; %New and probably temporary!</span>
+0247 <span class="comment">%         for cat=1:length(params)</span>
+0248 <span class="comment">%             tmaftertemp=[tmaftertemp smoothedMax(abs(PData(1:50, cat)),transientNumPts )];</span>
+0249 <span class="comment">%         end</span>
+0250 <span class="comment">%         tmafter=[tmafter; tmaftertemp];</span>
+0251 <span class="comment">% %         %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0252         tmafterWBias=[tmafterWBias; nanmean(PDataWBias(1:5, :))];
+0253         LateP=[LateP; nanmean(PData(end-44:end-5, :))];
+0254         
+0255         
+0256          
+0257          
+0258          <span class="comment">%If inclince decline then flat post -- NEw</span>
+0259          <span class="keyword">if</span> ~isempty(find(cellfun(@(x) ~isempty(x),(regexp(lower(adaptData.metaData.conditionName), lower(<span class="string">'flat post'</span>))))))
+0260              FlatWashoutData=adaptData.getParamInCond(params,<span class="string">'flat post'</span>);
+0261              FlatWash=[FlatWash; nanmean(FlatWashoutData(1:transientNumPts,:))];
+0262          <span class="keyword">else</span>
+0263              FlatWash=[FlatWash; NaN.*ones(1, length(params))];
+0264          <span class="keyword">end</span>
+0265          
+0266          <span class="comment">%Baseline Adaptation Paramerters~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0267         
+0268         FBase=[FBase; nanmean(FBaseData(6:end-4, :))];
+0269         SBase=[SBase; nanmean(SBaseData(6:end-4, :))];
+0270         MBase=[MBase; nanmean(MBaseData(6:end-4, :))];
+0271 <span class="comment">% %         FBase=[FBase; nanmean(FBaseData((end-5)-steadyNumPts+1:(end-5), :))];</span>
+0272 <span class="comment">% %         SBase=[SBase; nanmean(SBaseData((end-5)-steadyNumPts+1:(end-5), :))];</span>
+0273 <span class="comment">% %         MBase=[MBase; nanmean(MBaseData((end-5)-steadyNumPts+1:(end-5), :))];</span>
+0274         
+0275         
+0276         BaseAdapDiscont=[BaseAdapDiscont; nanmean(AData(1:5,:))-nanmean(MBaseData(6:end-4, :))];
+0277         BasePADiscont=[BasePADiscont; nanmean(PData(1:5,:))-nanmean(MBaseData(6:end-4, :))];
+0278         
+0279         fast=find(strcmp(params, {<span class="string">'FyPF'</span>})+strcmp(params, {<span class="string">'FyBF'</span>})+strcmp(params, {<span class="string">'XFast'</span>}));
+0280         slow=find(strcmp(params, {<span class="string">'FyPS'</span>})+strcmp(params, {<span class="string">'FyBS'</span>})+strcmp(params, {<span class="string">'XSlow'</span>}));
+0281         speedBias=[];
+0282         speedPABias=[];
+0283         <span class="keyword">for</span> w=1:length(fast)
+0284             speedBias(fast(w))=FBase(s, fast(w));
+0285             speedPABias(fast(w))=SBase(s, fast(w));
+0286         <span class="keyword">end</span>
+0287         <span class="keyword">for</span> w=1:length(slow)
+0288             speedBias(slow(w))=SBase(s, slow(w));
+0289             speedPABias(slow(w))=FBase(s, slow(w));
+0290         <span class="keyword">end</span>
+0291         <span class="keyword">if</span> length(speedBias)&lt;length(params)
+0292             speedBias=[speedBias zeros(1, length(params)-length(speedBias))];
+0293         <span class="keyword">end</span>
+0294         <span class="comment">%SpeedAdapDiscont=[SpeedAdapDiscont; nanmean(ADataWBias(end-44:end-5, :))-speedBias];</span>
+0295         SpeedAdapDiscont=[SpeedAdapDiscont; nanmean(ADataWBias(1:5, :))-speedBias];
+0296         SpeedPADiscont=[SpeedPADiscont; nanmean(PDataWBias(1:5, :))-speedBias];
+0297         <span class="comment">%TMSteady=[TMSteady; nanmean(ADataWBias(end-44:end-5, :))-speedBias];</span>
+0298         <span class="comment">%SpeedSSDiscont=[SpeedSSDiscont; nanmean(AData((end-5)-steadyNumPts+1:(end-5),:))-speedBias];</span>
+0299         SpeedSSDiscont=[SpeedSSDiscont; nanmean(ADataWBias((end-5)-steadyNumPts+1:(end-5),:))-speedBias];
+0300         
+0301         clear speedBias
+0302         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0303     <span class="keyword">end</span>
+0304     
+0305     Breaking=find(strcmp(params, {<span class="string">'FyBS'</span>})+strcmp(params, {<span class="string">'FyBF'</span>}));
+0306     <span class="keyword">if</span> ~isempty(Breaking)
+0307         DelFAdapt(:, Breaking)=-1.*DelFAdapt(:, Breaking);
+0308         DelFDeAdapt(:, Breaking)=-1.*DelFDeAdapt(:, Breaking);
+0309         
+0310         <span class="comment">%             if ~all(all(isnan(FBase))) &amp;&amp; ~all(all(isnan(SBase))) &amp;&amp; ~all(all(isnan(MBase)))</span>
+0311         <span class="comment">%             FBase(:, Breaking)=-1.*FBase(:, Breaking);</span>
+0312         <span class="comment">%             SBase(:, Breaking)=-1.*SBase(:, Breaking);</span>
+0313         <span class="comment">%             MBase(:, Breaking)=-1.*MBase(:, Breaking);</span>
+0314         <span class="comment">%             end</span>
+0315         
+0316         <span class="comment">% TMSteady(:, Breaking)=-1.*TMSteady(:, Breaking);</span>
+0317         
+0318     <span class="keyword">end</span>
+0319     
+0320         washout2=[washout2; 100-(100*(tmafter./TMSteady))];
+0321         plearn=[plearn; (100*(tmafter./TMSteady))];
+0322         
+0323     <span class="comment">% Initialize values to calculate</span>
+0324     results.DelFAdapt.avg(end+1,:)=nanmean(DelFAdapt,1);
+0325     results.DelFAdapt.se(end+1,:)=nanstd(DelFAdapt,1)./sqrt(nSubs);
+0326     
+0327     results.DelFDeAdapt.avg(end+1,:)=nanmean(DelFDeAdapt,1);
+0328     results.DelFDeAdapt.se(end+1,:)=nanstd(DelFDeAdapt,1)./sqrt(nSubs);
+0329     
+0330     results.TMSteady.avg(end+1,:)=nanmean(TMSteady,1);
+0331     results.TMSteady.se(end+1,:)=nanstd(TMSteady,1)./sqrt(nSubs);
+0332     
+0333     results.TMafter.avg(end+1,:)=nanmean(tmafter,1);
+0334     results.TMafter.se(end+1,:)=nanstd(tmafter,1)./sqrt(nSubs);
+0335     
+0336     results.TMSteadyWBias.avg(end+1,:)=nanmean(TMSteadyWBias,1);
+0337     results.TMSteadyWBias.se(end+1,:)=nanstd(TMSteadyWBias,1)./sqrt(nSubs);
+0338     
+0339     results.TMafterWBias.avg(end+1,:)=nanmean(tmafterWBias,1);
+0340     results.TMafterWBias.se(end+1,:)=nanstd(tmafterWBias,1)./sqrt(nSubs);
+0341     
+0342     results.FastBase.avg(end+1,:)=nanmean(FBase,1);
+0343     results.FastBase.se(end+1,:)=nanstd(FBase,1)./sqrt(nSubs);
+0344     
+0345     results.SlowBase.avg(end+1,:)=nanmean(SBase,1);
+0346     results.SlowBase.se(end+1,:)=nanstd(SBase,1)./sqrt(nSubs);
+0347     
+0348     results.MidBase.avg(end+1,:)=nanmean(MBase,1);
+0349     results.MidBase.se(end+1,:)=nanstd(MBase,1)./sqrt(nSubs);
+0350     
+0351     results.BaseAdapDiscont.avg(end+1,:)=nanmean(BaseAdapDiscont,1);
+0352     results.BaseAdapDiscont.se(end+1,:)=nanstd(BaseAdapDiscont,1)./sqrt(nSubs);
+0353     
+0354     results.BasePADiscont.avg(end+1,:)=nanmean(BasePADiscont,1);
+0355     results.BasePADiscont.se(end+1,:)=nanstd(BasePADiscont,1)./sqrt(nSubs);
+0356     
+0357     results.SpeedAdapDiscont.avg(end+1,:)=nanmean(SpeedAdapDiscont,1);
+0358     results.SpeedAdapDiscont.se(end+1,:)=nanstd(SpeedAdapDiscont,1)./sqrt(nSubs);
+0359     
+0360     results.SpeedPADiscont.avg(end+1,:)=nanmean(SpeedPADiscont,1);
+0361     results.SpeedPADiscont.se(end+1,:)=nanstd(SpeedPADiscont,1)./sqrt(nSubs);
+0362     
+0363     results.EarlyA.avg(end+1,:)=nanmean(EarlyA,1);
+0364     results.EarlyA.se(end+1,:)=nanstd(EarlyA,1)./sqrt(nSubs);
+0365     
+0366     results.LateP.avg(end+1,:)=nanmean(LateP,1);
+0367     results.LateP.se(end+1,:)=nanstd(LateP,1)./sqrt(nSubs);
+0368     
+0369        results.Washout2.avg(end+1,:)=nanmean(washout2,1);
+0370     results.Washout2.se(end+1,:)=nanstd(washout2)./sqrt(nSubs);
+0371     
+0372             results.FlatWash.avg(end+1,:)=nanmean(    FlatWash,1);
+0373     results.FlatWash.se(end+1,:)=nanstd(FlatWash)./sqrt(nSubs);
+0374     
+0375                 results.PLearn.avg(end+1,:)=nanmean(    plearn,1);
+0376     results.PLearn.se(end+1,:)=nanstd(plearn)./sqrt(nSubs);
+0377     
+0378                     results.lenA.avg(end+1,:)=nanmean(    lenA,1);
+0379     results.lenA.se(end+1,:)=nanstd(lenA)./sqrt(nSubs);
+0380     
+0381                         results.SpeedSSDiscont.avg(end+1,:)=nanmean(SpeedSSDiscont,1);
+0382     results.SpeedSSDiscont.se(end+1,:)=nanstd(SpeedSSDiscont)./sqrt(nSubs);
+0383     
+0384     <span class="keyword">if</span> g==1 <span class="comment">%This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS</span>
+0385         <span class="keyword">for</span> p=1:length(params)
+0386             results.DelFAdapt.indiv.(params{p})=[g*ones(nSubs,1) DelFAdapt(:,p)];
+0387             results.DelFDeAdapt.indiv.(params{p})=[g*ones(nSubs,1) DelFDeAdapt(:,p)];
+0388             results.FastBase.indiv.(params{p})=[g*ones(nSubs,1) FBase(:,p)];
+0389             results.SlowBase.indiv.(params{p})=[g*ones(nSubs,1) SBase(:,p)];
+0390             results.MidBase.indiv.(params{p})=[g*ones(nSubs,1) MBase(:,p)];
+0391             results.TMSteady.indiv.(params{p})=[g*ones(nSubs,1) TMSteady(:,p)];
+0392             results.TMafter.indiv.(params{p})=[g*ones(nSubs,1) tmafter(:,p)];
+0393             results.TMSteadyWBias.indiv.(params{p})=[g*ones(nSubs,1) TMSteadyWBias(:,p)];
+0394             results.TMafterWBias.indiv.(params{p})=[g*ones(nSubs,1) tmafterWBias(:,p)];
+0395             results.BaseAdapDiscont.indiv.(params{p})=[g*ones(nSubs,1) BaseAdapDiscont(:,p)];
+0396             results.BasePADiscont.indiv.(params{p})=[g*ones(nSubs,1) BasePADiscont(:,p)];
+0397             results.SpeedAdapDiscont.indiv.(params{p})=[g*ones(nSubs,1) SpeedAdapDiscont(:,p)];
+0398             results.SpeedPADiscont.indiv.(params{p})=[g*ones(nSubs,1) SpeedPADiscont(:,p)];
+0399             results.EarlyA.indiv.(params{p})=[g*ones(nSubs,1) EarlyA(:,p)];
+0400             results.LateP.indiv.(params{p})=[g*ones(nSubs,1) LateP(:,p)];
+0401             results.Washout2.indiv.(params{p})=[g*ones(nSubs,1) washout2(:,p)];
+0402             results.FlatWash.indiv.(params{p})=[g*ones(nSubs,1)     FlatWash(:,p)];
+0403              results.PLearn.indiv.(params{p})=[g*ones(nSubs,1)    plearn(:,p)];
+0404              results.lenA.indiv.(params{p})=[g*ones(nSubs,1)    lenA(:,p)];
+0405              results.SpeedSSDiscont.indiv.(params{p})=[g*ones(nSubs,1)    SpeedSSDiscont(:,p)];
+0406              
+0407         <span class="keyword">end</span>
+0408     <span class="keyword">else</span>
+0409         <span class="keyword">for</span> p=1:length(params)
+0410             results.DelFAdapt.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) DelFAdapt(:,p)];
+0411             results.DelFDeAdapt.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) DelFDeAdapt(:,p)];
+0412             results.FastBase.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) FBase(:,p)];
+0413             results.SlowBase.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) SBase(:,p)];
+0414             results.MidBase.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MBase(:,p)];
+0415             results.TMSteady.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) TMSteady(:,p)];
+0416             results.TMafter.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmafter(:,p)];
+0417             results.TMSteadyWBias.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) TMSteadyWBias(:,p)];
+0418             results.TMafterWBias.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) tmafterWBias(:,p)];
+0419             results.BaseAdapDiscont.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BaseAdapDiscont(:,p)];
+0420             results.BasePADiscont.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BasePADiscont(:,p)];
+0421             results.SpeedAdapDiscont.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) SpeedAdapDiscont(:,p)];
+0422              results.SpeedPADiscont.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) SpeedPADiscont(:,p)];
+0423              results.EarlyA.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) EarlyA(:,p)];
+0424              results.LateP.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) LateP(:,p)];
+0425              results.Washout2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) washout2(:,p)];
+0426              results.FlatWash.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1)     FlatWash(:,p)];
+0427              results.PLearn.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1)    plearn(:,p)];
+0428              results.lenA.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1)    lenA(:,p)];
+0429              results.SpeedSSDiscont.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1)    SpeedSSDiscont(:,p)];
+0430         <span class="keyword">end</span>
+0431     <span class="keyword">end</span>
+0432 <span class="keyword">end</span>
+0433 StatFlag=1;
+0434 resultNames=fieldnames(results);
+0435 indiData=[];
+0436 <span class="keyword">if</span> ~isempty(find(strcmp(groups, <span class="string">'InclineStroke'</span>))) &amp;&amp; ~isempty(find(strcmp(groups, <span class="string">'InclineStrokeNoCatch'</span>)))
+0437     whereArt=[find(strcmp(groups, <span class="string">'InclineStroke'</span>))  find(strcmp(groups, <span class="string">'InclineStrokeNoCatch'</span>))];
+0438     <span class="keyword">for</span> h=1:length(resultNames)
+0439         indiData=[];
+0440         <span class="keyword">for</span> p=1:size(results.DelFAdapt.avg, 2)
+0441             <span class="comment">%Change the individual columns so that it shows this group as one</span>
+0442             Group1=find(results.(resultNames{h}).indiv.(params{p})(:, 1)==whereArt(1));
+0443             Group2=find(results.(resultNames{h}).indiv.(params{p})(:, 1)==whereArt(2));
+0444             results.(resultNames{h}).indiv.(params{p})([Group1; Group2], 1)=whereArt(1).*ones(length([Group1; Group2]), 1);
+0445             indiData=[indiData  results.(resultNames{h}).indiv.(params{p})([Group1; Group2], 2)];
+0446         <span class="keyword">end</span>
+0447         <span class="comment">%change the avg and se to reflect one less group and use individual</span>
+0448         <span class="comment">%data to recalculate these</span>
+0449         results.(resultNames{h}).avg(whereArt(1), :)=nanmean(indiData);
+0450         results.(resultNames{h}).se(whereArt(1), :)=nanstd(indiData,1)./sqrt(length([Group1; Group2]));
+0451         results.(resultNames{h}).avg(whereArt(2), :)=[];
+0452         results.(resultNames{h}).se(whereArt(2), :)=[];
+0453         <span class="comment">%change groups</span>
+0454     <span class="keyword">end</span>
+0455     groups(whereArt(2))=[];
+0456 <span class="keyword">end</span>
+0457 
+0458 
+0459 <span class="comment">%if StatFlag==1</span>
+0460 <span class="keyword">for</span> h=1:length(resultNames)
+0461     <span class="keyword">for</span> i=1:size(results.DelFAdapt.avg, 2)<span class="comment">%size(StatReady, 2)</span>
+0462         <span class="keyword">if</span> size(results.DelFAdapt.avg, 1)==2 <span class="comment">%Can just used a ttest, which will be PAIRED</span>
+0463             Group1=find(results.(resultNames{h}).indiv.(params{i})(:, 1)==1);
+0464             Group2=find(results.(resultNames{h}).indiv.(params{i})(:, 1)==2);
+0465             <span class="comment">%[~, results.(resultNames{h}).p(i)]=ttest(results.(resultNames{h}).indiv.(params{i})(Group1, 2), results.(resultNames{h}).indiv.(params{i})(Group2, 2));</span>
+0466         <span class="keyword">else</span><span class="comment">% have to do an anova</span>
+0467             [results.(resultNames{h}).p(i), ~, stats]=anova1(results.(resultNames{h}).indiv.(params{i})(:, 2), results.(resultNames{h}).indiv.(params{i})(:, 1), <span class="string">'off'</span>);
+0468             results.(resultNames{h}).postHoc{i}=[NaN NaN];
+0469             <span class="keyword">if</span> results.(resultNames{h}).p(i)&lt;=0.05 &amp;&amp; exist(<span class="string">'stats'</span>)==1
+0470                 [c,~,~,gnames]=multcompare(stats, <span class="string">'CType'</span>, <span class="string">'lsd'</span>);
+0471                 results.(resultNames{h}).postHoc{i}=c(find(c(:,6)&lt;=0.05), 1:2);
+0472                 <span class="comment">%postHoc{i-1, h}=c(find(c(:,6)&lt;=0.05), 1:2);</span>
+0473             <span class="keyword">end</span>
+0474         <span class="keyword">end</span>
+0475     <span class="keyword">end</span>
+0476 <span class="keyword">end</span>
+0477 <span class="comment">% p(1)=[];</span>
+0478 <span class="comment">%end</span>
+0479 close all
+0480 
+0481 <span class="comment">%plot stuff</span>
+0482 <span class="keyword">if</span> nargin&gt;4 &amp;&amp; plotFlag
+0483     
+0484     <span class="comment">% FIRST: plot baseline values against catch and transfer</span>
+0485     <span class="comment">%%epochs={'TMSteady','TMSteadyWBias', 'DelFAdapt', 'BaseAdapDiscont','TMafter','TMafterWBias','DelFDeAdapt', 'BasePADiscont'};</span>
+0486     <span class="comment">%%epochs={'SlowBase','FastBase', 'TMSteadyWBias', 'TMSteady','DelFAdapt', 'BaseAdapDiscont'};</span>
+0487     <span class="comment">%epochs={'SlowBase','FastBase', 'TMSteady','DelFAdapt','BaseAdapDiscont'};%, 'BasePADiscont'};</span>
+0488     <span class="comment">%%epochs={'TMSteady','SpeedAdapDiscont', 'DelFAdapt','TMafter','SpeedPADiscont', 'DelFDeAdapt'};</span>
+0489     <span class="comment">%%epochs={'SlowBase','FastBase', 'TMSteady','DelFAdapt','TMafter','DelFDeAdapt'};</span>
+0490     <span class="comment">%epochs={'TMSteady','TMafter', 'DelFDeAdapt', 'DelFAdapt', 'DelFDeAdapt'};</span>
+0491     <span class="comment">%epochs={ 'BaseAdapDiscont', 'DelFAdapt', 'TMSteady','TMafter','DelFDeAdapt'};</span>
+0492     <span class="comment">%epochs={'SlowBase','FastBase', 'MidBase', 'EarlyA', 'TMSteady','SpeedSSDiscont'};</span>
+0493     epochs={<span class="string">'DelFAdapt'</span>,<span class="string">'DelFDeAdapt'</span>,<span class="string">'SlowBase'</span>,<span class="string">'FastBase'</span>, <span class="string">'MidBase'</span>,};
+0494     <span class="comment">%%epochs={'BaseAdapDiscont','DelFDeAdapt'};</span>
+0495     <span class="comment">%%epochs={'TMSteady', 'SlowBase', 'FastBase', 'MidBase'};</span>
+0496     <span class="keyword">if</span> nargin&gt;5 <span class="comment">%I imagine there has to be a better way to do this...</span>
+0497         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs,indivFlag)
+0498     <span class="keyword">else</span>
+0499         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs)
+0500     <span class="keyword">end</span>
+0501     
+0502 <span class="keyword">end</span>
+0503 
+0504 <span class="keyword">end</span>
+0505</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

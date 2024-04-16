@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of distTo3D</title>
+  <meta name="keywords" content="distTo3D">
+  <meta name="description" content="Takes a matrix of distances N^2 x 1 and returns the minimum squared-error">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="../../../../../index.html">fun</a> &gt; <a href="../../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="../index.html">old_markerFiltering</a> &gt; <a href="index.html">staticSkeleton</a> &gt; distTo3D.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/old/old_markerFiltering/staticSkeleton&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>distTo3D
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>Takes a matrix of distances N^2 x 1 and returns the minimum squared-error</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [pos3d] = distTo3D(distances,anchorPositions,anchorIndexes) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Takes a matrix of distances N^2 x 1 and returns the minimum squared-error
+reconstruction in a 3D space through multi-dimensional scaling</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="getRotationAndTranslation.html" class="code" title="function [R,t,X1proy] = getRotationAndTranslation(X1,X2)">getRotationAndTranslation</a>	UNTITLED Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pos3d] = distTo3D(distances,anchorPositions,anchorIndexes)</a>
+0002 <span class="comment">%Takes a matrix of distances N^2 x 1 and returns the minimum squared-error</span>
+0003 <span class="comment">%reconstruction in a 3D space through multi-dimensional scaling</span>
+0004 <span class="comment">%</span>
+0005 pos3d=mdscale(distances,3); <span class="comment">%Need to choose the proper metric, I don't think the default is the best</span>
+0006 <span class="comment">%getPoisitionFromDistances.m in /sideProjects/markerModels has an</span>
+0007 <span class="comment">%alternative way to do it.</span>
+0008 
+0009 <span class="comment">%Do a rotation+translation to find the most likely position</span>
+0010 [R,t,X1proy] = <a href="getRotationAndTranslation.html" class="code" title="function [R,t,X1proy] = getRotationAndTranslation(X1,X2)">getRotationAndTranslation</a>(pos3d(anchorIndexes,:),anchorPositions); <span class="comment">%pos3D</span>
+0011 pos3d=pos3d*R+t;
+0012 <span class="keyword">end</span>
+0013</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

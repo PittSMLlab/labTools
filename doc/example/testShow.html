@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of testShow</title>
+  <meta name="keywords" content="testShow">
+  <meta name="description" content="Test script to show uses of Objects">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">example</a> &gt; testShow.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for example&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>testShow
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Test script to show uses of Objects</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Test script to show uses of Objects
+Test change</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Test script to show uses of Objects</span>
+0002 <span class="comment">%Test change</span>
+0003 
+0004 
+0005 <span class="comment">%% Generate an object:</span>
+0006 time=[1:100];
+0007 data=randn(100,10)+repmat([1:100]',1,10);
+0008 a=timeseries(data,time,<span class="string">'Name'</span>,<span class="string">'OriginalTS'</span>) <span class="comment">%Constructor</span>
+0009 <span class="comment">%Not using ; after an object (a) implicitly calls the function</span>
+0010 <span class="comment">%a.display/display(a)</span>
+0011 figure
+0012 plot(a) <span class="comment">%This is already defined, saves time!</span>
+0013 
+0014 
+0015 <span class="comment">%% Some useful functions already defined for timeseries objects:</span>
+0016 <span class="comment">%% Detrend</span>
+0017 b=a.detrend(<span class="string">'constant'</span>);
+0018 b.Name=<span class="string">'ZeroMeanTS'</span>;
+0019 figure
+0020 subplot(1,2,1)
+0021 plot(b)
+0022 c=a.detrend(<span class="string">'linear'</span>);
+0023 c.Name=<span class="string">'ZeroMeanTimeInvariantTS'</span>;
+0024 subplot(1,2,2)
+0025 plot(c)
+0026 
+0027 <span class="comment">%We could add a function that not only detrends, but normalizes to the</span>
+0028 <span class="comment">%[0,1] interval=+</span>
+0029 
+0030 <span class="comment">%% Retrieve partial data</span>
+0031 d=getsampleusingtime(a,);
+0032 figure
+0033 plot(d)
+0034 
+0035 <span class="comment">%% Interpolate</span>
+0036 a=a.setinterpmethod(<span class="string">'zoh'</span>);
+0037 a2 = resample(a,[1:.1:100]); <span class="comment">%Notice the 10x fold increase in samples, and zero-order hold interpolation method</span>
+0038 figure
+0039 plot(a2)2,5
+0040 
+0041 <span class="comment">%% Define events and get data between events</span>
+0042 a=a.addevent(<span class="string">'LTO'</span>,1.3);
+0043 a=a.addevent(<span class="string">'LTO'</span>,3.4);
+0044 a=a.addevent(<span class="string">'LTO'</span>,5.2);
+0045 a=a.addevent(<span class="string">'RTO'</span>,2.0);
+0046 a=a.addevent(<span class="string">'RTO'</span>,4.1);
+0047 a=a.addevent(<span class="string">'RTO'</span>,6.7);
+0048 
+0049 e=a.gettsbetweenevents(<span class="string">'LTO'</span>,<span class="string">'RTO'</span>,2,3);
+0050 e.Name=<span class="string">'Between 2nd LTO and 3rd RTO'</span>;
+0051 figure
+0052 plot(e)
+0053 
+0054 <span class="comment">%% Other defined functions:</span>
+0055 <span class="comment">%filter, idealfilter</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:46 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
