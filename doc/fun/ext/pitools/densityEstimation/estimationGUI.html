@@ -1,0 +1,599 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estimationGUI</title>
+  <meta name="keywords" content="estimationGUI">
+  <meta name="description" content="ESTIMATIONGUI MATLAB code for estimationGUI.fig">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">densityEstimation</a> &gt; estimationGUI.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/densityEstimation&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>estimationGUI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>ESTIMATIONGUI MATLAB code for estimationGUI.fig</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function varargout = estimationGUI(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ESTIMATIONGUI MATLAB code for estimationGUI.fig
+      ESTIMATIONGUI, by itself, creates a new ESTIMATIONGUI or raises the existing
+      singleton*.
+
+      H = ESTIMATIONGUI returns the handle to a new ESTIMATIONGUI or the handle to
+      the existing singleton*.
+
+      ESTIMATIONGUI('CALLBACK',hObject,eventData,handles,...) calls the local
+      function named CALLBACK in ESTIMATIONGUI.M with the given input arguments.
+
+      ESTIMATIONGUI('Property','Value',...) creates a new ESTIMATIONGUI or raises the
+      existing singleton*.  Starting from the left, property value pairs are
+      applied to the GUI before estimationGUI_OpeningFcn gets called.  An
+      unrecognized property name or invalid value makes property application
+      stop.  All inputs are passed to estimationGUI_OpeningFcn via varargin.
+
+      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one
+      instance to run (singleton)&quot;.
+
+ See also: GUIDE, GUIDATA, GUIHANDLES</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="ksdensityn.html" class="code" title="function [p] = ksdensityn(data,binsC,method,bandwidth,weights,k)">ksdensityn</a>	ksdensityn estimates a probability density from data points in</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function estimationGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = estimationGUI_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function pushbutton1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function FileMenu_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub5" class="code">function OpenMenuItem_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub6" class="code">function PrintMenuItem_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub7" class="code">function CloseMenuItem_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub8" class="code">function popupmenu1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub9" class="code">function popupmenu1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub10" class="code">function slider1_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub11" class="code">function slider1_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub12" class="code">function kernelTypeMenu_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub13" class="code">function kernelTypeMenu_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub14" class="code">function updateButton_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub15" class="code">function sampleName_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub16" class="code">function sampleName_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub17" class="code">function sliderValue_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub18" class="code">function sliderValue_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub19" class="code">function dim1Check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub20" class="code">function dim2Check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub21" class="code">function dim3Check_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub22" class="code">function slider2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub23" class="code">function slider2_CreateFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub24" class="code">function sliderValue2_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub25" class="code">function sliderValue2_CreateFcn(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = estimationGUI(varargin)</a>
+0002 <span class="comment">% ESTIMATIONGUI MATLAB code for estimationGUI.fig</span>
+0003 <span class="comment">%      ESTIMATIONGUI, by itself, creates a new ESTIMATIONGUI or raises the existing</span>
+0004 <span class="comment">%      singleton*.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%      H = ESTIMATIONGUI returns the handle to a new ESTIMATIONGUI or the handle to</span>
+0007 <span class="comment">%      the existing singleton*.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%      ESTIMATIONGUI('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+0010 <span class="comment">%      function named CALLBACK in ESTIMATIONGUI.M with the given input arguments.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%      ESTIMATIONGUI('Property','Value',...) creates a new ESTIMATIONGUI or raises the</span>
+0013 <span class="comment">%      existing singleton*.  Starting from the left, property value pairs are</span>
+0014 <span class="comment">%      applied to the GUI before estimationGUI_OpeningFcn gets called.  An</span>
+0015 <span class="comment">%      unrecognized property name or invalid value makes property application</span>
+0016 <span class="comment">%      stop.  All inputs are passed to estimationGUI_OpeningFcn via varargin.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one</span>
+0019 <span class="comment">%      instance to run (singleton)&quot;.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+0022 
+0023 <span class="comment">% Edit the above text to modify the response to help estimationGUI</span>
+0024 
+0025 <span class="comment">% Last Modified by GUIDE v2.5 19-Jun-2014 10:48:13</span>
+0026 
+0027 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0028 gui_Singleton = 1;
+0029 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0030                    <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0031                    <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction estimationGUI_OpeningFcn(hObject, eventdata, handles, varargin)">estimationGUI_OpeningFcn</a>, <span class="keyword">...</span>
+0032                    <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = estimationGUI_OutputFcn(hObject, eventdata, handles)">estimationGUI_OutputFcn</a>, <span class="keyword">...</span>
+0033                    <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0034                    <span class="string">'gui_Callback'</span>,   []);
+0035 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0036     gui_State.gui_Callback = str2func(varargin{1});
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> nargout
+0040     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0041 <span class="keyword">else</span>
+0042     gui_mainfcn(gui_State, varargin{:});
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0045 
+0046 <span class="comment">% --- Executes just before estimationGUI is made visible.</span>
+0047 <a name="_sub1" href="#_subfunctions" class="code">function estimationGUI_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0048 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0049 <span class="comment">% hObject    handle to figure</span>
+0050 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0051 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0052 <span class="comment">% varargin   command line arguments to estimationGUI (see VARARGIN)</span>
+0053 
+0054 <span class="comment">% Choose default command line output for estimationGUI</span>
+0055 handles.output = hObject;
+0056 
+0057 <span class="comment">% Update handles structure</span>
+0058 guidata(hObject, handles);
+0059 
+0060 <span class="comment">% This sets up the initial plot - only do when we are invisible</span>
+0061 <span class="comment">% so window can get raised using estimationGUI.</span>
+0062 <span class="keyword">if</span> strcmp(get(hObject,<span class="string">'Visible'</span>),<span class="string">'off'</span>)
+0063     plot(rand(5));
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% UIWAIT makes estimationGUI wait for user response (see UIRESUME)</span>
+0067 <span class="comment">% uiwait(handles.figure1);</span>
+0068 
+0069 
+0070 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0071 <a name="_sub2" href="#_subfunctions" class="code">function varargout = estimationGUI_OutputFcn(hObject, eventdata, handles)</a>
+0072 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0073 <span class="comment">% hObject    handle to figure</span>
+0074 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0075 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0076 
+0077 <span class="comment">% Get default command line output from handles structure</span>
+0078 varargout{1} = handles.output;
+0079 
+0080 <span class="comment">% --- Executes on button press in pushbutton1.</span>
+0081 <a name="_sub3" href="#_subfunctions" class="code">function pushbutton1_Callback(hObject, eventdata, handles)</a>
+0082 <span class="comment">% hObject    handle to pushbutton1 (see GCBO)</span>
+0083 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0084 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0085 axes(handles.axes1);
+0086 cla;
+0087 
+0088 popup_sel_index = get(handles.popupmenu1, <span class="string">'Value'</span>);
+0089 <span class="keyword">switch</span> popup_sel_index
+0090     <span class="keyword">case</span> 1
+0091         plot(rand(5));
+0092     <span class="keyword">case</span> 2
+0093         plot(sin(1:0.01:25.99));
+0094     <span class="keyword">case</span> 3
+0095         bar(1:.5:10);
+0096     <span class="keyword">case</span> 4
+0097         plot(membrane);
+0098     <span class="keyword">case</span> 5
+0099         surf(peaks);
+0100 <span class="keyword">end</span>
+0101 
+0102 
+0103 <span class="comment">% --------------------------------------------------------------------</span>
+0104 <a name="_sub4" href="#_subfunctions" class="code">function FileMenu_Callback(hObject, eventdata, handles)</a>
+0105 <span class="comment">% hObject    handle to FileMenu (see GCBO)</span>
+0106 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0107 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0108 
+0109 
+0110 <span class="comment">% --------------------------------------------------------------------</span>
+0111 <a name="_sub5" href="#_subfunctions" class="code">function OpenMenuItem_Callback(hObject, eventdata, handles)</a>
+0112 <span class="comment">% hObject    handle to OpenMenuItem (see GCBO)</span>
+0113 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0114 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0115 file = uigetfile(<span class="string">'*.fig'</span>);
+0116 <span class="keyword">if</span> ~isequal(file, 0)
+0117     open(file);
+0118 <span class="keyword">end</span>
+0119 
+0120 <span class="comment">% --------------------------------------------------------------------</span>
+0121 <a name="_sub6" href="#_subfunctions" class="code">function PrintMenuItem_Callback(hObject, eventdata, handles)</a>
+0122 <span class="comment">% hObject    handle to PrintMenuItem (see GCBO)</span>
+0123 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0124 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0125 printdlg(handles.figure1)
+0126 
+0127 <span class="comment">% --------------------------------------------------------------------</span>
+0128 <a name="_sub7" href="#_subfunctions" class="code">function CloseMenuItem_Callback(hObject, eventdata, handles)</a>
+0129 <span class="comment">% hObject    handle to CloseMenuItem (see GCBO)</span>
+0130 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0131 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0132 selection = questdlg([<span class="string">'Close '</span> get(handles.figure1,<span class="string">'Name'</span>) <span class="string">'?'</span>],<span class="keyword">...</span>
+0133                      [<span class="string">'Close '</span> get(handles.figure1,<span class="string">'Name'</span>) <span class="string">'...'</span>],<span class="keyword">...</span>
+0134                      <span class="string">'Yes'</span>,<span class="string">'No'</span>,<span class="string">'Yes'</span>);
+0135 <span class="keyword">if</span> strcmp(selection,<span class="string">'No'</span>)
+0136     <span class="keyword">return</span>;
+0137 <span class="keyword">end</span>
+0138 
+0139 delete(handles.figure1)
+0140 
+0141 
+0142 <span class="comment">% --- Executes on selection change in popupmenu1.</span>
+0143 <a name="_sub8" href="#_subfunctions" class="code">function popupmenu1_Callback(hObject, eventdata, handles)</a>
+0144 <span class="comment">% hObject    handle to popupmenu1 (see GCBO)</span>
+0145 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0146 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0147 
+0148 <span class="comment">% Hints: contents = get(hObject,'String') returns popupmenu1 contents as cell array</span>
+0149 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from popupmenu1</span>
+0150 
+0151 
+0152 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0153 <a name="_sub9" href="#_subfunctions" class="code">function popupmenu1_CreateFcn(hObject, eventdata, handles)</a>
+0154 <span class="comment">% hObject    handle to popupmenu1 (see GCBO)</span>
+0155 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0156 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0157 
+0158 <span class="comment">% Hint: popupmenu controls usually have a white background on Windows.</span>
+0159 <span class="comment">%       See ISPC and COMPUTER.</span>
+0160 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0161      set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0162 <span class="keyword">end</span>
+0163 
+0164 set(hObject, <span class="string">'String'</span>, {<span class="string">'plot(rand(5))'</span>, <span class="string">'plot(sin(1:0.01:25))'</span>, <span class="string">'bar(1:.5:10)'</span>, <span class="string">'plot(membrane)'</span>, <span class="string">'surf(peaks)'</span>});
+0165 
+0166 
+0167 <span class="comment">% --- Executes on slider movement.</span>
+0168 <a name="_sub10" href="#_subfunctions" class="code">function slider1_Callback(hObject, eventdata, handles)</a>
+0169 <span class="comment">% hObject    handle to slider1 (see GCBO)</span>
+0170 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0171 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0172 
+0173 <span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+0174 <span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider</span>
+0175 set(handles.sliderValue,<span class="string">'String'</span>,num2str(10^(get(hObject,<span class="string">'Value'</span>))));
+0176 <a href="#_sub14" class="code" title="subfunction updateButton_Callback(hObject, eventdata, handles)">updateButton_Callback</a>(handles.updateButton, eventdata, handles)
+0177 
+0178 
+0179 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0180 <a name="_sub11" href="#_subfunctions" class="code">function slider1_CreateFcn(hObject, eventdata, handles)</a>
+0181 <span class="comment">% hObject    handle to slider1 (see GCBO)</span>
+0182 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0183 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0184 
+0185 <span class="comment">% Hint: slider controls usually have a light gray background.</span>
+0186 <span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0187     set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+0188 <span class="keyword">end</span>
+0189 
+0190 
+0191 <span class="comment">% --- Executes on selection change in kernelTypeMenu.</span>
+0192 <a name="_sub12" href="#_subfunctions" class="code">function kernelTypeMenu_Callback(hObject, eventdata, handles)</a>
+0193 <span class="comment">% hObject    handle to kernelTypeMenu (see GCBO)</span>
+0194 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0195 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0196 
+0197 <span class="comment">% Hints: contents = cellstr(get(hObject,'String')) returns kernelTypeMenu contents as cell array</span>
+0198 <span class="comment">%        contents{get(hObject,'Value')} returns selected item from kernelTypeMenu</span>
+0199 <span class="keyword">if</span> get(handles.kernelTypeMenu,<span class="string">'Value'</span>)&gt;1
+0200     set(handles.slider2,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0201     set(handles.sliderValue2,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0202 <span class="keyword">else</span>
+0203     set(handles.slider2,<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+0204     set(handles.sliderValue2,<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+0205 <span class="keyword">end</span>
+0206 
+0207 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0208 <a name="_sub13" href="#_subfunctions" class="code">function kernelTypeMenu_CreateFcn(hObject, eventdata, handles)</a>
+0209 <span class="comment">% hObject    handle to kernelTypeMenu (see GCBO)</span>
+0210 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0211 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0212 
+0213 <span class="comment">% Hint: popupmenu controls usually have a white background on Windows.</span>
+0214 <span class="comment">%       See ISPC and COMPUTER.</span>
+0215 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0216     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0217 <span class="keyword">end</span>
+0218 
+0219 
+0220 <span class="comment">% --- Executes on button press in updateButton.</span>
+0221 <a name="_sub14" href="#_subfunctions" class="code">function updateButton_Callback(hObject, eventdata, handles)</a>
+0222 <span class="comment">% hObject    handle to updateButton (see GCBO)</span>
+0223 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0224 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0225 
+0226 <span class="comment">%Estimate pdf</span>
+0227 sample=handles.sample;
+0228 [N,D]=size(sample);
+0229 
+0230 <span class="comment">%Get the kernel type &amp; size</span>
+0231 ktype=get(handles.kernelTypeMenu,<span class="string">'Value'</span>);
+0232 BWsize=10^get(handles.slider1,<span class="string">'Value'</span>);
+0233 k=round(get(handles.slider2,<span class="string">'Value'</span>));
+0234 <span class="keyword">if</span> k&lt;=D
+0235     k=D+1; <span class="comment">%Condition for non-singularity of kernel.</span>
+0236     set(handles.sliderValue2,<span class="string">'String'</span>,num2str(k));
+0237     set(handles.slider2,<span class="string">'Value'</span>,k);
+0238 <span class="keyword">end</span>
+0239 
+0240 
+0241 <span class="keyword">if</span> D&gt;3
+0242     set(hObject,<span class="string">'String'</span>,<span class="string">'Dim cannot be &gt;3'</span>)
+0243 <span class="keyword">else</span>
+0244 <span class="keyword">for</span> i=1:D
+0245     minX=min(sample(:,i));
+0246     maxX=max(sample(:,i));
+0247     meanX=.5*(minX+maxX);
+0248     rangeX=.5*(-minX+maxX);
+0249     gridSize=min([2^ceil(log2(2*N)),64]);
+0250     binsC{i}=linspace(meanX-1.1*rangeX,meanX+1.1*rangeX,gridSize);
+0251 <span class="keyword">end</span>
+0252 <span class="keyword">switch</span> ktype
+0253     <span class="keyword">case</span> 1
+0254         method=<span class="string">'conv'</span>;
+0255     <span class="keyword">case</span> 2
+0256         method=<span class="string">'varconv'</span>;
+0257     <span class="keyword">case</span> 3
+0258         method=<span class="string">'varshapeconv'</span>;
+0259 <span class="keyword">end</span>
+0260  p=<a href="ksdensityn.html" class="code" title="function [p] = ksdensityn(data,binsC,method,bandwidth,weights,k)">ksdensityn</a>(sample,binsC,method,BWsize,[],k);
+0261 
+0262  <span class="keyword">if</span> get(handles.dim1Check,<span class="string">'Value'</span>)
+0263      p=p./repmat(sum(sum(p,3),2),1,size(p,2),size(p,3));
+0264  <span class="keyword">end</span>
+0265   <span class="keyword">if</span> get(handles.dim2Check,<span class="string">'Value'</span>)
+0266      p=p./repmat(sum(sum(p,3),1),size(p,1),1,size(p,3));
+0267   <span class="keyword">end</span>
+0268   <span class="keyword">if</span> get(handles.dim3Check,<span class="string">'Value'</span>)
+0269      p=p./repmat(sum(sum(p,1),2),size(p,1),size(p,2),1);
+0270   <span class="keyword">end</span>
+0271   p=p/sum(p(:));
+0272 
+0273 <span class="comment">%Plot</span>
+0274 <span class="keyword">switch</span> D
+0275     <span class="keyword">case</span> 1
+0276         axes(handles.axes7)
+0277         [h,c]=hist(sample,binsC{1}(1:4:end));
+0278         bar(c,h/sum(h),1);
+0279         hold on
+0280         plot(binsC{1},p,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+0281         plot(sample,.05*max(p)*ones(N,1),<span class="string">'w.'</span>);
+0282         hold off
+0283         axis tight
+0284     <span class="keyword">case</span> 2
+0285         
+0286     <span class="keyword">case</span> 3
+0287         axes(handles.axes7)
+0288         title(<span class="string">'Marginal distribution for dimensions 2 and 3'</span>)
+0289         p23=squeeze(sum(p,1));
+0290         surf(binsC{3},binsC{2},p23,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0291         <span class="comment">%caxis([0 median(diff(binsC{1}))/N])</span>
+0292         <span class="comment">%contour(binsC{3},binsC{2},p23,max(p23(:))*logspace(-3,0,10))</span>
+0293         hold on
+0294         plot3(sample(:,3),sample(:,2),1.1*max(max(squeeze(sum(p,1))))*ones(N,1),<span class="string">'xw'</span>,<span class="string">'LineWidth'</span>,2);
+0295         hold off
+0296         view(2)
+0297         axis tight
+0298         axes(handles.axes8)
+0299         title(<span class="string">'Marginal distribution for dimensions 2 and 1'</span>)
+0300         p12=squeeze(sum(p,3))';
+0301         surf(binsC{1},binsC{2},p12,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0302         hold on
+0303         plot3(sample(:,1),sample(:,2),1.1*max(max(sum(p,3)))*ones(N,1),<span class="string">'wx'</span>,<span class="string">'LineWidth'</span>,2);
+0304         hold off
+0305         view(2)
+0306         axis tight
+0307         axes(handles.axes2)
+0308         title(<span class="string">'Marginal distribution for dimensions 1 and 3'</span>)
+0309         p13=permute(sum(p,2),[1,3,2]);
+0310         surf(binsC{3},binsC{1},p13,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>);
+0311         hold on
+0312         plot3(sample(:,3),sample(:,1),1.1*max(max(sum(p,2),[],3))*ones(N,1),<span class="string">'wx'</span>,<span class="string">'LineWidth'</span>,2);
+0313         hold off
+0314         view(2)
+0315         axis tight
+0316         
+0317         axes(handles.axes9)
+0318         [h,c]=hist(sample(:,3),binsC{3}(1:4:end));
+0319         bar(c,h/(4*sum(h)),1);
+0320         hold on
+0321         aux=squeeze(sum(sum(p,2),1));
+0322         p3=aux/sum(aux);
+0323         H3=-p3(:)'*log(p3(:)+eps);
+0324         plot(binsC{3},p3,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+0325         plot(sample(:,3),.05*max(p(:))*ones(N,1),<span class="string">'w.'</span>);
+0326         text(binsC{3}(end/2),2.5*mean(p3),[<span class="string">'H3='</span> num2str(H3)])
+0327         hold off
+0328         axis tight
+0329         axes(handles.axes10)
+0330         [h,c]=hist(sample(:,1),binsC{1}(1:4:end));
+0331         bar(c,h/(4*sum(h)),1);
+0332         hold on
+0333         aux=squeeze(sum(sum(p,3),2));
+0334         p1=aux/sum(aux);
+0335         H1=-p1(:)'*log(p1(:)+eps);
+0336         plot(binsC{1},p1,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+0337         plot(sample(:,1),.05*max(p(:))*ones(N,1),<span class="string">'w.'</span>);
+0338         text(binsC{1}(end/2),2.5*mean(p1),[<span class="string">'H1='</span> num2str(H1)])
+0339         hold off
+0340         axis tight
+0341         axes(handles.axes11)
+0342         [h,c]=hist(sample(:,2),binsC{2}(1:4:end));
+0343         bar(c,h/(4*sum(h)),1);
+0344         hold on
+0345         aux=squeeze(sum(sum(p,3),1));
+0346         p2=aux/sum(aux);
+0347         H2=-p2(:)'*log(p2(:)+eps);
+0348         plot(binsC{2},p2,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2);
+0349         plot(sample(:,2),.05*max(p(:))*ones(N,1),<span class="string">'w.'</span>);
+0350         text(binsC{2}(end-2),4*mean(p2),[<span class="string">'H2='</span> num2str(H2)])
+0351         hold off
+0352         axis tight
+0353         view(-90,90)
+0354 <span class="keyword">end</span>
+0355 <span class="keyword">end</span>
+0356 <span class="comment">%Update entropy and likelihood estimations</span>
+0357 H=-p(:)'*log(p(:)+eps);
+0358 H12=-p12(:)'*log(p12(:)+eps);
+0359 H13=-p13(:)'*log(p13(:)+eps);
+0360 H23=-p23(:)'*log(p23(:)+eps);
+0361 L=1;
+0362 <span class="keyword">for</span> i=1:N
+0363    [~,i1]=min(abs(sample(i,1)-binsC{1})); 
+0364    [~,i2]=min(abs(sample(i,2)-binsC{2})); 
+0365    [~,i3]=min(abs(sample(i,3)-binsC{3})); 
+0366    L=L*p(i1,i2,i3);
+0367 <span class="keyword">end</span>
+0368 set(handles.entropyText,<span class="string">'String'</span>,[<span class="string">'H='</span> num2str(H)]);
+0369 set(handles.h12,<span class="string">'String'</span>,[<span class="string">'H12='</span> num2str(H12)]);
+0370 set(handles.h13,<span class="string">'String'</span>,[<span class="string">'H13='</span> num2str(H13)]);
+0371 set(handles.h23,<span class="string">'String'</span>,[<span class="string">'H23='</span> num2str(H23)]);
+0372 set(handles.i12,<span class="string">'String'</span>,[<span class="string">'I12='</span> num2str(H1+H2-H12)]);
+0373 set(handles.i13,<span class="string">'String'</span>,[<span class="string">'I13='</span> num2str(H1+H3-H13)]);
+0374 set(handles.i23,<span class="string">'String'</span>,[<span class="string">'I23='</span> num2str(H2+H3-H23)]);
+0375 set(handles.likeText,<span class="string">'String'</span>,[<span class="string">'L='</span> num2str(log(L)/N)]);
+0376 
+0377 
+0378 
+0379 <a name="_sub15" href="#_subfunctions" class="code">function sampleName_Callback(hObject, eventdata, handles)</a>
+0380 <span class="comment">% hObject    handle to sampleName (see GCBO)</span>
+0381 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0382 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0383 
+0384 <span class="comment">% Hints: get(hObject,'String') returns contents of sampleName as text</span>
+0385 <span class="comment">%        str2double(get(hObject,'String')) returns contents of sampleName as a double</span>
+0386 <span class="keyword">try</span>
+0387     load(get(hObject,<span class="string">'String'</span>));
+0388     handles.sample=data;
+0389     [N,D]=size(data);
+0390     set(handles.updateButton,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0391     set(handles.dim1Check,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0392     <span class="keyword">if</span> D&gt;1
+0393         set(handles.dim2Check,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0394     <span class="keyword">else</span>
+0395         set(handles.dim2Check,<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+0396     <span class="keyword">end</span>
+0397     <span class="keyword">if</span> D&gt;2
+0398         set(handles.dim3Check,<span class="string">'Enable'</span>,<span class="string">'on'</span>);
+0399     <span class="keyword">else</span>
+0400         set(handles.dim3Check,<span class="string">'Enable'</span>,<span class="string">'off'</span>);
+0401     <span class="keyword">end</span>
+0402     guidata(hObject, handles);
+0403 <span class="keyword">catch</span>
+0404     set(hObject,<span class="string">'String'</span>,<span class="string">'Try again:'</span>);
+0405 <span class="keyword">end</span>
+0406 
+0407 
+0408 
+0409 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0410 <a name="_sub16" href="#_subfunctions" class="code">function sampleName_CreateFcn(hObject, eventdata, handles)</a>
+0411 <span class="comment">% hObject    handle to sampleName (see GCBO)</span>
+0412 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0413 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0414 
+0415 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0416 <span class="comment">%       See ISPC and COMPUTER.</span>
+0417 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0418     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0419 <span class="keyword">end</span>
+0420 
+0421 
+0422 
+0423 <a name="_sub17" href="#_subfunctions" class="code">function sliderValue_Callback(hObject, eventdata, handles)</a>
+0424 <span class="comment">% hObject    handle to sliderValue (see GCBO)</span>
+0425 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0426 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0427 
+0428 <span class="comment">% Hints: get(hObject,'String') returns contents of sliderValue as text</span>
+0429 <span class="comment">%        str2double(get(hObject,'String')) returns contents of sliderValue as a double</span>
+0430 <span class="keyword">try</span>
+0431     aux=str2num(get(hObject,<span class="string">'String'</span>));
+0432     set(handles.slider1,<span class="string">'Value'</span>,log10(aux));
+0433     <a href="#_sub10" class="code" title="subfunction slider1_Callback(hObject, eventdata, handles)">slider1_Callback</a>(handles.slider1, eventdata, handles);
+0434 <span class="keyword">catch</span>
+0435     set(hObject,<span class="string">'String'</span>,<span class="string">'1'</span>);
+0436 <span class="keyword">end</span>
+0437 
+0438 
+0439 
+0440 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0441 <a name="_sub18" href="#_subfunctions" class="code">function sliderValue_CreateFcn(hObject, eventdata, handles)</a>
+0442 <span class="comment">% hObject    handle to sliderValue (see GCBO)</span>
+0443 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0444 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0445 
+0446 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0447 <span class="comment">%       See ISPC and COMPUTER.</span>
+0448 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0449     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0450 <span class="keyword">end</span>
+0451 
+0452 
+0453 <span class="comment">% --- Executes on button press in dim1Check.</span>
+0454 <a name="_sub19" href="#_subfunctions" class="code">function dim1Check_Callback(hObject, eventdata, handles)</a>
+0455 <span class="comment">% hObject    handle to dim1Check (see GCBO)</span>
+0456 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0457 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0458 
+0459 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of dim1Check</span>
+0460 
+0461 
+0462 <span class="comment">% --- Executes on button press in dim2Check.</span>
+0463 <a name="_sub20" href="#_subfunctions" class="code">function dim2Check_Callback(hObject, eventdata, handles)</a>
+0464 <span class="comment">% hObject    handle to dim2Check (see GCBO)</span>
+0465 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0466 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0467 
+0468 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of dim2Check</span>
+0469 
+0470 
+0471 <span class="comment">% --- Executes on button press in dim3Check.</span>
+0472 <a name="_sub21" href="#_subfunctions" class="code">function dim3Check_Callback(hObject, eventdata, handles)</a>
+0473 <span class="comment">% hObject    handle to dim3Check (see GCBO)</span>
+0474 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0475 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0476 
+0477 <span class="comment">% Hint: get(hObject,'Value') returns toggle state of dim3Check</span>
+0478 
+0479 
+0480 <span class="comment">% --- Executes on slider movement.</span>
+0481 <a name="_sub22" href="#_subfunctions" class="code">function slider2_Callback(hObject, eventdata, handles)</a>
+0482 <span class="comment">% hObject    handle to slider2 (see GCBO)</span>
+0483 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0484 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0485 
+0486 <span class="comment">% Hints: get(hObject,'Value') returns position of slider</span>
+0487 <span class="comment">%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider</span>
+0488 set(handles.sliderValue2,<span class="string">'String'</span>,num2str(round(get(hObject,<span class="string">'Value'</span>))));
+0489 <a href="#_sub14" class="code" title="subfunction updateButton_Callback(hObject, eventdata, handles)">updateButton_Callback</a>(handles.updateButton, eventdata, handles)
+0490 
+0491 
+0492 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0493 <a name="_sub23" href="#_subfunctions" class="code">function slider2_CreateFcn(hObject, eventdata, handles)</a>
+0494 <span class="comment">% hObject    handle to slider2 (see GCBO)</span>
+0495 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0496 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0497 
+0498 <span class="comment">% Hint: slider controls usually have a light gray background.</span>
+0499 <span class="keyword">if</span> isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0500     set(hObject,<span class="string">'BackgroundColor'</span>,[.9 .9 .9]);
+0501 <span class="keyword">end</span>
+0502 
+0503 
+0504 
+0505 <a name="_sub24" href="#_subfunctions" class="code">function sliderValue2_Callback(hObject, eventdata, handles)</a>
+0506 <span class="comment">% hObject    handle to sliderValue2 (see GCBO)</span>
+0507 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0508 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0509 
+0510 <span class="comment">% Hints: get(hObject,'String') returns contents of sliderValue2 as text</span>
+0511 <span class="comment">%        str2double(get(hObject,'String')) returns contents of sliderValue2 as a double</span>
+0512 <span class="keyword">try</span>
+0513     aux=round(str2num(get(hObject,<span class="string">'String'</span>)));
+0514     set(handles.slider2,<span class="string">'Value'</span>,aux);
+0515     <a href="#_sub22" class="code" title="subfunction slider2_Callback(hObject, eventdata, handles)">slider2_Callback</a>(handles.slider2, eventdata, handles);
+0516 <span class="keyword">catch</span>
+0517     set(hObject,<span class="string">'String'</span>,<span class="string">'1'</span>);
+0518 <span class="keyword">end</span>
+0519 
+0520 
+0521 <span class="comment">% --- Executes during object creation, after setting all properties.</span>
+0522 <a name="_sub25" href="#_subfunctions" class="code">function sliderValue2_CreateFcn(hObject, eventdata, handles)</a>
+0523 <span class="comment">% hObject    handle to sliderValue2 (see GCBO)</span>
+0524 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0525 <span class="comment">% handles    empty - handles not created until after all CreateFcns called</span>
+0526 
+0527 <span class="comment">% Hint: edit controls usually have a white background on Windows.</span>
+0528 <span class="comment">%       See ISPC and COMPUTER.</span>
+0529 <span class="keyword">if</span> ispc &amp;&amp; isequal(get(hObject,<span class="string">'BackgroundColor'</span>), get(0,<span class="string">'defaultUicontrolBackgroundColor'</span>))
+0530     set(hObject,<span class="string">'BackgroundColor'</span>,<span class="string">'white'</span>);
+0531 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

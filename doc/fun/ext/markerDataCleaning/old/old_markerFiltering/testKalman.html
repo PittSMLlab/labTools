@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of testKalman</title>
+  <meta name="keywords" content="testKalman">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerFiltering</a> &gt; testKalman.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/old/old_markerFiltering&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>testKalman
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% 
+load()</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="predictv3.html" class="code" title="function [nextX,nextPrevX,fullAn,fullQn] = predictv3(Xhist,n,mode,tau)">predictv3</a>	Xhist should be Nx6, where N is</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%</span>
+0002 <span class="comment">%load()</span>
+0003 md=expData.data{10}.markerData;
+0004 labs={<span class="string">'RHIP'</span>,<span class="string">'LHIP'</span>,<span class="string">'LANK'</span>,<span class="string">'RANK'</span>};
+0005 dd=md.getOrientedData(labs);
+0006 d2=md.getOrientedData({<span class="string">'LASIS'</span>});
+0007 d3=md.getOrientedData({<span class="string">'RTHI'</span>});
+0008 clear allX allV expData
+0009 
+0010 <span class="comment">%% Generate random dataset</span>
+0011 x=dd(1:10000,:,:);
+0012 <span class="comment">%Drop markers</span>
+0013 <span class="comment">%10% drops</span>
+0014 ii=randi(size(x,1),round(size(x,1)*.01),size(dd,2));
+0015 <span class="keyword">for</span> i=1:size(dd,2)
+0016     <span class="keyword">for</span> k=1:size(ii,1)
+0017 x(ii(k,i)+[1:20],i,:)=nan;
+0018     <span class="keyword">end</span>
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">%Mislabel</span>
+0022 <span class="keyword">for</span> k=1:10 <span class="comment">%10 intervals of mislabeling</span>
+0023     i1=randi([5 30]);
+0024     i2=randi(size(x,1));
+0025     x(i2+[1:i1],2,:)=d2(i2+[1:i1],1,:); <span class="comment">%Mislabeling with LHIP LASIS</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%Add noise</span>
+0029 x=x+3*randn(size(x));
+0030 
+0031 <span class="comment">%% Do Kalman prediction</span>
+0032 estimX=zeros(6,size(x,1),4);
+0033 covarX=nan(6,6,size(x,1),4);
+0034 tau=[10 10 25 25];
+0035 lag=1;
+0036 mode=3;
+0037 delay=1;
+0038 
+0039 n=1;
+0040 qxy=n;
+0041 qz=min([.5*n 100]);
+0042 Qns{1}=diag([qxy qxy qz qxy qxy qz]); <span class="comment">%For hips, which are slow moving</span>
+0043 qxy=10*qxy;
+0044 qz=10*qz;
+0045 Qns{2}=diag([qxy qxy qz qxy qxy qz]); <span class="comment">%For anks</span>
+0046 <span class="comment">%Initialize:</span>
+0047 <span class="keyword">for</span> i=1:4
+0048 estimX(1:3,1,i)=x(1,i,:);
+0049 covarX(:,:,1,i)=eye(6)*1e6;
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="keyword">for</span> k=[1:4] <span class="comment">%Over all markers</span>
+0053     <span class="keyword">for</span> i=2:size(x,1)
+0054         <span class="comment">%Predict step:</span>
+0055         [nextX,nextPrevX,An,Qn] = <a href="predictv3.html" class="code" title="function [nextX,nextPrevX,fullAn,fullQn] = predictv3(Xhist,n,mode,tau)">predictv3</a>(estimX(:,i-1,k)',delay,mode,tau(k));
+0056         prediction=[nextX';nextPrevX'];
+0057         Qn=Qns{ceil(k/2)}; <span class="comment">%Ignoring Qn provided by predict</span>
+0058         predictionCovar=An*covarX(:,:,i-1,k)*An'+Qn;
+0059         <span class="keyword">if</span> k&lt;3
+0060             <span class="comment">%Here I would like to put an upper bound on z-axis uncertainty</span>
+0061         <span class="keyword">end</span>
+0062         
+0063         <span class="comment">%Update:</span>
+0064         readX=squeeze(x(i,k,:));
+0065         C=[eye(3) zeros(3)];
+0066         R=eye(3)*100;
+0067         
+0068         <span class="comment">%MAP estimation for mislabeling: %Idea for improving: use a</span>
+0069         <span class="comment">%hand-labeled skeleton to get some stronger priors</span>
+0070         err=readX-C*prediction; 
+0071         R1=eye(3)*1e6;
+0072         L1= exp(-.5*err.*diag(R1).^(-1).*err)./sqrt(diag(R1));<span class="comment">%Likelihood of observation given mislabeling, computed for EACH component independently</span>
+0073         R2=C*predictionCovar*C'+R;
+0074         L2= exp(-.5*err.*diag(R2).^(-1).*err)./sqrt(diag(R2));<span class="comment">%Likelihood of observation given mislabeling, computed for EACH component independently</span>
+0075         P=.1; <span class="comment">%Prior for mislabeling</span>
+0076         pm= L1*P./(L1*P+ L2*(1-P)); <span class="comment">%Posterior for mislabeling</span>
+0077         <span class="keyword">if</span> any(pm&gt;.5) <span class="comment">%Mislabeling</span>
+0078             R=R1;
+0079         <span class="keyword">elseif</span> any(L1&gt;L2) <span class="comment">%No MAP mislabeling, but there is MLE mislabeling</span>
+0080            <span class="comment">%R=100*diag(err.^2);</span>
+0081            <span class="comment">%R=3*C*predictionCovar*C'; %With this, each read is at most</span>
+0082         <span class="comment">%considered in equal footing with prediction. If the read is good,</span>
+0083         <span class="comment">%it is actually much more precise than that, but if it is bad, then</span>
+0084         <span class="comment">%ir may be helpful to not be so trusting.</span>
+0085         <span class="keyword">end</span>
+0086         
+0087         
+0088         <span class="keyword">if</span> ~any(isnan(readX))
+0089             K=predictionCovar*C'*pinv(C*predictionCovar*C'+R);
+0090             estimation=prediction + K*(readX - C*prediction); 
+0091             estimationCovar=(eye(6) -K*C)*predictionCovar;
+0092         <span class="keyword">else</span>
+0093             estimation=prediction;
+0094             estimationCovar=predictionCovar;
+0095         <span class="keyword">end</span>
+0096         
+0097         <span class="comment">%Store estimation:</span>
+0098         estimX(:,i,k)=estimation;
+0099         covarX(:,:,i,k)=estimationCovar;
+0100         
+0101     <span class="keyword">end</span>
+0102 <span class="keyword">end</span>
+0103 
+0104 <span class="comment">%% Do some plots</span>
+0105 close all
+0106 figure
+0107 <span class="keyword">for</span> k=1:4
+0108     subplot(2,2,k)
+0109     hold on
+0110     plot(squeeze(x(:,k,:)),<span class="string">'x'</span>); <span class="comment">%Plot original readings</span>
+0111     plot(estimX(1:3,:,k)',<span class="string">'-.'</span>); <span class="comment">%Plot filtered</span>
+0112     <span class="keyword">for</span> j=1:3
+0113         aux=estimX(j,:,k)'+squeeze(sqrt(covarX(j,j,:,k)));
+0114         aux1=estimX(j,:,k)'-squeeze(sqrt(covarX(j,j,:,k)));
+0115        patch([1:size(x,1) size(x,1):-1:1],[aux; flipud(aux1)],.7*ones(1,3),<span class="string">'FaceAlpha'</span>,.5,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>) 
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

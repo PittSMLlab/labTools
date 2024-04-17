@@ -6,7 +6,7 @@
   <meta name="keywords" content="subjectData">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -41,7 +41,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a></li><li><a href="#_sub2" class="code">function this=set.cognitiveScores(this,scores)</a></li></ul>
+<li><a href="#_sub1" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a></li><li><a href="#_sub2" class="code">function this=set.cognitiveScores(this,scores)</a></li><li><a href="#_sub3" class="code">function this=loadobj(this)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="subjectData.html" class="code" title="">subjectData</a>
@@ -60,62 +60,73 @@ This function is called by:
 0014 <span class="comment">%See also: labDate, strokeSubjectData</span>
 0015     
 0016     properties (SetAccess=private)
-0017         dateOfBirth=<span class="string">''</span>;
+0017         dateOfBirth=labDate.default;
 0018         sex=<span class="string">''</span>;
 0019         dominantLeg=<span class="string">''</span>;
 0020         dominantArm=<span class="string">''</span>;
 0021         height=[]; <span class="comment">%centimeters</span>
 0022         weight=[]; <span class="comment">%kgs</span>
 0023         age=[]; <span class="comment">%in years, at time of experiment</span>
-0024         ID=[]; <span class="comment">%experimental ID assigned</span>
+0024      
 0025     <span class="keyword">end</span>
 0026     
 0027     properties <span class="comment">%other</span>
 0028         cognitiveScores
-0029     <span class="keyword">end</span>
-0030     
-0031     methods
-0032         <span class="comment">%constructor</span>
-0033         <a name="_sub0" href="#_subfunctions" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a>
-0034             <span class="keyword">if</span> nargin&gt;0 &amp;&amp; ~isempty(DOB)
-0035                 this.dateOfBirth=DOB;
-0036             <span class="keyword">end</span>
-0037             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(sex)
-0038                 this.sex=sex;
-0039             <span class="keyword">end</span>
-0040             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(dLeg)
-0041                 this.dominantLeg=dLeg;
-0042             <span class="keyword">end</span>
-0043             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(dArm)
-0044                 this.dominantArm=dArm;
-0045             <span class="keyword">end</span>
-0046             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; ~isempty(hgt)
-0047                 this.height=hgt;
-0048             <span class="keyword">end</span>
-0049             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(wgt)
-0050                 this.weight=wgt;
-0051             <span class="keyword">end</span> 
-0052             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; ~isempty(age)
-0053                 this.age=age;
-0054             <span class="keyword">end</span>
-0055             <span class="keyword">if</span> nargin&gt;7 &amp;&amp; ~isempty(ID)
-0056                 this.ID=ID;
-0057             <span class="keyword">end</span>
-0058         <span class="keyword">end</span>
-0059         
-0060         <a name="_sub1" href="#_subfunctions" class="code">function this=set.cognitiveScores(this,scores)</a>
-0061             <span class="keyword">if</span> isa(scores,<span class="string">'cognitiveData'</span>) || isempty(scores)
-0062                 this.cognitiveScores=scores;
-0063             <span class="keyword">else</span>
-0064                 ME=MException(<span class="string">'subjectData:Setter'</span>,<span class="string">'cognitiveScores parameter is not object of the cognitiveData class'</span>);
-0065                 throw(ME);
-0066             <span class="keyword">end</span>
-0067         <span class="keyword">end</span>  
-0068     <span class="keyword">end</span>
-0069     
-0070          
-0071 <span class="keyword">end</span>
-0072</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0029         ID=[]; <span class="comment">%experimental ID assigned</span>
+0030     <span class="keyword">end</span>
+0031     
+0032     methods
+0033         <span class="comment">%constructor</span>
+0034         <a name="_sub0" href="#_subfunctions" class="code">function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)</a>
+0035             <span class="keyword">if</span> nargin&gt;0 &amp;&amp; ~isempty(DOB)
+0036                 warning(<span class="string">'subjectData:DOB'</span>,<span class="string">'Date of birth was provided but will be ignored for privacy.'</span>)
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(sex)
+0039                 this.sex=sex;
+0040             <span class="keyword">end</span>
+0041             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(dLeg)
+0042                 this.dominantLeg=dLeg;
+0043             <span class="keyword">end</span>
+0044             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(dArm)
+0045                 this.dominantArm=dArm;
+0046             <span class="keyword">end</span>
+0047             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; ~isempty(hgt)
+0048                 this.height=hgt;
+0049             <span class="keyword">end</span>
+0050             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(wgt)
+0051                 this.weight=wgt;
+0052             <span class="keyword">end</span> 
+0053             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; ~isempty(age)
+0054                 this.age=age;
+0055             <span class="keyword">end</span>
+0056             <span class="keyword">if</span> nargin&gt;7 &amp;&amp; ~isempty(ID)
+0057                 this.ID=ID;
+0058             <span class="keyword">end</span>
+0059         <span class="keyword">end</span>
+0060         
+0061         <a name="_sub1" href="#_subfunctions" class="code">function this=set.cognitiveScores(this,scores)</a>
+0062             <span class="keyword">if</span> isa(scores,<span class="string">'cognitiveData'</span>) || isempty(scores)
+0063                 this.cognitiveScores=scores;
+0064             <span class="keyword">else</span>
+0065                 ME=MException(<span class="string">'subjectData:Setter'</span>,<span class="string">'cognitiveScores parameter is not object of the cognitiveData class'</span>);
+0066                 throw(ME);
+0067             <span class="keyword">end</span>
+0068         <span class="keyword">end</span>  
+0069     <span class="keyword">end</span>
+0070     
+0071     methods(Static)
+0072         <span class="comment">%% Loading</span>
+0073         <a name="_sub2" href="#_subfunctions" class="code">function this=loadobj(this)</a>
+0074             <span class="comment">%This function was created to warn about DOB being present at load time</span>
+0075             <span class="comment">%DOB is not automatically scrubbed to prevent loss of information</span>
+0076             <span class="keyword">if</span> ~isempty(this.dateOfBirth)
+0077                 warning(<span class="string">'subjectData:DOB'</span>,[<span class="string">'Subject data contains DOB for subject '</span> this.ID <span class="string">' , which is in violation of HIPAA requirements for sharing data. Do not share until DOB has been scrubbed.'</span>])
+0078             <span class="keyword">end</span>
+0079         <span class="keyword">end</span>
+0080     <span class="keyword">end</span>
+0081          
+0082 <span class="keyword">end</span>
+0083</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

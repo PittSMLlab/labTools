@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of c3d2matCLI</title>
+  <meta name="keywords" content="c3d2matCLI">
+  <meta name="description" content="This function does the same as c3d2mat but without a GUI">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; c3d2matCLI.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for gui/importc3d&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>c3d2matCLI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This function does the same as c3d2mat but without a GUI</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [expData,rawExpData,adaptData]=c3d2matCLI(infoFile,eventClass) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function does the same as c3d2mat but without a GUI
+Information normally acquired through the GUI is loaded from a file
+Creating this file DOES require using the GUI: call c32dmat or GetInfoGUI</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a>	Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.</li><li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData,rawExpData,adaptData]=c3d2matCLI(infoFile,eventClass)</a>
+0002 <span class="comment">%This function does the same as c3d2mat but without a GUI</span>
+0003 <span class="comment">%Information normally acquired through the GUI is loaded from a file</span>
+0004 <span class="comment">%Creating this file DOES require using the GUI: call c32dmat or GetInfoGUI</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2
+0007     eventClass=<span class="string">''</span>; <span class="comment">%Default</span>
+0008 <span class="keyword">end</span>
+0009 
+0010 handles=loadInfoFile(infoFile,<span class="string">''</span>);
+0011 out = <a href="errorProofInfo.html" class="code" title="function out = errorProofInfo(handles,ignoreErrors)">errorProofInfo</a>(handles,ignoreErrors);
+0012 [expData,rawExpData,adaptData]=<a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>(info,eventClass);
+0013 
+0014 
+0015 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:03 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

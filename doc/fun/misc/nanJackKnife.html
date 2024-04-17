@@ -6,7 +6,7 @@
   <meta name="keywords" content="nanJackKnife">
   <meta name="description" content="JACKKNIFE plots jackknife errorbars around a given curve">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../m2html.css">
 </head>
@@ -252,47 +252,48 @@ This function is called by:
 0139         U = y + E;
 0140         LineColor =  varargin{4};
 0141         EdgeColor = LineColor-0.5.*abs(LineColor);
-0142         PatchColor = varargin{5};
-0143         Opacity= varargin{6};
-0144         w=varargin{7}; <span class="comment">%Binary flag to make some markers white (?)</span>
-0145 <span class="comment">%         Opacity= varargin{7};</span>
-0146 <span class="keyword">end</span>
-0147 Xcoords = [x x(end:-1:1)];
-0148 Ycoords = [U L(end:-1:1)];
-0149 Pa=[];
-0150 <span class="comment">% Pa = patch(Xcoords,Ycoords,PatchColor);</span>
-0151 <span class="comment">% set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);</span>
-0152 hold on;
-0153 <span class="comment">%Li = plot(x,y,'color',LineColor,'linewidth',2);</span>
-0154 <span class="keyword">if</span> nargin&lt;7
-0155     <span class="keyword">if</span> ~all(U==L)
-0156     Pa = patch(Xcoords,Ycoords,PatchColor);
-0157     set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
-0158     <span class="keyword">end</span>
-0159     Li = plot(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
-0160 <span class="keyword">elseif</span> nargin&gt;=7
-0161     <span class="comment">% Pa = patch(Xcoords,Ycoords,'w');</span>
-0162 
-0163     <span class="keyword">if</span> ~all(U==L)
-0164         Pa = patch(Xcoords,Ycoords,PatchColor);
-0165         set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
-0166     <span class="keyword">end</span>
-0167     <span class="keyword">for</span> l=1:length(x)        
-0168         <span class="keyword">if</span> w(l)==0;
-0169             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
-0170             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);</span>
-0171         <span class="keyword">else</span>
-0172             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeCOlor,<span class="string">'MarkerFaceColor'</span>,LineColor);
-0173             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);</span>
-0174         <span class="keyword">end</span>
-0175     <span class="keyword">end</span>
-0176 <span class="keyword">end</span>
-0177 
-0178 hold on;
-0179 
+0142         EdgeColor = <span class="string">'none'</span>;
+0143         PatchColor = varargin{5};
+0144         Opacity= varargin{6};
+0145         w=varargin{7}; <span class="comment">%Binary flag to make some markers white (?)</span>
+0146 <span class="comment">%         Opacity= varargin{7};</span>
+0147 <span class="keyword">end</span>
+0148 Xcoords = [x x(end:-1:1)];
+0149 Ycoords = [U L(end:-1:1)];
+0150 Pa=[];
+0151 <span class="comment">% Pa = patch(Xcoords,Ycoords,PatchColor);</span>
+0152 <span class="comment">% set(Pa,'linestyle','-','linewidth',1,'EdgeColor',LineColor,'FaceAlpha',Opacity);</span>
+0153 hold on;
+0154 <span class="comment">%Li = plot(x,y,'color',LineColor,'linewidth',2);</span>
+0155 <span class="keyword">if</span> nargin&lt;7
+0156     <span class="keyword">if</span> ~all(U==L)
+0157     Pa = patch(Xcoords,Ycoords,PatchColor);
+0158     set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
+0159     <span class="keyword">end</span>
+0160     Li = plot(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0161 <span class="keyword">elseif</span> nargin&gt;=7
+0162     <span class="comment">% Pa = patch(Xcoords,Ycoords,'w');</span>
+0163 
+0164     <span class="keyword">if</span> ~all(U==L)
+0165         Pa = patch(Xcoords,Ycoords,PatchColor);
+0166         set(Pa,<span class="string">'linestyle'</span>,<span class="string">'-'</span>,<span class="string">'linewidth'</span>,1,<span class="string">'EdgeColor'</span>,LineColor,<span class="string">'FaceAlpha'</span>,Opacity);
+0167     <span class="keyword">end</span>
+0168     <span class="keyword">for</span> l=1:length(x)        
+0169         <span class="keyword">if</span> w(l)==0;
+0170             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,[0 0 0]);
+0171             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',[0 0 0]);</span>
+0172         <span class="keyword">else</span>
+0173             Li = plot(x(l),y(l),<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,8,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerEdgeColor'</span>,EdgeColor,<span class="string">'MarkerFaceColor'</span>,LineColor);
+0174             <span class="comment">% Li = plot(x(l),y(l),'o','MarkerSize',5,'LineWidth',1,'MarkerEdgeColor',[0 0 0],'MarkerFaceColor',LineColor);</span>
+0175         <span class="keyword">end</span>
+0176     <span class="keyword">end</span>
+0177 <span class="keyword">end</span>
+0178 
+0179 hold on;
 0180 
 0181 
-0182</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0182 
+0183</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

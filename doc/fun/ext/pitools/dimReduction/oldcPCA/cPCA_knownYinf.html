@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cPCA_knownYinf</title>
+  <meta name="keywords" content="cPCA_knownYinf">
+  <meta name="description" content="cPCA or canonic PCA, aims at estimating a canonical space-state model from">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">oldcPCA</a> &gt; cPCA_knownYinf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/dimReduction/oldcPCA&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>cPCA_knownYinf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>cPCA or canonic PCA, aims at estimating a canonical space-state model from</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [C,J,X,V,r2] = cPCA_knownYinf(Y,order,forcePCS,useSPCA,estimSize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">cPCA or canonic PCA, aims at estimating a canonical space-state model from
+given outputs Y, and assuming constant input.
+It returns the a (best in some sense?) fit of the form Y'~C*X;
+X(i+1,:)=J*X(i,:), where J is a Jordan's canonical form matrix.
+This function can be used to do system-identification provided that the
+data corresponds to a constant input system and the steady-state of Y is 0.
+It works in three steps:
+1) Approximate Y' ~ W*H through uncentered PCA with #order
+2) Linearly transform C=W*V and V*Z=H , minimizing (Z-X) with X(:,i+1)=J*X(:,i), X(:,1)=1, with J canonical Jordan form
+3) If ~forcePCS (default), recompute the optimal C given the smoothed states X.
+INPUTS:
+Y = N x D data matrix, representing N samples of d-dimensional data
+order: number of principal components to be estimated
+estimSize: step-size considered to perform the estimation, larger sizes return more robust estimations.
+forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs
+useSPCA: (Default=true) flag to indicate the use of sPCA to initialize solution 
+OUTPUTS:
+C: D x order matrix, representing map from states to output (Y)
+J: evolution matrix for states, such that X(:,i+1)=J*X(:,i)
+X: smoothed state estimators, forcing X(:,1)=1 (WLOG)
+V: matrix such that C~W*V (exact if forcePCS==1), where Y'~=W*H is the uncentered PCA factorization using the first #order PCs</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="sPCA_knownYinf.html" class="code" title="function [C,A,X,r2] = sPCA_knownYinf(Y,order,forcePCS)">sPCA_knownYinf</a>	sPCA or smooth PCA, aims at estimating a best-fit space-state model from</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="cPCA.html" class="code" title="function [C,J,X,Yinf,V,r2] = cPCA(Y,order,forcePCS,useSPCA,estimSize)">cPCA</a>	cPCA or canonic PCA, aims at estimating a canonical space-state model from</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C,J,X,V,r2] = cPCA_knownYinf(Y,order,forcePCS,useSPCA,estimSize)</a>
+0002 <span class="comment">%cPCA or canonic PCA, aims at estimating a canonical space-state model from</span>
+0003 <span class="comment">%given outputs Y, and assuming constant input.</span>
+0004 <span class="comment">%It returns the a (best in some sense?) fit of the form Y'~C*X;</span>
+0005 <span class="comment">%X(i+1,:)=J*X(i,:), where J is a Jordan's canonical form matrix.</span>
+0006 <span class="comment">%This function can be used to do system-identification provided that the</span>
+0007 <span class="comment">%data corresponds to a constant input system and the steady-state of Y is 0.</span>
+0008 <span class="comment">%It works in three steps:</span>
+0009 <span class="comment">%1) Approximate Y' ~ W*H through uncentered PCA with #order</span>
+0010 <span class="comment">%2) Linearly transform C=W*V and V*Z=H , minimizing (Z-X) with X(:,i+1)=J*X(:,i), X(:,1)=1, with J canonical Jordan form</span>
+0011 <span class="comment">%3) If ~forcePCS (default), recompute the optimal C given the smoothed states X.</span>
+0012 <span class="comment">%INPUTS:</span>
+0013 <span class="comment">%Y = N x D data matrix, representing N samples of d-dimensional data</span>
+0014 <span class="comment">%order: number of principal components to be estimated</span>
+0015 <span class="comment">%estimSize: step-size considered to perform the estimation, larger sizes return more robust estimations.</span>
+0016 <span class="comment">%forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs</span>
+0017 <span class="comment">%useSPCA: (Default=true) flag to indicate the use of sPCA to initialize solution</span>
+0018 <span class="comment">%OUTPUTS:</span>
+0019 <span class="comment">%C: D x order matrix, representing map from states to output (Y)</span>
+0020 <span class="comment">%J: evolution matrix for states, such that X(:,i+1)=J*X(:,i)</span>
+0021 <span class="comment">%X: smoothed state estimators, forcing X(:,1)=1 (WLOG)</span>
+0022 <span class="comment">%V: matrix such that C~W*V (exact if forcePCS==1), where Y'~=W*H is the uncentered PCA factorization using the first #order PCs</span>
+0023 
+0024 <span class="comment">% Pablo A. Iturralde - Univ. of Pittsburgh - Last rev: Jun 14th 2017</span>
+0025 
+0026 
+0027 NN=size(Y,1); <span class="comment">%Number of samples</span>
+0028 D=size(Y,2); <span class="comment">%Dimensionality of data</span>
+0029 <span class="keyword">if</span> nargin&lt;2 || isempty(order)
+0030     order=2; <span class="comment">%Minimum order for which this makes sense</span>
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> nargin&lt;5 || isempty(estimSize)
+0033     N=2^6; <span class="comment">%Integer geq 0 &amp; leq NN [ideally N &lt; 3*tau, where tau is the fastest decay rate]</span>
+0034 <span class="keyword">else</span>
+0035     N=estimSize;
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">if</span> nargin&lt;3 || isempty(forcePCS)
+0038    forcePCS=false; 
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">if</span> nargin&lt;4 || isempty(useSPCA)
+0041    useSPCA=true;
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">%Initialize solution:</span>
+0045 <span class="keyword">if</span> useSPCA
+0046     <span class="comment">%Pro: we can use N=1 because PP is smooth</span>
+0047     <span class="comment">%Con: requires an optimization in sPCA</span>
+0048     [W,An,H] = <a href="sPCA_knownYinf.html" class="code" title="function [C,A,X,r2] = sPCA_knownYinf(Y,order,forcePCS)">sPCA_knownYinf</a>(Y,order,forcePCS); N=1;
+0049 <span class="keyword">else</span>
+0050     <span class="comment">%Pro: fast to compute</span>
+0051     <span class="comment">%Con: requires large N, and we should optimize over N</span>
+0052     [p,c]=pca(Y',<span class="string">'Centered'</span>,false);
+0053     H=p(:,1:order)'; W=c(:,1:order);
+0054     An=H(:,N+1:end)/H(:,1:end-N); <span class="comment">%Robust identification: Estimate A^N, ie the system evolution N steps in the future</span>
+0055 <span class="keyword">end</span>
+0056 
+0057 <span class="keyword">if</span> any(eig(An)&lt;0) <span class="comment">%Throw error if we have discrete eigen values &lt;0</span>
+0058     error(<span class="string">'Best-fit dynamics matrix returned a negative eigen-value, which makes no sense. Try with smaller order.'</span>)
+0059     <span class="comment">%If N is even, this means at least one complex eigen value (not paired!) for J.</span>
+0060     <span class="comment">%If N is odd we can salvage this for strictly diagonal matrices by taking J=diag(diag(Jn).^(1/N)); which has at least one real solution.</span>
+0061     <span class="comment">%Long run solution: instead of just taking the Jordan form of An, find the J matrix that is Jordan form AND minimizes norm( J^N -jordan(An),'fro').</span>
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">%% Find linear transformation to Jordan's canonical form [transformation for A^N -&gt; J^N is the valid for A-&gt;J too]</span>
+0065 [V,Jn] = jordan(An);
+0066 <span class="comment">% Deal with complex solutions:</span>
+0067 a=imag(diag(Jn)); b=real(diag(Jn));
+0068 <span class="keyword">if</span> any(abs(a./b)&gt;1e-15) <span class="comment">%If there are (truly) complex eigen-values, will transform to the real-jordan form</span>
+0069     [~,Jn] = cdf2rdf(V,Jn);
+0070 <span class="keyword">else</span> <span class="comment">%This is to avoid numerical errors from negligible imaginary parts</span>
+0071     Jn=real(Jn);
+0072 <span class="keyword">end</span>
+0073 J=Jn^(1/N); <span class="comment">%Estimate of J: Equivalent if N is power of 2: N=2^n and then take sqrtm n times.</span>
+0074 
+0075 <span class="comment">%% Estimate X: arbitrary scaling: (there has to be a more efficient way to do it)</span>
+0076 X=ones(order,NN); <span class="comment">%A different initial condition will be needed if one of the true states has 0 initial value, and J is not diagonal.</span>
+0077 <span class="keyword">for</span> i=2:NN
+0078     X(:,i)=J*X(:,i-1);
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">%% Estimate C:</span>
+0082 <span class="keyword">if</span> ~forcePCS <span class="comment">%This allows C to escape the subspace spanned by the PCs from PCA</span>
+0083     C=Y'/X; <span class="comment">%Improves performance (r2) and suggests use of alternating optimization scheme by repeating the first steps with the new X</span>
+0084 <span class="keyword">else</span>
+0085     C=(W*H)/X; <span class="comment">%Only projecting data within PCA subspace, just for scaling purposes</span>
+0086 <span class="keyword">end</span>
+0087 V=W\C; <span class="comment">%Best linear projection of states onto PCA states</span>
+0088 
+0089 <span class="comment">%% Compute reconstruction value</span>
+0090 r2=1-norm(Y'-C*X,<span class="string">'fro'</span>)^2/norm(Y',<span class="string">'fro'</span>)^2; <span class="comment">%This is for the smoothed/estimated states, otherwise it would just be the same as PCA performance</span>
+0091 <span class="keyword">end</span>
+0092</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

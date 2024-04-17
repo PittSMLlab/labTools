@@ -6,7 +6,7 @@
   <meta name="keywords" content="getResultsSMART">
   <meta name="description" content="define number of points to use for calculating values">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../../m2html.css">
 </head>
@@ -222,7 +222,7 @@ This function is called by:
 0178         <span class="keyword">if</span> isempty(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), adaptData.metaData.conditionName))==0
 0179         <span class="comment">% compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)</span>
 0180         adapt1Data=adaptData.getParamInCond(params,<span class="string">'adaptation'</span>);
-0181         tmsteadyBC=[tmsteadyBC; nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:))];
+0181         tmsteadyBC=[tmsteadyBC; nanmean(adapt1Data((end-5)-steadyNumPts+1:(end-5),:))];
 0182         
 0183         <span class="comment">% compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)</span>
 0184         
@@ -446,6 +446,6 @@ This function is called by:
 0402 <span class="keyword">end</span>
 0403 
 0404</pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

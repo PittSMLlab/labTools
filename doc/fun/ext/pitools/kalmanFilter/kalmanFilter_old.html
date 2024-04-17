@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of kalmanFilter_old</title>
+  <meta name="keywords" content="kalmanFilter_old">
+  <meta name="description" content="A,B,C,Q,R are fixed.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">kalmanFilter</a> &gt; kalmanFilter_old.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/kalmanFilter&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>kalmanFilter_old
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>A,B,C,Q,R are fixed.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [priorState,posteriorState,priorVariance,posteriorVariance,K] = kalmanFilter(input,output,A,B,Q,C,R,x0,p0,error) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">A,B,C,Q,R are fixed.
+x0 is the initial state estimation</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [priorState,posteriorState,priorVariance,posteriorVariance,K] = kalmanFilter(input,output,A,B,Q,C,R,x0,p0,error)</a>
+0002 
+0003 <span class="comment">%A,B,C,Q,R are fixed.</span>
+0004 <span class="comment">%x0 is the initial state estimation</span>
+0005 xPosterior=x0;
+0006 pPosterior=p0;
+0007 
+0008 
+0009 <span class="keyword">for</span> i=1:size(output,2)
+0010     <span class="comment">%Prediction</span>
+0011     <span class="keyword">if</span> size(input,2)==size(output,2)
+0012         xPrior=A*xPosterior + B*input(:,i); <span class="comment">%Input is given</span>
+0013     <span class="keyword">else</span>
+0014         xPrior=(A+B*input)*xPosterior; <span class="comment">%Assuming what is given is a state-feedback matrix</span>
+0015     <span class="keyword">end</span>
+0016     
+0017     pPrior=A*pPosterior*A' + Q;
+0018 
+0019     <span class="comment">%Correction:</span>
+0020     <span class="keyword">if</span> nargin&lt;10
+0021         e=output(:,i)-C*xPrior;
+0022     <span class="keyword">else</span>
+0023         e=error(:,i); <span class="comment">%CAse error data is given. Useful to simulate error-clamp experiments.</span>
+0024     <span class="keyword">end</span>
+0025     K(:,i)=pPrior*C'*pinv(C*pPrior*C' + R);
+0026     xPosterior=xPrior + K(:,i)*e;
+0027     pPosterior=pPrior - K(:,i)*C*pPrior;
+0028 
+0029     <span class="comment">%Save history of predictions:</span>
+0030     priorState(:,i)=xPrior;
+0031     posteriorState(:,i)=xPosterior;
+0032     priorVariance(:,:,i)=pPrior;
+0033     posteriorVariance(:,:,i)=pPosterior;
+0034 <span class="keyword">end</span>
+0035 
+0036 
+0037 
+0038 <span class="keyword">end</span>
+0039</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -566,7 +566,34 @@ for t=cell2mat(info.trialnums) %loop through each trial
         EMGData=[];
         accData=[];
     end
+   
+    %% Add H-Reflex Stimulator Pin if exists (new expeirmental feature introduced in April 2024)
+    relData=[];
+    stimLabels ={};
+    units={};
+    fieldList=fields(analogs);
+    stimLabelIdx=cellfun(@(x) ~isempty(x),regexp(fieldList,'^Stimulator_Trigger_Sync_'));
+    stimLabelIdx = find(stimLabelIdx);
+    if ~isempty(stimLabelIdx)
+        for j=1:length(stimLabelIdx) %this will only run if the index exists
+            stimLabels{end+1} = fieldList{stimLabelIdx(j)}; %add the label
+            units{end+1}=eval(['analogsInfo.units.',fieldList{stimLabelIdx(j)}]);
+            relData=[relData,analogs.(fieldList{stimLabelIdx(j)})];
+        end
+        HreflexStimPinData = labTimeSeries(relData,0,1/analogsInfo.frequency,stimLabels);
+        %arg: data, t0 (offset in starting of the data, should be 0 like the force plates, as it's analog wired stream into Vicon?),
+        %Ts (1/sampling frequency), labels
 
+        %sanity check, the # of frames should match GRF data
+        if (GRFData.Length ~= HreflexStimPinData.Length)
+            error('Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.')
+        end
+    else
+        %This is needed to work with expeirments that doesn't have this pin.
+        HreflexStimPinData = [];
+    end
+    
+    
     %% MarkerData
     clear analogs* %Save memory space, no longer need analog data, it was already loaded
     if info.kinematics %check to see if there is kinematic data
@@ -638,6 +665,6 @@ for t=cell2mat(info.trialnums) %loop through each trial
     %% Construct trialData
 
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);%organize trial data into organized object of class rawTrialData
+    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[],HreflexStimPinData);%organize trial data into organized object of class rawTrialData
 
 end
