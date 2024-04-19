@@ -171,6 +171,17 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     end
     %%%
 end
+%% H-Reflex:
+fields = fieldnames(trialData); % retrieve all trialData object field names
+if any(contains(fields,'HreflexPin'))   % if 'HreflexPin' field exists, ...
+    % if there is data in the 'HreflexPin' and 'EMGData' fields, ...
+    if ~isempty(trialData.HreflexPin) && ~isempty(trialData.EMGData)
+        % compute parameters associated with H-reflex stimulation
+        Hreflex = computeHreflexParameters(strideEvents, ...
+            trialData.HreflexPin,trialData.EMGData,s);
+        out = cat(out,Hreflex);
+    end
+end
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
 %badStart=bad; %make a copy to compare at the end
