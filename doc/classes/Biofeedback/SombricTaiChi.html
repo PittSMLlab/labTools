@@ -1,0 +1,586 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SombricTaiChi</title>
+  <meta name="keywords" content="SombricTaiChi">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">classes</a> &gt; <a href="index.html">Biofeedback</a> &gt; SombricTaiChi.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for classes/Biofeedback&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>SombricTaiChi
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=SombricTaiChi(ID,sex,dleg,dhand,fastleg,height,weight,triallist,Rtarget,Ltarget)</a></li><li><a href="#_sub2" class="code">function []=AnalyzePerformance(this)</a></li><li><a href="#_sub3" class="code">function []=editTriallist(this)</a></li><li><a href="#_sub4" class="code">function []=saveit(this)</a></li><li><a href="#_sub5" class="code">function [Xlat,Ysag]=getHits(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SombricTaiChi.html" class="code" title="">SombricTaiChi</a>
+0002     <span class="comment">%SombricTaiChi class is for processing</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         subjectcode=<span class="string">''</span>;
+0007         sex=<span class="string">''</span>;
+0008         dominantleg=<span class="string">''</span>;
+0009         dominanthand=<span class="string">''</span>;
+0010         fastleg=<span class="string">''</span>
+0011         height=[];
+0012         weight=[];
+0013         triallist={};
+0014         Rtarget=[];
+0015         Ltarget=[];
+0016         datalocation=pwd;
+0017         data={};
+0018         dataheader={};
+0019         
+0020     <span class="keyword">end</span>
+0021     
+0022     methods
+0023         
+0024         <a name="_sub0" href="#_subfunctions" class="code">function this=SombricTaiChi(ID,sex,dleg,dhand,fastleg,height,weight,triallist,Rtarget,Ltarget)</a>
+0025             
+0026             <span class="keyword">if</span> nargin ~= 10
+0027                 <span class="comment">%                 disp('Error, incorrect # of input arguments provided');</span>
+0028                 cprintf(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
+0029             <span class="keyword">else</span>
+0030             <span class="keyword">end</span>
+0031             
+0032             <span class="keyword">if</span> ischar(ID)
+0033                 this.subjectcode=ID;
+0034             <span class="keyword">else</span>
+0035                 this.subjectcode=<span class="string">''</span>;
+0036                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
+0037             <span class="keyword">end</span>
+0038             
+0039             <span class="keyword">if</span> ischar(sex)
+0040                 this.sex = sex;
+0041             <span class="keyword">else</span>
+0042                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input for subject gender must be a string\n'</span>);
+0043                 this.sex=<span class="string">''</span>;
+0044             <span class="keyword">end</span>
+0045             
+0046             <span class="keyword">if</span> ischar(dleg)
+0047                 this.dominantleg=dleg;
+0048             <span class="keyword">else</span>
+0049                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
+0050                 this.dominantleg=<span class="string">''</span>;
+0051             <span class="keyword">end</span>
+0052             
+0053             <span class="keyword">if</span> ischar(dhand)
+0054                 this.dominanthand=dhand;
+0055             <span class="keyword">else</span>
+0056                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
+0057                 this.dominanthand=<span class="string">''</span>;
+0058             <span class="keyword">end</span>
+0059             
+0060             <span class="keyword">if</span> ischar(fastleg)
+0061                 this.fastleg=fastleg;
+0062             <span class="keyword">else</span>
+0063                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
+0064                 this.fastleg=<span class="string">''</span>;
+0065             <span class="keyword">end</span>
+0066             
+0067             <span class="keyword">if</span> isnumeric(height)
+0068                 this.height = height;
+0069             <span class="keyword">else</span>
+0070                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
+0071                 this.height=[];
+0072             <span class="keyword">end</span>
+0073             
+0074             <span class="keyword">if</span> isnumeric(weight)
+0075                 this.weight = weight;
+0076             <span class="keyword">else</span>
+0077                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
+0078                 this.weight=[];
+0079             <span class="keyword">end</span>
+0080             
+0081             <span class="keyword">if</span> iscell(triallist)
+0082                 this.triallist=triallist;
+0083             <span class="keyword">else</span>
+0084                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
+0085                 this.triallist={};
+0086             <span class="keyword">end</span>
+0087             
+0088             <span class="keyword">if</span> isnumeric(Rtarget)
+0089                 this.Rtarget = Rtarget;
+0090             <span class="keyword">else</span>
+0091                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
+0092                 this.Rtarget = [];
+0093             <span class="keyword">end</span>
+0094             
+0095             <span class="keyword">if</span> isnumeric(Ltarget)
+0096                 this.Ltarget = Ltarget;
+0097             <span class="keyword">else</span>
+0098                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
+0099                 this.Ltarget = [];
+0100             <span class="keyword">end</span>
+0101                 
+0102         <span class="keyword">end</span>
+0103         
+0104         
+0105         <a name="_sub1" href="#_subfunctions" class="code">function []=AnalyzePerformance(this)</a>
+0106             
+0107 <span class="comment">%             if this.fastleg == 'r'</span>
+0108 <span class="comment">%                 colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};</span>
+0109 <span class="comment">%             elseif this.fastleg == 'l'</span>
+0110 <span class="comment">% %                 colors = {[14/255,201/255,52/255],[201/255,242/255,209/255],[2/255,184/255,245/255],[181/255,217/255,230/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};</span>
+0111 <span class="comment">%                 colors = {[2/255,184/255,245/255],[181/255,217/255,230/255],[14/255,201/255,52/255],[201/255,242/255,209/255],[35/255,21/255,232/255],[190/255,21/255,232/255],[232/255,21/255,24/255],[232/255,214/255,21/255]};</span>
+0112 <span class="comment">%             end</span>
+0113             
+0114             [Xlat,Ysag]=this.getHits();
+0115             [m,n]=size(Ysag);
+0116             sage=cell(m,n);
+0117             late=cell(m,n);
+0118             h=0;
+0119             h2 = 0;
+0120             h3=0;
+0121             h4=0;
+0122 <span class="comment">%             keyboard</span>
+0123             <span class="keyword">for</span> z=1:length(Ysag)
+0124                 
+0125                 <span class="keyword">if</span> strcmp(this.triallist{z,4},<span class="string">'Rleg Train'</span>)
+0126                     colors{z} = [189/255,15/255,18/255];<span class="comment">%red</span>
+0127                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Lleg Train'</span>)
+0128                     colors{z} = [189/255,15/255,18/255];<span class="comment">%red</span>
+0129                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Base Rleg Map'</span>)
+0130                     colors{z} = [48/255,32/255,158/255];<span class="comment">%blue</span>
+0131                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Base Lleg Map'</span>)
+0132                     colors{z} = [48/255,32/255,158/255];<span class="comment">%blue</span>
+0133                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Pre Rleg Train'</span>)
+0134                     colors{z} = [25/255,235/255,74/255];<span class="comment">%green</span>
+0135                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Pre Lleg Train'</span>)
+0136                     colors{z} = [25/255,235/255,74/255];<span class="comment">%green</span>
+0137                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Post Rleg Map'</span>)
+0138                     colors{z} = [9/255,109/255,143/255];<span class="comment">%bluegrey</span>
+0139                 <span class="keyword">elseif</span> strcmp(this.triallist{z,4},<span class="string">'Post Lleg Map'</span>)
+0140                     colors{z} = [9/255,109/255,143/255];<span class="comment">%bluegrey</span>
+0141                 <span class="keyword">end</span>
+0142                 
+0143                 <span class="keyword">if</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
+0144                     
+0145                     temps = Ysag{z};
+0146                     templ = Xlat{z};
+0147                     temps = temps-this.Rtarget;
+0148                     templ = templ-this.Rtarget;
+0149                     
+0150                     temps(abs(temps)&gt;0.1)=[];
+0151                     templ(abs(templ)&gt;0.1)=[];
+0152                     
+0153                     sage{z} = temps;
+0154                     late{z} = templ;
+0155                     
+0156                 <span class="keyword">elseif</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
+0157                     temps = Ysag{z};
+0158                     templ = Xlat{z};
+0159                     Xlat{z} = -1*templ;
+0160                     temps = temps-this.Ltarget;
+0161                     templ = -1*templ-this.Ltarget;
+0162 <span class="comment">%                     keyboard</span>
+0163                     temps(abs(temps)&gt;0.1)=[];
+0164                     templ(abs(templ)&gt;0.1)=[];
+0165                     
+0166                     sage{z} = temps;
+0167                     late{z} = templ;
+0168                     
+0169                 <span class="keyword">else</span>
+0170                     disp(<span class="string">'no errors computed'</span>);
+0171                     temps = 1000;
+0172                     templ = 1000;
+0173                 <span class="keyword">end</span>
+0174 <span class="comment">%                 keyboard</span>
+0175                 
+0176                 figure(2) <span class="comment">%Saggital errors</span>
+0177                 subplot(2,1,1)
+0178                 hold on
+0179                 scatter(h+[1:length(temps)],temps,<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
+0180                 title(<span class="string">'Saggital Target Errors'</span>);
+0181                 h = h+length(temps);
+0182                 plot([h h],[-1 1],<span class="string">'k'</span>);
+0183                 
+0184                 
+0185                 subplot(2,1,2)
+0186                 hold on
+0187                 scatter(h2+[1:length(templ)],templ,<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
+0188                 title(<span class="string">'Lateral Target Errors'</span>);
+0189                 h2 = h2+length(templ);
+0190                 plot([h2 h2],[-1 1],<span class="string">'k'</span>);
+0191 <span class="comment">%                 plot([0 h2],[0.01 0.01],'--k');</span>
+0192 <span class="comment">%                 plot([0 h2],[-0.01 -0.01],'--k');</span>
+0193 <span class="comment">% %                 grid on</span>
+0194 <span class="comment">%                 ylim([-0.1 0.1]);</span>
+0195 <span class="comment">%                 ylabel('Step Error (m)');</span>
+0196                 
+0197                 figure(3)
+0198                 subplot(2,1,1)
+0199                 hold on
+0200                 scatter(h3+[1:length(Ysag{z})],Ysag{z},<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
+0201                 title(<span class="string">'Saggital Landing Positions'</span>)
+0202                 h3 = h3+length(Ysag{z});
+0203                 plot([h3 h3],[-1 1],<span class="string">'k'</span>);
+0204                 <span class="keyword">if</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
+0205                     plot([h3-length(Ysag{z}) h3],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
+0206                     plot([h3-length(Ysag{z}) h3],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
+0207                     plot([h3-length(Ysag{z}) h3],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
+0208                 <span class="keyword">elseif</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
+0209                     plot([h3-length(Ysag{z}) h3],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
+0210                     plot([h3-length(Ysag{z}) h3],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
+0211                     plot([h3-length(Ysag{z}) h3],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
+0212                 <span class="keyword">end</span>
+0213 
+0214                 
+0215                 subplot(2,1,2)
+0216                 hold on
+0217                 scatter(h4+[1:length(Xlat{z})],Xlat{z},<span class="string">'MarkerFaceColor'</span>,colors{z},<span class="string">'MarkerEdgeColor'</span>,colors{z});
+0218                 title(<span class="string">'Lateral Landing Positions'</span>)
+0219                 h4 = h4+length(Xlat{z});
+0220                 plot([h4 h4],[-1 1],<span class="string">'k'</span>);
+0221                 <span class="keyword">if</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
+0222                     plot([h4-length(Xlat{z}) h4],[this.Ltarget this.Ltarget],<span class="string">'k'</span>);
+0223                     plot([h4-length(Xlat{z}) h4],[this.Ltarget+0.01 this.Ltarget+0.01],<span class="string">'--k'</span>);
+0224                     plot([h4-length(Xlat{z}) h4],[this.Ltarget-0.01 this.Ltarget-0.01],<span class="string">'--k'</span>);
+0225                 <span class="keyword">elseif</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
+0226                     plot([h4-length(Xlat{z}) h4],[this.Rtarget this.Rtarget],<span class="string">'k'</span>);
+0227                     plot([h4-length(Xlat{z}) h4],[this.Rtarget+0.01 this.Rtarget+0.01],<span class="string">'--k'</span>);
+0228                     plot([h4-length(Xlat{z}) h4],[this.Rtarget-0.01 this.Rtarget-0.01],<span class="string">'--k'</span>);
+0229                 <span class="keyword">end</span>
+0230 
+0231                 
+0232                 
+0233                 
+0234             <span class="keyword">end</span>
+0235             
+0236             figure(2) <span class="comment">%Saggital errors</span>
+0237             subplot(2,1,1)
+0238             ylim([-0.1 0.1]);
+0239             ylabel(<span class="string">'Step Error (m)'</span>);
+0240 <span class="comment">%             legend('Training','Map','Base Map','Pre train','Post Map');</span>
+0241             plot([0 h],[0 0],<span class="string">'k'</span>);
+0242             plot([0 h],[0.01 0.01],<span class="string">'--k'</span>);
+0243             plot([0 h],[-0.01 -0.01],<span class="string">'--k'</span>);
+0244             subplot(2,1,2)
+0245             plot([0 h2],[0 0],<span class="string">'k'</span>);
+0246             plot([0 h2],[0.01 0.01],<span class="string">'--k'</span>);
+0247             plot([0 h2],[-0.01 -0.01],<span class="string">'--k'</span>);
+0248             ylim([-0.1 0.1]);
+0249             ylabel(<span class="string">'Step Error (m)'</span>);
+0250             
+0251             figure(3)
+0252             subplot(2,1,1)
+0253             ylim([0.1 0.4]);
+0254             ylabel(<span class="string">'Step Position (m)'</span>);
+0255             
+0256             subplot(2,1,2)
+0257             ylim([0.1 0.4]);
+0258             ylabel(<span class="string">'Step Position (m)'</span>);
+0259             
+0260 <span class="comment">%             keyboard</span>
+0261             
+0262         <span class="keyword">end</span>
+0263         
+0264         <a name="_sub2" href="#_subfunctions" class="code">function []=editTriallist(this)</a>
+0265             <span class="keyword">global</span> t
+0266             <span class="keyword">global</span> ID
+0267             ID = this.subjectcode;
+0268             
+0269             <span class="keyword">if</span> isempty(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
+0270                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
+0271                 this.data = cell(length(filenames),1);
+0272                 <span class="keyword">if</span> iscell(filenames)
+0273                     f = figure;
+0274                     data1 = cell(length(filenames),4);
+0275                     data1(:,1)=filenames;
+0276                     
+0277                     <span class="keyword">for</span> z=1:length(filenames)<span class="comment">%autodetect if a trial was a train for evaluation</span>
+0278                         tname = filenames{z};
+0279                         <span class="keyword">if</span> strcmp(tname(end-5:end-4),<span class="string">'V1'</span>)
+0280                             data1{z,3} = <span class="string">'train'</span>;
+0281                         <span class="keyword">else</span>
+0282                             data1{z,3} = <span class="string">'eval'</span>;
+0283                         <span class="keyword">end</span>
+0284                     <span class="keyword">end</span>
+0285                     <span class="comment">%                     keyboard</span>
+0286                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0287                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'Rleg Train'</span>,<span class="string">'Lleg Train'</span>,<span class="string">'Base Rleg Map'</span>,<span class="string">'Base Lleg Map'</span>,<span class="string">'Pre Rleg Train'</span>,<span class="string">'Pre Lleg Train'</span>,<span class="string">'Post Rleg Map'</span>,<span class="string">'Post Lleg Map'</span>}};
+0288                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data1,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0289                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0290                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0291                 <span class="keyword">else</span>
+0292                     f = figure;
+0293                     data1 = cell(1,4);
+0294                     data1(1,1) = filenames;
+0295                     <span class="keyword">if</span> strcmp(filenames(end-5:end-4),<span class="string">'V3'</span>)
+0296                         data1(1,3) = <span class="string">'train'</span>;
+0297                     <span class="keyword">else</span>
+0298                         data1(1,3) = <span class="string">'eval'</span>;
+0299                     <span class="keyword">end</span>
+0300                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0301                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'Rleg Train'</span>,<span class="string">'Lleg Train'</span>,<span class="string">'Base Rleg Map'</span>,<span class="string">'Base Lleg Map'</span>,<span class="string">'Pre Rleg Train'</span>,<span class="string">'Pre Lleg Train'</span>,<span class="string">'Post Rleg Map'</span>,<span class="string">'Post Lleg Map'</span>}};
+0302                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data1,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0303                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0304                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0305                 <span class="keyword">end</span>
+0306                 
+0307             <span class="keyword">else</span> <span class="comment">%if triallist is already populated, just edit what is already there</span>
+0308                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
+0309                 this.data = cell(length(filenames),1);
+0310                 <span class="keyword">if</span> iscell(filenames)
+0311                     f = figure;
+0312                     data1 = cell(length(filenames),4);
+0313                     data1(:,1)=filenames;
+0314                     data1(:,2:4) = this.triallist(:,2:4);
+0315                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0316                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'Rleg Train'</span>,<span class="string">'Lleg Train'</span>,<span class="string">'Base Rleg Map'</span>,<span class="string">'Base Lleg Map'</span>,<span class="string">'Pre Rleg Train'</span>,<span class="string">'Pre Lleg Train'</span>,<span class="string">'Post Rleg Map'</span>,<span class="string">'Post Lleg Map'</span>}};
+0317                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data1,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0318                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0319                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0320                 <span class="keyword">else</span>
+0321                     f = figure;
+0322                     data1 = cell(1,4);
+0323                     data1(1,1) = filenames;
+0324                     data1(1,2:4) = this.triallist(1,2:4);
+0325                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0326                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'Rleg Train'</span>,<span class="string">'Lleg Train'</span>,<span class="string">'Base Rleg Map'</span>,<span class="string">'Base Lleg Map'</span>,<span class="string">'Pre Rleg Train'</span>,<span class="string">'Pre Lleg Train'</span>,<span class="string">'Post Rleg Map'</span>,<span class="string">'Post Lleg Map'</span>}};
+0327                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data1,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0328                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0329                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0330                 <span class="keyword">end</span>
+0331                 
+0332             <span class="keyword">end</span>
+0333             
+0334         <span class="keyword">end</span>
+0335         
+0336         <a name="_sub3" href="#_subfunctions" class="code">function []=saveit(this)</a><span class="comment">%save instance as the &quot;subjectcode_SLBF&quot;</span>
+0337             
+0338             <span class="keyword">if</span> isempty(this.subjectcode)
+0339                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
+0340             <span class="keyword">else</span>
+0341                 savename = [this.subjectcode <span class="string">'_PerceptionBF_day.mat'</span>];
+0342                 eval([this.subjectcode <span class="string">'=this;'</span>]);
+0343                 save(savename,this.subjectcode);
+0344             <span class="keyword">end</span>
+0345         <span class="keyword">end</span>
+0346         
+0347         <a name="_sub4" href="#_subfunctions" class="code">function [Xlat,Ysag]=getHits(this) </a><span class="comment">%X and Y do not inidicate which leg is being tested</span>
+0348             
+0349             filename = this.triallist(:,1);
+0350             WB = waitbar(0,<span class="string">'Processing Trials...'</span>);
+0351             
+0352             <span class="keyword">if</span> iscell(filename)
+0353                 <span class="keyword">for</span> z=1:length(filename)
+0354 <span class="comment">%                     tempname = filename{z};</span>
+0355                     waitbar((z-1)/length(filename),WB,[<span class="string">'Processing Trial '</span> num2str(z)]);
+0356                     
+0357 <span class="comment">%                     if strcmp(this.triallist{z,4},'Rleg Train')</span>
+0358 <span class="comment">%                         color{z} = [189/255,15/255,18/255];%red</span>
+0359 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Lleg Train')</span>
+0360 <span class="comment">%                         color{z} = [189/255,15/255,18/255];%red</span>
+0361 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Base Rleg Map')</span>
+0362 <span class="comment">%                         color{z} = [48/255,32/255,158/255];%blue</span>
+0363 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Base Lleg Map')</span>
+0364 <span class="comment">%                         color{z} = [48/255,32/255,158/255];%blue</span>
+0365 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Pre Rleg Train')</span>
+0366 <span class="comment">%                         color{z} = [25/255,235/255,74/255];%green</span>
+0367 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Pre Lleg Train')</span>
+0368 <span class="comment">%                         color{z} = [25/255,235/255,74/255];%green</span>
+0369 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Post Rleg Map')</span>
+0370 <span class="comment">%                         color{z} = [9/255,109/255,143/255];%bluegrey</span>
+0371 <span class="comment">%                     elseif strcmp(this.triallist{z,4},'Post Lleg Map')</span>
+0372 <span class="comment">%                         color{z} = [9/255,109/255,143/255];%bluegrey</span>
+0373 <span class="comment">%                     end</span>
+0374                     
+0375                     <span class="comment">%check to see if data is already processed, it will</span>
+0376                     <span class="comment">%save time...</span>
+0377                     <span class="keyword">if</span> length(this.data)&lt;z
+0378                         disp(<span class="string">'Parsing data...'</span>);
+0379                         <span class="comment">%                     keyboard</span>
+0380                         fn = filename{z};
+0381                         <span class="keyword">if</span> strcmp(fn(end-3:end),<span class="string">'c3d'</span>)
+0382                             disp(<span class="string">'method undeveloped for processing c3d'</span>);
+0383                         <span class="keyword">end</span>
+0384                         
+0385                         f = fopen(filename{z});
+0386                         g = fgetl(f);
+0387                         fclose(f);
+0388                         
+0389                         <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
+0390                             [header,data] = JSONtxt2cell(filename{z});
+0391                             this.data{z} = data;
+0392                             this.dataheader = header;
+0393                         <span class="keyword">else</span>
+0394                             S = importdata(filename{z},<span class="string">','</span>,1);
+0395                             data = S.data;
+0396                             this.data{z} = S.data;
+0397                             this.dataheader = S.textdata;
+0398                         <span class="keyword">end</span>
+0399                     <span class="keyword">else</span>
+0400                         data = cell2mat(this.data(z));
+0401                         header = this.dataheader;
+0402                     <span class="keyword">end</span>
+0403                     
+0404                     data2 = unique(data,<span class="string">'rows'</span>,<span class="string">'stable'</span>);<span class="comment">%remove duplicate frames</span>
+0405                     data2(:,1) = data2(:,1)-data2(1,1)+1;<span class="comment">%set frame # to start at 1</span>
+0406                     
+0407                     <span class="comment">%check for monotonicity</span>
+0408                     checkers = find(diff(data2(:,1))&lt;1);
+0409                     <span class="keyword">while</span> ~isempty(checkers)
+0410                         disp(<span class="string">'WARNING repeated frames present in data, removing...'</span>);
+0411                         <span class="keyword">for</span> y=1:length(checkers)
+0412                             data2(checkers(y),:)=[];
+0413                         <span class="keyword">end</span>
+0414                         checkers = find(diff(data2(:,1))&lt;1);
+0415                     <span class="keyword">end</span>
+0416                     
+0417 <span class="comment">%                     Rz2 = data2(:,2);</span>
+0418 <span class="comment">%                     Lz2 = data2(:,3);</span>
+0419                     <span class="comment">%                 keyboard</span>
+0420                     <span class="keyword">if</span> ismember(<span class="string">'R'</span>,this.triallist{z,4})
+0421                         X = data2(:,6);
+0422                         Y = data2(:,8);
+0423 <span class="comment">%                         RHS = data2(:,4);</span>
+0424                         phase = data2(:,10);
+0425 <span class="comment">%                         target = data2(:,11);</span>
+0426                         
+0427                         RHS = zeros(length(X),1);<span class="comment">%not real HS, just when to sample</span>
+0428                         <span class="keyword">for</span> n = 1:length(X)-1
+0429                             <span class="keyword">if</span> (phase(n)==2) &amp;&amp; (phase(n+1)==0)
+0430                                 RHS(n) = 1;
+0431                             <span class="keyword">end</span>
+0432                         <span class="keyword">end</span>
+0433                         RHS = find(RHS);
+0434                         
+0435 <span class="comment">%                         %cleanup HS</span>
+0436 <span class="comment">%                         for zz=2:length(RHS)</span>
+0437 <span class="comment">%                             if RHS(zz)==1 &amp;&amp; RHS(zz-1)==0</span>
+0438 <span class="comment">%                                 RHS2(zz)=1;</span>
+0439 <span class="comment">%                             else</span>
+0440 <span class="comment">%                                 RHS2(zz)=0;</span>
+0441 <span class="comment">%                             end</span>
+0442 <span class="comment">%                         end</span>
+0443 <span class="comment">%                         RHS = find(RHS2);</span>
+0444 <span class="comment">%                         clear RHS2</span>
+0445 <span class="comment">% keyboard</span>
+0446                         <span class="keyword">for</span> zz=1:length(RHS)
+0447                             <span class="keyword">if</span> abs(Y(RHS(zz)))&gt;0.1 <span class="comment">%&amp;&amp; abs(X(RHS(zz)))&lt;=0.1</span>
+0448                                 tempx(zz) = X(RHS(zz));
+0449                                 tempy(zz) = Y(RHS(zz));
+0450                                 temp2x(zz) = 5000;
+0451                                 temp2y(zz) = 5000;
+0452                             <span class="keyword">elseif</span> abs(X(RHS(zz)))&gt;0.1 <span class="comment">%&amp;&amp; abs(Y(RHS(zz)))&lt;=0.1</span>
+0453                                 tempx(zz) = 5000;
+0454                                 tempy(zz) = 5000;
+0455                                 temp2x(zz) = X(RHS(zz));
+0456                                 temp2y(zz) = Y(RHS(zz));
+0457                             <span class="keyword">else</span>
+0458                                 tempx(zz)=5000;
+0459                                 tempy(zz)=5000;
+0460                                 temp2x(zz)=5000;
+0461                                 temp2y(zz)=5000;
+0462                             <span class="keyword">end</span>
+0463                         <span class="keyword">end</span>
+0464                         tempx(tempx==5000)=[];
+0465                         tempy(tempy==5000)=[];
+0466                         temp2x(temp2x==5000)=[];
+0467                         temp2y(temp2y==5000)=[];
+0468                         Xsag{z}=tempx;
+0469                         Xlat{z}=temp2x;
+0470                         Ysag{z}=tempy;
+0471                         Ylat{z}=temp2y;
+0472                         
+0473                     <span class="keyword">elseif</span> ismember(<span class="string">'L'</span>,this.triallist{z,4})
+0474                         X = data2(:,7);
+0475                         Y = data2(:,9);
+0476 <span class="comment">%                         LHS = data2(:,5);</span>
+0477                         phase = data2(:,10);
+0478                         
+0479                         LHS = zeros(length(X),1);<span class="comment">%not real HS, just when to sample</span>
+0480                         <span class="keyword">for</span> n = 1:length(X)-1
+0481                             <span class="keyword">if</span> (phase(n)==2) &amp;&amp; (phase(n+1)==0)
+0482                                 LHS(n) = 1;
+0483                             <span class="keyword">end</span>
+0484                         <span class="keyword">end</span>
+0485                         LHS = find(LHS);
+0486                         
+0487 <span class="comment">%                         for zz=2:length(LHS)</span>
+0488 <span class="comment">%                             if LHS(zz)==1 &amp;&amp; LHS(zz-1)==0</span>
+0489 <span class="comment">%                                 LHS2(zz)=1;</span>
+0490 <span class="comment">%                             else</span>
+0491 <span class="comment">%                                 LHS2(zz)=0;</span>
+0492 <span class="comment">%                             end</span>
+0493 <span class="comment">%                         end</span>
+0494 <span class="comment">%                         LHS = find(LHS2);</span>
+0495 <span class="comment">%                         clear LHS2</span>
+0496                         
+0497                         <span class="keyword">for</span> zz=1:length(LHS)
+0498                             <span class="keyword">if</span> abs(Y(LHS(zz)))&gt;0.1 <span class="comment">%&amp;&amp; abs(X(LHS(zz)))&lt;=0.1</span>
+0499                                 tempx(zz) = X(LHS(zz));
+0500                                 tempy(zz) = Y(LHS(zz));
+0501                                 temp2x(zz) = 5000;
+0502                                 temp2y(zz) = 5000;
+0503                             <span class="keyword">elseif</span> abs(X(LHS(zz)))&gt;0.1 <span class="comment">%&amp;&amp; abs(Y(LHS(zz)))&lt;=0.1</span>
+0504                                 tempx(zz) = 5000;
+0505                                 tempy(zz) = 5000;
+0506                                 temp2x(zz) = X(LHS(zz));
+0507                                 temp2y(zz) = Y(LHS(zz));
+0508                             <span class="keyword">else</span>
+0509                                 tempx(zz)=5000;
+0510                                 tempy(zz)=5000;
+0511                                 temp2x(zz)=5000;
+0512                                 temp2y(zz)=5000;
+0513                             <span class="keyword">end</span>
+0514                         <span class="keyword">end</span>
+0515                         tempx(tempx==5000)=[];
+0516                         tempy(tempy==5000)=[];
+0517                         temp2x(temp2x==5000)=[];
+0518                         temp2y(temp2y==5000)=[];
+0519                         Xsag{z}=tempx;
+0520                         Xlat{z}=temp2x;
+0521                         Ysag{z}=tempy;
+0522                         Ylat{z}=temp2y;
+0523                     <span class="keyword">end</span>
+0524 
+0525                 <span class="keyword">end</span>
+0526                 close(WB);
+0527 <span class="comment">%                 keyboard</span>
+0528             <span class="keyword">else</span>
+0529                 
+0530             <span class="keyword">end</span>
+0531         
+0532         
+0533     <span class="keyword">end</span>
+0534     
+0535     <span class="keyword">end</span>
+0536 <span class="keyword">end</span>
+0537</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

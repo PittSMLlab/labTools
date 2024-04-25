@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of predictv2</title>
+  <meta name="keywords" content="predictv2">
+  <meta name="description" content="Xhist should be NxM, where M is number of variables to predict, and N is">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerFiltering</a> &gt; predictv2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/markerDataCleaning/old/old_markerFiltering&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>predictv2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>Xhist should be NxM, where M is number of variables to predict, and N is</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [nextX,nextPrevX,An,Q] = predictv2(Xhist,n,mode,tau,lag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Xhist should be NxM, where M is number of variables to predict, and N is
+the number of samples. Xhist(1,:) is the first sample, Xhist(end,:) is the
+last sample in time.
+n is the prediction range in samples.
+tau is the decay rate for temporally discounted models (mode==3)
+lag is 1 or 0. With 0, the very first prediction has temporal discounting,
+with 1, only the second prediction has it.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="statsTest.html" class="code" title="">statsTest</a>	% Load some file with marker data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [nextX,nextPrevX,An,Q] = predictv2(Xhist,n,mode,tau,lag)</a>
+0002 <span class="comment">%Xhist should be NxM, where M is number of variables to predict, and N is</span>
+0003 <span class="comment">%the number of samples. Xhist(1,:) is the first sample, Xhist(end,:) is the</span>
+0004 <span class="comment">%last sample in time.</span>
+0005 <span class="comment">%n is the prediction range in samples.</span>
+0006 <span class="comment">%tau is the decay rate for temporally discounted models (mode==3)</span>
+0007 <span class="comment">%lag is 1 or 0. With 0, the very first prediction has temporal discounting,</span>
+0008 <span class="comment">%with 1, only the second prediction has it.</span>
+0009 s=size(Xhist);
+0010 
+0011 <span class="keyword">if</span> nargin&lt;4 || isempty(tau)
+0012     tau=20;
+0013 <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;5 || isempty(lag)
+0015     lag=1;
+0016 <span class="keyword">end</span>
+0017 
+0018 nextX=nan(s);
+0019 nextPrevX=nan(s);
+0020 Xhist=Xhist(:,:);
+0021 <span class="keyword">for</span> i=1:size(Xhist,2)
+0022     X=Xhist(:,i);
+0023     prevX=cat(1,0,X(1:end-1));
+0024     <span class="keyword">switch</span> mode
+0025         <span class="keyword">case</span> 1 <span class="comment">%Constant x, v=0</span>
+0026             A=[1 0; 1 0];
+0027         <span class="keyword">case</span> 2 <span class="comment">%constant v</span>
+0028             A=[2 -1; 1 0];
+0029         <span class="keyword">case</span> 3 <span class="comment">%temp-discounted v</span>
+0030             A=[1+exp(-1/tau) -exp(-1/tau); 2-exp(-1/tau) exp(-1/tau)-1];
+0031     <span class="keyword">end</span>
+0032     An=A^n;
+0033     aux=An*[X(:)';prevX(:)'];
+0034 
+0035     nextX(:,i)=aux(1,:);
+0036     nextPrevX(:,i)=aux(2,:); 
+0037 
+0038     <span class="comment">%Variance of estimator:</span>
+0039     Q=eye(2) * min([n^2*400 n*900]);
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

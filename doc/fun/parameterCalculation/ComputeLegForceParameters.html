@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ComputeLegForceParameters</title>
+  <meta name="keywords" content="ComputeLegForceParameters">
+  <meta name="description" content="UNTITLED2 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; ComputeLegForceParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>ComputeLegForceParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED2 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED2 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>	computeForceParameters -- analyzes kinetic treadmill data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT)</a>
+0002 <span class="comment">%UNTITLED2 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="keyword">if</span> nargin&lt;4 || isempty(titleTXT)
+0006     titleTXT=<span class="string">''</span>;
+0007 <span class="keyword">end</span>
+0008 
+0009 <span class="comment">% Identify all the 'braking' (i.e., negative) and 'propeling' (i.e.,</span>
+0010 <span class="comment">% positive data points for the stride</span>
+0011 ns=find((striderS-LevelofInterest)&lt;0);
+0012 ps=find((striderS-LevelofInterest)&gt;0);
+0013 
+0014 <span class="comment">%From the first 15% of the stride, determin the peak anterior-posterior impact force</span>
+0015 [ImpactMagS, ImpactSWhere]=nanmax(striderS(1:round(0.15*length(striderS))));
+0016 
+0017 <span class="comment">% if there is an impact force, then we do not want the impact behavior to</span>
+0018 <span class="comment">% be considered when we are computing braking and propulsion measures.</span>
+0019 <span class="keyword">if</span> isempty(ImpactSWhere)~=1
+0020     <span class="comment">% New method 2/25/2020</span>
+0021         ps(find(ps&lt;ImpactSWhere))=[];
+0022         ns(find(ns&lt;ImpactSWhere))=[];
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="comment">%% Mean Behaviors</span>
+0026 
+0027 <span class="comment">% Braking Force Characterization</span>
+0028 <span class="keyword">if</span> isempty(ns) <span class="comment">%No Braking Data</span>
+0029     SB=NaN;
+0030     SBsum=NaN;
+0031 <span class="keyword">else</span> <span class="comment">% As long as there are some braking data points</span>
+0032     SB=FlipB.*(nanmean(striderS(ns)-LevelofInterest));
+0033     SBsum=FlipB.*nansum(striderS(ns)-LevelofInterest);
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">% Propulsion Force Characterization</span>
+0037 <span class="keyword">if</span> isempty(ps)
+0038     SP=NaN;
+0039     SPsum=NaN;
+0040 <span class="keyword">else</span> <span class="comment">% As long as there are some propulsion data points</span>
+0041     SP=nanmean(striderS(ps)-LevelofInterest);
+0042     SPsum=nansum(striderS(ps)-LevelofInterest);
+0043 <span class="keyword">end</span>
+0044 
+0045 ns_ALL=ns;
+0046 ps_ALL=ps;
+0047 
+0048 <span class="comment">%% Peak Behaviors</span>
+0049 
+0050 <span class="comment">%Prevent Impulse &amp; Tail end of forces traces from being identified at peaks</span>
+0051 ns(find(ns&gt;=0.9*length(striderS)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as the braking force 4/11/2017 CJS</span>
+0052 ps(find(ps&lt;=0.1*length(striderS)))=[]; <span class="comment">% 2/14/2018 -- This is to prevent the impulse from being identified.</span>
+0053 
+0054 <span class="keyword">if</span> isempty(ns)
+0055     SBmax=NaN;
+0056     SBmax_ABS=NaN;
+0057     SBmaxQS=NaN;
+0058 <span class="keyword">else</span><span class="comment">% As long as there are some braking data points</span>
+0059     [SBmax]=nanmin(striderS(ns));<span class="comment">%-LevelofInterest</span>
+0060     SBmax=FlipB.*SBmax;
+0061     SBmaxQS=SBmax-2.*FlipB.*(LevelofInterest);
+0062     SBmax_ABS=FlipB.*(nanmin(striderS-LevelofInterest));
+0063 <span class="keyword">end</span>
+0064  
+0065 <span class="keyword">if</span> isempty(ps)
+0066     SPmax=NaN;
+0067    SPmaxQS=NaN;
+0068 <span class="keyword">else</span> <span class="comment">% As long as there are some propulsion data points</span>
+0069     [SPmax]=nanmax(striderS(ps));<span class="comment">%-LevelofInterest</span>
+0070     SPmaxQS=SPmax-2.*LevelofInterest;
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">% if ps(MaxWhereS)&lt;=0.1*length(striderS)</span>
+0074 <span class="comment">%     figure</span>
+0075 <span class="comment">%     plot(striderS, 'k'); hold on</span>
+0076 <span class="comment">%     line([0.1*length(striderS) 0.1*length(striderS)], [-.2 .2])</span>
+0077 <span class="comment">%     line([0.9*length(striderS) 0.9*length(striderS)], [-.2 .2])</span>
+0078 <span class="comment">%     plot(ps(MaxWhereS), striderS(ps(MaxWhereS)), 'r*')</span>
+0079 <span class="comment">%     plot(ns(MinWhereS), striderS(ns(MinWhereS)), 'b*')</span>
+0080 <span class="comment">%     title(titleTXT)</span>
+0081 <span class="comment">% end</span>
+0082 
+0083 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of skillmack</title>
+  <meta name="keywords" content="skillmack">
+  <meta name="description" content="[p stats] = skillmack(response, treatments, blocks)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">statTest</a> &gt; skillmack.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/statTest&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>skillmack
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>[p stats] = skillmack(response, treatments, blocks)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [p stats] = skillmack(M, treatments, blocks) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> [p stats] = skillmack(response, treatments, blocks)
+
+ The Skillings-Mack Statistical Test
+
+ A nonparametric two-way ANOVA when the number of observations per
+ treatment block is one or zero (i.e., when there are missing
+ observations).  If the response variable is parametric
+ (or normally distributed), anovan() should be used instead.
+
+
+ Syntax
+ [p] = skillmack(response, treatments, blocks)
+ [p stats] = skillmack(response, treatments, blocks)
+ 
+ or
+
+ [p stats] = skillmack(M)
+
+ This version assumes M is structured similar to a table in the function
+ friedman(), where columns are treatments, and rows are blocks. 
+
+
+ Example:
+
+ The following table given in Skillings &amp; Mack (1981, page 173) describes 
+ an unbalanced block design example for assembly times, assembly methods 
+ (treatments, in rows), and people (blocks, in columns).  We might be
+ interested in knowing whether there is a significant difference between
+ assembly methods regardless of the person assembling them.  Formally, we
+ are testing for the probability that the differences apparent in response
+ time by assembly method (controlling for the assemblers) are due to 
+ chance.
+ 
+ %                  Blocks (Person)
+ %         A   B   C   D   E   F   G   H   I
+ M =     [3.2 3.1 4.3 3.5 3.6 4.5 NaN 4.3 3.5; ...  % A  
+          4.1 3.9 3.5 3.6 4.2 4.7 4.2 4.6 NaN; ...  % B   Treatments
+          3.8 3.4 4.6 3.9 3.7 3.7 3.4 4.4 3.7; ...  % C  (Assembly Method)
+          4.2 4.0 4.8 4.0 3.9 NaN NaN 4.9 3.9];     % D     
+
+ % Matlab syntax, however, prefers the row/block column/treatment
+ % composition to the matrix.  
+ M = M';
+ 
+ % While this is a concise way to represent the information, large
+ % datasets may not feature such compression.  The data might also be
+ % stored as three separate vectors.
+ [block treatment response] = find(sparse(M));
+ % or
+ [person method time] = find(sparse(M));
+
+ [p stats] = skillmack(M)
+ % or
+ [p stats] = skillmack(response, treatments, blocks)
+ % or
+ [p stats] = skillmack(time, method, person)
+ % are equivalent, and yield:
+
+ stats.T = 15.5930
+ stats.df = 3
+ stats.p = 0.0014
+
+ % We could see these differences visually with a boxplot:
+ boxplot(M)
+ 
+ The algorithm uses the chi-squared approximation for the p-value, which 
+ should not be used when there are very few observations.  Please refer to
+ the original text for a complete description.
+ 
+ References: 
+ Hollander, M., &amp; Wolfe, D. A. (1999). Nonparametric statistical methods (2nd ed.). New York: Wiley.
+ Mack, G. A., &amp; Skillings, J. H. (1980). A Friedman-Type Rank Test for Main Effects in a 2-Factor Anova. Journal of the American Statistical Association, 75(372), 947-951.
+ Skillings, J. H., &amp; Mack, G. A. (1981). On the Use of a Friedman-Type Statistic in Balanced and Unbalanced Block Designs. Technometrics, 23(2), 171-177.
+
+ The code was tested against several published datasets, including the
+ original dataset published by Skillings &amp; Mack (1981).  For a copy of
+ these datasets and other code written by the author, please see:
+ http://www.geog.ucsb.edu/~pingel/matlabCode/index.html
+
+ Use of this code for any non-commercial purpose is granted under the GNU
+ Public License.  
+
+ Author: 
+ Thomas J. Pingel
+ Department of Geography
+ University of California, Santa Barbara
+ 11 November 2010</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% [p stats] = skillmack(response, treatments, blocks)</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% The Skillings-Mack Statistical Test</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% A nonparametric two-way ANOVA when the number of observations per</span>
+0006 <span class="comment">% treatment block is one or zero (i.e., when there are missing</span>
+0007 <span class="comment">% observations).  If the response variable is parametric</span>
+0008 <span class="comment">% (or normally distributed), anovan() should be used instead.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Syntax</span>
+0012 <span class="comment">% [p] = skillmack(response, treatments, blocks)</span>
+0013 <span class="comment">% [p stats] = skillmack(response, treatments, blocks)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% or</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% [p stats] = skillmack(M)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% This version assumes M is structured similar to a table in the function</span>
+0020 <span class="comment">% friedman(), where columns are treatments, and rows are blocks.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Example:</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% The following table given in Skillings &amp; Mack (1981, page 173) describes</span>
+0026 <span class="comment">% an unbalanced block design example for assembly times, assembly methods</span>
+0027 <span class="comment">% (treatments, in rows), and people (blocks, in columns).  We might be</span>
+0028 <span class="comment">% interested in knowing whether there is a significant difference between</span>
+0029 <span class="comment">% assembly methods regardless of the person assembling them.  Formally, we</span>
+0030 <span class="comment">% are testing for the probability that the differences apparent in response</span>
+0031 <span class="comment">% time by assembly method (controlling for the assemblers) are due to</span>
+0032 <span class="comment">% chance.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% %                  Blocks (Person)</span>
+0035 <span class="comment">% %         A   B   C   D   E   F   G   H   I</span>
+0036 <span class="comment">% M =     [3.2 3.1 4.3 3.5 3.6 4.5 NaN 4.3 3.5; ...  % A</span>
+0037 <span class="comment">%          4.1 3.9 3.5 3.6 4.2 4.7 4.2 4.6 NaN; ...  % B   Treatments</span>
+0038 <span class="comment">%          3.8 3.4 4.6 3.9 3.7 3.7 3.4 4.4 3.7; ...  % C  (Assembly Method)</span>
+0039 <span class="comment">%          4.2 4.0 4.8 4.0 3.9 NaN NaN 4.9 3.9];     % D</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% % Matlab syntax, however, prefers the row/block column/treatment</span>
+0042 <span class="comment">% % composition to the matrix.</span>
+0043 <span class="comment">% M = M';</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% % While this is a concise way to represent the information, large</span>
+0046 <span class="comment">% % datasets may not feature such compression.  The data might also be</span>
+0047 <span class="comment">% % stored as three separate vectors.</span>
+0048 <span class="comment">% [block treatment response] = find(sparse(M));</span>
+0049 <span class="comment">% % or</span>
+0050 <span class="comment">% [person method time] = find(sparse(M));</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% [p stats] = skillmack(M)</span>
+0053 <span class="comment">% % or</span>
+0054 <span class="comment">% [p stats] = skillmack(response, treatments, blocks)</span>
+0055 <span class="comment">% % or</span>
+0056 <span class="comment">% [p stats] = skillmack(time, method, person)</span>
+0057 <span class="comment">% % are equivalent, and yield:</span>
+0058 <span class="comment">%</span>
+0059 <span class="comment">% stats.T = 15.5930</span>
+0060 <span class="comment">% stats.df = 3</span>
+0061 <span class="comment">% stats.p = 0.0014</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">% % We could see these differences visually with a boxplot:</span>
+0064 <span class="comment">% boxplot(M)</span>
+0065 <span class="comment">%</span>
+0066 <span class="comment">% The algorithm uses the chi-squared approximation for the p-value, which</span>
+0067 <span class="comment">% should not be used when there are very few observations.  Please refer to</span>
+0068 <span class="comment">% the original text for a complete description.</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">% References:</span>
+0071 <span class="comment">% Hollander, M., &amp; Wolfe, D. A. (1999). Nonparametric statistical methods (2nd ed.). New York: Wiley.</span>
+0072 <span class="comment">% Mack, G. A., &amp; Skillings, J. H. (1980). A Friedman-Type Rank Test for Main Effects in a 2-Factor Anova. Journal of the American Statistical Association, 75(372), 947-951.</span>
+0073 <span class="comment">% Skillings, J. H., &amp; Mack, G. A. (1981). On the Use of a Friedman-Type Statistic in Balanced and Unbalanced Block Designs. Technometrics, 23(2), 171-177.</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">% The code was tested against several published datasets, including the</span>
+0076 <span class="comment">% original dataset published by Skillings &amp; Mack (1981).  For a copy of</span>
+0077 <span class="comment">% these datasets and other code written by the author, please see:</span>
+0078 <span class="comment">% http://www.geog.ucsb.edu/~pingel/matlabCode/index.html</span>
+0079 <span class="comment">%</span>
+0080 <span class="comment">% Use of this code for any non-commercial purpose is granted under the GNU</span>
+0081 <span class="comment">% Public License.</span>
+0082 <span class="comment">%</span>
+0083 <span class="comment">% Author:</span>
+0084 <span class="comment">% Thomas J. Pingel</span>
+0085 <span class="comment">% Department of Geography</span>
+0086 <span class="comment">% University of California, Santa Barbara</span>
+0087 <span class="comment">% 11 November 2010</span>
+0088 
+0089 <a name="_sub0" href="#_subfunctions" class="code">function [p stats] = skillmack(M, treatments, blocks)</a>
+0090 
+0091 <span class="keyword">if</span> nargin&lt;3
+0092 <span class="comment">% This section reformats matrix M into:</span>
+0093 <span class="comment">%     X (observations in the matrix M)</span>
+0094 <span class="comment">%     treatments (columns of M, and the variable of interest)</span>
+0095 <span class="comment">%     blocks (rows of M, and the nuisance variable)</span>
+0096 
+0097 <span class="comment">% Pick apart the observations</span>
+0098 X = reshape(M,numel(M),1); 
+0099 
+0100 <span class="comment">% Since input is a matrix, define the levels.</span>
+0101 treatmentlevels = [1:size(M,2)]'; <span class="comment">% Columns</span>
+0102 blocklevels = [1:size(M,1)]'; <span class="comment">% Rows</span>
+0103 <span class="comment">% treatmentlevels = ([1:size(M,2)]'); % Columns</span>
+0104 <span class="comment">% blocklevels = ([1:size(M,1)]'); % Rows</span>
+0105 k = length(treatmentlevels);
+0106 n = length(blocklevels);
+0107 treatments = reshape(repmat(treatmentlevels',n,1),numel(X),1); 
+0108 blocks = reshape(repmat(blocklevels,k,1),numel(X),1); 
+0109 
+0110 
+0111 <span class="comment">% Get rid of extraneous information, as this will be redefined in the next</span>
+0112 <span class="comment">% section anyway.</span>
+0113 clear treatmentlevels blocklevels k n;
+0114 <span class="keyword">end</span>
+0115 <span class="comment">%%</span>
+0116 <span class="comment">% This section applies to if the preferred format is supplied</span>
+0117 <span class="comment">% skillmack(X,treatments,blocks) where X is a vector (double) and</span>
+0118 <span class="comment">% treatments and blocks are cell arrays.</span>
+0119 
+0120 <span class="comment">% X is now the first argument, input as M</span>
+0121 
+0122 <span class="keyword">if</span> nargin==3
+0123     X = M;
+0124 <span class="keyword">end</span>
+0125 
+0126 <span class="comment">% First, convert to a cell array from matrix if necessary</span>
+0127 <span class="keyword">if</span> ~iscell(treatments)
+0128     treatments2 = cell(size(treatments));
+0129     <span class="keyword">for</span> i=1:length(treatments)
+0130         treatments2{i,1} = treatments(i);
+0131     <span class="keyword">end</span>
+0132     treatments = treatments2;
+0133     clear treatments2 i;
+0134 <span class="keyword">end</span>
+0135 <span class="keyword">if</span> ~iscell(blocks)
+0136     blocks2 = cell(size(blocks));
+0137     <span class="keyword">for</span> i=1:length(blocks)
+0138         blocks2{i,1} = blocks(i);
+0139     <span class="keyword">end</span>
+0140     blocks = blocks2;
+0141     clear blocks2 i;
+0142 <span class="keyword">end</span>
+0143 <span class="comment">%%</span>
+0144 <span class="comment">% Change to cell array of strings, for standardization.</span>
+0145 <span class="comment">% for i=1:length(blocks)</span>
+0146 <span class="comment">%     blocks{i,1} = num2str(blocks{i});</span>
+0147 <span class="comment">%     treatments{i,1} = num2str(treatments{i});</span>
+0148 <span class="comment">% end</span>
+0149 <span class="comment">% clear i;</span>
+0150 
+0151 <span class="comment">% Determine unique levels</span>
+0152 treatmentlevels = unique(treatments);
+0153 blocklevels = unique(blocks);
+0154 
+0155 
+0156 <span class="comment">%%</span>
+0157 <span class="comment">% Check to see if any block has only one observation.  If so, for now just</span>
+0158 <span class="comment">% issue a warning.  Technically, this block should be removed.</span>
+0159 <span class="keyword">for</span> i=1:length(blocklevels)
+0160     indx = find(strcmp(blocks,blocklevels{i}));
+0161     <span class="keyword">if</span> length(indx) &lt;= 1
+0162         disp([<span class="string">'Block '</span>,num2str(blocklevels{i}),<span class="string">' has an insufficient number of observations.'</span>]);
+0163     <span class="keyword">end</span>
+0164 <span class="keyword">end</span>
+0165 clear i indx;
+0166 
+0167 <span class="comment">%% Balance the observations</span>
+0168 <span class="comment">% See if the results improve if 'unbalanced' setups are replaced with NaNs</span>
+0169 
+0170 
+0171 <span class="comment">%%</span>
+0172 <span class="comment">% Create a vector to hold ranked observations</span>
+0173 rankedobs = nan(size(X));
+0174 <span class="comment">% disp(num2str(size(X)));</span>
+0175 <span class="comment">% disp(num2str(length(blocklevels)));</span>
+0176 <span class="keyword">for</span> i=1:length(blocklevels)
+0177    <span class="comment">% Step II</span>
+0178    <span class="comment">% Within each block, rank the observations from 1 to ki, where ki is the</span>
+0179    <span class="comment">% number of treatments present in block i.  If ties occur, use average</span>
+0180    <span class="comment">% ranks.</span>
+0181    <span class="comment">% Grab the blocks at level i</span>
+0182    indx = find(strcmp(blocks,blocklevels{i}));
+0183    <span class="comment">% r holds the ranks for that block. NaNs in empty values.</span>
+0184    r = tiedrank(X(indx));
+0185    <span class="comment">% Step III</span>
+0186    <span class="comment">% Let r(i,j) be the rank assigned to X(i,j) if the observation is present.</span>
+0187    <span class="comment">% Otherwise, let r(i,j) = (k(i) + 1) / 2;</span>
+0188    <span class="comment">% In other words, replace NaNs with guesses.</span>
+0189    indx2 = isnan(r);
+0190     <span class="keyword">if</span> sum(indx2)&gt;0
+0191 <span class="comment">%       disp('There are some NaN observations.');</span>
+0192       replacementr = (sum(isfinite(r)) + 1) / 2;
+0193       r(indx2) = replacementr;
+0194     <span class="keyword">end</span>
+0195    
+0196    
+0197    <span class="keyword">for</span> j=1:length(indx)
+0198       rankedobs(indx(j)) = r(j);
+0199    <span class="keyword">end</span>
+0200 <span class="keyword">end</span>
+0201 clear i j indx indx2 r replacementr
+0202 <span class="comment">% disp(num2str(rankedobs));</span>
+0203 <span class="comment">%% Let's try step 4: Calculating weights.</span>
+0204 A = nan(length(treatmentlevels),1);
+0205 maxrank = nan(size(rankedobs));
+0206 frontweight = nan(size(rankedobs));
+0207 backweight = nan(size(rankedobs));
+0208 totalweight = nan(size(rankedobs));
+0209 <span class="comment">% Calculate front and back weights</span>
+0210 <span class="keyword">for</span> i=1:numel(X)
+0211    maxrank(i) = max(rankedobs(find(strcmp(blocks,blocks{i}))));
+0212    frontweight(i) = sqrt(12/(maxrank(i)+1));
+0213    backweight(i) = rankedobs(i) - ((maxrank(i) + 1)/2);
+0214 <span class="keyword">end</span>
+0215 
+0216 <span class="comment">% Multiply them together to get total weights</span>
+0217 totalweight = frontweight.*backweight;
+0218 <span class="comment">% Sum each treatment.</span>
+0219 <span class="keyword">for</span> i=1:length(A)
+0220     indx = find(strcmp(treatments,treatmentlevels{i}));
+0221     A(i) = sum(totalweight(indx));
+0222 <span class="keyword">end</span>
+0223 clear i totalweight frontweight backweight maxrank indx;
+0224 <span class="comment">% disp(num2str(A));</span>
+0225 
+0226 <span class="comment">%% Create sigma matrix</span>
+0227 sigma = nan(length(treatmentlevels),length(treatmentlevels));
+0228 k = length(treatmentlevels);
+0229 <span class="keyword">for</span> i=1:k <span class="comment">% row</span>
+0230     <span class="keyword">for</span> j=1:k <span class="comment">% column</span>
+0231        indxi = intersect(find(strcmp(treatments,treatmentlevels{i})),find(isfinite(X)==1));
+0232        indxj = intersect(find(strcmp(treatments,treatmentlevels{j})),find(isfinite(X)==1));
+0233 <span class="comment">%        indxk = intersect(indxi,indxj);</span>
+0234        sigma(i,j) = -length(intersect([blocks{indxi}],[blocks{indxj}]));
+0235     <span class="keyword">end</span>
+0236 <span class="keyword">end</span>
+0237 <span class="keyword">for</span> i=1:length(treatmentlevels)
+0238     j = setdiff([1:length(treatmentlevels)],i);
+0239     sigma(i,i) = sum(abs(sigma(i,j)));
+0240 <span class="keyword">end</span>
+0241 
+0242 <span class="comment">%% Calculate the final statistic.</span>
+0243 isigma = pinv(sigma);
+0244 T = A' * pinv(sigma) * A;
+0245 
+0246 <span class="comment">% Hollander and Wolfe (1999) propose that any value of A be omitted since</span>
+0247 <span class="comment">% Aj's are linearly dependent (see page 320).  For test purposes, this line</span>
+0248 <span class="comment">% equates to:</span>
+0249 <span class="comment">% A = A(1:end-1);</span>
+0250 <span class="comment">% sigma = sigma(1:end-1,1:end-1);</span>
+0251 
+0252 <span class="comment">% However, this produces the same test statistic as the above.</span>
+0253 <span class="comment">% Note that values in Hollander and Wolfe can be obtained by rounding the</span>
+0254 <span class="comment">% values of A to the third decimal and the inverse of sigma to the fourth decimal.</span>
+0255 <span class="comment">% A = round(A*1000)./1000;</span>
+0256 <span class="comment">% isigma = round(inv(sigma)*10000)./10000;</span>
+0257 <span class="comment">% T = A' * isigma * A;</span>
+0258 
+0259 <span class="comment">%% Calculate mean ranks</span>
+0260 meanranks = nan(size(treatmentlevels));
+0261 <span class="keyword">for</span> i=1:length(treatmentlevels)
+0262     indx = find(strcmp(treatments,treatmentlevels{i}));
+0263     meanranks(i) = nanmean(rankedobs(indx));
+0264 <span class="keyword">end</span>
+0265 clear indx;
+0266 <span class="comment">%%</span>
+0267 
+0268 df = length(treatmentlevels)-1;
+0269 p = 1 - chi2cdf(T,df);
+0270 stats.T = T;
+0271 stats.df = df;
+0272 stats.p = p;
+0273 stats.A = A;
+0274 stats.sigma = sigma;
+0275 stats.isigma = isigma;
+0276 stats.source = <span class="string">'skillmack'</span>;
+0277 stats.labels = treatmentlevels;
+0278 stats.meanranks = meanranks;</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

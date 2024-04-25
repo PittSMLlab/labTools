@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of polyfit1PCA</title>
+  <meta name="keywords" content="polyfit1PCA">
+  <meta name="description" content="Finding best line through PCA">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; polyfit1PCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>polyfit1PCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Finding best line through PCA</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [pp] = polyfit1PCA(x,y,varNormalizeFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Finding best line through PCA</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pp] = polyfit1PCA(x,y,varNormalizeFlag)</a>
+0002 <span class="comment">%Finding best line through PCA</span>
+0003 my=mean(y);
+0004 y=y(:)'-my;
+0005 mx=mean(x);
+0006     x=x(:)'-mx;
+0007     <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(varNormalizeFlag) &amp;&amp; varNormalizeFlag==1
+0008       vx=std(x);
+0009       vy=std(y);
+0010     <span class="keyword">else</span>
+0011       vx=1;
+0012       vy=1;
+0013 <span class="keyword">end</span>
+0014 [ppp,ccc,aaa]=pca([x/vx; y/vy],<span class="string">'Centered'</span>,false);
+0015 ccc=ccc(:,1);
+0016 pp(1)=ccc(2)*vy/(ccc(1)*vx);
+0017 pp(2)=my-mx*pp(1);
+0018 
+0019 
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

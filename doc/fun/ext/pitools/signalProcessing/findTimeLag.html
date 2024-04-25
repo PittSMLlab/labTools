@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findTimeLag</title>
+  <meta name="keywords" content="findTimeLag">
+  <meta name="description" content="First: truncate:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">signalProcessing</a> &gt; findTimeLag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/signalProcessing&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>findTimeLag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>First: truncate:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">First: truncate:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="estimateDopplerShift.html" class="code" title="function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)">estimateDopplerShift</a>	Signals need to have a relative delay <<M on any arbitrarily chosen window of time:</li><li><a href="matchSignals.html" class="code" title="function [alignedSignal2,timeScaleFactor,lagInSamples,gain] = matchSignals(signal1,signal2)">matchSignals</a>	alignSignals takes two 1-D time signals and finds a transformation of</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal)</a>
+0002 
+0003 <span class="comment">%First: truncate:</span>
+0004 M=max([length(referenceSignal) length(secondarySignal)]);
+0005 referenceSignal(end+1:M)=0;
+0006 secondarySignal(end+1:M)=0;
+0007 
+0008 <span class="comment">%Second: correlate</span>
+0009 F1=fft(referenceSignal);
+0010 F2=fft(fftshift(secondarySignal));
+0011 F=F1.*conj(F2);
+0012 P=ifft(F);
+0013 
+0014 <span class="comment">%Third: sub-sample:</span>
+0015 aux=0:.01:length(P)-1;
+0016 P2=interp1(0:length(P)-1,P,aux,<span class="string">'spline'</span>)/sqrt(sum(referenceSignal.^2)*sum(secondarySignal.^2)); <span class="comment">%For sub-sample resolution</span>
+0017 
+0018 <span class="comment">%Fourth: find max correlation</span>
+0019 [~,t]=max(abs(P2));
+0020 lagInSamples=aux(t)-floor(M/2); <span class="comment">%The -floor(M/2) term accounts for the fftshift</span>
+0021 corrCoef=P2(t);
+0022 
+0023 <span class="keyword">if</span> abs(corrCoef)&lt;.3
+0024     warning([<span class="string">'Could not synch signals: r^2= '</span> num2str(abs(corrCoef))])
+0025 <span class="keyword">end</span>
+0026 timeDiff = NaN;
+0027 
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

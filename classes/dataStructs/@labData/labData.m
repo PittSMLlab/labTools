@@ -12,6 +12,8 @@ classdef labData
 %   beltSpeedSetData - labTS with commands sent to treadmill
 %   beltSpeedReadData - labTS with speed read from treadmill
 %   footSwitchData - labTS with data from foot switches
+%   HreflexPin - labTS with a analog signal with a spike once in a while representing time when an
+%               H-reflex stimulation is being delivered.
 %
 %labData methods:
 %   getMarkerData - accessor method for marker data
@@ -43,13 +45,14 @@ classdef labData
         beltSpeedSetData %labTS, sent commands to treadmill
         beltSpeedReadData %labTS, speed read from treadmill
         footSwitchData %labTS
+        HreflexPin %labTS, this should contain pin readings for left and right leg, it's a sync signal that shows a spike once in a while when an H reflex stimulus is being delivered.
     end
     
     %%
     methods
         
         %Constructor:
-        function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
+        function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)
             %----------------
             
             %if nargin<1 || isempty(metaData)
@@ -127,7 +130,14 @@ classdef labData
                 ME=MException('labData:Constructor','Ninth argument (footSwitches) should be a LabTimeSeries object.');
                 throw(ME);
             end
-            
+            if nargin<10 || isempty(HreflexPin)
+                this.HreflexPin=[];
+            elseif isa(HreflexPin,'labTimeSeries')
+                this.HreflexPin=HreflexPin; %Empty or labels 'L' and 'R'
+            else
+                ME=MException('labData:Constructor','Tenth argument (HreflexPin) should be a LabTimeSeries object.');
+                throw(ME);
+            end
             %---------------
             %Check that all data is from the same time interval: To Do!
             %---------------
@@ -259,7 +269,7 @@ classdef labData
             %COMDATA=this.CarlysCOMData; %CJS: you should do this!
             
             % 7) Generate processedTrial object
-            processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
+            processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData,this.HreflexPin);
             
             % 8) Calculate adaptation parameters - to be
             % recalculated later!!

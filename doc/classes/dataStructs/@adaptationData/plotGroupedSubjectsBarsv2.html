@@ -6,7 +6,7 @@
   <meta name="keywords" content="plotGroupedSubjectsBarsv2">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../../m2html.css">
 </head>
@@ -43,7 +43,7 @@ This function is called by:
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)</a>
-0002             mode=3; <span class="comment">%1 is bars +- std, 2 is lines +- std, 3 is boxplots</span>
+0002             mode=1; <span class="comment">%1 is bars +- std, 2 is lines +- std, 3 is boxplots</span>
 0003             
 0004             
 0005             <span class="keyword">if</span> nargin&lt;4 || isempty(plotIndividualsFlag)
@@ -156,58 +156,56 @@ This function is called by:
 0112                             <span class="keyword">catch</span> <span class="comment">%old matlab versions don't allow for 'FaceAlpha' property on bars</span>
 0113                                 bb(j,k)=bar(xPos,relevantMean,<span class="string">'BarWidth'</span>,.9/((Ngroups+1)*length(N2)),<span class="string">'FaceColor'</span>,colors(j,:).^(1-((k-1)/length(N2))),<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'EdgeColor'</span>,colors(j,:),<span class="string">'LineWidth'</span>,2);<span class="comment">%,'FaceAlpha',(k/length(N2)));</span>
 0114                             <span class="keyword">end</span>
-0115                             hC=errorbar(xPos,relevantMean,relevantSte,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>);
-0116                             set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
-0117                         <span class="keyword">elseif</span> mode==2 <span class="comment">%Mean/median lines +- std or 16-84 percentile range</span>
-0118                             errorbar(xPos,relevantMean, relevantSte,<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,colors(j,:).^(k/length(N2)))
-0119                         <span class="keyword">elseif</span> mode==3 <span class="comment">%Boxplots</span>
-0120                             boxplot(squeeze(allData.group{j}(:,k,i,:)))
-0121                         <span class="keyword">end</span>
-0122                         <span class="keyword">if</span> plotIndividualsFlag==1
-0123                             indivColors=[];
-0124                            hC=plot(xPos-.1,reshape(allData.group{j}(:,k,i,:),nConds,nSubs),<span class="string">'r.'</span>);
-0125                            <span class="comment">%Exclude from legend:</span>
-0126                            hCGroup = hggroup; <span class="comment">%Create group</span>
-0127                            set(hC,<span class="string">'Parent'</span>,hCGroup)<span class="comment">%Grouping all lines plotted</span>
-0128                            set(get(get(hCGroup,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>); 
-0129                         <span class="keyword">end</span>
-0130                         hold off
-0131                     <span class="keyword">end</span>
-0132                     
-0133                 <span class="keyword">end</span>
-0134 <span class="comment">%                 xPos=((length(N2)*Ngroups+1)/2):length(N2)*Ngroups:nConds*length(N2)*Ngroups;</span>
-0135 <span class="comment">%                 xPos=((Ngroups+1)/2):(Ngroups+1):nConds*length(N2)*(Ngroups+1);</span>
-0136 <span class="comment">%                 tickList=cell(length(N2),length(condList));</span>
-0137 <span class="comment">%                 for k=1:length(N2)</span>
-0138 <span class="comment">%                     tickList(k,:)=strcat(['Set ' num2str(k) ' '],condList);</span>
-0139 <span class="comment">%                 end</span>
-0140 <span class="comment">%                 tickList=tickList(:);</span>
-0141                 xPos=((length(N2)*(Ngroups+1))/2):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
-0142                 tickList=condList;
-0143                 set(gca,<span class="string">'XTick'</span>,xPos,<span class="string">'XTickLabel'</span>,tickList);
-0144                 <span class="keyword">if</span> i==length(ah)
-0145                     legend(gca,<span class="string">'show'</span>)
-0146                     <span class="comment">%legend(bb(:,k),gName)</span>
-0147                 <span class="keyword">end</span>
-0148                 <span class="keyword">if</span> removeBiasFlag==1
-0149                 title([label{i} <span class="string">' w/o bias'</span>])
-0150                 <span class="keyword">else</span>
-0151                     title(label{i})
-0152                 <span class="keyword">end</span>
-0153                 aa=axis;
-0154                 <span class="keyword">for</span> j=2:2:nConds
-0155                    hC=patch(xPos(j) +[-1,1,1,-1]*(length(N2)*(Ngroups+1))/2,[aa(3) aa(3) aa(4) aa(4)],[.8,.8,.8],<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,.6); 
-0156                    set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
-0157                    uistack(hC,<span class="string">'bottom'</span>)
-0158                 <span class="keyword">end</span>
-0159                 axis(aa)
-0160             <span class="keyword">end</span>
-0161             
-0162             
-0163             
-0164             
-0165  
-0166 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0115                             bb(j,k).Tag=[<span class="string">'Group'</span> num2str(j) <span class="string">',Cond'</span> num2str(k)];
+0116                             hC=errorbar(xPos,relevantMean,relevantSte,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,<span class="string">'k'</span>);
+0117                             set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
+0118                         <span class="keyword">elseif</span> mode==2 <span class="comment">%Mean/median lines +- std or 16-84 percentile range</span>
+0119                             errorbar(xPos,relevantMean, relevantSte,<span class="string">'DisplayName'</span>,strcat(gName{j},bName{k}),<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,colors(j,:).^(1-((k-1)/length(N2))))
+0120                         <span class="keyword">elseif</span> mode==3 <span class="comment">%Boxplots</span>
+0121                             boxplot(squeeze(allData.group{j}(:,k,i,:))',<span class="string">'positions'</span>,xPos,<span class="string">'widths'</span>,.9,<span class="string">'symbol'</span>,<span class="string">'+'</span>,<span class="string">'colors'</span>,colors(j,:).^(k/length(N2)),<span class="string">'boxstyle'</span>,<span class="string">'outline'</span>);
+0122                         <span class="keyword">end</span>
+0123                         <span class="keyword">if</span> plotIndividualsFlag==1
+0124                             indivColors=[];
+0125                            hC=plot(xPos-.1,reshape(allData.group{j}(:,k,i,:),nConds,nSubs),<span class="string">'r.'</span>);
+0126                            <span class="comment">%Exclude from legend:</span>
+0127                            hCGroup = hggroup; <span class="comment">%Create group</span>
+0128                            set(hC,<span class="string">'Parent'</span>,hCGroup)<span class="comment">%Grouping all lines plotted</span>
+0129                            set(get(get(hCGroup,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>); 
+0130                         <span class="keyword">end</span>
+0131                         hold off
+0132                     <span class="keyword">end</span>
+0133                     
+0134                 <span class="keyword">end</span>
+0135 <span class="comment">%                 xPos=((length(N2)*Ngroups+1)/2):length(N2)*Ngroups:nConds*length(N2)*Ngroups;</span>
+0136 <span class="comment">%                 xPos=((Ngroups+1)/2):(Ngroups+1):nConds*length(N2)*(Ngroups+1);</span>
+0137 <span class="comment">%                 tickList=cell(length(N2),length(condList));</span>
+0138 <span class="comment">%                 for k=1:length(N2)</span>
+0139 <span class="comment">%                     tickList(k,:)=strcat(['Set ' num2str(k) ' '],condList);</span>
+0140 <span class="comment">%                 end</span>
+0141 <span class="comment">%                 tickList=tickList(:);</span>
+0142                 xPos=((length(N2)*(Ngroups+1))/2):length(N2)*(Ngroups+1):nConds*length(N2)*(Ngroups+1);
+0143                 tickList=condList;
+0144                 set(gca,<span class="string">'XTick'</span>,xPos,<span class="string">'XTickLabel'</span>,tickList);
+0145                 <span class="keyword">if</span> i==length(ah)
+0146                     legend(gca,<span class="string">'show'</span>)
+0147                     <span class="comment">%legend(bb(:,k),gName)</span>
+0148                 <span class="keyword">end</span>
+0149                 <span class="keyword">if</span> removeBiasFlag==1
+0150                 title([label{i} <span class="string">' w/o bias'</span>])
+0151                 <span class="keyword">else</span>
+0152                     title(label{i})
+0153                 <span class="keyword">end</span>
+0154                 axis tight
+0155                 aa=axis;
+0156                 <span class="keyword">for</span> j=2:2:nConds
+0157                    hC=patch(xPos(j) +[-1,1,1,-1]*(length(N2)*(Ngroups+1))/2,[aa(3) aa(3) aa(4) aa(4)],[.8,.8,.8],<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceAlpha'</span>,.6); 
+0158                    set(get(get(hC,<span class="string">'Annotation'</span>),<span class="string">'LegendInformation'</span>),<span class="string">'IconDisplayStyle'</span>,<span class="string">'off'</span>);
+0159                    uistack(hC,<span class="string">'bottom'</span>)
+0160                 <span class="keyword">end</span>
+0161                 axis(aa)
+0162             <span class="keyword">end</span>
+0163 
+0164 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

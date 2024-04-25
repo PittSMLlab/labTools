@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of main_cPCA</title>
+  <meta name="keywords" content="main_cPCA">
+  <meta name="description" content="Idea: given some observed dynamical system, identify the eigen-states of">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">oldcPCA</a> &gt; main_cPCA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/dimReduction/oldcPCA&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>main_cPCA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>Idea: given some observed dynamical system, identify the eigen-states of</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Idea: given some observed dynamical system, identify the eigen-states of
+the evolution dynamics</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="cPCA.html" class="code" title="function [C,J,X,Yinf,V,r2] = cPCA(Y,order,forcePCS,useSPCA,estimSize)">cPCA</a>	cPCA or canonic PCA, aims at estimating a canonical space-state model from</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Idea: given some observed dynamical system, identify the eigen-states of</span>
+0002 <span class="comment">%the evolution dynamics</span>
+0003 
+0004 <span class="comment">%Generate data corresponding to over-damped second order system with 360-D</span>
+0005 <span class="comment">%output (Y)</span>
+0006 D=360;
+0007 NN=900;
+0008 v1=randn(D,1);
+0009 <span class="comment">%v1=sort(v1);</span>
+0010 <span class="comment">%v1=fftshift(v1);</span>
+0011 v2=randn(D,1);
+0012 <span class="comment">%v2=sort(v2);</span>
+0013 <span class="comment">%v2=fftshift(v2);</span>
+0014 v3=randn(D,1);
+0015 <span class="comment">%v3=sort(v3);</span>
+0016 <span class="comment">%v3=fftshift(v3);</span>
+0017 tt=[exp(-[0:(NN-1)]/50); exp(-[0:(NN-1)]/200)];
+0018 Y=bsxfun(@plus,v1*tt(1,:)+v2*tt(2,:),v3);
+0019 Y=Y+randn(size(Y));
+0020 
+0021 
+0022 <span class="comment">%Method one: identify dynamics from early &amp; late components</span>
+0023 early=nanmedian(Y(:,3:10),2);
+0024 late=nanmedian(Y(:,end-100:end),2); <span class="comment">%This should be close to v3</span>
+0025 C1=[early,late];
+0026 X1=C1\Y;
+0027 X1=X1';
+0028 
+0029 <span class="comment">%Method two: do PCA after subtracting steady-state</span>
+0030 order=2;
+0031 Yinf=nanmedian(Y(:,end-100:end),2);
+0032 [X2,C2,D2]=pca(Y-Yinf,<span class="string">'Centered'</span>,false);
+0033 X2=X2(:,1:order);
+0034 C2=C2(:,1:order);
+0035 
+0036 <span class="comment">%Now, do canonical PCA:</span>
+0037 [C3,J,X3,~] = <a href="cPCA.html" class="code" title="function [C,J,X,Yinf,V,r2] = cPCA(Y,order,forcePCS,useSPCA,estimSize)">cPCA</a>((Y-Yinf)',order,2^5-1,1);
+0038 [~,JJ]=jordan(J);
+0039 
+0040 <span class="comment">%% Visualize results</span>
+0041 figure
+0042 ex1=[.85,0,.1];
+0043 ex2=[0,.1,.6];
+0044 map=[bsxfun(@plus,ex1,bsxfun(@times,1-ex1,[0:.01:1]'));bsxfun(@plus,ex2,bsxfun(@times,1-ex2,[1:-.01:0]'))];
+0045 <span class="keyword">for</span> i=1:4 <span class="comment">%Three methods + original vectors</span>
+0046     <span class="keyword">switch</span> i
+0047         <span class="keyword">case</span> 1
+0048             PC=[C1,zeros(size(late))];
+0049             coefs=X1;
+0050             t=[<span class="string">'Early/Late proj'</span>];
+0051         <span class="keyword">case</span> 2
+0052             PC=[C2 Yinf];
+0053             coefs=X2;
+0054             scale=median(coefs(3:10,:));
+0055             coefs=bsxfun(@rdivide,coefs,scale);
+0056             PC(:,1:end-1)=bsxfun(@times,PC(:,1:end-1),scale);
+0057             t=[<span class="string">'PCA'</span>];
+0058         <span class="keyword">case</span> 3
+0059             PC=[C3 Yinf];
+0060             coefs=X3';
+0061             scale=median(coefs(3:10,:));
+0062             coefs=bsxfun(@rdivide,coefs,scale);
+0063             PC(:,1:end-1)=bsxfun(@times,PC(:,1:end-1),scale);
+0064             t=[<span class="string">'cPCA, \tau= '</span> num2str(-1./log(diag(J)'),3)];
+0065         <span class="keyword">case</span> 4
+0066             PC=[v1,v2,v3];
+0067             coefs=tt';
+0068             t=[<span class="string">'Actual, \tau= 50, 200'</span>];
+0069     <span class="keyword">end</span>
+0070     <span class="keyword">for</span> j=1:size(PC,2)+1 <span class="comment">%Two/three PCs and dynamics plot</span>
+0071         subplot(4,4,(i-1)*4+j)
+0072         <span class="keyword">if</span> j&lt;=size(PC,2)
+0073         hold on
+0074         imagesc(reshape(PC(:,j),12,30)')
+0075         <span class="keyword">if</span> j&lt;size(PC,2)
+0076         title([<span class="string">'PC'</span> num2str(j)])
+0077         <span class="keyword">else</span>
+0078             title([<span class="string">'Y_\infty'</span>])
+0079         <span class="keyword">end</span>
+0080         <span class="keyword">else</span>
+0081             plot(coefs)
+0082             title(t)
+0083             grid on
+0084         <span class="keyword">end</span>
+0085         axis tight
+0086     <span class="keyword">end</span>
+0087     
+0088 <span class="keyword">end</span>
+0089 colormap(flipud(map))</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

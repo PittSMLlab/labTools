@@ -6,7 +6,7 @@
   <meta name="keywords" content="trialMetaData">
   <meta name="description" content="">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
   <meta name="robots" content="index, follow">
   <link type="text/css" rel="stylesheet" href="../../../m2html.css">
 </head>
@@ -41,7 +41,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)</a></li></ul>
+<li><a href="#_sub1" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab,perceptualTasks,datlog)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 classdef <a href="trialMetaData.html" class="code" title="">trialMetaData</a>
@@ -65,52 +65,76 @@ This function is called by:
 0019         condition=[];
 0020         rawDataFilename=<span class="string">''</span>; <span class="comment">%string or cell array of strings, if there are many files</span>
 0021         type=<span class="string">''</span>;
-0022     <span class="keyword">end</span>
-0023 
-0024     
-0025     methods
-0026         <span class="comment">%Constructor</span>
-0027         <span class="comment">%trialMetaData(desc,obs,refLeg,cond,filename,type)</span>
-0028         <a name="_sub0" href="#_subfunctions" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type)                  </a>
-0029             <span class="keyword">if</span> isa(name,<span class="string">'char'</span>)
-0030                 this.name=name;
-0031             <span class="keyword">end</span>
-0032             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; isa(desc,<span class="string">'char'</span>)
-0033                 this.description=desc;
+0022         schenleyLab=<span class="string">''</span>;
+0023         perceptualTasks=<span class="string">''</span>;
+0024         datlog=<span class="string">''</span>;
+0025     <span class="keyword">end</span>
+0026 
+0027     
+0028     methods
+0029         <span class="comment">%Constructor</span>
+0030         <span class="comment">%trialMetaData(desc,obs,refLeg,cond,filename,type)</span>
+0031         <a name="_sub0" href="#_subfunctions" class="code">function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab,perceptualTasks,datlog)                  </a>
+0032             <span class="keyword">if</span> isa(name,<span class="string">'char'</span>)
+0033                 this.name=name;
 0034             <span class="keyword">end</span>
-0035             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(obs,<span class="string">'char'</span>)
-0036                 this.observations=obs;
+0035             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; isa(desc,<span class="string">'char'</span>)
+0036                 this.description=desc;
 0037             <span class="keyword">end</span>
-0038             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; (isa(refLeg,<span class="string">'char'</span>)) <span class="comment">%Must be either 'L' or 'R'</span>
-0039                 <span class="keyword">if</span> strcmpi(refLeg,<span class="string">'R'</span>) || strcmpi(refLeg,<span class="string">'L'</span>)
-0040                     this.refLeg=refLeg; 
-0041                 <span class="keyword">else</span>
-0042                     ME = MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'refLeg must be either ''L'' or ''R''.'</span>);
-0043                     throw(ME);
-0044                 <span class="keyword">end</span>                
-0045             <span class="keyword">end</span>                      
-0046             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; isa(cond,<span class="string">'double'</span>);
-0047                 this.condition=cond;
-0048             <span class="keyword">end</span>
-0049             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; (isa(filename,<span class="string">'char'</span>) || (isa(filename,<span class="string">'cell'</span>)&amp;&amp; isa(filename{1},<span class="string">'char'</span>)) )
-0050                 this.rawDataFilename=filename;
+0038             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(obs,<span class="string">'char'</span>)
+0039                 this.observations=obs;
+0040             <span class="keyword">end</span>
+0041             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; (isa(refLeg,<span class="string">'char'</span>)) <span class="comment">%Must be either 'L' or 'R'</span>
+0042                 <span class="keyword">if</span> strcmpi(refLeg,<span class="string">'R'</span>) || strcmpi(refLeg,<span class="string">'L'</span>)
+0043                     this.refLeg=refLeg; 
+0044                 <span class="keyword">else</span>
+0045                     ME = MException(<span class="string">'experimentMetaData:Constructor'</span>,<span class="string">'refLeg must be either ''L'' or ''R''.'</span>);
+0046                     throw(ME);
+0047                 <span class="keyword">end</span>                
+0048             <span class="keyword">end</span>                      
+0049             <span class="keyword">if</span> nargin&gt;4 &amp;&amp; isa(cond,<span class="string">'double'</span>);
+0050                 this.condition=cond;
 0051             <span class="keyword">end</span>
-0052             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; (isa(type,<span class="string">'char'</span>))
-0053                 <span class="keyword">if</span> strcmpi(type,<span class="string">'TM'</span>) || strcmpi(type,<span class="string">'OG'</span>)
-0054                     this.type=type;
-0055                 <span class="keyword">else</span>
-0056                     ME = MException(<span class="string">'labMetaData:Constructor'</span>,<span class="string">'type must be either ''OG'' or ''TM''.'</span>);
-0057                     throw(ME);
-0058                 <span class="keyword">end</span>
-0059             <span class="keyword">else</span>
-0060                 this.type=<span class="string">'TM'</span>;
-0061                 warning(<span class="string">'Assuming trial is conducted on the treadmill'</span>)
-0062             <span class="keyword">end</span>
-0063         <span class="keyword">end</span>
-0064         
-0065     <span class="keyword">end</span>
-0066     
-0067 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Tue 08-Mar-2016 13:39:40 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0052             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; (isa(filename,<span class="string">'char'</span>) || (isa(filename,<span class="string">'cell'</span>)&amp;&amp; isa(filename{1},<span class="string">'char'</span>)) )
+0053                 this.rawDataFilename=filename;
+0054             <span class="keyword">end</span>
+0055             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; (isa(type,<span class="string">'char'</span>))
+0056                 <span class="keyword">if</span> strcmpi(type,<span class="string">'TM'</span>) || strcmpi(type,<span class="string">'OG'</span>) || strcmpi(type,<span class="string">'NIM'</span>) || strcmpi(type,<span class="string">'IN'</span>)
+0057                     this.type=type;
+0058                 <span class="keyword">else</span>
+0059                     ME = MException(<span class="string">'labMetaData:Constructor'</span>,<span class="string">'type must be either ''OG'' or ''TM'' , ''NIM'' or ''IN''.'</span>);
+0060                     throw(ME);
+0061                 <span class="keyword">end</span>
+0062             <span class="keyword">else</span>
+0063                 this.type=<span class="string">'TM'</span>;
+0064                 warning(<span class="string">'Assuming trial is conducted on the treadmill'</span>)
+0065             <span class="keyword">end</span>
+0066             
+0067             <span class="keyword">if</span> nargin&gt;7 &amp;&amp; (isa(schenleyLab,<span class="string">'double'</span>))
+0068                 this.schenleyLab=schenleyLab;
+0069             <span class="keyword">else</span>
+0070                 this.schenleyLab=0;
+0071                 warning(<span class="string">'Assuming this data was not collected on Schenley lab. This will only affect overground trial turn removal.'</span>)
+0072             <span class="keyword">end</span>
+0073             <span class="keyword">if</span> nargin&gt;8 &amp;&amp; (isa(perceptualTasks,<span class="string">'double'</span>))
+0074                 this.perceptualTasks=perceptualTasks;
+0075             <span class="keyword">else</span>
+0076                 this.perceptualTasks=0;
+0077                 warning(<span class="string">'Assuming this experiment does not have any perceptual tasks (2AFC tasks).'</span>)
+0078             <span class="keyword">end</span>
+0079             <span class="keyword">if</span> nargin&gt;9 &amp;&amp; (isa(datlog,<span class="string">'struct'</span>))
+0080                 this.datlog = datlog;
+0081                 this.datlog = this.datlog.datlog;
+0082             <span class="keyword">else</span>
+0083                 this.datlog=<span class="string">''</span>;
+0084     
+0085             <span class="keyword">end</span>
+0086             
+0087         <span class="keyword">end</span>
+0088         
+0089     <span class="keyword">end</span>
+0090     
+0091 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:13 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
 </body>
 </html>

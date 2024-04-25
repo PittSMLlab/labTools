@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of compareLists</title>
+  <meta name="keywords" content="compareLists">
+  <meta name="description" content="Searches for strings in list2 to match any string in list1.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">usefulCode</a> &gt; compareLists.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for fun/ext/pitools/usefulCode&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>compareLists
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Searches for strings in list2 to match any string in list1.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [bool,idxs] = compareLists(list1,list2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Searches for strings in list2 to match any string in list1.
+List2 has to be a cell array of strings.
+List 1 has to be a cell array containing strings or cell arrays of
+strings, to allow for multiple alternative spellings.
+bool &amp; idxs are of the same size as list2
+bool(i) is true if list2{i} is found in list1
+idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that
+any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}
+may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may
+return a boolean vector</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>	Searches for strings in list2 to match any string in list1.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bool,idxs] = compareLists(list1,list2)</a>
+0002 <span class="comment">%Searches for strings in list2 to match any string in list1.</span>
+0003 <span class="comment">%List2 has to be a cell array of strings.</span>
+0004 <span class="comment">%List 1 has to be a cell array containing strings or cell arrays of</span>
+0005 <span class="comment">%strings, to allow for multiple alternative spellings.</span>
+0006 <span class="comment">%bool &amp; idxs are of the same size as list2</span>
+0007 <span class="comment">%bool(i) is true if list2{i} is found in list1</span>
+0008 <span class="comment">%idxs(i), if bool(i)==true, contains the element of list1 that contains the string list2{i} such that</span>
+0009 <span class="comment">%any(strcmp(list2{i},list1{idxs(i)}))=true. Note that since list1{idxs(i)}</span>
+0010 <span class="comment">%may contain a cell array of strings, strcmp(list2{i},list1{idxs(i)}) may</span>
+0011 <span class="comment">%return a boolean vector</span>
+0012 warning(<span class="string">'Deprecated: use compareListsNested'</span>)
+0013 [bool,idxs] = <a href="compareListsNested.html" class="code" title="function [bool,idxs] = compareListsNested(list1,list2)">compareListsNested</a>(list1,list2);
+0014 <span class="keyword">end</span>
+0015</pre></div>
+<hr><address>Generated on Tue 16-Apr-2024 13:38:31 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
