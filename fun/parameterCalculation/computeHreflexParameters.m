@@ -34,13 +34,18 @@ switch lower(slowLeg)   % which leg is slow, R or L
         indsStimSlowAll = find(stimTrigR > threshVolt);
         indsStimFastAll = find(stimTrigL > threshVolt);
         % MG is the muscle used for the H-reflex
-        EMGSlow = EMGData.Data(:,contains(EMGData.labels,'RMG'));
-        EMGFast = EMGData.Data(:,contains(EMGData.labels,'LMG'));
+        EMGSlowMG = EMGData.Data(:,contains(EMGData.labels,'RMG'));
+        EMGFastMG = EMGData.Data(:,contains(EMGData.labels,'LMG'));
+        % use the TAP to corroborate the stim artifact time
+        EMGSlowTAP = EMGData.Data(:,contains(EMGData.labels,'RTAP'));
+        EMGFastTAP = EMGData.Data(:,contains(EMGData.labels,'LTAP'));
     case 'l'            % if left leg is slow, ...
         indsStimSlowAll = find(stimTrigL > threshVolt);
         indsStimFastAll = find(stimTrigR > threshVolt);
-        EMGSlow = EMGData.Data(:,contains(EMGData.labels,'LMG'));
-        EMGFast = EMGData.Data(:,contains(EMGData.labels,'RMG'));
+        EMGSlowMG = EMGData.Data(:,contains(EMGData.labels,'LMG'));
+        EMGFastMG = EMGData.Data(:,contains(EMGData.labels,'RMG'));
+        EMGSlowTAP = EMGData.Data(:,contains(EMGData.labels,'LTAP'));
+        EMGFastTAP = EMGData.Data(:,contains(EMGData.labels,'RTAP'));
     otherwise           % otherwise, throw an error
         error('Invalid slow leg input argument, must be ''R'' or ''L''');
 end
@@ -50,12 +55,12 @@ end
 indsNewPulseSlow = diff([0; indsStimSlowAll]) > 1;
 indsNewPulseFast = diff([0; indsStimFastAll]) > 1;
 
-% determine time since start of trial when stim pulse occurred
+% determine time since start of trial when stim pulse started (rising edge)
 stimTimeSlowAbs = HreflexData.Time(indsStimSlowAll(indsNewPulseSlow));
 stimTimeFastAbs = HreflexData.Time(indsStimFastAll(indsNewPulseFast));
 
 % initialize parameter arrays: time of stimulation trigger pulse onset
-% (i.e., rising edge) and H-wave magnitude (i.e., peak-to-peak voltage)
+% (i.e., rising edge) and H-wave amplitude (i.e., peak-to-peak voltage)
 stimTimeSlow = nan(size(timeSHS));
 stimTimeFast = nan(size(timeFHS));
 hReflexSlow = nan(size(timeSHS));
@@ -73,6 +78,7 @@ indsStimStrideFast = arrayfun(@(x) find((x-timeFHS) > 0,1,'last'), ...
     stimTimeFastAbs);
 
 % populate the times for the strides that have stimulation
+% TODO: Update to use TAP EMG stim artifact rather than trigger pulse
 stimTimeSlow(indsStimStrideSlow) = stimTimeSlowAbs - ...
     timeSHS(indsStimStrideSlow);
 stimTimeFast(indsStimStrideFast) = stimTimeFastAbs - ...
@@ -84,30 +90,70 @@ indsEMGStimOnsetSlowAbs = arrayfun(@(x) find(x == EMGData.Time), ...
     stimTimeSlowAbs);
 indsEMGStimOnsetFastAbs = arrayfun(@(x) find(x == EMGData.Time), ...
     stimTimeFastAbs);
+
 numStimSlow = length(indsEMGStimOnsetSlowAbs);  % number of stimuli
 numStimFast = length(indsEMGStimOnsetFastAbs);
 
+indsEMGStimArtifactSlowAbs = nan(size(indsEMGStimOnsetSlowAbs));
+indsEMGStimArtifactFastAbs = nan(size(indsEMGStimOnsetFastAbs));
+
+% TODO: store more parameters related to the H-reflex:
+%        - time of H-wave (peak and trough relative to stimulus pulse)
+%        - M-wave amplitude
+%        - time of M-wave (peak and trough)
+
 % 20 ms after stimulus trigger pulse onset divided by sample period to get
 % the number of samples after stim onset for the start of the H-wave window
-winStart = 0.020 / EMGData.sampPeriod;
-winEnd = 0.050 / EMGData.sampPeriod;    % 50 ms after stimulus pulse onset
+% sample period (in seconds) of EMG data, which should be identical to the
+% sample period of H-reflex stimulation trigger data (i.e., 1 / 2,000 Hz)
+% TODO: add check to ensure identical
+per = EMGData.sampPeriod;   % sample period of data
+winStart = 0.020 / per;     % 20 ms after TAP-aligned stim artifact
+winEnd = 0.050 / per;       % 50 ms after TAP-aligned stim artifact
+winStim = 0.1 / per;    % +/- 100 ms of the onset of the stim trigger pulse
 
 for stS = 1:numStimSlow     % for each slow leg stimulus, ...
+    winSearch = (indsEMGStimOnsetSlowAbs(stS) - winStim): ...
+        (indsEMGStimOnsetSlowAbs(stS) + winStim);
+    [~,indMaxTAP] = max(EMGSlowTAP(winSearch));
+    timesWin = EMGData.Time(winSearch);
+
+    % TODO: implement more robust peak finding and discrepancy handling
+    % consider moving into a function or reducing loops
+    % TODO: need to add a threshold so that data is thrown out if the
+    % TAP positive artifact peak (which appears to be typically massive
+    % relative to the EMG signal or the artifact present in other
+    % muscles) < 0.0004 (from the peak finding in Omar's code)
+    timeStimStart = timesWin(indMaxTAP);
+    indsEMGStimArtifactSlowAbs(stS) = find(EMGData.Time == timeStimStart);
+
     % extract the EMG data for the time window of 20 ms - 50 ms from the
     % onset of the stimulus pulse
-    indWinStart = indsEMGStimOnsetSlowAbs(stS) + winStart;
-    indWinEnd = indsEMGStimOnsetSlowAbs(stS) + winEnd;
-    winEMG = EMGSlow(indWinStart:indWinEnd);
+    % indWinStart = indsEMGStimOnsetSlowAbs(stS) + winStart;
+    % indWinEnd = indsEMGStimOnsetSlowAbs(stS) + winEnd;
+    indWinStart = indsEMGStimArtifactSlowAbs(stS) + winStart;
+    indWinEnd = indsEMGStimArtifactSlowAbs(stS) + winEnd;
+    winEMG = EMGSlowMG(indWinStart:indWinEnd);
     % compute amplitude of the H-waveform (i.e., peak-to-peak voltage)
     hReflexSlow(indsStimStrideSlow(stS)) = max(winEMG) - min(winEMG);
 end
 
 for stF = 1:numStimFast     % for each fast leg stimulus, ...
+    winSearch = (indsEMGStimOnsetFastAbs(stF) - winStim): ...
+        (indsEMGStimOnsetFastAbs(stF) + winStim);
+    [~,indMaxTAP] = max(EMGFastTAP(winSearch));
+    timesWin = EMGData.Time(winSearch);
+
+    timeStimStart = timesWin(indMaxTAP);
+    indsEMGStimArtifactFastAbs(stF) = find(EMGData.Time == timeStimStart);
+
     % extract the EMG data for the time window of 20 ms - 50 ms from the
     % onset of the stimulus pulse
-    indWinStart = indsEMGStimOnsetFastAbs(stF) + winStart;
-    indWinEnd = indsEMGStimOnsetFastAbs(stF) + winEnd;
-    winEMG = EMGFast(indWinStart:indWinEnd);
+    % indWinStart = indsEMGStimOnsetFastAbs(stF) + winStart;
+    % indWinEnd = indsEMGStimOnsetFastAbs(stF) + winEnd;
+    indWinStart = indsEMGStimArtifactFastAbs(stF) + winStart;
+    indWinEnd = indsEMGStimArtifactFastAbs(stF) + winEnd;
+    winEMG = EMGFastMG(indWinStart:indWinEnd);
     % compute amplitude of the H-waveform (i.e., peak-to-peak voltage)
     hReflexFast(indsStimStrideFast(stF)) = max(winEMG) - min(winEMG);
 end
