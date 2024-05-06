@@ -8,7 +8,7 @@
 % NOTE: this processing script uses 'SL_Realtime.m' as a template to use
 % the Vicon Nexus sofware tools.
 
-%% Load the C3D File Data
+%% 1. Load the C3D File Data
 % Vicon Nexus must be open, offline, and the desired trial loaded
 vicon = ViconNexus();
 [path,filename] = vicon.GetTrialName; % ask Nexus which trial is open
@@ -18,11 +18,322 @@ filename = [filename '.c3d'];
 % commandwindow();
 % [filename,path] = uigetfile('*.c3d', ...
 %     'Please select the c3d file of interest:');
-
 H = btkReadAcquisition([path filename]);
 
 % using the same method as Labtools, retrieve the analog data
 [analogs,analogsInfo] = btkGetAnalogs(H);
+
+%% 2. Retrieve User Input Data
+
+% TODO: Use the feature of the stimulator to set the current output
+% based on the voltage of the trigger pulse to eliminate the need for
+% asking the user to input the stimulation amplitudes
+
+prompt = { ...
+    'Enter the EMG sensor muscles in sensor number order:', ...
+    'Was trial a walking calibration? (''1'' = true, ''0'' = false)', ...
+    'Enter the right leg stimulation amplitudes (numbers only):', ...
+    'Enter the left leg stimulation amplitudes (numbers only):', ...
+    'Stimulation Artifact Threshold (V):', ...
+    'Minimum Time Between Stimulation Pulses (s):'};
+dlgtitle = 'H-Reflex Calibration Input';
+fieldsize = [1 200; 1 200; 1 200; 1 200; 1 200; 1 200];
+% TODO: set the below initial values to whatever we would expect to use
+% during the calibration trial; for now set to values used for SAS01V02
+% (with the amplitudes being the best guess based on memory)
+definput = { ...
+    ['RTAP RTAD NA RPER RMG RLG LTAP LTAD LPER LMG LLG RSOL LSOL NA NA' ...
+    ' sync1'], ...
+    '1', ...
+    '8 12 16 16 20 16 16 18 18', ... '8 8 12 12 16 16 20 20 24 24', ...
+    '8 12 16 16 20 16 16 18 18', ... '8 8 12 12 16 16 20 20 24 24', ...
+    '0.0003', ...
+    '5'};
+answer = inputdlg(prompt,dlgtitle,fieldsize,definput);
+
+% TODO: add input argument checks (e.g., throw error if EMG is left blank)
+EMGList1 = strsplit(answer{1},' ');
+isCalWalking = boolean(str2double(answer{2}));
+ampsStimR = str2num(answer{3});
+ampsStimL = str2num(answer{4});
+threshStimArtifact = str2double(answer{5});% stimulation artifact threshold
+threshStimTimeSep = str2double(answer{6}); % at least 5 sec between stim
+
+numStimR = length(ampsStimR);   % number of times stimulated right leg
+numStimL = length(ampsStimL);   % number of times stimulated left leg
+
+%% Retrieve EMG Data
+% NOTE: below is copied directly from 'loadTrials.m'
+% below are the muscle names (abbrev.) in the desired order
+% NOTE: thigh and hip muscles have been removed since not currently
+% relevant for the Spinal Adaptation project
+orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG'};
+orderedEMGList={};
+for j = 1:length(orderedMuscleList)
+    orderedEMGList{end+1}=['R' orderedMuscleList{j}];
+    orderedEMGList{end+1}=['L' orderedMuscleList{j}];
+end
+
+EMGData = [];
+relData = [];
+relDataTemp = [];
+fieldList = fields(analogs);
+idxList = [];
+for j=1:length(fieldList)
+    if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
+        relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+        idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
+        analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+    end
+end
+emptyChannels1=cellfun(@(x) contains(x,'NA') || contains(x,'sync'),EMGList1);
+EMGList1 = EMGList1(~emptyChannels1);
+relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+relData=relData(:,~emptyChannels1);
+EMGList=EMGList1;
+
+%Check if names match with expectation, otherwise query user
+for k=1:length(EMGList)
+    while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
+        aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
+        if k<=length(EMGList1)
+            EMGList1{idxList(k)}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
+        end
+        EMGList{k}=aux{1};
+    end
+end
+
+%For some reasing the naming convention for analog pins is not kept
+%across Nexus versions:
+fieldNames=fields(analogs);
+
+refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
+
+%Check for frequencies between the two PCs
+if secondFile
+    if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
+        warning('Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.')
+        %Assuming that the sampling rates are multiples of one another
+        if analogsInfo.frequency>analogsInfo2.frequency
+            %First set is the up-sampled one, reducing
+            P=analogsInfo.frequency/analogsInfo2.frequency;
+            R=round(P);
+            relData=relData(1:R:end,:);
+            refSync=refSync(1:R:end);
+            EMGfrequency=analogsInfo2.frequency;
+        else
+            P=round(analogsInfo2.frequency/analogsInfo.frequency);
+            R=round(P);
+            relData2=relData2(1:R:end,:);
+            EMGfrequency=analogsInfo.frequency;
+        end
+        if abs(R-P)>1e-7
+            error('loadTrials:unmatchedSamplingRatesForEMG','The different EMG files are sampled at different rates and they are not multiple of one another')
+        end
+    else
+        EMGfrequency=analogsInfo.frequency;
+    end
+else
+    EMGfrequency=analogsInfo.frequency;
+end
+
+%Only keeping matrices of same size to one another:
+if secondFile
+    [auxData, auxData2] = truncateToSameLength(relData,relData2);
+    allData=[auxData,auxData2];
+    clear auxData*
+else
+    allData=relData;
+end
+
+%Pre-process:
+[refSync] = clipSignals(refSync(:),.1); %Clipping top & bottom samples (1 out of 1e3!)
+refAux=medfilt1(refSync,20);
+%refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
+refAux=medfilt1(diff(refAux),10);
+clear auxData*
+
+syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
+sync=allData(:,syncIdx);
+
+if ~isempty(sync) %Only proceeding with synchronization if there are sync signals
+    %Clipping top & bottom 0.1%
+    [sync] = clipSignals(sync,.1);
+    N=size(sync,1);
+    aux=medfilt1(sync,20,[],1); %Median filter to remove spikes
+    %aux(aux>(median(aux)+5*iqr(aux)) | aux <(median(aux)-5*iqr(aux)))=median(aux(:)); %Truncating samples outside the median+-5*iqr range
+    aux=medfilt1(diff(aux),10,[],1);
+    if secondFile
+        [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
+        %                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2));
+        newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
+    end
+    [~,timeScaleFactorA,lagInSamplesA,~] = matchSignals(refAux,aux(:,1));
+    newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
+    if secondFile
+        newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
+        %                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
+        %                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
+        % %
+    end
+    
+    %Only keeping matrices of same size to one another:
+    if secondFile
+        [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
+        clear newRelData*
+        allData=[auxData,auxData2];
+        clear auxData*
+    else
+        allData=newRelData;
+    end
+    
+    %Finding gains through least-squares on high-pass filtered synch
+    %signals (why using HPF for gains and not for synch?)
+    [refSync] = clipSignals(refSync(:),.1);
+    refSync=idealHPF(refSync,0); %Removing DC only
+    [allData,refSync]=truncateToSameLength(allData,refSync);
+    sync=allData(:,syncIdx);
+    [sync] = clipSignals(sync,.1);
+    sync=idealHPF(sync,0);
+    gain1=refSync'/sync(:,1)';
+    indStart=round(max([lagInSamplesA+1,1]));
+    reducedRefSync=refSync(indStart:end);
+    indStart=round(max([lagInSamplesA+1,1]));
+    reducedSync1=sync(indStart:end,1)*gain1;
+    E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
+    if secondFile
+        gain2=refSync'/sync(:,2)';
+        indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+        reducedRefSync2=refSync(indStart:end);
+        %                 indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+        reducedSync2=sync(indStart:end,2)*gain2;
+        E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
+        %Comparing the two bases' synchrony mechanism (not to ref signal):
+        %reducedSync1a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;
+        %reducedSync2a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;
+        %E3=sum((reducedSync1a-reducedSync2a).^2)/sum(refSync.^2);
+    else
+        E2=0;
+        gain2=NaN;
+        timeScaleFactor=NaN;
+        lagInSamples=NaN;
+    end
+    
+    %Analytic measure of alignment problems
+    disp(['Sync complete: mismatch signal energy (as %) was ' num2str(100*E1,3) ' and ' num2str(100*E2,3) '.'])
+    disp(['Sync parameters to ref. signal were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's']);
+    disp(['Typical sync parameters are: gains= -933.3 +- 0.2 (both); delays= -0.025s +- 0.001, 0.014 +- 0.002'])
+    disp(['Sync parameters between PCs were: gain= ' num2str(gain1/gain2,4) '; delay= ' num2str((lagInSamples)/EMGfrequency,3) 's; sampling mismatch (ppm)= ' num2str(1e6*(1-timeScaleFactor),3)]);
+    disp(['Typical sync parameters are: gain= 1; delay= 0.040s; sampling= 35 ppm'])
+    if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
+        warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
+        h=figure;
+        subplot(2,2,[1:2])
+        hold on
+        title(['Trial ' num2str(t) ' Synchronization'])
+        time=[0:length(refSync)-1]*1/EMGfrequency;
+        plot(time,refSync)
+        plot(time,sync(:,1)*gain1,'r')
+        if secondFile
+            plot(time,sync(:,2)*gain2,'g')
+        end
+        leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
+        leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+        legend('refSync',leg1,leg2)
+        hold off
+        subplot(2,2,3)
+        T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
+        if T<length(refSync)
+            hold on
+            plot(time(1:T),refSync(1:T))
+            plot(time(1:T),sync(1:T,1)*gain1,'r')
+            if secondFile
+                plot(time(1:T),sync(1:T,2)*gain2,'g')
+            end
+            hold off
+            subplot(2,2,4)
+            hold on
+            plot(time(end-T:end),refSync(end-T:end))
+            plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
+            if secondFile
+                plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+            end
+            hold off
+        end
+        s=inputdlg('If sync parameters between signals look fine and mismatch is below 5%, we recommend yes.','Please confirm that you want to proceed like this (y/n).');
+        switch s{1}
+            case {'y','Y','yes'}
+                disp(['Using signals in a possibly unsynchronized way!.'])
+                close(h)
+            case {'n','N','no'}
+                error('loadTrials:EMGCouldNotBeSynched','Could not synchronize EMG data, stopping data loading.')
+        end
+    end
+    
+    %Plot to CONFIRM VISUALLY if alignment worked:
+    h=figure;
+    subplot(2,2,[1:2])
+    hold on
+    title(['Trial ' num2str(t) ' Synchronization'])
+    time=[0:length(refSync)-1]*1/EMGfrequency;
+    plot(time,refSync)
+    plot(time,sync(:,1)*gain1,'r')
+    leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
+    if secondFile
+        plot(time,sync(:,2)*gain2,'g')
+        leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
+        legend('refSync',leg1,leg2)
+    else
+        legend('refSync',leg1)
+    end
+    hold off
+    subplot(2,2,3)
+    T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
+    if T<length(refSync)
+        hold on
+        plot(time(1:T),refSync(1:T))
+        plot(time(1:T),sync(1:T,1)*gain1,'r')
+        if secondFile
+            plot(time(1:T),sync(1:T,2)*gain2,'g')
+        end
+        %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+        hold off
+        subplot(2,2,4)
+        hold on
+        plot(time(end-T:end),refSync(end-T:end))
+        plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
+        if secondFile
+            plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
+        end
+        %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
+        hold off
+    end
+    saveFig(h,'./',['Trial ' num2str(t) ' Synchronization'])
+    %         uiwait(h)
+else
+    warning('No sync signals were present, using data as-is.')
+end
+
+
+%Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
+orderedIndexes=zeros(length(orderedEMGList),1);
+for j=1:length(orderedEMGList)
+    for k=1:length(EMGList)
+        if strcmpi(orderedEMGList{j},EMGList{k})
+            orderedIndexes(j)=k;
+            break;
+        end
+    end
+end
+orderedIndexes=orderedIndexes(orderedIndexes~=0); %Avoiding missing muscles
+aux=zeros(length(EMGList),1);
+aux(orderedIndexes)=1;
+if any(aux==0) && ~all(strcmpi(EMGList(aux==0),'sync'))
+    warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
+end
+allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
+EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
+clear allData* relData* auxData*
 
 %% Retrieve H-Reflex Stimulator Pin Data If It Exists
 % NOTE: the below code block is copied from loadTrials (implemented by SL)
@@ -34,19 +345,16 @@ stimLabelIdx = cellfun(@(x) ~isempty(x), ...
     regexp(fieldList,'^Stimulator_Trigger_Sync_'));
 stimLabelIdx = find(stimLabelIdx);
 hasStimTrig = ~isempty(stimLabelIdx);
-if hasStimTrig  % if stimulator trigger sync data found, ...
+if hasStimTrig	% if stimulator trigger sync data found, ...
     for st = 1:length(stimLabelIdx) % for each stim trigger pin, ...
-        stimLabels{end+1} = fieldList{stimLabelIdx(j)}; % add the label
+        stimLabels{end+1} = fieldList{stimLabelIdx(st)};	% add the label
         units{end+1} = eval(['analogsInfo.units.', ...
-            fieldList{stimLabelIdx(j)}]);
-        relData = [relData analogs.(fieldList{stimLabelIdx(j)})];
+            fieldList{stimLabelIdx(st)}]);
+        relData = [relData analogs.(fieldList{stimLabelIdx(st)})];
     end
-    % TODO: remove the labTimeSeries object creation if not necessary
-    % USE THE LABTIMESERIES OBJECTS IF POSSIBLE AND NOT TOO TIME CONSUMING
-    % TO USE THE SAME CODE AS BELOW
-    % HreflexStimPinData = labTimeSeries(relData,0, ...
-    %     1/analogsInfo.frequency,stimLabels);
-
+    HreflexStimPinData = labTimeSeries(relData,0, ...
+        1/analogsInfo.frequency,stimLabels);
+    
     % TODO: retrieve GRF data if helpful for verifying stim occurred during
     % stance phase during walking calibration trials
     % verify that the # of frames matches that of the GRF data
@@ -56,305 +364,8 @@ if hasStimTrig  % if stimulator trigger sync data found, ...
     %             'GRF data. This should never happen. Data is compromised.']);
     %     end
     % end
-end
-
-HreflexStimPinData = relData;
-
-%% Retrieve EMG Data
-
-orderedMuscleList={'PER','TA','TAP','TAD','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
-orderedEMGList={};
-for j=1:length(orderedMuscleList)
-    orderedEMGList{end+1}=['R' orderedMuscleList{j}];
-    orderedEMGList{end+1}=['L' orderedMuscleList{j}];
-end
-
-if info.EMGs
-    %Primary file (PC)
-    if  info.Nexus==1
-        relData=[];
-        relDataTemp=[];
-        fieldList=fields(analogs);
-        idxList=[];
-        for j=1:length(fieldList);
-            if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-                relDataTemp=[relDataTemp,analogs.(fieldList{j})];
-                idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
-                analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
-            end
-        end
-        emptyChannels1=cellfun(@(x) isempty(x),info.EMGList1);
-        EMGList1=info.EMGList1(~emptyChannels1);
-        relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-        relData=relData(:,~emptyChannels1);
-        EMGList=EMGList1;
-
-        %Secondary file (PC)
-        relDataTemp2=[];
-        idxList2=[];
-        if secondFile
-            fieldList=fields(analogs2);
-            for j=1:length(fieldList);
-                if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-                    relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
-                    idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
-                    analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
-                end
-            end
-            emptyChannels2=cellfun(@(x) isempty(x),info.EMGList2);
-            EMGList2=info.EMGList2(~emptyChannels2); %Just using the names for the channels that were actually in the file
-            relData2(:,idxList2)=relDataTemp2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-            relData2=relData2(:,~emptyChannels2);
-            EMGList=[EMGList1,EMGList2];
-        end
-    elseif info.EMGworks==1
-
-        [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t});
-    end
-    %Check if names match with expectation, otherwise query user
-    for k=1:length(EMGList)
-        while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
-            aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
-            if k<=length(EMGList1)
-                info.EMGList1{idxList(k)}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
-            else
-                info.EMGList2{idxList2(k-length(EMGList1))}=aux{1};
-            end
-            EMGList{k}=aux{1};
-        end
-    end
-
-    %For some reasing the naming convention for analog pins is not kept
-    %across Nexus versions:
-    fieldNames=fields(analogs);
-
-    refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
-
-    %Check for frequencies between the two PCs
-    if secondFile
-        if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
-            warning('Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.')
-            %Assuming that the sampling rates are multiples of one another
-            if analogsInfo.frequency>analogsInfo2.frequency
-                %First set is the up-sampled one, reducing
-                P=analogsInfo.frequency/analogsInfo2.frequency;
-                R=round(P);
-                relData=relData(1:R:end,:);
-                refSync=refSync(1:R:end);
-                EMGfrequency=analogsInfo2.frequency;
-            else
-                P=round(analogsInfo2.frequency/analogsInfo.frequency);
-                R=round(P);
-                relData2=relData2(1:R:end,:);
-                EMGfrequency=analogsInfo.frequency;
-            end
-            if abs(R-P)>1e-7
-                error('loadTrials:unmatchedSamplingRatesForEMG','The different EMG files are sampled at different rates and they are not multiple of one another')
-            end
-        else
-            EMGfrequency=analogsInfo.frequency;
-        end
-    else
-        EMGfrequency=analogsInfo.frequency;
-    end
-
-    %Only keeping matrices of same size to one another:
-    if secondFile
-        [auxData, auxData2] = truncateToSameLength(relData,relData2);
-        allData=[auxData,auxData2];
-        clear auxData*
-    else
-        allData=relData;
-    end
-
-    %Pre-process:
-    [refSync] = clipSignals(refSync(:),.1); %Clipping top & bottom samples (1 out of 1e3!)
-    refAux=medfilt1(refSync,20);
-    %refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
-    refAux=medfilt1(diff(refAux),10);
-    clear auxData*
-
-    syncIdx=strncmpi(EMGList,'Sync',4); %Compare first 4 chars in string list
-    sync=allData(:,syncIdx);
-
-    if ~isempty(sync) %Only proceeding with synchronization if there are sync signals
-        %Clipping top & bottom 0.1%
-        [sync] = clipSignals(sync,.1);
-        N=size(sync,1);
-        aux=medfilt1(sync,20,[],1); %Median filter to remove spikes
-        %aux(aux>(median(aux)+5*iqr(aux)) | aux <(median(aux)-5*iqr(aux)))=median(aux(:)); %Truncating samples outside the median+-5*iqr range
-        aux=medfilt1(diff(aux),10,[],1);
-        if secondFile
-            [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
-            %                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2));
-            newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
-        end
-        [~,timeScaleFactorA,lagInSamplesA,~] = matchSignals(refAux,aux(:,1));
-        newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
-        if secondFile
-            newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
-            %                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
-            %                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
-            % %
-        end
-
-        %Only keeping matrices of same size to one another:
-        if secondFile
-            [auxData, auxData2] = truncateToSameLength(newRelData,newRelData2);
-            clear newRelData*
-            allData=[auxData,auxData2];
-            clear auxData*
-        else
-            allData=newRelData;
-        end
-
-        %Finding gains through least-squares on high-pass filtered synch
-        %signals (why using HPF for gains and not for synch?)
-        [refSync] = clipSignals(refSync(:),.1);
-        refSync=idealHPF(refSync,0); %Removing DC only
-        [allData,refSync]=truncateToSameLength(allData,refSync);
-        sync=allData(:,syncIdx);
-        [sync] = clipSignals(sync,.1);
-        sync=idealHPF(sync,0);
-        gain1=refSync'/sync(:,1)';
-        indStart=round(max([lagInSamplesA+1,1]));
-        reducedRefSync=refSync(indStart:end);
-        indStart=round(max([lagInSamplesA+1,1]));
-        reducedSync1=sync(indStart:end,1)*gain1;
-        E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
-        if secondFile
-            gain2=refSync'/sync(:,2)';
-            indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
-            reducedRefSync2=refSync(indStart:end);
-            %                 indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
-            reducedSync2=sync(indStart:end,2)*gain2;
-            E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
-            %Comparing the two bases' synchrony mechanism (not to ref signal):
-            %reducedSync1a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,1)*gain1;
-            %reducedSync2a=sync(max([lagInSamplesA+1+lagInSamples,1,lagInSamplesA+1]):end,2)*gain2;
-            %E3=sum((reducedSync1a-reducedSync2a).^2)/sum(refSync.^2);
-        else
-            E2=0;
-            gain2=NaN;
-            timeScaleFactor=NaN;
-            lagInSamples=NaN;
-        end
-
-        %Analytic measure of alignment problems
-        disp(['Sync complete: mismatch signal energy (as %) was ' num2str(100*E1,3) ' and ' num2str(100*E2,3) '.'])
-        disp(['Sync parameters to ref. signal were: gains= ' num2str(gain1,4) ', ' num2str(gain2,4) '; delays= ' num2str(lagInSamplesA/EMGfrequency,3) 's, ' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's']);
-        disp(['Typical sync parameters are: gains= -933.3 +- 0.2 (both); delays= -0.025s +- 0.001, 0.014 +- 0.002'])
-        disp(['Sync parameters between PCs were: gain= ' num2str(gain1/gain2,4) '; delay= ' num2str((lagInSamples)/EMGfrequency,3) 's; sampling mismatch (ppm)= ' num2str(1e6*(1-timeScaleFactor),3)]);
-        disp(['Typical sync parameters are: gain= 1; delay= 0.040s; sampling= 35 ppm'])
-        if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
-            warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
-            h=figure;
-            subplot(2,2,[1:2])
-            hold on
-            title(['Trial ' num2str(t) ' Synchronization'])
-            time=[0:length(refSync)-1]*1/EMGfrequency;
-            plot(time,refSync)
-            plot(time,sync(:,1)*gain1,'r')
-            if secondFile
-                plot(time,sync(:,2)*gain2,'g')
-            end
-            leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
-            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
-            legend('refSync',leg1,leg2)
-            hold off
-            subplot(2,2,3)
-            T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
-            if T<length(refSync)
-                hold on
-                plot(time(1:T),refSync(1:T))
-                plot(time(1:T),sync(1:T,1)*gain1,'r')
-                if secondFile
-                    plot(time(1:T),sync(1:T,2)*gain2,'g')
-                end
-                hold off
-                subplot(2,2,4)
-                hold on
-                plot(time(end-T:end),refSync(end-T:end))
-                plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
-                if secondFile
-                    plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
-                end
-                hold off
-            end
-            s=inputdlg('If sync parameters between signals look fine and mismatch is below 5%, we recommend yes.','Please confirm that you want to proceed like this (y/n).');
-            switch s{1}
-                case {'y','Y','yes'}
-                    disp(['Using signals in a possibly unsynchronized way!.'])
-                    close(h)
-                case {'n','N','no'}
-                    error('loadTrials:EMGCouldNotBeSynched','Could not synchronize EMG data, stopping data loading.')
-            end
-        end
-
-        %Plot to CONFIRM VISUALLY if alignment worked:
-        h=figure;
-        subplot(2,2,[1:2])
-        hold on
-        title(['Trial ' num2str(t) ' Synchronization'])
-        time=[0:length(refSync)-1]*1/EMGfrequency;
-        plot(time,refSync)
-        plot(time,sync(:,1)*gain1,'r')
-        leg1=['sync1, delay=' num2str(lagInSamplesA/EMGfrequency,3) 's, gain=' num2str(gain1,4) ', mismatch(%)=' num2str(100*E1,3)];
-        if secondFile
-            plot(time,sync(:,2)*gain2,'g')
-            leg2=['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/EMGfrequency,3) 's, gain=' num2str(gain2,4) ', mismatch(%)=' num2str(100*E2,3)];
-            legend('refSync',leg1,leg2)
-        else
-            legend('refSync',leg1)
-        end
-        hold off
-        subplot(2,2,3)
-        T=round(3*EMGfrequency); %To plot just 3 secs at the beginning and at the end
-        if T<length(refSync)
-            hold on
-            plot(time(1:T),refSync(1:T))
-            plot(time(1:T),sync(1:T,1)*gain1,'r')
-            if secondFile
-                plot(time(1:T),sync(1:T,2)*gain2,'g')
-            end
-            %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
-            hold off
-            subplot(2,2,4)
-            hold on
-            plot(time(end-T:end),refSync(end-T:end))
-            plot(time(end-T:end),sync(end-T:end,1)*gain1,'r')
-            if secondFile
-                plot(time(end-T:end),sync(end-T:end,2)*gain2,'g')
-            end
-            %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
-            hold off
-        end
-        saveFig(h,'./',['Trial ' num2str(t) ' Synchronization'])
-        %         uiwait(h)
-    else
-        warning('No sync signals were present, using data as-is.')
-    end
-
-
-    %Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
-    orderedIndexes=zeros(length(orderedEMGList),1);
-    for j=1:length(orderedEMGList)
-        for k=1:length(EMGList)
-            if strcmpi(orderedEMGList{j},EMGList{k})
-                orderedIndexes(j)=k;
-                break;
-            end
-        end
-    end
-    orderedIndexes=orderedIndexes(orderedIndexes~=0); %Avoiding missing muscles
-    aux=zeros(length(EMGList),1);
-    aux(orderedIndexes)=1;
-    if any(aux==0) && ~all(strcmpi(EMGList(aux==0),'sync'))
-        warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
-    end
-    allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
-    EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
-    clear allData* relData* auxData*
+else
+    HreflexStimPinData = [];
 end
 
 %% Retrieve Ground Reaction Force (GRF) Data If It Exists
@@ -461,43 +472,8 @@ end
 %     throw(ME)
 % end
 
-%% 1. Retrieve User Input Data
-
-% TODO: Use the feature of the stimulator to set the current output
-% based on the voltage of the trigger pulse to eliminate the need for
-% asking the user to input the stimulation amplitudes
-
-prompt = { ...
-    'Was the trial a walking calibration? (''true'' or ''false'')', ...
-    'Enter the right leg stimulation amplitudes (numbers only):', ...
-    'Enter the left leg stimulation amplitudes (numbers only):', ...
-    'Stimulation Artifact Threshold (V):', ...
-    'Minimum Time Between Stimulation Pulses (s):'};
-dlgtitle = 'H-Reflex Calibration Input';
-fieldsize = [1 200; 1 200; 1 200; 1 200; 1 200];
-definput = {'true', ...
-    '8 8 12 12 16 16 20 20 24 24', ...
-    '8 8 12 12 16 16 20 20 24 24', ...
-    '0.0003', ...
-    '5'};
-answer = inputdlg(prompt,dlgtitle,fieldsize,definput);
-
 %% 1. Define H-Reflex Calibration Trial Parameters
 
-% NOTE: currently need to manually enter the stimulation amplitudes
-% TODO: consider using a dialog box to input the stimulation amplitudes
-ampsStimR = [8; 9; 10; 11];
-ampsStimL = [6; 8; 9; 10; 11];
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-numStimR = 4;           % number of times stimulated right leg in trial
-numStimL = 5;           % number of times stimulated left leg in trial
-% hasStimRandL = true;    % does trial contain right and left leg stim?
-% isFirstR = true;        % was right leg stimulated first?
-trialR = 2;              % calibration trial number to analyze right leg
-trialL = 2;             % calibration trial number to analyze left leg
-threshStimArtifact = 0.0003;    % stimulation artifact threshold
-threshStimTimeSep = 5;  % at least five seconds between stimulations
 % NOTE: should always be the same across trials
 per = rawExpData.data{trialR}.EMGData.sampPeriod;    % sampling period
 threshSamps = threshStimTimeSep / per;  % convert to samples
@@ -575,10 +551,10 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
     snipsStimAllMuscles = [EMGRightTAP(winPlotR); EMGRightMG(winPlotR)];
     ymin = min(snipsStimAllMuscles,[],'all');
     ymax = max(snipsStimAllMuscles,[],'all');
-
+    
     figure('Units','normalized','OuterPosition',[0 0 1 1]);
     tl = tiledlayout('vertical','TileSpacing','tight');
-
+    
     ax1 = nexttile; hold on;
     xline(timesR(locsR(stR)),'k','LineWidth',2);
     xline(timesR(locsR(stR)+indStartM),'b');
@@ -589,7 +565,7 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
     plot(timesWinPlotR,EMGRightTAP(winPlotR));
     title('Right TA - Proximal');
     hold off;
-
+    
     snippetsHreflexR(stR,:) = EMGRightMG(winPlotR);
     ax2 = nexttile; hold on;
     xline(timesR(locsR(stR)),'k','LineWidth',2);
@@ -600,14 +576,14 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
     plot(timesWinPlotR,EMGRightMG(winPlotR));
     title('Right MG');
     hold off;
-
+    
     linkaxes([ax1 ax2]);
     xlabel(tl,'time (s)');
     ylabel(tl,'MG Raw Voltage (V)');
     xlim([timesWinPlotR(1) timesWinPlotR(end)]);
     ylim([ymin ymax]);
     title(tl,[id ' - Right Leg - Stim ' num2str(stR) ' - EMG']);
-
+    
     saveas(gcf,[id '_StimEMGSnippets_Trial' num2str(trialR) ...
         '_RightLeg_Stim' num2str(stR) '.png']);
     saveas(gcf,[id '_StimEMGSnippets_Trial' num2str(trialR) ...
@@ -622,10 +598,10 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     snipsStimAllMuscles = [EMGLeftTAP(winPlotL); EMGLeftMG(winPlotL)];
     ymin = min(snipsStimAllMuscles,[],'all');
     ymax = max(snipsStimAllMuscles,[],'all');
-
+    
     figure('Units','normalized','OuterPosition',[0 0 1 1]);
     tl = tiledlayout('vertical','TileSpacing','tight');
-
+    
     ax1 = nexttile; hold on;
     xline(timesL(locsL(stL)),'k','LineWidth',2);
     xline(timesL(locsL(stL)+indStartM),'b');
@@ -636,7 +612,7 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     plot(timesWinPlotL,EMGLeftTAP(winPlotL));
     title('Left TA - Proximal');
     hold off;
-
+    
     snippetsHreflexL(stL,:) = EMGLeftMG(winPlotL);
     ax2 = nexttile; hold on;
     xline(timesL(locsL(stL)),'k','LineWidth',2);
@@ -647,14 +623,14 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     plot(timesWinPlotL,EMGLeftMG(winPlotL));
     title('Left MG');
     hold off;
-
+    
     linkaxes([ax1 ax2]);
     xlabel(tl,'time (s)');
     ylabel(tl,'MG Raw Voltage (V)');
     xlim([timesWinPlotL(1) timesWinPlotL(end)]);
     ylim([ymin ymax]);
     title(tl,[id ' - Left Leg - Stim ' num2str(stL) ' - EMG']);
-
+    
     saveas(gcf,[id '_StimEMGSnippets_Trial' num2str(trialL) ...
         '_LeftLeg_Stim' num2str(stL) '.png']);
     saveas(gcf,[id '_StimEMGSnippets_Trial' num2str(trialL) ...
