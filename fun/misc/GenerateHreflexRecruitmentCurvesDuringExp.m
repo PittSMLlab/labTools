@@ -617,20 +617,40 @@ end
 %% 11. Compute Means for Unique Stimulation Amplitudes
 ampsStimRU = unique(ampsStimR);
 ampsStimLU = unique(ampsStimL);
+% Gaussian fit function for fitting average H-wave amplitude data
+% based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
+% Journal of Neuroscience Methods, 2007)
+fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
 avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x)),ampsStimRU);
+% pdR = fitdist(ampsStimRU','Normal', ...
+%     'Frequency',round((avgsHwaveR / max(avgsHwaveR)) * 10000));
+% initialize coefficients
+coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
+coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
 avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x)),ampsStimRU);
 avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x)),ampsStimLU);
+% pdL = fitdist(ampsStimLU','Normal', ...
+%     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
+coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
+coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
 avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x)),ampsStimLU);
 % TODO: verify that these values will always be sorted in ascending order
 
 %% 12. Plot Recruitment Curve for Both Legs
 % TODO: add normal distribution fit to H-wave recruitment curve to pick out
 % peak amplitude and current at which peak occurs
+
+% TODO: do not hardcode x-value (i.e., amplitude) increment for fit
+xR = min(ampsStimRU):0.1:max(ampsStimRU);
+yR = fun(coefsR,xR);
+xL = min(ampsStimLU):0.1:max(ampsStimLU);
+yL = fun(coefsL,xL);
+
 % compute Hmax and I_Hmax for the right and left leg
-[hMaxR,indHMaxR] = max(avgsHwaveR);
-IhMaxR = ampsStimRU(indHMaxR);
-[hMaxL,indHMaxL] = max(avgsHwaveL);
-IhMaxL = ampsStimLU(indHMaxL);
+[hMaxR,indHMaxR] = max(yR);
+IhMaxR = xR(indHMaxR);
+[hMaxL,indHMaxL] = max(yL);
+IhMaxL = xL(indHMaxL);
 
 [ampsStimR,indsOrderR] = sort(ampsStimR);
 ampsHwaveR = ampsHwaveR(indsOrderR);
@@ -644,7 +664,9 @@ figure; hold on;
 plot(ampsStimR,ampsMwaveR,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
 p1 = plot(ampsStimRU,avgsMwaveR,'LineWidth',2,'Color',[0.5 0.5 0.5]);
 plot(ampsStimR,ampsHwaveR,'ok','MarkerSize',10);
-p2 = plot(ampsStimRU,avgsHwaveR,'k','LineWidth',2);
+% p2 = plot(ampsStimRU,avgsHwaveR,'k','LineWidth',2);
+% p2 = plot(xR,pdf(pdR,xR)*(max(avgsHwaveR)*10),'k','LineWidth',2);
+p2 = plot(xR,yR,'k','LineWidth',2);
 plot([IhMaxR IhMaxR],[0 hMaxR],'k-.');  % vertical line from I_Hmax to Hmax
 % add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
@@ -658,7 +680,7 @@ text(min(ampsStimR) + 0.1,hMaxR + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
 hold off;
 xlabel('Stimulation Amplitude (mA)');
 ylabel('MG EMG Amplitude (V)');
-legend([p1 p2],'M-wave','H-wave','Location','best');
+legend([p1 p2],'M-wave','H-wave fit','Location','best');
 title([id ' - Trial' trialNum ' - Right Leg - Recruitment Curve']);
 saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
     trialNum '_RightLeg.png']);
@@ -669,7 +691,8 @@ figure; hold on;
 plot(ampsStimL,ampsMwaveL,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
 p1 = plot(ampsStimLU,avgsMwaveL,'LineWidth',2,'Color',[0.5 0.5 0.5]);
 plot(ampsStimL,ampsHwaveL,'ok','MarkerSize',10);
-p2 = plot(ampsStimLU,avgsHwaveL,'k','LineWidth',2);
+% p2 = plot(ampsStimLU,avgsHwaveL,'k','LineWidth',2);
+p2 = plot(xL,yL,'k','LineWidth',2);
 plot([IhMaxL IhMaxL],[0 hMaxL],'k-.');  % vertical line from I_Hmax to Hmax
 % add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
@@ -683,7 +706,7 @@ text(min(ampsStimL) + 0.1,hMaxL + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
 hold off;
 xlabel('Stimulation Amplitude (mA)');
 ylabel('MG EMG Amplitude (V)');
-legend([p1 p2],'M-wave','H-wave','Location','best');
+legend([p1 p2],'M-wave','H-wave fit','Location','best');
 title([id ' - Trial' trialNum ' - Left Leg - Recruitment Curve']);
 saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
     trialNum '_LeftLeg.png']);
