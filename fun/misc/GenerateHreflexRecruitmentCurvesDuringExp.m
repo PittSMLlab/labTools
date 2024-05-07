@@ -9,31 +9,46 @@
 % the Vicon Nexus sofware tools.
 
 %% 1. Load the C3D File Data
-% Vicon Nexus must be open, offline, and the desired trial loaded
-vicon = ViconNexus();
-[path,filename] = vicon.GetTrialName; % ask Nexus which trial is open
+try     % if Vicon Nexus is running with a file open, use that
+    % Vicon Nexus must be open, offline, and the desired trial loaded
+    vicon = ViconNexus();
+    [path,filename] = vicon.GetTrialName; % ask Nexus which trial is open
+    id = vicon.GetSubjectName;  % retrieve participant / session ID
+catch   % use below two lines when processing c3d files not open in Nexus
+    commandwindow();
+    [filename,path] = uigetfile('*.c3d', ...
+        'Please select the c3d file of interest:');
+    compsPath = strsplit(path,filesep);
+    guessID = compsPath(contains(compsPath,'SA'));
+    id = inputdlg({'Enter the Participant / Session ID:'},'ID',[1 50], ...
+        guessID);
+end
+id = id{1};
+[~,filename,ext] = fileparts(filename);
+trialNum = filename(end-1:end); % last two characters of file name are #
 filename = [filename '.c3d'];
+mkdir([path 'HreflexCalFigs']);
+pathFigs = [path 'HreflexCalFigs'];
 
-%% use the below two lines when processing c3d files not open in Nexus:
-% commandwindow();
-% [filename,path] = uigetfile('*.c3d', ...
-%     'Please select the c3d file of interest:');
 H = btkReadAcquisition([path filename]);
-
-% using the same method as Labtools, retrieve the analog data
+% using the same method as labtools, retrieve the analog data
 [analogs,analogsInfo] = btkGetAnalogs(H);
 
 %% 2. Retrieve User Input Data
-% TODO: Use the feature of the stimulator to set the current output
+% TODO: use the feature of the stimulator to set the current output
 % based on the voltage of the trigger pulse to eliminate the need for
 % asking the user to input the stimulation amplitudes
 prompt = { ...
     'Enter the EMG sensor muscles in sensor number order:', ...
-    'Was trial a walking calibration? (''1'' = true, ''0'' = false)', ...
+    ['Should stimulation trigger pulse data be used to identify ' ...
+    'artifact peak times? (''1'' = true, ''0'' = false)'], ...
+    ... 'Was trial a walking calibration? (''1'' = true, ''0'' = false)', ...
     'Enter the right leg stimulation amplitudes (numbers only):', ...
     'Enter the left leg stimulation amplitudes (numbers only):', ...
-    'Stimulation Artifact Threshold (V):', ...
-    'Minimum Time Between Stimulation Pulses (s):'};
+    ['Stimulation Artifact Threshold (V) (NOTE: only relevant if not ' ...
+    'using stim trigger pulse):'], ...
+    ['Minimum Time Between Stimulation Pulses (s) (NOTE: only relevant' ...
+    ' if not using stim trigger pulse):']};
 dlgtitle = 'H-Reflex Calibration Input';
 fieldsize = [1 200; 1 200; 1 200; 1 200; 1 200; 1 200];
 % TODO: set the below initial values to whatever we would expect to use
@@ -49,9 +64,14 @@ definput = { ...
     '5'};
 answer = inputdlg(prompt,dlgtitle,fieldsize,definput);
 
-% TODO: add input argument checks (e.g., throw error if EMG is left blank)
+% TODO: add input argument checks
 EMGList1 = strsplit(answer{1},' ');
-isCalWalking = logical(str2double(answer{2}));
+if isempty(EMGList1)    % if no EMG labels input, ...
+    error(['No EMG labels have been provided. It is not possible to ' ...
+        'generate H-reflex recruitment curves without EMG data.']);
+end
+% isCalWalking = logical(str2double(answer{2}));
+shouldUseStimTrig = logical(str2double(answer{2}));
 ampsStimR = str2num(answer{3});
 ampsStimL = str2num(answer{4});
 threshStimArtifact = str2double(answer{5});% stimulation artifact threshold
@@ -144,8 +164,8 @@ units={};
 fieldList=fields(analogs);
 forceLabelIdx = contains(fieldList,'Force_Fz'); % only care about Fz
 forceLabelIdx = find(forceLabelIdx,2,'first');  % FP 1 (Left) & 2 (Right)
-hasForce = ~isempty(forceLabelIdx);
-if hasForce     % if force data found, ...
+hasForces = ~isempty(forceLabelIdx);
+if hasForces     % if force data found, ...
     for j=1:length(forceLabelIdx)   % for each relevant force label, ...
         forceLabels{end+1} = fieldList{forceLabelIdx(j)};    % add label
         units{end+1} = eval(['analogsInfo.units.', ...
@@ -162,36 +182,39 @@ end
 clear relData
 
 %% 5. Retrieve H-Reflex Stimulator Pin Data If It Exists
-% NOTE: the below code block is copied from loadTrials (implemented by SL)
-relData = [];
-stimLabels = {};
-units = {};
-fieldList = fields(analogs);
-stimLabelIdx = cellfun(@(x) ~isempty(x), ...
-    regexp(fieldList,'^Stimulator_Trigger_Sync_'));
-stimLabelIdx = find(stimLabelIdx);
-hasStimTrig = ~isempty(stimLabelIdx);
-if hasStimTrig	% if stimulator trigger sync data found, ...
-    for st = 1:length(stimLabelIdx) % for each stim trigger pin, ...
-        stimLabels{end+1} = fieldList{stimLabelIdx(st)};	% add the label
-        units{end+1} = eval(['analogsInfo.units.', ...
-            fieldList{stimLabelIdx(st)}]);
-        relData = [relData analogs.(fieldList{stimLabelIdx(st)})];
-    end
-    HreflexStimPin = labTimeSeries(relData,0, ...
-        1/analogsInfo.frequency,stimLabels);
-
-    % TODO: retrieve GRF data if helpful for verifying stim occurred during
-    % stance phase during walking calibration trials
-    % verify that the # of frames matches that of the GRF data
-    if ~isempty(GRF)    % if there is GRF data present, ...
-        if (GRF.Length ~= HreflexStimPin.Length)
-            error(['Hreflex stimulator pins have different length than' ...
-                'GRF data. This should never happen. Data is compromised.']);
+if shouldUseStimTrig    % if stimulation trigger data should be used, ...
+    % NOTE: the below code block is copied from loadTrials (implemented by SL)
+    relData = [];
+    stimLabels = {};
+    units = {};
+    fieldList = fields(analogs);
+    stimLabelIdx = cellfun(@(x) ~isempty(x), ...
+        regexp(fieldList,'^Stimulator_Trigger_Sync_'));
+    stimLabelIdx = find(stimLabelIdx);
+    hasStimTrig = ~isempty(stimLabelIdx);
+    if hasStimTrig	% if stimulator trigger sync data found, ...
+        for st = 1:length(stimLabelIdx) % for each stim trigger pin, ...
+            stimLabels{end+1} = fieldList{stimLabelIdx(st)};	% add the label
+            units{end+1} = eval(['analogsInfo.units.', ...
+                fieldList{stimLabelIdx(st)}]);
+            relData = [relData analogs.(fieldList{stimLabelIdx(st)})];
         end
+        HreflexStimPin = labTimeSeries(relData,0, ...
+            1/analogsInfo.frequency,stimLabels);
+
+        % verify that the # of frames matches that of the GRF data
+        if ~isempty(GRF)    % if there is GRF data present, ...
+            if (GRF.Length ~= HreflexStimPin.Length)
+                error(['Hreflex stimulator pins have different length than' ...
+                    'GRF data. This should never happen. Data is compromised.']);
+            end
+        end
+    else
+        warning(['User indicated stimulation trigger data should be ' ...
+            'used to identify the artifact peak times, but no trigger ' ...
+            'pulse data is present.']);
+        HreflexStimPin = [];
     end
-else
-    HreflexStimPin = [];
 end
 
 clear analogs* %Save memory space, no longer need analog data, it was already loaded
@@ -235,8 +258,6 @@ clear analogs* %Save memory space, no longer need analog data, it was already lo
 % end
 
 %% 6. Define H-Reflex Calibration Trial Parameters
-% TODO: add participant ID and trial number to figure titles and file names
-% to avoid overwriting figures if run multiple trials
 % NOTE: should always be the same across trials
 period = EMG.sampPeriod;    % sampling period
 threshSamps = threshStimTimeSep / period;  % convert to samples
@@ -260,18 +281,27 @@ EMG_LSOL = EMG.Data(:,contains(EMG.labels,'lsol', ...
     'IgnoreCase',true));  % in case want to explore SOL H-reflex
 EMG_RSOL = EMG.Data(:,contains(EMG.labels,'rsol', ...
     'IgnoreCase',true));
-times = EMG.Time;   % if want to plot, can use the time array
-
-if hasForce
-    GRFRFz = GRF.Data(:,contains(GRF.labels,'rfz','IgnoreCase',true));
-    GRFLFz = GRF.Data(:,contains(GRF.labels,'lfz','IgnoreCase',true));
+% if missing any of the EMG signals used below, ...
+if any(isempty([EMG_LTAP EMG_RTAP EMG_LMG EMG_RMG EMG_LSOL EMG_RSOL]))
+    % TODO: update handling of cases when one or more of these signals is
+    % missing (e.g., if only conducting calibration on one leg or not using
+    % the Soleus sensor)
+    error('Missing one or more EMG signals.');
 end
 
-% TODO: it does not work to use the stim trigger pulse to retrieve the
-% start times if the stimulator is turned off during the trial (because
-% there will be a trigger pulse but the participant will not have been
-% stimulated)
-if hasStimTrig
+times = EMG.Time;   % if want to plot, can use the time array
+
+if hasForces
+    GRFRFz = GRF.Data(:,contains(GRF.labels,'fz2','IgnoreCase',true));
+    GRFLFz = GRF.Data(:,contains(GRF.labels,'fz1','IgnoreCase',true));
+end
+
+% NOTE: it does not work to use stim trigger pulse to retrieve peak times
+% if stimulator is turned off during trial (because there will be trigger
+% pulse but participant will not have been stimulated)
+% if there is stimulation trigger pulse data and it should be used to
+% identify the locations of the artifact peaks, ...
+if shouldUseStimTrig && hasStimTrig
     % threshold to determine rising edge of stimulation trigger pulse
     threshVolt = 2.5;
     % extract all stimulation trigger data for each leg
@@ -295,8 +325,11 @@ if hasStimTrig
     % stimulation trigger pulse
     indsEMGStimOnsetRAbs = arrayfun(@(x) find(x == times),stimTimeRAbs);
     indsEMGStimOnsetLAbs = arrayfun(@(x) find(x == times),stimTimeLAbs);
-    % numStimR = length(indsEMGStimOnsetRAbs);  % number of stimuli
-    % numStimL = length(indsEMGStimOnsetLAbs);
+    if (numStimR ~= length(indsEMGStimOnsetRAbs)) || ...
+            (numStimL ~= length(indsEMGStimOnsetlAbs))
+        error(['The number of stimulation trigger pulses does not ' ...
+            'match the number of input stimulation amplitudes.']);
+    end
 
     % initialize array of indices determined by the stim artifact
     locsR = nan(size(indsEMGStimOnsetRAbs));
@@ -304,10 +337,10 @@ if hasStimTrig
 
     winStim = 0.1;  % +/- 100 ms of the onset of the stim trigger pulse
 
-    for stR = 1:numStimR
+    for stR = 1:numStimR    % for each right leg stimulus, ...
         winSearch = (indsEMGStimOnsetRAbs(stR) - (winStim/period)): ...
             (indsEMGStimOnsetRAbs(stR) + (winStim/period));
-        [~,indMaxTAP] = max(EMG_RTAP(winSearch));
+        [~,indMaxTAP] = max(EMG_RTAP(winSearch));   % find artifact peak
         timesWin = times(winSearch);
         timeStimStart = timesWin(indMaxTAP);
         locsR(stR) = find(times == timeStimStart);
@@ -322,10 +355,12 @@ if hasStimTrig
         locsL(stL) = find(times == timeStimStart);
     end
 
+    % TODO: add plotting for this method for visual verification that
+    % correct times have been selected
 else
-    warning(['No stimulation trigger signal present. Artifact ' ...
+    warning(['No stimulation trigger signal being used. Artifact ' ...
         'identification may not be as accurate.']);
-    % TODO: switch to 'subplot' if running MATLAB 2019a or earlier
+
     % if want to plot the peaks to check, run without output arguments
     figure('Units','normalized','OuterPosition',[0 0 1 1]);
     tl = tiledlayout('vertical','TileSpacing','tight');
@@ -335,20 +370,20 @@ else
         'MinPeakHeight',threshStimArtifact,'MinPeakDistance',threshSamps);
     yline(threshStimArtifact,'r','Stim Artifact Thresh');
     hold off;
-    title(['Right TAP']);
+    title(['Right TAP - Trial' trialNum]);
 
     nexttile; hold on;
     findpeaks(EMG_LTAP,'NPeaks',numStimL, ...
         'MinPeakHeight',threshStimArtifact,'MinPeakDistance',threshSamps);
     yline(threshStimArtifact,'r','Stim Artifact Thresh');
     hold off;
-    title(['Left TAP']);
+    title(['Left TAP - Trial' trialNum]);
 
     xlabel(tl,'sample number');
     ylabel(tl,'Raw Voltage (V)');
-    title(tl,['Stimulation Artifact Peak Finding']);
-    % saveas(gcf,[path 'StimArtifactPeakFinding.png']);
-    % saveas(gcf,[path 'StimArtifactPeakFinding.fig']);
+    title(tl,[id ' - Stimulation Artifact Peak Finding']);
+    saveas(gcf,[pathFigs id '_StimArtifactPeakFinding.png']);
+    saveas(gcf,[pathFigs id '_StimArtifactPeakFinding.fig']);
 
     [~,locsR] = findpeaks(EMG_RTAP,'NPeaks',numStimR, ...
         'MinPeakHeight',threshStimArtifact,'MinPeakDistance',threshSamps);
@@ -356,7 +391,7 @@ else
         'MinPeakHeight',threshStimArtifact,'MinPeakDistance',threshSamps);
 end
 
-%% Plot All Stimuli to Verify the Waveforms
+%% 8. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
 snipStart = -0.005; % 5 ms before artifact peak
 snipEnd = 0.045;    % 45 ms after artifact peak
 timesSnippet = snipStart:period:snipEnd;
@@ -367,17 +402,36 @@ snippetsHreflexR = nan(numStimR,numSamps);
 snippetsHreflexL = nan(numStimL,numSamps);
 % plot the right leg stimuli
 % TODO: add checks for trials without stimuli for one leg or the other
-% TODO: Add SOL, TAP, and GRFs (to verify single stance)
 for stR = 1:numStimR    % for each right leg stimulus, ...
     winPlotR = (locsR(stR) + (snipStart/period)):(locsR(stR) + (snipEnd/period));
     timesWinPlotR = times(winPlotR);
-    snipsStimAllMuscles = [EMG_RTAP(winPlotR); EMG_RMG(winPlotR)];
+    snipsStimAllMuscles = [EMG_RTAP(winPlotR); EMG_RMG(winPlotR); ...
+        EMG_RSOL(winPlotR)];
     ymin = min(snipsStimAllMuscles,[],'all');
     ymax = max(snipsStimAllMuscles,[],'all');
 
-    % TODO: use subplot is MATLAB version is 2019a or earlier
     figure('Units','normalized','OuterPosition',[0 0 1 1]);
     tl = tiledlayout('vertical','TileSpacing','tight');
+
+    % TODO: throw error if EMG arrays and GRF arrays are different length
+    % (should be identical since sampled at the same rate)
+    if hasForces
+        nexttile; hold on;
+        xline(times(locsR(stR)),'k','LineWidth',2);
+        plot(timesWinPlotR,GRFRFz(winPlotR));
+        xlim([timesWinPlotR(1) timesWinPlotR(end)]);
+        hold off;
+        ylabel('Force (N)');
+        title('Right Fz');
+
+        nexttile; hold on;
+        xline(times(locsR(stR)),'k','LineWidth',2);
+        plot(timesWinPlotR,GRFLFz(winPlotR));
+        xlim([timesWinPlotR(1) timesWinPlotR(end)]);
+        hold off;
+        ylabel('Force (N)');
+        title('Left Fz');
+    end
 
     ax1 = nexttile; hold on;
     xline(times(locsR(stR)),'k','LineWidth',2);
@@ -385,7 +439,10 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
     xline(times(locsR(stR)+indEndM),'b');
     xline(times(locsR(stR)+indStartH),'g');
     xline(times(locsR(stR)+indEndH),'g');
-    yline(threshStimArtifact,'r','Stim Artifact Thresh');
+    % only plot the stimulation artifact threshold if it is used
+    % if ~(hasStimTrig && shouldUseStimTrig)
+        yline(threshStimArtifact,'r','Stim Artifact Thresh');
+    % end
     plot(timesWinPlotR,EMG_RTAP(winPlotR));
     title('Right TA - Proximal');
     hold off;
@@ -398,17 +455,29 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
     xline(times(locsR(stR)+indStartH),'g');
     xline(times(locsR(stR)+indEndH),'g');
     plot(timesWinPlotR,EMG_RMG(winPlotR));
+    ylabel('Raw EMG (V)');
     title('Right MG');
     hold off;
 
-    linkaxes([ax1 ax2]);
+    ax3 = nexttile; hold on;
+    xline(times(locsR(stR)),'k','LineWidth',2);
+    xline(times(locsR(stR)+indStartM),'b');
+    xline(times(locsR(stR)+indEndM),'b');
+    xline(times(locsR(stR)+indStartH),'g');
+    xline(times(locsR(stR)+indEndH),'g');
+    plot(timesWinPlotR,EMG_RSOL(winPlotR));
+    title('Right SOL');
+    hold off;
+
+    linkaxes([ax1 ax2 ax3]);
     xlabel(tl,'time (s)');
-    ylabel(tl,'MG Raw Voltage (V)');
     xlim([timesWinPlotR(1) timesWinPlotR(end)]);
     ylim([ymin ymax]);
-    title(tl,['Right Leg - Stim ' num2str(stR) ' - EMG']);
-    % saveas(gcf,[path 'StimEMGSnippets_RightLeg_Stim' num2str(stR) '.png']);
-    % saveas(gcf,[path 'StimEMGSnippets_RightLeg_Stim' num2str(stR) '.fig']);
+    title(tl,[id ' - Right Leg - Trial' trialNum ' - Stim ' num2str(stR)]);
+    saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...
+        '_Stim' num2str(stR) '.png']);
+    saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...
+        '_Stim' num2str(stR) '.fig']);
     close;
 end
 
@@ -416,12 +485,31 @@ end
 for stL = 1:numStimL    % for each left leg stimulus, ...
     winPlotL = (locsL(stL) + (snipStart/period)):(locsL(stL) + (snipEnd/period));
     timesWinPlotL = times(winPlotL);
-    snipsStimAllMuscles = [EMG_LTAP(winPlotL); EMG_LMG(winPlotL)];
+    snipsStimAllMuscles = [EMG_LTAP(winPlotL); EMG_LMG(winPlotL); ...
+        EMG_LSOL(winPlotL)];
     ymin = min(snipsStimAllMuscles,[],'all');
     ymax = max(snipsStimAllMuscles,[],'all');
 
     figure('Units','normalized','OuterPosition',[0 0 1 1]);
     tl = tiledlayout('vertical','TileSpacing','tight');
+
+    if hasForces    % if force data is present, ...
+        nexttile; hold on;
+        xline(times(locsL(stL)),'k','LineWidth',2);
+        plot(timesWinPlotL,GRFLFz(winPlotL));
+        xlim([timesWinPlotL(1) timesWinPlotL(end)]);
+        hold off;
+        ylabel('Force (N)');
+        title('Left Fz');
+
+        nexttile; hold on;
+        xline(times(locsL(stL)),'k','LineWidth',2);
+        plot(timesWinPlotL,GRFRFz(winPlotL));
+        xlim([timesWinPlotL(1) timesWinPlotL(end)]);
+        hold off;
+        ylabel('Force (N)');
+        title('Right Fz');
+    end
 
     ax1 = nexttile; hold on;
     xline(times(locsL(stL)),'k','LineWidth',2);
@@ -442,21 +530,34 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     xline(times(locsL(stL)+indStartH),'g');
     xline(times(locsL(stL)+indEndH),'g');
     plot(timesWinPlotL,EMG_LMG(winPlotL));
+    ylabel('Raw EMG (V)');
     title('Left MG');
     hold off;
 
-    linkaxes([ax1 ax2]);
+    ax3 = nexttile; hold on;
+    xline(times(locsL(stL)),'k','LineWidth',2);
+    xline(times(locsL(stL)+indStartM),'b');
+    xline(times(locsL(stL)+indEndM),'b');
+    xline(times(locsL(stL)+indStartH),'g');
+    xline(times(locsL(stL)+indEndH),'g');
+    plot(timesWinPlotL,EMG_LSOL(winPlotL));
+    title('Left SOL');
+    hold off;
+
+    linkaxes([ax1 ax2 ax3]);
     xlabel(tl,'time (s)');
-    ylabel(tl,'MG Raw Voltage (V)');
     xlim([timesWinPlotL(1) timesWinPlotL(end)]);
     ylim([ymin ymax]);
-    title(tl,['Left Leg - Stim ' num2str(stL) ' - EMG']);
-    % saveas(gcf,[path 'StimEMGSnippets_LeftLeg_Stim' num2str(stL) '.png']);
-    % saveas(gcf,[path 'StimEMGSnippets_LeftLeg_Stim' num2str(stL) '.fig']);
+    title(tl,[id ' - Left Leg - Trial' trialNum ' - Stim ' num2str(stL)]);
+    saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...
+        '_Stim' num2str(stL) '.png']);
+    saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...
+        '_Stim' num2str(stL) '.fig']);
     close;
 end
 
-%% Plot All Snippets for Each Leg Together in One Figure
+%% 9. Plot All Snippets for Each Leg Together in One Figure
+% TODO: Add GRF snippets if beneficial
 ymin = min([snippetsHreflexL; snippetsHreflexR],[],'all');
 ymax = max([snippetsHreflexL; snippetsHreflexR],[],'all');
 
@@ -473,7 +574,6 @@ plot(timesSnippet,snippetsHreflexR);
 hold off;
 title('Right MG');
 
-snippetsHreflexL(stL,:) = EMG_LMG(winPlotL);
 ax2 = nexttile; hold on;
 xline(0,'k','LineWidth',2);
 xline(indStartM*period,'b');
@@ -486,15 +586,15 @@ title('Left MG');
 
 linkaxes([ax1 ax2]);
 xlabel(tl,'time (s)');
-ylabel(tl,'MG Raw Voltage (V)');
+ylabel(tl,'MG Raw (V)');
 xlim([timesSnippet(1) timesSnippet(end)]);
 ylim([ymin ymax]);
-title(tl,['H-Reflex Calibration Waveforms']);
-% saveas(gcf,[path 'HreflexSnippets.png']);
-% saveas(gcf,[path 'HreflexSnippets.fig']);
+title(tl,[id ' - H-Reflex Calibration Waveforms']);
+saveas(gcf,[pathFigs id '_HreflexSnippets_Trial' trialNum '.png']);
+saveas(gcf,[pathFigs id '_HreflexSnippets_Trial' trialNum '.fig']);
 
-%% 3. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
-
+%% 10. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
+% TODO: reject measurements if GRF reveals not in single stance
 ampsMwaveR = nan(numStimR,1);
 ampsHwaveR = nan(numStimR,1);
 ampsMwaveL = nan(numStimL,1);
@@ -514,13 +614,23 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     ampsHwaveL(stL) = max(winEMGH) - min(winEMGH);
 end
 
-%% 4. Plot Recruitment Curve for Both Legs
+%% 11. Compute Means for Unique Stimulation Amplitudes
+ampsStimRU = unique(ampsStimR);
+ampsStimLU = unique(ampsStimL);
+avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x)),ampsStimRU);
+avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x)),ampsStimRU);
+avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x)),ampsStimLU);
+avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x)),ampsStimLU);
+% TODO: verify that these values will always be sorted in ascending order
 
+%% 12. Plot Recruitment Curve for Both Legs
+% TODO: add normal distribution fit to H-wave recruitment curve to pick out
+% peak amplitude and current at which peak occurs
 % compute Hmax and I_Hmax for the right and left leg
-[hMaxR,indHMaxR] = max(ampsHwaveR);
-IhMaxR = ampsStimR(indHMaxR);
-[hMaxL,indHMaxL] = max(ampsHwaveL);
-IhMaxL = ampsStimL(indHMaxL);
+[hMaxR,indHMaxR] = max(avgsHwaveR);
+IhMaxR = ampsStimRU(indHMaxR);
+[hMaxL,indHMaxL] = max(avgsHwaveL);
+IhMaxL = ampsStimLU(indHMaxL);
 
 [ampsStimR,indsOrderR] = sort(ampsStimR);
 ampsHwaveR = ampsHwaveR(indsOrderR);
@@ -531,50 +641,52 @@ ampsHwaveL = ampsHwaveL(indsOrderL);
 ampsMwaveL = ampsMwaveL(indsOrderL);
 
 figure; hold on;
-plot(ampsStimR,ampsHwaveR,'k','LineWidth',2);
-plot(ampsStimR,ampsMwaveR,'LineWidth',2,'Color',[0.5 0.5 0.5]);
-% plot([IhMaxR IhMaxR],[0 hMaxR],'k-.');  % vertical line from I_Hmax to Hmax
+plot(ampsStimR,ampsMwaveR,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
+p1 = plot(ampsStimRU,avgsMwaveR,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+plot(ampsStimR,ampsHwaveR,'ok','MarkerSize',10);
+p2 = plot(ampsStimRU,avgsHwaveR,'k','LineWidth',2);
+plot([IhMaxR IhMaxR],[0 hMaxR],'k-.');  % vertical line from I_Hmax to Hmax
 % add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
-% TODO: use one decimal place for I_Hmax
 % TODO: do not hardcode x offset for label
-% text(IhMaxR + 0.1,0 + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
-%     sprintf('I_{H_{max}} = %.1f mA',IhMaxR));
+text(IhMaxR + 0.1,0 + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
+    sprintf('I_{H_{max}} = %.1f mA',IhMaxR));
 plot([min(ampsStimR) IhMaxR],[hMaxR hMaxR],'k-.'); % horizontal line to Hmax
 % add label to horizontal line (Hmax)
 text(min(ampsStimR) + 0.1,hMaxR + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
     sprintf('H_{max} = %.5f V',hMaxR));
 hold off;
-xlabel('Stimulation #'); % xlabel('Stimulation Amplitude (mA)');
+xlabel('Stimulation Amplitude (mA)');
 ylabel('MG EMG Amplitude (V)');
-legend('H-wave','M-wave');
-% title(['Right Leg - Recruitment Curve']);
-% saveas(gcf,['H-ReflexRecruitmentCurve_Trial' num2str(trialR) ...
-%     '_RightLeg.png']);
-% saveas(gcf,['H-ReflexRecruitmentCurve_Trial' num2str(trialR) ...
-%     '_RightLeg.fig']);
+legend([p1 p2],'M-wave','H-wave','Location','best');
+title([id ' - Trial' trialNum ' - Right Leg - Recruitment Curve']);
+saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
+    trialNum '_RightLeg.png']);
+saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
+    trialNum '_RightLeg.fig']);
 
 figure; hold on;
-plot(ampsStimL,ampsHwaveL,'k','LineWidth',2);
-plot(ampsStimL,ampsMwaveL,'LineWidth',2,'Color',[0.5 0.5 0.5]);
-% plot([IhMaxL IhMaxL],[0 hMaxL],'k-.');  % vertical line from I_Hmax to Hmax
+plot(ampsStimL,ampsMwaveL,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
+p1 = plot(ampsStimLU,avgsMwaveL,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+plot(ampsStimL,ampsHwaveL,'ok','MarkerSize',10);
+p2 = plot(ampsStimLU,avgsHwaveL,'k','LineWidth',2);
+plot([IhMaxL IhMaxL],[0 hMaxL],'k-.');  % vertical line from I_Hmax to Hmax
 % add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
-% TODO: use one decimal place for I_Hmax
 % TODO: do not hardcode x offset for label
-% text(IhMaxL + 0.1,0 + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
-%     sprintf('I_{H_{max}} = %.1f mA',IhMaxL));
+text(IhMaxL + 0.1,0 + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
+    sprintf('I_{H_{max}} = %.1f mA',IhMaxL));
 plot([min(ampsStimL) IhMaxL],[hMaxL hMaxL],'k-.'); % horizontal line to Hmax
 % add label to horizontal line (Hmax)
 text(min(ampsStimL) + 0.1,hMaxL + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
     sprintf('H_{max} = %.5f V',hMaxL));
 hold off;
-xlabel('Stimulation #'); % xlabel('Stimulation Amplitude (mA)');
+xlabel('Stimulation Amplitude (mA)');
 ylabel('MG EMG Amplitude (V)');
-legend('H-wave','M-wave');
-% title(['Left Leg - Recruitment Curve']);
-% saveas(gcf,['H-ReflexRecruitmentCurve_Trial' num2str(trialL) ...
-%     '_LeftLeg.png']);
-% saveas(gcf,['H-ReflexRecruitmentCurve_Trial' num2str(trialL) ...
-%     '_LeftLeg.fig']);
+legend([p1 p2],'M-wave','H-wave','Location','best');
+title([id ' - Trial' trialNum ' - Left Leg - Recruitment Curve']);
+saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
+    trialNum '_LeftLeg.png']);
+saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
+    trialNum '_LeftLeg.fig']);
 
