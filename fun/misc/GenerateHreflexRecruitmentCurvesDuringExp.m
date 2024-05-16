@@ -12,7 +12,8 @@
 try     % if Vicon Nexus is running with a file open, use that
     % Vicon Nexus must be open, offline, and the desired trial loaded
     vicon = ViconNexus();
-    [path,filenameWExt] = vicon.GetTrialName;   % get trial open in Nexus
+    [path,filenameWOExt] = vicon.GetTrialName;   % get trial open in Nexus
+    filenameWExt = [filenameWOExt '.c3d'];
     guessID = vicon.GetSubjectNames;    % retrieve participant / session ID
 catch   % use below two lines when processing c3d files not open in Nexus
     commandwindow();
