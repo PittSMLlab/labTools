@@ -79,12 +79,12 @@ end
 %% Trial Data
 
 % Generate meta data for each trial
-[trialMD,fileList,secFileList]=getTrialMetaData(info);
+[trialMD,fileList,secFileList, datlogExist]=getTrialMetaData(info);
 
 % Load trials
 rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
 
-if info.perceptualTasks == 1
+if datlogExist || info.perceptualTasks == 1 %this most likely redundant, but keep for now, the way the code is used will always have datlog = true when perceptual task = 1
     datlog = {{}};
     for trial=1:length(rawTrialData)
         if ~isempty(rawTrialData{trial})
@@ -104,6 +104,12 @@ end
 
 rawExpData=experimentData(expMD,subData,rawTrialData);
 
+%Sync the datlog. if datlog for all trials exist and the forces
+%exist in the datlog.
+if datlogExist
+    rawExpData = SyncDatalog(rawExpData, [info.save_folder filesep 'DatlogSyncRes' filesep]);
+end
+
 %save raw
 save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3')
 
@@ -115,6 +121,11 @@ save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3')
 
 %create adaptationData object
 adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
+
+%% Add additional handling for experiments that needs trial splited
+if strcmp(info.ExpDescription,'SpinalAdaptation')
+    [expData, adaptData] = SepCondsInExpByAudioCue(expData, info.save_folder, info.ID, eventClass, info.ExpDescription);
+end
 
 %%
 diary off
