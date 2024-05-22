@@ -395,6 +395,14 @@ classdef labData
         end
         
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
+            %Split the data into [t0, t1). 
+            %Args: 
+            %   -t0: time in seconds (relative to trial start) of where to start the split (inclusive)
+            %           when given NaN, default to start of the trial.
+            %   -t1: time in seconds (relative to trial start) of where to stop (exclusive).
+            %           OPTIONAL, when not provided or got NaN, default to end of the trial
+            %   -newClass: string representing class/object type to reutnr.
+            %           OPTIONAL, default return the same type
             newThis=[]; %Just to avoid Matlab saying this is not defined
             cname=class(this);
             if nargin<4
@@ -409,7 +417,17 @@ classdef labData
             for i=1:length(auxLst)
                 eval(['oldVal=this.' auxLst{i} ';']) %Should try to do this only if the property is not dependent, otherwise, I'm computing things I don't need
                 if isa(oldVal,'labTimeSeries') && ~isa(oldVal,'parameterSeries')
-                    newVal=oldVal.split(t0,t1); %Calling labTS.split (or one of the subclass' implementation)
+                    if nargin < 3 || isnan(t1) %no end time point provided, assume spliting from t0 to end of the trial
+                        tEnd = oldVal.Time(end) + oldVal.sampPeriod;
+                    else %end point provided use it
+                        tEnd = t1; 
+                    end
+                    if isnan(t0) %a flag/fake initial time provided, assuming split from beginning to to t1
+                        tStart = oldVal.Time(1); %start is inclusive, no need to pad
+                    else %end point provided use it.
+                        tStart = t0;
+                    end
+                    newVal=oldVal.split(tStart,tEnd); %Calling labTS.split (or one of the subclass' implementation)
                 elseif ~isa(oldVal,'labMetaData')
                     newVal=oldVal; %Not a labTS object, not splitting
                 end
