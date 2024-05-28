@@ -59,6 +59,21 @@ indsNewPulseFast = diff([0; indsStimFastAll]) > 1;
 stimTimeSlowAbs = HreflexData.Time(indsStimSlowAll(indsNewPulseSlow));
 stimTimeFastAbs = HreflexData.Time(indsStimFastAll(indsNewPulseFast));
 
+% Romoves stims that happened too early (this happens when H reflex stim happened 
+% during transition into a new conditions and before a 1st valid HS is detected,
+% those strides won't be counted later on)
+% check if all stim time are after at least the 1st HS of the corresponding leg
+stimSlowCut = stimTimeSlowAbs - timeSHS(1) <= 0; 
+if any(stimSlowCut) %stimulation happens on or before a 1st valid stride is detected for this condition
+    warning('Hreflex stim for slow leg will be dropped, number of stim dropped: %d', sum(stimSlowCut));
+end
+stimFastCut = stimTimeFastAbs - timeFHS(1) <= 0;
+if any(stimFastCut)
+    warning('Hreflex stim for fast leg will be dropped, number of stim dropped: %d', sum(stimFastCut));
+end
+stimTimeSlowAbs = stimTimeSlowAbs(~stimSlowCut);
+stimTimeFastAbs = stimTimeFastAbs(~stimFastCut);
+
 % initialize parameter arrays: time of stimulation trigger pulse onset
 % (i.e., rising edge) and H-wave amplitude (i.e., peak-to-peak voltage)
 stimTimeSlow = nan(size(timeSHS));

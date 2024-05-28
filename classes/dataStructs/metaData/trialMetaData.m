@@ -78,7 +78,9 @@ classdef trialMetaData
             end
             if nargin>9 && (isa(datlog,'struct'))
                 this.datlog = datlog;
-                this.datlog = this.datlog.datlog;
+                if isfield(datlog,'datlog') %datlog is saved in datlog.datlog, this will be true depends on how the datlog was loaded.
+                    this.datlog = this.datlog.datlog;
+                end
             else
                 this.datlog='';
     

@@ -355,12 +355,15 @@ classdef labTimeSeries  < timeseries
            %Check t0>= Time(1)
            %Check t1<= Time(end)
            initT=this.Time(1)-eps;
-           finalT=this.Time(end)+eps;
+           % finalT=this.Time(end)+eps;%SL commented out, this will throw warning when trying to get the last sample
+           %the original intention was good to do [t0,t1) to avoid repeated sample,
+           %but the last sample (Time(end)) was never retrievable with this approach.
+           finalT = this.Time(end) + this.sampPeriod;%To get the last sample without warning.
            if ~(t0>= initT && t1<=finalT)
                if (t1<initT) || (t0>=finalT)
                    %ME=MException('labTS:split','Given time interval is not (even partially) contained within the time series.');
                    %throw(ME)
-			 warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is fully outside the timeseries. Padding with NaNs.'])
+			        warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is fully outside the timeseries. Padding with NaNs.'])
                else
                    warning('LabTS:split',['Requested interval [' num2str(t0) ',' num2str(t1) '] is not completely contained in TimeSeries. Padding with NaNs.'])
                end
@@ -369,6 +372,10 @@ classdef labTimeSeries  < timeseries
            %timeseries' time vector (if any).
             i1=find(this.Time>=t0,1);
             i2=find(this.Time<t1,1,'last'); %Explicitly NOT including the final sample, so that the time series is returned as the semi-closed interval [t0, t1). This avoids repeated samples if we ask for [t0,t1) and then for [t1,t2)
+            %SL: this will never be able to find the last sample
+            %if set t1 = this.Time(end)+eps, this.Time(end) < t1 evaluates
+            %to false (eps is machine precision, too small to make the
+            %boolean eval true? This may be a Matlab precision issue)
             if isempty(i1) || isempty(i2) %This happens when the whole timeseries is outside the range
 		i1=1;
 		i2=0;
