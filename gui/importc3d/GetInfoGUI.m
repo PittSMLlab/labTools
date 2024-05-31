@@ -5,7 +5,7 @@ function varargout = GetInfoGUI(varargin)
 %
 % See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 29-May-2024 10:45:34
+% Last Modified by GUIDE v2.5 29-May-2024 13:58:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,7 +64,7 @@ set(handles.day_edit,'TooltipString','Date the experiment was performed (NOT the
 set(handles.year_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
 set(handles.note_edit,'TooltipString',sprintf(['Notes about the experiment as a whole. If a comment is specific to a trial,\n'...
     'do not enter it here (there will be a chance later on to comment on individual trials).']));
-%set(handles.schenleyLab,'TooltipString','Was the data collect on Schenley Place?');
+set(handles.schenleyLab,'TooltipString','Was the data collect on Schenley Place?');
 
 %--------------------------Subject Info----------------------------------%
 set(handles.subID_edit,'TooltipString','Coded value used to identify subject. DO NOT use the subjec''s name!');
@@ -74,10 +74,9 @@ set(handles.DOByear_edit,'TooltipString','Year subject was born');
 set(handles.gender_list,'TooltipString','Subject''s gender');
 set(handles.domleg_list,'TooltipString','Dominant leg of subject');
 set(handles.domhand_list,'TooltipString','Dominant hand/arm of subject');
+set(handles.fastLeg,'TooltipString','Leg placed on the fast belt');
 set(handles.height_edit,'TooltipString','Height of subject as measured in the lab (in cm)');
 set(handles.weight_edit,'TooltipString','Weight of subject as measured in the lab (in Kg)');
-
-
 
 
 % UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
@@ -218,6 +217,9 @@ function DOByear_edit_Callback(hObject, eventdata, handles)
 % --- Executes on selection change in gender_list.
 function gender_list_Callback(hObject, eventdata, handles)
 
+% --- Executes on selection change in fastLeg.
+function fastLeg_Callback(hObject, eventdata, handles)
+
 % --- Executes on selection change in domleg_list.
 function domleg_list_Callback(hObject, eventdata, handles)
 
@@ -316,6 +318,10 @@ function  perceptualTasks_Callback(hObject, eventdata, handles)
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
+% function  fastLeg_Callback(hObject, eventdata, handles)
+% % Hint: get(hObject,'Value') returns toggle state of force_check
+% % set(handles.schenleyLab,'enable','on')
+% % guidata(hObject,handles);
 
 % --- Executes on button press in emg_check.
 function emg_check_Callback(hObject, eventdata, handles)
@@ -681,25 +687,39 @@ if file~=0
         set(handles.DOBday_edit,'string',subInfo.DOBday);
         set(handles.DOByear_edit,'string',subInfo.DOByear);
         genderContents = cellstr(get(handles.gender_list,'String'));
-        set(handles.gender_list,'Value',find(strcmp(genderContents,subInfo.gender)));
+        set(handles.gender_list,'Value',find(strcmp(genderContents,subInfo.gender)));        
         domlegContents = cellstr(get(handles.domleg_list,'String'));
         set(handles.domleg_list,'Value',find(strcmp(domlegContents,subInfo.domleg)));
         domhandContents = cellstr(get(handles.domhand_list,'String'));
         set(handles.domhand_list,'Value',find(strcmp(domhandContents,subInfo.domhand)));
         set(handles.height_edit,'string',subInfo.height);
         set(handles.weight_edit,'string',subInfo.weight);
-        
+               
         if isfield(subInfo,'isStroke') %for subject processed before 11/2014
             set(handles.strokeCheck,'Value',subInfo.isStroke);
         else %Case of old info files, prior support for stroke subjects
             set(handles.strokeCheck,'Value',0);
         end
+
         if get(handles.strokeCheck,'Value')
             set(handles.popupAffected,'Enable','On');
             set(handles.popupAffected,'Value',subInfo.affectedValue);
         end
         
-        
+        if isfield(subInfo,'fastLeg') 
+            fastLegContents = cellstr(get(handles.fastLeg,'String'));
+            set(handles.fastLeg,'Value',find(strcmp(fastLegContents,subInfo.fastLeg)));
+        else  % for subject processed before 05/2024
+            if handles.strokeCheck.Value
+                sLeg=subInfo.affectedSide; %the affected side was set as the affected side 
+                fLeg_value=find(~strcmpi(cellstr(get(handles.fastLeg,'String')),sLeg) & ~strcmpi(cellstr(get(handles.fastLeg,'String')),'')); %find which one will be the fast leg
+                set(handles.fastLeg,'Value',fLeg_value);
+            else
+                fLeg=subInfo.domleg;
+                fLeg_value=find(strcmpi(cellstr(get(handles.fastLeg,'String')),fLeg) & ~strcmpi(cellstr(get(handles.fastLeg,'String')),''));
+                set(handles.fastLeg,'Value',fLeg_value);
+            end
+        end
         
         % -- Data Info
         handles.folder_location=subInfo.dir_location;
@@ -726,7 +746,7 @@ if file~=0
            set(handles.perceptualTasks,'Value',subInfo.perceptualTasks);
         end
 
-
+        
         if isfield(subInfo, 'emg_check')
             set(handles.emg_check,'Value',subInfo.EMGs);
         else
@@ -768,7 +788,7 @@ if file~=0
         
         
         if isfield(handles, 'EMGworks') && handles.EMGworks==1
-            handles.EMGworksFile_Loc =subInfo.EMGworksdir_location;
+            handles.EMGworksFile_Loc=subInfo.EMGworksdir_location;
             set(handles.EMGworksLocation,'string',handles.EMGworksFile_Loc)
             if ~isempty(handles.EMGworksLocation.String)
                 set(handles.EMGworksLocation,'enable','on')
@@ -932,8 +952,12 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function domleg_list_CreateFcn(hObject, eventdata, handles)
+function fastLeg_CreateFcn(hObject, eventdata, handles)
+% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+%     set(hObject,'BackgroundColor','white');
+% end
 
+function domleg_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -1642,34 +1666,5 @@ end
 
 
 
-% 
-% % --- Executes on button press in perceptualTasks.
-% function perceptualTasks_Callback(hObject, eventdata, handles)
-% % hObject    handle to perceptualTasks (see GCBO)
-% % eventdata  reserved - to be defined in a future version of MATLAB
-% % handles    structure with handles and user data (see GUIDATA)
-% 
-% % Hint: get(hObject,'Value') returns toggle state of perceptualTasks
 
 
-% --- Executes on selection change in popupmenu9.
-function popupmenu9_Callback(hObject, eventdata, handles)
-% hObject    handle to popupmenu9 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns popupmenu9 contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupmenu9
-
-
-% --- Executes during object creation, after setting all properties.
-function popupmenu9_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to popupmenu9 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
