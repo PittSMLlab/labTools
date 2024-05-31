@@ -15,12 +15,12 @@ classdef strokeSubjectData<subjectData
     
     methods
         %constructor
-        function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,affected,strokeDate)
-            this@subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID);
-            if nargin>8
+        function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg,affected,strokeDate)            
+            this@subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg); % fLeg is added given that newer protocols do not have dominance or affected side as Fast or slow leg (refLeg)
+            if nargin>9
                 this.affectedSide=affected;
             end
-            if nargin>9
+            if nargin>10
                 this.strokeDate=strokeDate;
             end
         end
