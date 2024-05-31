@@ -9,7 +9,7 @@ classdef derivedMetaData < trialMetaData
     
     methods
         %Constructor
-        function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta,condition,rawDataFilename,type,schenleyLab,perceptualTasks,datlog)
+        function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta,condition,rawDataFilename,type,schenleyLab,perceptualTasks,datlog,fastLeg)
             if nargin == 7 %parentMeta is give, but no other args are given, set it to the parent
                 condition = parentMeta.condition;
                 rawDataFilename = parentMeta.rawDataFilename;
@@ -35,6 +35,10 @@ classdef derivedMetaData < trialMetaData
             end
             if ~exist('datlog','var') %no condition provided
                 datlog = ""; %default to empty
+            end
+
+            if ~exist('fastLeg','var') %no condition provided
+                fastLeg = refLeg; %default to empty
             end
             
             this@trialMetaData(ID,desc,obs,refLeg,condition,rawDataFilename,parentMeta.type,schenleyLab,perceptualTasks,datlog) 
