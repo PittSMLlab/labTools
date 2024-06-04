@@ -4,8 +4,10 @@ function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, su
 % subjectID] and copies the old files into [resSavePath subjectID originalCondName]
 % Always separate on sTO to presever sHS in new conditions as much as possible. 
 % This is specific for the SpinalAdaptation study (uses prior knowledge of what's
-% in the audioCue to separate the trials. However, logic in here can be
-% generalized for other studies who want to split trials.
+% in the audioCue to separate the trials). 
+% ***NOTE**** Logic in here can be generalized for other studies who want to 
+% split trials, search and fill in the blank for sections with "study
+% specific logic"
 %
 % OUTPUTARGS: -expData: experimentData object with conditions
 %                   separated. 
@@ -20,9 +22,7 @@ function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, su
 %                   in c3d2mat
 %           - studyName: string, name of the study (use this to add in
 %                   study specific logic when separating trials).
-% Examples: 
-% 
-% See also: loadSubject.m
+% Examples: See: loadSubject.m
 
 % $Author: Shuqi Liu $	$Date: 2024/05/22 13:24:55 $	$Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2024
@@ -98,11 +98,15 @@ for origTrialIdx = origTrials
     for trialIdx = trialsInCond %usually only have 1.
         curTrl = trialData{trialIdx};
         for msgIdx = 1:numel(msg) 
-            %create new trial from event time and after, update curTrl to only keep 1 to eventtime -1 , and update trial meta data 
-            if startsWith(msg{msgIdx},'Rest') %change to ramp2Tied
-                newName = [origCondName ' Ramp2Tied' msg{msgIdx}(end)];
-            else
-                newName = [origCondName ' ' msg{msgIdx}];
+            if strcmpi(studyName, 'SpinalAdaptation')
+                %StudySpecific logic: create new trial from event time and after, update curTrl to only keep 1 to eventtime -1 , and update trial meta data
+                if startsWith(msg{msgIdx},'Rest') %change to ramp2Tied
+                    newName = [origCondName ' Ramp2Tied' msg{msgIdx}(end)];
+                else
+                    newName = [origCondName ' ' msg{msgIdx}];
+                end
+            else %default value, add other study specific logic here.
+                newName = [origCondName ' Default'];
             end
             newDescription = newName; %keep it the same for now.
             %create a new trial separing on closet sHS to the msg
@@ -170,8 +174,17 @@ if strcmpi(studyName, 'SpinalAdaptation')
         {'RampToSplit','Split','RampToSplit'}); %Pre/PostTrain1 Keep the space.
     newName'
     newExpData.metaData.conditionName = newName;
+    
+    %update the trial meta data to also match the
+    %expData.metaData.conditionName
+    for i = 1:numel(newExpData.metaData.trialsInCondition)
+        trialsToUpdate = cell2mat(newExpData.metaData.trialsInCondition(i));
+        for j = trialsToUpdate
+            newExpData.data{j}.metaData.name = newExpData.metaData.conditionName{i};
+        end
+    end
 else
-    %add other study specific naming convention/style here.
+    %add other study specific logic naming convention/style here.
 end
 toc
 

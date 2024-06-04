@@ -42,10 +42,10 @@ for cond = sort(info.cond)
         if datlogExist %datalog folder found, load it.
             filenameDatlog = [datalogFolder filesep basename sprintf('%02d',t)];
             try
-            % Upload the datalog for the specifica condition   
-            info.datlog{cond} = load([filenameDatlog '.mat']);
+                % Upload the datalog for the specifica condition   
+                info.datlog{cond} = load([filenameDatlog '.mat']);
             catch ME
-                warning('Datalog folder exists (%s) but could not find datalog file for trial: %s. Maybe forget to rename them? Will ignore this trial.',datalogFolder,[basename sprintf('%02d',t)])
+                error('Datalog folder exists (%s) but could not find datalog file for trial: %s. Maybe forget to rename them? Will ignore this trial.',datalogFolder,[basename sprintf('%02d',t)])
             end
         end
                 
