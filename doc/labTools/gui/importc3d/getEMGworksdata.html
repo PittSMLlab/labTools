@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEMGworksdata</title>
+  <meta name="keywords" content="getEMGworksdata">
+  <meta name="description" content="get EMG from EMGworks">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; getEMGworksdata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>getEMGworksdata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>get EMG from EMGworks</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(infoEMGList1 ,infoEMGList2 ,secFileList,fileList, NexusfileList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> get EMG from EMGworks</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="loadTrials.html" class="code" title="function trials=loadTrials(trialMD,fileList,secFileList,info)">loadTrials</a>	loadTrials  generates rawTrialData instances for each trial</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [analogsNexus, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(infoEMGList1 ,infoEMGList2 ,secFileList,fileList, NexusfileList)</a>
+0002 <span class="comment">% get EMG from EMGworks</span>
+0003 
+0004 <span class="comment">%needed inputs:   EMGList1  EMGList2  secFileList{t}   fileList analogs</span>
+0005 <span class="comment">% outputs: EMGList relData relData2</span>
+0006 
+0007 <span class="comment">% secondFile=false;</span>
+0008 <span class="keyword">if</span> isempty(secFileList)
+0009     secondFile=false;
+0010 <span class="keyword">else</span>
+0011     secondFile=true;
+0012 <span class="keyword">end</span>
+0013 
+0014  idx1=str2num(NexusfileList(strfind(NexusfileList,<span class="string">'Trial'</span>)+5:end));
+0015 
+0016 <span class="comment">%% File 1</span>
+0017 
+0018 
+0019 <span class="keyword">if</span> idx1&lt;10
+0020 load([fileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0021 <span class="keyword">else</span>
+0022 load([fileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0023 <span class="keyword">end</span>
+0024 
+0025 r=2; <span class="comment">%rate of downsampling the data</span>
+0026 <span class="comment">% Data=Data(:,1:r:end); %Downsampling of the data</span>
+0027 
+0028 analogs=[];
+0029 analogsInfo=[];
+0030 <span class="keyword">for</span> j=1:length(Channels)
+0031 B(j) = convertCharsToStrings(Channels(j,:));
+0032 B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
+0033 B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
+0034 B(j) =deblank(B(j));
+0035 C(j) = cellstr(B(j));
+0036 <span class="keyword">if</span> contains(B(j),<span class="string">'_(IM)'</span>)
+0037    B(j) = strrep(B(j),<span class="string">'_(IM)'</span>,<span class="string">''</span>);
+0038 <span class="keyword">elseif</span> contains(B(j),<span class="string">'_IM__'</span>)
+0039     B(j) = strrep(B(j),<span class="string">'_IM__'</span>,<span class="string">''</span>);
+0040 <span class="keyword">end</span>
+0041 analogs.(B{j})=Data(j,:)';
+0042 <span class="keyword">end</span>
+0043 
+0044 relData=[];
+0045 relDataTemp=[];
+0046 fieldList=fields(analogs);
+0047 idxList=[];
+0048 <span class="keyword">for</span> j=1:length(fieldList)
+0049 <span class="keyword">if</span>  ~isempty(strfind(fieldList{j},<span class="string">'EMG'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0050     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0051     <span class="keyword">if</span> ~isempty(str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+4:end)))
+0052          idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+4:end));    
+0053     <span class="keyword">elseif</span>  ~isempty(str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end)))
+0054          idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end));
+0055     <span class="keyword">else</span>
+0056          idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end-1));
+0057     <span class="keyword">end</span>
+0058     analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0059     analogsInfo.frequency=Fs(j)/r;
+0060     analogsInfo.units.(fieldList{j})=<span class="string">'V'</span>;
+0061 <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog_16_A'</span>))
+0062     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0063     idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+7:end-2));
+0064     analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0065     analogsInfo.frequency= Fs(j)/r;
+0066     analogsInfo.units.(fieldList{j})=<span class="string">'V'</span>;
+0067 <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog16_A'</span>))
+0068     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0069     idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Analog16'</span>)+6:end-2));
+0070     analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0071     analogsInfo.frequency= Fs(j)/r;
+0072     analogsInfo.units.(fieldList{j})=<span class="string">'V'</span>;
+0073 <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog_A16'</span>))
+0074     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0075     idxList(end+1)=str2num((fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_A16'</span>)+8:end)));
+0076     analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0077     analogsInfo.frequency= Fs(j)/r;
+0078     analogsInfo.units.(fieldList{j})=<span class="string">'V'</span>;
+0079 <span class="keyword">end</span>
+0080 <span class="keyword">end</span>
+0081 emptyChannels1=cellfun(@(x) isempty(x),infoEMGList1);
+0082 EMGList1=infoEMGList1(~emptyChannels1);
+0083 relData(:,idxList)=relDataTemp; <span class="comment">%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does</span>
+0084 relData=relData(:,~emptyChannels1);
+0085 EMGList=EMGList1;
+0086 <span class="comment">%% File 2</span>
+0087 analogsInfo2=[];
+0088 emptyChannels2=[];
+0089 EMGList2=[];
+0090 relData2=[];
+0091 <span class="keyword">if</span> secondFile
+0092 <span class="comment">%  secFileList{t}</span>
+0093 <span class="comment">% files=what('./');</span>
+0094 <span class="comment">% RawfileList=files.mat;</span>
+0095 <span class="comment">% %</span>
+0096 <span class="comment">% indexTrial=find(strcmp(['Trial0', num2str(t),'.mat'],RawfileList));</span>
+0097 <span class="comment">% load(RawfileList{indexTrial})</span>
+0098 <span class="keyword">if</span> idx1&lt;10
+0099 load([secFileList, <span class="string">'/Trial0'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0100 <span class="keyword">else</span>
+0101 load([secFileList, <span class="string">'/Trial'</span>, num2str(idx1), <span class="string">'.mat'</span>])
+0102 <span class="keyword">end</span>
+0103 <span class="comment">% load([secFileList '.mat'])</span>
+0104 <span class="comment">% Data=Data(:,1:r:end);</span>
+0105 
+0106 analogs2=[];
+0107 <span class="comment">% analogsInfo2=[];</span>
+0108 <span class="keyword">for</span> j=1:length(Channels)
+0109     B(j) = convertCharsToStrings(Channels(j,:));
+0110     B(j) = regexprep(B(j),<span class="string">'\W*[: .]'</span>,<span class="string">' '</span>);
+0111     B(j) = regexprep(B(j),<span class="string">'\s'</span>,<span class="string">'_'</span>);
+0112     B(j) =deblank(B(j));
+0113     C(j) = cellstr(B(j));
+0114     <span class="keyword">if</span> contains(B(j),<span class="string">'_(IM)'</span>)
+0115         B(j) = strrep(B(j),<span class="string">'_(IM)'</span>,<span class="string">''</span>);
+0116     <span class="keyword">elseif</span> contains(B(j),<span class="string">'_IM__'</span>)
+0117         B(j) = strrep(B(j),<span class="string">'_IM__'</span>,<span class="string">''</span>);
+0118     <span class="keyword">end</span>
+0119     analogs2.(B{j})=Data(j,:)';
+0120 <span class="keyword">end</span>
+0121 fieldList=fields(analogs2);
+0122 relDataTemp2=[];
+0123 idxList2=[];
+0124 <span class="keyword">for</span> j=1:length(fieldList);
+0125     <span class="keyword">if</span>  ~isempty(strfind(fieldList{j},<span class="string">'EMG'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0126         relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+0127         <span class="keyword">if</span> ~isempty(str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+4:end)))
+0128             idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+4:end));
+0129         <span class="keyword">elseif</span>  ~isempty(str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end)))
+0130             idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end));
+0131         <span class="keyword">else</span>
+0132             idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end-1));
+0133         <span class="keyword">end</span>
+0134 <span class="comment">%         idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+4:end));</span>
+0135         analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0136         analogsInfo2.frequency= Fs(j)/r;
+0137         analogsInfo2.units.(fieldList{j})=<span class="string">'V'</span>;
+0138     <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog_16_A'</span>))
+0139         relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+0140         idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_16'</span>)+7:end-2));
+0141         analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0142         analogsInfo2.frequency=Fs(j)/r;
+0143         analogsInfo2.units.(fieldList{j})=<span class="string">'V'</span>;
+0144     <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog16_A'</span>))
+0145         relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+0146         idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Analog16'</span>)+6:end-2));
+0147         analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0148         analogsInfo2.frequency= Fs(j)/r;
+0149         analogsInfo2.units.(fieldList{j})=<span class="string">'V'</span>;
+0150     <span class="keyword">elseif</span>  ~isempty(strfind(fieldList{j},<span class="string">'Analog_A16'</span>))
+0151         relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
+0152         idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'Analog_A'</span>)+8:end));
+0153         analogs2=rmfield(analogs2,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0154         analogsInfo2.frequency= Fs(j)/r;
+0155         analogsInfo2.units.(fieldList{j})=<span class="string">'V'</span>;
+0156         
+0157     
+0158     <span class="keyword">end</span>
+0159 <span class="keyword">end</span>
+0160 emptyChannels2=cellfun(@(x) isempty(x),infoEMGList2);
+0161 EMGList2=infoEMGList2(~emptyChannels2); <span class="comment">%Just using the names for the channels that were actually in the file</span>
+0162 relData2(:,idxList2)=relDataTemp2; <span class="comment">%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does</span>
+0163 relData2=relData2(:,~emptyChannels2);
+0164 EMGList=[EMGList1,EMGList2];
+0165 <span class="keyword">end</span>
+0166 
+0167 
+0168 <span class="comment">%%</span>
+0169 H=btkReadAcquisition([NexusfileList <span class="string">'.c3d'</span>]);
+0170 [analogsNexus,analogsInfoNexus]=btkGetAnalogs(H);
+0171 analogsInfoNexus=analogsInfo;
+0172 
+0173 
+0174 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

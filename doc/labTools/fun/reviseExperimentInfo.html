@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of reviseExperimentInfo</title>
+  <meta name="keywords" content="reviseExperimentInfo">
+  <meta name="description" content="reviseSubjectInfo">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">fun</a> &gt; reviseExperimentInfo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>reviseExperimentInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>reviseSubjectInfo</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function reviseExperimentInfo </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">reviseSubjectInfo</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function reviseExperimentInfo</a>
+0002 
+0003 <span class="comment">%reviseSubjectInfo</span>
+0004 
+0005 <span class="comment">% Get info!</span>
+0006 info = GetInfoGUI;
+0007 
+0008 
+0009 <span class="comment">%%</span>
+0010 <span class="comment">%Compare to old subject file</span>
+0011 load([info.save_folder filesep info.ID <span class="string">'RAW.mat'</span>])
+0012 load([info.save_folder filesep info.ID <span class="string">'.mat'</span>])
+0013 
+0014 expDate = labDate(info.day,info.month,info.year);
+0015 <span class="comment">%% Experiment info</span>
+0016 
+0017 expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,<span class="keyword">...</span>
+0018     info.exp_obs,info.conditionNames,info.conditionDescriptions,expData.metaData.trialsInCondition,expData.metaData.Ntrials);
+0019 <span class="comment">%Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)</span>
+0020 
+0021 <span class="comment">%% Subject info</span>
+0022 
+0023 <span class="comment">% find reference leg</span>
+0024 <span class="comment">%This assumes</span>
+0025 <span class="comment">%   1) that the leg on the fast belt is the dominant leg</span>
+0026 <span class="comment">%   2) that info.domleg is either 'left' or 'right'</span>
+0027 <span class="comment">%   3) that the reference leg is the leg on the slow belt</span>
+0028 
+0029 <span class="keyword">if</span> isfield(info,<span class="string">'fastLeg'</span>)
+0030     <span class="keyword">if</span> strcmpi(info.fastLeg,<span class="string">'right'</span>)
+0031         info.refLeg=<span class="string">'L'</span>;
+0032     <span class="keyword">elseif</span> strcmpi(info.fastLeg,<span class="string">'left'</span>)
+0033         info.refLeg = <span class="string">'R'</span>;
+0034     <span class="keyword">else</span>
+0035         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.fastLeg is either ''Left'' or ''Right''.'</span>)
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">elseif</span> isfield(info,<span class="string">'isStroke'</span>) &amp;&amp; info.isStroke==1 <span class="comment">%For stroke patients, reference leg is equal to affected side</span>
+0038     <span class="keyword">if</span> strcmpi(info.affectedSide,<span class="string">'right'</span>)
+0039         info.refLeg=<span class="string">'R'</span>;
+0040     <span class="keyword">elseif</span> strcmpi(info.affectedSide,<span class="string">'left'</span>)
+0041         info.refLeg = <span class="string">'L'</span>;
+0042     <span class="keyword">else</span>
+0043         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.affectedSide is either ''Left'' or ''Right''.'</span>)
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">else</span> <span class="comment">%For non-stroke patients, we are assuming that the reference leg is their non-dominant leg</span>
+0046     <span class="keyword">if</span> strcmpi(info.domleg,<span class="string">'right'</span>)
+0047         info.refLeg = <span class="string">'L'</span>;
+0048     <span class="keyword">elseif</span> strcmpi(info.domleg,<span class="string">'left'</span>)
+0049         info.refLeg = <span class="string">'R'</span>;
+0050     <span class="keyword">else</span>
+0051         warning(<span class="string">'Reference leg could not be determined from information given. Make sure info.domleg is either ''Left'' or ''Right''.'</span>)
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 DOB = labDate(info.DOBday,info.DOBmonth,info.DOByear);
+0056 
+0057 <span class="comment">%age calc</span>
+0058 age = expDate.year - DOB.year;
+0059 <span class="keyword">if</span> expDate.month &lt; DOB.month
+0060     age = age-1;
+0061 <span class="keyword">elseif</span> expDate.month == DOB.month
+0062     <span class="keyword">if</span> expDate.day &lt; DOB.day
+0063         age = age-1;
+0064     <span class="keyword">end</span>
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="keyword">if</span> ~isfield(info,<span class="string">'isStroke'</span>) || info.isStroke==0
+0068     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
+0069     info.weight,age,info.ID,info.fastLeg);
+0070 <span class="keyword">else</span>
+0071     subData=strokeSubjectData(DOB,info.gender,info.domleg,info.domhand,info.height,<span class="keyword">...</span>
+0072     info.weight,age,info.ID,info.fastLeg,info.affectedSide); <span class="comment">%TO DO: add stroke date</span>
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">%% Trial Data</span>
+0076 
+0077 <span class="comment">% Generate meta data for each trial</span>
+0078 <span class="keyword">for</span> cond = sort(info.cond) 
+0079     <span class="keyword">for</span> t = expData.metaData.trialsInCondition{cond}               
+0080         <span class="keyword">if</span> ~isfield(info,<span class="string">'trialObs'</span>)
+0081             info.trialObs=cell(info.numoftrials,1);
+0082         <span class="keyword">end</span>
+0083         <span class="comment">% constructor: (name,desc,obs,refLeg,cond,filename,type)</span>
+0084         trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},<span class="keyword">...</span>
+0085             info.trialObs{t},info.refLeg,cond,expData.data{t}.metaData.rawDataFilename,info.type{cond});        
+0086     <span class="keyword">end</span>    
+0087 <span class="keyword">end</span>
+0088 
+0089 <span class="comment">% Load trials</span>
+0090 <span class="keyword">for</span> t=cell2mat(expData.metaData.trialsInCondition)     
+0091     GRFData=rawExpData.data{t}.GRFData;
+0092     EMGData=rawExpData.data{t}.EMGData;
+0093     accData=rawExpData.data{t}.accData;
+0094     markerData=rawExpData.data{t}.markerData;    
+0095     <span class="comment">%rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)</span>
+0096     trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[]);
+0097 <span class="keyword">end</span>    
+0098     
+0099 rawExpData=experimentData(expMD,subData,trials); <span class="comment">%Overwrites old!</span>
+0100 
+0101 <span class="comment">%save raw</span>
+0102 save([info.save_folder filesep info.ID <span class="string">'RAW.mat'</span>],<span class="string">'rawExpData'</span>,<span class="string">'-v7.3'</span>)
+0103 
+0104 <span class="comment">%% &quot;Process&quot; data</span>
+0105 <span class="keyword">for</span> t=1:length(rawExpData.data)    
+0106     <span class="keyword">if</span> ~isempty(rawExpData.data{t})        
+0107             procEMGData=expData.data{t}.procEMGData;
+0108             filteredEMGData=expData.data{t}.EMGData;
+0109             angleData=expData.data{t}.angleData;
+0110             events = expData.data{t}.gaitEvents;            
+0111             beltSpeedReadData = expData.data{t}.beltSpeedReadData; 
+0112             jointMomentsData = expData.data{t}.jointMomentsData;
+0113             COPData = expData.data{t}.COPData;
+0114             COMData = expData.data{t}.COMData; 
+0115             
+0116             <span class="comment">% Generate processedTrial object</span>
+0117             processedData{t}=processedTrialData(trialMD{t},expData.data{t}.markerData,<span class="keyword">...</span>
+0118                 filteredEMGData,expData.data{t}.GRFData,expData.data{t}.beltSpeedSetData,beltSpeedReadData,<span class="keyword">...</span>
+0119                 expData.data{t}.accData,expData.data{t}.EEGData,expData.data{t}.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData);
+0120             processedData{t}.adaptParams=expData.data{t}.adaptParams;     
+0121     <span class="keyword">else</span>
+0122         processedData{t}=[];
+0123     <span class="keyword">end</span>
+0124 <span class="keyword">end</span>
+0125 expData=experimentData(expMD,subData,processedData); <span class="comment">%Overwrites old!</span>
+0126 
+0127 <span class="comment">%Save processed</span>
+0128 save([info.save_folder filesep info.ID <span class="string">'.mat'</span>],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>)
+0129 
+0130 <span class="comment">%create adaptationData object</span>
+0131 adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
+0132 
+0133 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

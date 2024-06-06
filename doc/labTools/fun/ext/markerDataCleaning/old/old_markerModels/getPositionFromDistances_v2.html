@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getPositionFromDistances_v2</title>
+  <meta name="keywords" content="getPositionFromDistances_v2">
+  <meta name="description" content="v2 allos for many pos to be estimated simultaneously">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; getPositionFromDistances_v2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>getPositionFromDistances_v2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>v2 allos for many pos to be estimated simultaneously</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [pos] = getPositionFromDistances_v2(knownPositions,knownDistances,weights,initGuess) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">v2 allos for many pos to be estimated simultaneously
+INPUT:
+knownPositions: N x D  matrix, D being dimension of space
+knownDistances: N x M matrix containing distances from unknown point to
+weights: N x M vector to weigh the distances in the regression (larger
+weights means the distance is better preserved)
+OUTPUT:
+pos: M x D matrix containing D-dimensional positions for M points</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="distanceDistanceAll.html" class="code" title="function [f,g]=distanceDistanceAll(x,kP,kD,w)">distanceDistanceAll</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [f,g]=distanceDistance(x,kP,kD,w)</a></li><li><a href="#_sub2" class="code">function [f,g]=distanceDistanceAll(x,kP,kD,w)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pos] = getPositionFromDistances_v2(knownPositions,knownDistances,weights,initGuess)</a>
+0002 <span class="comment">%v2 allos for many pos to be estimated simultaneously</span>
+0003 <span class="comment">%INPUT:</span>
+0004 <span class="comment">%knownPositions: N x D  matrix, D being dimension of space</span>
+0005 <span class="comment">%knownDistances: N x M matrix containing distances from unknown point to</span>
+0006 <span class="comment">%weights: N x M vector to weigh the distances in the regression (larger</span>
+0007 <span class="comment">%weights means the distance is better preserved)</span>
+0008 <span class="comment">%OUTPUT:</span>
+0009 <span class="comment">%pos: M x D matrix containing D-dimensional positions for M points</span>
+0010 
+0011 [N,dim]=size(knownPositions);
+0012 [N1,M]=size(knownDistances);
+0013 <span class="keyword">if</span> nargin&lt;3 || isempty(weights)
+0014     weights=ones(size(knownDistances));
+0015 <span class="keyword">elseif</span> size(weights,1)~=N
+0016     error(<span class="string">'Weight dimensions mismatch'</span>)
+0017 <span class="keyword">end</span>
+0018 weights=weights/sum(weights); <span class="comment">%Normalizing to 1</span>
+0019 
+0020 <span class="keyword">if</span> nargin&lt;4 || isempty(initGuess)
+0021     initGuess=mean(knownPositions);
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> size(knownDistances,1)~=N
+0025     error(<span class="string">'Provided distances dimension mismatch. Check that the number of distances is the same as the numer of known positions'</span>)
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">%Option 1:</span>
+0029 <span class="comment">%Do a least-squares regression:</span>
+0030 opts = optimoptions(<span class="string">'fminunc'</span>,<span class="string">'Algorithm'</span>,<span class="string">'trust-region'</span>,<span class="string">'SpecifyObjectiveGradient'</span>,true,<span class="string">'Display'</span>,<span class="string">'off'</span>);
+0031 pos=fminunc(@(x) <a href="distanceDistanceAll.html" class="code" title="function [f,g]=distanceDistanceAll(x,kP,kD,w)">distanceDistanceAll</a>(reshape(x,M,dim),knownPositions,knownDistances,weights),initGuess(:),opts);
+0032 
+0033 <span class="keyword">end</span>
+0034 
+0035 <a name="_sub1" href="#_subfunctions" class="code">function [f,g]=distanceDistance(x,kP,kD,w)</a>
+0036     xx=bsxfun(@minus,x,kP); <span class="comment">%Relative positions</span>
+0037     normXX=sqrt(sum(xx.^2,2));
+0038     f=norm(w.*(normXX-kD))^2;
+0039     gg1=2*w.^2.*(normXX-kD);
+0040     gg2=bsxfun(@rdivide,xx,normXX);
+0041     gg=bsxfun(@times,gg1,gg2);
+0042     g=sum(gg,1);
+0043 <span class="keyword">end</span>
+0044 
+0045 <a name="_sub2" href="#_subfunctions" class="code">function [f,g]=distanceDistanceAll(x,kP,kD,w)</a>
+0046     [M,dim]=size(x);
+0047     [N,dim]=size(kP);
+0048     xx=bsxfun(@minus,x,reshape(kP',1,size(kP,2),size(kP,1))); <span class="comment">%M x dim x N</span>
+0049     normXX=sqrt(sum(xx.^2,2)); <span class="comment">%M x 1 x N</span>
+0050     f=sum(sum((w'.*(reshape(normXX,M,N)-kD')).^2)); <span class="comment">%scalar</span>
+0051     gg1=2*w'.^2.*(reshape(normXX,M,N)-kD'); <span class="comment">%M x N</span>
+0052     gg2=bsxfun(@rdivide,xx,normXX); <span class="comment">%M x dim x N</span>
+0053     gg=bsxfun(@times,reshape(gg1,size(gg2,1),1,size(gg2,3)),gg2); <span class="comment">%M x dim x N</span>
+0054     g=sum(gg,3); <span class="comment">%M x dim</span>
+0055     g=g(:);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%% A little script to test distanceDistanceAll:</span>
+0059 <span class="comment">% X1=randn(10,3);</span>
+0060 <span class="comment">% D=computeDistanceMatrix(X1);</span>
+0061 <span class="comment">% kP=X1(1:7,:);</span>
+0062 <span class="comment">% kD=D(1:7,8:10);</span>
+0063 <span class="comment">% w=ones(size(kD));</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% %% Eval:</span>
+0066 <span class="comment">% xA=randn(3,3);</span>
+0067 <span class="comment">% [fA,gA]=distanceDistanceAll(xA,kP,kD,w);</span>
+0068 <span class="comment">% xB=bsxfun(@plus,xA,[0, 0, 1e-5]);</span>
+0069 <span class="comment">% [fB,gB]=distanceDistanceAll(xB,kP,kD,w);</span>
+0070 <span class="comment">% xC=bsxfun(@plus,xA,[0, 1e-5, 0]);</span>
+0071 <span class="comment">% [fC,gC]=distanceDistanceAll(xC,kP,kD,w);</span>
+0072 <span class="comment">% xD=bsxfun(@plus,xA,[1e-5, 0, 0]);</span>
+0073 <span class="comment">% [fD,gD]=distanceDistanceAll(xD,kP,kD,w);</span>
+0074 <span class="comment">% sum(reshape(gA,3,3),1)</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">% [(fD-fA) (fC-fA) (fB-fA)]/1e-5</span>
+0077 <span class="comment">%</span>
+0078 <span class="comment">% [fA,~]=distanceDistanceAll(X1(8:10,:),kP,kD,w)</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

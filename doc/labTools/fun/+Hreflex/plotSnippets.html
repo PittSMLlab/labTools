@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotSnippets</title>
+  <meta name="keywords" content="plotSnippets">
+  <meta name="description" content="PLOTSNIPPETS Plot H-reflex snippets">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; plotSnippets.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotSnippets
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOTSNIPPETS Plot H-reflex snippets</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function fig = plotSnippets(times,snippets,labels,id,trialNum,path) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOTSNIPPETS Plot H-reflex snippets
+   Plot the H-reflex snippets for desired muscles or forces (if desired)
+ with the window bounds for M-wave and H-wave indicated by vertical lines.
+
+ input:
+   times: number of samples x 1 array of the time in seconds with 0
+       indicating the identified stimulation artifact peak
+   snippets: N x 1 cell array of number of snippets x number of samples
+       arrays of force or raw EMG data (NOTE: no cells may be empty, and
+       every cell must have a corresponding label)
+   labels: N x 1 cell array of strings or character arrays of the tile
+       titles (i.e., labels) for each of the snippets plot
+   id: string or character array of participant / session ID for naming
+   trialNum: string or character array of the trial number for naming
+   path: OPTIONAL input for saving figures (not saved if not provided)
+ output:
+   fig: handle object to the figure generated</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ax = plotTile(t,y,lbl)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fig = plotSnippets(times,snippets,labels,id,trialNum,path)</a>
+0002 <span class="comment">%PLOTSNIPPETS Plot H-reflex snippets</span>
+0003 <span class="comment">%   Plot the H-reflex snippets for desired muscles or forces (if desired)</span>
+0004 <span class="comment">% with the window bounds for M-wave and H-wave indicated by vertical lines.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% input:</span>
+0007 <span class="comment">%   times: number of samples x 1 array of the time in seconds with 0</span>
+0008 <span class="comment">%       indicating the identified stimulation artifact peak</span>
+0009 <span class="comment">%   snippets: N x 1 cell array of number of snippets x number of samples</span>
+0010 <span class="comment">%       arrays of force or raw EMG data (NOTE: no cells may be empty, and</span>
+0011 <span class="comment">%       every cell must have a corresponding label)</span>
+0012 <span class="comment">%   labels: N x 1 cell array of strings or character arrays of the tile</span>
+0013 <span class="comment">%       titles (i.e., labels) for each of the snippets plot</span>
+0014 <span class="comment">%   id: string or character array of participant / session ID for naming</span>
+0015 <span class="comment">%   trialNum: string or character array of the trial number for naming</span>
+0016 <span class="comment">%   path: OPTIONAL input for saving figures (not saved if not provided)</span>
+0017 <span class="comment">% output:</span>
+0018 <span class="comment">%   fig: handle object to the figure generated</span>
+0019 
+0020 narginchk(5,6); <span class="comment">% verify correct number of input arguments</span>
+0021 
+0022 hasSameNumSamples = length(unique( <span class="keyword">...</span>
+0023     [cellfun(@(x) size(x,2),snippets) length(times)]));
+0024 <span class="keyword">if</span> ~hasSameNumSamples   <span class="comment">% if not same number of samples for all arrays, ...</span>
+0025     error(<span class="string">'There are different numbers of samples across arrays.'</span>);
+0026 <span class="keyword">end</span>
+0027 <span class="comment">% TODO: ensure that there is at least one snippet</span>
+0028 <span class="comment">% TODO: adapt this function to work for generating any snippets plot</span>
+0029 
+0030 <span class="comment">% TODO: consider converting to a date object before performing the</span>
+0031 <span class="comment">% comparison, although string comparison seems to work just fine</span>
+0032 <span class="keyword">if</span> string(version(<span class="string">'-release'</span>)) &lt; &quot;2019b&quot; <span class="comment">% if version older than 2019b, ...</span>
+0033     error(<span class="string">'MATLAB version is not compatible with ''tiledlayout''.'</span>);
+0034 <span class="keyword">end</span>
+0035 
+0036 numLabels = length(labels);         <span class="comment">% number of labels (subplot titles)</span>
+0037 
+0038 <span class="comment">% set the figure to be full screen</span>
+0039 fig = figure(<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1]);
+0040 tl = tiledlayout(numLabels,1,<span class="string">'TileSpacing'</span>,<span class="string">'tight'</span>);
+0041 
+0042 indsForce = contains(labels,{<span class="string">'force'</span>,<span class="string">'fz'</span>},<span class="string">'IgnoreCase'</span>,true);
+0043 numForce = sum(indsForce);          <span class="comment">% number of force labels</span>
+0044 hasForce = any(indsForce);          <span class="comment">% is there force data present?</span>
+0045 numNonForce = numLabels - numForce; <span class="comment">% number of non-force labels</span>
+0046 
+0047 <span class="comment">% NOTE: assuming inputs in desired plot order from top to bottom</span>
+0048 <span class="comment">% TODO: consider plotting ipsilateral and contralateral leg force in the</span>
+0049 <span class="comment">% same tile but with different colors so that the gait phase in which stim</span>
+0050 <span class="comment">% occurred can more easily be deciphered; this would require changing the</span>
+0051 <span class="comment">% format of the snippets input and labeling</span>
+0052 <span class="keyword">if</span> hasForce     <span class="comment">% if force provided for plotting, ...</span>
+0053     <span class="keyword">for</span> ii = 1:numForce     <span class="comment">% for each force label, ...</span>
+0054         <a href="#_sub1" class="code" title="subfunction ax = plotTile(t,y,lbl)">plotTile</a>(times,snippets{ii},labels{ii});
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 ax = gobjects(1,numNonForce);   <span class="comment">% initialize array of Axes objects</span>
+0059 <span class="comment">% TODO: move y-axis limit code outside this function or make optional input</span>
+0060 <span class="comment">% (e.g., which index to start from) for more flexibility</span>
+0061 indsYLims = times &gt; 0.005;
+0062 ymin = 0;                   <span class="comment">% initialize minimum y-axis value to be 0</span>
+0063 ymax = 0;
+0064 <span class="keyword">for</span> ii = 1:numNonForce      <span class="comment">% for each non-force signal, ...</span>
+0065     ax(ii) = <a href="#_sub1" class="code" title="subfunction ax = plotTile(t,y,lbl)">plotTile</a>(times,snippets{ii+numForce},labels{ii+numForce});
+0066     newYmin = min(snippets{ii+numForce}(:,indsYLims),[],<span class="string">'all'</span>);
+0067     newYmax = max(snippets{ii+numForce}(:,indsYLims),[],<span class="string">'all'</span>);
+0068     <span class="keyword">if</span> newYmin &lt; ymin       <span class="comment">% if minimum y-value less than previous, ...</span>
+0069         ymin = newYmin;     <span class="comment">% update minimum y-axis value</span>
+0070     <span class="keyword">end</span>
+0071     <span class="keyword">if</span> newYmax &gt; ymax       <span class="comment">% if maximum y-value greater than previous, ...</span>
+0072         ymax = newYmax;     <span class="comment">% update maximum y-axis value</span>
+0073     <span class="keyword">end</span>
+0074 <span class="keyword">end</span>
+0075 
+0076 linkaxes(ax);
+0077 xlabel(tl,<span class="string">'time (s)'</span>);
+0078 xlim([times(1) times(end)]);
+0079 ylim([ymin ymax]);
+0080 
+0081 <span class="comment">% TODO: should y-axis limits be the same in case of both legs present?</span>
+0082 <span class="comment">% TODO: consider accepting labels as optional input argument</span>
+0083 xlabel(tl,<span class="string">'time (s)'</span>);  <span class="comment">% TODO: make work for either sample number or time</span>
+0084 <span class="comment">% TODO: make figure title and filename optional inputs</span>
+0085 title(tl,[id <span class="string">' - Trial'</span> trialNum <span class="string">' - H-Reflex Snippets'</span>]);
+0086 
+0087 <span class="keyword">if</span> ~isempty(path)   <span class="comment">% if figure saving path provided as input argument, ...</span>
+0088     <span class="comment">% save figure</span>
+0089     saveas(gcf,[path id <span class="string">'_HreflexSnippets_Trial'</span> trialNum <span class="string">'.png'</span>]);
+0090     saveas(gcf,[path id <span class="string">'_HreflexSnippets_Trial'</span> trialNum <span class="string">'.fig'</span>]);
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="keyword">end</span>
+0094 
+0095 <a name="_sub1" href="#_subfunctions" class="code">function ax = plotTile(t,y,lbl)</a>
+0096 
+0097 ax = nexttile;  <span class="comment">% advance to the next tile in tiled layout figure</span>
+0098 hold on;
+0099 xline(0,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);     <span class="comment">% indicate stim artifact alignment</span>
+0100 <span class="keyword">if</span> ~contains(lbl,{<span class="string">'force'</span>,<span class="string">'fz'</span>},<span class="string">'IgnoreCase'</span>,true)  <span class="comment">% if EMG snippet, ...</span>
+0101     <span class="comment">% plot lines indicating M-wave and H-wave range</span>
+0102     <span class="comment">% TODO: make this optional input</span>
+0103     <span class="comment">% TODO: do not hardcode start and stop times</span>
+0104     xline(0.005,<span class="string">'b'</span>);           <span class="comment">% M-wave start:  5 ms after stim artifact</span>
+0105     xline(0.020,<span class="string">'b'</span>);           <span class="comment">% M-wave end:   20 ms</span>
+0106     xline(0.025,<span class="string">'g'</span>);           <span class="comment">% H-wave start: 25 ms after stim artifact</span>
+0107     xline(0.045,<span class="string">'g'</span>);           <span class="comment">% H-wave end:   45 ms</span>
+0108 <span class="keyword">end</span>
+0109 plot(t,y);
+0110 hold off;
+0111 <span class="keyword">if</span> contains(lbl,{<span class="string">'force'</span>,<span class="string">'fz'</span>},<span class="string">'IgnoreCase'</span>,true)   <span class="comment">% if force snippet, ...</span>
+0112     ylabel(<span class="string">'Force (N)'</span>);
+0113 <span class="keyword">else</span>                                                <span class="comment">% otherwise, ...</span>
+0114     ylabel(<span class="string">'Raw EMG (V)'</span>);                          <span class="comment">% EMG snippet(s)</span>
+0115 <span class="keyword">end</span>
+0116 title(lbl);
+0117 
+0118 <span class="keyword">end</span>
+0119</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

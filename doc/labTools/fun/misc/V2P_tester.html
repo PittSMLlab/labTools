@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of V2P_tester</title>
+  <meta name="keywords" content="V2P_tester">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; V2P_tester.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>V2P_tester
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>	JSONtxt2cell uses json_parse and i/o to open a txt file and parse it into a cell</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 clear
+0002 clc
+0003 close all
+0004 
+0005 filename = uigetfile(<span class="string">'*.*'</span>);
+0006 
+0007 f = fopen(filename);
+0008 g = fgetl(f);
+0009 fclose(f);
+0010 
+0011 <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
+0012     [header,data] = <a href="JSONtxt2cell.html" class="code" title="function [header,outmat] = JSONtxt2cell(filename)">JSONtxt2cell</a>(filename);
+0013 <span class="keyword">else</span>
+0014     S = importdata(filename,<span class="string">','</span>,1);
+0015     data = S.data;
+0016     Header = S.textdata;
+0017 <span class="keyword">end</span>
+0018 
+0019 frame = data(:,1)-data(1,1);
+0020 <span class="comment">% disp(['% data received: ' num2str(length(frame)/frame(end)*100)]);</span>
+0021 Rz = data(:,2);
+0022 Lz = data(:,3);
+0023 RHS = data(:,4);
+0024 LHS = data(:,5);
+0025 
+0026 bframe = frame(10:end);
+0027 <span class="comment">% bframe = frame;</span>
+0028 framediff = diff(bframe);
+0029 mean(framediff)
+0030 disp([<span class="string">'% data received: '</span> num2str(length(bframe)/(bframe(end)-bframe(1))*100)]);
+0031 timeelap = (bframe(end)-bframe(1))/100;
+0032 freq = length(bframe)/timeelap
+0033 
+0034 figure(1)
+0035 plot(framediff);
+0036 ylim([-4 6])
+0037 
+0038 RHS(isnan(RHS))=[];
+0039 figure(2)
+0040 plot(frame,Rz,1:length(RHS),RHS);</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

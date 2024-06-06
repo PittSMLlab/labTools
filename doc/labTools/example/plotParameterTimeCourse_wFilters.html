@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotParameterTimeCourse_wFilters</title>
+  <meta name="keywords" content="plotParameterTimeCourse_wFilters">
+  <meta name="description" content="This is an example on how to plot parameter time-courses using the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="index.html">example</a> &gt; plotParameterTimeCourse_wFilters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/example&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plotParameterTimeCourse_wFilters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is an example on how to plot parameter time-courses using the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This is an example on how to plot parameter time-courses using the
+monoLS() filter to 'clean' the signal</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%This is an example on how to plot parameter time-courses using the</span>
+0002 <span class="comment">%monoLS() filter to 'clean' the signal</span>
+0003 
+0004 <span class="comment">%PRe-requisite:</span>
+0005 <span class="comment">%A variable named 'adaptData' of the adaptationData class needs to exist in</span>
+0006 <span class="comment">%the workspace</span>
+0007 
+0008 <span class="comment">%Define parameters &amp; conditions to be plotted: can be anything that exists</span>
+0009 <span class="comment">%on adaptData!</span>
+0010 <span class="comment">%params={'alphaSlow','alphaFast','singleStanceSpeedSlowAbs'};</span>
+0011 params={<span class="string">'spatialContributionP'</span>,<span class="string">'stepTimeContributionP'</span>,<span class="string">'velocityContributionP'</span>,<span class="string">'netContributionP'</span>};
+0012 conds={<span class="string">'TM base'</span>,<span class="string">'Adap'</span>,<span class="string">'Wash'</span>};
+0013 
+0014 <span class="comment">%Do the plots:</span>
+0015 <span class="comment">%% First plot: no filters</span>
+0016 binWidth=1;
+0017 [f,~,~,ph]=adaptationData.plotAvgTimeCourse(adaptData,params,conds,binWidth);
+0018 
+0019 <span class="comment">%% Second plot: use monotonic LS, constraining derivatives up to 2nd order to</span>
+0020 <span class="comment">%have no sign changes, using no regularization, and fitting a single</span>
+0021 <span class="comment">%function for each condition</span>
+0022 order=2;
+0023 reg=0;
+0024 medianAcrossSubj=0;
+0025 trialBased=0;
+0026 filterFlag=[medianAcrossSubj,order,reg,trialBased];
+0027 colorOrder=repmat(.6*ones(1,3),3,1); <span class="comment">%Changing colors for plot</span>
+0028 <span class="comment">%Do the plot:</span>
+0029 adaptationData.plotAvgTimeCourse(adaptData,params,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph);
+0030 
+0031 <span class="comment">%% Third plot: use monotonic LS, constraining derivatives up to 2nd order to</span>
+0032 <span class="comment">%have no sign changes, using no regularization, and fitting a single</span>
+0033 <span class="comment">%function for each TRIAL</span>
+0034 trialBased=1;
+0035 filterFlag=[medianAcrossSubj,order,reg,trialBased];
+0036 colorOrder=repmat(0*ones(1,3),3,1); <span class="comment">%Changing colors for plot</span>
+0037 <span class="comment">%Do the plot:</span>
+0038 adaptationData.plotAvgTimeCourse(adaptData,params,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph);
+0039 
+0040 <span class="comment">%% Fourth plot: using median across samples instead (for comparison)</span>
+0041 <span class="comment">% groupMedian=0;</span>
+0042 <span class="comment">% sampleMedian=1;</span>
+0043 <span class="comment">% filterFlag=[sampleMedian, groupMedian];</span>
+0044 <span class="comment">% binWidth=9;</span>
+0045 <span class="comment">% colorOrder=repmat([1,0,1],3,1); %Changing colors for plot</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">% %Do the plot:</span>
+0048 <span class="comment">% adaptationData.plotAvgTimeCourse(adaptData,params,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph);</span>
+0049 
+0050 <span class="comment">%% Save figure</span>
+0051 saveFig(f,<span class="string">'./'</span>,<span class="string">'plotParameterTimeCourse_wFilters2'</span>)</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

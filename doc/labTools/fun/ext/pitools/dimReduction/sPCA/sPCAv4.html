@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sPCAv4</title>
+  <meta name="keywords" content="sPCAv4">
+  <meta name="description" content="sPCA or smooth PCA, aims at estimating a best-fit space-state model from">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">sPCA</a> &gt; sPCAv4.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction/sPCA&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sPCAv4
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>sPCA or smooth PCA, aims at estimating a best-fit space-state model from</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [C,J,X,B,D,r2,V] = sPCAv4(Y,order,forcePCS,nullBD) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">sPCA or smooth PCA, aims at estimating a best-fit space-state model from
+given outputs Y, and assuming constant input. It is similar to cPCA, but
+it doesn't purposefully identify the canonical states
+It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D
+where C are the first #order PCs from PCA, and A is a matrix with strictly real 
+&amp; different eigen-vectors (no complex or double-pole solutions allowed)
+X is scaled such that X(0)=1 for all states.
+INPUTS:
+Y = N x D data matrix, representing N samples of d-dimensional data
+order: number of principal components to be estimated
+forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs
+OUTPUTS:
+C: D x order matrix, representing map from states to output (Y) minus constant (D)
+A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B
+X: smoothed state estimators
+B:
+D:
+r2: r^2 of data to reconstruction
+V: transformation from PCA's PCs to canonic states (only makes sense if forcePCS=true)
+See also: sPCA_knownYinf</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="chngInitState.html" class="code" title="function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)">chngInitState</a>	Taking an SSM-LTI with some given state trajectories, we can re-define</li><li><a href="estimateDynv2.html" class="code" title="function [J,B,Xh] = estimateDynv2(X, realPolesOnly, nullB, J0)">estimateDynv2</a>	estimateDyn for a given vector X, it estimates matrices J,B,V such that</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C,J,X,B,D,r2,V] = sPCAv4(Y,order,forcePCS,nullBD)</a>
+0002 <span class="comment">%sPCA or smooth PCA, aims at estimating a best-fit space-state model from</span>
+0003 <span class="comment">%given outputs Y, and assuming constant input. It is similar to cPCA, but</span>
+0004 <span class="comment">%it doesn't purposefully identify the canonical states</span>
+0005 <span class="comment">%It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D</span>
+0006 <span class="comment">%where C are the first #order PCs from PCA, and A is a matrix with strictly real</span>
+0007 <span class="comment">%&amp; different eigen-vectors (no complex or double-pole solutions allowed)</span>
+0008 <span class="comment">%X is scaled such that X(0)=1 for all states.</span>
+0009 <span class="comment">%INPUTS:</span>
+0010 <span class="comment">%Y = N x D data matrix, representing N samples of d-dimensional data</span>
+0011 <span class="comment">%order: number of principal components to be estimated</span>
+0012 <span class="comment">%forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs</span>
+0013 <span class="comment">%OUTPUTS:</span>
+0014 <span class="comment">%C: D x order matrix, representing map from states to output (Y) minus constant (D)</span>
+0015 <span class="comment">%A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B</span>
+0016 <span class="comment">%X: smoothed state estimators</span>
+0017 <span class="comment">%B:</span>
+0018 <span class="comment">%D:</span>
+0019 <span class="comment">%r2: r^2 of data to reconstruction</span>
+0020 <span class="comment">%V: transformation from PCA's PCs to canonic states (only makes sense if forcePCS=true)</span>
+0021 <span class="comment">%See also: sPCA_knownYinf</span>
+0022 
+0023 <span class="comment">% Pablo A. Iturralde - Univ. of Pittsburgh - Last rev: Jun 14th 2017 %Need</span>
+0024 <span class="comment">% to update description</span>
+0025 
+0026 
+0027 <span class="keyword">if</span> nargin&lt;2 || isempty(order)
+0028     order=2; <span class="comment">%Minimum order for which this makes sense</span>
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> nargin&lt;3 || isempty(forcePCS)
+0031     forcePCS=false; <span class="comment">%If true, this flag forces the columns of C to lie in the subspace spanned by the first #order PCs from PCA</span>
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;4 || isempty(nullBD)
+0034     nullBD=false;
+0035 <span class="keyword">end</span>
+0036 
+0037 NN=size(Y,1); <span class="comment">%Number of samples</span>
+0038 DD=size(Y,2); <span class="comment">%Dimensionality of data</span>
+0039 realPolesOnly=true; <span class="comment">%Only acceptable value right now</span>
+0040 
+0041 <span class="comment">%% Find a first solution: PCA + dynamic fit over PCA coefficients: fast and good enough</span>
+0042 <span class="comment">%Do PCA to extract the #order most meaningful PCs:</span>
+0043 <span class="keyword">if</span> ~nullBD
+0044     mY=mean(Y,1); <span class="comment">%Better-conditioned problem(?) if we remove the mean first, but less optimal(?)</span>
+0045 <span class="keyword">else</span>
+0046     mY=0;
+0047 <span class="keyword">end</span>
+0048 M=order;
+0049 YY=(Y-mY)';
+0050 [p,c,a]=pca(YY,<span class="string">'Centered'</span>,false);
+0051 CD=c(:,1:M);
+0052 P=p(:,1:M)';
+0053 <span class="keyword">if</span> ~nullBD
+0054     CD=[CD mY'];
+0055     P=[P;ones(1,size(P,2))];
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%Estimate dynamics:</span>
+0059 [J,B,X] = <a href="estimateDynv2.html" class="code" title="function [J,B,Xh] = estimateDynv2(X, realPolesOnly, nullB, J0)">estimateDynv2</a>(P, realPolesOnly, nullBD,[]);
+0060 CD=(CD*P)/X;
+0061 <span class="keyword">if</span> ~forcePCS
+0062     CD=YY/X; <span class="comment">%This improves r2 slightly</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">%% Optimize solution: %Estimating J,B,CD altogether, is slow and in practice improves very little (convergence issues?)</span>
+0066 <span class="comment">%  if ~forcePCS %No improvement possible if forcePCS=true</span>
+0067 <span class="comment">%      [J,B,X] = estimateDynv2(YY, realPolesOnly, nullBD,J);</span>
+0068 <span class="comment">%      CD=YY/X;</span>
+0069 <span class="comment">%  end</span>
+0070 
+0071 <span class="comment">%% Decompose solution:</span>
+0072 C=CD(:,1:order);
+0073 <span class="keyword">if</span> ~nullBD
+0074     D=CD(:,order+1)+mY';
+0075     X=X(1:order,:);
+0076 <span class="keyword">else</span>
+0077     D=0;
+0078 <span class="keyword">end</span>
+0079 
+0080 <span class="comment">%% Change initial states, as convention, when nullBD=0 such that x(0)=0 and states grow</span>
+0081 <span class="keyword">if</span> ~nullBD
+0082     [B,D,X]=<a href="chngInitState.html" class="code" title="function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)">chngInitState</a>(J,B,C,D,X,zeros(size(X,1),1));
+0083     B=-B;
+0084     C=-C;
+0085     X=-X;
+0086 <span class="keyword">end</span>
+0087 <span class="comment">%% Reconstruction values:</span>
+0088 <span class="comment">%rA=1-norm(X(:,2:end)-J*X(:,1:end-1)-B,'fro')^2/norm(Y','fro')^2 %This has to be exactly 1</span>
+0089 r2=1-norm(Y'-(C*X+D),<span class="string">'fro'</span>)^2/norm(Y',<span class="string">'fro'</span>)^2;
+0090 <span class="keyword">end</span>
+0091 
+0092 <a name="_sub1" href="#_subfunctions" class="code">function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)</a>
+0093     <span class="comment">%Taking an SSM-LTI with some given state trajectories, we can re-define</span>
+0094     <span class="comment">%the initial state arbitrarily by modifying B and D, such that we get a</span>
+0095     <span class="comment">%modified LTI-SSM with the same output, same A,C matrices but different B,D,x0</span>
+0096     oldX0=X(:,1);
+0097     Dx0=newX0-oldX0;
+0098     B1=B-(A-eye(size(A)))*Dx0;
+0099     D1=D-C*Dx0;
+0100     X1=X+Dx0;
+0101 <span class="keyword">end</span>
+0102</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

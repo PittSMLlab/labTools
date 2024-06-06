@@ -1,0 +1,775 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PlotHelper</title>
+  <meta name="keywords" content="PlotHelper">
+  <meta name="description" content="PLOTHELPER helper function with static functions to make common plots">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; PlotHelper.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>PlotHelper
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOTHELPER helper function with static functions to make common plots</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOTHELPER helper function with static functions to make common plots
+ Input arguments that are OPTIONAL can be skipped or provided by [] or nan.
+
+ Current support: 1. correlation plot: scatter plots with a best fit
+ regression line (y=mx + b) and text printout of the pearson and spearman
+ correlation results
+ 2. bar plots with individual subjects dot
+ 3. confidence intervals
+ 4. boot strap of correlations
+ 5. regression diagnostics (residual normality and homoscedasticity)
+ 6. tight margin of plots (shrink empty space between the plot and the figure window)
+
+ 
+ $Author: Shuqi Liu $    $Date: 2022/08/22 10:06:49 $    $Revision: 0.1 $
+ Copyright: Sensorimotor Learning Laboratory 2022</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PlotHelper.html" class="code" title="">PlotHelper</a>	PLOTHELPER helper function with static functions to make common plots</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function f = computeAndPlotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly, controlVar, controlVarXIdx, controlVarYIdx,performKws, plotDiagnostic)</a></li><li><a href="#_sub2" class="code">function f = plotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly,rho, p, rhoSpearman, pSpearman, performKws, plotDiagnostic)</a></li><li><a href="#_sub3" class="code">function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs)</a></li><li><a href="#_sub4" class="code">function barPlotWithIndiv(dataToPlot, subjectIDs, xlabelStrings, ylabelString, titleString, saveResAndFigure, savePath, f, addJitter, MarkerColor,connectLine)</a></li><li><a href="#_sub5" class="code">function plotCI(x, y, lineColor, dataLabel, showMeanCILegend, colorNonZeroRed, typeOfCI)</a></li><li><a href="#_sub6" class="code">function plotRegressionDiagnostics(mdl, actualYs, saveResAndFigure, savePath)</a></li><li><a href="#_sub7" class="code">function plotBootStrapCorrSpearman(xData, yData, xlabels, ylabels, titleStr, saveResAndFigure, savePath, iterations, controlVar, controlVarXIdx, controlVarYIdx, f)</a></li><li><a href="#_sub8" class="code">function [SigMdlSum] = compileModelSummaries(mdl, SigMdlSum)</a></li><li><a href="#_sub9" class="code">function tightMargin(ax)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%PLOTHELPER helper function with static functions to make common plots</span>
+0002 <span class="comment">% Input arguments that are OPTIONAL can be skipped or provided by [] or nan.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Current support: 1. correlation plot: scatter plots with a best fit</span>
+0005 <span class="comment">% regression line (y=mx + b) and text printout of the pearson and spearman</span>
+0006 <span class="comment">% correlation results</span>
+0007 <span class="comment">% 2. bar plots with individual subjects dot</span>
+0008 <span class="comment">% 3. confidence intervals</span>
+0009 <span class="comment">% 4. boot strap of correlations</span>
+0010 <span class="comment">% 5. regression diagnostics (residual normality and homoscedasticity)</span>
+0011 <span class="comment">% 6. tight margin of plots (shrink empty space between the plot and the figure window)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% $Author: Shuqi Liu $    $Date: 2022/08/22 10:06:49 $    $Revision: 0.1 $</span>
+0015 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2022</span>
+0016 classdef <a href="PlotHelper.html" class="code" title="">PlotHelper</a>
+0017     
+0018     properties (Constant)
+0019          colorOrder = [colororder;    
+0020         1.0000         0         0
+0021         1.0000    0.5333         0
+0022         1.0000    1.0000         0
+0023              0    0.7333         0
+0024              0.2 0.8 0.8
+0025             0.75 0.75 0.75
+0026              0         0    1.0000
+0027         0.3333         0    1.0000
+0028         0.6667         0    1.0000];
+0029     <span class="keyword">end</span>
+0030     
+0031     methods(Static)
+0032 
+0033         <a name="_sub0" href="#_subfunctions" class="code">function f = computeAndPlotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly, controlVar, controlVarXIdx, controlVarYIdx,performKws, plotDiagnostic)</a>
+0034         <span class="comment">%compute correlations and plot a figure with subplots of correlations</span>
+0035         <span class="comment">%between each columns in x and y data.</span>
+0036         <span class="comment">%</span>
+0037         <span class="comment">% [Example] f = computeAndPlotCorrelations(xs, ys, {'S01','S01'},'Title x and y correlations', {'xlabelColumn1','xlabelColumn12'...},{'ylabelRow1','ylabelRow2',...},true,'C:/Documents/myfigure.png', true)</span>
+0038         <span class="comment">%</span>
+0039         <span class="comment">% [OUTPUTARGS]: f, the fingure handle; typically a full figure</span>
+0040         <span class="comment">% with subplots.</span>
+0041         <span class="comment">% InputArgs: - xData: 2D matrix of data, subjects x columns</span>
+0042         <span class="comment">%            - yData: 2D matrix of data to plot on the yaxis, subjects x columns</span>
+0043         <span class="comment">%            - subjectIDs: cell array of strings of subject IDs used in</span>
+0044         <span class="comment">%            legend</span>
+0045         <span class="comment">%            - titleStr: string, subplots title (main title for all plots)</span>
+0046         <span class="comment">%            - xlabels: cell array of strings for xlabel (per column)</span>
+0047         <span class="comment">%            - ylabels: cell aray of strings for ylabel (per row)</span>
+0048         <span class="comment">%            - saveResAndFigure: boolean whether or not to save the</span>
+0049         <span class="comment">%            figure</span>
+0050         <span class="comment">%            - savePath: the full path (directory and name) to save</span>
+0051         <span class="comment">%            the figures.</span>
+0052         <span class="comment">%            - xylabelOnceOnly: boolean indicate if label should</span>
+0053         <span class="comment">%               only be used once (at bottom row and first column)</span>
+0054         <span class="comment">%               otherwise label all grpahs.</span>
+0055         <span class="comment">%           - controlVar: OPTIONAL. 2D matrix of data to control for in a</span>
+0056         <span class="comment">%               partial correlation, in subjects x variableColumns</span>
+0057         <span class="comment">%           - controlVarXIdx: OPTIONAL. integer or integer array, if the</span>
+0058         <span class="comment">%               controlled variable is part of the xData, corresponding</span>
+0059         <span class="comment">%               data columns in xData that's the contrlled var. Pass</span>
+0060         <span class="comment">%               NaN if the controlled var is not part of the xData.</span>
+0061         <span class="comment">%           - controlVarYIdx: OPTIONAL. integer or integer array, if the</span>
+0062         <span class="comment">%               controlled variable is part of the yData, corresponding</span>
+0063         <span class="comment">%               data columns in xData that's the contrlled var. Pass</span>
+0064         <span class="comment">%               NaN or omit the arg if the controlled var is not part of the yData.</span>
+0065         <span class="comment">%           - performKws: OPTIONAL. boolean flag for if</span>
+0066         <span class="comment">%               kruskalwallis should be performed. Default false.</span>
+0067         <span class="comment">%           - plotDiagnostic: OPTIONAL. Default False. boolean flag. True if</span>
+0068         <span class="comment">%               plotting residual diagnostics of the fitted</span>
+0069         <span class="comment">%               regressions.</span>
+0070 
+0071             <span class="keyword">if</span> nargin &lt;=12 || isnan(performKws) || isempty(performKws) <span class="comment">%no performKws given</span>
+0072                 performKws = false;
+0073             <span class="keyword">end</span>
+0074             <span class="keyword">if</span> nargin &lt;=13 || isnan(plotDiagnostic) || isempty(performKws) <span class="comment">%no plotDiagnostic given</span>
+0075                 plotDiagnostic = false;
+0076             <span class="keyword">end</span>
+0077             <span class="comment">% calclulate partial corr if controlVar is provided, otherwise regular</span>
+0078             <span class="comment">% correlation.</span>
+0079             numNans = sum(isnan(yData),<span class="string">'all'</span>) + sum(isnan(xData),<span class="string">'all'</span>);
+0080             <span class="keyword">if</span> numNans
+0081                 warning([num2str([numNans]) <span class="string">' NAN Value found in the data. Will only use non-nan values to compute correlation'</span>])
+0082             <span class="keyword">end</span>
+0083             <span class="keyword">if</span> nargin &gt;=10 &amp;&amp; ~isempty(controlVar) &amp;&amp; ~any(isnan(controlVar),<span class="string">'all'</span>)
+0084                 [rho,p] = partialcorr(xData, yData,controlVar,<span class="string">'Rows'</span>,<span class="string">'complete'</span>); <span class="comment">%resulting size x by y</span>
+0085                 [rhoSpearman,pSpearman] = partialcorr(xData, yData,controlVar,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0086                 <span class="keyword">if</span> nargin&gt;=11 &amp;&amp; ~isempty(controlVarXIdx) &amp;&amp; ~any(isnan(controlVarXIdx),<span class="string">'all'</span>) <span class="comment">%the variable controlled is part of the xData.</span>
+0087                     [rho(controlVarXIdx,:),p(controlVarXIdx,:)] = corr(controlVar, yData,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0088                     [rhoSpearman(controlVarXIdx,:),pSpearman(controlVarXIdx,:)] = corr(controlVar, yData,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0089                 <span class="keyword">end</span>
+0090                 <span class="keyword">if</span> nargin&gt;=12 &amp;&amp; ~isempty(controlVarYIdx) &amp;&amp; ~any(isnan(controlVarYIdx),<span class="string">'all'</span>) <span class="comment">%the variable controlled is part of the yData.</span>
+0091                     [rho(:,controlVarYIdx),p(:,controlVarYIdx)] = corr(xData, controlVar,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0092                     [rhoSpearman(:,controlVarYIdx),pSpearman(:,controlVarYIdx)] = corr(xData, controlVar,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0093                 <span class="keyword">end</span>
+0094             <span class="keyword">else</span>
+0095                 [rho,p] = corr(xData,yData,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0096                 [rhoSpearman,pSpearman] = corr(xData,yData,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0097             <span class="keyword">end</span>
+0098             f = PlotHelper.plotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly,rho, p, rhoSpearman, pSpearman, performKws, plotDiagnostic);
+0099         <span class="keyword">end</span>
+0100         
+0101         <a name="_sub1" href="#_subfunctions" class="code">function f = plotCorrelations(xData, yData, subjectIDs, titleStr, xlabels, ylabels, saveResAndFigure, savePath, xylabelOnceOnly,rho, p, rhoSpearman, pSpearman, performKws, plotDiagnostic)</a>
+0102         <span class="comment">% plot correlations (usually when x and y are more than 1dimensional).</span>
+0103         <span class="comment">% if want to plot 1 correlation only, see PlotHelper.plotSingleCorrelation</span>
+0104         <span class="comment">% the pearson and spearman correlations need to be computed and</span>
+0105         <span class="comment">% given as input here. If want the code to compute the</span>
+0106         <span class="comment">% correlations for you, see PlotHelper.computeAndPlotCorrelations</span>
+0107         <span class="comment">%</span>
+0108         <span class="comment">% [Example] f = plotCorrelations(xs, ys, {'S01','S01'},'Title x and y correlations', {'xlabel1','label2'...},{'ylabel','label2',...},true,'C:/Documents/myfigure.png',...</span>
+0109         <span class="comment">%                               true,rhoMatrix, pMatrix, rhoSpearmanMatrix, pSpearmanMatrix)</span>
+0110         <span class="comment">%</span>
+0111         <span class="comment">% [OUTPUTARGS]: f, the fingure handle; typically a full figure</span>
+0112         <span class="comment">% with subplots.</span>
+0113         <span class="comment">%</span>
+0114         <span class="comment">% See also: computeAndPlotCorrelations for input argument</span>
+0115         <span class="comment">% requirements.</span>
+0116         <span class="comment">%</span>
+0117         <span class="comment">% InputArgs: - first few args see computeAndPlotCorrelations</span>
+0118         <span class="comment">%            - rho: 2D matrix of Pearson's correlation coefficient,</span>
+0119         <span class="comment">%                   Y by X where X is number of variables (columns) in xData and Y is number of</span>
+0120         <span class="comment">%                   variable (columns) in yData</span>
+0121         <span class="comment">%            - p: 2D matrix of the p-value for pearson's</span>
+0122         <span class="comment">%                   correlation</span>
+0123         <span class="comment">%            - rhoSpearman: 2D matrix of Spearman's correlation coefficient,</span>
+0124         <span class="comment">%                   Y by X where X is number of variables (columns) in xData and Y is number of</span>
+0125         <span class="comment">%                   variable (columns) in yData</span>
+0126         <span class="comment">%            - pSpearman: 2D matrix of the p-value for Spearman's</span>
+0127         <span class="comment">%                   correlation</span>
+0128         <span class="comment">%            - performKws: OPTIONAL. Default false. boolean flag for if kruskalwallis test</span>
+0129         <span class="comment">%               should be performed instead of correlations (proper</span>
+0130         <span class="comment">%               for categorical data).</span>
+0131         <span class="comment">%            - plotDiagnostic: OPTIONAL. Default False. boolean flag. True if</span>
+0132         <span class="comment">%               plotting residual diagnostics of the fitted</span>
+0133         <span class="comment">%               regressions.</span>
+0134             <span class="keyword">if</span> nargin &lt;=13 || isnan(performKws) || isempty(performKws) <span class="comment">%no performKws given</span>
+0135                 performKws = false;
+0136             <span class="keyword">end</span>
+0137             <span class="keyword">if</span> nargin &lt;= 14 || isnan(plotDiagnostic) || isempty(plotDiagnostic)<span class="comment">%no plotDiagnostic given</span>
+0138                 plotDiagnostic = false;
+0139             <span class="keyword">end</span>
+0140             colorOrder = PlotHelper.colorOrder; <span class="comment">%load colorOrder</span>
+0141 
+0142             <span class="keyword">if</span> plotDiagnostic
+0143                 <span class="comment">%make diagnostic figure first. then the focus will be on</span>
+0144                 <span class="comment">%the regression plot to start with.</span>
+0145                 fDiagnostic = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);
+0146             <span class="keyword">end</span>
+0147             f = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);<span class="comment">%('Position', get(0, 'Screensize'));</span>
+0148 <span class="comment">%             markerOrder = {'o','+','*','^','x','_','|','.','d','s'};</span>
+0149             
+0150             <span class="keyword">for</span> rowIdx = 1:size(yData,2) <span class="comment">%row</span>
+0151                 <span class="keyword">for</span> colIdx = 1:size(xData,2) <span class="comment">%col</span>
+0152                     subplot(size(yData,2),size(xData,2),(rowIdx-1)*size(xData,2)+colIdx); hold on;
+0153                     axis square;
+0154                     xToPlot = xData(:,colIdx); <span class="comment">%put fnir on the x-axis</span>
+0155                     yToPlot = yData(:,rowIdx);
+0156                     <span class="keyword">for</span> subIdx = 1:length(subjectIDs)
+0157                         colorIdx = rem(subIdx,size(colorOrder,1));
+0158                         <span class="keyword">if</span> colorIdx == 0 <span class="comment">%avoid 0</span>
+0159                             colorIdx = size(colorOrder,1);
+0160                         <span class="keyword">end</span>
+0161                         plot(xToPlot(subIdx),yToPlot(subIdx),<span class="string">'o'</span>,<span class="string">'Color'</span>,colorOrder(colorIdx,:),<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,7,<span class="string">'DisplayName'</span>,subjectIDs{subIdx});
+0162                     <span class="keyword">end</span>
+0163                     <span class="comment">% Do the regression with an intercept of 0 and plot the line</span>
+0164                     linFit = fitlm(xToPlot,yToPlot,<span class="string">'RobustOpts'</span>,<span class="string">'on'</span>);
+0165                     plotFitX = xlim;
+0166                     <span class="keyword">if</span> pSpearman(colIdx, rowIdx) &lt; 0.1 <span class="comment">%plot the line if spearman significant only; p(colIdx, rowIdx) &lt; 0.1 ||</span>
+0167                         <span class="comment">%plot the regression line only if the p-value for</span>
+0168                         <span class="comment">%either test is &lt;0.05</span>
+0169                         plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
+0170                         <span class="keyword">if</span> pSpearman(colIdx, rowIdx) &lt; 0.05 <span class="comment">%solid line for significant %plot the line if spearman significant only p(colIdx, rowIdx) &lt; 0.05 ||</span>
+0171                             plot(xlim,plotFitY,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2.5,<span class="string">'handleVisibility'</span>,<span class="string">'off'</span>);
+0172                         <span class="keyword">else</span> <span class="comment">%dashed line for trending.</span>
+0173                             plot(xlim,plotFitY,<span class="string">'k--'</span>,<span class="string">'LineWidth'</span>,2.5,<span class="string">'handleVisibility'</span>,<span class="string">'off'</span>);
+0174                         <span class="keyword">end</span>
+0175                     <span class="keyword">end</span>
+0176                     txtY = ylim;
+0177                     <span class="keyword">if</span> p(colIdx, rowIdx) &lt; 0.05 <span class="comment">%show the text in red</span>
+0178                         textColorPearson = <span class="string">'r'</span>;
+0179                     <span class="keyword">else</span>
+0180                         textColorPearson = <span class="string">'k'</span>;
+0181                     <span class="keyword">end</span>
+0182                     <span class="keyword">if</span> pSpearman(colIdx, rowIdx) &lt; 0.05 <span class="comment">%show the text in red</span>
+0183                         textColorSpearman = <span class="string">'r'</span>;
+0184                     <span class="keyword">else</span>
+0185                         textColorSpearman = <span class="string">'k'</span>;
+0186                     <span class="keyword">end</span>
+0187                     <span class="keyword">if</span> performKws
+0188                         kws = kruskalwallis(yToPlot,xToPlot,<span class="string">'off'</span>);
+0189                         <span class="keyword">if</span> kws &lt; 0.05
+0190                             textColorKws = <span class="string">'r'</span>;
+0191                         <span class="keyword">else</span>
+0192                             textColorKws = <span class="string">'k'</span>;
+0193                         <span class="keyword">end</span>
+0194                         text(plotFitX(1),txtY(2)-range(txtY)*0.35,sprintf(<span class="string">'K-W p=%.4f'</span>,kws),<span class="string">'FontSize'</span>,40,<span class="string">'Color'</span>,textColorKws)
+0195                     <span class="keyword">end</span>
+0196                     <span class="comment">%0.15, 25 for top; 7 and .8 for btm</span>
+0197 <span class="comment">%                     text(plotFitX(1),txtY(2)-range(txtY)*0.65,sprintf('RobustR=%.2f',linFit.Rsquared.Ordinary^0.5),'FontSize',40,'Color',textColorPearson)</span>
+0198                     text(plotFitX(1),txtY(2)-range(txtY)*0.75,sprintf(<span class="string">'P:r=%.3f,p=%.4f'</span>,rho(colIdx, rowIdx),p(colIdx, rowIdx)),<span class="string">'FontSize'</span>,40,<span class="string">'Color'</span>,textColorPearson)
+0199                     text(plotFitX(1),txtY(2)-range(txtY)*0.85,sprintf(<span class="string">'S:\\rho=%.3f,p=%.4f'</span>,rhoSpearman(colIdx, rowIdx),pSpearman(colIdx, rowIdx)),<span class="string">'FontSize'</span>,40,<span class="string">'Color'</span>,textColorSpearman)
+0200                     xlim(plotFitX)
+0201                     <span class="keyword">if</span> xylabelOnceOnly
+0202                         <span class="keyword">if</span> colIdx == 1 <span class="comment">%first column, give y label</span>
+0203                             ylabel(ylabels{rowIdx});
+0204                         <span class="keyword">end</span>
+0205                         <span class="keyword">if</span> rowIdx == size(yData,2) <span class="comment">%last row, give x label</span>
+0206                             xlabel(xlabels{colIdx});
+0207                         <span class="keyword">end</span>
+0208                     <span class="keyword">else</span>
+0209                         xlabel(xlabels{colIdx});
+0210                         ylabel(ylabels{rowIdx});
+0211                     <span class="keyword">end</span>
+0212                     
+0213                     <span class="comment">% check if there is outlier in the data in x or y.</span>
+0214                     curLabel = xlabels{colIdx};
+0215                     dataAxis = <span class="string">'X'</span>;
+0216                     <span class="keyword">for</span> dataToPlot = {xToPlot, yToPlot}
+0217                         <span class="comment">%Outliers are defined as elements more than three scaled MAD from the median.</span>
+0218                         outlierSubj = isoutlier(dataToPlot{1},<span class="string">'mean'</span>);
+0219                         <span class="keyword">if</span> any(outlierSubj)
+0220 <span class="comment">%                             fprintf('\n%s: Outlier in %s column %s',titleStr, dataAxis, curLabel)</span>
+0221 <span class="comment">%                             disp(subjectIDs(outlierSubj))</span>
+0222                         <span class="keyword">end</span>
+0223                         curLabel = ylabels{rowIdx};
+0224                         dataAxis = <span class="string">'Y'</span>;
+0225                     <span class="keyword">end</span>
+0226                     clear dataToPlot curLabel outlierSubj dataAxis
+0227 
+0228                     <span class="keyword">if</span> plotDiagnostic <span class="comment">%by default plot leverage and cook's D 2 diagnostic graph per regression (2 rows 1 column)</span>
+0229                         <span class="comment">%options to plot:</span>
+0230                         <span class="comment">%contour plot, if points fall outside of cook's d (have</span>
+0231                         <span class="comment">%a high cook's d value), likely influential points.</span>
+0232                         <span class="comment">% High leverage points are outliers in the x-space, they</span>
+0233                         <span class="comment">%tend to have extreme values in one or more of the x’s</span>
+0234                         <span class="comment">%or represent an unusual combo of x values.</span>
+0235                         <span class="comment">%Cook’s distance is a weighted sum of terms(betaj betaj(-i)), function of the leverages and studentized residuals</span>
+0236                         <span class="comment">%DFFITS quantify how much the fitted values change if the ith observation was deleted from the dataset</span>
+0237                         <span class="comment">%DFBETAs quantify how much each coefficient would change (in s.e. units) if the ith observation was deleted from the dataset</span>
+0238                         figure(fDiagnostic);
+0239                         subplot(size(yData,2)*2,size(xData,2),(rowIdx-1)*size(xData,2)*2+colIdx); 
+0240                         plotDiagnostics(linFit);
+0241                         ref_leverage = 2*linFit.NumCoefficients/linFit.NumObservations;
+0242                         high_leveragePts = linFit.Diagnostics.Leverage &gt; ref_leverage;
+0243                         fprintf([titleStr <span class="string">'\nX='</span> xlabels{colIdx} <span class="string">', Y='</span> ylabels{rowIdx} <span class="string">'\nHigh leverage points index: '</span> num2str(find(high_leveragePts)') <span class="string">' Subjects: '</span>])
+0244                         disp(subjectIDs(high_leveragePts));
+0245                         <span class="comment">%plot on row 2</span>
+0246                         subplot(size(yData,2)*2,size(xData,2),(rowIdx*2-1)*size(xData,2)+colIdx); 
+0247                         plotDiagnostics(linFit,<span class="string">'cookd'</span>);
+0248                         ref_cookd = 3*mean(linFit.Diagnostics.CooksDistance,<span class="string">'omitnan'</span>);
+0249                         high_cookdPts = linFit.Diagnostics.CooksDistance &gt; ref_cookd;
+0250                         fprintf([<span class="string">'\nHigh cooks d (influential) points index: '</span> num2str(find(high_cookdPts)') <span class="string">' Subjects: '</span>])
+0251                         disp(subjectIDs(high_cookdPts))
+0252     <span class="comment">%                     subplot(1,3,3); plotDiagnostics(linFit,'contour');</span>
+0253     <span class="comment">%                     subplot(1,3,3); plotDiagnostics(linFit,'dfbetas');</span>
+0254     <span class="comment">%                     subplot(2,2,4); plotDiagnostics(linFit,'dffits');</span>
+0255                         figure(f);
+0256                         linFit = fitlm(xToPlot,yToPlot,<span class="string">'RobustOpts'</span>,<span class="string">'on'</span>);
+0257                         fprintf(<span class="string">'\nr from robust regression: '</span>)
+0258                         disp((linFit.Rsquared.Ordinary).^0.5)
+0259                     <span class="keyword">end</span>
+0260                 <span class="keyword">end</span>
+0261             <span class="keyword">end</span>
+0262             legend()
+0263         <span class="comment">%     sgtitle(['Correlation Btw Cognitive Measures and ' scaleString])</span>
+0264             sgtitle(titleStr)
+0265             set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,15)
+0266             <span class="keyword">if</span> plotDiagnostic
+0267                 figure(fDiagnostic);
+0268                 sgtitle([titleStr <span class="string">' Diagnostic'</span>]);
+0269                 set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,15)
+0270             <span class="keyword">end</span>
+0271             <span class="keyword">if</span> saveResAndFigure
+0272                 figure(f)
+0273                 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>)
+0274                 saveas(f, [savePath <span class="string">'.fig'</span>])
+0275 <span class="comment">%                 s = findobj('type','legend'); delete(s)</span>
+0276                 saveas(f, [savePath <span class="string">'.png'</span>])
+0277                 <span class="keyword">if</span> plotDiagnostic
+0278                     figure(fDiagnostic)
+0279                     set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>)
+0280                     saveas(f, [savePath <span class="string">'Diagnostic.fig'</span>])
+0281                     saveas(f, [savePath <span class="string">'Diagnostic.png'</span>])
+0282                 <span class="keyword">end</span>
+0283             <span class="keyword">end</span>
+0284         <span class="keyword">end</span>
+0285         
+0286         <a name="_sub2" href="#_subfunctions" class="code">function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs)</a>
+0287         <span class="comment">%Plot on the current figure (a subplot should have</span>
+0288         <span class="comment">%been opened and configured before calling this function) correlations</span>
+0289         <span class="comment">%between x and yToPlot</span>
+0290         <span class="comment">%</span>
+0291         <span class="comment">% [Example]: plotSingleCorrelation(xRow, yRow, {'S01','S02',...})</span>
+0292         <span class="comment">%</span>
+0293         <span class="comment">% [OUTPUTARGS]: none, this function simply draws on existing</span>
+0294         <span class="comment">% figure.</span>
+0295         <span class="comment">% with subplots.</span>
+0296         <span class="comment">% InputArgs:    -xToPlot: a row vector of data to plot on x-axis</span>
+0297         <span class="comment">%               -yToPlot: a row vector of double to plot on y-axis</span>
+0298         <span class="comment">%               -subjectIDs: cell array of string of subjectIDs</span>
+0299         <span class="comment">%               for legend.</span>
+0300         <span class="comment">%</span>
+0301             hold on;
+0302             colorOrder = PlotHelper.colorOrder;
+0303             colorLength = size(colorOrder, 1);
+0304             <span class="keyword">for</span> dIdx = 1:length(xToPlot)
+0305                 plot(xToPlot(dIdx),yToPlot(dIdx),<span class="string">'o'</span>,<span class="string">'Color'</span>,colorOrder(mod(dIdx-1, colorLength)+1,:),<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerSize'</span>,7,<span class="string">'DisplayName'</span>,subjectIDs{dIdx});
+0306             <span class="keyword">end</span>
+0307             numNans = sum(isnan(xToPlot),<span class="string">'all'</span>) + sum(isnan(yToPlot),<span class="string">'all'</span>);
+0308             <span class="keyword">if</span> numNans
+0309                 warning([num2str(numNans) <span class="string">' NAN Value found in the data. Will only use non-nan values to compute correlation'</span>])
+0310             <span class="keyword">end</span>
+0311             [rho,p] = corr(xToPlot',yToPlot',<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0312             [rhoSpearman,pSpearman] = corr(xToPlot',yToPlot',<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>);
+0313             linFit = fitlm(xToPlot,yToPlot);
+0314             plotFitX = xlim;
+0315             <span class="keyword">if</span> pSpearman &lt; 0.1 <span class="comment">%plot reg line only if corr for pearson is significant</span>
+0316                 plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
+0317                 <span class="keyword">if</span> pSpearman &lt; 0.05 <span class="comment">%solid line for significant</span>
+0318                     plot(xlim,plotFitY,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2.5,<span class="string">'handleVisibility'</span>,<span class="string">'off'</span>);
+0319                 <span class="keyword">else</span> <span class="comment">%dashed line for trending.</span>
+0320                     plot(xlim,plotFitY,<span class="string">'k--'</span>,<span class="string">'LineWidth'</span>,2.5,<span class="string">'handleVisibility'</span>,<span class="string">'off'</span>);
+0321                 <span class="keyword">end</span>
+0322             <span class="keyword">end</span>
+0323             txtY = ylim;
+0324             <span class="keyword">if</span> p &lt; 0.05 <span class="comment">%show the text in red</span>
+0325                 textColorPearson = <span class="string">'r'</span>;
+0326             <span class="keyword">else</span>
+0327                 textColorPearson = <span class="string">'k'</span>;
+0328             <span class="keyword">end</span>
+0329             <span class="keyword">if</span> pSpearman &lt; 0.05 <span class="comment">%show the text in red</span>
+0330                 textColorSpearman = <span class="string">'r'</span>;
+0331             <span class="keyword">else</span>
+0332                 textColorSpearman = <span class="string">'k'</span>;
+0333             <span class="keyword">end</span>
+0334             <span class="comment">%0.15, 25 for top; 7 and .8 for btm</span>
+0335             text(plotFitX(1),txtY(2)-range(txtY)*0.7,sprintf(<span class="string">'P:r=%.3f,p=%.3f'</span>,rho,p),<span class="string">'FontSize'</span>,20,<span class="string">'Color'</span>,textColorPearson)
+0336             text(plotFitX(1),txtY(2)-range(txtY)*0.8,sprintf(<span class="string">'S:\\rho=%.3f,p=%.3f'</span>,rhoSpearman,pSpearman),<span class="string">'FontSize'</span>,20,<span class="string">'Color'</span>,textColorSpearman)
+0337             xlim(plotFitX)
+0338             axis square
+0339         <span class="keyword">end</span>
+0340         
+0341         <a name="_sub3" href="#_subfunctions" class="code">function barPlotWithIndiv(dataToPlot, subjectIDs, xlabelStrings, ylabelString, titleString, saveResAndFigure, savePath, f, addJitter, MarkerColor,connectLine)</a>
+0342         <span class="comment">%Plot bar graph with dataToPlot, 1 bar per row in data, also plot</span>
+0343         <span class="comment">%individual subjects and connect them with a line across bars (if</span>
+0344         <span class="comment">%connectLine is true or default). Plot on existing figure if a</span>
+0345         <span class="comment">%figure is given; otherwise create a new figure.</span>
+0346         <span class="comment">%</span>
+0347         <span class="comment">% [Examples]: barPlotWithIndiv(data,{'S01','S02',...},{'xtickLabel1','tick2'...},'ylabel','title',true,'C:/document/saveMyFig.png')</span>
+0348         <span class="comment">% If want to add jitter to points and not connect them:</span>
+0349         <span class="comment">%      barPlotWithIndiv(data,{'S01','S02',...},'xlabel','ylabel','title',true,'C:/document/saveMyFig.png',figureHandle, true, [], false)</span>
+0350         <span class="comment">%</span>
+0351         <span class="comment">% [OUTPUTARGS]: none.</span>
+0352         <span class="comment">%</span>
+0353         <span class="comment">% [InputArgs]: - dataToPlot: 2d matrix in bars(category to plot) x subjects</span>
+0354         <span class="comment">%              - subjectIDs: cell array of strings of subject IDs used in</span>
+0355         <span class="comment">%              legend</span>
+0356         <span class="comment">%              - xlabelStrings: cell array of the xtick labels.</span>
+0357         <span class="comment">%              - ylabelString: string for yaxis label</span>
+0358         <span class="comment">%              - titleString: string for the plot title</span>
+0359         <span class="comment">%              - saveResAndFigure: boolean for if the plot should</span>
+0360         <span class="comment">%              be saved.</span>
+0361         <span class="comment">%              - savePath: if saveResAndFigure TRUE, save the</span>
+0362         <span class="comment">%              figure to the given path. Should provide a string of</span>
+0363         <span class="comment">%              the full path including directories and figure file name.</span>
+0364         <span class="comment">%              - f: OPTIONAL figure handle. If not provided will</span>
+0365         <span class="comment">%              create a new one.</span>
+0366         <span class="comment">%              - addJitter: OPTIONAL boolean. Default false. If</span>
+0367         <span class="comment">%              true, will add jitter to the data points to better</span>
+0368         <span class="comment">%              visualize data with same/similar values.</span>
+0369         <span class="comment">%              - MarkerColor: OPTIONAL. Any matlab accepted color</span>
+0370         <span class="comment">%              format (e.g., 'k', or vector of 3 doubles for RGB,</span>
+0371         <span class="comment">%              see MATLAB documentation). Default rotate through PlotHelper.colorOrder</span>
+0372         <span class="comment">%              - connectLine: OPTIONAL. Default true. Connect the</span>
+0373         <span class="comment">%              dots from the same subjects with a line across bars.</span>
+0374             <span class="keyword">if</span> nargin &lt; 8 || isempty(f) || isnan(double(f)) <span class="comment">%no figure handle provided, create a new figure; if figure is provided, simply plot</span>
+0375                 f = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);<span class="comment">%('Position', get(0, 'Screensize'));</span>
+0376             <span class="keyword">end</span>
+0377             <span class="keyword">if</span> nargin &lt; 9 || isempty(addJitter) || isnan(addJitter)
+0378                 addJitter = false;
+0379             <span class="keyword">end</span>
+0380             <span class="keyword">if</span> nargin &lt; 11 || isempty(connectLine) || isnan(connectLine) || connectLine
+0381                 markerSymbol = <span class="string">'.-'</span>; <span class="comment">%default connect line</span>
+0382             <span class="keyword">else</span> <span class="comment">%specified not connect line, plot symbol only.</span>
+0383                 markerSymbol = <span class="string">'.'</span>; 
+0384             <span class="keyword">end</span>
+0385             colorOrder = PlotHelper.colorOrder;
+0386             colorLength = size(colorOrder, 1);
+0387             avgPerf = nanmean(dataToPlot,2); <span class="comment">%in order: pre, training, post</span>
+0388             stdBarHeight = nanstd(dataToPlot,0,2); <span class="comment">%2nd arg is weight, 0 means equal weight</span>
+0389             hold on;
+0390             bar(avgPerf,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="string">'LineWidth'</span>,5,<span class="string">'DisplayName'</span>,<span class="string">'Avg'</span>)
+0391             xticks(1:length(avgPerf));
+0392             xticklabels(xlabelStrings);
+0393             er = errorbar(1:length(avgPerf),avgPerf,stdBarHeight,stdBarHeight,<span class="string">'DisplayName'</span>,<span class="string">'SD'</span>);    
+0394             er.Color = [0 0 0];                            
+0395             er.LineStyle = <span class="string">'none'</span>;
+0396             er.LineWidth = 5;
+0397             <span class="keyword">for</span> dIdx = 1:length(subjectIDs)
+0398                 <span class="keyword">if</span> addJitter <span class="comment">%shifts individual data with some jitter to see overlapping data points</span>
+0399                     jitter = (rand-0.5)./2;
+0400                 <span class="keyword">else</span> <span class="comment">%default just shift all data slightly to the side of the error bar.</span>
+0401                     jitter = 0.1;
+0402                 <span class="keyword">end</span>
+0403                 <span class="keyword">if</span> nargin &gt;= 10 &amp;&amp; ~any(isnan(MarkerColor)) &amp;&amp; ~isempty(MarkerColor)
+0404                     plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,<span class="string">'Color'</span>,MarkerColor,<span class="string">'LineWidth'</span>,2.5,<span class="string">'MarkerSize'</span>,17,<span class="string">'DisplayName'</span>,subjectIDs{dIdx});
+0405                 <span class="keyword">else</span>
+0406                     plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,<span class="string">'Color'</span>,colorOrder(mod(dIdx-1, colorLength)+1,:),<span class="string">'LineWidth'</span>,2.5,<span class="string">'MarkerSize'</span>,17,<span class="string">'DisplayName'</span>,subjectIDs{dIdx});
+0407                 <span class="keyword">end</span>
+0408             <span class="keyword">end</span>
+0409             legend();<span class="comment">%,'Location','bestoutside') %legend on 2nd plot only</span>
+0410             ylabel(ylabelString) 
+0411             
+0412             <span class="keyword">if</span> length(avgPerf) == 2 <span class="comment">%perform t-tests</span>
+0413                 [h,p] = ttest(dataToPlot(1,:)',dataToPlot(2,:)');
+0414                 txtY = ylim;
+0415                 <span class="keyword">if</span> p &lt; 0.05
+0416                     textColor = <span class="string">'r'</span>;
+0417                 <span class="keyword">else</span>
+0418                     textColor = <span class="string">'k'</span>;
+0419                 <span class="keyword">end</span>
+0420                 text(2.3,txtY(2)-range(txtY)*0.80,sprintf(<span class="string">'T:p=%.3f'</span>,p),<span class="string">'FontSize'</span>,20,<span class="string">'Color'</span>,textColor);
+0421             <span class="keyword">end</span>
+0422             sgtitle(titleString)
+0423             set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,25)
+0424             <span class="keyword">if</span> saveResAndFigure
+0425                 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>)
+0426                 saveas(f,savePath)
+0427                 s = findobj(<span class="string">'type'</span>,<span class="string">'legend'</span>); delete(s)
+0428                 saveas(f,[savePath <span class="string">'.png'</span>])
+0429             <span class="keyword">end</span>
+0430         <span class="keyword">end</span>
+0431         
+0432         <a name="_sub4" href="#_subfunctions" class="code">function plotCI(x, y, lineColor, dataLabel, showMeanCILegend, colorNonZeroRed, typeOfCI)</a>
+0433         <span class="comment">%Plot confidence interval of the y, and printout the y range (min,</span>
+0434         <span class="comment">%max), mean, and 95%CI.</span>
+0435         <span class="comment">%This function doesn't create a blank figure canvas, plots on the</span>
+0436         <span class="comment">%current focused figure.</span>
+0437         <span class="comment">% Adapted from: https://www.mathworks.com/matlabcentral/answers/159417-how-to-calculate-the-confidence-interval</span>
+0438         <span class="comment">% Alternative approach see: https://www.mathworks.com/help/stats/prob.normaldistribution.paramci.html</span>
+0439         <span class="comment">%</span>
+0440         <span class="comment">% [Example] plotCI(xValue, yColumn, 'YDataName', false, true)</span>
+0441         <span class="comment">% if want to plot multiple CIs in 1 figure:</span>
+0442         <span class="comment">%     for i = 1:10</span>
+0443         <span class="comment">%         plotCI(i, yMatrix(:,i), labels{i}, false, true,'95data')</span>
+0444         <span class="comment">%         %this plots the 95% of the data (e.g. applicable if you just</span>
+0445         <span class="comment">%         ran a bootstrapping analysis)</span>
+0446         <span class="comment">%     end</span>
+0447         <span class="comment">%</span>
+0448         <span class="comment">% [OUTPUTARGS]: none.</span>
+0449         <span class="comment">% [InputArgs]:</span>
+0450         <span class="comment">%           - x: an integer/double of where along the x-axis to</span>
+0451         <span class="comment">%           plot the y values.</span>
+0452         <span class="comment">%           - y: a column vector of doubles of y values to plot,</span>
+0453         <span class="comment">%           compute CI from</span>
+0454         <span class="comment">%           - lineColor: color to plot the y (could be any matlab</span>
+0455         <span class="comment">%           accepted color format, either single character like 'k'</span>
+0456         <span class="comment">%           or a row vector of 3 numbers between[0,1] for r,g,b.</span>
+0457         <span class="comment">%           - dataLabel: string display name of the y variable.</span>
+0458         <span class="comment">%           - showMeanCILegend: boolean determining if legend of</span>
+0459         <span class="comment">%           graph items (CI and mean) will be shown.</span>
+0460         <span class="comment">%           - colorNonZeroRed: OPTIONAL boolean flag to indicate if</span>
+0461         <span class="comment">%           CI that doesn't contain 0 should be colored red</span>
+0462         <span class="comment">%           (ignoring the given line color command). Default false.</span>
+0463         <span class="comment">%           if want to skip, use nan or [].</span>
+0464         <span class="comment">%           - typeOfCI: OPTIONAL string argument of what kind of CI</span>
+0465         <span class="comment">%           we want to plot. Accepted args: 'tinv','95data'</span>
+0466         <span class="comment">%           (words need to be exact, it would be nice if matlab has</span>
+0467         <span class="comment">%           enum type)</span>
+0468         <span class="comment">%           default plot 95% interval calculated from</span>
+0469         <span class="comment">%           the data (Using tinv). Notice that if it's data from</span>
+0470         <span class="comment">%           bootstrapping, the CI is 95% of the data without the</span>
+0471         <span class="comment">%           need for tinv again.</span>
+0472             <span class="keyword">if</span> nargin &lt; 6 || ~exist(<span class="string">'colorNonZeroRed'</span>,<span class="string">'var'</span>) || any(isnan(colorNonZeroRed)) || isempty(colorNonZeroRed)
+0473                 colorNonZeroRed = false;
+0474             <span class="keyword">end</span>
+0475             <span class="keyword">if</span> nargin &lt; 7 || ~exist(<span class="string">'typeOfCI'</span>,<span class="string">'var'</span>) || any(isnan(typeOfCI)) || isempty(typeOfCI)
+0476                 typeOfCI = <span class="string">'tinv'</span>;
+0477             <span class="keyword">end</span>
+0478             hold on;
+0479             N = length(y);
+0480             yMean = mean(y);
+0481             <span class="keyword">if</span> strcmp(typeOfCI,<span class="string">'tinv'</span>) <span class="comment">%this is the default 95% of CI computed from the data and its spread</span>
+0482                 ySEM = std(y)/sqrt(N);
+0483                 CI95 = tinv([0.025 0.975], N-1);                    <span class="comment">% Calculate 95% Probability Intervals Of t-Distribution</span>
+0484                 yCI95 = bsxfun(@times, ySEM, CI95(:));
+0485                 yCI95 = yCI95 + yMean;
+0486             <span class="keyword">elseif</span> strcmp(typeOfCI,<span class="string">'95data'</span>)
+0487                 yCI95 = prctile(y, [2.5 97.5]);
+0488             <span class="keyword">else</span>
+0489                 error(<span class="string">'\nInvalid typeOfCI plotted. Only tinv or 95data is accepted.\n'</span>)
+0490             <span class="keyword">end</span>
+0491 <span class="comment">%             yCI95 = mean(y) + [-std(y), std(y)]; %temp to plot std</span>
+0492             <span class="keyword">if</span> colorNonZeroRed &amp;&amp; (yCI95(1) &gt; 0 || yCI95(2) &lt; 0)
+0493                 lineColor = <span class="string">'r'</span>;
+0494             <span class="keyword">end</span>
+0495             <span class="keyword">if</span> showMeanCILegend <span class="comment">%show legend to indicate what's mean and CI.</span>
+0496                 plot(x, yMean,<span class="string">'.'</span>,<span class="string">'Color'</span>,lineColor,<span class="string">'LineWidth'</span>,3.5,<span class="string">'MarkerSize'</span>,38,<span class="string">'DisplayName'</span>,<span class="string">'Mean'</span>); 
+0497                 plot([x,x], yCI95,<span class="string">'Color'</span>,lineColor,<span class="string">'LineWidth'</span>,3.5,<span class="string">'Marker'</span>,<span class="string">'None'</span>,<span class="string">'DisplayName'</span>,<span class="string">'95%CI'</span>);
+0498             <span class="keyword">else</span> <span class="comment">%don't show legend for mean and CI. Show legend to identify the group of data only.</span>
+0499                 plot(x, yMean,<span class="string">'.'</span>,<span class="string">'Color'</span>,lineColor,<span class="string">'LineWidth'</span>,3.5,<span class="string">'MarkerSize'</span>,38,<span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>); 
+0500                 plot([x,x], yCI95,<span class="string">'Color'</span>,lineColor,<span class="string">'LineWidth'</span>,3.5,<span class="string">'Marker'</span>,<span class="string">'None'</span>,<span class="string">'HandleVisibility'</span>,<span class="string">'off'</span>);
+0501             <span class="keyword">end</span>
+0502             plot(x*ones(size(y))+0.4,y,<span class="string">'o'</span>,<span class="string">'Color'</span>,lineColor, <span class="string">'LineWidth'</span>,1,<span class="string">'MarkerSize'</span>,10,<span class="string">'DisplayName'</span>,dataLabel)
+0503             grid on;
+0504             set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,25)
+0505             [miny, maxy] = bounds(y);
+0506 <span class="comment">%             fprintf('\n%s: Range[min, max]: [%f, %f]; Mean: %f, CI: [%f, %f]\n',dataLabel, miny, maxy, yMean, yCI95);</span>
+0507         <span class="keyword">end</span>
+0508         
+0509         <a name="_sub5" href="#_subfunctions" class="code">function plotRegressionDiagnostics(mdl, actualYs, saveResAndFigure, savePath)</a>
+0510         <span class="comment">%Plot diagnosis plot of the linear regression model from mdl.</span>
+0511         <span class="comment">%Top left: residual histogram for visualization of normality; top right: QQ plot for normality test.</span>
+0512         <span class="comment">%Bottom left: residual vs yhat for homeoscadesticity (equal</span>
+0513         <span class="comment">%variance across all y values). Bottom right: fitted vs actual y to</span>
+0514         <span class="comment">%evalute the fit results.</span>
+0515         <span class="comment">%</span>
+0516         <span class="comment">% [Example]: plotRegressionDiagnostics(linearModel, ys, true, 'C:/Documents/saveMyData.png')</span>
+0517         <span class="comment">%</span>
+0518         <span class="comment">% [OUTPUTARGS]: none.</span>
+0519         <span class="comment">% [InputArgs]:</span>
+0520         <span class="comment">%           - mdl: a LinearModel object from matlab (regression output)</span>
+0521         <span class="comment">%           - actualYs: the actual y values (a column vector)</span>
+0522         <span class="comment">%           - saveResAndFigure: boolean determining if plot should</span>
+0523         <span class="comment">%           be saved.</span>
+0524         <span class="comment">%           - savePath: string of the location and name to save the</span>
+0525         <span class="comment">%               figure (absolute path recommended)</span>
+0526         <span class="comment">%</span>
+0527             f = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);<span class="comment">%('Position', get(0, 'Screensize'));</span>
+0528             subplot(2,2,1); histogram(mdl.Residuals.Raw); <span class="comment">%histogram(mdl.Residuals.Studentized);</span>
+0529             title(<span class="string">'Residual Histogram'</span>); xlabel(<span class="string">'Residuals (y-yhat)'</span>);
+0530     <span class="comment">%         xRange = xlim;</span>
+0531     <span class="comment">%         hold on; plot(xRange(1):0.1:xRange(2), normpdf(xRange(1):0.1:xRange(2), 0,1))</span>
+0532             pd = fitdist(mdl.Residuals.Raw,<span class="string">'Normal'</span>); <span class="comment">%pd = fitdist(mdl.Residuals.Studentized,'Normal');</span>
+0533             [h, p] = kstest(normalize(mdl.Residuals.Raw)); <span class="comment">%[h, p] = kstest(mdl.Residuals.Studentized);</span>
+0534             subplot(2,2,2); qqplot(mdl.Residuals.Raw); <span class="comment">%qqplot(mdl.Residuals.Studentized);</span>
+0535             title([<span class="string">'Residual vs Standard Normal: kstest (0:normal) = '</span> num2str(h)]);
+0536             fprintf(<span class="string">'Residual is normal (kstest, 0 = normal): %d, p = %f'</span>,h,p)
+0537             subplot(2,2,3); scatter(mdl.Fitted, mdl.Residuals.Raw);<span class="comment">%scatter(mdl.Fitted, mdl.Residuals.Studentized);</span>
+0538             hold on; yline(0);
+0539             xlabel(<span class="string">'Fitted'</span>); ylabel(<span class="string">'Residuals'</span>); title(<span class="string">'Homoscedasticity Check'</span>);
+0540             subplot(2,2,4); scatter(mdl.Fitted, actualYs);
+0541             hold on; plot(xlim, xlim); legend({<span class="string">'Data'</span>,<span class="string">'y=x'</span>});
+0542             ylabel(<span class="string">'ActualY'</span>); xlabel(<span class="string">'Fitted'</span>); title(<span class="string">'Fitted vs Actual Data Check'</span>);
+0543             figureTitleStr = split(savePath, filesep);
+0544             sgtitle(figureTitleStr{end}); <span class="comment">%last part is file name and figure title.</span>
+0545             <span class="comment">%TODO: sgtitle find the last part of the saveRes</span>
+0546             set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,15)
+0547             <span class="keyword">if</span> saveResAndFigure
+0548                 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>)
+0549                 saveas(f,savePath)
+0550 <span class="comment">%                 s = findobj('type','legend'); delete(s)</span>
+0551                 saveas(f,[savePath <span class="string">'.png'</span>])
+0552             <span class="keyword">end</span>
+0553         <span class="keyword">end</span>
+0554         
+0555         <a name="_sub6" href="#_subfunctions" class="code">function plotBootStrapCorrSpearman(xData, yData, xlabels, ylabels, titleStr, saveResAndFigure, savePath, iterations, controlVar, controlVarXIdx, controlVarYIdx, f)</a>
+0556             <span class="comment">%Plot boot strapping results of spearman's correlation between</span>
+0557             <span class="comment">%columns in xData and yData. Resample with replacement</span>
+0558             <span class="comment">%#iteration times to get a distribution of the rhos.</span>
+0559             <span class="comment">%Top: histogram of the bootstrapped rho (coefficient of</span>
+0560             <span class="comment">%correlation) -- %commented out right now.</span>
+0561             <span class="comment">%Bottom: 95%CI, mean and each bootstrapped value of rho</span>
+0562             <span class="comment">%For each pairs of x and y column, get 1 column of 2 figures (2rows). E.g., xData column 2 and yData column 3 will</span>
+0563             <span class="comment">%have 2 plots in (5:6,2)</span>
+0564             <span class="comment">%</span>
+0565             <span class="comment">% [Examples]: plotBootStrapCorrSpearman(x,y,{'xlabel1','label2',...},{'ylabel1','ylabel2',...},'title',true,'C:/Documents/saveFolder/myFig.png')</span>
+0566             <span class="comment">%</span>
+0567             <span class="comment">% [OUTPUTARGS]: none.</span>
+0568             <span class="comment">% [InputArgs]:</span>
+0569             <span class="comment">%    - xData: 2D matrix of data, subjects x columns</span>
+0570             <span class="comment">%    - yData: 2D matrix of data to plot on the yaxis, subjects x columns</span>
+0571             <span class="comment">%    - xlabels: cell array of strings for xlabel (per column)</span>
+0572             <span class="comment">%    - ylabels: cell aray of strings for ylabel (per row)</span>
+0573             <span class="comment">%    - titleStr: a string for plot title (overall title)</span>
+0574             <span class="comment">%    - saveResAndFigure: boolean whether or not to save the</span>
+0575             <span class="comment">%            figure</span>
+0576             <span class="comment">%    - savePath: the full path (directory and name) to save</span>
+0577             <span class="comment">%            the figures.</span>
+0578             <span class="comment">%    - iterations: OPTIONAL. Default 1000. integer number</span>
+0579             <span class="comment">%    specifcying how many iterations of resample to run.</span>
+0580             <span class="comment">%    - controlVar: OPTIONAL. 2D matrix of data to control for in a</span>
+0581             <span class="comment">%            partial correlation, in subjects x variableColumns</span>
+0582             <span class="comment">%    - controlVarXIdx: OPTIONAL. integer or integer array, if the</span>
+0583             <span class="comment">%            controlled variable is part of the xData, corresponding</span>
+0584             <span class="comment">%            data columns in xData that's the contrlled var. Pass</span>
+0585             <span class="comment">%            NaN if the controlled var is not part of the xData.</span>
+0586             <span class="comment">%   - controlVarYIdx: OPTIONAL. integer or integer array, if the</span>
+0587             <span class="comment">%            controlled variable is part of the yData, corresponding</span>
+0588             <span class="comment">%            data columns in xData that's the contrlled var. Pass</span>
+0589             <span class="comment">%            NaN or omit the arg if the controlled var is not part of the yData.</span>
+0590             <span class="comment">%   - f: OPTIONAL. figure handle. If not</span>
+0591             <span class="comment">%   provided, or provide empty, create a new one.</span>
+0592             <span class="keyword">if</span> nargin &lt; 8 || isempty(iterations) || any(isnan(iterations))<span class="comment">%iterations default.</span>
+0593                 iterations = 1000;
+0594             <span class="keyword">end</span>
+0595             <span class="keyword">if</span> nargin &gt;= 9 &amp;&amp; ~isempty(controlVar) &amp;&amp; ~any(isnan(controlVar),<span class="string">'all'</span>)<span class="comment">%partial correlation</span>
+0596                 bootStrpStatement = &quot;bootstat = bootstrp(iterations, @(x,y, controlVar)partialcorr(x,y,controlVar,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>),xToPlot,yToPlot, controlVar);&quot;;
+0597             <span class="keyword">else</span> <span class="comment">%regular correlation</span>
+0598                 bootStrpStatement = &quot;bootstat = bootstrp(iterations, @(x,y)corr(x,y,<span class="string">'Type'</span>,<span class="string">'Spearman'</span>,<span class="string">'Rows'</span>,<span class="string">'complete'</span>),xToPlot,yToPlot);&quot;;
+0599             <span class="keyword">end</span>
+0600             <span class="keyword">if</span> nargin &lt; 12 || isempty(f) || any(isnan(f))
+0601                 f = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);<span class="comment">%('Position', get(0, 'Screensize'));</span>
+0602             <span class="keyword">end</span>
+0603             <span class="keyword">for</span> rowIdx = 1:size(yData,2) <span class="comment">%row</span>
+0604                 <span class="keyword">for</span> colIdx = 1:size(xData,2) <span class="comment">%col</span>
+0605                     xToPlot = xData(:,colIdx); <span class="comment">%put fnir on the x-axis</span>
+0606                     yToPlot = yData(:,rowIdx);
+0607                     eval(bootStrpStatement);
+0608 <span class="comment">%                     bootstat = bootstrp(iterations, @(x,y)corr(x,y,'Type','Spearman','Rows','complete'),xToPlot,yToPlot);</span>
+0609 <span class="comment">%                     subplot(size(yData,2)*2,size(xData,2),(rowIdx-1)*size(xData,2)*2+colIdx);</span>
+0610 <span class="comment">%                     hold on; %row 1</span>
+0611 <span class="comment">%                     histogram(bootstat); title([xlabels{colIdx},' ',ylabels{rowIdx}])</span>
+0612 <span class="comment">%                     subplot(size(yData,2)*2,size(xData,2),(rowIdx*2-1)*size(xData,2)+colIdx);  %row 2</span>
+0613                     <span class="keyword">if</span> size(yData,2) &gt; 1 || size(xData,2) &gt; 1
+0614                         subplot(size(yData,2),size(xData,2),(rowIdx-1)*size(xData,2)+colIdx); <span class="comment">%row 1</span>
+0615                     <span class="keyword">end</span>
+0616                     PlotHelper.plotCI(1,bootstat,<span class="string">'k'</span>,[<span class="string">'\rho('</span> xlabels{colIdx},<span class="string">','</span>,ylabels{rowIdx} <span class="string">')'</span>],true, true)
+0617                     <span class="keyword">if</span> size(yData,2) == 1 <span class="comment">%1 row only use y label (have enough height)</span>
+0618                         ylabel([<span class="string">'\rho('</span> xlabels{colIdx},<span class="string">','</span>,ylabels{rowIdx} <span class="string">')'</span>]);
+0619                     <span class="keyword">else</span>
+0620                         title([<span class="string">'\rho('</span> xlabels{colIdx},<span class="string">','</span>,ylabels{rowIdx} <span class="string">')'</span>]);
+0621                     <span class="keyword">end</span>
+0622                 <span class="keyword">end</span>
+0623             <span class="keyword">end</span>
+0624 <span class="comment">%             legend();</span>
+0625             sgtitle(titleStr)
+0626             set(findall(gcf,<span class="string">'-property'</span>,<span class="string">'FontSize'</span>),<span class="string">'FontSize'</span>,13)
+0627             <span class="keyword">if</span> saveResAndFigure
+0628                 set(gcf,<span class="string">'renderer'</span>,<span class="string">'painters'</span>)
+0629                 saveas(f,[savePath <span class="string">'.fig'</span>])
+0630 <span class="comment">%                 s = findobj('type','legend'); delete(s)</span>
+0631                 saveas(f,[savePath <span class="string">'.png'</span>])
+0632             <span class="keyword">end</span>
+0633         <span class="keyword">end</span>
+0634         
+0635         <a name="_sub7" href="#_subfunctions" class="code">function [SigMdlSum] = compileModelSummaries(mdl, SigMdlSum)</a>
+0636             <span class="comment">% Generate and save summaries for linear models into SigMdlSum.</span>
+0637             <span class="comment">%</span>
+0638             <span class="comment">% [Example[ [modelSumCell] = compileModelSummaries(newMdl,modelSumCell)</span>
+0639             <span class="comment">%</span>
+0640             <span class="comment">% [OUTPUTARGS]: SigMdlSum: a cell array of model summaries with</span>
+0641             <span class="comment">% table header in the first row.</span>
+0642             <span class="comment">%</span>
+0643             <span class="comment">% [InputArgs]:</span>
+0644             <span class="comment">%    - mdl: A matlab linear model object.</span>
+0645             <span class="comment">%    - SigMdlSum: OPTIONAL. the model summary arrays to append the data</span>
+0646             <span class="comment">%    to. The same object with new entries will be the returned. If not provided, will create a new one and return it.</span>
+0647             alpha = 0.05;
+0648 <span class="comment">%             trendingThreshold = 0.1;</span>
+0649             <span class="keyword">if</span> nargin &lt; 2 <span class="comment">%no existing mdlSum array provided, intialize, first row is header.</span>
+0650                 SigMdlSum = {<span class="string">'ResponseName'</span>,<span class="string">'Predictors'</span>,<span class="string">'SigRegressor'</span>,<span class="string">'R2Ordinary'</span>,<span class="string">'R2Adjusted'</span>,<span class="string">'CogVarBeta'</span>,<span class="string">'pValue'</span>,<span class="string">'AIC'</span>,<span class="string">'BIC'</span>,<span class="string">'ResidualAbnormal(0Normal)'</span>,<span class="string">'LackOfFit(1lack)'</span>,<span class="string">'RobustOpt'</span>,<span class="string">'NumSub'</span>,<span class="string">'Model'</span>};
+0651             <span class="keyword">end</span>
+0652 <span class="comment">%             if nargin &lt; 3 %no existing mdlSum array provided, intialize, first row is header.</span>
+0653 <span class="comment">%                 trendingMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','ResidualAbnormal(0Normal)'};</span>
+0654 <span class="comment">%             end</span>
+0655             
+0656             mdlStats=anova(mdl,<span class="string">'summary'</span>);
+0657 <span class="comment">%             if mdlStats{'Model','pValue'} &gt; 0.2</span>
+0658 <span class="comment">%                 return</span>
+0659 <span class="comment">%             end</span>
+0660             
+0661             <span class="keyword">if</span> ismember(<span class="string">'. Lack of fit'</span>,mdlStats.Row) &amp;&amp; mdlStats{<span class="string">'. Lack of fit'</span>,<span class="string">'pValue'</span>} &lt;= alpha
+0662                 lackOfFit = true;
+0663             <span class="keyword">else</span>
+0664                 lackOfFit = false;
+0665             <span class="keyword">end</span>
+0666             coefPVal = mdl.Coefficients.pValue;
+0667             sigCoef = mdl.CoefficientNames(coefPVal&lt;= alpha);
+0668             sigCoef = strjoin(sigCoef);
+0669             <span class="keyword">try</span>
+0670                 [h,~] = kstest(mdl.Residuals.Studentized);
+0671             <span class="keyword">catch</span>
+0672                 warning(<span class="string">'\nCannot compute normality test on residual, reporting NaN.'</span>)
+0673                 mdl.Formula
+0674                 h=nan;
+0675             <span class="keyword">end</span>
+0676             cogVarIdx = contains(mdl.CoefficientNames,{<span class="string">'TMTBMinusTMTA'</span>,<span class="string">'traila'</span>,<span class="string">'trailb'</span>,<span class="string">'MMSE_total'</span>});
+0677             <span class="keyword">if</span> any(cogVarIdx)
+0678                 cogVarBeta = mdl.Coefficients{mdl.CoefficientNames(cogVarIdx),<span class="string">'Estimate'</span>};
+0679             <span class="keyword">else</span>
+0680                 cogVarBeta = nan;
+0681             <span class="keyword">end</span>
+0682             
+0683             SigMdlSum(end+1,:) = {mdl.Formula.ResponseName,mdl.Formula.LinearPredictor,sigCoef,mdl.Rsquared.Ordinary,mdl.Rsquared.Adjusted,<span class="keyword">...</span>
+0684                 cogVarBeta,mdlStats{<span class="string">'Model'</span>,<span class="string">'pValue'</span>},mdl.ModelCriterion.AIC, mdl.ModelCriterion.BIC,h,lackOfFit,mdl.Robust,mdl.NumObservations,mdl};
+0685         <span class="keyword">end</span>
+0686         
+0687         <a name="_sub8" href="#_subfunctions" class="code">function tightMargin(ax)</a>
+0688             <span class="comment">% Decrease the margin size of the given figure. Adapted from https://www.mathworks.com/matlabcentral/answers/369399-removing-the-grey-margin-of-a-plot</span>
+0689             <span class="comment">%</span>
+0690             <span class="comment">% [Example]: tightMargin(gca)</span>
+0691             <span class="comment">%</span>
+0692             <span class="comment">% [OUTPUTARGS]: none</span>
+0693             <span class="comment">%</span>
+0694             <span class="comment">% [InputArgs]:</span>
+0695             <span class="comment">%    - ax: figure handle, usually get by calling gca on the</span>
+0696             <span class="comment">%    active figure.</span>
+0697             outerpos = ax.OuterPosition;
+0698             ti = ax.TightInset; 
+0699             left = outerpos(1) + 2*ti(1);
+0700             bottom = outerpos(2)+ ti(2);
+0701             ax_width = outerpos(3) - 3*ti(1) - 3*ti(3); 
+0702             ax_height = outerpos(4) - ti(2) - ti(4);
+0703             <span class="comment">%to have no margin at all, use the following</span>
+0704 <span class="comment">%             left = outerpos(1) + ti(1);</span>
+0705 <span class="comment">%             bottom = outerpos(2) + ti(2);</span>
+0706 <span class="comment">%             ax_width = outerpos(3) - ti(1) - ti(3); %make left and right exactly the same as the figure</span>
+0707 <span class="comment">%             ax_height = outerpos(4) - ti(2) - ti(4);</span>
+0708             ax.Position = [left bottom ax_width ax_height];
+0709         <span class="keyword">end</span>
+0710     <span class="keyword">end</span>
+0711 <span class="keyword">end</span>
+0712</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

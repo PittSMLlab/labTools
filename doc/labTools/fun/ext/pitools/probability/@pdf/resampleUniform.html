@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of resampleUniform</title>
+  <meta name="keywords" content="resampleUniform">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">probability</a> &gt; <a href="index.html">@pdf</a> &gt; resampleUniform.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/probability/@pdf&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>resampleUniform
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [newThis,delta]=resampleUniform(this,size) %Force uniform sampling with sample size = "size" </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="pdf.html" class="code" title="">pdf</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newThis,delta]=resampleUniform(this,size) </a><span class="comment">%Force uniform sampling with sample size = &quot;size&quot;</span>
+0002             <span class="keyword">if</span> nargin&lt;2 || isempty(size) <span class="comment">%Resample to minimum interval in current coordinates</span>
+0003                 <span class="keyword">for</span> i=1:length(this.coordinates)
+0004                 min1(i)=min(this.coordinates{i});
+0005                 max1(i)=max(this.coordinates{i});
+0006                 range(i)=max1(i)-min1(i);
+0007                 delta(i)=min(diff(this.coordinates{i}));
+0008                 delta(i)=range(i)/round(range(i)/delta);
+0009                 <span class="keyword">end</span>
+0010             <span class="keyword">else</span>
+0011                 <span class="keyword">for</span> i=1:length(this.coordinates)
+0012                     min1(i)=min(this.coordinates{i});
+0013                     max1(i)=max(this.coordinates{i});
+0014                     range(i)=max1(i)-min1(i);
+0015                     delta(i)=range(i)/(N-1);
+0016                 <span class="keyword">end</span>
+0017             <span class="keyword">end</span>
+0018             <span class="keyword">for</span> i=1:length(this.coordinates)
+0019                 newThisCoordinates{i}=min1(i):delta(i):max1(i);
+0020             <span class="keyword">end</span>
+0021             newThis=this.resample(newThisCoordinates); 
+0022         <span class="keyword">end</span>
+0023</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

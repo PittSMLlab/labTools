@@ -1,0 +1,982 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of GenerateHreflexRecruitmentCurvesDuringExp</title>
+  <meta name="keywords" content="GenerateHreflexRecruitmentCurvesDuringExp">
+  <meta name="description" content="% Generate H-Reflex Calibration Recruitment Curves During the Experiment">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; GenerateHreflexRecruitmentCurvesDuringExp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>GenerateHreflexRecruitmentCurvesDuringExp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Generate H-Reflex Calibration Recruitment Curves During the Experiment</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Generate H-Reflex Calibration Recruitment Curves During the Experiment
+ author: NWB
+ date (started): 05 May 2024
+ purpose: to extract the M-wave and H-wave amplitudes from the H-reflex
+ calibration EMG data shortly after the creation of the calibration trial
+ C3D file in a Vicon Nexus software processing pipeline during an
+ experiment.
+ NOTE: this processing script uses 'SL_Realtime.m' as a template to use
+ the Vicon Nexus sofware tools.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="clipSignals.html" class="code" title="function [signals] = clipSignals(signals,percentile)">clipSignals</a>	Clips the top and bottom percentile of signals. Acts along columns</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Generate H-Reflex Calibration Recruitment Curves During the Experiment</span>
+0002 <span class="comment">% author: NWB</span>
+0003 <span class="comment">% date (started): 05 May 2024</span>
+0004 <span class="comment">% purpose: to extract the M-wave and H-wave amplitudes from the H-reflex</span>
+0005 <span class="comment">% calibration EMG data shortly after the creation of the calibration trial</span>
+0006 <span class="comment">% C3D file in a Vicon Nexus software processing pipeline during an</span>
+0007 <span class="comment">% experiment.</span>
+0008 <span class="comment">% NOTE: this processing script uses 'SL_Realtime.m' as a template to use</span>
+0009 <span class="comment">% the Vicon Nexus sofware tools.</span>
+0010 
+0011 <span class="comment">%% 1. Load the C3D File Data</span>
+0012 <span class="keyword">try</span>     <span class="comment">% if Vicon Nexus is running with a file open, use that</span>
+0013     <span class="comment">% Vicon Nexus must be open, offline, and the desired trial loaded</span>
+0014     vicon = ViconNexus();
+0015     [path,filenameWOExt] = vicon.GetTrialName;   <span class="comment">% get trial open in Nexus</span>
+0016     filenameWExt = [filenameWOExt <span class="string">'.c3d'</span>];
+0017     guessID = vicon.GetSubjectNames;    <span class="comment">% retrieve participant / session ID</span>
+0018 <span class="keyword">catch</span>   <span class="comment">% use below two lines when processing c3d files not open in Nexus</span>
+0019     commandwindow();
+0020     [filenameWExt,path] = uigetfile(<span class="string">'*.c3d'</span>, <span class="keyword">...</span>
+0021         <span class="string">'Please select the c3d file of interest:'</span>);
+0022     compsPath = strsplit(path,filesep);
+0023     compsPath = compsPath(cellfun(@(x) ~isempty(x),compsPath));
+0024     guessID = compsPath(contains(compsPath,<span class="string">'SA'</span>));
+0025     <span class="keyword">if</span> isempty(guessID)
+0026         guessID = compsPath(end);
+0027     <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 id = inputdlg({<span class="string">'Enter the Participant / Session ID:'</span>},<span class="string">'ID'</span>,[1 50], <span class="keyword">...</span>
+0030     guessID);   <span class="comment">% Verify ID with user first</span>
+0031 id = id{1};
+0032 [~,filename] = fileparts(filenameWExt);
+0033 trialNum = filename(end-1:end); <span class="comment">% last two characters of file name are #</span>
+0034 pathFigs = [path <span class="string">'HreflexCalFigs'</span> filesep];
+0035 <span class="keyword">if</span> ~exist(pathFigs,<span class="string">'dir'</span>)   <span class="comment">% if figure folder does not already exist, ...</span>
+0036     mkdir(pathFigs);        <span class="comment">% make it</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 H = btkReadAcquisition([path filenameWExt]);
+0040 <span class="comment">% using the same method as labtools, retrieve the analog data</span>
+0041 [analogs,analogsInfo] = btkGetAnalogs(H);
+0042 
+0043 <span class="comment">%% 2. Retrieve User Input Data</span>
+0044 <span class="comment">% TODO: use the feature of the stimulator to set the current output</span>
+0045 <span class="comment">% based on the voltage of the trigger pulse to eliminate the need for</span>
+0046 <span class="comment">% asking the user to input the stimulation amplitudes</span>
+0047 prompt = { <span class="keyword">...</span>
+0048     [<span class="string">'Enter the EMG sensor muscles in sensor number order for all 16 '</span> <span class="keyword">...</span>
+0049     <span class="string">'sensors of Box 1 (using ''NA'' for sensors not in use):'</span>], <span class="keyword">...</span>
+0050     [<span class="string">'Should stimulation trigger pulse data be used to identify '</span> <span class="keyword">...</span>
+0051     <span class="string">'artifact peak times? (''1'' = true (TM calibration where all '</span> <span class="keyword">...</span>
+0052     <span class="string">'triggers in Vicon are valid and have a stim current written '</span> <span class="keyword">...</span>
+0053     <span class="string">'down), ''0'' = false (otherwise))'</span>], <span class="keyword">...</span>
+0054     <span class="string">'Enter the right leg stimulation amplitudes (numbers only):'</span>, <span class="keyword">...</span>
+0055     <span class="string">'Enter the left leg stimulation amplitudes (numbers only):'</span>, <span class="keyword">...</span>
+0056     [<span class="string">'Stimulation Artifact Threshold (V) (NOTE: only relevant if not '</span> <span class="keyword">...</span>
+0057     <span class="string">'using stim trigger pulse):'</span>], <span class="keyword">...</span>
+0058     [<span class="string">'Minimum Time Between Stimulation Pulses (s) (NOTE: only relevant'</span> <span class="keyword">...</span>
+0059     <span class="string">' if not using stim trigger pulse):'</span>]};
+0060 dlgtitle = <span class="string">'H-Reflex Calibration Input'</span>;
+0061 fieldsize = [1 200; 1 200; 1 200; 1 200; 1 200; 1 200];
+0062 
+0063 filesConf = dir([pathFigs id <span class="string">'Config*.mat'</span>]);
+0064 fnamesConf = {filesConf.name};
+0065 fnameConf = [id <span class="string">'Config'</span> trialNum <span class="string">'.mat'</span>];
+0066 <span class="keyword">if</span> isempty(fnamesConf)  <span class="comment">% if no configuration file exists, ...</span>
+0067     <span class="comment">% use the default values for the input</span>
+0068     definput = { <span class="keyword">...</span>
+0069         [<span class="string">'RTAP RTAD NA RPER RMG RLG RSOL LTAP LTAD LPER LMG LLG LSOL NA NA'</span> <span class="keyword">...</span>
+0070         <span class="string">' sync1'</span>], <span class="keyword">...</span><span class="comment">                  muscle list</span>
+0071         <span class="string">'1'</span>, <span class="keyword">...</span><span class="comment">                        should use stimulation trigger pulse</span>
+0072         [<span class="string">'7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 16 18 18 '</span> <span class="keyword">...</span>
+0073         <span class="string">'18 21 21 21 25 25 25'</span>], <span class="keyword">...</span><span class="comment">    right leg stimulation amplitudes</span>
+0074         [<span class="string">'7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 16 18 18 '</span> <span class="keyword">...</span>
+0075         <span class="string">'18 21 21 21 25 25 25'</span>], <span class="keyword">...</span><span class="comment">    left leg stimulation amplitudes</span>
+0076         <span class="string">'0.0003'</span>, <span class="keyword">...</span><span class="comment">                   stimulation artifact threshold</span>
+0077         <span class="string">'5'</span>};                         <span class="comment">% minimum time between stimuli</span>
+0078 <span class="keyword">elseif</span> any(strcmpi(fnamesConf,fnameConf))   <span class="comment">% if current trial file, ...</span>
+0079     load([pathFigs fnameConf],<span class="string">'answer'</span>);    <span class="comment">% load configuration</span>
+0080     definput = answer;                      <span class="comment">% set default input to config</span>
+0081 <span class="keyword">elseif</span> ~isempty(fnamesConf) <span class="comment">% if there is config but not current trial, ...</span>
+0082     load([pathFigs fnamesConf{end}],<span class="string">'answer'</span>);  <span class="comment">% load config of last trial</span>
+0083     definput = answer;                      <span class="comment">% set default input to config</span>
+0084 <span class="keyword">else</span>    <span class="comment">% otherwise, ...</span>
+0085     <span class="comment">% do something else</span>
+0086 <span class="keyword">end</span>
+0087 
+0088 answer = inputdlg(prompt,dlgtitle,fieldsize,definput);
+0089 <span class="comment">% if config file does not exist (save new file) or if it does exist but ...</span>
+0090 <span class="comment">% has changed (overwrite previous file), ...</span>
+0091 <span class="keyword">if</span> ~isfile([pathFigs fnameConf]) || (isfile([pathFigs fnameConf]) &amp;&amp; <span class="keyword">...</span>
+0092         ~isequal(definput,answer))
+0093     save([pathFigs fnameConf],<span class="string">'answer'</span>,<span class="string">'analogs'</span>,<span class="string">'analogsInfo'</span>,<span class="string">'H'</span>, <span class="keyword">...</span>
+0094         <span class="string">'id'</span>,<span class="string">'path'</span>,<span class="string">'pathFigs'</span>,<span class="string">'trialNum'</span>,<span class="string">'filenameWExt'</span>,<span class="string">'fnameConf'</span>);
+0095 <span class="keyword">end</span>
+0096 
+0097 <span class="comment">%%</span>
+0098 <span class="comment">% TODO: add more input checks</span>
+0099 EMGList1 = strsplit(answer{1},<span class="string">' '</span>); <span class="comment">% list of EMG muscle labels</span>
+0100 <span class="keyword">if</span> isempty(EMGList1)                <span class="comment">% if no EMG labels input, ...</span>
+0101     error([<span class="string">'No EMG labels have been provided. It is not possible to '</span> <span class="keyword">...</span>
+0102         <span class="string">'generate H-reflex recruitment curves without EMG data.'</span>]);
+0103 <span class="keyword">end</span>
+0104 <span class="comment">% currently using below as a proxy for standing vs. walking trials</span>
+0105 shouldUseStimTrig = logical(str2double(answer{2}));
+0106 ampsStimR = str2num(answer{3});
+0107 ampsStimL = str2num(answer{4});
+0108 threshStimArtifact = str2double(answer{5});<span class="comment">% stimulation artifact threshold</span>
+0109 threshStimTimeSep = str2double(answer{6}); <span class="comment">% time between stim</span>
+0110 
+0111 numStimR = length(ampsStimR);   <span class="comment">% number of times stimulated right leg</span>
+0112 numStimL = length(ampsStimL);   <span class="comment">% number of times stimulated left leg</span>
+0113 
+0114 <span class="comment">%% 3. Retrieve EMG Data</span>
+0115 <span class="comment">% TODO: Consider making each data retrieval its own separate function for</span>
+0116 <span class="comment">% modularity and easy access and use for future applications</span>
+0117 <span class="comment">% NOTE: below is copied directly from 'loadTrials.m'</span>
+0118 <span class="comment">% below are the muscle names (abbrev.) in the desired order</span>
+0119 <span class="comment">% NOTE: thigh and hip muscles have been removed since not currently</span>
+0120 <span class="comment">% relevant for the Spinal Adaptation project</span>
+0121 orderedMuscleList = {<span class="string">'PER'</span>,<span class="string">'TA'</span>,<span class="string">'TAP'</span>,<span class="string">'TAD'</span>,<span class="string">'SOL'</span>,<span class="string">'MG'</span>,<span class="string">'LG'</span>};
+0122 orderedEMGList={};
+0123 <span class="keyword">for</span> j = 1:length(orderedMuscleList)
+0124     orderedEMGList{end+1}=[<span class="string">'R'</span> orderedMuscleList{j}];
+0125     orderedEMGList{end+1}=[<span class="string">'L'</span> orderedMuscleList{j}];
+0126 <span class="keyword">end</span>
+0127 
+0128 EMG = [];
+0129 relData = [];
+0130 relDataTemp = [];
+0131 fieldList = fields(analogs);
+0132 idxList = [];
+0133 <span class="keyword">for</span> j=1:length(fieldList)
+0134     <span class="keyword">if</span>  ~isempty(strfind(fieldList{j},<span class="string">'EMG'</span>))  <span class="comment">%Getting fields that start with 'EMG' only</span>
+0135         relDataTemp=[relDataTemp,analogs.(fieldList{j})];
+0136         idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},<span class="string">'EMG'</span>)+3:end));
+0137         analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0138     <span class="keyword">end</span>
+0139 <span class="keyword">end</span>
+0140 emptyChannels1=cellfun(@(x) contains(x,<span class="string">'NA'</span>) || contains(x,<span class="string">'sync'</span>),EMGList1);
+0141 EMGList1 = EMGList1(~emptyChannels1);
+0142 relData(:,idxList)=relDataTemp; <span class="comment">%Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does</span>
+0143 relData=relData(:,~emptyChannels1);
+0144 EMGList=EMGList1;
+0145 
+0146 <span class="comment">%Check if names match with expectation, otherwise query user</span>
+0147 <span class="keyword">for</span> k=1:length(EMGList)
+0148     <span class="keyword">while</span> sum(strcmpi(orderedEMGList,EMGList{k}))==0 &amp;&amp; ~strcmpi(EMGList{k}(1:4),<span class="string">'sync'</span>)
+0149         aux= inputdlg([<span class="string">'Did not recognize muscle name, please re-enter name for channel '</span> num2str(k) <span class="string">' (was '</span> EMGList{k} <span class="string">'). Acceptable values are '</span> cell2mat(strcat(orderedEMGList,<span class="string">', '</span>)) <span class="string">' or ''sync''.'</span>],<span class="string">'s'</span>);
+0150         <span class="keyword">if</span> k&lt;=length(EMGList1)
+0151             EMGList1{idxList(k)}=aux{1}; <span class="comment">%This is to keep the same message from being prompeted for each trial processed.</span>
+0152         <span class="keyword">end</span>
+0153         EMGList{k}=aux{1};
+0154     <span class="keyword">end</span>
+0155 <span class="keyword">end</span>
+0156 
+0157 <span class="comment">%For some reasing the naming convention for analog pins is not kept</span>
+0158 <span class="comment">%across Nexus versions:</span>
+0159 fieldNames=fields(analogs);
+0160 
+0161 refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,<span class="string">'Pin3'</span>)) | ~isempty(strfind(x,<span class="string">'Pin_3'</span>)) | ~isempty(strfind(x,<span class="string">'Raw_3'</span>)),fieldNames)});
+0162 
+0163 EMGfrequency=analogsInfo.frequency;
+0164 allData=relData;
+0165 
+0166 <span class="comment">%Pre-process:</span>
+0167 [refSync] = <a href="clipSignals.html" class="code" title="function [signals] = clipSignals(signals,percentile)">clipSignals</a>(refSync(:),.1); <span class="comment">%Clipping top &amp; bottom samples (1 out of 1e3!)</span>
+0168 refAux=medfilt1(refSync,20);
+0169 <span class="comment">%refAux(refAux&lt;(median(refAux)-5*iqr(refAux)) | refAux&gt;(median(refAux)+5*iqr(refAux)))=median(refAux);</span>
+0170 refAux=medfilt1(diff(refAux),10);
+0171 clear auxData*
+0172 
+0173 <span class="comment">%Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order</span>
+0174 orderedIndexes=zeros(length(orderedEMGList),1);
+0175 <span class="keyword">for</span> j=1:length(orderedEMGList)
+0176     <span class="keyword">for</span> k=1:length(EMGList)
+0177         <span class="keyword">if</span> strcmpi(orderedEMGList{j},EMGList{k})
+0178             orderedIndexes(j)=k;
+0179             <span class="keyword">break</span>;
+0180         <span class="keyword">end</span>
+0181     <span class="keyword">end</span>
+0182 <span class="keyword">end</span>
+0183 orderedIndexes=orderedIndexes(orderedIndexes~=0); <span class="comment">%Avoiding missing muscles</span>
+0184 aux=zeros(length(EMGList),1);
+0185 aux(orderedIndexes)=1;
+0186 <span class="keyword">if</span> any(aux==0) &amp;&amp; ~all(strcmpi(EMGList(aux==0),<span class="string">'sync'</span>))
+0187     warning([<span class="string">'loadTrials: Not all of the provided muscles are in the ordered list, ignoring '</span> EMGList{aux==0}])
+0188 <span class="keyword">end</span>
+0189 allData(allData==0)=NaN; <span class="comment">%Eliminating samples that are exactly 0: these are unavailable samples</span>
+0190 EMG=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); <span class="comment">%Throw away the synch signal</span>
+0191 clear allData* relData* auxData*
+0192 
+0193 <span class="comment">%% 4. Retrieve Ground Reaction Force (GRF) Data If It Exists</span>
+0194 relData=[];
+0195 forceLabels ={};
+0196 units={};
+0197 fieldList=fields(analogs);
+0198 forceLabelIdx = contains(fieldList,<span class="string">'Force_Fz'</span>); <span class="comment">% only care about Fz</span>
+0199 forceLabelIdx = find(forceLabelIdx,2,<span class="string">'first'</span>);  <span class="comment">% FP 1 (Left) &amp; 2 (Right)</span>
+0200 hasForces = ~isempty(forceLabelIdx);
+0201 <span class="keyword">if</span> hasForces     <span class="comment">% if force data found, ...</span>
+0202     <span class="keyword">for</span> j=1:length(forceLabelIdx)   <span class="comment">% for each relevant force label, ...</span>
+0203         forceLabels{end+1} = fieldList{forceLabelIdx(j)};    <span class="comment">% add label</span>
+0204         units{end+1} = eval([<span class="string">'analogsInfo.units.'</span>, <span class="keyword">...</span>
+0205             fieldList{forceLabelIdx(j)}]);
+0206         relData = [relData analogs.(fieldList{forceLabelIdx(j)})];
+0207     <span class="keyword">end</span>
+0208     GRF = labTimeSeries(relData,0, <span class="keyword">...</span>
+0209         1/analogsInfo.frequency,forceLabels);
+0210     GRF.DataInfo.Units = units;
+0211 <span class="keyword">else</span>    <span class="comment">% otherwise, set force data to be empty, ...</span>
+0212     GRF = [];
+0213 <span class="keyword">end</span>
+0214 
+0215 clear relData
+0216 
+0217 <span class="comment">%% 5. Retrieve H-Reflex Stimulator Pin Data If It Exists</span>
+0218 <span class="keyword">if</span> shouldUseStimTrig    <span class="comment">% if stimulation trigger data should be used, ...</span>
+0219     <span class="comment">% NOTE: the below code block is copied from loadTrials (implemented by SL)</span>
+0220     relData = [];
+0221     stimLabels = {};
+0222     units = {};
+0223     fieldList = fields(analogs);
+0224     stimLabelIdx = cellfun(@(x) ~isempty(x), <span class="keyword">...</span>
+0225         regexp(fieldList,<span class="string">'^Stimulator_Trigger_Sync_'</span>));
+0226     stimLabelIdx = find(stimLabelIdx);
+0227     hasStimTrig = ~isempty(stimLabelIdx);
+0228     <span class="keyword">if</span> hasStimTrig    <span class="comment">% if stimulator trigger sync data found, ...</span>
+0229         <span class="keyword">for</span> st = 1:length(stimLabelIdx) <span class="comment">% for each stim trigger pin, ...</span>
+0230             stimLabels{end+1} = fieldList{stimLabelIdx(st)};    <span class="comment">% add the label</span>
+0231             units{end+1} = eval([<span class="string">'analogsInfo.units.'</span>, <span class="keyword">...</span>
+0232                 fieldList{stimLabelIdx(st)}]);
+0233             relData = [relData analogs.(fieldList{stimLabelIdx(st)})];
+0234         <span class="keyword">end</span>
+0235         HreflexStimPin = labTimeSeries(relData,0, <span class="keyword">...</span>
+0236             1/analogsInfo.frequency,stimLabels);
+0237 
+0238         <span class="comment">% verify that the # of frames matches that of the GRF data</span>
+0239         <span class="keyword">if</span> ~isempty(GRF)    <span class="comment">% if there is GRF data present, ...</span>
+0240             <span class="keyword">if</span> (GRF.Length ~= HreflexStimPin.Length)
+0241                 error([<span class="string">'Hreflex stimulator pins have different length than'</span> <span class="keyword">...</span>
+0242                     <span class="string">'GRF data. This should never happen. Data is compromised.'</span>]);
+0243             <span class="keyword">end</span>
+0244         <span class="keyword">end</span>
+0245     <span class="keyword">else</span>
+0246         warning([<span class="string">'User indicated stimulation trigger data should be '</span> <span class="keyword">...</span>
+0247             <span class="string">'used to identify the artifact peak times, but no trigger '</span> <span class="keyword">...</span>
+0248             <span class="string">'pulse data is present.'</span>]);
+0249         HreflexStimPin = [];
+0250     <span class="keyword">end</span>
+0251 <span class="keyword">end</span>
+0252 
+0253 <span class="comment">% clear analogs* %Save memory space, no longer need analog data, it was already loaded</span>
+0254 
+0255 <span class="comment">%% Extract Events</span>
+0256 <span class="comment">% TODO: add back in to script if helpful to check the times to verify</span>
+0257 <span class="comment">% stimulation is during single stance if it is a walking calibration trial</span>
+0258 
+0259 <span class="comment">% [~,~,lfz] = intersect('LFz',forceLabels);</span>
+0260 <span class="comment">% [~,~,rfz] = intersect('RFz',forceLabels);</span>
+0261 <span class="comment">%</span>
+0262 <span class="comment">% [LHS,RHS,LTO,RTO] = getEventsFromForces(forces(:,lfz),forces(:,rfz),100);</span>
+0263 
+0264 <span class="comment">%% Save the Data</span>
+0265 <span class="comment">% TODO: implement if valuable for this script</span>
+0266 
+0267 <span class="comment">% try</span>
+0268 <span class="comment">%     RTdata = struct();%initialize save structure</span>
+0269 <span class="comment">%     RTdata.trialname = filename;</span>
+0270 <span class="comment">%     RTdata.path = path;</span>
+0271 <span class="comment">%     RTdata.creationdate = clock;</span>
+0272 <span class="comment">%     RTdata.forcedata = forces;</span>
+0273 <span class="comment">%     RTdata.forcelabels = forceLabels;</span>
+0274 <span class="comment">%     RTdata.markerdata = markers;</span>
+0275 <span class="comment">%     RTdata.markerlabels = markerList;</span>
+0276 <span class="comment">%     RTdata.Rsteplengths = Rgamma;</span>
+0277 <span class="comment">%     RTdata.Lsteplengths = Lgamma;</span>
+0278 <span class="comment">%     RTdata.Rcadence = Rcadence;</span>
+0279 <span class="comment">%     RTdata.Lcadence = Lcadence;</span>
+0280 <span class="comment">%     RTdata.Rsteptime = Rsteptime;</span>
+0281 <span class="comment">%     RTdata.Lsteptime = Lsteptime;</span>
+0282 <span class="comment">%     RTdata.time = time;</span>
+0283 <span class="comment">%</span>
+0284 <span class="comment">%     fn = strrep(datestr(clock),'-','');</span>
+0285 <span class="comment">%</span>
+0286 <span class="comment">%     filesave = [path fn(1:9) '_' filename(1:end-4) '_SL_Realtime'];</span>
+0287 <span class="comment">%</span>
+0288 <span class="comment">%     save(filesave,'RTdata');</span>
+0289 <span class="comment">% catch ME</span>
+0290 <span class="comment">%     throw(ME)</span>
+0291 <span class="comment">% end</span>
+0292 
+0293 <span class="comment">%% 6. Define H-Reflex Calibration Trial Parameters</span>
+0294 <span class="comment">% NOTE: should always be same across trials and should be same for forces</span>
+0295 period = EMG.sampPeriod;    <span class="comment">% sampling period</span>
+0296 threshSamps = threshStimTimeSep / period;  <span class="comment">% convert to samples</span>
+0297 <span class="comment">% M-wave is contained by interval 5ms - 20ms</span>
+0298 <span class="comment">% H-wave is contained by interval 25ms - 45ms</span>
+0299 <span class="comment">% Noise is contained by interval 50ms - 100ms</span>
+0300 indStartM = 0.005 / period;        <span class="comment">% 5 ms after stim artifact in samples</span>
+0301 indEndM = 0.020 / period;          <span class="comment">% 20 ms</span>
+0302 indStartH = 0.025 / period;        <span class="comment">% 25 ms</span>
+0303 indEndH = 0.045 / period;          <span class="comment">% 45 ms</span>
+0304 indStartN = 0.050 / period;        <span class="comment">% 50 ms</span>
+0305 indEndN = 0.100 / period;          <span class="comment">% 100 ms</span>
+0306 <span class="comment">% TODO: consider adding noise floor (50 - 150 ms after stim artifact?)</span>
+0307 <span class="comment">% and background EMG (50 - 100 ms before stim artifact) intervals</span>
+0308 <span class="comment">% TODO: replot extended snippet window from data with Zach to determine</span>
+0309 <span class="comment">% ideal interval for computing noise floor (across standing and walking</span>
+0310 <span class="comment">% trials) as well as whether there is an F-wave after the H-wave</span>
+0311 
+0312 <span class="comment">%% 7. Identify Locations of the Stimulation Artifacts</span>
+0313 <span class="comment">% extract relevant EMG data</span>
+0314 <span class="comment">% TODO: still need to handle case of only recording data from one leg</span>
+0315 <span class="comment">% during a trial (i.e., only want to compute parameters and plot one leg)</span>
+0316 
+0317 <span class="comment">% MG is the muscle used for the H-reflex</span>
+0318 hasMG = contains(EMG.labels,<span class="string">'MG'</span>);
+0319 <span class="keyword">if</span> ~any(hasMG)  <span class="comment">% if no medial gastrocnemius muscle data, ...</span>
+0320     error(<span class="string">'There is no medial gastrocnemius muscle data present.'</span>);
+0321 <span class="keyword">else</span>            <span class="comment">% otherwise, ...</span>
+0322     <span class="keyword">if</span> sum(hasMG) == 2  <span class="comment">% if data from both MG's present, ...</span>
+0323         EMG_LMG = EMG.Data(:,contains(EMG.labels,<span class="string">'LMG'</span>));
+0324         EMG_RMG = EMG.Data(:,contains(EMG.labels,<span class="string">'RMG'</span>));
+0325     <span class="keyword">elseif</span> contains(EMG.labels{hasMG},<span class="string">'L'</span>)  <span class="comment">% if left MG only, ...</span>
+0326         EMG_LMG = EMG.Data(:,contains(EMG.labels,<span class="string">'LMG'</span>));
+0327     <span class="keyword">elseif</span> contains(EMG.labels{hasMG},<span class="string">'R'</span>)  <span class="comment">% if right MG only, ...</span>
+0328         EMG_RMG = EMG.Data(:,contains(EMG.labels,<span class="string">'RMG'</span>));
+0329     <span class="keyword">else</span>                <span class="comment">% otherwise, ...</span>
+0330         <span class="comment">% throw an error</span>
+0331     <span class="keyword">end</span>
+0332 <span class="keyword">end</span>
+0333 
+0334 <span class="comment">% use proximal TA to determine stim artifact time</span>
+0335 hasTAP = contains(EMG.labels,<span class="string">'TAP'</span>);
+0336 <span class="keyword">if</span> ~any(hasTAP) <span class="comment">% if no proximal tibialis anterior muscle data, ...</span>
+0337     error(<span class="string">'There is no tibialis anterior muscle data present.'</span>);
+0338 <span class="keyword">else</span>            <span class="comment">% otherwise, ...</span>
+0339     <span class="keyword">if</span> sum(hasTAP) == 2  <span class="comment">% if data from both TAP's present, ...</span>
+0340         EMG_LTAP = EMG.Data(:,contains(EMG.labels,<span class="string">'LTAP'</span>));
+0341         EMG_RTAP = EMG.Data(:,contains(EMG.labels,<span class="string">'RTAP'</span>));
+0342     <span class="keyword">elseif</span> contains(EMG.labels{hasTAP},<span class="string">'L'</span>)  <span class="comment">% if left TAP only, ...</span>
+0343         EMG_LTAP = EMG.Data(:,contains(EMG.labels,<span class="string">'LTAP'</span>));
+0344     <span class="keyword">elseif</span> contains(EMG.labels{hasTAP},<span class="string">'R'</span>)  <span class="comment">% if right TAP only, ...</span>
+0345         EMG_RTAP = EMG.Data(:,contains(EMG.labels,<span class="string">'RTAP'</span>));
+0346     <span class="keyword">else</span>                <span class="comment">% otherwise, ...</span>
+0347         <span class="comment">% throw an error</span>
+0348     <span class="keyword">end</span>
+0349 <span class="keyword">end</span>
+0350 
+0351 <span class="comment">% for now not using Soleus muscle data at all</span>
+0352 <span class="comment">% EMG_LSOL = EMG.Data(:,contains(EMG.labels,'lsol', ...</span>
+0353 <span class="comment">%     'IgnoreCase',true));  % in case want to explore SOL H-reflex</span>
+0354 <span class="comment">% EMG_RSOL = EMG.Data(:,contains(EMG.labels,'rsol', ...</span>
+0355 <span class="comment">%     'IgnoreCase',true));</span>
+0356 
+0357 <span class="comment">% if missing any of the EMG signals used below, ...</span>
+0358 <span class="keyword">if</span> any(isempty([EMG_LTAP EMG_RTAP EMG_LMG EMG_RMG]))
+0359     <span class="comment">% TODO: update handling of cases when one or more of these signals is</span>
+0360     <span class="comment">% missing (e.g., only conducting calibration on one leg)</span>
+0361     error(<span class="string">'Missing one or more EMG signals.'</span>);
+0362 <span class="keyword">end</span>
+0363 
+0364 times = EMG.Time;   <span class="comment">% if want to plot, can use the time array</span>
+0365 
+0366 <span class="comment">% TODO: implement check for if forces should be used in case of standing on</span>
+0367 <span class="comment">% the treadmill but not walking during calibration</span>
+0368 <span class="comment">% NOTE: using 'shouldUseStimTrig' as a proxy for walking trials where</span>
+0369 <span class="comment">% useful forces are present</span>
+0370 <span class="comment">% if forces are present and useful to examine (i.e., walking trial), ...</span>
+0371 <span class="keyword">if</span> hasForces &amp;&amp; shouldUseStimTrig
+0372     GRFRFz = GRF.Data(:,contains(GRF.labels,<span class="string">'fz2'</span>,<span class="string">'IgnoreCase'</span>,true));
+0373     GRFLFz = GRF.Data(:,contains(GRF.labels,<span class="string">'fz1'</span>,<span class="string">'IgnoreCase'</span>,true));
+0374 <span class="keyword">end</span>
+0375 
+0376 <span class="comment">% NOTE: it does not work to use stim trigger pulse to retrieve peak times</span>
+0377 <span class="comment">% if stimulator is disabled during trial (because there will be trigger</span>
+0378 <span class="comment">% pulse but participant will not have been stimulated)</span>
+0379 <span class="comment">% if there is stimulation trigger pulse data and it should be used to</span>
+0380 <span class="comment">% identify the locations of the artifact peaks, ...</span>
+0381 <span class="keyword">if</span> shouldUseStimTrig &amp;&amp; hasStimTrig
+0382     <span class="comment">% threshold to determine rising edge of stimulation trigger pulse</span>
+0383     threshVolt = 2.5;
+0384     <span class="comment">% extract all stimulation trigger data for each leg</span>
+0385     stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, <span class="keyword">...</span>
+0386         <span class="string">'right'</span>,<span class="string">'IgnoreCase'</span>,true));
+0387     stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, <span class="keyword">...</span>
+0388         <span class="string">'left'</span>,<span class="string">'IgnoreCase'</span>,true));
+0389     indsStimRAll = find(stimTrigR &gt; threshVolt);
+0390     indsStimLAll = find(stimTrigL &gt; threshVolt);
+0391 
+0392     <span class="comment">% determine which indices correspond to start of new stimulus pulse</span>
+0393     <span class="comment">% (i.e., there is jump in index greater than 1, not just next sample)</span>
+0394     indsNewPulseR = diff([0; indsStimRAll]) &gt; 1;
+0395     indsNewPulseL = diff([0; indsStimLAll]) &gt; 1;
+0396 
+0397     <span class="comment">% determine time since trial start when stim pulse began (rising edge)</span>
+0398     stimTimeRAbs = HreflexStimPin.Time(indsStimRAll(indsNewPulseR));
+0399     stimTimeLAbs = HreflexStimPin.Time(indsStimLAll(indsNewPulseL));
+0400 
+0401     <span class="comment">% find the indices of the EMG data corresponding to the onset of the</span>
+0402     <span class="comment">% stimulation trigger pulse</span>
+0403     indsEMGStimOnsetRAbs = arrayfun(@(x) find(x == times),stimTimeRAbs);
+0404     indsEMGStimOnsetLAbs = arrayfun(@(x) find(x == times),stimTimeLAbs);
+0405     <span class="keyword">if</span> (numStimR ~= length(indsEMGStimOnsetRAbs)) || <span class="keyword">...</span>
+0406             (numStimL ~= length(indsEMGStimOnsetLAbs))
+0407         error([<span class="string">'The number of stimulation trigger pulses does not '</span> <span class="keyword">...</span>
+0408             <span class="string">'match the number of input stimulation amplitudes.'</span>]);
+0409     <span class="keyword">end</span>
+0410 
+0411     <span class="comment">% initialize array of indices determined by the stim artifact</span>
+0412     locsR = nan(size(indsEMGStimOnsetRAbs));
+0413     locsL = nan(size(indsEMGStimOnsetLAbs));
+0414 
+0415     winStim = 0.1;  <span class="comment">% +/- 100 ms of the onset of the stim trigger pulse</span>
+0416 
+0417     <span class="keyword">for</span> stR = 1:numStimR    <span class="comment">% for each right leg stimulus, ...</span>
+0418         winSearch = (indsEMGStimOnsetRAbs(stR) - (winStim/period)): <span class="keyword">...</span>
+0419             (indsEMGStimOnsetRAbs(stR) + (winStim/period));
+0420         [~,indMaxTAP] = max(EMG_RTAP(winSearch));   <span class="comment">% find artifact peak</span>
+0421         timesWin = times(winSearch);
+0422         timeStimStart = timesWin(indMaxTAP);
+0423         locsR(stR) = find(times == timeStimStart);
+0424     <span class="keyword">end</span>
+0425 
+0426     <span class="keyword">for</span> stL = 1:numStimL
+0427         winSearch = (indsEMGStimOnsetLAbs(stL) - (winStim/period)): <span class="keyword">...</span>
+0428             (indsEMGStimOnsetLAbs(stL) + (winStim/period));
+0429         [~,indMaxTAP] = max(EMG_LTAP(winSearch));
+0430         timesWin = times(winSearch);
+0431         timeStimStart = timesWin(indMaxTAP);
+0432         locsL(stL) = find(times == timeStimStart);
+0433     <span class="keyword">end</span>
+0434 
+0435     Hreflex.plotStimArtifactPeaks(times,{EMG_RTAP,EMG_LTAP}, <span class="keyword">...</span>
+0436         {locsR,locsL},id,trialNum,pathFigs);
+0437 <span class="keyword">else</span>
+0438     warning([<span class="string">'No stimulation trigger signal being used. Artifact '</span> <span class="keyword">...</span>
+0439         <span class="string">'identification may not be as accurate.'</span>]);
+0440 
+0441     [~,locsR] = findpeaks(EMG_RTAP,<span class="string">'NPeaks'</span>,numStimR, <span class="keyword">...</span>
+0442         <span class="string">'MinPeakHeight'</span>,threshStimArtifact,<span class="string">'MinPeakDistance'</span>,threshSamps);
+0443     [~,locsL] = findpeaks(EMG_LTAP,<span class="string">'NPeaks'</span>,numStimL, <span class="keyword">...</span>
+0444         <span class="string">'MinPeakHeight'</span>,threshStimArtifact,<span class="string">'MinPeakDistance'</span>,threshSamps);
+0445 
+0446     Hreflex.plotStimArtifactPeaks(times,{EMG_RTAP,EMG_LTAP}, <span class="keyword">...</span>
+0447         {locsR,locsL},id,trialNum,threshStimArtifact,pathFigs);
+0448 <span class="keyword">end</span>
+0449 
+0450 <span class="comment">%% 8. Plot All Stimuli to Verify the Waveforms &amp; Timing (Via GRFs)</span>
+0451 snipStart = -0.005; <span class="comment">% 5 ms before artifact peak</span>
+0452 snipEnd = 0.045;    <span class="comment">% 45 ms after artifact peak</span>
+0453 timesSnippet = snipStart:period:snipEnd;
+0454 numSamps = length(timesSnippet);
+0455 
+0456 <span class="comment">% store H-reflex snippets to plot them together</span>
+0457 snippetsHreflexR = nan(numStimR,numSamps);
+0458 snippetsHreflexL = nan(numStimL,numSamps);
+0459 <span class="comment">% store force snippets to plot them together</span>
+0460 snippetsForceRR = nan(numStimR,numSamps);   <span class="comment">% ipsi to stim</span>
+0461 snippetsForceRL = nan(numStimR,numSamps);   <span class="comment">% contra to stim</span>
+0462 snippetsForceLL = nan(numStimL,numSamps);
+0463 snippetsForceLR = nan(numStimL,numSamps);
+0464 <span class="comment">% plot the right leg stimuli</span>
+0465 <span class="comment">% TODO: add checks for trials without stimuli for one leg or the other</span>
+0466 <span class="keyword">for</span> stR = 1:numStimR    <span class="comment">% for each right leg stimulus, ...</span>
+0467     winPlotR = (locsR(stR) + (snipStart/period)):(locsR(stR) + (snipEnd/period));
+0468     timesWinPlotR = times(winPlotR);
+0469     snippetsHreflexR(stR,:) = EMG_RMG(winPlotR);
+0470     <span class="keyword">if</span> hasForces &amp;&amp; shouldUseStimTrig
+0471         snippetsForceRR(stR,:) = GRFRFz(winPlotR);
+0472         snippetsForceRL(stR,:) = GRFLFz(winPlotR);
+0473     <span class="keyword">end</span>
+0474 
+0475     <span class="comment">% snipsStimAllMuscles = [EMG_RTAP(winPlotR); EMG_RMG(winPlotR); ...</span>
+0476     <span class="comment">%     EMG_RSOL(winPlotR)];</span>
+0477     <span class="comment">% ymin = min(snipsStimAllMuscles,[],'all');</span>
+0478     <span class="comment">% ymax = max(snipsStimAllMuscles,[],'all');</span>
+0479 
+0480     <span class="comment">% TODO: make showing snippet plots an input so that user can decide</span>
+0481     <span class="comment">%     figure('Units','normalized','OuterPosition',[0 0 1 1]);</span>
+0482 
+0483     <span class="comment">% TODO: throw error if EMG arrays and GRF arrays are different length</span>
+0484     <span class="comment">% (should be identical since sampled at the same rate)</span>
+0485     <span class="comment">%     if hasForces</span>
+0486     <span class="comment">%         tl = tiledlayout(5,1,'TileSpacing','tight');</span>
+0487     <span class="comment">%</span>
+0488     <span class="comment">%         nexttile; hold on;</span>
+0489     <span class="comment">%         xline(times(locsR(stR)),'k','LineWidth',2);</span>
+0490     <span class="comment">%         plot(timesWinPlotR,GRFRFz(winPlotR));</span>
+0491     <span class="comment">%         xlim([timesWinPlotR(1) timesWinPlotR(end)]);</span>
+0492     <span class="comment">%         hold off;</span>
+0493     <span class="comment">%         ylabel('Force (N)');</span>
+0494     <span class="comment">%         title('Right Fz');</span>
+0495     <span class="comment">%</span>
+0496     <span class="comment">%         nexttile; hold on;</span>
+0497     <span class="comment">%         xline(times(locsR(stR)),'k','LineWidth',2);</span>
+0498     <span class="comment">%         plot(timesWinPlotR,GRFLFz(winPlotR));</span>
+0499     <span class="comment">%         xlim([timesWinPlotR(1) timesWinPlotR(end)]);</span>
+0500     <span class="comment">%         hold off;</span>
+0501     <span class="comment">%         ylabel('Force (N)');</span>
+0502     <span class="comment">%         title('Left Fz');</span>
+0503     <span class="comment">%     else</span>
+0504     <span class="comment">%         tl = tiledlayout(3,1,'TileSpacing','tight');</span>
+0505     <span class="comment">%     end</span>
+0506     <span class="comment">%</span>
+0507     <span class="comment">%     ax1 = nexttile; hold on;</span>
+0508     <span class="comment">%     xline(times(locsR(stR)),'k','LineWidth',2);</span>
+0509     <span class="comment">%     xline(times(locsR(stR)+indStartM),'b');</span>
+0510     <span class="comment">%     xline(times(locsR(stR)+indEndM),'b');</span>
+0511     <span class="comment">%     xline(times(locsR(stR)+indStartH),'g');</span>
+0512     <span class="comment">%     xline(times(locsR(stR)+indEndH),'g');</span>
+0513     <span class="comment">%     % only plot the stimulation artifact threshold if it is used</span>
+0514     <span class="comment">%     % if ~(hasStimTrig &amp;&amp; shouldUseStimTrig)</span>
+0515     <span class="comment">%         yline(threshStimArtifact,'r','Stim Artifact Thresh');</span>
+0516     <span class="comment">%     % end</span>
+0517     <span class="comment">%     plot(timesWinPlotR,EMG_RTAP(winPlotR));</span>
+0518     <span class="comment">%     title('Right TA - Proximal');</span>
+0519     <span class="comment">%     hold off;</span>
+0520     <span class="comment">%</span>
+0521     <span class="comment">%     ax2 = nexttile; hold on;</span>
+0522     <span class="comment">%     xline(times(locsR(stR)),'k','LineWidth',2);</span>
+0523     <span class="comment">%     xline(times(locsR(stR)+indStartM),'b');</span>
+0524     <span class="comment">%     xline(times(locsR(stR)+indEndM),'b');</span>
+0525     <span class="comment">%     xline(times(locsR(stR)+indStartH),'g');</span>
+0526     <span class="comment">%     xline(times(locsR(stR)+indEndH),'g');</span>
+0527     <span class="comment">%     plot(timesWinPlotR,EMG_RMG(winPlotR));</span>
+0528     <span class="comment">%     ylabel('Raw EMG (V)');</span>
+0529     <span class="comment">%     title('Right MG');</span>
+0530     <span class="comment">%     hold off;</span>
+0531     <span class="comment">%</span>
+0532     <span class="comment">%     ax3 = nexttile; hold on;</span>
+0533     <span class="comment">%     xline(times(locsR(stR)),'k','LineWidth',2);</span>
+0534     <span class="comment">%     xline(times(locsR(stR)+indStartM),'b');</span>
+0535     <span class="comment">%     xline(times(locsR(stR)+indEndM),'b');</span>
+0536     <span class="comment">%     xline(times(locsR(stR)+indStartH),'g');</span>
+0537     <span class="comment">%     xline(times(locsR(stR)+indEndH),'g');</span>
+0538     <span class="comment">%     plot(timesWinPlotR,EMG_RSOL(winPlotR));</span>
+0539     <span class="comment">%     title('Right SOL');</span>
+0540     <span class="comment">%     hold off;</span>
+0541     <span class="comment">%</span>
+0542     <span class="comment">%     linkaxes([ax1 ax2 ax3]);</span>
+0543     <span class="comment">%     xlabel(tl,'time (s)');</span>
+0544     <span class="comment">%     xlim([timesWinPlotR(1) timesWinPlotR(end)]);</span>
+0545     <span class="comment">%     ylim([ymin ymax]);</span>
+0546     <span class="comment">%     title(tl,[id ' - Right Leg - Trial' trialNum ' - Stim ' num2str(stR)]);</span>
+0547     <span class="comment">%     saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...</span>
+0548     <span class="comment">%         '_Stim' num2str(stR) '.png']);</span>
+0549     <span class="comment">%     saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...</span>
+0550     <span class="comment">%         '_Stim' num2str(stR) '.fig']);</span>
+0551     <span class="comment">%     close;</span>
+0552 <span class="keyword">end</span>
+0553 
+0554 <span class="comment">% plot the left leg stimuli</span>
+0555 <span class="keyword">for</span> stL = 1:numStimL    <span class="comment">% for each left leg stimulus, ...</span>
+0556     winPlotL = (locsL(stL) + (snipStart/period)):(locsL(stL) + (snipEnd/period));
+0557     timesWinPlotL = times(winPlotL);
+0558     snippetsHreflexL(stL,:) = EMG_LMG(winPlotL);
+0559     <span class="keyword">if</span> hasForces &amp;&amp; shouldUseStimTrig
+0560         snippetsForceLL(stL,:) = GRFLFz(winPlotL);
+0561         snippetsForceLR(stL,:) = GRFRFz(winPlotL);
+0562     <span class="keyword">end</span>
+0563 
+0564     <span class="comment">% snipsStimAllMuscles = [EMG_LTAP(winPlotL); EMG_LMG(winPlotL); ...</span>
+0565     <span class="comment">%     EMG_LSOL(winPlotL)];</span>
+0566     <span class="comment">% ymin = min(snipsStimAllMuscles,[],'all');</span>
+0567     <span class="comment">% ymax = max(snipsStimAllMuscles,[],'all');</span>
+0568 
+0569     <span class="comment">%     figure('Units','normalized','OuterPosition',[0 0 1 1]);</span>
+0570     <span class="comment">%     tl = tiledlayout(5,1,'TileSpacing','tight');</span>
+0571     <span class="comment">%</span>
+0572     <span class="comment">%     if hasForces    % if force data is present, ...</span>
+0573     <span class="comment">%         nexttile; hold on;</span>
+0574     <span class="comment">%         xline(times(locsL(stL)),'k','LineWidth',2);</span>
+0575     <span class="comment">%         plot(timesWinPlotL,GRFLFz(winPlotL));</span>
+0576     <span class="comment">%         xlim([timesWinPlotL(1) timesWinPlotL(end)]);</span>
+0577     <span class="comment">%         hold off;</span>
+0578     <span class="comment">%         ylabel('Force (N)');</span>
+0579     <span class="comment">%         title('Left Fz');</span>
+0580     <span class="comment">%</span>
+0581     <span class="comment">%         nexttile; hold on;</span>
+0582     <span class="comment">%         xline(times(locsL(stL)),'k','LineWidth',2);</span>
+0583     <span class="comment">%         plot(timesWinPlotL,GRFRFz(winPlotL));</span>
+0584     <span class="comment">%         xlim([timesWinPlotL(1) timesWinPlotL(end)]);</span>
+0585     <span class="comment">%         hold off;</span>
+0586     <span class="comment">%         ylabel('Force (N)');</span>
+0587     <span class="comment">%         title('Right Fz');</span>
+0588     <span class="comment">%     end</span>
+0589     <span class="comment">%</span>
+0590     <span class="comment">%     ax1 = nexttile; hold on;</span>
+0591     <span class="comment">%     xline(times(locsL(stL)),'k','LineWidth',2);</span>
+0592     <span class="comment">%     xline(times(locsL(stL)+indStartM),'b');</span>
+0593     <span class="comment">%     xline(times(locsL(stL)+indEndM),'b');</span>
+0594     <span class="comment">%     xline(times(locsL(stL)+indStartH),'g');</span>
+0595     <span class="comment">%     xline(times(locsL(stL)+indEndH),'g');</span>
+0596     <span class="comment">%     yline(threshStimArtifact,'r','Stim Artifact Thresh');</span>
+0597     <span class="comment">%     plot(timesWinPlotL,EMG_LTAP(winPlotL));</span>
+0598     <span class="comment">%     title('Left TA - Proximal');</span>
+0599     <span class="comment">%     hold off;</span>
+0600     <span class="comment">%</span>
+0601     <span class="comment">%     ax2 = nexttile; hold on;</span>
+0602     <span class="comment">%     xline(times(locsL(stL)),'k','LineWidth',2);</span>
+0603     <span class="comment">%     xline(times(locsL(stL)+indStartM),'b');</span>
+0604     <span class="comment">%     xline(times(locsL(stL)+indEndM),'b');</span>
+0605     <span class="comment">%     xline(times(locsL(stL)+indStartH),'g');</span>
+0606     <span class="comment">%     xline(times(locsL(stL)+indEndH),'g');</span>
+0607     <span class="comment">%     plot(timesWinPlotL,EMG_LMG(winPlotL));</span>
+0608     <span class="comment">%     ylabel('Raw EMG (V)');</span>
+0609     <span class="comment">%     title('Left MG');</span>
+0610     <span class="comment">%     hold off;</span>
+0611     <span class="comment">%</span>
+0612     <span class="comment">%     ax3 = nexttile; hold on;</span>
+0613     <span class="comment">%     xline(times(locsL(stL)),'k','LineWidth',2);</span>
+0614     <span class="comment">%     xline(times(locsL(stL)+indStartM),'b');</span>
+0615     <span class="comment">%     xline(times(locsL(stL)+indEndM),'b');</span>
+0616     <span class="comment">%     xline(times(locsL(stL)+indStartH),'g');</span>
+0617     <span class="comment">%     xline(times(locsL(stL)+indEndH),'g');</span>
+0618     <span class="comment">%     plot(timesWinPlotL,EMG_LSOL(winPlotL));</span>
+0619     <span class="comment">%     title('Left SOL');</span>
+0620     <span class="comment">%     hold off;</span>
+0621     <span class="comment">%</span>
+0622     <span class="comment">%     linkaxes([ax1 ax2 ax3]);</span>
+0623     <span class="comment">%     xlabel(tl,'time (s)');</span>
+0624     <span class="comment">%     xlim([timesWinPlotL(1) timesWinPlotL(end)]);</span>
+0625     <span class="comment">%     ylim([ymin ymax]);</span>
+0626     <span class="comment">%     title(tl,[id ' - Left Leg - Trial' trialNum ' - Stim ' num2str(stL)]);</span>
+0627     <span class="comment">%     saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...</span>
+0628     <span class="comment">%         '_Stim' num2str(stL) '.png']);</span>
+0629     <span class="comment">%     saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...</span>
+0630     <span class="comment">%         '_Stim' num2str(stL) '.fig']);</span>
+0631     <span class="comment">%     close;</span>
+0632 <span class="keyword">end</span>
+0633 
+0634 <span class="comment">%% 9.1 Plot All Snippets for Each Leg Together in One Figure</span>
+0635 <span class="comment">% if force data present and should use the stimulation trigger signal to</span>
+0636 <span class="comment">% localize the artifact peaks (using as proxy for walking trial), ...</span>
+0637 <span class="keyword">if</span> hasForces &amp;&amp; shouldUseStimTrig
+0638     Hreflex.plotSnippets(timesSnippet,{[snippetsForceRR; <span class="keyword">...</span>
+0639         snippetsForceRL],[snippetsForceLL; snippetsForceLR], <span class="keyword">...</span>
+0640         snippetsHreflexR,snippetsHreflexL}, <span class="keyword">...</span>
+0641         {<span class="string">'Right &amp; Left Fz - Right Stim'</span>,<span class="string">'Left &amp; Right Fz - Left Stim'</span>, <span class="keyword">...</span>
+0642         <span class="string">'Right MG'</span>,<span class="string">'Left MG'</span>},id,trialNum,pathFigs);
+0643 <span class="keyword">else</span>        <span class="comment">% otherwise, do not plot the forces</span>
+0644     Hreflex.plotSnippets(timesSnippet,{snippetsHreflexR, <span class="keyword">...</span>
+0645         snippetsHreflexL},{<span class="string">'Right MG'</span>,<span class="string">'Left MG'</span>},id,trialNum,pathFigs);
+0646 <span class="keyword">end</span>
+0647 
+0648 <span class="comment">%% 9.2 Plot Snippets for a Given Amplitude for Each Leg Together</span>
+0649 <span class="comment">% TODO: move the finding of unique amplitudes and indices up here, make</span>
+0650 <span class="comment">% this a helper function to reduce code duplication</span>
+0651 <span class="comment">% TODO: Add dots to show the min and max picked out for each wave to see if</span>
+0652 <span class="comment">% first/last points (i.e., if makes sense)</span>
+0653 
+0654 <span class="comment">%% 10. Compute M-wave &amp; H-wave Amplitude (assuming waveforms are correct)</span>
+0655 <span class="comment">% TODO: reject measurements if GRF reveals not in single stance</span>
+0656 threshWaveAmp = 0.00015;    <span class="comment">% 0.15 mV peak-to-peak voltage threshold</span>
+0657 ampsMwaveR = nan(numStimR,1);
+0658 ampsHwaveR = nan(numStimR,1);
+0659 ampsNoiseR = nan(numStimR,1);
+0660 ampsMwaveL = nan(numStimL,1);
+0661 ampsHwaveL = nan(numStimL,1);
+0662 ampsNoiseL = nan(numStimL,1);
+0663 
+0664 <span class="comment">% TODO: put into a helper function to reduce code duplication</span>
+0665 <span class="keyword">for</span> stR = 1:numStimR    <span class="comment">% for each right leg stimulus, ...</span>
+0666     winEMGM = EMG_RMG((locsR(stR)+indStartM):(locsR(stR)+indEndM));
+0667     winEMGH = EMG_RMG((locsR(stR)+indStartH):(locsR(stR)+indEndH));
+0668     winEMGN = EMG_RMG((locsR(stR)+indStartN):(locsR(stR)+indEndN));
+0669     [maxM,indMaxM] = max(winEMGM);
+0670     [minM,indMinM] = min(winEMGM);
+0671     [maxH,indMaxH] = max(winEMGH);
+0672     [minH,indMinH] = min(winEMGH);
+0673     <span class="keyword">if</span> any(indMinM == [1 2]) || <span class="keyword">...</span>
+0674             any(indMaxM == [length(winEMGM)-1 length(winEMGM)])
+0675         ampsMwaveR(stR) = threshWaveAmp;
+0676     <span class="keyword">else</span>
+0677         ampsMwaveR(stR) = maxM - minM;
+0678     <span class="keyword">end</span>
+0679     <span class="keyword">if</span> any(indMinH == [1 2]) || <span class="keyword">...</span>
+0680             any(indMaxH == [length(winEMGH)-1 length(winEMGH)])
+0681         ampsHwaveR(stR) = threshWaveAmp;
+0682     <span class="keyword">else</span>
+0683         ampsHwaveR(stR) = maxH - minH;
+0684     <span class="keyword">end</span>
+0685     ampsNoiseR(stR) = max(winEMGN) - min(winEMGN);
+0686 <span class="keyword">end</span>
+0687 
+0688 <span class="keyword">for</span> stL = 1:numStimL    <span class="comment">% for each left leg stimulus, ...</span>
+0689     winEMGM = EMG_LMG((locsL(stL)+indStartM):(locsL(stL)+indEndM));
+0690     winEMGH = EMG_LMG((locsL(stL)+indStartH):(locsL(stL)+indEndH));
+0691     winEMGN = EMG_LMG((locsL(stL)+indStartN):(locsL(stL)+indEndN));
+0692     [maxM,indMaxM] = max(winEMGM);
+0693     [minM,indMinM] = min(winEMGM);
+0694     [maxH,indMaxH] = max(winEMGH);
+0695     [minH,indMinH] = min(winEMGH);
+0696     <span class="keyword">if</span> any(indMinM == [1 2]) || <span class="keyword">...</span>
+0697             any(indMaxM == [length(winEMGM)-1 length(winEMGM)])
+0698         ampsMwaveL(stL) = threshWaveAmp;
+0699     <span class="keyword">else</span>
+0700         ampsMwaveL(stL) = maxM - minM;
+0701     <span class="keyword">end</span>
+0702     <span class="keyword">if</span> any(indMinH == [1 2]) || <span class="keyword">...</span>
+0703             any(indMaxH == [length(winEMGH)-1 length(winEMGH)])
+0704         ampsHwaveL(stL) = threshWaveAmp;
+0705     <span class="keyword">else</span>
+0706         ampsHwaveL(stL) = maxH - minH;
+0707     <span class="keyword">end</span>
+0708     ampsNoiseL(stL) = max(winEMGN) - min(winEMGN);
+0709 <span class="keyword">end</span>
+0710 
+0711 <span class="comment">%% 11. Compute Means and H/M Ratios for Unique Stimulation Amplitudes</span>
+0712 ampsStimRU = unique(ampsStimR);
+0713 ampsStimLU = unique(ampsStimL);
+0714 <span class="comment">% Gaussian fit function for fitting average H-wave amplitude data</span>
+0715 <span class="comment">% based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,</span>
+0716 <span class="comment">% Journal of Neuroscience Methods, 2007)</span>
+0717 fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
+0718 avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x)),ampsStimRU);
+0719 <span class="comment">% TODO: alternate approach would be to convert the mean H-wave amplitudes</span>
+0720 <span class="comment">% to integer &quot;frequencies&quot; for each stim amplitude and fit a normal dist.</span>
+0721 <span class="comment">% pdR = fitdist(ampsStimRU','Normal', ...</span>
+0722 <span class="comment">%     'Frequency',round((avgsHwaveR / max(avgsHwaveR)) * 10000));</span>
+0723 <span class="comment">% initialize coefficients</span>
+0724 coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
+0725 coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
+0726 avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x)),ampsStimRU);
+0727 avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x)),ampsStimLU);
+0728 <span class="comment">% pdL = fitdist(ampsStimLU','Normal', ...</span>
+0729 <span class="comment">%     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));</span>
+0730 coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
+0731 coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
+0732 avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x)),ampsStimLU);
+0733 <span class="comment">% TODO: verify that these values will always be sorted in ascending order</span>
+0734 <span class="comment">% and, if not, sort them</span>
+0735 
+0736 ratioR = ampsHwaveR ./ ampsMwaveR;
+0737 ratioL = ampsHwaveL ./ ampsMwaveL;
+0738 avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x)),ampsStimRU);
+0739 avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
+0740 
+0741 <span class="comment">%% Plot the Noise Distributions for Both Legs</span>
+0742 
+0743 <span class="comment">% compute four times the noise floor (75th percentile) to determine whether</span>
+0744 <span class="comment">% to send the participant home or not (at least one leg must exceed</span>
+0745 <span class="comment">% threshold)</span>
+0746 threshNoiseR = 4 * prctile(ampsNoiseR,75);
+0747 threshNoiseL = 4 * prctile(ampsNoiseL,75);
+0748 
+0749 figure; hold on;
+0750 histogram(ampsNoiseR*1000,0.00:0.05:0.30,<span class="string">'Normalization'</span>,<span class="string">'probability'</span>);
+0751 xline(mean(ampsNoiseR*1000),<span class="string">'r'</span>,sprintf(<span class="string">'Mean = %.2f mV'</span>, <span class="keyword">...</span>
+0752     mean(ampsNoiseR*1000)),<span class="string">'LineWidth'</span>,2);
+0753 xline(median(ampsNoiseR*1000),<span class="string">'g'</span>,sprintf(<span class="string">'Median = %.2f mV'</span>, <span class="keyword">...</span>
+0754     median(ampsNoiseR*1000)),<span class="string">'LineWidth'</span>,2);
+0755 xline(prctile(ampsNoiseR*1000,75),<span class="string">'k'</span>,sprintf( <span class="keyword">...</span>
+0756     <span class="string">'75^{th} Percentile = %.2f mV'</span>,prctile(ampsNoiseR*1000,75)),<span class="string">'LineWidth'</span>,2);
+0757 hold off;
+0758 axis([0 0.3 0 0.8]);
+0759 xlabel(<span class="string">'Noise Amplitude Peak-to-Peak (mV)'</span>);
+0760 ylabel(<span class="string">'Proportion of Stimuli'</span>);
+0761 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Right Leg - Noise Distribution'</span>]);
+0762 saveas(gcf,[pathFigs id <span class="string">'_NoiseDistribution_Trial'</span> trialNum <span class="keyword">...</span>
+0763     <span class="string">'_RightLeg.png'</span>]);
+0764 saveas(gcf,[pathFigs id <span class="string">'_NoiseDistribution_Trial'</span> trialNum <span class="keyword">...</span>
+0765     <span class="string">'_RightLeg.fig'</span>]);
+0766 
+0767 figure; hold on;
+0768 histogram(ampsNoiseL*1000,0.00:0.05:0.30,<span class="string">'Normalization'</span>,<span class="string">'probability'</span>);
+0769 xline(mean(ampsNoiseL*1000),<span class="string">'r'</span>,sprintf(<span class="string">'Mean = %.2f mV'</span>, <span class="keyword">...</span>
+0770     mean(ampsNoiseL*1000)),<span class="string">'LineWidth'</span>,2);
+0771 xline(median(ampsNoiseL*1000),<span class="string">'g'</span>,sprintf(<span class="string">'Median = %.2f mV'</span>, <span class="keyword">...</span>
+0772     median(ampsNoiseL*1000)),<span class="string">'LineWidth'</span>,2);
+0773 xline(prctile(ampsNoiseL*1000,75),<span class="string">'k'</span>,sprintf( <span class="keyword">...</span>
+0774     <span class="string">'75^{th} Percentile = %.2f mV'</span>,prctile(ampsNoiseL*1000,75)),<span class="string">'LineWidth'</span>,2);
+0775 hold off;
+0776 axis([0 0.3 0 0.8]);
+0777 xlabel(<span class="string">'Noise Amplitude Peak-to-Peak (mV)'</span>);
+0778 ylabel(<span class="string">'Proportion of Stimuli'</span>);
+0779 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Left Leg - Noise Distribution'</span>]);
+0780 saveas(gcf,[pathFigs id <span class="string">'_NoiseDistribution_Trial'</span> trialNum <span class="keyword">...</span>
+0781     <span class="string">'_LeftLeg.png'</span>]);
+0782 saveas(gcf,[pathFigs id <span class="string">'_NoiseDistribution_Trial'</span> trialNum <span class="keyword">...</span>
+0783     <span class="string">'_LeftLeg.fig'</span>]);
+0784 
+0785 <span class="comment">%% 12. Plot Recruitment Curve for Both Legs</span>
+0786 <span class="comment">% TODO: add normal distribution fit to H-wave recruitment curve to pick out</span>
+0787 <span class="comment">% peak amplitude and current at which peak occurs</span>
+0788 <span class="comment">% TODO: consider displaying all raw values in mV rather than V</span>
+0789 incX = 0.1; <span class="comment">% increment for curve fit (in mA)</span>
+0790 xR = min(ampsStimRU):incX:max(ampsStimRU);
+0791 yR = fun(coefsR,xR);
+0792 xL = min(ampsStimLU):incX:max(ampsStimLU);
+0793 yL = fun(coefsL,xL);
+0794 
+0795 <span class="comment">% compute Hmax and I_Hmax for the right and left leg</span>
+0796 [hMaxR,indHMaxR] = max(avgsHwaveR); <span class="comment">% [hMaxR,indHMaxR] = max(yR);</span>
+0797 IhMaxR = ampsStimRU(indHMaxR); <span class="comment">% IhMaxR = xR(indHMaxR);</span>
+0798 [hMaxL,indHMaxL] = max(avgsHwaveL); <span class="comment">% [hMaxL,indHMaxL] = max(yL);</span>
+0799 IhMaxL = ampsStimLU(indHMaxL); <span class="comment">% IhMaxL = xL(indHMaxL);</span>
+0800 
+0801 [ampsStimR,indsOrderR] = sort(ampsStimR);
+0802 ampsHwaveR = ampsHwaveR(indsOrderR);
+0803 ampsMwaveR = ampsMwaveR(indsOrderR);
+0804 
+0805 [ampsStimL,indsOrderL] = sort(ampsStimL);
+0806 ampsHwaveL = ampsHwaveL(indsOrderL);
+0807 ampsMwaveL = ampsMwaveL(indsOrderL);
+0808 
+0809 figure; hold on;
+0810 <span class="comment">% TODO: Change Vpp threshold line to a noise floor line with the computed</span>
+0811 <span class="comment">% value printed above the line in mV</span>
+0812 <span class="comment">% TODO: consider also showing a 4xNoise line for decision making during exp</span>
+0813 yline(threshNoiseR,<span class="string">'r'</span>,<span class="string">'H-Wave V_{pp} Threshold'</span>);
+0814 plot(ampsStimR,ampsMwaveR,<span class="string">'x'</span>,<span class="string">'Color'</span>,[0.5 0.5 0.5],<span class="string">'MarkerSize'</span>,10);
+0815 p1 = plot(ampsStimRU,avgsMwaveR,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[0.5 0.5 0.5]);
+0816 plot(ampsStimR,ampsHwaveR,<span class="string">'ok'</span>,<span class="string">'MarkerSize'</span>,10);
+0817 p2 = plot(ampsStimRU,avgsHwaveR,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);
+0818 <span class="comment">% p2 = plot(xR,pdf(pdR,xR)*(max(avgsHwaveR)*10),'k','LineWidth',2);</span>
+0819 <span class="comment">% p3 = plot(xR,yR,'b--','LineWidth',2);</span>
+0820 plot([IhMaxR IhMaxR],[0 hMaxR],<span class="string">'k-.'</span>);  <span class="comment">% vertical line from I_Hmax to Hmax</span>
+0821 <span class="comment">% add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y</span>
+0822 <span class="comment">% value and over from the line by 0.1 mA</span>
+0823 <span class="comment">% TODO: do not hardcode x offset for label</span>
+0824 text(IhMaxR + 0.1,0 + (0.05*max([ampsMwaveR; ampsHwaveR])), <span class="keyword">...</span>
+0825     sprintf(<span class="string">'I_{H_{max}} = %.1f mA'</span>,IhMaxR));
+0826 plot([min(ampsStimR)-1 IhMaxR],[hMaxR hMaxR],<span class="string">'k-.'</span>);    <span class="comment">% horizontal line to Hmax</span>
+0827 <span class="comment">% add label to horizontal line (Hmax)</span>
+0828 text(min(ampsStimR)-1 + 0.1, <span class="keyword">...</span>
+0829     hMaxR + (0.05*max([ampsMwaveR; ampsHwaveR])), <span class="keyword">...</span>
+0830     sprintf(<span class="string">'H_{max} = %.5f V'</span>,hMaxR));
+0831 hold off;
+0832 xlim([min(ampsStimR)-1 max(ampsStimR)+1]);
+0833 xlabel(<span class="string">'Stimulation Amplitude (mA)'</span>);
+0834 ylabel(<span class="string">'MG EMG Amplitude (V)'</span>);
+0835 legend([p1 p2],<span class="string">'M-wave'</span>,<span class="string">'H-wave'</span>,<span class="string">'Location'</span>,<span class="string">'best'</span>);
+0836 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Right Leg - Recruitment Curve'</span>]);
+0837 saveas(gcf,[pathFigs id <span class="string">'_HreflexRecruitmentCurve_Trial'</span> <span class="keyword">...</span>
+0838     trialNum <span class="string">'_RightLeg.png'</span>]);
+0839 saveas(gcf,[pathFigs id <span class="string">'_HreflexRecruitmentCurve_Trial'</span> <span class="keyword">...</span>
+0840     trialNum <span class="string">'_RightLeg.fig'</span>]);
+0841 
+0842 figure; hold on;
+0843 yline(threshNoiseL,<span class="string">'r'</span>,<span class="string">'H-Wave V_{pp} Threshold'</span>);
+0844 plot(ampsStimL,ampsMwaveL,<span class="string">'x'</span>,<span class="string">'Color'</span>,[0.5 0.5 0.5],<span class="string">'MarkerSize'</span>,10);
+0845 p1 = plot(ampsStimLU,avgsMwaveL,<span class="string">'LineWidth'</span>,2,<span class="string">'Color'</span>,[0.5 0.5 0.5]);
+0846 plot(ampsStimL,ampsHwaveL,<span class="string">'ok'</span>,<span class="string">'MarkerSize'</span>,10);
+0847 p2 = plot(ampsStimLU,avgsHwaveL,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);
+0848 <span class="comment">% p3 = plot(xL,yL,'b--','LineWidth',2);</span>
+0849 plot([IhMaxL IhMaxL],[0 hMaxL],<span class="string">'k-.'</span>);  <span class="comment">% vertical line from I_Hmax to Hmax</span>
+0850 <span class="comment">% add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y</span>
+0851 <span class="comment">% value and over from the line by 0.1 mA</span>
+0852 <span class="comment">% TODO: do not hardcode x offset for label</span>
+0853 text(IhMaxL + 0.1,0 + (0.05*max([ampsMwaveL; ampsHwaveL])), <span class="keyword">...</span>
+0854     sprintf(<span class="string">'I_{H_{max}} = %.1f mA'</span>,IhMaxL));
+0855 plot([min(ampsStimL) IhMaxL],[hMaxL hMaxL],<span class="string">'k-.'</span>); <span class="comment">% horizontal line to Hmax</span>
+0856 <span class="comment">% add label to horizontal line (Hmax)</span>
+0857 text(min(ampsStimL) + 0.1,hMaxL + (0.05*max([ampsMwaveL; ampsHwaveL])), <span class="keyword">...</span>
+0858     sprintf(<span class="string">'H_{max} = %.5f V'</span>,hMaxL));
+0859 hold off;
+0860 xlim([min(ampsStimL)-1 max(ampsStimL)+1]);
+0861 xlabel(<span class="string">'Stimulation Amplitude (mA)'</span>);
+0862 ylabel(<span class="string">'MG EMG Amplitude (V)'</span>);
+0863 legend([p1 p2],<span class="string">'M-wave'</span>,<span class="string">'H-wave'</span>,<span class="string">'Location'</span>,<span class="string">'best'</span>);
+0864 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Left Leg - Recruitment Curve'</span>]);
+0865 saveas(gcf,[pathFigs id <span class="string">'_HreflexRecruitmentCurve_Trial'</span> <span class="keyword">...</span>
+0866     trialNum <span class="string">'_LeftLeg.png'</span>]);
+0867 saveas(gcf,[pathFigs id <span class="string">'_HreflexRecruitmentCurve_Trial'</span> <span class="keyword">...</span>
+0868     trialNum <span class="string">'_LeftLeg.fig'</span>]);
+0869 
+0870 <span class="comment">%% 13. Plot Ratio of H-wave to M-wave amplitude</span>
+0871 <span class="comment">% compute Ratio_max and I_Ratio_max for the right and left leg</span>
+0872 [ratioMaxR,indRatioMaxR] = max(avgsRatioR);
+0873 IRatioMaxR = ampsStimRU(indRatioMaxR);
+0874 [ratioMaxL,indRatioMaxL] = max(avgsRatioL);
+0875 IRatioMaxL = ampsStimLU(indRatioMaxL);
+0876 
+0877 ratioR = ratioR(indsOrderR);
+0878 ratioL = ratioL(indsOrderL);
+0879 
+0880 figure; hold on;
+0881 <span class="comment">% yline(threshWaveAmp,'r','V_{pp} Threshold');</span>
+0882 plot(ampsStimR,ratioR,<span class="string">'ok'</span>,<span class="string">'MarkerSize'</span>,10);
+0883 plot(ampsStimRU,avgsRatioR,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);
+0884 plot([IRatioMaxR IRatioMaxR],[0 ratioMaxR],<span class="string">'k-.'</span>);  <span class="comment">% vertical line from I_Ratio_max to Ratio_max</span>
+0885 <span class="comment">% add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of</span>
+0886 <span class="comment">% max y value and over from the line by 0.1 mA</span>
+0887 <span class="comment">% TODO: do not hardcode x offset for label</span>
+0888 text(IRatioMaxR + 0.1,0 + (0.05*max(ratioR)), <span class="keyword">...</span>
+0889     sprintf(<span class="string">'I_{Ratio_{max}} = %.1f mA'</span>,IRatioMaxR));
+0890 plot([min(ampsStimR) IRatioMaxR],[ratioMaxR ratioMaxR],<span class="string">'k-.'</span>); <span class="comment">% horizontal line to Ratio_max</span>
+0891 <span class="comment">% add label to horizontal line (Ratio_max)</span>
+0892 text(min(ampsStimR) + 0.1,ratioMaxR + (0.05*max(ratioR)), <span class="keyword">...</span>
+0893     sprintf(<span class="string">'Ratio_{max} = %.5f'</span>,ratioMaxR));
+0894 hold off;
+0895 xlim([min(ampsStimR)-1 max(ampsStimR)+1]);
+0896 xlabel(<span class="string">'Stimulation Amplitude (mA)'</span>);
+0897 ylabel(<span class="string">'H:M Ratio'</span>);
+0898 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Right Leg'</span>]);
+0899 saveas(gcf,[pathFigs id <span class="string">'_HreflexRatioCurve_Trial'</span> trialNum <span class="keyword">...</span>
+0900     <span class="string">'_RightLeg.png'</span>]);
+0901 saveas(gcf,[pathFigs id <span class="string">'_HreflexRatioCurve_Trial'</span> trialNum <span class="keyword">...</span>
+0902     <span class="string">'_RightLeg.fig'</span>]);
+0903 
+0904 figure; hold on;
+0905 <span class="comment">% yline(threshWaveAmp,'r','V_{pp} Threshold');</span>
+0906 plot(ampsStimL,ratioL,<span class="string">'ok'</span>,<span class="string">'MarkerSize'</span>,10);
+0907 plot(ampsStimLU,avgsRatioL,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);
+0908 plot([IRatioMaxL IRatioMaxL],[0 ratioMaxL],<span class="string">'k-.'</span>);  <span class="comment">% vertical line from I_Ratio_max to Ratio_max</span>
+0909 <span class="comment">% add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of</span>
+0910 <span class="comment">% max y value and over from the line by 0.1 mA</span>
+0911 <span class="comment">% TODO: do not hardcode x offset for label</span>
+0912 text(IRatioMaxL + 0.1,0 + (0.05*max(ratioL)), <span class="keyword">...</span>
+0913     sprintf(<span class="string">'I_{Ratio_{max}} = %.1f mA'</span>,IRatioMaxL));
+0914 plot([min(ampsStimL) IRatioMaxL],[ratioMaxL ratioMaxL],<span class="string">'k-.'</span>); <span class="comment">% horizontal line to Ratio_max</span>
+0915 <span class="comment">% add label to horizontal line (Ratio_max)</span>
+0916 text(min(ampsStimL) + 0.1,ratioMaxL + (0.05*max(ratioL)), <span class="keyword">...</span>
+0917     sprintf(<span class="string">'Ratio_{max} = %.5f'</span>,ratioMaxL));
+0918 hold off;
+0919 xlim([min(ampsStimL)-1 max(ampsStimL)+1]);
+0920 xlabel(<span class="string">'Stimulation Amplitude (mA)'</span>);
+0921 ylabel(<span class="string">'H:M Ratio'</span>);
+0922 title([id <span class="string">' - Trial'</span> trialNum <span class="string">' - Left Leg'</span>]);
+0923 saveas(gcf,[pathFigs id <span class="string">'_HreflexRatioCurve_Trial'</span> trialNum <span class="keyword">...</span>
+0924     <span class="string">'_LeftLeg.png'</span>]);
+0925 saveas(gcf,[pathFigs id <span class="string">'_HreflexRatioCurve_Trial'</span> trialNum <span class="keyword">...</span>
+0926     <span class="string">'_LeftLeg.fig'</span>]);
+0927</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

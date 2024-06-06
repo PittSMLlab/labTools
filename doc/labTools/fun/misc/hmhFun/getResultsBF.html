@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getResultsBF</title>
+  <meta name="keywords" content="getResultsBF">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getResultsBF.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getResultsBF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>	Make a bar plot to compare groups for a given epoch and parameter</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getResultsBF(SMatrix,groups,plotFlag,indivFlag)</a>
+0002 
+0003 params={<span class="string">'SlowLeg'</span>, <span class="string">'FastLeg'</span>};
+0004 
+0005 <span class="comment">% define number of points to use for calculating values</span>
+0006 catchNumPts = 3; <span class="comment">%catch</span>
+0007 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0008 transientNumPts = 5; <span class="comment">%OG and Washout</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0011     groups=fields(SMatrix);  <span class="comment">%default</span>
+0012 <span class="keyword">end</span>
+0013 ngroups=length(groups);
+0014 
+0015 
+0016 <span class="comment">% Initialize values to calculate</span>
+0017 results.BFafter1.avg=[];
+0018 results.BFafter1.se=[];
+0019 
+0020 results.BFafter2.avg=[];
+0021 results.BFafter2.se=[];
+0022 
+0023 results.MapShort.avg=[];
+0024 results.MapShort.se=[];
+0025 
+0026 results.MapMid.avg=[];
+0027 results.MapMid.se=[];
+0028 
+0029 results.MapLong.avg=[];
+0030 results.MapLong.se=[];
+0031 
+0032 
+0033 <span class="keyword">for</span> g=1:ngroups
+0034     
+0035     <span class="comment">% get subjects in group</span>
+0036     subjects=SMatrix.(groups{g}).ID;
+0037     
+0038     BFafter1=[];
+0039     BFafter2=[];
+0040     MapShort=[];
+0041     MapMid=[];
+0042     MapLong=[];
+0043     
+0044     <span class="keyword">for</span> s=1:length(subjects)
+0045         <span class="comment">% load subject</span>
+0046         DATA=load([subjects{s} <span class="string">'_PerceptionBF_day.mat'</span>]);
+0047         eval([<span class="string">'DATA=DATA.'</span> subjects{s} <span class="string">';'</span>]);
+0048         
+0049         [rhits, lhits, rts, lts, color]=getHits(DATA);
+0050         
+0051         RDATA=[];
+0052         LDATA=[];
+0053         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0054         <span class="comment">%organize the data</span>
+0055         PossibleTarget=unique(rts{1});
+0056         LLL=max(PossibleTarget);
+0057         SS=min(PossibleTarget);
+0058         MM=median(PossibleTarget);
+0059         
+0060         <span class="keyword">for</span> z = 1:length(rts)
+0061             
+0062             <span class="keyword">for</span> t=1:length(rts{z})
+0063                 <span class="keyword">if</span> rts{z}(t)==LLL
+0064                     RDATA(t)=3;
+0065                 <span class="keyword">elseif</span> rts{z}(t)==SS
+0066                     RDATA(t)=1;
+0067                 <span class="keyword">elseif</span> rts{z}(t)==MM
+0068                     RDATA(t)=2;
+0069                 <span class="keyword">else</span>
+0070                     <span class="keyword">break</span>
+0071                 <span class="keyword">end</span>
+0072             <span class="keyword">end</span>
+0073             
+0074             <span class="keyword">for</span> t=1:length(lts{z})
+0075                 <span class="keyword">if</span> lts{z}(t)==LLL
+0076                     LDATA(t)=3;
+0077                 <span class="keyword">elseif</span> lts{z}(t)==SS
+0078                     LDATA(t)=1;
+0079                 <span class="keyword">elseif</span> lts{z}(t)==MM
+0080                     LDATA(t)=2;
+0081                 <span class="keyword">else</span>
+0082                     <span class="keyword">break</span>
+0083                 <span class="keyword">end</span>
+0084             <span class="keyword">end</span>
+0085             
+0086             t=1;
+0087             r=1;
+0088             RR{z}=[0, 0, 0];
+0089             <span class="keyword">while</span> t&lt;length(rts{z})
+0090                 RR{z}(r, RDATA(t))=mean(rhits{z}(t:(find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-2)));
+0091                 <span class="keyword">if</span> isnan(RR{z}(r, RDATA(t)))
+0092                     RR{z}(r, RDATA(t))=mean(rhits{z}(t:end));
+0093                 <span class="keyword">end</span>
+0094                 t=find(RDATA(t:end)~=RDATA(t),1, <span class="string">'first'</span>)+t-1;
+0095                 <span class="keyword">if</span> isempty(t)
+0096                     t=length(rts{z});
+0097                 <span class="keyword">end</span>
+0098                 <span class="keyword">if</span>  RR{z}(r, RDATA(t))~=0;
+0099                     r=r+1;
+0100                 <span class="keyword">end</span>
+0101             <span class="keyword">end</span>
+0102             t=1;
+0103             r=1;
+0104             LL{z}=[0, 0, 0];
+0105             <span class="keyword">while</span> t&lt;length(lts{z})
+0106                 LL{z}(r, LDATA(t))=mean(lhits{z}(t:(find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-2)));
+0107                 <span class="keyword">if</span> isnan(LL{z}(r, LDATA(t)))
+0108                     LL{z}(r, LDATA(t))=mean(lhits{z}(t:end));
+0109                 <span class="keyword">end</span>
+0110                 t=find(LDATA(t:end)~=LDATA(t),1, <span class="string">'first'</span>)+t-1;
+0111                 <span class="keyword">if</span> isempty(t)
+0112                     t=length(lts{z});
+0113                 <span class="keyword">end</span>
+0114                 <span class="keyword">if</span>  LL{z}(r,LDATA(t))~=0;
+0115                     r=r+1;
+0116                 <span class="keyword">end</span>
+0117             <span class="keyword">end</span>
+0118             clear RDATA LDATA
+0119         <span class="keyword">end</span>
+0120         DDR{1}=RR{4}-RR{3};<span class="comment">% Error Clamp</span>
+0121         DDR{2}=nanmean(RR{5}-RR{2}); <span class="comment">%Map</span>
+0122         
+0123         DDL{1}=LL{4}-LL{3};
+0124         DDL{2}=nanmean(LL{5}-LL{2});
+0125         
+0126         <span class="comment">%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span>
+0127         <span class="keyword">if</span> DATA.fastleg==<span class="string">'r'</span>
+0128             <span class="comment">%Order independent</span>
+0129             MapShort=[MapShort; DDL{2}(1, 1) DDR{2}(1, 1)];
+0130             MapMid=[MapMid; DDL{2}(1, 2) DDR{2}(1, 2)];
+0131             MapLong=[MapLong; DDL{2}(1, 3) DDR{2}(1, 3)];
+0132             <span class="comment">%Order Dependent</span>
+0133             <span class="keyword">if</span> rts{3}(1)==SS
+0134                 BFafter1=[BFafter1; DDL{1}(1, 1) DDR{1}(1, 1)];
+0135                 BFafter2=[BFafter2; DDL{1}(1, 3) DDR{1}(1, 3)];
+0136             <span class="keyword">else</span>
+0137                 BFafter1=[BFafter1; DDL{1}(1, 3) DDR{1}(1, 3)];
+0138                 BFafter2=[BFafter2; DDL{1}(1, 1) DDR{1}(1, 1)];
+0139             <span class="keyword">end</span>
+0140         <span class="keyword">elseif</span> DATA.fastleg==<span class="string">'l'</span>
+0141             <span class="comment">%Order independent</span>
+0142             MapShort=[MapShort; DDR{2}(1, 1) DDL{2}(1, 1)];
+0143             MapMid=[MapMid; DDR{2}(1, 2) DDL{2}(1, 2)];
+0144             MapLong=[MapLong; DDR{2}(1, 3) DDL{2}(1, 3)];
+0145             <span class="comment">%Order Dependent</span>
+0146             <span class="keyword">if</span> rts{3}(1)==SS
+0147                 BFafter1=[BFafter1; DDR{1}(1, 1) DDL{1}(1, 1)];
+0148                 BFafter2=[BFafter2; DDR{1}(1, 3) DDL{1}(1, 3)];
+0149             <span class="keyword">else</span>
+0150                 BFafter1=[BFafter1; DDR{1}(1, 3) DDL{1}(1, 3)];
+0151                 BFafter2=[BFafter2; DDR{1}(1, 1) DDL{1}(1, 1)];
+0152             <span class="keyword">end</span>
+0153         <span class="keyword">else</span>
+0154             cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Which leg is fast????'</span>);
+0155         <span class="keyword">end</span>
+0156         
+0157         
+0158         
+0159     <span class="keyword">end</span>
+0160     
+0161     nSubs=length(subjects);
+0162     
+0163     results.BFafter1.avg(end+1,:)=nanmean(BFafter1,1);
+0164     results.BFafter1.se(end+1,:)=nanstd(BFafter1,1)./sqrt(nSubs);
+0165     
+0166     results.BFafter2.avg(end+1,:)=nanmean(BFafter2,1);
+0167     results.BFafter2.se(end+1,:)=nanstd(BFafter2,1)./sqrt(nSubs);
+0168     
+0169     results.MapShort.avg(end+1,:)=nanmean(MapShort,1);
+0170     results.MapShort.se(end+1,:)=nanstd(MapShort,1)./sqrt(nSubs);
+0171     
+0172     results.MapMid.avg(end+1,:)=nanmean(MapMid,1);
+0173     results.MapMid.se(end+1,:)=nanstd(MapMid,1)./sqrt(nSubs);
+0174     
+0175     results.MapLong.avg(end+1,:)=nanmean(MapLong,1);
+0176     results.MapLong.se(end+1,:)=nanstd(MapLong,1)./sqrt(nSubs);
+0177     
+0178     
+0179     <span class="keyword">if</span> g==1 <span class="comment">%This seems ridiculous, but I don't know of another way to do it without making MATLAB mad. The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS</span>
+0180         <span class="keyword">for</span> p=1:length(params)
+0181             results.BFafter1.indiv.(params{p})=[g*ones(nSubs,1) BFafter1(:,p)];
+0182             results.BFafter2.indiv.(params{p})=[g*ones(nSubs,1) BFafter2(:,p)];
+0183             results.MapShort.indiv.(params{p})=[g*ones(nSubs,1) MapShort(:,p)];
+0184             results.MapMid.indiv.(params{p})=[g*ones(nSubs,1) MapMid(:,p)];
+0185             results.MapLong.indiv.(params{p})=[g*ones(nSubs,1) MapLong(:,p)];
+0186         <span class="keyword">end</span>
+0187     <span class="keyword">else</span>
+0188         <span class="keyword">for</span> p=1:length(params)
+0189             results.BFafter1.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BFafter1(:,p)];
+0190             results.BFafter2.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) BFafter2(:,p)];
+0191             results.MapShort.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapShort(:,p)];
+0192             results.MapMid.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapMid(:,p)];
+0193             results.MapLong.indiv.(params{p})(end+1:end+nSubs,1:2)=[g*ones(nSubs,1) MapLong(:,p)];
+0194         <span class="keyword">end</span>
+0195     <span class="keyword">end</span>
+0196 <span class="keyword">end</span>
+0197 
+0198 <span class="comment">%stats</span>
+0199 resultNames=fieldnames(results);
+0200 <span class="comment">%if StatFlag==1</span>
+0201 <span class="keyword">for</span> h=1:length(resultNames)
+0202     <span class="keyword">for</span> i=1:size(results.BFafter1.avg, 2)<span class="comment">%size(StatReady, 2)</span>
+0203         [~, results.(resultNames{h}).p(i)]=ttest(results.(resultNames{h}).indiv.(params{i})(:, 2));
+0204     <span class="keyword">end</span>
+0205 <span class="keyword">end</span>
+0206 
+0207 
+0208 <span class="comment">%plot stuff</span>
+0209 <span class="keyword">if</span> plotFlag
+0210     epochs={<span class="string">'BFafter1'</span>,<span class="string">'BFafter2'</span>, <span class="string">'MapShort'</span>, <span class="string">'MapMid'</span>, <span class="string">'MapLong'</span>};
+0211     <span class="keyword">if</span> nargin&gt;3 <span class="comment">%I imagine there has to be a better way to do this...</span>
+0212         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs,indivFlag)
+0213     <span class="keyword">else</span>
+0214         <a href="barGroups.html" class="code" title="function barGroups(Study,results,groups,params,epochs,indivFlag,colorOrder,mode)">barGroups</a>(SMatrix,results,groups,params,epochs)
+0215     <span class="keyword">end</span>
+0216 <span class="keyword">end</span>
+0217 
+0218</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

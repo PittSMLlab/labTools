@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of myNNMF</title>
+  <meta name="keywords" content="myNNMF">
+  <meta name="description" content="myNNMF Customized call to NNMF to get more consistent results">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">dimReduction</a> &gt; myNNMF.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>myNNMF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>myNNMF Customized call to NNMF to get more consistent results</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [W,C,d] = myNNMF(data,rank,reps,useParallel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">myNNMF Customized call to NNMF to get more consistent results
+This function calls nnmf with custom params:
+INPUTS:
+data is the matrix to be factorized
+rank is the desired rank of the factorization (dimensionality)
+useParallel defines whether to use parallel computation
+------------------------------------------------------------------------
+CUSTOM PARAMS:
+tolF is a % error that will be accepted as the min increment to say that
+convergence has been achieved
+tolX is</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="nnmfpca.html" class="code" title="function [fact1,fact2] = nnmfpca(data,k,replicates)">nnmfpca</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [W,C,d] = myNNMF(data,rank,reps,useParallel)</a>
+0002 <span class="comment">%myNNMF Customized call to NNMF to get more consistent results</span>
+0003 <span class="comment">%This function calls nnmf with custom params:</span>
+0004 <span class="comment">%INPUTS:</span>
+0005 <span class="comment">%data is the matrix to be factorized</span>
+0006 <span class="comment">%rank is the desired rank of the factorization (dimensionality)</span>
+0007 <span class="comment">%useParallel defines whether to use parallel computation</span>
+0008 <span class="comment">%------------------------------------------------------------------------</span>
+0009 <span class="comment">%CUSTOM PARAMS:</span>
+0010 <span class="comment">%tolF is a % error that will be accepted as the min increment to say that</span>
+0011 <span class="comment">%convergence has been achieved</span>
+0012 <span class="comment">%tolX is</span>
+0013 
+0014 <span class="keyword">if</span> nargin&lt;4
+0015     useParallel=<span class="string">'always'</span>;
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;3
+0018     reps=8;
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="keyword">if</span> size(data,1)&lt;size(data,2)
+0022     data=data';
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> rank==0
+0026     disp(<span class="string">'There are no possible factorizations of rank 0, returning'</span>)
+0027     <span class="keyword">return</span>
+0028 <span class="keyword">elseif</span> rank==size(data,2)
+0029     <span class="comment">%disp('Full rank factorization: returning original matrix.')</span>
+0030     C=eye(size(data,2));
+0031     W=data;
+0032     d=0;
+0033     <span class="keyword">return</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 nm=numel(data);
+0037 alg=<span class="string">'als'</span>; <span class="comment">%Should verify this is the best choice</span>
+0038 tolF=sqrt(.0001*norm(data,<span class="string">'fro'</span>)^2/(nm*(rank^2))) + eps; <span class="comment">% 0.1% tolerance in objective function (note that this is 1/1000th of the max value for the tolerance function F)divided by desired rank squared.</span>
+0039 tolX=0.0001; <span class="comment">%This is as a percentage (0.01%). It will determine convergence if the element that changes the most in W or H changes less than 0.01% of the highest element in those matrices.</span>
+0040 
+0041 opts=statset(<span class="string">'TolFun'</span>,tolF,<span class="string">'TolX'</span>,tolX,<span class="string">'UseParallel'</span>,useParallel,<span class="string">'Display'</span>,<span class="string">'off'</span>);
+0042 
+0043 [W,C,d]=nnmf(data,rank,<span class="string">'replicates'</span>,reps,<span class="string">'algorithm'</span>,alg,<span class="string">'options'</span>,opts);
+0044 
+0045 
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

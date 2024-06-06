@@ -1,0 +1,651 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotAvgTimeCourse</title>
+  <meta name="keywords" content="plotAvgTimeCourse">
+  <meta name="description" content="adaptDataList must be cell array of 'param.mat' file names">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; plotAvgTimeCourse.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>plotAvgTimeCourse
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>adaptDataList must be cell array of 'param.mat' file names</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">adaptDataList must be cell array of 'param.mat' file names
+params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to
+plot on separate graphs or with semicolons to plot on same graph.
+conditions is cell array of conditions to plot
+binwidth is the number of data points to average in time
+indivFlag - set to true to plot individual subject time courses
+indivSubs - must be a cell array of 'param.mat' file names that is
+a subset of those in the adaptDataList. Plots specific subjects
+instead of all subjects.
+
+ figHandle = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)
+ [Avg, Indiv] = plotAvgTimeCourse(figHandle,adaptDataList,params,conditions,binwidth,trialMarkerFlag)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)</a>
+0002 <span class="comment">%adaptDataList must be cell array of 'param.mat' file names</span>
+0003 <span class="comment">%params is cell array of parameters to plot, or cell array of adaptationData objects. List with commas to</span>
+0004 <span class="comment">%plot on separate graphs or with semicolons to plot on same graph.</span>
+0005 <span class="comment">%conditions is cell array of conditions to plot</span>
+0006 <span class="comment">%binwidth is the number of data points to average in time</span>
+0007 <span class="comment">%indivFlag - set to true to plot individual subject time courses</span>
+0008 <span class="comment">%indivSubs - must be a cell array of 'param.mat' file names that is</span>
+0009 <span class="comment">%a subset of those in the adaptDataList. Plots specific subjects</span>
+0010 <span class="comment">%instead of all subjects.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% figHandle = plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs)</span>
+0013 <span class="comment">% [Avg, Indiv] = plotAvgTimeCourse(figHandle,adaptDataList,params,conditions,binwidth,trialMarkerFlag)</span>
+0014 
+0015 
+0016 <span class="comment">%% Check inputs</span>
+0017 
+0018 <span class="comment">% See if adaptDataList is a single subject (char), a cell</span>
+0019 <span class="comment">% array of subject names (one group of subjects), or a cell array of cell arrays of</span>
+0020 <span class="comment">% subjects names (several groups of subjects), and put all the</span>
+0021 <span class="comment">% cases into the same format</span>
+0022 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0023     <span class="keyword">if</span> ~isa(adaptDataList{1},<span class="string">'cell'</span>)
+0024         adaptDataList={adaptDataList};
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>) || isa(adaptDataList,<span class="string">'adaptationData'</span>)
+0027     adaptDataList={{adaptDataList}};
+0028 <span class="keyword">end</span>
+0029 legacyVersion=false;
+0030 <span class="keyword">if</span> isa(adaptDataList{1}{1},<span class="string">'char'</span>)
+0031     legacyVersion=true;
+0032 <span class="keyword">end</span>
+0033 Ngroups=length(adaptDataList);
+0034 
+0035 <span class="comment">% make sure params is a cell array</span>
+0036 <span class="keyword">if</span> isa(params,<span class="string">'char'</span>)
+0037     params={params};
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% check condition input %TO DO: allow for condition numbers</span>
+0041 <span class="keyword">if</span> nargin&gt;2
+0042     <span class="keyword">if</span> isa(conditions,<span class="string">'char'</span>)
+0043         conditions={conditions};
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">else</span>
+0046     <span class="keyword">if</span> ~legacyVersion
+0047         conditions=adaptDataList{1}{1}.metaData.conditionName; <span class="comment">%default</span>
+0048     <span class="keyword">else</span>
+0049         error(<span class="string">'No condition list provided'</span>)
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 nConds=length(conditions);
+0053 cond=cell(1,nConds);
+0054 Opacity=.3;
+0055 <span class="keyword">for</span> c=1:nConds
+0056     <span class="keyword">if</span> isa(conditions{c},<span class="string">'cell'</span>)
+0057         cond{c}=conditions{c}{1}(ismember(conditions{c}{1},[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span> <span class="string">'0'</span>:<span class="string">'9'</span>]));
+0058     <span class="keyword">elseif</span> isa(conditions{c},<span class="string">'char'</span>)
+0059         cond{c}=conditions{c}(ismember(conditions{c},[<span class="string">'A'</span>:<span class="string">'Z'</span> <span class="string">'a'</span>:<span class="string">'z'</span> <span class="string">'0'</span>:<span class="string">'9'</span>])); <span class="comment">%remove non alphanumeric characters</span>
+0060     <span class="keyword">else</span>
+0061         error(<span class="string">'Conditions argument is neither a string, a cell array of strings or a cell array of cell array of strings.'</span>)
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 
+0066 <span class="keyword">if</span> nargin&lt;4 || isempty(binwidth)
+0067     binwidth=1; <span class="comment">%default</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">if</span> nargin&lt;5 || length(trialMarkerFlag)~=length(cond)
+0071     trialMarkerFlag=false(1,length(cond));
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="keyword">if</span> nargin&lt;6 || isempty(indivFlag)
+0075     indivFlag=false;
+0076 <span class="keyword">end</span>
+0077 
+0078 <span class="keyword">if</span> nargin&gt;6
+0079     <span class="keyword">if</span> isa(indivSubs,<span class="string">'cell'</span>) &amp;&amp; ~isempty(indivSubs)
+0080         <span class="keyword">if</span> ~isa(indivSubs{1},<span class="string">'cell'</span>)
+0081             indivSubs{1}=indivSubs;
+0082         <span class="keyword">end</span>
+0083     <span class="keyword">elseif</span> isa(indivSubs,<span class="string">'char'</span>)
+0084         indivSubs{1}={indivSubs};
+0085     <span class="keyword">end</span>
+0086 <span class="keyword">end</span>
+0087 
+0088 <span class="comment">% if nargin&lt;9</span>
+0089     maxNumPts=false; <span class="comment">%set to true to plot the maximum number of strides per trial/condition</span>
+0090     <span class="comment">%                      otherwise, the subject with the fewest strides in a particular trial/condition</span>
+0091     <span class="comment">%                      determines the number of strides plotted.</span>
+0092 <span class="comment">%     if ~isempty(alignEnd)</span>
+0093 <span class="comment">%         maxNumPts=true;</span>
+0094 <span class="comment">%     end</span>
+0095 <span class="comment">% end</span>
+0096 <span class="keyword">if</span> nargin&lt;10 || isempty(removeBiasFlag)
+0097     removeBiasFlag=0;
+0098 <span class="keyword">end</span>
+0099 
+0100 <span class="keyword">if</span> nargin&lt;12 || isempty(filterFlag)
+0101     filterFlag=0;
+0102 <span class="keyword">end</span>
+0103 <span class="comment">%Added 9/28/2016: separated the two functionalities of 'medianFlag' into</span>
+0104 <span class="comment">%'medianFlag' and 'medianFilter'. Now accept that users may pass a scalar</span>
+0105 <span class="comment">%flag or a 2x1 flag vector, where the first index indicates the FILTER</span>
+0106 <span class="comment">%flag (median across samples), and the second indicates the GROUP flag (median across subjects).</span>
+0107 <span class="comment">%Update: 3/01/2017: if the vector is of length 3, using monoLS filter</span>
+0108 <span class="comment">%instead of median</span>
+0109 monoFlag=false;
+0110 <span class="keyword">if</span> numel(filterFlag)&lt;2
+0111     medianFilter=filterFlag;
+0112     medianFlag=filterFlag;
+0113 <span class="keyword">elseif</span> numel(filterFlag)==2
+0114     medianFilter=filterFlag(1);
+0115     medianFlag=filterFlag(2);
+0116 <span class="keyword">elseif</span> numel(filterFlag)==4 <span class="comment">%This is interpreted as using the monoLS filter, instead of median filter for samples</span>
+0117     monoFlag=true;
+0118     medianFlag=filterFlag(1); <span class="comment">%Taking median across groups, or not</span>
+0119     monoNder=filterFlag(2); <span class="comment">%</span>
+0120     monoNreg=filterFlag(3);
+0121     monoTrialBased=filterFlag(4);
+0122     medianFilter=0;
+0123 <span class="keyword">else</span>
+0124     error(<span class="string">'filterFlag length not recognized: can be a binary scalar (for median across subjects and samples), a 2x1 binary vector (to do median across samples or subjects), or 4x1 vector (to use monoLS for samples)'</span>)
+0125 <span class="keyword">end</span>
+0126 
+0127 
+0128 <span class="keyword">if</span> nargin&lt;14 || alignEnd==0
+0129     alignEnd=[];
+0130 <span class="keyword">end</span>
+0131 
+0132 <span class="keyword">if</span> nargin&lt;15 || alignIni==0
+0133     alignIni=[];
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="comment">%% Initialize plot</span>
+0137 
+0138 <span class="comment">% axesFontSize=14;</span>
+0139 <span class="comment">% labelFontSize=0;</span>
+0140 <span class="comment">% titleFontSize=24;</span>
+0141 axesFontSize=20;
+0142 labelFontSize=10;
+0143 titleFontSize=18;
+0144 <span class="keyword">if</span> nargin&lt;13 || isempty(plotHandles) || length(plotHandles)~=length(params)
+0145     [ah,figHandle]=optimizedSubPlot(size(params,2),4,1,<span class="string">'tb'</span>,axesFontSize,labelFontSize,titleFontSize);
+0146 <span class="keyword">else</span>
+0147     ah=plotHandles;
+0148     figHandle=gcf;
+0149 <span class="keyword">end</span>
+0150 legendStr=cell(1);
+0151 
+0152 <span class="comment">% Set colors order</span>
+0153 <span class="keyword">if</span> nargin&lt;8 || isempty(colorOrder) || size(colorOrder,2)~=3
+0154     poster_colors;
+0155     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1];p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
+0156      colorOrder=[ colorOrder; colorOrder;colorOrder];
+0157 <span class="keyword">end</span>
+0158 
+0159 lineOrder={<span class="string">'-'</span>,<span class="string">'--'</span>,<span class="string">'-.'</span>,<span class="string">':'</span>};
+0160 
+0161 <span class="comment">%% determine length of trials or conditions</span>
+0162 s=1; <span class="comment">%subject counter</span>
+0163 values=struct([]);
+0164 <span class="keyword">for</span> group=1:Ngroups
+0165     <span class="keyword">for</span> subject=1:length(adaptDataList{group})
+0166         <span class="comment">%Load subject</span>
+0167         adaptData = adaptDataList{group}{subject};
+0168         <span class="keyword">if</span> legacyVersion
+0169             load(adaptData)
+0170         <span class="keyword">end</span>
+0171         adaptData = adaptData.removeBadStrides;
+0172         <span class="keyword">if</span> removeBiasFlag==1
+0173             adaptData = adaptData.removeBias;
+0174         <span class="keyword">elseif</span> removeBiasFlag==2
+0175             adaptData = adaptData.normalizeBias;
+0176         <span class="keyword">end</span>
+0177 
+0178         <span class="keyword">for</span> c=1:nConds
+0179             <span class="keyword">if</span> trialMarkerFlag(c)
+0180                 trials=num2cell(adaptData.getTrialsInCond({conditions{c}}));
+0181             <span class="keyword">else</span>
+0182                 trials={adaptData.getTrialsInCond({conditions{c}})}; <span class="comment">%all trials in the condition are one &quot;trial&quot;</span>
+0183             <span class="keyword">end</span>
+0184 
+0185             <span class="keyword">for</span> t=1:length(trials) <span class="comment">%length(trials) is always 1</span>
+0186                 <span class="comment">%Check</span>
+0187                 <span class="keyword">if</span> ~all(adaptData.data.isaParameter(params))
+0188                     error(<span class="string">'Not all provided labels are parameters in this subject'</span>)
+0189                     keyboard <span class="comment">%This shouldnt happen</span>
+0190                 <span class="keyword">end</span>
+0191                 <span class="keyword">if</span> monoFlag &amp;&amp; ~monoTrialBased
+0192                     dataPts2=adaptData.getParamInTrial(params,trials{t});
+0193                     dataPts=monoLS(dataPts2,[],monoNder,monoNreg);
+0194                 <span class="keyword">elseif</span> monoFlag
+0195                     dataPts=[];
+0196                     <span class="keyword">for</span> j=1:length(trials{1})
+0197                         origData=adaptData.getParamInTrial(params,trials{1}(j));
+0198                         aux=monoLS(origData,[],monoNder,monoNreg);
+0199                         dataPts=[dataPts; aux];
+0200                     <span class="keyword">end</span>
+0201                 <span class="keyword">else</span>
+0202                     dataPts=adaptData.getParamInTrial(params,trials{t});
+0203 <span class="comment">%                     dataPts=dataPts(2:end-5);</span>
+0204                 <span class="keyword">end</span>
+0205                 nPoints=size(dataPts,1);
+0206                 M=2000; <span class="comment">%this assumes that the max number of data points that could exist in a single conition or trial is M</span>
+0207                 <span class="keyword">if</span> nPoints == 0
+0208                     numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])(s)=NaN;
+0209                 <span class="keyword">else</span>
+0210                     numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])(s)=nPoints;
+0211                     <span class="keyword">if</span> ~isempty(alignEnd) <span class="comment">%Aligning data to the end, too</span>
+0212                         <span class="keyword">if</span> strcmpi(cond{c},<span class="string">'catch'</span>)
+0213                             numPts.([cond{c}]).([<span class="string">'trial'</span> num2str(t)])(s)=nPoints;
+0214                         <span class="keyword">else</span>
+0215                             numPts.([cond{c} <span class="string">'End'</span>]).([<span class="string">'trial'</span> num2str(t)])(s)=alignEnd+50;
+0216                         <span class="keyword">end</span>
+0217                     <span class="keyword">end</span>
+0218                 <span class="keyword">end</span>
+0219                 <span class="keyword">for</span> p=1:length(params)
+0220                     <span class="comment">%initialize so there are no inconsistant dimensions or out of bounds errors</span>
+0221                     values(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(subject,:)=NaN(1,M);
+0222                     values(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+0223                     <span class="keyword">if</span> ~isempty(alignEnd) <span class="comment">%Aligning data to the end too, by creating a fake condition</span>
+0224                         <span class="keyword">if</span> strcmpi(cond{c},<span class="string">'catch'</span>)
+0225                             values(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(subject,:)=NaN(1,M);
+0226                             values(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+0227                         <span class="keyword">else</span>
+0228                         values(group).(params{p}).([cond{c} <span class="string">'End'</span>]).([<span class="string">'trial'</span> num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:<span class="keyword">end</span>,p)];
+0229                         <span class="keyword">end</span>
+0230                     <span class="keyword">end</span>
+0231                 <span class="keyword">end</span>
+0232             <span class="keyword">end</span>
+0233         <span class="keyword">end</span>
+0234         s=s+1;
+0235     <span class="keyword">end</span>
+0236 <span class="keyword">end</span>
+0237 
+0238 <span class="comment">%% Do the actual plotting</span>
+0239 Li=cell(1);
+0240 avg=struct([]);
+0241 se=struct([]);
+0242 indiv=struct([]);
+0243 <span class="keyword">if</span> ~isempty(alignEnd)
+0244     newCond=cell(2*length(cond),1);
+0245    newCond(1:2:end)=cond;
+0246    newCond(2:2:end)=strcat(cond,<span class="string">'End'</span>);
+0247    catchindx=find(strcmpi(newCond,<span class="string">'catchEnd'</span>));
+0248    <span class="keyword">if</span> ~isempty(catchindx);
+0249    newCond{catchindx}=[];
+0250    <span class="keyword">end</span>
+0251    newCond=newCond(~cellfun(<span class="string">'isempty'</span>,newCond));
+0252    cond=newCond;
+0253    cond=newCond;
+0254    nConds=length(cond);
+0255 <span class="keyword">end</span>
+0256 
+0257 <span class="keyword">for</span> group=1:Ngroups
+0258     Xstart=1;
+0259     lineX=0;
+0260     <span class="keyword">for</span> c=1:nConds
+0261         <span class="keyword">for</span> t=1:length(fields(values(group).(params{p}).(cond{c})));
+0262 
+0263             <span class="comment">% 1) find the length of each trial</span>
+0264             <span class="keyword">if</span> maxNumPts
+0265                 <span class="comment">%to plot the MAX number of pts in each trial:</span>
+0266                 [maxPts,loc]=nanmax(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)]));
+0267                 <span class="keyword">while</span> maxPts&gt;1.25*nanmax(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])([1:loc-1 loc+1:end]))
+0268                         numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])(loc)=nanmean(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])([1:loc-1 loc+1:end])); <span class="comment">%do not include min in mean (?)</span>
+0269                     [maxPts,loc]=nanmax(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)]));
+0270                 <span class="keyword">end</span>
+0271                 <span class="keyword">if</span> maxPts==0
+0272                     <span class="keyword">continue</span>
+0273                 <span class="keyword">end</span>
+0274             <span class="keyword">else</span>
+0275                 <span class="comment">%to plot the MIN number of pts in each trial:</span>
+0276                 [maxPts,loc]=nanmin(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)]));
+0277                 <span class="keyword">while</span> maxPts&lt;0.75*nanmin(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])([1:loc-1 loc+1:end]))
+0278                         numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])(loc)=nanmean(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)])([1:loc-1 loc+1:end])); <span class="comment">%do not include min in mean (?)</span>
+0279                     [maxPts,loc]=nanmin(numPts.(cond{c}).([<span class="string">'trial'</span> num2str(t)]));
+0280                 <span class="keyword">end</span>
+0281                 <span class="keyword">if</span> maxPts==0
+0282                     <span class="keyword">continue</span>
+0283                 <span class="keyword">end</span>
+0284             <span class="keyword">end</span>
+0285 
+0286             <span class="keyword">for</span> p=1:length(params)
+0287 
+0288                 <span class="keyword">if</span> ~isnan(maxPts)<span class="comment">%do not try to plot if maxPts is NaN, this indicates that there is no c3d for this trial</span>
+0289                     allValues=values(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(:,1:maxPts);
+0290                 <span class="keyword">else</span>
+0291                     allValues = NaN;<span class="comment">%set plot values to NaN when there is no c3d data</span>
+0292                 <span class="keyword">end</span>
+0293 
+0294                 <span class="comment">% 2) average across subjuects within bins</span>
+0295 
+0296                 <span class="comment">%Find (running) averages and standard deviations for bin data</span>
+0297                 start=1:size(allValues,2)-(binwidth-1);
+0298                 stop=start+binwidth-1;
+0299 <span class="comment">%                 %Find (simple) averages and standard deviations for bin data</span>
+0300 <span class="comment">%                 start = 1:binwidth:(size(allValues,2)-binwidth+1);</span>
+0301 <span class="comment">%                 stop = start+(binwidth-1);</span>
+0302 
+0303                 <span class="keyword">for</span> i = 1:length(start)
+0304                     t1 = start(i);
+0305                     t2 = stop(i);
+0306                     bin = allValues(:,t1:t2);
+0307 
+0308                     <span class="keyword">if</span> length(adaptDataList{group})&gt;1 <span class="comment">%Several subjects</span>
+0309                         <span class="comment">%errors calculated as standard error of averaged subject points</span>
+0310                         <span class="keyword">if</span> medianFilter==0
+0311                             subBin=nanmean(bin,2); <span class="comment">%Mean across time</span>
+0312                         <span class="keyword">else</span>
+0313                             subBin=nanmedian(bin,2); <span class="comment">%Median across  time</span>
+0314                         <span class="keyword">end</span>
+0315                         <span class="keyword">if</span> medianFlag==0
+0316                             avg(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanmean(subBin); <span class="comment">%Mean across subjects</span>
+0317                             se(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
+0318                         <span class="keyword">else</span> <span class="comment">%Using median and 15.87-84.13 percentiles</span>
+0319                             avg(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanmedian(subBin);
+0320                             se(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=.5*diff(prctile(subBin,[16,84]))/sqrt(length(subBin));
+0321                         <span class="keyword">end</span>
+0322                          indiv(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(:,i)=subBin;
+0323                     <span class="keyword">else</span> <span class="comment">%Single subject</span>
+0324                         <span class="comment">%errors calculated as standard error of all data</span>
+0325                         <span class="comment">%points within a bin</span>
+0326                         <span class="keyword">if</span> medianFlag==0
+0327                             avg(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanmean(reshape(bin,1,numel(bin)));
+0328                             indiv(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(:,i)=nanmean(bin,2);
+0329                             se(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
+0330                         <span class="keyword">else</span>
+0331                            avg(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
+0332                             indiv(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(:,i)=nanmedian(bin,2);
+0333                             se(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidth);
+0334                         <span class="keyword">end</span>
+0335                     <span class="keyword">end</span>
+0336                 <span class="keyword">end</span>
+0337 
+0338                 <span class="comment">% 3) plot data</span>
+0339                 <span class="keyword">if</span> size(params,1)&gt;1
+0340                     axes(ah)
+0341                     g=p;
+0342                     Cdiv=group;
+0343                     <span class="keyword">if</span> Ngroups==1
+0344                         legStr=params(p);
+0345                     <span class="keyword">else</span>
+0346                         <span class="keyword">if</span> ~legacyVersion
+0347                             <span class="keyword">if</span> length(adaptDataList{group})&gt;1
+0348                                 legStr={[params{p} <span class="string">' '</span> adaptDataList{group}{1}.metaData.ID]};
+0349                             <span class="keyword">else</span>
+0350                                 legStr={[params{p} <span class="string">' '</span> adaptDataList{group}{1}.subData.ID]};
+0351                             <span class="keyword">end</span>
+0352                         <span class="keyword">else</span>
+0353                             <span class="keyword">if</span> length(adaptDataList{group})&gt;1
+0354                                 legStr={[params{p} <span class="string">' '</span> adaptDataList{group}{1}]};
+0355                             <span class="keyword">else</span>
+0356                                 legStr={[params{p} <span class="string">' '</span> adaptDataList{group}{1}]};
+0357                             <span class="keyword">end</span>
+0358 
+0359                         <span class="keyword">end</span>
+0360 
+0361                     <span class="keyword">end</span>
+0362                 <span class="keyword">else</span>
+0363                     axes(ah(p))
+0364                     g=group;
+0365                     Cdiv=1;
+0366                 <span class="keyword">end</span>
+0367                 hold on
+0368                 afterTrialPad=5; <span class="comment">%adds empty sapce to end of trial/condition (in strides)</span>
+0369                 y=[avg(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)]), NaN(1,afterTrialPad)];
+0370                 E=[se(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)]), NaN(1,afterTrialPad)];
+0371 <span class="comment">%                 condLength=length(y);</span>
+0372 <span class="comment">%                 x=Xstart:Xstart+condLength-1;</span>
+0373 
+0374                 <span class="keyword">if</span> isempty(alignIni) <span class="comment">%DULCE</span>
+0375                     condLength=length(y);
+0376                     x=Xstart:Xstart+condLength-1;
+0377                 <span class="keyword">elseif</span> ~isempty(alignIni) &amp;&amp; strcmp(cond{c}(end-2:end), <span class="string">'End'</span>)
+0378                     condLength=length(y);
+0379                     x=Xstart:Xstart+condLength-1;
+0380                 <span class="keyword">else</span>
+0381                     x=Xstart:Xstart+alignIni-1;
+0382                     y=y(1:length(x));
+0383                     E=E(1:length(x));
+0384                     condLength=length(y);
+0385                 <span class="keyword">end</span>
+0386 
+0387                 <span class="comment">%Biofeedback</span>
+0388                 <span class="keyword">if</span> nargin&gt;8 &amp;&amp; ~isempty(biofeedback)
+0389                     <span class="keyword">if</span> biofeedback==1 &amp;&amp; strcmp(params{p},<span class="string">'alphaFast'</span>)
+0390                         w=adaptData{group}{1}.getParamInCond(<span class="string">'TargetHitR'</span>,conditions{c});
+0391                     <span class="keyword">elseif</span> biofeedback==1 &amp;&amp;  strcmp(params{p},<span class="string">'alphaSlow'</span>)
+0392                         w=adaptData{group}{1}.getParamInCond(<span class="string">'TargetHitL'</span>,conditions{c});
+0393                     <span class="keyword">elseif</span> biofeedback==0
+0394                         biofeedback=[];
+0395                     <span class="keyword">else</span>
+0396                         w=adaptData.getParamInCond(<span class="string">'TargetHit'</span>,conditions{c});
+0397                     <span class="keyword">end</span>
+0398                 <span class="keyword">else</span>
+0399                     biofeedback=[];
+0400                 <span class="keyword">end</span>
+0401 
+0402                 <span class="keyword">if</span> indivFlag <span class="comment">%plotting all individual subjects</span>
+0403                     nSubs=length(adaptDataList{group});
+0404                     subjects=cell(1,nSubs);
+0405                     <span class="keyword">for</span> s=1:nSubs
+0406                         <span class="keyword">if</span> ~legacyVersion
+0407                             subjects{s}=adaptDataList{group}{s}.subData.ID;
+0408                         <span class="keyword">else</span>
+0409                             subjects{s}=adaptDataList{group}{s}(1:end-6);
+0410                         <span class="keyword">end</span>
+0411                     <span class="keyword">end</span>
+0412                     <span class="keyword">if</span> ~isempty(indivSubs) &amp;&amp; ~isempty(indivSubs{group}{1}) <span class="comment">%plot specific individual subjects</span>
+0413                         subsToPlot=indivSubs{group};
+0414                     <span class="keyword">else</span>
+0415                         subsToPlot=adaptDataList{group};
+0416                     <span class="keyword">end</span>
+0417                     <span class="keyword">for</span> s=1:length(subsToPlot)
+0418                         <span class="keyword">if</span> ~legacyVersion
+0419                             id=subsToPlot{s}.subData.ID;
+0420                         <span class="keyword">else</span>
+0421                             id=subsToPlot{s}(1:end-6);
+0422                         <span class="keyword">end</span>
+0423                         subInd=find(ismember(subjects,id),1,<span class="string">'first'</span>);
+0424                         y_indiv=[indiv(group).(params{p}).(cond{c}).([<span class="string">'trial'</span> num2str(t)])(subInd,:), NaN(1,afterTrialPad)];
+0425                         <span class="comment">%%to plot as dots:</span>
+0426                         <span class="comment">%plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));</span>
+0427                         <span class="comment">%%to plot as lines:</span>
+0428                         Li{group}(s)=plot(x,y_indiv(1:length(x)),lineOrder{g},<span class="string">'color'</span>,colorOrder(mod(subInd-1,size(colorOrder,1))+1,:),<span class="string">'Tag'</span>,id);
+0429                         <span class="keyword">if</span> ~legacyVersion
+0430                             legendStr{group}(s)={subsToPlot{s}.subData.ID};
+0431                         <span class="keyword">else</span>
+0432                             legendStr{group}(s)={subsToPlot{s}};
+0433                         <span class="keyword">end</span>
+0434                     <span class="keyword">end</span>
+0435                     <span class="comment">%plot average of group if there is more than one person</span>
+0436                     <span class="comment">%in the group</span>
+0437                     <span class="keyword">if</span> length(adaptDataList{group})&gt;1
+0438                         Li{group}(length(subsToPlot)+1)=plot(x,y,<span class="string">'o'</span>,<span class="string">'MarkerSize'</span>,5,<span class="string">'MarkerEdgeColor'</span>,[0 0 0],<span class="string">'MarkerFaceColor'</span>,[0.7 0.7 0.7].^group);
+0439                         legendStr{group}(length(subsToPlot)+1)={[<span class="string">'Average '</span> adaptDataList{group}{1}.metaData.ID]};
+0440                     <span class="keyword">end</span>
+0441                 <span class="keyword">else</span> <span class="comment">%only plot group averages</span>
+0442                      <span class="keyword">if</span> Ngroups==1 &amp;&amp; ~(size(params,1)&gt;1) &amp;&amp; isempty(biofeedback)  <span class="comment">%one group (each condition colored different)</span>
+0443                         <span class="keyword">if</span> isempty(biofeedback)
+0444                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity);
+0445                         <span class="keyword">else</span>
+0446                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
+0447                         <span class="keyword">end</span>
+0448                         <span class="comment">%set(Li{c},'Clipping','off')</span>
+0449                         H=get(Li{c},<span class="string">'Parent'</span>);
+0450                         legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
+0451                    <span class="keyword">elseif</span> size(params,1)&gt;1 &amp;&amp; isempty(biofeedback)<span class="comment">%Each parameter colored differently (and shaded differently for different groups)</span>
+0452                         ind=(group-1)*size(params,1)+p;
+0453                         color=colorOrder(mod(g-1,size(colorOrder,1))+1,:)./Cdiv;
+0454                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
+0455                         <span class="comment">%set(Li{ind},'Clipping','off')</span>
+0456                         H=get(Li{ind},<span class="string">'Parent'</span>);
+0457                         legendStr{ind}=legStr;
+0458                 <span class="keyword">elseif</span>  isempty(biofeedback) <span class="comment">%Each group colored differently</span>
+0459                         color=colorOrder(g,:)./Cdiv;
+0460                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
+0461                         <span class="comment">%set(Li{g},'Clipping','off')</span>
+0462                         H=get(Li{g},<span class="string">'Parent'</span>);
+0463                         <span class="keyword">if</span> ~legacyVersion
+0464                             <span class="keyword">if</span> length(adaptDataList{g})&gt;1
+0465                                 legendStr{g}={adaptDataList{g}{1}.metaData.ID};
+0466                             <span class="keyword">else</span>
+0467                                 legendStr{g}={adaptDataList{g}{1}.subData.ID};
+0468                             <span class="keyword">end</span>
+0469                         <span class="keyword">else</span>
+0470                             <span class="keyword">if</span> length(adaptDataList{g})&gt;1
+0471                                 legendStr{g}={adaptDataList{g}{1}};
+0472                             <span class="keyword">else</span>
+0473                                 legendStr{g}={adaptDataList{g}{1}};
+0474                             <span class="keyword">end</span>
+0475 
+0476                         <span class="keyword">end</span>
+0477                     <span class="keyword">elseif</span> ~(size(params,1)&gt;1) &amp;&amp; ~isempty(biofeedback)
+0478                         color=colorOrder(g,:)./Cdiv;
+0479                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
+0480                         <span class="comment">%set(Li{g},'Clipping','off')</span>
+0481                         H=get(Li{g},<span class="string">'Parent'</span>);
+0482                         group=adaptData{g}{1}.subData.ID;
+0483                         abrevGroup=[group];
+0484                         legendStr{g}={[ abrevGroup]};
+0485                         <span class="keyword">elseif</span> Ngroups==1 &amp;&amp; ~(size(params,1)&gt;1) &amp;&amp; ~isempty(biofeedback)
+0486                         [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
+0487                         <span class="comment">%set(Li{c},'Clipping','off')</span>
+0488                         H=get(Li{c},<span class="string">'Parent'</span>);
+0489                         legendStr={conditions};
+0490                     <span class="keyword">elseif</span> ~(size(params,1)&gt;1) &amp;&amp; ~isempty(biofeedback)
+0491                         color=colorOrder(g,:)./Cdiv;
+0492                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
+0493                         <span class="comment">%set(Li{g},'Clipping','off')</span>
+0494                         H=get(Li{g},<span class="string">'Parent'</span>);
+0495                         load([adaptDataList{g}{1,1}])
+0496                         group=adaptData.subData.ID;
+0497                         abrevGroup=[group];
+0498                         legendStr{g}={[ abrevGroup]};
+0499                     <span class="keyword">end</span>
+0500                     <span class="comment">%set(Pa,'Clipping','off')</span>
+0501                     set(H,<span class="string">'Layer'</span>,<span class="string">'top'</span>)
+0502                 <span class="keyword">end</span>
+0503             <span class="keyword">end</span>
+0504           Xstart=Xstart+condLength;
+0505         <span class="keyword">end</span>
+0506 
+0507         <span class="keyword">if</span> c==nConds &amp;&amp; group==Ngroups
+0508             <span class="comment">%on last iteration of conditions loop, add title and</span>
+0509             <span class="comment">%vertical lines to seperate conditions</span>
+0510             <span class="keyword">for</span> p=1:length(params)
+0511                 <span class="keyword">if</span> ~(size(params,1)&gt;1)
+0512                     axes(ah(p))
+0513                     <span class="comment">%title(params{p},'fontsize',titleFontSize)</span>
+0514                     ylabel(params{p})
+0515                 <span class="keyword">else</span>
+0516                     axes(ah)
+0517                 <span class="keyword">end</span>
+0518                 axis tight
+0519                 <span class="comment">%if isempty(alignEnd)</span>
+0520                 <span class="comment">%    line([lineX; lineX],ylim,'color','k')</span>
+0521                 <span class="comment">%else %When plotting data aligned to end, only put a vertical line for actual condition end</span>
+0522                 <span class="comment">%    line([lineX(1:2:end); lineX(1:2:end)],ylim,'color','k')</span>
+0523                 <span class="comment">%end</span>
+0524                 xticks=lineX+diff([lineX Xstart])./2;
+0525 
+0526                 <span class="comment">%set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)))</span>
+0527                 <span class="keyword">if</span> ~isempty(alignEnd)
+0528 
+0529                     xticks=[[0 lineX(3:2:end)];xticks(1:2:end)];
+0530                     xticks=xticks(:);
+0531                     xtl=[adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))];
+0532                     xtl=xtl(:);
+0533                     xtl(1:2:end)={<span class="string">''</span>};
+0534                     <span class="comment">%xtl=cond;</span>
+0535                     <span class="comment">%xtl(1:2:end)=strcat(xtl(1:2:end),'Early');</span>
+0536                     <span class="comment">%xticks(2:2:end)=xticks(2:2:end)+25;</span>
+0537 
+0538                 <span class="keyword">else</span>
+0539                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
+0540                 <span class="keyword">end</span>
+0541 <span class="comment">%                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)</span>
+0542                 <span class="comment">%h=refline(0,0);</span>
+0543                 <span class="comment">%set(h,'color','k')</span>
+0544             <span class="keyword">end</span>
+0545             hold off
+0546         <span class="keyword">end</span>
+0547         lineX(end+1)=Xstart-0.5;
+0548     <span class="keyword">end</span>
+0549 <span class="keyword">end</span>
+0550 
+0551 <span class="comment">%linkaxes(ah,'x')</span>
+0552 set(gcf,<span class="string">'color'</span>,<span class="string">'w'</span>);
+0553 set(gcf,<span class="string">'Renderer'</span>,<span class="string">'painters'</span>);
+0554 <span class="keyword">if</span> nargin&lt;11 || isempty(labels) || indivFlag==1
+0555 
+0556     <span class="keyword">if</span> size(legendStr(:),2)&gt;10
+0557 
+0558         legend([Li{:}],[legendStr{:}],<span class="string">'NumColumns'</span>,3)
+0559     <span class="keyword">else</span>
+0560         legend([Li{:}],[legendStr{:}])
+0561     <span class="keyword">end</span>
+0562 <span class="keyword">else</span>
+0563 labels={labels}';
+0564 legend([Li{:}],[labels{:}])
+0565 <span class="keyword">end</span>
+0566 <span class="comment">%% outputs</span>
+0567 <span class="keyword">if</span> nargout&lt;2
+0568     varargout{1}=figHandle;
+0569 <span class="keyword">elseif</span> nargout==2
+0570     varargout{1}=avg;
+0571     varargout{2}=indiv;
+0572 <span class="keyword">elseif</span> nargout==3
+0573     varargout{1}=figHandle;
+0574     varargout{2}=avg;
+0575     varargout{3}=indiv;
+0576 <span class="keyword">else</span>
+0577     varargout{1}=figHandle;
+0578     varargout{2}=avg;
+0579     varargout{3}=indiv;
+0580     varargout{4}=ah; <span class="comment">%axes handles</span>
+0581 <span class="keyword">end</span>
+0582 
+0583 <span class="comment">%% Sending patches to back</span>
+0584 p=findobj(gcf,<span class="string">'Type'</span>,<span class="string">'Patch'</span>);
+0585 <span class="keyword">if</span> ~isempty(p)
+0586     <span class="keyword">for</span> i=1:length(p)
+0587     uistack(p(i),<span class="string">'bottom'</span>)
+0588     <span class="keyword">end</span>
+0589 <span class="keyword">end</span>
+0590 
+0591 <span class="comment">%% Eliminating marker edge color</span>
+0592 <span class="comment">%p=findobj(gcf,'Type','Line');</span>
+0593 <span class="comment">%set(p,'MarkerEdgeColor','none')</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

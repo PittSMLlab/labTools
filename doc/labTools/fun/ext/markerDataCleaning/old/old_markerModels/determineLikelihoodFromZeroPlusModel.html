@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of determineLikelihoodFromZeroPlusModel</title>
+  <meta name="keywords" content="determineLikelihoodFromZeroPlusModel">
+  <meta name="description" content="Computes a likelihood for a set of marker positions given a 'zero-model'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; determineLikelihoodFromZeroPlusModel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>determineLikelihoodFromZeroPlusModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>Computes a likelihood for a set of marker positions given a 'zero-model'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lp] = determineLikelihoodFromZeroPlusModel(X1,D,sD,I) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Computes a likelihood for a set of marker positions given a 'zero-model'
+(naive bayes) which assumes independent gaussian distributions for each
+distance between models. 
+------
+INPUTS:
+X is a Nx3xM matrix of N marker positions in 3D, samples M times.
+D is a NxN matrix containing the expected distances between the N markers
+sD is a NxN matrix containing the standard deviation of the distances
+across time
+------
+OUTPUT:
+p is a NxM matrix containing log-likelihoods for each of the N markers in each
+of the M samples</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li><li><a href="expandDataForZeroPlus.html" class="code" title="function [newData,I,sourceI] = expandDataForZeroPlus(posData,I)">expandDataForZeroPlus</a>	UNTITLED3 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function bool=issquare(D)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lp] = determineLikelihoodFromZeroPlusModel(X1,D,sD,I)</a>
+0002 <span class="comment">%Computes a likelihood for a set of marker positions given a 'zero-model'</span>
+0003 <span class="comment">%(naive bayes) which assumes independent gaussian distributions for each</span>
+0004 <span class="comment">%distance between models.</span>
+0005 <span class="comment">%------</span>
+0006 <span class="comment">%INPUTS:</span>
+0007 <span class="comment">%X is a Nx3xM matrix of N marker positions in 3D, samples M times.</span>
+0008 <span class="comment">%D is a NxN matrix containing the expected distances between the N markers</span>
+0009 <span class="comment">%sD is a NxN matrix containing the standard deviation of the distances</span>
+0010 <span class="comment">%across time</span>
+0011 <span class="comment">%------</span>
+0012 <span class="comment">%OUTPUT:</span>
+0013 <span class="comment">%p is a NxM matrix containing log-likelihoods for each of the N markers in each</span>
+0014 <span class="comment">%of the M samples</span>
+0015 
+0016 [X] = <a href="expandDataForZeroPlus.html" class="code" title="function [newData,I,sourceI] = expandDataForZeroPlus(posData,I)">expandDataForZeroPlus</a>(X1,I);
+0017 [N,tres,M]=size(X);
+0018 <span class="keyword">if</span> size(D,1)~=N || ~<a href="#_sub1" class="code" title="subfunction bool=issquare(D)">issquare</a>(D)
+0019     error()
+0020 <span class="keyword">end</span>
+0021 <span class="keyword">if</span> size(sD,1)~=N || ~<a href="#_sub1" class="code" title="subfunction bool=issquare(D)">issquare</a>(sD)
+0022     error()
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">if</span> tres~=3
+0025     error()
+0026 <span class="keyword">end</span>
+0027 
+0028 
+0029 [lp] = <a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>(X,D,sD);
+0030 lp=lp(1:size(X1,1),:);
+0031 
+0032 <span class="keyword">end</span>
+0033 
+0034 <a name="_sub1" href="#_subfunctions" class="code">function bool=issquare(D)</a>
+0035 bool = size(D,1)==size(D,2);
+0036 <span class="keyword">end</span>
+0037</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

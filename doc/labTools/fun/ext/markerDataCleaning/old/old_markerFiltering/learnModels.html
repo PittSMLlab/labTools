@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of learnModels</title>
+  <meta name="keywords" content="learnModels">
+  <meta name="description" content="% Load">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerFiltering</a> &gt; learnModels.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerFiltering&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>learnModels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>% Load</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Load</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="dataToDistances.html" class="code" title="function [distances] = dataToDistances(data)">dataToDistances</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Load</span>
+0002 load C0001MarkerData.mat
+0003 data=M{3}; <span class="comment">%Just one trial of data</span>
+0004 
+0005 <span class="comment">%% Learn distance between markers model</span>
+0006 [N,M,d]=size(data);
+0007 dataAux1=reshape(data,N,1,M,d);
+0008 dataAux2=reshape(data,N,M,1,d);
+0009 distances=sqrt(sum((dataAux1-dataAux2).^2,4));
+0010 distReduced=zeros(N,0);
+0011 <span class="keyword">for</span> i=1:M
+0012     aux=squeeze(distances(:,i,i+1:end));
+0013     distReduced(:,end+[1:size(aux,2)])=aux;
+0014 <span class="keyword">end</span>
+0015 mu=squeeze(nanmean(distReduced));
+0016 sigma=squeeze(nanstd(distReduced));
+0017 S=squeeze(nancov(distReduced));
+0018 
+0019 <span class="comment">%% Detect outliers</span>
+0020 dd=<a href="dataToDistances.html" class="code" title="function [distances] = dataToDistances(data)">dataToDistances</a>(data)';
+0021 [outlierIndx]=detectOutliers(dd,mu',S,eye(length(mu)),zeros(size(S)));</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

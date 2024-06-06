@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of compressedArray</title>
+  <meta name="keywords" content="compressedArray">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">compression</a> &gt; compressedArray.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/compression&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>compressedArray
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="compressedArray.html" class="code" title="">compressedArray</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="compressedArray.html" class="code" title="">compressedArray</a>	</li><li><a href="diffCompressedArray.html" class="code" title="">diffCompressedArray</a>	</li><li><a href="simpleCodedArray.html" class="code" title="">simpleCodedArray</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=compressedArray(compressedData,originalSize,compressionMethod)</a></li><li><a href="#_sub2" class="code">function [words,remainder]=bits2words(bits)</a></li><li><a href="#_sub3" class="code">function bits=words2bits(words,remainder)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="compressedArray.html" class="code" title="">compressedArray</a>
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         originalSize
+0007         compressionMethod
+0008     <span class="keyword">end</span>
+0009     properties(Hidden)
+0010         compressedData
+0011     <span class="keyword">end</span>
+0012     
+0013     methods
+0014         <a name="_sub0" href="#_subfunctions" class="code">function this=compressedArray(compressedData,originalSize,compressionMethod)</a>
+0015             this.compressedData=compressedData;
+0016             this.originalSize=originalSize;
+0017             this.compressionMethod=compressionMethod;
+0018         <span class="keyword">end</span>
+0019         
+0020         array=decompress(this) <span class="comment">%To be implemented on each sub-class</span>
+0021         
+0022         this=compress(array) <span class="comment">%To be implemented on each sub-class</span>
+0023         
+0024     <span class="keyword">end</span>
+0025     
+0026     methods(Static)
+0027         HC=getHuffmanCode(p)
+0028         
+0029         <a name="_sub1" href="#_subfunctions" class="code">function [words,remainder]=bits2words(bits) </a><span class="comment">%Gets a string of bits (e.g. '10100010001111010') and parses it as uint64, returning an array of uint64 integers (MSB first). If the number of bits is not a multiple of 64, the last remainder bits are returned as a string.</span>
+0030             N=64;
+0031             words=zeros(floor(length(bits)/N),1,<span class="string">'uint64'</span>);
+0032             counter=0;
+0033             <span class="keyword">while</span> length(bits)&gt;=(N*(counter+1))
+0034                 counter=counter+1;
+0035                 aux=bits(N*(counter-1)+1:N*counter);
+0036                 bb=uint64(0);
+0037                 <span class="keyword">for</span> i=1:N
+0038                     aa=uint64(str2double(aux(i)));
+0039                     bb=2*bb+aa;
+0040                 <span class="keyword">end</span>
+0041                 words(counter)=bb;
+0042             <span class="keyword">end</span>
+0043             remainder=bits(N*counter+1:end);
+0044         <span class="keyword">end</span>
+0045         
+0046         <a name="_sub2" href="#_subfunctions" class="code">function bits=words2bits(words,remainder) </a><span class="comment">%Essentially reverses the previous function. Remainder input argument is optional.</span>
+0047             N=64;
+0048            <span class="keyword">for</span> i=1:length(words)
+0049               <span class="keyword">for</span> j=1:N
+0050                  aux=floor(words(i)/2^(N-j));
+0051                  bits(N*(i-1)+j)=num2str(aux); <span class="comment">%Don't know how to pre-allocate for a char array.</span>
+0052                  words(i)=mod(words(i),(2^(N-j)));
+0053               <span class="keyword">end</span>
+0054            <span class="keyword">end</span>
+0055            <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(remainder)
+0056                bits(end+1:end+length(remainder))=remainder;
+0057            <span class="keyword">end</span>
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">end</span>
+0060     
+0061 <span class="keyword">end</span>
+0062</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

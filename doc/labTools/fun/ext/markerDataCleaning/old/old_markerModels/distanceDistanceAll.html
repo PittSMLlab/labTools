@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of distanceDistanceAll</title>
+  <meta name="keywords" content="distanceDistanceAll">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; distanceDistanceAll.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>distanceDistanceAll
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [f,g]=distanceDistanceAll(x,kP,kD,w) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="getPositionFromDistances_v2.html" class="code" title="function [pos] = getPositionFromDistances_v2(knownPositions,knownDistances,weights,initGuess)">getPositionFromDistances_v2</a>	v2 allos for many pos to be estimated simultaneously</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [f,g]=distanceDistanceAll(x,kP,kD,w)</a>
+0002     xx=bsxfun(@minus,x,reshape(kP',1,size(kP,2),size(kP,1))); <span class="comment">%M x dim x N</span>
+0003     normXX=sqrt(sum(xx.^2,2)); <span class="comment">%M x 1 x N</span>
+0004     f=sum(sum((w'.*(squeeze(normXX)-kD')).^2)); <span class="comment">%scalar</span>
+0005     gg1=2*w'.^2.*(squeeze(normXX)-kD'); <span class="comment">%M x N</span>
+0006     gg2=bsxfun(@rdivide,xx,normXX); <span class="comment">%M x dim x N</span>
+0007     gg=bsxfun(@times,reshape(gg1,size(gg2,1),1,size(gg2,3)),gg2); <span class="comment">%M x dim x N</span>
+0008     g=sum(gg,3); <span class="comment">%M x dim</span>
+0009     g=g(:);
+0010 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

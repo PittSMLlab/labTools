@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spikeID</title>
+  <meta name="keywords" content="spikeID">
+  <meta name="description" content="expectedFiringRate should be in the [0,.5] interval, where .5 means it is">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">dimReduction</a> &gt; spikeID.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>spikeID
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>expectedFiringRate should be in the [0,.5] interval, where .5 means it is</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [APwaves,spikeTrains] = spikeID(timeSignal,k,featureSize,expectedFiringRate) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">expectedFiringRate should be in the [0,.5] interval, where .5 means it is
+expected to fire every other sample, and 0 means it never fires.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function J=J1(spikes,APwaves,timeSignal,correctedLambda)</a></li><li><a href="#_sub2" class="code">function J=J2(APwaves,spikes,timeSignal,correctedLambda)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [APwaves,spikeTrains] = spikeID(timeSignal,k,featureSize,expectedFiringRate)</a>
+0002 
+0003 <span class="comment">%expectedFiringRate should be in the [0,.5] interval, where .5 means it is</span>
+0004 <span class="comment">%expected to fire every other sample, and 0 means it never fires.</span>
+0005 
+0006 <span class="comment">%Compute appropriate weighing parameter for sparsity of spikes</span>
+0007 lambda=1/expectedFiringRate;
+0008 correctedLambda=length(timeSignal)*lambda/featureSize;
+0009 
+0010 
+0011 <span class="comment">%Initialize AP waveforms by finding the</span>
+0012 aux=conv(timeSignal,ones(featureSize,1),<span class="string">'same'</span>);
+0013 <span class="keyword">for</span> i=1:k
+0014     idx=find(max(abs(aux(1:end-featureSize))));
+0015     APwaves(i,:)=timeSignal(idx:idx+featureSize-1);
+0016     aux(idx:idx+featureSize-1)=0;
+0017 <span class="keyword">end</span>
+0018 
+0019 
+0020 <span class="comment">%Initialize spikeTrains</span>
+0021 <span class="keyword">for</span> i=1:k
+0022     spikes(:,i)=conv(timeSignal,APwaves(i,:)',<span class="string">'same'</span>)/norm(APwaves(i,:));
+0023     keepIdx=abs(spikes(:,i))&gt;=(1-expectedFiringRate)*(max(abs(spikes(:,i))));
+0024     spikes(:,i)=spikes(keepIdx,i);
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">%Initialize constants</span>
+0028 Niter=20;
+0029 iter=0;
+0030 
+0031 <span class="comment">%Iterate</span>
+0032 <span class="keyword">while</span> iter&lt;Niter
+0033     iter=iter+1
+0034     J(iter)=<a href="#_sub1" class="code" title="subfunction J=J1(spikes,APwaves,timeSignal,correctedLambda)">J1</a>(spikes,APwaves,timeSignal,correctedLambda);
+0035     
+0036     <span class="comment">%Update new waveforms</span>
+0037     <span class="keyword">for</span> i=1:k
+0038         auxTimeSignal=timeSignal;
+0039         <span class="keyword">for</span> j=1:k
+0040             <span class="keyword">if</span> j~=i
+0041                 auxTimeSignal=auxTimeSignal-conv(spikes(:,j),APwaves(j,:)',<span class="string">'same'</span>);
+0042             <span class="keyword">end</span>
+0043         <span class="keyword">end</span>
+0044         aaux=conv(spikes(:,i),APwaves(i,:),<span class="string">'same'</span>);
+0045         
+0046         APwaves(i,:)=APwaves(i,:)-.2*();
+0047         APwaves=fminunc(@(x) <a href="#_sub2" class="code" title="subfunction J=J2(APwaves,spikes,timeSignal,correctedLambda)">J2</a>(x,spikes,timeSignal,correctedLambda),APwaves);
+0048     
+0049 <span class="keyword">end</span>
+0050 
+0051 plot(J)
+0052 
+0053 <span class="keyword">end</span>
+0054 
+0055 <a name="_sub1" href="#_subfunctions" class="code">function J=J1(spikes,APwaves,timeSignal,correctedLambda)</a>
+0056 aux=zeros(size(timeSignal));
+0057 k=size(spikes,2);
+0058 <span class="keyword">for</span> i=1:k
+0059     aux=aux+conv(spikes(:,i),APwaves(i,:),<span class="string">'same'</span>);
+0060 <span class="keyword">end</span>
+0061     J=norm(aux-timeSignal)^2 + correctedLambda*sum(abs(spikes(:)))^2;
+0062 <span class="keyword">end</span>
+0063 
+0064 <a name="_sub2" href="#_subfunctions" class="code">function J=J2(APwaves,spikes,timeSignal,correctedLambda)</a>
+0065     aux=zeros(size(timeSignal));
+0066     k=size(spikes,2);
+0067     <span class="keyword">for</span> i=1:k
+0068         aux=aux+conv(spikes(:,i),APwaves(i,:),<span class="string">'same'</span>);
+0069     <span class="keyword">end</span>
+0070     J=norm(aux-timeSignal)^2;
+0071 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

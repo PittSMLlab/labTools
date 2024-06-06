@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of outlierFences</title>
+  <meta name="keywords" content="outlierFences">
+  <meta name="description" content="outlierFences detects outliers in data, using the 'fences' strategy, where">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">statTest</a> &gt; outlierFences.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/statTest&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>outlierFences
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>outlierFences detects outliers in data, using the 'fences' strategy, where</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [allOutliers,extremeOutliers] = outlierFences(data,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">outlierFences detects outliers in data, using the 'fences' strategy, where
+any data point more than 1.5 inter-quartile ranges away from the first or
+third quartile marks is deemed a 'mild' outlier, and any point more than 3
+IQRs away is an 'extreme' outlier
+ This function operates along columns of data.
+OUTPUT:
+Returns two binary matrices allOutliers and extremeOutliers, of the same
+size as data. Values equal to 1 indicate an outlier.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [allOutliers,extremeOutliers] = outlierFences(data,dim)</a>
+0002 <span class="comment">%outlierFences detects outliers in data, using the 'fences' strategy, where</span>
+0003 <span class="comment">%any data point more than 1.5 inter-quartile ranges away from the first or</span>
+0004 <span class="comment">%third quartile marks is deemed a 'mild' outlier, and any point more than 3</span>
+0005 <span class="comment">%IQRs away is an 'extreme' outlier</span>
+0006 <span class="comment">% This function operates along columns of data.</span>
+0007 <span class="comment">%OUTPUT:</span>
+0008 <span class="comment">%Returns two binary matrices allOutliers and extremeOutliers, of the same</span>
+0009 <span class="comment">%size as data. Values equal to 1 indicate an outlier.</span>
+0010 
+0011 <span class="comment">% if nargin&lt;2 || isempty(dim) || dim&lt;1</span>
+0012 <span class="comment">%     dim=1;</span>
+0013 <span class="comment">% end</span>
+0014 
+0015 Quartiles=quantile(data,4);
+0016 IQRs=Quartiles(3,:)-Quartiles(1,:); <span class="comment">%Computing IQR along columns</span>
+0017 k=[1.5,3]; <span class="comment">%Computing 2 classes of outliers</span>
+0018 outlierClass=cell(size(k));
+0019 <span class="keyword">for</span> i=1:length(k)
+0020     lowerThreshold=Quartiles(1,:)-k(i)*IQRs;
+0021     upperThreshold=Quartiles(3,:)+k(i)*IQRs;
+0022     outlierClass{i}=bsxfun(@lt, data(:,:), lowerThreshold) | bsxfun(@gt, data(:,:), upperThreshold);
+0023 <span class="keyword">end</span>
+0024 
+0025 allOutliers=reshape(outlierClass{1},size(data));
+0026 extremeOutliers=reshape(outlierClass{2},size(data));
+0027 
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

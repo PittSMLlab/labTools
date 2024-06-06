@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of COMCalculator</title>
+  <meta name="keywords" content="COMCalculator">
+  <meta name="description" content="CJS 5/2017  -- COMCalculator">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; COMCalculator.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>COMCalculator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>CJS 5/2017  -- COMCalculator</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [markerDataNEW] = COMCalculator(markerData, BW) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">CJS 5/2017  -- COMCalculator 
+ Takes marker data and will give you an approximation of the COM position
+ (1) If a HAT marker is present then a more correct version of the COM will be
+       Calculated using anthropometry tables from
+       (http://www.smf.org/docs/articles/hic/USAARL_88-5.pdf), winters,
+       and perhaps some assymptions from https://msis.jsc.nasa.gov/sections/section03.htm#3.3.7.3.2.1
+       WHICH ASSUMES: I am assuming that the arms don't affect anything because they are swinging completely counter clockwise to each other
+ (2) If not HAT marker is present than we will use the average of the hips
+       isntead.  I know what you are thinking!  Yes, the ASIS and PSIS
+       would be better (&quot;Alteration in the center of mass trajectory of 
+       patients after stroke&quot;), but people don't take the time to fill these
+       markers in so I think from than perspective, the hips are better.
+% Step 1: Get relevant marker data
+get orientation</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="computeCOM.html" class="code" title="function [ out ] = computeCOM( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT )">computeCOM</a>	UNTITLED2 Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [markerDataNEW] = COMCalculator(markerData, BW)</a>
+0002 <span class="comment">%CJS 5/2017  -- COMCalculator</span>
+0003 <span class="comment">% Takes marker data and will give you an approximation of the COM position</span>
+0004 <span class="comment">% (1) If a HAT marker is present then a more correct version of the COM will be</span>
+0005 <span class="comment">%       Calculated using anthropometry tables from</span>
+0006 <span class="comment">%       (http://www.smf.org/docs/articles/hic/USAARL_88-5.pdf), winters,</span>
+0007 <span class="comment">%       and perhaps some assymptions from https://msis.jsc.nasa.gov/sections/section03.htm#3.3.7.3.2.1</span>
+0008 <span class="comment">%       WHICH ASSUMES: I am assuming that the arms don't affect anything because they are swinging completely counter clockwise to each other</span>
+0009 <span class="comment">% (2) If not HAT marker is present than we will use the average of the hips</span>
+0010 <span class="comment">%       isntead.  I know what you are thinking!  Yes, the ASIS and PSIS</span>
+0011 <span class="comment">%       would be better (&quot;Alteration in the center of mass trajectory of</span>
+0012 <span class="comment">%       patients after stroke&quot;), but people don't take the time to fill these</span>
+0013 <span class="comment">%       markers in so I think from than perspective, the hips are better.</span>
+0014 <span class="comment">%% Step 1: Get relevant marker data</span>
+0015 <span class="comment">%get orientation</span>
+0016 <span class="keyword">if</span> isempty(markerData.orientation)
+0017     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0018     orientation=orientationInfo([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
+0019 <span class="keyword">else</span>
+0020     orientation=markerData.orientation;
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="comment">%get hip position</span>
+0024 RHip=markerData.getDataAsVector({[<span class="string">'RHIP'</span> orientation.sideAxis],[<span class="string">'RHIP'</span> orientation.foreaftAxis],[<span class="string">'RHIP'</span> orientation.updownAxis]});
+0025 RHip=[orientation.sideSign*RHip(:,1),orientation.foreaftSign*RHip(:,2),orientation.updownSign*RHip(:,3)];
+0026 LHip=markerData.getDataAsVector({[<span class="string">'LHIP'</span> orientation.sideAxis],[<span class="string">'LHIP'</span> orientation.foreaftAxis],[<span class="string">'LHIP'</span> orientation.updownAxis]});
+0027 LHip=[orientation.sideSign*LHip(:,1),orientation.foreaftSign*LHip(:,2),orientation.updownSign*LHip(:,3)];
+0028 
+0029 <span class="comment">% Define the marker data</span>
+0030 <span class="keyword">if</span> isempty(markerData.getLabelsThatMatch(<span class="string">'HAT'</span>)) <span class="comment">%we don't have the data we need to do this for realy, but we can use a proxy</span>
+0031     warning(<span class="string">'Not enough markers to calculate the COM, using the average of the hips as a proxy'</span>)
+0032     <span class="comment">%THe average of the pelvis would be better, but people don't usually</span>
+0033     <span class="comment">%take the time to fill these markers, so this will be more robust</span>
+0034     BCOM=[mean([RHip(:,1) LHip(:,1)], 2) mean([RHip(:,2) LHip(:,2)], 2) mean([RHip(:,3) LHip(:,3)], 2)];
+0035 <span class="keyword">else</span>
+0036     
+0037     <span class="comment">%get ankle position</span>
+0038     RAnk=markerData.getDataAsVector({[<span class="string">'RANK'</span> orientation.sideAxis],[<span class="string">'RANK'</span> orientation.foreaftAxis],[<span class="string">'RANK'</span> orientation.updownAxis]});
+0039     RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];
+0040     LAnk=markerData.getDataAsVector({[<span class="string">'LANK'</span> orientation.sideAxis],[<span class="string">'LANK'</span> orientation.foreaftAxis],[<span class="string">'LANK'</span> orientation.updownAxis]});
+0041     LAnk=[orientation.sideSign*LAnk(:,1),orientation.foreaftSign*LAnk(:,2),orientation.updownSign*LAnk(:,3)];
+0042     <span class="comment">%get knee position</span>
+0043     RKnee=markerData.getDataAsVector({[<span class="string">'RKNE'</span> orientation.sideAxis],[<span class="string">'RKNE'</span> orientation.foreaftAxis],[<span class="string">'RKNE'</span> orientation.updownAxis]});
+0044     RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
+0045     LKnee=markerData.getDataAsVector({[<span class="string">'LKNE'</span> orientation.sideAxis],[<span class="string">'LKNE'</span> orientation.foreaftAxis],[<span class="string">'LKNE'</span> orientation.updownAxis]});
+0046     LKnee=[orientation.sideSign*LKnee(:,1),orientation.foreaftSign*LKnee(:,2),orientation.updownSign*LKnee(:,3)];
+0047     <span class="comment">%get toe position</span>
+0048     RToe=markerData.getDataAsVector({[<span class="string">'RTOE'</span> orientation.sideAxis],[<span class="string">'RTOE'</span> orientation.foreaftAxis],[<span class="string">'RTOE'</span> orientation.updownAxis]});
+0049     RToe=[orientation.sideSign*RToe(:,1),orientation.foreaftSign*RToe(:,2),orientation.updownSign*RToe(:,3)];
+0050     LToe=markerData.getDataAsVector({[<span class="string">'LTOE'</span> orientation.sideAxis],[<span class="string">'LTOE'</span> orientation.foreaftAxis],[<span class="string">'LTOE'</span> orientation.updownAxis]});
+0051     LToe=[orientation.sideSign*LToe(:,1),orientation.foreaftSign*LToe(:,2),orientation.updownSign*LToe(:,3)];
+0052     <span class="comment">%get HAT position</span>
+0053     HAT=markerData.getDataAsVector({[<span class="string">'HAT'</span> orientation.sideAxis],[<span class="string">'HAT'</span> orientation.foreaftAxis],[<span class="string">'HAT'</span> orientation.updownAxis]});
+0054     HAT=[orientation.sideSign*HAT(:,1),orientation.foreaftSign*HAT(:,2),orientation.updownSign*HAT(:,3)];
+0055     
+0056     <span class="comment">%% Need to calculate the position of the center of mass of each segment</span>
+0057     
+0058     <span class="comment">%Foot:</span>
+0059     fcomxR=abs(RAnk(:,1)-RToe(:,1)).*.5+RToe(:,1); <span class="comment">%m</span>
+0060     fcomxL=abs(LAnk(:,1)-LToe(:,1)).*.5+LToe(:,1); <span class="comment">%m</span>
+0061     fcomyR=abs(RAnk(:,2)-RToe(:,2)).*.5+RToe(:,2); <span class="comment">%m</span>
+0062     fcomzR=abs(RAnk(:,3)-RToe(:,3)).*.5+RToe(:,3); <span class="comment">%m</span>
+0063     fcomyL=abs(LAnk(:,2)-LToe(:,2)).*.5+LToe(:,2); <span class="comment">%m</span>
+0064     fcomzL=abs(LAnk(:,3)-LToe(:,3)).*.5+LToe(:,3); <span class="comment">%m</span>
+0065     
+0066     fcomR=[fcomxR,fcomyR,fcomzR]; <span class="comment">%foot</span>
+0067     fcomL=[fcomxL,fcomyL,fcomzL];
+0068     
+0069     <span class="comment">%Shank: former I was using 0.394, but that is the whole leg, I just want</span>
+0070     <span class="comment">%the shank, 0.567 is closer to what I want but I need to recalculate</span>
+0071     display(<span class="string">'Updated Shank COM length?'</span>)
+0072     scomxR=abs(RKnee(:,1)-RAnk(:,1)).*.567+RAnk(:,1);
+0073     scomxL=abs(LKnee(:,1)-LAnk(:,1)).*.567+LAnk(:,1);
+0074     scomyR=abs(RKnee(:,2)-RAnk(:,2)).*.567+RAnk(:,2);
+0075     scomzR=abs(RKnee(:,3)-RAnk(:,3)).*.567+RAnk(:,3);
+0076     scomyL=abs(LKnee(:,2)-LAnk(:,2)).*.567+LAnk(:,2);
+0077     scomzL=abs(LKnee(:,3)-LAnk(:,3)).*.567+LAnk(:,3);
+0078     
+0079     scomR=[scomxR,scomyR,scomzR]; <span class="comment">%Shank</span>
+0080     scomL=[scomxL,scomyL,scomzL];
+0081     
+0082     <span class="comment">%Thigh:</span>
+0083     tcomxR=abs(RHip(:,1)-RKnee(:,1)).*.567+RKnee(:,1);
+0084     tcomxL=abs(LHip(:,1)-LKnee(:,1)).*.567+LKnee(:,1);
+0085     tcomyR=abs(RHip(:,2)-RKnee(:,2)).*.567+RKnee(:,2);
+0086     tcomzR=abs(RHip(:,3)-RKnee(:,3)).*.567+RKnee(:,3);
+0087     tcomyL=abs(LHip(:,2)-LKnee(:,2)).*.567+LKnee(:,2);
+0088     tcomzL=abs(LHip(:,3)-LKnee(:,3)).*.567+LKnee(:,3);
+0089     
+0090     tcomR=[tcomxR,tcomyR,tcomzR]; <span class="comment">%Thigh</span>
+0091     tcomL=[tcomxL,tcomyL,tcomzL];
+0092     
+0093     <span class="comment">%HAT: head, arms, trunk</span>
+0094     <span class="comment">% The distal distance from top of the head I calculated useing winter and</span>
+0095     <span class="comment">% the midsized pilot from this document (http://www.smf.org/docs/articles/hic/USAARL_88-5.pdf)</span>
+0096     HATcomx=abs(nanmean([RHip(:,1) LHip(:,1)], 2)-HAT(:,1)).*(1-0.697)+nanmean([RHip(:,1); LHip(:,1)]);
+0097     HATcomy=abs(nanmean([RHip(:,2) LHip(:,2)], 2)-HAT(:,2)).*(1-0.697)+nanmean([RHip(:,2); LHip(:,2)]);
+0098     HATcomz=abs(nanmean([RHip(:,3) LHip(:,3)], 2)-HAT(:,3)).*(1-0.697)+nanmean([RHip(:,3); LHip(:,3)]);
+0099     
+0100     HATcom=[HATcomx, HATcomy, HATcomz];
+0101     
+0102     <span class="comment">%% Need to compile whole body COM</span>
+0103     FootW=0.0145.*BW;
+0104     shankW=0.0465.*BW;
+0105     thighW=0.1.*BW;
+0106     HATW=0.71.*BW;
+0107     
+0108     BodyCOMx=(1/BW).*((fcomxR*FootW+scomxR*shankW+tcomxR*thighW)+(fcomxL*FootW+scomxL*shankW+tcomxL*thighW)+HATcomx*HATW);
+0109     BodyCOMy=(1/BW).*((fcomyR*FootW+scomyR*shankW+tcomyR*thighW)+(fcomyL*FootW+scomyL*shankW+tcomyL*thighW)+HATcomy*HATW);
+0110     BodyCOMz=(1/BW).*((fcomzR*FootW+scomzR*shankW+tcomzR*thighW)+(fcomzL*FootW+scomzL*shankW+tcomzL*thighW)+HATcomz*HATW);
+0111     
+0112     BCOM=[BodyCOMx, BodyCOMy, BodyCOMz];
+0113     <span class="comment">%% Save everything in an orientedLabTS</span>
+0114     COMData=[fcomR fcomL scomR scomL tcomR tcomL HATcom BCOM]; <span class="comment">%CJS note to self, change here to change what is stored in the COM</span>
+0115     labels={<span class="string">'RfCOMx'</span>,<span class="string">'RfCOMy'</span>,<span class="string">'RfCOMz'</span>,<span class="string">'LfCOMx'</span>,<span class="string">'LfCOMy'</span>,<span class="string">'LfCOMz'</span>, <span class="string">'RsCOMx'</span>,<span class="string">'RsCOMy'</span>,<span class="string">'RsCOMz'</span>,<span class="string">'LsCOMx'</span>,<span class="string">'LsCOMy'</span>,<span class="string">'LsCOMz'</span>,<span class="string">'RtCOMx'</span>,<span class="string">'RtCOMy'</span>,<span class="string">'RtCOMz'</span>,<span class="string">'LtCOMx'</span>, <span class="string">'LtCOMy'</span>,<span class="string">'LtCOMz'</span>,<span class="string">'HATCOMx'</span>,<span class="string">'HATCOMy'</span>,<span class="string">'HATCOMz'</span>,<span class="string">'BCOMx'</span>,<span class="string">'BCOMy'</span>,<span class="string">'BCOMz'</span>};
+0116 <span class="keyword">end</span>
+0117 
+0118 labelsBody={<span class="string">'BCOMx'</span>,<span class="string">'BCOMy'</span>,<span class="string">'BCOMz'</span>};
+0119 <span class="comment">%Pablo: creating orientedLabTS</span>
+0120 <span class="comment">%COMTS=orientedLabTimeSeries(COMData,markerData.Time(1),markerData.sampPeriod,labels(:),markerData.orientation);</span>
+0121 markerDataNEW=appendData(markerData,BCOM,labelsBody,markerData.orientation);
+0122 <span class="keyword">end</span>
+0123</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
