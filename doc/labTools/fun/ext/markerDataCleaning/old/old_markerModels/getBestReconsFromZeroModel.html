@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getBestReconsFromZeroModel</title>
+  <meta name="keywords" content="getBestReconsFromZeroModel">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; getBestReconsFromZeroModel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>getBestReconsFromZeroModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [altPos] = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li><li><a href="getPositionFromDistances.html" class="code" title="function [pos] = getPositionFromDistances(knownPositions,knownDistances,weights,initGuess)">getPositionFromDistances</a>	UNTITLED Summary of this function goes here</li><li><a href="getRotationAndTranslation.html" class="code" title="function [R,t,X1proy] = getRotationAndTranslation(X1,X2)">getRotationAndTranslation</a>	UNTITLED Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	UNTITLED6 Summary of this function goes here</li><li><a href="getBestReconsFromOneModel.html" class="code" title="function [altPos,likelihoods] = getBestReconsFromOneModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)">getBestReconsFromOneModel</a>	UNTITLED Summary of this function goes here</li><li><a href="getBestReconsFromZeroPlusModel.html" class="code" title="function [altPos] = getBestReconsFromZeroPlusModel(measuredPos,D,sD,meanPos,I,biasPos)">getBestReconsFromZeroPlusModel</a>	UNTITLED Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [altPos] = getBestReconsFromZeroModel(measuredPos,D,sD,meanPos,markersForReconstruction,biasPos)</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 X2=measuredPos;
+0005 [~,~,x0]=<a href="getRotationAndTranslation.html" class="code" title="function [R,t,X1proy] = getRotationAndTranslation(X1,X2)">getRotationAndTranslation</a>(meanPos(1:size(measuredPos,1),:),measuredPos);
+0006 
+0007 <span class="keyword">if</span> nargin&lt;5 || isempty(markersForReconstruction) <span class="comment">%If marker list not given, reconstructing everything</span>
+0008     markersForReconstruction=1:size(measuredPos,1);
+0009 <span class="keyword">end</span>
+0010 X2alt=X2;
+0011 <span class="keyword">if</span> nargin&lt;6 || isempty(biasPos)
+0012     biasPos=zeros(size(measuredPos));
+0013 <span class="keyword">end</span>
+0014 
+0015 measuredLike=<a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>(X2alt,D,sD);
+0016 measuredLike(isnan(measuredLike))=-1e3;
+0017 [~,markerOrder]=sort(measuredLike(markersForReconstruction),1,<span class="string">'ascend'</span>); <span class="comment">%Sorting likelihoods of measuredMarkers that need to be reconstructed</span>
+0018 lp=<a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>(measuredPos,D,sD);
+0019 
+0020 kP=X2;
+0021 kD=D(:,markersForReconstruction);
+0022 sD2=sD+diag(nan*diag(sD));
+0023 sD=sqrt(sD.^2+0); <span class="comment">%Adding some uncertainty for measurement errors (?)</span>
+0024 selfSD=min(sD2,[],1).*exp((lp+1));
+0025 <span class="comment">%Weight for same-marker will be inversely related to likelihood of measurement. Likelihood ~-1 weights measurement as the best reference marker, -2 weights it 1/e, -3 weights it 1/e^2</span>
+0026 selfSD=1e3*ones(size(selfSD))
+0027 kSD=sD+diag(selfSD); 
+0028 kSD=kSD(:,markersForReconstruction);
+0029     
+0030 <span class="keyword">for</span> i=1:length(markerOrder)
+0031     marker=markersForReconstruction(markerOrder(i)); <span class="comment">%Marker to reconstruct</span>
+0032     
+0033     w=1./kSD(:,marker); 
+0034     w=w/nansum(w);
+0035     wS=sort(w,<span class="string">'descend'</span>);
+0036     
+0037     idx=any(isnan(kP),2) | isnan(kD(:,marker)) | isnan(w) | (w&lt;(1/length(w)) &amp; w&lt;wS(4)); <span class="comment">%Eliminating missing markers &amp; very-low weights (preserving at least 4 reference markers)</span>
+0038     [X2alt(marker,:)] = <a href="getPositionFromDistances.html" class="code" title="function [pos] = getPositionFromDistances(knownPositions,knownDistances,weights,initGuess)">getPositionFromDistances</a>(kP(~idx,:),kD(~idx,marker),w(~idx),x0(marker,:)); <span class="comment">%Estimated reconstruction</span>
+0039     kP=X2alt; <span class="comment">%Update</span>
+0040 <span class="keyword">end</span>
+0041 altPos=X2alt+biasPos;
+0042 
+0043 <span class="keyword">end</span>
+0044</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

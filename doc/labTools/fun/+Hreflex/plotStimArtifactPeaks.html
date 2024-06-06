@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotStimArtifactPeaks</title>
+  <meta name="keywords" content="plotStimArtifactPeaks">
+  <meta name="description" content="PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">+Hreflex</a> &gt; plotStimArtifactPeaks.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/+Hreflex&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>plotStimArtifactPeaks
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id,trialNum,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA
+   Plot the H-reflex raw EMG traces for the proximal tibialis anterior
+ muscle with the identified stimulation artifact peaks highlighted with a
+ filled in triangle to verify that the indices found for the peaks are
+ correct for later H-reflex alignment and analysis.
+
+ input:
+   times: number of samples x 1 array with the time in seconds from the
+       start of the trial for each sample
+   rawEMG_TAP: 2 x 1 cell array of number of samples x 1 arrays for right
+       (cell 1) and left (cell 2) leg proximal TA muscle EMG signal (NOTE:
+       if one cell is input as empty array, that leg will not be plot)
+   indsPeaks: 2 x 1 cell array of number of peaks x 1 arrays of the
+       stimulation artifact peaks found by the algorithm
+   id: string or character array of participant / session ID for naming
+   trialNum: string or character array of the trial number for naming
+   thresh: OPTIONAL input for the threshold used to determine peaks
+   path: OPTIONAL input for saving figures (not saved if not provided)
+ output:
+   fig: handle object to the figure generated</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function plotSignalWithPeaks(x,y,inds,thresh)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id, </a><span class="keyword">...</span>
+0002     trialNum,varargin)
+0003 <span class="comment">%PLOTSTIMARTIFACTPEAKS Plot stimulation artifact peaks in proximal TA</span>
+0004 <span class="comment">%   Plot the H-reflex raw EMG traces for the proximal tibialis anterior</span>
+0005 <span class="comment">% muscle with the identified stimulation artifact peaks highlighted with a</span>
+0006 <span class="comment">% filled in triangle to verify that the indices found for the peaks are</span>
+0007 <span class="comment">% correct for later H-reflex alignment and analysis.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% input:</span>
+0010 <span class="comment">%   times: number of samples x 1 array with the time in seconds from the</span>
+0011 <span class="comment">%       start of the trial for each sample</span>
+0012 <span class="comment">%   rawEMG_TAP: 2 x 1 cell array of number of samples x 1 arrays for right</span>
+0013 <span class="comment">%       (cell 1) and left (cell 2) leg proximal TA muscle EMG signal (NOTE:</span>
+0014 <span class="comment">%       if one cell is input as empty array, that leg will not be plot)</span>
+0015 <span class="comment">%   indsPeaks: 2 x 1 cell array of number of peaks x 1 arrays of the</span>
+0016 <span class="comment">%       stimulation artifact peaks found by the algorithm</span>
+0017 <span class="comment">%   id: string or character array of participant / session ID for naming</span>
+0018 <span class="comment">%   trialNum: string or character array of the trial number for naming</span>
+0019 <span class="comment">%   thresh: OPTIONAL input for the threshold used to determine peaks</span>
+0020 <span class="comment">%   path: OPTIONAL input for saving figures (not saved if not provided)</span>
+0021 <span class="comment">% output:</span>
+0022 <span class="comment">%   fig: handle object to the figure generated</span>
+0023 
+0024 narginchk(5,7); <span class="comment">% verify correct number of input arguments</span>
+0025 
+0026 <span class="comment">% TODO: consider converting to a date object before performing the</span>
+0027 <span class="comment">% comparison, although string comparison seems to work just fine</span>
+0028 <span class="keyword">if</span> string(version(<span class="string">'-release'</span>)) &lt; &quot;2019b&quot; <span class="comment">% if version older than 2019b, ...</span>
+0029     error(<span class="string">'MATLAB version is not compatible with ''tiledlayout''.'</span>);
+0030 <span class="keyword">end</span>
+0031 
+0032 numOptArgs = length(varargin);
+0033 <span class="keyword">switch</span> numOptArgs
+0034     <span class="keyword">case</span> 0
+0035         thresh = nan;   <span class="comment">% default to Not-a-Number</span>
+0036         path = <span class="string">''</span>;      <span class="comment">% default to empty</span>
+0037     <span class="keyword">case</span> 1  <span class="comment">% one optional argument provided</span>
+0038         <span class="keyword">if</span> isnumeric(varargin{1})   <span class="comment">% if a number, ...</span>
+0039             thresh = varargin{1};   <span class="comment">% it is the threshold</span>
+0040             path = <span class="string">''</span>;
+0041         <span class="keyword">else</span>                        <span class="comment">% otherwise, ...</span>
+0042             path = varargin{1};     <span class="comment">% is is the file saving path</span>
+0043             thresh = nan;
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">case</span> 2  <span class="comment">% both optional arguments provided</span>
+0046         thresh = varargin{1};   <span class="comment">% first always stim artifact threshold</span>
+0047         path = varargin{2};     <span class="comment">% second always file saving path</span>
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">% set the figure to be full screen</span>
+0051 fig = figure(<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'OuterPosition'</span>,[0 0 1 1]);
+0052 
+0053 numLegs = sum(cellfun(@(x) ~isempty(x),rawEMG_TAP)); <span class="comment">% number of legs</span>
+0054 <span class="keyword">if</span> numLegs &gt; 2                  <span class="comment">% if cell array input incorrect length, ...</span>
+0055     error(<span class="string">'There must not be more than two input EMG signals.'</span>);
+0056 <span class="keyword">elseif</span> numLegs == 2             <span class="comment">% if right and left TAP data present, ...</span>
+0057     <span class="keyword">if</span> any(cellfun(@isempty,indsPeaks)) <span class="comment">% if missing peak index data, ...</span>
+0058         error([<span class="string">'Missing stimulation artifact peak index data for one '</span> <span class="keyword">...</span>
+0059             <span class="string">'or both legs.'</span>]);
+0060     <span class="keyword">end</span>
+0061     <span class="comment">% TODO: consider adding other subplots besides TAP EMG (e.g., forces</span>
+0062     <span class="comment">% or MG EMG)</span>
+0063     tl = tiledlayout(2,1,<span class="string">'TileSpacing'</span>,<span class="string">'tight'</span>);
+0064     <span class="keyword">if</span> ~isnan(thresh)           <span class="comment">% if threshold is input argument, ...</span>
+0065         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{1},indsPeaks{1},thresh);
+0066         title(<span class="string">'Right TAP'</span>);
+0067         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{2},indsPeaks{2},thresh);
+0068         title(<span class="string">'Left TAP'</span>);
+0069     <span class="keyword">else</span>                        <span class="comment">% otherwise, ...</span>
+0070         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{1},indsPeaks{1});
+0071         title(<span class="string">'Right TAP'</span>);
+0072         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{2},indsPeaks{2});
+0073         title(<span class="string">'Left TAP'</span>);
+0074     <span class="keyword">end</span>
+0075 <span class="keyword">elseif</span> numLegs == 1             <span class="comment">% if TAP data from only one leg, ...</span>
+0076     indLeg = find(cellfun(@(x) ~isempty(x),rawEMG_TAP));    <span class="comment">% leg index</span>
+0077     <span class="keyword">if</span> isempty(indsPeaks{indLeg})
+0078         error(<span class="string">'Missing stimulation artifact peak index data.'</span>);
+0079     <span class="keyword">end</span>
+0080     tl = tiledlayout(1,1,<span class="string">'TileSpacing'</span>,<span class="string">'tight'</span>);
+0081     <span class="keyword">if</span> indLeg == 1              <span class="comment">% if right leg, ...</span>
+0082         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{indLeg},indsPeaks{indLeg});
+0083         title(<span class="string">'Right TAP'</span>);
+0084     <span class="keyword">elseif</span> indLeg == 2          <span class="comment">% if left leg, ...</span>
+0085         <a href="#_sub1" class="code" title="subfunction plotSignalWithPeaks(x,y,inds,thresh)">plotSignalWithPeaks</a>(times,rawEMG_TAP{indLeg},indsPeaks{indLeg});
+0086         title(<span class="string">'Left TAP'</span>);
+0087     <span class="keyword">end</span>
+0088 <span class="keyword">else</span>                            <span class="comment">% otherwise, ...</span>
+0089     error(<span class="string">'There are no input EMG signals.'</span>);   <span class="comment">% no EMG data present</span>
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">% TODO: should y-axis limits be the same in case of both legs present?</span>
+0093 <span class="comment">% TODO: consider accepting labels as optional input argument</span>
+0094 xlabel(tl,<span class="string">'time (s)'</span>);  <span class="comment">% TODO: make work for either sample number or time</span>
+0095 ylabel(tl,<span class="string">'Raw EMG (V)'</span>);
+0096 title(tl,[id <span class="string">' - Trial'</span> trialNum <span class="string">' - Stimulation Artifact Peak Finding'</span>]);
+0097 
+0098 <span class="keyword">if</span> ~isempty(path)   <span class="comment">% if figure saving path provided as input argument, ...</span>
+0099     <span class="comment">% save figure</span>
+0100     saveas(gcf,[path id <span class="string">'_StimArtifactPeakFinding_Trial'</span> trialNum <span class="string">'.png'</span>]);
+0101     saveas(gcf,[path id <span class="string">'_StimArtifactPeakFinding_Trial'</span> trialNum <span class="string">'.fig'</span>]);
+0102 <span class="keyword">end</span>
+0103 
+0104 <span class="keyword">end</span>
+0105 
+0106 <a name="_sub1" href="#_subfunctions" class="code">function plotSignalWithPeaks(x,y,inds,thresh)</a>
+0107 
+0108 <span class="comment">% TODO: consider moving tile title into this helper function</span>
+0109 narginchk(3,4);                         <span class="comment">% only fourth input optional</span>
+0110 
+0111 nexttile;   <span class="comment">% advance to the next tile in tiled layout figure</span>
+0112 hold on;
+0113 <span class="comment">% below code is copied from MATLAB 'findpeaks' function to replicate</span>
+0114 hLine = plot(x,y,<span class="string">'Tag'</span>,<span class="string">'Signal'</span>);       <span class="comment">% plot signal line</span>
+0115 hAxes = ancestor(hLine,<span class="string">'Axes'</span>);
+0116 grid on;                                <span class="comment">% turn on grid</span>
+0117 <span class="keyword">if</span> length(y) &gt; 1
+0118     hAxes.XLim = hLine.XData([1 end]);  <span class="comment">% restrict x-axis limits</span>
+0119 <span class="keyword">end</span>
+0120 color = get(hLine,<span class="string">'Color'</span>);             <span class="comment">% use the color of the line</span>
+0121 line(hLine.XData(inds),y(inds),<span class="string">'Parent'</span>,hAxes,<span class="string">'Marker'</span>,<span class="string">'v'</span>, <span class="keyword">...</span>
+0122     <span class="string">'MarkerFaceColor'</span>,color,<span class="string">'LineStyle'</span>,<span class="string">'none'</span>,<span class="string">'Color'</span>,color,<span class="string">'tag'</span>,<span class="string">'Peak'</span>);
+0123 hold off;
+0124 <span class="keyword">if</span> nargin == 4  <span class="comment">% if there is a threshold input, ...</span>
+0125     yline(thresh,<span class="string">'r'</span>,<span class="string">'Peak Finding Threshold'</span>);     <span class="comment">% plot it</span>
+0126 <span class="keyword">end</span>
+0127 
+0128 <span class="keyword">end</span>
+0129</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

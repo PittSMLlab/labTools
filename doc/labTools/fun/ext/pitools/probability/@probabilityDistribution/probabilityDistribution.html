@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of probabilityDistribution</title>
+  <meta name="keywords" content="probabilityDistribution">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">probability</a> &gt; <a href="index.html">@probabilityDistribution</a> &gt; probabilityDistribution.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/probability/@probabilityDistribution&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>probabilityDistribution
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="probabilityDistribution.html" class="code" title="">probabilityDistribution</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="probabilityDistribution.html" class="code" title="">probabilityDistribution</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=probabilityDistribution()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="probabilityDistribution.html" class="code" title="">probabilityDistribution</a>
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         dimension
+0007         mean
+0008         cov
+0009         std
+0010         entropy
+0011         isConditional
+0012         isEmpiric
+0013         isParametric
+0014         isDiscrete
+0015     <span class="keyword">end</span>
+0016     
+0017     methods
+0018         <a name="_sub0" href="#_subfunctions" class="code">function this=probabilityDistribution()</a>
+0019             
+0020         <span class="keyword">end</span>
+0021         getMoment(dim,order)
+0022         getPDF(sampleGrid)
+0023         getCDF(sampleGrid)
+0024         getMutualInfo(dim1,dim2)
+0025         marginalize(dim)
+0026         drawSample(N)
+0027     <span class="keyword">end</span>
+0028     methods(Hidden)
+0029         
+0030     <span class="keyword">end</span>
+0031     
+0032     methods(Static)
+0033        newThis=getDistributionOfVariableSum(this,other)
+0034        newThis=getDistributionOfVariableProduct(this,other)
+0035        newThis=getJointDistribution(this,other)
+0036        
+0037     <span class="keyword">end</span>
+0038     
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

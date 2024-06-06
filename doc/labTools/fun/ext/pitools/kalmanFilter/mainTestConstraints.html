@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mainTestConstraints</title>
+  <meta name="keywords" content="mainTestConstraints">
+  <meta name="description" content="% Generate data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">kalmanFilter</a> &gt; mainTestConstraints.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/kalmanFilter&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>mainTestConstraints
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>% Generate data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Generate data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="circleConstraint.html" class="code" title="function [H,e,S]=circleConstraint(x)">circleConstraint</a>	x(1)^2+y(1)^2=1</li><li><a href="filterStationary.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary(Y,A,C,Q,R,x0,P0,B,D,U,outlierRejection)">filterStationary</a>	filterStationary implements a Kalman filter assuming</li><li><a href="filterStationary_wConstraint.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary_wConstraint(Y,A,C,Q,R,x0,P0,B,D,U,constFun)">filterStationary_wConstraint</a>	Same as filterStationary but allowing for a generic constraint model for the states.</li><li><a href="smoothStationary.html" class="code" title="function [Xs,Ps,X,P,Xp,Pp,rejSamples]=smoothStationary(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag,constFun)">smoothStationary</a>	Init missing params:</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Generate data</span>
+0002 N=1e3;
+0003 X=nan(2,N);
+0004 Y=nan(2,N);
+0005 X(:,1)=[1;0];
+0006 Y(:,1)=[1;0];
+0007 alpha=.1;
+0008 A=[cos(alpha) sin(alpha); -sin(alpha) cos(alpha)];
+0009 R=.1*eye(2);
+0010 r=sqrtm(R);
+0011 C=eye(2);
+0012 <span class="keyword">for</span> i=2:N
+0013   X(:,i)=A*X(:,i-1); <span class="comment">%Real Q is 0!</span>
+0014   Y(:,i)=C*X(:,i)+ r*randn(2,1);
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">%% Add S&amp;P noise</span>
+0018 idx=randi(N,20);
+0019 Y(:,idx)=5;
+0020 
+0021 <span class="comment">%% Run filter w/o constraint</span>
+0022 Q=.01*eye(2);
+0023 q=sqrtm(Q);
+0024 outRej=0; <span class="comment">%No outlier rejection</span>
+0025 x0=[1;0];
+0026 P0=1e3*ones(2);
+0027 B=[0;0];
+0028 D=[0;0];
+0029 U=zeros(1,N);
+0030 [Xs,Ps,Xp,Pp,rejSamples]=<a href="filterStationary.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary(Y,A,C,Q,R,x0,P0,B,D,U,outlierRejection)">filterStationary</a>(Y,A,C,Q,R,x0,P0,B,D,U,outRej);
+0031 
+0032 <span class="comment">%% Filter outliers</span>
+0033 outRej=1;
+0034 [Xs3,Ps3,Xp3,Pp3,rejSamples]=<a href="filterStationary.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary(Y,A,C,Q,R,x0,P0,B,D,U,outlierRejection)">filterStationary</a>(Y,A,C,Q,R,x0,P0,B,D,U,outRej);
+0035 
+0036 <span class="comment">%% Smooth w/outlier rejection</span>
+0037 [Xs4,Ps4,Xa,Pa,Xp,Pp,rejSamples]=<a href="smoothStationary.html" class="code" title="function [Xs,Ps,X,P,Xp,Pp,rejSamples]=smoothStationary(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag,constFun)">smoothStationary</a>(Y,A,C,Q,R,x0,P0,B,D,U,outRej);
+0038 <span class="comment">%% Run filter adding constraint</span>
+0039 constFun=@(x) <a href="circleConstraint.html" class="code" title="function [H,e,S]=circleConstraint(x)">circleConstraint</a>(x);
+0040 [Xs2,Ps2,Xp2,Pp2,rejSamples]=<a href="filterStationary_wConstraint.html" class="code" title="function [X,P,Xp,Pp,rejSamples]=filterStationary_wConstraint(Y,A,C,Q,R,x0,P0,B,D,U,constFun)">filterStationary_wConstraint</a>(Y,A,C,Q,R,x0,P0,B,D,U,constFun);
+0041 
+0042 <span class="comment">%% Smooth w/outlier rejection &amp; constraint</span>
+0043 [Xs5,Ps5,Xa5,Pa5,Xp5,Pp5,rejSamples]=<a href="smoothStationary.html" class="code" title="function [Xs,Ps,X,P,Xp,Pp,rejSamples]=smoothStationary(Y,A,C,Q,R,x0,P0,B,D,U,outRejFlag,constFun)">smoothStationary</a>(Y,A,C,Q,R,x0,P0,B,D,U,outRej,constFun);
+0044 
+0045 <span class="comment">%% Compare &amp; contrast</span>
+0046 figure; plot(Y(1,:),Y(2,:)); hold on; plot(Xs(1,:),Xs(2,:)); plot(Xs2(1,:),Xs2(2,:)); plot(Xs3(1,:),Xs3(2,:));plot(Xs4(1,:),Xs4(2,:)); plot(Xs5(1,:),Xs5(2,:))
+0047 figure; hold on; histogram(Xs(1,:)-X(1,:)); histogram(Xs2(1,:)-X(1,:)); histogram(Xs3(1,:)-X(1,:)); histogram(Xs4(1,:)-X(1,:));histogram(Xs5(1,:)-X(1,:));</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of EMG_traces_example</title>
+  <meta name="keywords" content="EMG_traces_example">
+  <meta name="description" content="%Traces from example subject to show how data is summarized">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">PlotEMGTraces</a> &gt; EMG_traces_example.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/PlotEMGTraces&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>EMG_traces_example
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%Traces from example subject to show how data is summarized</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%Traces from example subject to show how data is summarized</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%Traces from example subject to show how data is summarized</span>
+0002 
+0003 <span class="comment">%You can update this script to your data set</span>
+0004 <span class="comment">%Important is to load a ID.mat file</span>
+0005 <span class="comment">%Choose the conditions that you want to plot</span>
+0006 <span class="comment">%Hoe many strides you want to plot</span>
+0007 <span class="comment">%IF you want to plot the early or the late part of the conditions</span>
+0008 <span class="comment">% IF you want to ignore stides at the early part of the conditon</span>
+0009 
+0010 <span class="comment">%% Set muscle to plot</span>
+0011 muscle={ <span class="string">'TFL'</span>, <span class="string">'GLU'</span>,<span class="string">'HIP'</span>, <span class="string">'SEMB'</span>, <span class="string">'SEMT'</span>,<span class="string">'BF'</span>, <span class="string">'VM'</span>, <span class="string">'VL'</span>, <span class="string">'RF'</span>,<span class="string">'SOL'</span>, <span class="string">'LG'</span>, <span class="string">'MG'</span>,<span class="string">'TA'</span>, <span class="string">'PER'</span>}; <span class="comment">%muscles that you want to plot</span>
+0012 normalize = 1;  <span class="comment">% 1 to normalize data</span>
+0013 normCond = {<span class="string">'TM mid 1'</span>}; <span class="comment">% Condition that you want to use to normalize the data</span>
+0014 <span class="comment">%%</span>
+0015 <span class="comment">%% Baseline condtions</span>
+0016 <span class="comment">% Here we are plotting treadmill baseline for references</span>
+0017 conds={<span class="string">'TM base'</span>};
+0018 late=[1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0019 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0020 IgnoreStridesEarly=[1 1 1] ;  <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0021 
+0022 <span class="comment">%plotting function</span>
+0023 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
+0024 
+0025 <span class="comment">%% Baseline condtions for the 3 usual speeds</span>
+0026 <span class="comment">% Here we are okitting the late part of the different baseline conditions</span>
+0027 conds={<span class="string">'TM base'</span>,<span class="string">'TM fast'</span>,<span class="string">'TM slow'</span>, <span class="string">'OG base'</span>};
+0028 late=[1 1 1];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0029 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0030 IgnoreStridesEarly=[1 1 1] ; <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0031 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly);
+0032 
+0033 
+0034 <span class="comment">%%  Baseline plus early and late adaptation</span>
+0035 <span class="comment">% Here we are plotting treadmill baseline, early adaptation and late</span>
+0036 <span class="comment">% adaptation</span>
+0037 
+0038 conds={<span class="string">'TM base'</span>,<span class="string">'Adaptation'</span>,<span class="string">'Adaptation'</span>};
+0039 late=[1 0  1 ];  <span class="comment">%0 average of initial strides 1 average of the last strides</span>
+0040 strides=[40 40 40]; <span class="comment">% Number of strides that you are going to average</span>
+0041 IgnoreStridesEarly=[1 1 0]; <span class="comment">%number of strides that you are going to ignore at the beginning</span>
+0042 plotEMGtraces(expData,conds,muscle,late,strides,normalize,normCond,IgnoreStridesEarly); 
+0043 
+0044</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

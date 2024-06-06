@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sPCAv8</title>
+  <meta name="keywords" content="sPCAv8">
+  <meta name="description" content="sPCA or smooth PCA, aims at estimating a best-fit space-state model from">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">sPCA</a> &gt; sPCAv8.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction/sPCA&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sPCAv8
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>sPCA or smooth PCA, aims at estimating a best-fit space-state model from</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [model] = sPCAv8(Y,dynOrder,forcePCS,nullBD,outputUnderRank) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">sPCA or smooth PCA, aims at estimating a best-fit space-state model from
+given outputs Y, and assuming constant input. It is similar to cPCA, but
+it doesn't purposefully identify the canonical states
+It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D
+where C are the first #order PCs from PCA, and A is a matrix with strictly real
+&amp; different eigen-vectors (no complex or double-pole solutions allowed)
+X is scaled such that X(0)=1 for all states.
+INPUTS:
+Y = N x D data matrix, representing N samples of d-dimensional data
+order: number of principal components to be estimated
+forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs
+nullBD: flag that forces
+OUTPUTS:
+C: D x order matrix, representing map from states to output (Y) minus constant (D)
+A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B
+X: smoothed state estimators
+B:
+D:
+r2: r^2 of data to reconstruction
+See also: <a href="estimateDynv2.html" class="code" title="function [J,B,Xh] = estimateDynv2(X, realPolesOnly, nullB, J0)">estimateDynv2</a>.m
+Changes in v8: change <a href="estimateDynv3.html" class="code" title="function [J,Xh,V,K] = estimateDynv3(X, realPolesOnly, nullK, J0)">estimateDynv3</a> to v3b, which uses multiple random initialization points to get better convergence.
+ Pablo A. Iturralde - Univ. of Pittsburgh - Last rev: Oct 1st 2017 %Need
+ to update description</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="chngInitState.html" class="code" title="function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)">chngInitState</a>	Taking an SSM-LTI with some given state trajectories, we can re-define</li><li><a href="estimateDynv3b.html" class="code" title="function [J,Xh,V,K,r2] = estimateDynv3b(X, realPolesOnly, nullK, J0)">estimateDynv3b</a>	estimateDyn for a given vector X, it estimates matrices J,B,V such that</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model] = sPCAv8(Y,dynOrder,forcePCS,nullBD,outputUnderRank)</a>
+0002 <span class="comment">%sPCA or smooth PCA, aims at estimating a best-fit space-state model from</span>
+0003 <span class="comment">%given outputs Y, and assuming constant input. It is similar to cPCA, but</span>
+0004 <span class="comment">%it doesn't purposefully identify the canonical states</span>
+0005 <span class="comment">%It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D</span>
+0006 <span class="comment">%where C are the first #order PCs from PCA, and A is a matrix with strictly real</span>
+0007 <span class="comment">%&amp; different eigen-vectors (no complex or double-pole solutions allowed)</span>
+0008 <span class="comment">%X is scaled such that X(0)=1 for all states.</span>
+0009 <span class="comment">%INPUTS:</span>
+0010 <span class="comment">%Y = N x D data matrix, representing N samples of d-dimensional data</span>
+0011 <span class="comment">%order: number of principal components to be estimated</span>
+0012 <span class="comment">%forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs</span>
+0013 <span class="comment">%nullBD: flag that forces</span>
+0014 <span class="comment">%OUTPUTS:</span>
+0015 <span class="comment">%C: D x order matrix, representing map from states to output (Y) minus constant (D)</span>
+0016 <span class="comment">%A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B</span>
+0017 <span class="comment">%X: smoothed state estimators</span>
+0018 <span class="comment">%B:</span>
+0019 <span class="comment">%D:</span>
+0020 <span class="comment">%r2: r^2 of data to reconstruction</span>
+0021 <span class="comment">%See also: estimateDynv2.m</span>
+0022 <span class="comment">%Changes in v8: change estimateDynv3 to v3b, which uses multiple random initialization points to get better convergence.</span>
+0023 <span class="comment">% Pablo A. Iturralde - Univ. of Pittsburgh - Last rev: Oct 1st 2017 %Need</span>
+0024 <span class="comment">% to update description</span>
+0025 
+0026 
+0027 <span class="keyword">if</span> nargin&lt;2 || isempty(dynOrder)
+0028     dynOrder=2; <span class="comment">%Minimum order for which this makes sense</span>
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> nargin&lt;3 || isempty(forcePCS)
+0031     forcePCS=false; <span class="comment">%If true, this flag forces the columns of C to lie in the subspace spanned by the first #order PCs from PCA</span>
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;4 || isempty(nullBD)
+0034     nullBD=false;
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin&lt;5 || isempty(outputUnderRank)
+0037     outputUnderRank=0;
+0038 <span class="keyword">end</span>
+0039 
+0040 NN=size(Y,1); <span class="comment">%Number of samples</span>
+0041 DD=size(Y,2); <span class="comment">%Dimensionality of data</span>
+0042 realPolesOnly=true; <span class="comment">%Only acceptable value right now</span>
+0043 rankC=dynOrder-outputUnderRank;
+0044 
+0045 <span class="comment">%% Find a first solution: PCA + dynamic fit over PCA coefficients: fast and good enough</span>
+0046 rankD=0;
+0047 <span class="keyword">if</span> ~nullBD
+0048     rankD=1;
+0049 <span class="keyword">end</span>
+0050 rankCD=rankC+rankD;
+0051 [p,c]=pca(Y',<span class="string">'Centered'</span>,false); <span class="comment">%Do PCA to extract the #order most meaningful PCs:</span>
+0052 CD=c(:,1:rankCD);
+0053 P=p(:,1:rankCD)';
+0054 
+0055 <span class="comment">%Estimate dynamics from PCA:</span>
+0056 [J,X,V,K] = <a href="estimateDynv3b.html" class="code" title="function [J,Xh,V,K,r2] = estimateDynv3b(X, realPolesOnly, nullK, J0)">estimateDynv3b</a>(P, realPolesOnly, nullBD, dynOrder);
+0057 <span class="comment">%EstimateDynv3 returns states X such that states are exponentially decaying</span>
+0058 <span class="comment">%(except constant term, if present) so asymptotic state is 0, and initial</span>
+0059 <span class="comment">%states are all =1.</span>
+0060 CD=CD*[V K]; <span class="comment">%Equivalent to: CD=(CD*P)/X; %Rotating PCs</span>
+0061 <span class="comment">%r2=1-norm(Y'-(CD*X),'fro')^2/norm(Y','fro')^2</span>
+0062 
+0063 <span class="keyword">if</span> ~forcePCS
+0064     <span class="comment">%Iterate for optimal solution:</span>
+0065     ii=0;
+0066     <span class="keyword">while</span> ii&lt;5 <span class="comment">%For some reason this converges very quickly (more iterations return very fast, no cost really in having them)</span>
+0067     CD=Y'/X; <span class="comment">%Compute optimal subspace given states trajectories</span>
+0068     <span class="comment">%r2=1-norm(Y'-(CD*X),'fro')^2/norm(Y','fro')^2</span>
+0069     <span class="keyword">if</span> outputUnderRank&gt;0 &amp;&amp; size(CD,1)&gt;=rankC   <span class="comment">%Need to reduce rank: using reduced-rank reg when dim data =&gt; M</span>
+0070         <span class="comment">%See: https://stats.stackexchange.com/questions/152517/what-is-reduced-rank-regression-all-about</span>
+0071         Yfit=CD*X;
+0072         [ww,hh,aa]=pca(Yfit',<span class="string">'Centered'</span>,false);
+0073         CD=ww(:,1:rankCD)*ww(:,1:rankCD)'*CD;
+0074     <span class="keyword">end</span>
+0075     [J,X,V,K] = <a href="estimateDynv3b.html" class="code" title="function [J,Xh,V,K,r2] = estimateDynv3b(X, realPolesOnly, nullK, J0)">estimateDynv3b</a>(CD\Y', realPolesOnly, nullBD, J); <span class="comment">% Compute optimal states given projection onto subspace</span>
+0076     CD=CD*[V K]; <span class="comment">%Re-expressing subspace basis in canonically-decoupled states</span>
+0077     <span class="comment">%r2=1-norm(Y'-(CD*X),'fro')^2/norm(Y','fro')^2</span>
+0078     ii=ii+1;
+0079     <span class="keyword">end</span>
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">%% Decompose solution:</span>
+0083 C=CD(:,1:rankC);
+0084 X=X(1:rankC,:);
+0085 D=CD(:,[rankC+1:end]); <span class="comment">%Empty if nullBD==true</span>
+0086 B=zeros(size(X,1),1); <span class="comment">%This is by convention of estimateDynv3 results</span>
+0087 
+0088 <span class="comment">%% Normalize columns of C as convention (and normalize X accordingly)</span>
+0089 scale=sqrt(sum(C.^2));
+0090 C=bsxfun(@rdivide,C,scale);
+0091 X=bsxfun(@times,X,scale');
+0092 
+0093 <span class="comment">%% Change initial states, as convention, when nullBD~=0 such that x(0)=0 and states grow</span>
+0094 <span class="keyword">if</span> ~nullBD
+0095     [B,D,X]=<a href="chngInitState.html" class="code" title="function [B1,D1,X1]=chngInitState(A,B,C,D,X,newX0)">chngInitState</a>(J,B,C,D,X,zeros(size(X,1),1));
+0096     B=-B;
+0097     C=-C;
+0098     X=-X;
+0099 <span class="keyword">end</span>
+0100 <span class="comment">%% Reconstruction values:</span>
+0101 <span class="comment">%rA=1-norm(X(:,2:end)-J*X(:,1:end-1)-B,'fro')^2/norm(Y','fro')^2 %This has to be exactly 1</span>
+0102 r2=1-norm(Y'-([C D]*[X; ones(size(D,2),size(X,2))]),<span class="string">'fro'</span>)^2/norm(Y',<span class="string">'fro'</span>)^2;
+0103 
+0104 <span class="comment">%% Assign outputs:</span>
+0105 model.C=C;
+0106 model.J=J;
+0107 model.X=X;
+0108 model.B=B;
+0109 model.D=D;
+0110 model.r2=r2;
+0111 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

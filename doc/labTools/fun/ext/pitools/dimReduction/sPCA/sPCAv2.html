@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sPCAv2</title>
+  <meta name="keywords" content="sPCAv2">
+  <meta name="description" content="sPCA or smooth PCA, aims at estimating a best-fit space-state model from">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">dimReduction</a> &gt; <a href="index.html">sPCA</a> &gt; sPCAv2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction/sPCA&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sPCAv2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>sPCA or smooth PCA, aims at estimating a best-fit space-state model from</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [C,J,X,B,D,r2,V] = sPCAv2(Y,order,forcePCS,nullBD) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">sPCA or smooth PCA, aims at estimating a best-fit space-state model from
+given outputs Y, and assuming constant input. It is similar to cPCA, but
+it doesn't purposefully identify the canonical states
+It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D
+where C are the first #order PCs from PCA, and A is a matrix with strictly real 
+&amp; different eigen-vectors (no complex or double-pole solutions allowed)
+X is scaled such that X(0)=1 for all states.
+INPUTS:
+Y = N x D data matrix, representing N samples of d-dimensional data
+order: number of principal components to be estimated
+forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs
+OUTPUTS:
+C: D x order matrix, representing map from states to output (Y) minus constant (D)
+A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B
+X: smoothed state estimators
+B:
+D:
+r2: r^2 of data to reconstruction
+V: transformation from PCA's PCs to canonic states (only makes sense if forcePCS=true)
+See also: sPCA_knownYinf</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="estimateDyn.html" class="code" title="function [J,B,Xh,V] = estimateDyn(X, realPolesOnly, nullB, J0)">estimateDyn</a>	estimateDyn for a given vector X, it estimates matrices J,B,V such that</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C,J,X,B,D,r2,V] = sPCAv2(Y,order,forcePCS,nullBD)</a>
+0002 <span class="comment">%sPCA or smooth PCA, aims at estimating a best-fit space-state model from</span>
+0003 <span class="comment">%given outputs Y, and assuming constant input. It is similar to cPCA, but</span>
+0004 <span class="comment">%it doesn't purposefully identify the canonical states</span>
+0005 <span class="comment">%It returns the a (best in some sense?) fit of the form Y'~C*X + B ; with X(i+1,:)=A*X(i,:)+D</span>
+0006 <span class="comment">%where C are the first #order PCs from PCA, and A is a matrix with strictly real</span>
+0007 <span class="comment">%&amp; different eigen-vectors (no complex or double-pole solutions allowed)</span>
+0008 <span class="comment">%X is scaled such that X(0)=1 for all states.</span>
+0009 <span class="comment">%INPUTS:</span>
+0010 <span class="comment">%Y = N x D data matrix, representing N samples of d-dimensional data</span>
+0011 <span class="comment">%order: number of principal components to be estimated</span>
+0012 <span class="comment">%forcePCS: flag to indicate if the solution is constrained to be a linear transformation of the PCA subspace determined by first #order PCs</span>
+0013 <span class="comment">%OUTPUTS:</span>
+0014 <span class="comment">%C: D x order matrix, representing map from states to output (Y) minus constant (D)</span>
+0015 <span class="comment">%A: evolution matrix for states, such that X(:,i+1)=A*X(:,i)+B</span>
+0016 <span class="comment">%X: smoothed state estimators</span>
+0017 <span class="comment">%B:</span>
+0018 <span class="comment">%D:</span>
+0019 <span class="comment">%r2: r^2 of data to reconstruction</span>
+0020 <span class="comment">%V: transformation from PCA's PCs to canonic states (only makes sense if forcePCS=true)</span>
+0021 <span class="comment">%See also: sPCA_knownYinf</span>
+0022 
+0023 <span class="comment">% Pablo A. Iturralde - Univ. of Pittsburgh - Last rev: Jun 14th 2017 %Need</span>
+0024 <span class="comment">% to update description</span>
+0025 
+0026 
+0027 <span class="keyword">if</span> nargin&lt;2 || isempty(order)
+0028     order=2; <span class="comment">%Minimum order for which this makes sense</span>
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> nargin&lt;3 || isempty(forcePCS)
+0031     forcePCS=false; <span class="comment">%If true, this flag forces the columns of C to lie in the subspace spanned by the first #order PCs from PCA</span>
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;4 || isempty(nullBD)
+0034     nullBD=false;
+0035 <span class="keyword">end</span>
+0036 
+0037 NN=size(Y,1); <span class="comment">%Number of samples</span>
+0038 DD=size(Y,2); <span class="comment">%Dimensionality of data</span>
+0039 
+0040 <span class="comment">%Do PCA to extract the #order most meaningful PCs:</span>
+0041 mY=mean(Y,1);
+0042 mY=0;
+0043 [p,c,a]=pca((Y-mY)',<span class="string">'Centered'</span>,false);
+0044 <span class="keyword">if</span> ~nullBD
+0045     CD=c(:,1:order+1);
+0046     P=p(:,1:order+1)';
+0047     r2pca=sum(a(1:order+1))/sum(a);
+0048 <span class="keyword">else</span>
+0049     CD=c(:,1:order);
+0050     P=p(:,1:order);
+0051     r2pca=sum(a(1:order))/sum(a)
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%% Optimize to find best decaying exponential fits:</span>
+0055 realPolesOnly=true;
+0056 <span class="keyword">if</span> ~forcePCS
+0057     maxIter=1; <span class="comment">%Apparently iterating does NOT improve performance (in fact, it makes it worse)</span>
+0058     <span class="comment">%Intuitively, it seems there has to be a convergence issue in estimateDyn.</span>
+0059     <span class="comment">%Alternatively, it may be that the decoupling of the problem into PCA +</span>
+0060     <span class="comment">%smooth dynamics only works appropriately for PCA space</span>
+0061     <span class="comment">%**After making changes such that P always has orthogonal columns (to</span>
+0062     <span class="comment">%avoid ill-conditioned situations that may be numerically hard)</span>
+0063     <span class="comment">%performance is still the same or (very slightly) worse. This suggests</span>
+0064     <span class="comment">%that orthogonality of P is needed for this to work well.**</span>
+0065 <span class="keyword">else</span>
+0066     maxIter=1; <span class="comment">%No need to iterate, since CD doesn't change</span>
+0067 <span class="keyword">end</span>
+0068 iter=0;
+0069 J=[];
+0070 <span class="keyword">while</span> iter&lt;maxIter
+0071     iter=iter+1;
+0072     [J,B,X,V] = <a href="estimateDyn.html" class="code" title="function [J,B,Xh,V] = estimateDyn(X, realPolesOnly, nullB, J0)">estimateDyn</a>(P, realPolesOnly, nullBD,J);
+0073     <span class="keyword">if</span> iter==1
+0074         CD=(CD*P)/X;
+0075     <span class="keyword">end</span>
+0076     <span class="keyword">if</span> ~forcePCS
+0077         CD=Y'/X; <span class="comment">%This allows CD to escape the subspace spanned by the PCs from PCA, and improves r2 slightly</span>
+0078     <span class="keyword">end</span>
+0079     
+0080     <span class="comment">%This is only needed if we want to iterate:</span>
+0081     <span class="comment">%[P,CD2,a]=pca(CD\Y','Centered',false);</span>
+0082     <span class="comment">%P=P';</span>
+0083 <span class="keyword">end</span>
+0084 
+0085 C=CD(:,1:order);
+0086 <span class="keyword">if</span> ~nullBD
+0087     D=CD(:,order+1);
+0088     X=X(1:order,:);
+0089 <span class="keyword">else</span>
+0090     D=0;
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">%Reconstruction value:</span>
+0094 rA=1-norm(X(:,2:end)-J*X(:,1:end-1)-B,<span class="string">'fro'</span>)^2/norm(Y',<span class="string">'fro'</span>)^2 <span class="comment">%This has to be 1</span>
+0095 r2(1)=1-norm(Y'-(C*X+D),<span class="string">'fro'</span>)^2/norm(Y',<span class="string">'fro'</span>)^2;
+0096 r2(2)=1-norm(Y'-(C*X+D),<span class="string">'fro'</span>)^2/norm(Y'-D,<span class="string">'fro'</span>)^2;
+0097 <span class="keyword">end</span>
+0098</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

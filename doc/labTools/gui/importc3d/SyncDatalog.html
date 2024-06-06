@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SyncDatalog</title>
+  <meta name="keywords" content="SyncDatalog">
+  <meta name="description" content="Synchronize the datlog with the rawExpData using the force signal.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; SyncDatalog.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SyncDatalog
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Synchronize the datlog with the rawExpData using the force signal.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Synchronize the datlog with the rawExpData using the force signal.
+ In each trial's datalog will have a new field datlog.dataLogTimeOffsetBest, 
+ which = delay in seconds between (datlog - rawExpData) 
+ where positive number means datlog started after rawExpData, which is
+ usually the case, unless the trial has been cut in Vicon. 
+ This function assume the datlog has already been loaded in
+ rawExpData.metaData.datlog{trial} and that object will be updated. 
+
+ OUTPUTARGS:
+           -rawExpData: the same rawExpeirmentData object in inputarg with datlog updated
+                   with the new field dataLogTimeOffsetBest
+ INPUTARGS: 
+           - rawExpData: rawExperimentData object with datlog loaded.
+           - synImgSavePath: string, the directory to save the datlog sync
+                   result image. 
+ Examples: 
+ [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)
+ next can do:
+ TMReadSyncedTime = rawExpData.metaData.datlog{trial}.dataLogTimeOffsetBest +
+ rawExpData.metaData.datlog{trial}.TreadmillCommands.read(:,5)
+ 
+ See also: <a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)">SepCondsInExpByAudioCue</a>.m</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)</a>
+0002 <span class="comment">%Synchronize the datlog with the rawExpData using the force signal.</span>
+0003 <span class="comment">% In each trial's datalog will have a new field datlog.dataLogTimeOffsetBest,</span>
+0004 <span class="comment">% which = delay in seconds between (datlog - rawExpData)</span>
+0005 <span class="comment">% where positive number means datlog started after rawExpData, which is</span>
+0006 <span class="comment">% usually the case, unless the trial has been cut in Vicon.</span>
+0007 <span class="comment">% This function assume the datlog has already been loaded in</span>
+0008 <span class="comment">% rawExpData.metaData.datlog{trial} and that object will be updated.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% OUTPUTARGS:</span>
+0011 <span class="comment">%           -rawExpData: the same rawExpeirmentData object in inputarg with datlog updated</span>
+0012 <span class="comment">%                   with the new field dataLogTimeOffsetBest</span>
+0013 <span class="comment">% INPUTARGS:</span>
+0014 <span class="comment">%           - rawExpData: rawExperimentData object with datlog loaded.</span>
+0015 <span class="comment">%           - synImgSavePath: string, the directory to save the datlog sync</span>
+0016 <span class="comment">%                   result image.</span>
+0017 <span class="comment">% Examples:</span>
+0018 <span class="comment">% [rawExpData] = SyncDatalog(rawExpData, syncImgSavePath)</span>
+0019 <span class="comment">% next can do:</span>
+0020 <span class="comment">% TMReadSyncedTime = rawExpData.metaData.datlog{trial}.dataLogTimeOffsetBest +</span>
+0021 <span class="comment">% rawExpData.metaData.datlog{trial}.TreadmillCommands.read(:,5)</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% See also: SepCondsInExpByAudioCue.m</span>
+0024 
+0025 <span class="comment">% $Author: Shuqi Liu $    $Date: 2024/05/22 13:24:55 $    $Revision: 0.1 $</span>
+0026 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2024</span>
+0027 
+0028 <span class="comment">%% Create a save folder if doesn't exist.</span>
+0029 <span class="keyword">if</span> ~isfolder(syncImgSavePath)
+0030     mkdir(syncImgSavePath)
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% find time shifts btw datlog F and rawExpData F</span>
+0034 trials = cell2mat(rawExpData.metaData.trialsInCondition);
+0035 
+0036 <span class="keyword">for</span> trialIdx = trials
+0037     <span class="keyword">if</span> ~strcmpi(rawExpData.data{trialIdx}.metaData.type,<span class="string">'TM'</span>)
+0038         <span class="keyword">continue</span>; <span class="comment">%skip non TM trials, no force data</span>
+0039     <span class="keyword">end</span>
+0040     
+0041     <span class="comment">% Find force from data log and upsample to 2000Hz</span>
+0042     datlog = rawExpData.metaData.datlog{trialIdx};
+0043     <span class="keyword">try</span>
+0044     totalTime = datlog.forces.data(<span class="keyword">end</span>,5); <span class="comment">% in seconds</span>
+0045     <span class="keyword">catch</span> ME
+0046         warning(<span class="string">'No force data found in datlog for trial %d. Ignore datlog synching for this trial.'</span>, trialIdx)
+0047         <span class="keyword">continue</span>
+0048     <span class="keyword">end</span>
+0049 
+0050     currTrial = rawExpData.data{trialIdx};
+0051     sampleFrq = currTrial.GRFData.sampFreq;
+0052     intervalAt2000 = 0:1/sampleFrq:totalTime;
+0053     <span class="comment">%1st arg is time, 2nd arg is data,  %{'frame #','U time','Rfz','Lfz','Relative Time'}</span>
+0054     FL_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,4),intervalAt2000)';
+0055     FR_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,3),intervalAt2000)';
+0056 
+0057     <span class="comment">% find force data from rawExpData.</span>
+0058     labelIdx = ismember(currTrial.GRFData.labels,{<span class="string">'LFz'</span>,<span class="string">'RFz'</span>}); <span class="comment">%TODO: add new labels here</span>
+0059     force_rawData = currTrial.GRFData.Data(:,labelIdx);
+0060 <span class="comment">%     force_rawData = [zeros(24000,2);force_rawData]; %if both fail could</span>
+0061 <span class="comment">%     try to pad some zeros in the beginnign to see if that helps.</span>
+0062 
+0063     <span class="comment">% attempt to align the signals.</span>
+0064     tL = finddelay(FL_datlog,force_rawData(:,1)); <span class="comment">%delay from t2-t1, if &gt;0, means t2 started later or t1 has fewer data</span>
+0065     tR = finddelay(FR_datlog,force_rawData(:,2)); <span class="comment">%delay from t2-t1</span>
+0066     <span class="comment">%in theory tL and tR should be very similar</span>
+0067     
+0068     <span class="comment">% %use Matlab's built function to align to the earliest signal (this should</span>
+0069     <span class="comment">% %be the same to our manual approach when force_rawData starts early),</span>
+0070     <span class="comment">% %we want more control to always shift datlog only regardless of which signal is easier,</span>
+0071     <span class="comment">% %so will use our own approach. Remove comments for debugging and</span>
+0072     <span class="comment">% %checking plot1 below.</span>
+0073     <span class="comment">% [aligndataLogL, alignFRawL] = alignsignals(FL_datlog,force_rawData(:,1));</span>
+0074     <span class="comment">% [aligndataLogR, alignFRawR] = alignsignals(FR_datlog,force_rawData(:,2));</span>
+0075 
+0076 <span class="comment">%     alignedToRawL = all(alignFRawL == force_rawData(:,1)); %this should be true, the raw exp data doesn't need to be padded, unless th trial</span>
+0077 <span class="comment">%   % has been cut short manually in post-processing in Vicon</span>
+0078 <span class="comment">%     alignedToRawR = all(alignFRawR == force_rawData(:,2)); %this should be true, the raw exp data doesn't need to be padded</span>
+0079 <span class="comment">%     if ~alignedToRawL %not aligned properly, raw data is shorter (should never happen)</span>
+0080 <span class="comment">%         warning('Raw data for L is shorter than data log. This should never happen. \n')</span>
+0081 <span class="comment">%     end</span>
+0082 <span class="comment">%     if ~alignedToRawR %not aligned properly, raw data is shorter (should never happen)</span>
+0083 <span class="comment">%         warning('Raw data for R is shorter than data log. This should never happen. \n')</span>
+0084 <span class="comment">%     end</span>
+0085     
+0086     <span class="comment">%% Calculate a parameter to measure how good is the sync</span>
+0087     <span class="keyword">if</span> tL &gt;0
+0088         FL_raw_aligned = force_rawData(tL:<span class="keyword">end</span>,1); <span class="comment">%select from delay and forward in raw forces</span>
+0089         [sync,refSync]=truncateToSameLength(FL_datlog,FL_raw_aligned);<span class="comment">%truncate end</span>
+0090         FL_datlog = [zeros(tL,1);FL_datlog]; <span class="comment">%padd datlog in the front</span>
+0091     <span class="keyword">else</span> <span class="comment">%Force actually have fewer samples</span>
+0092         [sync,refSync]=truncateToSameLength(FL_datlog(-tL:end),force_rawData(:,1));<span class="comment">%truncate end</span>
+0093         FL_datlog = FL_datlog(-tL:end); <span class="comment">%trim datlog in the front, always align to force.</span>
+0094         warning(<span class="string">'Trial %d The raw data starts before or had more samples than datlog. This should not happen unless the trial has been cut in Vicon. Recommend fixing it.'</span>,trialIdx)
+0095     <span class="keyword">end</span>
+0096     gain1=refSync'/sync(:,1)';
+0097     sync=sync*gain1;
+0098     signalCorrL = corr(sync, refSync);
+0099     
+0100     <span class="keyword">if</span> tR &gt;0
+0101         FR_raw_aligned = force_rawData(tR:<span class="keyword">end</span>,2); <span class="comment">%select from delay and forward in raw forces</span>
+0102         [sync,refSync]=truncateToSameLength(FR_datlog,FR_raw_aligned);<span class="comment">%truncate end</span>
+0103         FR_datlog = [zeros(tR,1);FR_datlog]; <span class="comment">%padd datlog in the front</span>
+0104     <span class="keyword">else</span> <span class="comment">%Force actually have fewer samples</span>
+0105         [sync,refSync]=truncateToSameLength(FR_datlog(-tR:end),force_rawData(:,2));<span class="comment">%truncate end</span>
+0106         FR_datlog = FR_datlog(-tR:end); <span class="comment">%trim datlog in the front, always align to force.</span>
+0107         warning(<span class="string">'Trial %d The raw data starts before or had more samples than datlog. This should not happen unless the trial has been cut in Vicon. Recommend fixing it.'</span>,trialIdx)
+0108     <span class="keyword">end</span>
+0109     gain1=refSync'/sync(:,1)';
+0110     sync=sync*gain1;
+0111     signalCorrR = corr(sync, refSync);
+0112     
+0113     <span class="keyword">if</span> signalCorrL &gt;= signalCorrR
+0114         datlogDelay = tL; <span class="comment">%this is the best delay to match signal, choose the one with better correlation</span>
+0115     <span class="keyword">else</span>
+0116         datlogDelay = tR;
+0117     <span class="keyword">end</span>
+0118     
+0119 <span class="comment">%     %% Option 2 (this works too). Calculate sync error.(Logic copied from loadTrials when synchronizing EMG with forces, I do not fully understand what I'm doing here)</span>
+0120 <span class="comment">%     refSync = force_rawData(:,1);</span>
+0121 <span class="comment">%     refSync = refSync(tL:end); %choose the aligned portion</span>
+0122 <span class="comment">%     sync = FL_datlog;%[zeros(tL,1);FL_datlog];</span>
+0123 <span class="comment">%</span>
+0124 <span class="comment">%     [refSync] = clipSignals(refSync(:),.1);</span>
+0125 <span class="comment">%     refSync=idealHPF(refSync,0); %Removing DC only</span>
+0126 <span class="comment">%     [sync,refSync]=truncateToSameLength(sync,refSync);</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">%     [sync] = clipSignals(sync,.1);</span>
+0129 <span class="comment">%     sync=idealHPF(sync,0);</span>
+0130 <span class="comment">%     gain1=refSync'/sync(:,1)';</span>
+0131 <span class="comment">%     reducedRefSync=refSync;</span>
+0132 <span class="comment">%     reducedSync1=sync*gain1;</span>
+0133 <span class="comment">%     E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.</span>
+0134             
+0135     <span class="comment">%% Plot to visualize alignment.</span>
+0136     <span class="comment">% % 1. Plot data from the align function call to compare with matlab aligned data, not really needed, just to make sure i'm not plotting something wrong.</span>
+0137     <span class="comment">% figure(); hold on;</span>
+0138     <span class="comment">% plot(aligndataLogL,'LineWidth',2,'DisplayName','AlignedData');</span>
+0139     <span class="comment">% plot(alignFRawL(:,1),'DisplayName','RawExpL');</span>
+0140    
+0141     <span class="comment">% 2. Plot manually padded version (always shift datlog to match raw)</span>
+0142     f = figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);
+0143     subplot(2,1,1);
+0144     hold on;
+0145     plot([FL_datlog],<span class="string">'LineWidth'</span>,1.5,<span class="string">'DisplayName'</span>,<span class="string">'AlignedDatlogL'</span>);
+0146     plot(force_rawData(:,1),<span class="string">'DisplayName'</span>,<span class="string">'RawExpL'</span>);
+0147     title(sprintf(<span class="string">'FL Corr: %.2f'</span>,signalCorrL))
+0148     legend();
+0149     subplot(2,1,2); hold on;
+0150     plot([FR_datlog],<span class="string">'LineWidth'</span>,1.5,<span class="string">'DisplayName'</span>,<span class="string">'AlignedDatlogR'</span>);
+0151     plot(force_rawData(:,2),<span class="string">'DisplayName'</span>,<span class="string">'RawExpR'</span>);
+0152     title(sprintf(<span class="string">'FR Corr: %.2f'</span>,signalCorrR))
+0153     sgtitle(sprintf(<span class="string">'Trial%02d Sync'</span>,trialIdx))
+0154 
+0155     <span class="comment">% %3. Plot the raw/unaligned data, for debugging purpose.</span>
+0156     <span class="comment">%     figure(); hold on;</span>
+0157     <span class="comment">% plot(force_rawData(:,1),'DisplayName','RawExpF'); legend()</span>
+0158     <span class="comment">% subplot(3,1,3); hold on;</span>
+0159     <span class="comment">% plot(FL_datlog_raw,'DisplayName','DataLogF');</span>
+0160     <span class="comment">% legend()</span>
+0161 
+0162     <span class="comment">%If sync is bad, give a pop up</span>
+0163     <span class="keyword">if</span> signalCorrL &lt;= 0.90 &amp;&amp; signalCorrR &lt;= 0.90 <span class="comment">%this is a rather arbitrary number</span>
+0164         answer = questdlg(<span class="string">'Which one syncs better (choose the one with higher correlation and looks better; if both are bad, choose none to abort)?'</span>, <span class="keyword">...</span>
+0165             <span class="string">''</span>, <span class="keyword">...</span>
+0166             <span class="string">'L'</span>,<span class="string">'R'</span>,<span class="string">'None (abort)'</span>,<span class="string">'L'</span>); <span class="comment">%give 3 options and default to L</span>
+0167         <span class="comment">% Handle response</span>
+0168         <span class="keyword">switch</span> answer
+0169             <span class="keyword">case</span> <span class="string">'L'</span> <span class="comment">%none of them is great, still choose to match with the best one available.</span>
+0170                 datlogDelay = tL;
+0171                 warning(<span class="string">'Trial %d Data log sync correlation is below 0.90. Choose %s as the reference (r=%.4f)'</span>,trialIdx,answer,signalCorrL)
+0172             <span class="keyword">case</span> <span class="string">'R'</span>
+0173                 datlogDelay = tR;
+0174                 warning(<span class="string">'Trial %d Data log sync correlation is below 0.90. Choose %s as the reference (r=%.4f)'</span>,trialIdx,answer,signalCorrR)
+0175             <span class="keyword">case</span> <span class="string">'None (abort)'</span>
+0176                 error(<span class="string">'SyncDatlog:Datlog CouldNotBeSynched. Could not synchronize Datlog data, stopping data loading.'</span>)
+0177         <span class="keyword">end</span>
+0178     <span class="keyword">end</span>
+0179         
+0180     saveas(f,[syncImgSavePath sprintf(<span class="string">'Trial%02d Sync'</span>,trialIdx)])
+0181     saveas(f,[syncImgSavePath sprintf(<span class="string">'Trial%02d Sync'</span>,trialIdx) <span class="string">'.png'</span>])
+0182           
+0183     <span class="comment">%% Save the time offset into the datlog and in rawExpData.metadata</span>
+0184     datlog.dataLogTimeOffsetL = tL/sampleFrq; <span class="comment">%in seconds</span>
+0185     datlog.dataLogTimeOffsetR = tR/sampleFrq; <span class="comment">%in seconds</span>
+0186     datlog.dataLogTimeOffsetBest = datlogDelay/sampleFrq; <span class="comment">%in seconds.</span>
+0187    
+0188     rawExpData.metaData.datlog{trialIdx} = datlog; <span class="comment">%update to have the log with time shift info.</span>
+0189 <span class="keyword">end</span>
+0190 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

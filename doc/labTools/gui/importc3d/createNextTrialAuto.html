@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of createNextTrialAuto</title>
+  <meta name="keywords" content="createNextTrialAuto">
+  <meta name="description" content="Separate 1 trial into 2 using the sepTime, curTrl will be from [0,">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; createNextTrialAuto.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>createNextTrialAuto
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Separate 1 trial into 2 using the sepTime, curTrl will be from [0,</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [nextTrial, curTrl] = createNextTrialAuto(curTrl, sepTime, newName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Separate 1 trial into 2 using the sepTime, curTrl will be from [0,
+ sepTime) and nextTrail will be from [sepTime, end)
+
+ OUTPUTARGS: -nextTrial: labData object (e.g., a trial in rawExpData or
+                    expData) representing a new trial from [sepTime, end)
+             -curTrl: labData object (e.g., a trial in rawExpData or
+                    expData) representing a new trial from [0, sepTime)
+ INPUTARGS: 
+           - curTrl: labData object (e.g., a trial in rawExpData or
+                    expData) to separate
+           - sepTime: double, time (in seconds) to separate the trial, the
+                time is relative to the start of the original trial (1st trial
+                processed from c3d2mat)
+           - newName: string, name of the nextTrial.
+ Examples: see SepCondsInExpByAudioCue.m
+ 
+ $Author: Shuqi Liu $    $Date: 2024/05/22 13:24:55 $    $Revision: 0.1 $
+ Copyright: Sensorimotor Learning Laboratory 2024</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SepCondsInExpByAudioCue.html" class="code" title="function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)">SepCondsInExpByAudioCue</a>	Separate 1 condition into multiple in expData using timing information from audioCue.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [nextTrial, curTrl] = createNextTrialAuto(curTrl, sepTime, newName)</a>
+0002 <span class="comment">% Separate 1 trial into 2 using the sepTime, curTrl will be from [0,</span>
+0003 <span class="comment">% sepTime) and nextTrail will be from [sepTime, end)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% OUTPUTARGS: -nextTrial: labData object (e.g., a trial in rawExpData or</span>
+0006 <span class="comment">%                    expData) representing a new trial from [sepTime, end)</span>
+0007 <span class="comment">%             -curTrl: labData object (e.g., a trial in rawExpData or</span>
+0008 <span class="comment">%                    expData) representing a new trial from [0, sepTime)</span>
+0009 <span class="comment">% INPUTARGS:</span>
+0010 <span class="comment">%           - curTrl: labData object (e.g., a trial in rawExpData or</span>
+0011 <span class="comment">%                    expData) to separate</span>
+0012 <span class="comment">%           - sepTime: double, time (in seconds) to separate the trial, the</span>
+0013 <span class="comment">%                time is relative to the start of the original trial (1st trial</span>
+0014 <span class="comment">%                processed from c3d2mat)</span>
+0015 <span class="comment">%           - newName: string, name of the nextTrial.</span>
+0016 <span class="comment">% Examples: see SepCondsInExpByAudioCue.m</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% $Author: Shuqi Liu $    $Date: 2024/05/22 13:24:55 $    $Revision: 0.1 $</span>
+0019 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2024</span>
+0020 
+0021     nextTrial = curTrl.split(sepTime); <span class="comment">%from sep (inclusive) to end (not provided, will default to end)</span>
+0022     nextTrial.metaData.name = newName;
+0023     curTrl = curTrl.split(nan, sepTime); <span class="comment">%give nan such that the code will later default to [startOfCurTrl, sep) such that septime will only be included once.</span>
+0024 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

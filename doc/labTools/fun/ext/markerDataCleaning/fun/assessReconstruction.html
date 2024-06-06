@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of assessReconstruction</title>
+  <meta name="keywords" content="assessReconstruction">
+  <meta name="description" content="% Assess missing and outlier markers in original &amp; reconstructed data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">fun</a> &gt; assessReconstruction.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/fun&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>assessReconstruction
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>% Assess missing and outlier markers in original &amp; reconstructed data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function assessReconstruction(referenceData, reconstructedData, model) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Assess missing and outlier markers in original &amp; reconstructed data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function assessReconstruction(referenceData, reconstructedData, model)</a>
+0002 
+0003 <span class="comment">%% Assess missing and outlier markers in original &amp; reconstructed data</span>
+0004 missing=squeeze(any(isnan(referenceData),2));
+0005 outlier=model.outlierDetect(referenceData);
+0006 missingR=squeeze(any(isnan(reconstructedData),2));
+0007 outlierR=model.outlierDetect(reconstructedData);
+0008 disp([<span class="string">'Original missing markers: '</span> num2str(sum(missing(:)))])
+0009 disp([<span class="string">'Reconstructed missing markers: '</span> num2str(sum(missingR(:)))])
+0010 disp([<span class="string">'Original outlier markers: '</span> num2str(sum(outlier(:)))])
+0011 disp([<span class="string">'Reconstructed outlier markers: '</span> num2str(sum(outlierR(:)))])
+0012 <span class="comment">%% Assess distortion from present but not outlier markers during reconstruction</span>
+0013 dist=reconstructedData-referenceData;
+0014 figure;
+0015 <span class="keyword">for</span> i=1:3
+0016 subplot(2,3,i)
+0017 histogram(squeeze(dist(:,i,:))')
+0018 title(<span class="string">'X'</span>+(i-1))
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">for</span> i=1:3
+0021 subplot(2,3,i+3)
+0022 plot(squeeze(dist(:,i,:))')
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="comment">%% Assess likelihood differences between original and reconstructed data</span>
+0026 <span class="comment">%marker level  (could do it at distance level)</span>
+0027 L=model.scoreMarkersOpt(referenceData);
+0028 LR=model.scoreMarkersOpt(reconstructedData);
+0029 figure;
+0030 <span class="keyword">for</span> i=1:size(L,1)
+0031 subplot(5,5,i)
+0032 histogram(L(i,:),[-Inf,-10:.1:0])
+0033 hold on
+0034 histogram(LR(i,:),[-Inf,-10:.1:0])
+0035 title(model.markerLabels{i})
+0036 <span class="keyword">if</span> i==1
+0037 legend(<span class="string">'Original'</span>,<span class="string">'Reconstructed'</span>)
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 subplot(5,5,21:25)
+0041 title(<span class="string">'Frame log-log-likelihoods'</span>)
+0042 semilogy((-max(-L)))
+0043 hold on
+0044 semilogy((-max(-LR)))
+0045 legend(<span class="string">'Original'</span>,<span class="string">'Reconstructed'</span>)
+0046 
+0047 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

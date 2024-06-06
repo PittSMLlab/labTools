@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AnovaEpochs</title>
+  <meta name="keywords" content="AnovaEpochs">
+  <meta name="description" content="%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@groupAdaptationData</a> &gt; AnovaEpochs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@groupAdaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>AnovaEpochs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Performs ANOVA on a parameter in a series of defined epochs    %%
+                                                               %%
+Applications                                                   %%
+ - Oneway ANOVA if nepochs=1 and ngroups&gt;1                     %%
+ - Oneway RM ANOVA if nepochs&gt;1 and ngroups=1                  %%
+ - Twoway RM ANOVA if nepochs&gt;1 and ngroups&gt;1                  %%
+                                                               %%
+Input variables:                                               %%
+ - groups: groupAdaptationData with one or more groups         %% 
+ - groupsNames: names of groups                                %%
+ - label: name of parameter of interest                        %%
+ - eps: epoch dataset created with defineEpochs                %% 
+                                                               %%
+                                                               %%
+Output variables:                                              %%
+ - t: Table generated to perform ANOVA                         %%
+ - model: fitted model                                         %% 
+ - btab: between subjects ANOVA table                          %%
+ - wtab: within subjects ANOVA table                           %%
+ - maineff: table with maineff of group and epoch              %%
+ - posthocGroup: table with posthoc results                    %%
+ - posthocEpoch: table with posthoc results                    %%
+ - posthocEpochByGroup                                         %%
+ - posthocGroupByEpoch                                         %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="groupAdaptationData.html" class="code" title="">groupAdaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model,btab,wtab,maineff,posthocGroup,posthocEpoch,posthocEpochByGroup,posthocGroupByEpoch]=AnovaEpochs(groups,groupsNames,label,eps,significanceThreshold)</a>
+0002 
+0003 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0004 <span class="comment">%Performs ANOVA on a parameter in a series of defined epochs    %%</span>
+0005 <span class="comment">%                                                               %%</span>
+0006 <span class="comment">%Applications                                                   %%</span>
+0007 <span class="comment">% - Oneway ANOVA if nepochs=1 and ngroups&gt;1                     %%</span>
+0008 <span class="comment">% - Oneway RM ANOVA if nepochs&gt;1 and ngroups=1                  %%</span>
+0009 <span class="comment">% - Twoway RM ANOVA if nepochs&gt;1 and ngroups&gt;1                  %%</span>
+0010 <span class="comment">%                                                               %%</span>
+0011 <span class="comment">%Input variables:                                               %%</span>
+0012 <span class="comment">% - groups: groupAdaptationData with one or more groups         %%</span>
+0013 <span class="comment">% - groupsNames: names of groups                                %%</span>
+0014 <span class="comment">% - label: name of parameter of interest                        %%</span>
+0015 <span class="comment">% - eps: epoch dataset created with defineEpochs                %%</span>
+0016 <span class="comment">%                                                               %%</span>
+0017 <span class="comment">%                                                               %%</span>
+0018 <span class="comment">%Output variables:                                              %%</span>
+0019 <span class="comment">% - t: Table generated to perform ANOVA                         %%</span>
+0020 <span class="comment">% - model: fitted model                                         %%</span>
+0021 <span class="comment">% - btab: between subjects ANOVA table                          %%</span>
+0022 <span class="comment">% - wtab: within subjects ANOVA table                           %%</span>
+0023 <span class="comment">% - maineff: table with maineff of group and epoch              %%</span>
+0024 <span class="comment">% - posthocGroup: table with posthoc results                    %%</span>
+0025 <span class="comment">% - posthocEpoch: table with posthoc results                    %%</span>
+0026 <span class="comment">% - posthocEpochByGroup                                         %%</span>
+0027 <span class="comment">% - posthocGroupByEpoch                                         %%</span>
+0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0029 
+0030 posthocGroup=[];
+0031 posthocEpoch=[];
+0032 posthocEpochByGroup=[];
+0033 posthocGroupByEpoch=[];
+0034 
+0035 
+0036 
+0037 
+0038 <span class="comment">%%Step 1: Create table with data of interest</span>
+0039 t=table;
+0040 <span class="comment">%create croup variable</span>
+0041 <span class="keyword">for</span> i=1:length(groups)
+0042     nsub=length(groups{i}.adaptData);
+0043     <span class="keyword">if</span> i==1
+0044         subcodes=cellstr(repmat(groupsNames{i},nsub,1));
+0045     <span class="keyword">else</span>
+0046         subcodes=[subcodes;cellstr(repmat(groupsNames{i},nsub,1))];
+0047     <span class="keyword">end</span>
+0048 <span class="keyword">end</span>
+0049 t.group=nominal(subcodes);
+0050 epData=[];
+0051 <span class="keyword">for</span> i=1:length(groups)
+0052     epData=[epData;transpose(squeeze(groups{i}.getEpochData(eps,label)))];
+0053 <span class="keyword">end</span>
+0054 <span class="keyword">for</span> e = 1:length(eps)
+0055     eval([<span class="string">'t.ep'</span>,num2str(e),<span class="string">'=epData(:,'</span>,num2str(e),<span class="string">');'</span>]);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%%Step 2: perform ANOVA and posthoc tests</span>
+0059 maineff=table;
+0060 Meas = table([1:length(eps)]',<span class="string">'VariableNames'</span>,{<span class="string">'epoch'</span>});<span class="comment">%table for within-subject design</span>
+0061  
+0062 <span class="comment">%determine which type of ANOVA</span>
+0063 <span class="keyword">if</span> length(eps) == 1 <span class="comment">%Oneway ANOVA</span>
+0064    posthocGroup=table;
+0065    
+0066    
+0067     [pval,anovatab,model] = anova1(t.ep1,t.group,<span class="string">'off'</span>);
+0068     wtab=[];btab=anovatab;<span class="comment">%these are for repeated measures or mixed ANOVA's;</span>
+0069     c = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'lsd'</span>);
+0070     c2 = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'bonferroni'</span>);
+0071     c3 = multcompare(model,<span class="string">'display'</span>,<span class="string">'off'</span>,<span class="string">'CType'</span>,<span class="string">'hsd'</span>);
+0072     F=cell2mat(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'F'</span>)==1)));
+0073     p=cell2mat(anovatab(2,find(strcmp(anovatab(1,:),<span class="string">'Prob&gt;F'</span>)==1)));
+0074     maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[F;NaN;NaN;NaN];maineff.p=[p;NaN;NaN;pval];<span class="comment">%table with main effects</span>
+0075     posthocGroup.groups1=groupsNames(c(:,1))';posthocGroup.groups2=groupsNames(c(:,2))';<span class="comment">%groups to compare</span>
+0076     posthocGroup.meandiff=c(:,4);posthocGroup.lowerbound=c(:,3);posthocGroup.upperbound=c(:,5);posthocGroup.pvalLSD=c(:,6);
+0077     posthocGroup.pvalBonferroni=c2(:,6);posthocGroup.pvalTukey=c3(:,6);
+0078     [posthocGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(c(:,6),significanceThreshold);<span class="comment">%FDR of 0.05 seems reasonable;</span>
+0079     clear F p pval c c2 c3 dt1 dt2; 
+0080     
+0081 <span class="keyword">elseif</span> length(groups) == 1 <span class="comment">%Oneway RM ANOVA</span>
+0082     posthocEpoch=table;
+0083     
+0084     <span class="comment">%perform RM ANOVA with between-group factor set to 1; I cross-validated</span>
+0085     <span class="comment">%with an older function from file exchange (anova_rm.m), which yields</span>
+0086     <span class="comment">%similar results. I prefer this method, since it does not fail for NaN's.</span>
+0087     rm=fitrm(t,[<span class="string">'ep1-ep'</span>,num2str(length(eps)),<span class="string">'~1'</span>],<span class="string">'WithinDesign'</span>,Meas,<span class="string">'WithinModel'</span>,<span class="string">'epoch'</span>);
+0088     wtab=ranova(rm); btab=[];
+0089     <span class="keyword">if</span> rm.mauchly.pValue&gt;.05<span class="comment">%spherecity can be assumed</span>
+0090         maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[NaN;wtab.F(1);NaN;NaN];maineff.p=[NaN;wtab.pValue(1);NaN;NaN];<span class="comment">%table with main effects</span>
+0091     <span class="keyword">else</span> <span class="comment">%use greenhouse geisser</span>
+0092          maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[NaN;wtab.F(1);NaN;NaN];maineff.p=[NaN;wtab.pValueGG(1);NaN;NaN];<span class="comment">%table with main effects</span>
+0093     <span class="keyword">end</span>
+0094    
+0095     <span class="comment">%perform pairwise comparisons by hand, since multcompare does not</span>
+0096     <span class="comment">%account for repeated observations.</span>
+0097     
+0098     ncomp=[length(eps)*(length(eps)-1)]/2;
+0099     comp=1;
+0100     posthocEpoch.ep1=repmat({<span class="string">''</span>},ncomp,1);<span class="comment">%this is to initialize the table</span>
+0101     <span class="keyword">for</span> e=1:length(eps)
+0102         <span class="keyword">for</span> e2=1:length(eps)
+0103             <span class="keyword">if</span> e&gt;e2;
+0104                 posthocEpoch.ep1(comp)=eps.Properties.ObsNames(e);
+0105                 posthocEpoch.ep2(comp)=eps.Properties.ObsNames(e2);
+0106                 [H,P,CI] = ttest(t.([<span class="string">'ep'</span>,num2str(e)]),t.([<span class="string">'ep'</span>,num2str(e2)]));
+0107                 posthocEpoch.meandiff(comp)=mean(CI);
+0108                 posthocEpoch.lowerbound(comp)=CI(1);
+0109                 posthocEpoch.upperbound(comp)=CI(2);
+0110                 posthocEpoch.pval(comp)=P;
+0111                 posthocEpoch.pvalBonferroni(comp)=P*ncomp;                
+0112                 clear H P CI
+0113                 comp=comp+1;
+0114             <span class="keyword">end</span>
+0115         <span class="keyword">end</span>
+0116     <span class="keyword">end</span>
+0117     [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
+0118      model=rm;
+0119     
+0120     
+0121     
+0122 <span class="keyword">elseif</span> length(eps) &gt; 1 || length(groups) &gt; 1 <span class="comment">%Two-way RM ANOVA</span>
+0123    posthocEpoch=table;
+0124    posthocGroupByEpoch=table;
+0125    posthocEpochByGroup=table;
+0126     
+0127     rm=fitrm(t,[<span class="string">'ep1-ep'</span>,num2str(length(eps)),<span class="string">'~group'</span>],<span class="string">'WithinDesign'</span>,Meas,<span class="string">'WithinModel'</span>,<span class="string">'epoch'</span>);
+0128     wtab=ranova(rm); btab=anova(rm);
+0129     <span class="keyword">if</span> rm.mauchly.pValue&gt;.05<span class="comment">%spherecity can be assumed</span>
+0130         maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[btab.F(2);wtab.F(1);wtab.F(2);NaN];maineff.p=[btab.pValue(2);wtab.pValue(1);wtab.pValue(2);NaN];<span class="comment">%table with main effects</span>
+0131     <span class="keyword">else</span> <span class="comment">%use greenhouse geisser</span>
+0132          maineff.names={<span class="string">'group'</span>;<span class="string">'epoch'</span>;<span class="string">'interaction'</span>;<span class="string">'modelpval'</span>};maineff.F=[btab.F(2);wtab.F(1);wtab.F(2);NaN];maineff.p=[btab.pValue(2);wtab.pValueGG(1);wtab.pValueGG(2);NaN];<span class="comment">%table with main effects</span>
+0133     <span class="keyword">end</span>  
+0134      
+0135     <span class="comment">%perform pairwise comparisons for epoch</span>
+0136     ncomp=[length(eps)*(length(eps)-1)]/2;
+0137     comp=1;
+0138     posthocEpoch.ep1=repmat({<span class="string">''</span>},ncomp,1);<span class="comment">%this is to initialize the table</span>
+0139     <span class="keyword">for</span> e=1:length(eps)
+0140         <span class="keyword">for</span> e2=1:length(eps)
+0141             <span class="keyword">if</span> e&lt;e2;
+0142                 posthocEpoch.ep1(comp)=eps.Properties.ObsNames(e);
+0143                 posthocEpoch.ep2(comp)=eps.Properties.ObsNames(e2);
+0144                 [H,P,CI] = ttest(t.([<span class="string">'ep'</span>,num2str(e)]),t.([<span class="string">'ep'</span>,num2str(e2)]));
+0145                 posthocEpoch.meandiff(comp)=mean(CI);
+0146                 posthocEpoch.lowerbound(comp)=CI(1);
+0147                 posthocEpoch.upperbound(comp)=CI(2);
+0148                 posthocEpoch.pval(comp)=P;
+0149                 posthocEpoch.pvalBonferroni(comp)=P*ncomp;                
+0150                 clear H P CI
+0151                 comp=comp+1;
+0152             <span class="keyword">end</span>
+0153         <span class="keyword">end</span>
+0154     <span class="keyword">end</span>
+0155     [posthocEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpoch.pval,significanceThreshold);clear dt1 dt2
+0156     
+0157     <span class="comment">%perform pairwise comparisons between groups for each epoch</span>
+0158     <span class="comment">%first create subtable for each group</span>
+0159     t2=[];
+0160     <span class="keyword">for</span> g = 1:length(groups)
+0161         t2{g}=t(t.group==groupsNames(g),:);
+0162     <span class="keyword">end</span>
+0163     
+0164     ncomp=([length(groups)*(length(groups)-1)]/2)*length(eps);
+0165     comp=1;
+0166     posthocGroupByEpoch.epoch=repmat({<span class="string">''</span>},ncomp,1);<span class="comment">%this is to initialize the table</span>
+0167     <span class="keyword">for</span> e = 1:length(eps)
+0168         <span class="keyword">for</span> g1 = 1:length(groups)
+0169             <span class="keyword">for</span> g2 = 1:length(groups)
+0170                 <span class="keyword">if</span> g1&lt;g2
+0171                     posthocGroupByEpoch.epoch(comp)=eps.Properties.ObsNames(e);
+0172                     posthocGroupByEpoch.group_1(comp)=groupsNames(g1);
+0173                     posthocGroupByEpoch.group_2(comp)=groupsNames(g2);
+0174                     [H,P,CI] = ttest2(t2{g1}.([<span class="string">'ep'</span>,num2str(e)]),t2{g2}.([<span class="string">'ep'</span>,num2str(e)]));
+0175                     posthocGroupByEpoch.meandiff(comp)=mean(CI);
+0176                     posthocGroupByEpoch.lowerbound(comp)=CI(1);
+0177                     posthocGroupByEpoch.upperbound(comp)=CI(2);
+0178                     posthocGroupByEpoch.pval(comp)=P;
+0179                     posthocGroupByEpoch.pvalBonferroni(comp)=P*ncomp;                
+0180                     clear H P CI
+0181                     comp=comp+1;                     
+0182                 <span class="keyword">end</span>
+0183             <span class="keyword">end</span>
+0184         <span class="keyword">end</span>
+0185     <span class="keyword">end</span>
+0186     [posthocGroupByEpoch.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocGroupByEpoch.pval,significanceThreshold);clear dt1 dt2
+0187     
+0188     <span class="comment">%perform pairwise comparisons between epochs for each group</span>
+0189     ncomp=([length(eps)*(length(eps)-1)]/2)*length(groups);
+0190     comp=1;   
+0191     posthocEpochByGroup.group=repmat({<span class="string">''</span>},ncomp,1);<span class="comment">%this is to initialize the table</span>
+0192     <span class="keyword">for</span> g = 1:length(groups)
+0193         <span class="keyword">for</span> e=1:length(eps)
+0194             <span class="keyword">for</span> e2=1:length(eps)
+0195                 <span class="keyword">if</span> e&lt;e2;
+0196                     posthocEpochByGroup.group(comp)=groupsNames(g);
+0197                     posthocEpochByGroup.ep1(comp)=eps.Properties.ObsNames(e);
+0198                     posthocEpochByGroup.ep2(comp)=eps.Properties.ObsNames(e2);
+0199                     [H,P,CI] = ttest(t2{g}.([<span class="string">'ep'</span>,num2str(e)]),t2{g}.([<span class="string">'ep'</span>,num2str(e2)]));
+0200                     posthocEpochByGroup.meandiff(comp)=mean(CI);
+0201                     posthocEpochByGroup.lowerbound(comp)=CI(1);
+0202                     posthocEpochByGroup.upperbound(comp)=CI(2);
+0203                     posthocEpochByGroup.pval(comp)=P;
+0204                     posthocEpochByGroup.pvalBonferroni(comp)=P*ncomp;
+0205                     clear H P CI
+0206                     comp=comp+1;
+0207                 <span class="keyword">end</span>
+0208             <span class="keyword">end</span>
+0209         <span class="keyword">end</span>
+0210     <span class="keyword">end</span>
+0211     [posthocEpochByGroup.hBenHoch,dt1,dt2] = BenjaminiHochberg(posthocEpochByGroup.pval,significanceThreshold);clear dt1 dt2
+0212     model=rm;
+0213 <span class="keyword">end</span>   
+0214     
+0215     
+0216 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

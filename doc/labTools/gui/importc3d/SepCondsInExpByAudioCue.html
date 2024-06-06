@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SepCondsInExpByAudioCue</title>
+  <meta name="keywords" content="SepCondsInExpByAudioCue">
+  <meta name="description" content="Separate 1 condition into multiple in expData using timing information from audioCue.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">gui</a> &gt; <a href="index.html">importc3d</a> &gt; SepCondsInExpByAudioCue.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/gui/importc3d&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SepCondsInExpByAudioCue
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Separate 1 condition into multiple in expData using timing information from audioCue.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Separate 1 condition into multiple in expData using timing information from audioCue.
+ The function saves the new expData and adaptData in [resSavePath
+ subjectID] and copies the old files into [resSavePath subjectID originalCondName]
+ Always separate on sTO to presever sHS in new conditions as much as possible. 
+ This is specific for the SpinalAdaptation study (uses prior knowledge of what's
+ in the audioCue to separate the trials). 
+ ***NOTE**** Logic in here can be generalized for other studies who want to 
+ split trials, search and fill in the blank for sections with &quot;study
+ specific logic&quot;
+
+ OUTPUTARGS: -expData: experimentData object with conditions
+                   separated. 
+             -adaptData: adaptationData object with conitions separated.
+ INPUTARGS: 
+           - expData: rawExperimentData object with datlog loaded.
+           - resSavePath: string, the directory to save the exp and adapt
+                   data with conditions separated.
+           - subjectID: string, subject ID.
+           - eventClass: string, allowed values: 'force',
+                  'kin',''(default), this usually comes from the info file
+                   in c3d2mat
+           - studyName: string, name of the study (use this to add in
+                   study specific logic when separating trials).
+ Examples: See: loadSubject.m</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="createNextTrialAuto.html" class="code" title="function [nextTrial, curTrl] = createNextTrialAuto(curTrl, sepTime, newName)">createNextTrialAuto</a>	Separate 1 trial into 2 using the sepTime, curTrl will be from [0,</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="loadSubject.html" class="code" title="function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)">loadSubject</a>	loadSubject  Load, organize, process, and save data from .c3d files as a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)</a>
+0002 <span class="comment">% Separate 1 condition into multiple in expData using timing information from audioCue.</span>
+0003 <span class="comment">% The function saves the new expData and adaptData in [resSavePath</span>
+0004 <span class="comment">% subjectID] and copies the old files into [resSavePath subjectID originalCondName]</span>
+0005 <span class="comment">% Always separate on sTO to presever sHS in new conditions as much as possible.</span>
+0006 <span class="comment">% This is specific for the SpinalAdaptation study (uses prior knowledge of what's</span>
+0007 <span class="comment">% in the audioCue to separate the trials).</span>
+0008 <span class="comment">% ***NOTE**** Logic in here can be generalized for other studies who want to</span>
+0009 <span class="comment">% split trials, search and fill in the blank for sections with &quot;study</span>
+0010 <span class="comment">% specific logic&quot;</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% OUTPUTARGS: -expData: experimentData object with conditions</span>
+0013 <span class="comment">%                   separated.</span>
+0014 <span class="comment">%             -adaptData: adaptationData object with conitions separated.</span>
+0015 <span class="comment">% INPUTARGS:</span>
+0016 <span class="comment">%           - expData: rawExperimentData object with datlog loaded.</span>
+0017 <span class="comment">%           - resSavePath: string, the directory to save the exp and adapt</span>
+0018 <span class="comment">%                   data with conditions separated.</span>
+0019 <span class="comment">%           - subjectID: string, subject ID.</span>
+0020 <span class="comment">%           - eventClass: string, allowed values: 'force',</span>
+0021 <span class="comment">%                  'kin',''(default), this usually comes from the info file</span>
+0022 <span class="comment">%                   in c3d2mat</span>
+0023 <span class="comment">%           - studyName: string, name of the study (use this to add in</span>
+0024 <span class="comment">%                   study specific logic when separating trials).</span>
+0025 <span class="comment">% Examples: See: loadSubject.m</span>
+0026 
+0027 <span class="comment">% $Author: Shuqi Liu $    $Date: 2024/05/22 13:24:55 $    $Revision: 0.1 $</span>
+0028 <span class="comment">% Copyright: Sensorimotor Learning Laboratory 2024</span>
+0029 
+0030 <span class="comment">%% Create a new raw Exp Data object</span>
+0031 <span class="comment">%set up trigger event, copied from calcParameters</span>
+0032 refLeg = expData.getRefLeg;
+0033 <span class="keyword">if</span> refLeg == <span class="string">'R'</span>
+0034     s = <span class="string">'R'</span>;    f = <span class="string">'L'</span>; <span class="comment">%TODO: substitute with getOtherLeg()</span>
+0035 <span class="keyword">elseif</span> refLeg == <span class="string">'L'</span>
+0036     s = <span class="string">'L'</span>;    f = <span class="string">'R'</span>; <span class="comment">%TODO: substitute with getOtherLeg()</span>
+0037 <span class="keyword">else</span>
+0038     ME=MException(<span class="string">'MakeParameters:refLegError'</span>,<span class="string">'the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.'</span>);
+0039     throw(ME);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">%Define the events that will be used for all further computations</span>
+0043 eventTypes={[s,<span class="string">'HS'</span>],[f,<span class="string">'TO'</span>],[f,<span class="string">'HS'</span>],[s,<span class="string">'TO'</span>]};
+0044 eventTypes=strcat(eventClass,eventTypes);
+0045 triggerEvent=eventTypes{4}; <span class="comment">%in calc parameter trial starts with sHS, so separate on the event immediately before to preserve as much strides as possible.</span>
+0046 
+0047 newExpData = expData;
+0048 trialData = expData.data;
+0049 
+0050 <span class="keyword">if</span> strcmpi(studyName, <span class="string">'SpinalAdaptation'</span>)
+0051     condsToUpdate = contains(expData.metaData.conditionName,<span class="string">'Split Train'</span>) | contains(expData.metaData.conditionName,<span class="string">'Practice'</span>);
+0052     <span class="keyword">if</span> sum(condsToUpdate) ~= 9
+0053         condsToUpdate = find(condsToUpdate)
+0054         error(<span class="string">'Conds to split missing, expected 9 condsToUpdate. Got %d, Check condition name.'</span>,sum(condsToUpdate))
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">else</span> <span class="comment">%default to all false (no update), add other study specific logic here.</span>
+0057     condsToUpdate = false(size(expData.metaData.trialsInCondition)); 
+0058 <span class="keyword">end</span>
+0059 origTrials = cell2mat(expData.metaData.trialsInCondition(condsToUpdate));
+0060 
+0061 <span class="comment">%% Separate conditions using info from the audioCue timing in the datlog.</span>
+0062 tic
+0063 <span class="keyword">for</span> origTrialIdx = origTrials
+0064     fprintf(<span class="string">'Processing orig trial %d\n'</span>, origTrialIdx)
+0065     
+0066     <span class="comment">%use original index to get data log, original condition name</span>
+0067     origCondName = expData.data{origTrialIdx}.metaData.name;
+0068     datlog = expData.metaData.datlog{origTrialIdx};
+0069     
+0070     <span class="comment">%find the new trial index using the old name and the new name list</span>
+0071     <span class="comment">%(newRawData is being updated in each for loop inside). This is needed</span>
+0072     <span class="comment">%bc old trialIdx won't be valid anymore (trialIdx updated in the for loop), but we also want to avoid</span>
+0073     <span class="comment">%looping through newly added conditions.</span>
+0074     [~, loc] = ismember(origCondName, newExpData.metaData.conditionName);
+0075     trialsInCond = cell2mat(newExpData.metaData.trialsInCondition(loc));
+0076     newTrialIdx = trialsInCond(1); <span class="comment">%initialize to the 1st trial index, this will then be incremented for each new cond added.</span>
+0077     
+0078     msg = datlog.audioCues.audio_instruction_message;
+0079     msgTime = datlog.audioCues.startInRelativeTime + datlog.dataLogTimeOffsetBest;
+0080     <span class="comment">%filter out relevant messages only (study specific decisions)</span>
+0081     <span class="keyword">if</span> strcmpi(studyName, <span class="string">'SpinalAdaptation'</span>)
+0082         <span class="keyword">if</span> contains(origCondName,<span class="string">'Practice'</span>)
+0083             relMsg = contains(msg, <span class="string">'DccRamp2Split'</span>) | contains(msg, <span class="string">'Split'</span>);
+0084         <span class="keyword">elseif</span> contains(origCondName,<span class="string">'Split Train'</span>)
+0085             relMsg = (contains(msg, <span class="string">'Mid'</span>) | contains(msg, <span class="string">'DccRamp2Split'</span>) | contains(msg, <span class="string">'Split'</span>) | contains(msg, <span class="string">'Rest'</span>)) &amp; (~strcmpi(msg, <span class="string">'Rest4'</span>)); <span class="comment">%all rest except for rest 4 (last one, no data in there)</span>
+0086             <span class="keyword">if</span> strcmpi(origCondName,<span class="string">'TM Split Train Post 1'</span>) <span class="comment">%post 1 no 1st ramp, so Mid1 is the first condition but the 1st separating point is DccRamp2Split1</span>
+0087                 relMsg = relMsg &amp; (~strcmpi(msg, <span class="string">'Mid1'</span>)); <span class="comment">%ignore Mid1 in Post train 1 (no ramp to start, one condition short)</span>
+0088             <span class="keyword">end</span>
+0089             <span class="comment">%Improvements: this can be done with reg exp</span>
+0090             relMsg(1) = false; <span class="comment">%ignore the 1st rest (from rest to mid, only had 1 condition = ramp to start walking, 2nd condition is mid = tied walking)</span>
+0091         <span class="keyword">end</span>
+0092     <span class="keyword">else</span> <span class="comment">%default to all false, add other study specific logic here.</span>
+0093         relMsg = false(size(msg)); 
+0094     <span class="keyword">end</span>
+0095     msg = msg(relMsg);
+0096     msgTime = msgTime(relMsg);
+0097     
+0098     <span class="keyword">for</span> trialIdx = trialsInCond <span class="comment">%usually only have 1.</span>
+0099         curTrl = trialData{trialIdx};
+0100         <span class="keyword">for</span> msgIdx = 1:numel(msg) 
+0101             <span class="keyword">if</span> strcmpi(studyName, <span class="string">'SpinalAdaptation'</span>)
+0102                 <span class="comment">%StudySpecific logic: create new trial from event time and after, update curTrl to only keep 1 to eventtime -1 , and update trial meta data</span>
+0103                 <span class="keyword">if</span> startsWith(msg{msgIdx},<span class="string">'Rest'</span>) <span class="comment">%change to ramp2Tied</span>
+0104                     newName = [origCondName <span class="string">' Ramp2Tied'</span> msg{msgIdx}(end)];
+0105                 <span class="keyword">else</span>
+0106                     newName = [origCondName <span class="string">' '</span> msg{msgIdx}];
+0107                 <span class="keyword">end</span>
+0108             <span class="keyword">else</span> <span class="comment">%default value, add other study specific logic here.</span>
+0109                 newName = [origCondName <span class="string">' Default'</span>];
+0110             <span class="keyword">end</span>
+0111             newDescription = newName; <span class="comment">%keep it the same for now.</span>
+0112             <span class="comment">%create a new trial separing on closet sHS to the msg</span>
+0113             triggerEventTime = curTrl.gaitEvents.Data(:,strcmp(curTrl.gaitEvents.labels,triggerEvent));
+0114             triggerEventTime = curTrl.gaitEvents.Time(triggerEventTime);
+0115             [closestTime,closestIdx] = min(abs(msgTime(msgIdx) - triggerEventTime));
+0116             closestTime = triggerEventTime(closestIdx);
+0117             <span class="comment">%Option2. use msg time directly, performs about the same as uing sTO</span>
+0118             <span class="comment">% closestTime = msgTime(msgIdx);</span>
+0119             <span class="comment">%Improvements: this can be improved to split all</span>
+0120             <span class="comment">%trials follwoing the msgTime once, then add all new trials</span>
+0121             <span class="comment">%once isntead of the looping methods.</span>
+0122             [nextTrial, curTrl] = <a href="createNextTrialAuto.html" class="code" title="function [nextTrial, curTrl] = createNextTrialAuto(curTrl, sepTime, newName)">createNextTrialAuto</a>(curTrl, closestTime, newName);
+0123 
+0124             <span class="comment">%update cell array list of trial data</span>
+0125             trialData = [trialData(1:newTrialIdx-1),{curTrl,nextTrial},trialData(newTrialIdx+1:end)];
+0126             <span class="comment">%nextTrial now belongs to a new conditions. Increment the condition</span>
+0127             <span class="comment">% for each element after the curTrl by 1. Also update the</span>
+0128             <span class="comment">% rawDataFileName bc the last 2 digits of that is used later on</span>
+0129             <span class="comment">% to populate TrialIdx in the adaptationData.Data.</span>
+0130             <span class="keyword">for</span> jj = newTrialIdx+1:length(trialData)
+0131                 <span class="keyword">if</span> ~isempty(trialData{jj})
+0132                     trialData{jj}.metaData.condition = trialData{jj}.metaData.condition+1;
+0133                     <span class="keyword">if</span> contains(trialData{jj}.metaData.rawDataFilename,<span class="string">'_SpltNewIdx'</span>) <span class="comment">%already been renamed in prev ite, replace it.</span>
+0134                         trialData{jj}.metaData.rawDataFilename(end-1:end) = sprintf(<span class="string">'%02d'</span>,jj);
+0135                     <span class="keyword">else</span> <span class="comment">%1st time being renamed, append</span>
+0136                         trialData{jj}.metaData.rawDataFilename = [trialData{jj}.metaData.rawDataFilename <span class="string">'_SpltNewIdx'</span> sprintf(<span class="string">'%02d'</span>,jj)];
+0137                         <span class="comment">%the correct trialIdx should be the index of this trial in the list of trialData.</span>
+0138                     <span class="keyword">end</span>
+0139                 <span class="keyword">end</span>
+0140             <span class="keyword">end</span>
+0141             nextTrial = trialData{newTrialIdx+1}; <span class="comment">%index out the updated curtrl with new cond &amp; file name</span>
+0142             newExpData.data = trialData;
+0143                         
+0144             <span class="comment">%now update expData.metadata</span>
+0145             curCondIdx = curTrl.metaData.condition; <span class="comment">%give index of the condition this trial belongs to.</span>
+0146             newTrialsInConds = {newTrialIdx+1};
+0147             <span class="comment">%for the ones following, increment by 1</span>
+0148             <span class="keyword">for</span> i = curCondIdx+1:length(newExpData.metaData.conditionName)
+0149                 newTrialsInConds{i-curCondIdx+1} = newExpData.metaData.trialsInCondition{i}+1;
+0150             <span class="keyword">end</span>
+0151             newExpData.metaData.trialsInCondition = [newExpData.metaData.trialsInCondition{1:curCondIdx}, newTrialsInConds];
+0152             newExpData.metaData.conditionName = [newExpData.metaData.conditionName{1:curCondIdx}, {newName}, newExpData.metaData.conditionName{curCondIdx+1:end}];
+0153             newExpData.metaData.conditionDescription = [newExpData.metaData.conditionDescription{1:curCondIdx}, {newDescription}, newExpData.metaData.conditionDescription{curCondIdx+1:end}];
+0154             newExpData.metaData.Ntrials = newExpData.metaData.Ntrials + 1; <span class="comment">%add 1 trial</span>
+0155             
+0156             newTrialIdx = newTrialIdx + 1;
+0157             curTrl = nextTrial; 
+0158         <span class="keyword">end</span>
+0159     <span class="keyword">end</span>
+0160 <span class="keyword">end</span>
+0161 
+0162 <span class="comment">%rename the trials for readability (study specific naming convention)</span>
+0163 <span class="keyword">if</span> strcmpi(studyName, <span class="string">'SpinalAdaptation'</span>)
+0164     newName = regexprep(newExpData.metaData.conditionName,<span class="keyword">...</span>
+0165         {<span class="string">'^TM Split Train Pre 1$'</span>,<span class="string">'^TM Split Train Pre 2$'</span>,<span class="string">'^TM Split Train Post 1$'</span>,<span class="string">'^TM Split Train Post 2$'</span>},<span class="keyword">...</span>
+0166         {<span class="string">'TM Split Train Pre 1 Ramp2Tied1'</span>,<span class="string">'TM Split Train Pre 2 Ramp2Tied1'</span>,<span class="string">'TM Split Train Post 1 Mid1'</span>,<span class="string">'TM Split Train Post 2 Ramp2Tied1'</span>});
+0167     pracNames = regexp(newExpData.metaData.conditionName,<span class="string">'^Practice [1-5]$'</span>);
+0168     pracNames = find(~cellfun(@isempty,pracNames))
+0169     <span class="keyword">for</span> i = pracNames
+0170         newName{i} = [newName{i} <span class="string">'Tied'</span>]; <span class="comment">%practice block do it with no space</span>
+0171     <span class="keyword">end</span>
+0172     newName = regexprep(newName,<span class="keyword">...</span>
+0173         {<span class="string">' DccRamp2Split0'</span>,<span class="string">' Split0'</span>,<span class="string">'DccRamp2Split'</span>},<span class="keyword">...</span>
+0174         {<span class="string">'RampToSplit'</span>,<span class="string">'Split'</span>,<span class="string">'RampToSplit'</span>}); <span class="comment">%Pre/PostTrain1 Keep the space.</span>
+0175     newName'
+0176     newExpData.metaData.conditionName = newName;
+0177     
+0178     <span class="comment">%update the trial meta data to also match the</span>
+0179     <span class="comment">%expData.metaData.conditionName</span>
+0180     <span class="keyword">for</span> i = 1:numel(newExpData.metaData.trialsInCondition)
+0181         trialsToUpdate = cell2mat(newExpData.metaData.trialsInCondition(i));
+0182         <span class="keyword">for</span> j = trialsToUpdate
+0183             newExpData.data{j}.metaData.name = newExpData.metaData.conditionName{i};
+0184         <span class="keyword">end</span>
+0185     <span class="keyword">end</span>
+0186 <span class="keyword">else</span>
+0187     <span class="comment">%add other study specific logic naming convention/style here.</span>
+0188 <span class="keyword">end</span>
+0189 toc
+0190 
+0191 <span class="comment">%% special handling for the 1st ramp2start in SAS01Session2 to get rid of some rest to help get good strides out when computing params.</span>
+0192 <span class="keyword">if</span> strcmpi(studyName, <span class="string">'SpinalAdaptation'</span>) &amp; strcmp(subjectID,<span class="string">'SAS01V02'</span>) <span class="comment">%hard coded for now</span>
+0193     newExpDataBackup = newExpData;
+0194     newExpData = newExpDataBackup;
+0195     figure(); plot(newExpData.data{1,9}.GRFData.Time,newExpData.data{1,9}.GRFData.Data(:,3))
+0196     temp = newExpData.data{9}.split(180); <span class="comment">%from 180s to end (180 is taken from looking at the fig)</span>
+0197     figure(); plot(temp.GRFData.Time,temp.GRFData.Data(:,3))
+0198     newExpData.data{9} = temp;
+0199 <span class="keyword">end</span>
+0200 
+0201 <span class="comment">%% inspect results (should expect force traces to roughly match how long the trial is, contains non-periodic traces at beginning or end of the original trial).</span>
+0202 inspectResPlot = true;
+0203 
+0204 <span class="keyword">if</span> inspectResPlot
+0205     figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]); spIdx = 1; <span class="comment">%ax = [];</span>
+0206     <span class="keyword">for</span> i = 1:length(newExpData.metaData.conditionName)
+0207         <span class="keyword">for</span> j = cell2mat(newExpData.metaData.trialsInCondition(i))
+0208             ax(spIdx) = subplot(10,1,spIdx); 
+0209             plot(newExpData.data{1, j}.GRFData.Time,newExpData.data{1, j}.GRFData.Data(:,3)); title([<span class="string">'Trial '</span> num2str(j) <span class="string">' '</span> newExpData.metaData.conditionName{i}])
+0210             spIdx = spIdx + 1;
+0211         <span class="keyword">end</span>
+0212         <span class="keyword">if</span> spIdx == 10 <span class="comment">%max per figure reached (fig full, start the next one)</span>
+0213             figure(<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]); hold on; <span class="comment">%restart a figure</span>
+0214             spIdx = 1;
+0215         <span class="keyword">end</span>           
+0216     <span class="keyword">end</span>
+0217 <span class="keyword">end</span>
+0218 
+0219 <span class="comment">%% Save this new exp data and recompute exp and params</span>
+0220 tic
+0221 
+0222 <span class="comment">%save an intermediate file with the sep conditions</span>
+0223 <span class="comment">% save([resSavePath subjectID 'Separated.mat'],'newExpData','-v7.3')</span>
+0224 
+0225 <span class="comment">%save a copy of the exp and adapt data if exists, then replace it.</span>
+0226 <span class="keyword">if</span> exist([resSavePath filesep subjectID <span class="string">'.mat'</span>],<span class="string">'file'</span>)
+0227    eval([<span class="string">'copyfile '</span> resSavePath filesep subjectID <span class="string">'.mat '</span> resSavePath filesep subjectID <span class="string">'OriginalCondName.mat'</span>])
+0228 <span class="keyword">end</span>
+0229 <span class="keyword">if</span> exist([resSavePath filesep subjectID <span class="string">'params.mat'</span>])
+0230    eval([<span class="string">'copyfile '</span> resSavePath filesep subjectID <span class="string">'params.mat '</span> resSavePath filesep subjectID <span class="string">'OriginalCondNameparams.mat'</span>])
+0231 <span class="keyword">end</span>
+0232 
+0233 <span class="comment">%recompute and overwrite/replace the expData</span>
+0234 expData = newExpData.flushAndRecomputeParameters(eventClass);
+0235 save([resSavePath filesep subjectID <span class="string">'.mat'</span>],<span class="string">'expData'</span>,<span class="string">'-v7.3'</span>) 
+0236 
+0237 <span class="comment">%create adaptationData object</span>
+0238 adaptData=expData.makeDataObj([resSavePath filesep subjectID]);
+0239 
+0240 toc
+0241 
+0242 f = adaptData.plotAvgTimeCourse(adaptData,{<span class="string">'singleStanceSpeedFastAbsANK'</span>,<span class="string">'singleStanceSpeedSlowAbsANK'</span>});
+0243 saveas(f,[resSavePath filesep subjectID <span class="string">'SeparatedSpeeds'</span>])
+0244 saveas(f,[resSavePath filesep subjectID <span class="string">'SeparatedSpeeds.png'</span>])
+0245 
+0246 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

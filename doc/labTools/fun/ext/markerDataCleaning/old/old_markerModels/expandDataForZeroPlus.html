@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of expandDataForZeroPlus</title>
+  <meta name="keywords" content="expandDataForZeroPlus">
+  <meta name="description" content="UNTITLED3 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; expandDataForZeroPlus.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>expandDataForZeroPlus
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED3 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [newData,I,sourceI] = expandDataForZeroPlus(posData,I) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED3 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>	UNTITLED6 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="createZeroPlusModel.html" class="code" title="function [D,sD,meanPos,I,biasPos] = createZeroPlusModel(inputData1)">createZeroPlusModel</a>	UNTITLED6 Summary of this function goes here</li><li><a href="determineLikelihoodFromZeroPlusModel.html" class="code" title="function [lp] = determineLikelihoodFromZeroPlusModel(X1,D,sD,I)">determineLikelihoodFromZeroPlusModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li><li><a href="getBestReconsFromZeroPlusModel.html" class="code" title="function [altPos] = getBestReconsFromZeroPlusModel(measuredPos,D,sD,meanPos,I,biasPos)">getBestReconsFromZeroPlusModel</a>	UNTITLED Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newData,I,sourceI] = expandDataForZeroPlus(posData,I)</a>
+0002 <span class="comment">%UNTITLED3 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 
+0006 [N,dim,M]=size(posData);
+0007 
+0008 <span class="comment">%These virtual markers don't improve anything:</span>
+0009 <span class="comment">% virtualData=bsxfun(@minus,2*posData,reshape(permute(posData,[2,3,1]),[1,dim,M,N]));</span>
+0010 <span class="comment">% virtualData=permute(virtualData,[1,4,2,3]);</span>
+0011 <span class="comment">% virtualData=reshape(virtualData,N^2,dim,M);</span>
+0012 <span class="comment">% sourceI(:,1)=repmat(1:N,N,1);</span>
+0013 <span class="comment">% sourceI(:,2)=repmat([1:N]',1,N);</span>
+0014  
+0015 
+0016 <span class="comment">%Virtual markers from cross-products:</span>
+0017 iii=nchoosek(1:N,3);
+0018 P=size(iii,1);
+0019 virtualData=nan(P*3,dim,M);
+0020 <span class="keyword">for</span> i=1:P
+0021     <span class="keyword">for</span> k=1:3
+0022         <span class="keyword">switch</span> k
+0023             <span class="keyword">case</span> 1
+0024                 k1=2;
+0025                 k2=3;
+0026             <span class="keyword">case</span> 2
+0027                 k1=1;
+0028                 k2=3;
+0029             <span class="keyword">case</span> 3
+0030                 k1=2;
+0031                 k2=3;
+0032         <span class="keyword">end</span>
+0033         vec1=posData(iii(i,k1),:,:)-posData(iii(i,k),:,:);
+0034         nVec1=sqrt(sum(vec1.^2,2));
+0035         vec1=bsxfun(@rdivide,vec1,nVec1);
+0036         vec2=posData(iii(i,k2),:,:)-posData(iii(i,k),:,:);
+0037         nVec2=sqrt(sum(vec2.^2,2));
+0038         vec2=bsxfun(@rdivide,vec2,nVec2);
+0039         aux=cross(vec1,vec2);
+0040         virtualData(3*(i-1)+k,:,:)=bsxfun(@times,aux,.5*(nVec1+nVec2))+posData(iii(i,k),:,:);
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 sourceI(1:3:P*3,:)=iii;
+0044 sourceI(2:3:P*3,:)=iii;
+0045 sourceI(3:3:P*3,:)=iii;
+0046 
+0047 
+0048 <span class="keyword">if</span> nargin&lt;2 || isempty(I)
+0049     <span class="comment">%Dropping some virtual markers for complexity's sake:</span>
+0050     [D,sD,meanPos] = <a href="createZeroModel.html" class="code" title="function [D,sD,meanPos,biasPos] = createZeroModel(inputData)">createZeroModel</a>(posData);
+0051     tol=15;
+0052     I=sD(sub2ind(size(sD),sourceI(:,1),sourceI(:,2)))&lt;tol &amp; sD(sub2ind(size(sD),sourceI(:,1),sourceI(:,2)))&gt;0;
+0053     <span class="keyword">if</span> size(sourceI,2)&gt;2
+0054         I2=sD(sub2ind(size(sD),sourceI(:,1),sourceI(:,3)))&lt;tol &amp; sD(sub2ind(size(sD),sourceI(:,1),sourceI(:,3)))&gt;0;
+0055         I3=sD(sub2ind(size(sD),sourceI(:,2),sourceI(:,3)))&lt;tol &amp; sD(sub2ind(size(sD),sourceI(:,2),sourceI(:,3)))&gt;0;
+0056         I = I &amp; I2 &amp; I3;
+0057     <span class="keyword">end</span>
+0058     
+0059     <span class="comment">%For the pair-based markers:</span>
+0060 <span class="comment">%     %Distance based:</span>
+0061 <span class="comment">%     D=computeDistanceMatrix(nanmean(posData,3));</span>
+0062 <span class="comment">%     I1=D&lt;.8*nanmedian(D(:)) &amp; D&gt;0; %Only marker-pairs below 40% of median distances will be considered</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">%     %std of distance based: this doesn't work because all virtual markers</span>
+0065 <span class="comment">%     %satisfy the condition</span>
+0066 <span class="comment">%     [D,sD1,meanPos] = createZeroModel(cat(1,posData,virtualData));</span>
+0067 <span class="comment">%     sD=sD1(N+1:end,:);</span>
+0068 <span class="comment">%     I=any(sD&gt;0 &amp; sD&lt;10,2); %Only variability in distance of less than 10mm is preserved</span>
+0069 <span class="comment">%     I=reshape(I,[N,N]);</span>
+0070 <span class="comment">%</span>
+0071 <span class="comment">%     Another attempt: based on variability between the two involved markers</span>
+0072 <span class="comment">%     I=sD&gt;0 &amp; sD&lt;10; %Only variability in distance of less than 10mm is preserved</span>
+0073 <span class="comment">%     I=I(:);</span>
+0074     
+0075 <span class="keyword">end</span>
+0076 
+0077 sourceI=sourceI(I==1,:);
+0078 newData=cat(1,posData,virtualData(I==1,:,:));
+0079 
+0080 <span class="keyword">end</span>
+0081</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

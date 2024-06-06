@@ -1,0 +1,442 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SL_RealtimeAlpha</title>
+  <meta name="keywords" content="SL_RealtimeAlpha">
+  <meta name="description" content="SL Realtime">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">misc</a> &gt; SL_RealtimeAlpha.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>SL_RealtimeAlpha
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>SL Realtime</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SL Realtime
+
+A script designed to be used by a Nexus 2 pipeline shortly after creation
+of a c3d file.
+
+The script opens the desired c3d and quickly computes the following
+parameters using the same methods as Labtools but without initializing the
+classes.
+
+Parameters: 
+ 1. Average Step Length (ANK-ANK distance)
+ 2. Cadence
+
+WDA 4/11/2016</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% SL Realtime</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">%A script designed to be used by a Nexus 2 pipeline shortly after creation</span>
+0004 <span class="comment">%of a c3d file.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%The script opens the desired c3d and quickly computes the following</span>
+0007 <span class="comment">%parameters using the same methods as Labtools but without initializing the</span>
+0008 <span class="comment">%classes.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%Parameters:</span>
+0011 <span class="comment">% 1. Average Step Length (ANK-ANK distance)</span>
+0012 <span class="comment">% 2. Cadence</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%WDA 4/11/2016</span>
+0015 
+0016 
+0017 <span class="comment">%% Load Data</span>
+0018 
+0019 <span class="comment">%Nexus must be open, offline, and the desired trial loaded</span>
+0020 vicon = ViconNexus();
+0021 [path,filename] = vicon.GetTrialName;<span class="comment">%Ask Nexus which trial is open</span>
+0022 filename = [filename <span class="string">'.c3d'</span>];
+0023 
+0024 <span class="comment">%use these two lines when processing c3d files not open in Nexus</span>
+0025 <span class="comment">% commandwindow()</span>
+0026 <span class="comment">% [filename,path] = uigetfile('*.c3d','Please select the c3d file of interest:');</span>
+0027 
+0028 H = btkReadAcquisition([path filename]);
+0029 
+0030 <span class="comment">%Using same method as Labtools, determine analog data</span>
+0031 [analogs,analogsInfo] = btkGetAnalogs(H);
+0032 
+0033 relData=[];
+0034 forceLabels ={};
+0035 units={};
+0036 fieldList=fields(analogs);
+0037 showWarning = false;
+0038 <span class="keyword">for</span> j=1:length(fieldList);<span class="comment">%parse analog channels by force, moment, cop</span>
+0039     <span class="comment">%if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only</span>
+0040     <span class="keyword">if</span> strcmp(fieldList{j}(1),<span class="string">'F'</span>) || strcmp(fieldList{j}(1),<span class="string">'M'</span>) || ~isempty(strfind(fieldList{j},<span class="string">'Force'</span>)) || ~isempty(strfind(fieldList{j},<span class="string">'Moment'</span>))
+0041         <span class="keyword">if</span> ~strcmpi(<span class="string">'x'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'y'</span>,fieldList{j}(end-1)) &amp;&amp; ~strcmpi(<span class="string">'z'</span>,fieldList{j}(end-1))
+0042             warning([<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel '</span> fieldList{j}])
+0043         <span class="keyword">else</span>
+0044             <span class="keyword">switch</span> fieldList{j}(end)<span class="comment">%parse devices</span>
+0045                 <span class="keyword">case</span> <span class="string">'1'</span> <span class="comment">%Forces/moments ending in '1' area assumed to be of left treadmill belt</span>
+0046                     forceLabels{end+1} = [<span class="string">'L'</span>,fieldList{j}(end-2:end-1)];
+0047                     units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0048                     relData=[relData,analogs.(fieldList{j})];
+0049                 <span class="keyword">case</span> <span class="string">'2'</span> <span class="comment">%Forces/moments ending in '2' area assumed to be of right treadmill belt</span>
+0050                     forceLabels{end+1} = [<span class="string">'R'</span>,fieldList{j}(end-2:end-1)];
+0051                     units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0052                     relData=[relData,analogs.(fieldList{j})];
+0053                 <span class="keyword">case</span> <span class="string">'4'</span><span class="comment">%Forces/moments ending in '4' area assumed to be of handrail</span>
+0054                     forceLabels{end+1} = [<span class="string">'H'</span>,fieldList{j}(end-2:end-1)];
+0055                     units{end+1}=eval([<span class="string">'analogsInfo.units.'</span>,fieldList{j}]);
+0056                     relData=[relData,analogs.(fieldList{j})];
+0057                 <span class="keyword">otherwise</span>
+0058                     showWarning=true;<span class="comment">%%HH moved warning outside loop on 6/3/2015 to reduce command window output</span>
+0059             <span class="keyword">end</span>
+0060             analogs=rmfield(analogs,fieldList{j}); <span class="comment">%Just to save memory space</span>
+0061         <span class="keyword">end</span>
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 <span class="keyword">if</span> showWarning
+0065     warning([<span class="string">'loadTrials:GRFs'</span>,<span class="string">'Found force/moment data in trial '</span> filename <span class="string">' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'</span>])
+0066 <span class="keyword">end</span>
+0067 
+0068 forces = relData;
+0069 
+0070 clear analogs* <span class="comment">%Save memory space, no longer need analog data, it was already loaded</span>
+0071 clear relData
+0072 
+0073 
+0074 
+0075 <span class="comment">%Get marker data</span>
+0076 [markers,markerInfo]=btkGetMarkers(H);
+0077 relData=[];
+0078 fieldList=fields(markers);
+0079 markerList={};
+0080 
+0081 <span class="comment">%Check marker labels are good in .c3d files</span>
+0082 mustHaveLabels={<span class="string">'LHIP'</span>,<span class="string">'RHIP'</span>,<span class="string">'LANK'</span>,<span class="string">'RANK'</span>,<span class="string">'RHEE'</span>,<span class="string">'LHEE'</span>,<span class="string">'LTOE'</span>,<span class="string">'RTOE'</span>,<span class="string">'RKNE'</span>,<span class="string">'LKNE'</span>};<span class="comment">%we don't really care if there is RPSIS RASIS LPSIS LASIS or anything else really</span>
+0083 labelPresent=false(1,length(mustHaveLabels));
+0084 <span class="keyword">for</span> i=1:length(fieldList)
+0085     newFieldList{i}=findLabel(fieldList{i});
+0086     labelPresent=labelPresent+ismember(mustHaveLabels,newFieldList{i});
+0087 <span class="keyword">end</span>
+0088 <span class="keyword">for</span> j=1:length(fieldList);
+0089     <span class="keyword">if</span> length(fieldList{j})&gt;2 &amp;&amp; ~strcmp(fieldList{j}(1:2),<span class="string">'C_'</span>)  <span class="comment">%Getting fields that do NOT start with 'C_' (they correspond to unlabeled markers in Vicon naming)</span>
+0090         relData=[relData,markers.(fieldList{j})];
+0091         markerLabel=findLabel(fieldList{j});<span class="comment">%make sure that the markers are always named the same after this point (ex - if left hip marker is labeled LGT, LHIP, or anyhting else it always becomes LHIP.)</span>
+0092         markerList{end+1}=[markerLabel <span class="string">'x'</span>];
+0093         markerList{end+1}=[markerLabel <span class="string">'y'</span>];
+0094         markerList{end+1}=[markerLabel <span class="string">'z'</span>];
+0095     <span class="keyword">end</span>
+0096     markers=rmfield(markers,fieldList{j}); <span class="comment">%Save memory</span>
+0097 <span class="keyword">end</span>
+0098 
+0099 markers = relData;
+0100 clear H
+0101 <span class="comment">%*******************************************************************************</span>
+0102 <span class="comment">%% Extract Events</span>
+0103 
+0104 [~,~,lfz] = intersect(<span class="string">'LFz'</span>,forceLabels);
+0105 [~,~,rfz] = intersect(<span class="string">'RFz'</span>,forceLabels);
+0106 
+0107 [LHS,RHS,LTO,RTO] = getEventsFromForces(forces(:,lfz),forces(:,rfz),100);
+0108 
+0109 <span class="comment">%% Compute parameters</span>
+0110 
+0111 <span class="comment">%up sample to match forceplate data</span>
+0112 <span class="comment">%check sampling frequency of forces (could be 1000 or 2000 Hz)</span>
+0113 <span class="keyword">if</span> length(forces)/1000 == length(markers)/100
+0114     markers1000 = interp1(markers,[1:1/10:length(markers)]);
+0115 <span class="keyword">elseif</span> length(forces)/2000 == length(markers)/100
+0116     markers1000 = interp1(markers,[1:1/20:length(markers)]);
+0117 <span class="keyword">else</span>
+0118     disp(<span class="string">'Warning: Unknown sampling frequency in analog data!'</span>);
+0119 <span class="keyword">end</span>
+0120 markers1000(<span class="keyword">end</span>,:)=[];
+0121 
+0122 [~,rank,~] = intersect(markerList,<span class="string">'RANKy'</span>);
+0123 [~,lank,~] = intersect(markerList,<span class="string">'LANKy'</span>);
+0124 
+0125 [~,rhip,~] = intersect(markerList,<span class="string">'RHIPy'</span>);
+0126 [~,lhip,~] = intersect(markerList,<span class="string">'LHIPy'</span>);
+0127 
+0128 RANKY = markers1000(:,rank);
+0129 LANKY = markers1000(:,lank);
+0130 RHIPY = markers1000(:,rhip);
+0131 LHIPY = markers1000(:,lhip);
+0132 
+0133 <span class="comment">% figure(1)</span>
+0134 <span class="comment">% plot(0:10:length(markers)*10-1,markers(:,rank),'LineWidth',3);</span>
+0135 <span class="comment">% hold on</span>
+0136 <span class="comment">% plot(0:length(RANKY)-1,RANKY)</span>
+0137 
+0138 RHS = find(RHS);
+0139 LHS = find(LHS);
+0140 
+0141 short = min([length(RHS) length(LHS)]);
+0142 <span class="keyword">if</span> short&lt;0.75*max([length(RHS) length(LHS)])<span class="comment">%check to see if one of the legs has significantly less data than the other</span>
+0143     disp([<span class="string">'Warning!! Missing significant # of steps. Large disparity in # of steps calculated between limbs, please verify data is accurate.'</span>]);
+0144 <span class="keyword">end</span>
+0145 
+0146 <span class="comment">%step lengths*********************************************</span>
+0147 Rgamma = LANKY(RHS(1:short))-RANKY(RHS(1:short));
+0148 Lgamma = RANKY(LHS(1:short))-LANKY(LHS(1:short));
+0149 
+0150 <span class="comment">%remove erroneous data</span>
+0151 Rgamma(Rgamma==0)=[];
+0152 Lgamma(Lgamma==0)=[];
+0153 Rgamma(Rgamma&lt;0)=[];
+0154 Lgamma(Lgamma&lt;0)=[];
+0155 Rgamma(1:5)=[];
+0156 Lgamma(1:5)=[];
+0157 Rgamma(end-5:end)=[];
+0158 Lgamma(end-5:end)=[];
+0159 
+0160 Rgammamean = nanmean(Rgamma);
+0161 Rgammastd = nanstd(Rgamma);
+0162 Lgammamean = nanmean(Lgamma);
+0163 Lgammastd = nanstd(Lgamma);
+0164 
+0165 figure(2)
+0166 subplot(6,1,1)
+0167 plot(Rgamma,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0168 title(<span class="string">'Right Leg Step Lengths (mm)'</span>);
+0169 subplot(6,1,2)
+0170 plot(Lgamma,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0171 title(<span class="string">'Left Leg Step Lengths (mm)'</span>);
+0172 
+0173 <span class="comment">%alpha *********************************************</span>
+0174 Ralpha = ((LHIPY(RHS(1:short))+RHIPY(RHS(1:short)))./2)-RANKY(RHS(1:short)); 
+0175 Lalpha = ((LHIPY(LHS(1:short))+RHIPY(LHS(1:short)))./2)-LANKY(LHS(1:short));
+0176 
+0177 <span class="comment">%remove erroneous data</span>
+0178 Ralpha(Ralpha==0)=[];
+0179 Lalpha(Lalpha==0)=[];
+0180 Ralpha(Ralpha&lt;0)=[];
+0181 Lalpha(Lalpha&lt;0)=[];
+0182 Ralpha(1:5)=[];
+0183 Lalpha(1:5)=[];
+0184 Ralpha(end-5:end)=[];
+0185 Lalpha(end-5:end)=[];
+0186 
+0187 Ralphamean = nanmean(Ralpha);
+0188 Ralphastd = nanstd(Ralpha);
+0189 Lalphamean = nanmean(Lalpha);
+0190 Lalphastd = nanstd(Lalpha);
+0191 
+0192 <span class="comment">%X *********************************************</span>
+0193 RX = ((LHIPY(LHS(1:short))+RHIPY(LHS(1:short)))./2)-RANKY(LHS(1:short)); 
+0194 LX = ((LHIPY(RHS(1:short))+RHIPY(RHS(1:short)))./2)-LANKY(RHS(1:short)); 
+0195 
+0196 
+0197 <span class="comment">%remove erroneous data</span>
+0198 RX(RX==0)=[];
+0199 LX(LX==0)=[];
+0200 RX(RX&gt;0)=[];
+0201 LX(LX&gt;0)=[];
+0202 RX(1:5)=[];
+0203 LX(1:5)=[];
+0204 RX(end-5:end)=[];
+0205 LX(end-5:end)=[];
+0206 
+0207 RXmean = nanmean(RX);
+0208 RXstd = nanstd(RX);
+0209 LXmean = nanmean(LX);
+0210 LXstd = nanstd(LX);
+0211 <span class="comment">%</span>
+0212 <span class="comment">% figure(2)</span>
+0213 <span class="comment">% subplot(6,1,1)</span>
+0214 <span class="comment">% plot(Rgamma,'Color',[195/255,4/255,4/255]);</span>
+0215 <span class="comment">% title('Right Leg Step Lengths (mm)');</span>
+0216 <span class="comment">% subplot(6,1,2)</span>
+0217 <span class="comment">% plot(Lgamma,'Color',[15/255,129/255,6/255]);</span>
+0218 <span class="comment">% title('Left Leg Step Lengths (mm)');</span>
+0219 
+0220 <span class="comment">%Cadence**********************************************</span>
+0221 <span class="keyword">if</span> length(forces)/1000 == length(markers)/100
+0222     duration = length(RANKY)/1000;
+0223     time = 0:0.001:duration;
+0224 <span class="keyword">elseif</span> length(forces)/2000 == length(markers)/100
+0225     duration = length(RANKY)/2000;
+0226     time = 0:0.0005:duration;
+0227 <span class="keyword">else</span>
+0228     disp(<span class="string">'Warning: Unknown sampling frequency in analog data!'</span>);
+0229 <span class="keyword">end</span>
+0230     
+0231 
+0232 time(end)=[];
+0233 Rcadence = 60./diff(time(RHS));
+0234 Lcadence = 60./diff(time(LHS));
+0235 
+0236 <span class="comment">%remove erroneous data</span>
+0237 Rcadence(1:5) = [];
+0238 Lcadence(1:5) = [];
+0239 Rcadence(end-5:end)=[];
+0240 Lcadence(end-5:end)=[];
+0241 Rcadence(Rcadence&lt;0)=[];
+0242 Lcadence(Lcadence&lt;0)=[];
+0243 Rcadence(Rcadence&gt;75)=[];
+0244 Lcadence(Lcadence&gt;75)=[];
+0245 
+0246 Rcadmean = nanmean(Rcadence);
+0247 Lcadmean = nanmean(Lcadence);
+0248 Rcadstd = nanstd(Rcadence);
+0249 Lcadstd = nanstd(Lcadence);
+0250 
+0251 <span class="comment">%*****************************************</span>
+0252 <span class="comment">%Step times</span>
+0253 HS = [RHS; LHS];
+0254 HS = sort(HS);
+0255 
+0256 [~,rind,~] = intersect(HS,RHS);
+0257 [~,lind,~] = intersect(HS,LHS);
+0258 
+0259 <span class="comment">%check to make sure events are spliced in the correct alternating order</span>
+0260 <span class="comment">%???</span>
+0261 
+0262 <span class="keyword">if</span> HS(1) == RHS(1)<span class="comment">%first event is RHS</span>
+0263     <span class="keyword">for</span> z = 1:length(HS)-2
+0264         Lsteptime(z) = time(HS(z+1))-time(HS(z));
+0265         Rsteptime(z) = time(HS(z+2))-time(HS(z+1));
+0266     <span class="keyword">end</span>
+0267 <span class="keyword">else</span>
+0268     <span class="keyword">for</span> z = 1:length(HS)-2
+0269         Rsteptime(z) = time(HS(z+1))-time(HS(z));
+0270         Lsteptime(z) = time(HS(z+2))-time(HS(z+1));
+0271     <span class="keyword">end</span>
+0272 <span class="keyword">end</span>
+0273 
+0274 Rsteptime(Rsteptime&lt;=0)=[];
+0275 Lsteptime(Lsteptime&lt;=0)=[];
+0276 Rsteptime(1:4) = [];
+0277 Lsteptime(1:4) = [];
+0278 Rsteptime(end-4:end)=[];
+0279 Lsteptime(end-4:end)=[];
+0280 
+0281 rstmean = nanmean(Rsteptime);
+0282 lstmean = nanmean(Lsteptime);
+0283 rststd = nanstd(Rsteptime);
+0284 lststd = nanstd(Lsteptime);
+0285 
+0286 figure(2)
+0287 subplot(6,1,3)
+0288 plot(Rcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0289 title(<span class="string">'Right Leg Cadence (steps/min)'</span>);
+0290 subplot(6,1,4)
+0291 plot(Lcadence,<span class="string">'.-'</span>,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0292 title(<span class="string">'Left Leg Cadence (steps/min)'</span>);
+0293 subplot(6,1,5)
+0294 plot(Rsteptime,<span class="string">'Color'</span>,[195/255,4/255,4/255]);
+0295 title(<span class="string">'Right Leg Step Time (s)'</span>);
+0296 ylim([0 1]);
+0297 subplot(6,1,6)
+0298 plot(Lsteptime,<span class="string">'Color'</span>,[15/255,129/255,6/255]);
+0299 title(<span class="string">'Left Leg Step Time (s)'</span>);
+0300 ylim([0 1]);
+0301 
+0302 <span class="comment">%report the data</span>
+0303 mesg = <span class="string">'Mean R Step Length: '</span>;
+0304 mesg = [mesg num2str(Rgammamean) <span class="string">' stdev: '</span> num2str(Rgammastd)];
+0305 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0306 mesg = [mesg <span class="string">'Mean L Step Length: '</span> num2str(Lgammamean) <span class="string">' stdev: '</span> num2str(Lgammastd)];
+0307 mesg = [mesg sprintf(<span class="string">'\n\n'</span>)];
+0308 mesg = [mesg <span class="string">'Mean R Cadence: '</span> num2str(Rcadmean) <span class="string">' stdev: '</span> num2str(Rcadstd)];
+0309 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0310 mesg = [mesg <span class="string">'Mean L Cadence: '</span> num2str(Lcadmean) <span class="string">' stdev: '</span> num2str(Lcadstd)];
+0311 mesg = [mesg sprintf(<span class="string">'\n\n'</span>)];
+0312 mesg = [mesg <span class="string">'Mean R Step Time: '</span> num2str(rstmean) <span class="string">' stedev: '</span> num2str(rststd)];
+0313 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0314 mesg = [mesg <span class="string">'Mean L Step Time: '</span> num2str(lstmean) <span class="string">' stedev: '</span> num2str(lststd)];
+0315 
+0316 mesg = [mesg sprintf(<span class="string">'\n\n'</span>)];
+0317 mesg = [mesg <span class="string">'Mean R alpha: '</span> num2str(Ralphamean) <span class="string">' stdev: '</span> num2str(Ralphastd)];
+0318 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0319 mesg = [mesg <span class="string">'Mean L alpha: '</span> num2str(Lalphamean) <span class="string">' stdev: '</span> num2str(Lalphastd)];
+0320 
+0321 mesg = [mesg sprintf(<span class="string">'\n\n'</span>)];
+0322 mesg = [mesg <span class="string">'Mean R X: '</span> num2str(RXmean) <span class="string">' stdev: '</span> num2str(RXstd)];
+0323 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0324 mesg = [mesg <span class="string">'Mean L X: '</span> num2str(LXmean) <span class="string">' stdev: '</span> num2str(LXstd)];
+0325 
+0326 mesg = [mesg sprintf(<span class="string">'\n\n'</span>)];
+0327 mesg = [mesg <span class="string">'Mean R R: '</span> num2str(RXmean/Ralphamean)];
+0328 mesg = [mesg sprintf(<span class="string">'\n'</span>)];
+0329 mesg = [mesg <span class="string">'Mean L R: '</span> num2str(LXmean/Lalphamean)];
+0330 
+0331 
+0332 
+0333 H = msgbox(mesg,<span class="string">'Metrics'</span>);
+0334 
+0335 disp(mesg)
+0336 
+0337 <span class="comment">%% Save data</span>
+0338 
+0339 <span class="keyword">try</span>
+0340 RTdata = struct();<span class="comment">%initialize save structure</span>
+0341 RTdata.trialname = filename;
+0342 RTdata.path = path;
+0343 RTdata.creationdate = clock;
+0344 RTdata.forcedata = forces;
+0345 RTdata.forcelabels = forceLabels;
+0346 RTdata.markerdata = markers;
+0347 RTdata.markerlabels = markerList;
+0348 RTdata.Rsteplengths = Rgamma;
+0349 RTdata.Lsteplengths = Lgamma;
+0350 RTdata.Rcadence = Rcadence;
+0351 RTdata.Lcadence = Lcadence;
+0352 RTdata.Rsteptime = Rsteptime;
+0353 RTdata.Lsteptime = Lsteptime;
+0354 RTdata.time = time;
+0355 
+0356 fn = strrep(datestr(clock),<span class="string">'-'</span>,<span class="string">''</span>);
+0357 
+0358 filesave = [path fn(1:9) <span class="string">'_'</span> filename(1:end-4) <span class="string">'_SL_Realtime'</span>];
+0359 
+0360 save(filesave,<span class="string">'RTdata'</span>);
+0361 
+0362 <span class="keyword">catch</span> ME
+0363     
+0364     throw(ME)
+0365     
+0366 <span class="keyword">end</span>
+0367 
+0368 
+0369 <span class="comment">% clear all</span>
+0370 
+0371 
+0372 
+0373 
+0374 
+0375 
+0376 
+0377 
+0378 
+0379 
+0380 
+0381 
+0382</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

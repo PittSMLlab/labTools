@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of determineLikelihoodFromOneModel</title>
+  <meta name="keywords" content="determineLikelihoodFromOneModel">
+  <meta name="description" content="Computes a likelihood for a set of marker positions given a 'zero-model'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="index.html">old_markerModels</a> &gt; determineLikelihoodFromOneModel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerModels&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>determineLikelihoodFromOneModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>Computes a likelihood for a set of marker positions given a 'zero-model'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [lp,p] = determineLikelihoodFromOneModel(X,D,sD) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Computes a likelihood for a set of marker positions given a 'zero-model'
+(naive bayes) which assumes independent gaussian distributions for each
+distance between models. 
+------
+INPUTS:
+X is a Nx3xM matrix of N marker positions in 3D, samples M times.
+D is a NxN matrix containing the expected distances between the N markers
+sD is a NxN matrix containing the standard deviation of the distances
+across time
+------
+OUTPUT:
+p is a NxM matrix containing log-likelihoods for each of the N markers in each
+of the M samples</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="computeOneModelCollectionProb.html" class="code" title="function [p] = computeOneModelCollectionProb(actualX,D,sD)">computeOneModelCollectionProb</a>	</li><li><a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>	Computes a likelihood for a set of marker positions given a 'zero-model'</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function bool=issquare(D)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [lp,p] = determineLikelihoodFromOneModel(X,D,sD)</a>
+0002 <span class="comment">%Computes a likelihood for a set of marker positions given a 'zero-model'</span>
+0003 <span class="comment">%(naive bayes) which assumes independent gaussian distributions for each</span>
+0004 <span class="comment">%distance between models.</span>
+0005 <span class="comment">%------</span>
+0006 <span class="comment">%INPUTS:</span>
+0007 <span class="comment">%X is a Nx3xM matrix of N marker positions in 3D, samples M times.</span>
+0008 <span class="comment">%D is a NxN matrix containing the expected distances between the N markers</span>
+0009 <span class="comment">%sD is a NxN matrix containing the standard deviation of the distances</span>
+0010 <span class="comment">%across time</span>
+0011 <span class="comment">%------</span>
+0012 <span class="comment">%OUTPUT:</span>
+0013 <span class="comment">%p is a NxM matrix containing log-likelihoods for each of the N markers in each</span>
+0014 <span class="comment">%of the M samples</span>
+0015 
+0016 [N,tres,M]=size(X);
+0017 <span class="keyword">if</span> size(D,1)~=N || ~<a href="#_sub1" class="code" title="subfunction bool=issquare(D)">issquare</a>(D)
+0018     error()
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span> size(sD,1)~=N || ~<a href="#_sub1" class="code" title="subfunction bool=issquare(D)">issquare</a>(sD)
+0021     error()
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> tres~=3
+0024     error()
+0025 <span class="keyword">end</span>
+0026 
+0027 
+0028 [p] = <a href="computeOneModelCollectionProb.html" class="code" title="function [p] = computeOneModelCollectionProb(actualX,D,sD)">computeOneModelCollectionProb</a>(X,D,sD);
+0029 Q=size(p,2);
+0030 lp1=zeros(N,M,Q);
+0031 relModels=bsxfun(@gt,p,max(p,[],2)/3); <span class="comment">%Soft membership with threshold</span>
+0032 <span class="comment">%relModels=p==max(p,[],2); %Hard memebership</span>
+0033 
+0034 <span class="keyword">for</span> i=1:Q
+0035     idx=relModels(:,i); <span class="comment">%Frames for which the i-th model is relevant</span>
+0036     <span class="keyword">if</span> sum(idx)&gt;0
+0037     [lp1(:,idx,i)] = <a href="determineLikelihoodFromZeroModel.html" class="code" title="function [lp,p] = determineLikelihoodFromZeroModel(X,D,sD)">determineLikelihoodFromZeroModel</a>(X(:,:,idx),D(:,:,i),sD(:,:,i));
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 modP=p;
+0041 modP(~relModels)=0;
+0042 modP=bsxfun(@rdivide,modP,sum(modP,2));
+0043 lp=log(nansum(bsxfun(@times,exp(lp1),reshape(modP,1,M,Q)),3));
+0044 
+0045 
+0046 <span class="keyword">end</span>
+0047 
+0048 <a name="_sub1" href="#_subfunctions" class="code">function bool=issquare(D)</a>
+0049 bool = size(D,1)==size(D,2);
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

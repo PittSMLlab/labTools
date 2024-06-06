@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of filterEMG</title>
+  <meta name="keywords" content="filterEMG">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">EMGanalysis</a> &gt; filterEMG.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/EMGanalysis&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>filterEMG
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [filteredData,filterList] = filterEMG(data,fs,BW,notchList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="extractMuscleActivityFromEMG.html" class="code" title="function [procData,filteredData,filterList,procList] =extractMuscleActivityFromEMG(data,fs,f_cut,BW,notchList)">extractMuscleActivityFromEMG</a>	Extract EMG amplitude. Wrapper for filterEMG + amp_estim functions.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [filteredData,filterList] = filterEMG(data,fs,BW,notchList)</a>
+0002 
+0003 <span class="keyword">if</span> nargin&lt;3 || isempty(BW)
+0004     <span class="comment">%BW=[20,450]; %As per recommendations on De Luca et al. 2010 (Filtering the surface EMG signal: Movement artifact and baseline noise contamination).</span>
+0005     <span class="comment">%BW=[50,450]; %Changed on Sept 23 2014, by Pablo, because of artifacts detected in P0001. This should not alter the envelope detected for actual EMG activity.</span>
+0006     <span class="comment">%BW=[30,450]; %Changed on Feb 20 2015, by Pablo, following recommendations on the book Electromyography by Merletti and Parker (Section 5.6, First Edition, p.121)</span>
+0007     BW=[200,450]; <span class="comment">% On March 18th, decided to make this the default behavior, based on Potvin &amp; Brown 2004. Not sure this is optimal, but seems better than 30.</span>
+0008     BW=[30,450]; <span class="comment">%On Nov 6th 2017, I moved to this BW to make publication easier by sticking to a field standard.</span>
+0009 <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;4 || isempty(notchList)
+0011     <span class="comment">%notchList=[23.5,60,120,180,100,200,300,400];</span>
+0012     notchList=[]; <span class="comment">%Changed on Sept 23 2014, by Pablo, not sure we need all these notch filters. On Merletti &amp; Parker (see above) notchFilters are discouraged, more strongly for online filtering because of phase distortion.</span>
+0013 <span class="keyword">end</span>
+0014 filterList={};
+0015     
+0016     <span class="comment">% Pre-filter:</span>
+0017     <span class="comment">%Some filter design basics:</span>
+0018     <span class="comment">%In what follows we define a 'pass' frequency that we will allow to be</span>
+0019     <span class="comment">%attenuated 1.5dB at most.  Since we do filtfilt (dual-pass), we get at</span>
+0020     <span class="comment">%most a 3dB fall, which is 1/sqrt(2) in amplitude.</span>
+0021     <span class="comment">%We also define 'stop' frequencies, that we will require are attenuated</span>
+0022     <span class="comment">%at least 10dB. Once again, because of filtfilt, this means 20dB</span>
+0023     <span class="comment">%minimum attenuation for this frequency, which is 1/10 in amplitude.</span>
+0024     <span class="comment">%Stop frequency is defined as passfreq/2 for the high-pass filter</span>
+0025     <span class="comment">%(creating effectively a 20dB/octave fall after filtfilt), and as 20%</span>
+0026     <span class="comment">%higher than the remaining spectrum for low-pass filters.</span>
+0027     <span class="comment">% HF noise</span>
+0028     Wn=2*BW(2)/fs;
+0029     filterList{1}=fdesign.lowpass(<span class="string">'Fp,Fst,Ap,Ast'</span>,Wn,Wn+.2*(1-Wn),1.5,20); <span class="comment">%Ast=10dB (/octave) results in a 4th order Butterworth filter (-80dB/dec fall).</span>
+0030     lowPassFilter=design(filterList{1},<span class="string">'butter'</span>); <span class="comment">%Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.</span>
+0031 
+0032     <span class="comment">% LF noise</span>
+0033     Wn=2*BW(1)/fs;
+0034     filterList{2}=fdesign.highpass(<span class="string">'Fst,Fp,Ast,Ap'</span>,Wn/2,Wn,20,1.5); <span class="comment">%Ast=10dB (/octave) results in a 2nd order Butter filter (~-40dB/dec), while setting Ast=20dB would result in a 4th order.</span>
+0035     highPassFilter=design(filterList{2},<span class="string">'butter'</span>); <span class="comment">%Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 2nd order filter.</span>
+0036     
+0037     <span class="comment">% Notch filters for electrical interference.</span>
+0038     <span class="keyword">for</span> i=1:length(notchList)
+0039         filterList{2+i}=fdesign.notch(10,fz,1000*fz);
+0040         fz=2*notchList(i)/fs;
+0041         notchFilter=design(filterList{2+1}); 
+0042     <span class="keyword">end</span>
+0043     
+0044 <span class="comment">%     data=filtfilthd(lowPassFilter,data);  %Ext function</span>
+0045 <span class="comment">%     data=filtfilthd(highPassFilter,data);</span>
+0046 <span class="comment">%     if ~isempty(notchList)</span>
+0047 <span class="comment">%         data=filtfilthd(notchFilter,data);</span>
+0048 <span class="comment">%     end</span>
+0049     <span class="comment">%Alt: (slightly more efficient)</span>
+0050     allFilters=cascade(lowPassFilter,highPassFilter);
+0051     <span class="keyword">if</span> ~isempty(notchList)
+0052         allFilters=allFilters.addStage(notchFilter);
+0053     <span class="keyword">end</span>
+0054     filteredData=filtfilthd_short(allFilters,data,<span class="string">'reflect'</span>,fs); <span class="comment">%1sec of data samples for reflective boundaries</span>
+0055     
+0056 <span class="keyword">end</span>
+0057</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

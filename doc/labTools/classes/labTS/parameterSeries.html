@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parameterSeries</title>
+  <meta name="keywords" content="parameterSeries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">labTS</a> &gt; parameterSeries.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/labTS&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>parameterSeries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="parameterSeries.html" class="code" title="">parameterSeries</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=parameterSeries(data,labels,times,description,types)</a></li><li><a href="#_sub2" class="code">function this=setTrialTypes(this,types)</a></li><li><a href="#_sub3" class="code">function vals=get.bad(this)</a></li><li><a href="#_sub4" class="code">function vals=get.stridesTrial(this)</a></li><li><a href="#_sub5" class="code">function vals=get.stridesInitTime(this)</a></li><li><a href="#_sub6" class="code">function vals=get.description(this)</a></li><li><a href="#_sub7" class="code">function vals=get.trialTypes(this)</a></li><li><a href="#_sub8" class="code">function [bool,idx]=isaParameter(this,labels)</a></li><li><a href="#_sub9" class="code">function inds=indsInTrial(this,t)</a></li><li><a href="#_sub10" class="code">function [data,auxLabel]=getParameter(this,label)</a></li><li><a href="#_sub11" class="code">function newThis=incorporateDependentParameters(this,labels)</a></li><li><a href="#_sub12" class="code">function newThis=cat(this,other)</a></li><li><a href="#_sub13" class="code">function newThis=addStrides(this,other)</a></li><li><a href="#_sub14" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a></li><li><a href="#_sub15" class="code">function newThis=getDataAsPS(this,labels,strides,skipFixedParams)</a></li><li><a href="#_sub16" class="code">function newThis=appendData(this,newData,newLabels,newDesc)</a></li><li><a href="#_sub17" class="code">function this=replaceParams(this,other)</a></li><li><a href="#_sub18" class="code">function newThis=markBadWhenMissingAny(this,labels)</a></li><li><a href="#_sub19" class="code">function newThis=markBadWhenMissingAll(this,labels)</a></li><li><a href="#_sub20" class="code">function newThis=substituteNaNs(this,method)</a></li><li><a href="#_sub21" class="code">function this=markBadStridesAsNan(this)</a></li><li><a href="#_sub22" class="code">function this=normalizeToBaseline(this,labels,rangeValues)</a></li><li><a href="#_sub23" class="code">function newThis=linearStretch(this,labels,rangeValues)</a></li><li><a href="#_sub24" class="code">function [F]=fourierTransform(this)</a></li><li><a href="#_sub25" class="code">function newThis=resample(this)</a></li><li><a href="#_sub26" class="code">function newThis=resampleN(this)</a></li><li><a href="#_sub27" class="code">function [h,h1]=plotAlt(this,h,labels,plotHandles,color)</a></li><li><a href="#_sub28" class="code">function [p,postHocMatrix] = anova(this,params,groupIdxs,dispOpt)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 classdef <a href="parameterSeries.html" class="code" title="">parameterSeries</a> &lt; labTimeSeries
+0003     <span class="comment">%parameterSeries  Extends labTimeSeries to hold adaptation parameters</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%parameterSeries properties:</span>
+0006     <span class="comment">%   hiddenTime</span>
+0007     <span class="comment">%   bad</span>
+0008     <span class="comment">%   stridesTrial</span>
+0009     <span class="comment">%   stridesInitTime</span>
+0010     <span class="comment">%   description</span>
+0011     <span class="comment">%</span>
+0012     <span class="comment">%parameterSeries methods:</span>
+0013     <span class="comment">%   idk</span>
+0014     <span class="comment">%</span>
+0015 
+0016     properties
+0017         hiddenTime
+0018         trialTypes <span class="comment">%Shuqi: 12/01/2021, to support split 1 condition into multiple</span>
+0019     <span class="keyword">end</span>
+0020     properties(Dependent)
+0021        bad
+0022        stridesTrial
+0023        stridesInitTime
+0024        description
+0025 <span class="comment">%        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple</span>
+0026     <span class="keyword">end</span>
+0027     properties(Hidden)
+0028        description_={};
+0029        trialTypes_={};
+0030        fixedParams=5;
+0031     <span class="keyword">end</span>
+0032 
+0033     methods
+0034         <a name="_sub0" href="#_subfunctions" class="code">function this=parameterSeries(data,labels,times,description,types)</a>
+0035             this@labTimeSeries(data,1,1,labels);
+0036             this.hiddenTime=times;
+0037             <span class="keyword">if</span> length(description)==length(labels)
+0038                 this.description_=description; <span class="comment">%Needs to be cell-array of same length as labels</span>
+0039             <span class="keyword">else</span>
+0040                 error(<span class="string">'paramtereSeries:constructor'</span>,<span class="string">'Description input needs to be same length as labels'</span>)
+0041             <span class="keyword">end</span>
+0042             <span class="keyword">if</span> nargin&gt;4
+0043                 this.trialTypes_=types;
+0044             <span class="keyword">end</span>
+0045         <span class="keyword">end</span>
+0046 
+0047         <a name="_sub1" href="#_subfunctions" class="code">function this=setTrialTypes(this,types)</a>
+0048             this.trialTypes_=types;
+0049         <span class="keyword">end</span>
+0050 
+0051 
+0052         <span class="comment">%% Getters for dependent variables (this could be made more efficient by fixing the indexes for these parameters ( which is something that already happens in practice) and doing direct indexing to data,</span>
+0053         <a name="_sub2" href="#_subfunctions" class="code">function vals=get.bad(this)</a>
+0054             <span class="keyword">if</span> this.isaParameter(<span class="string">'bad'</span>)
+0055                 vals=this.getDataAsVector(<span class="string">'bad'</span>);
+0056             <span class="keyword">elseif</span> this.isaParameter(<span class="string">'good'</span>)
+0057                 vals=this.getDataAsVector(<span class="string">'good'</span>);
+0058                 vals=~vals;
+0059             <span class="keyword">else</span>
+0060                 <span class="comment">%This should never be the case. Setting all values as good.</span>
+0061                 vals=false(size(this.Data,1),1);
+0062             <span class="keyword">end</span>
+0063         <span class="keyword">end</span>
+0064         <a name="_sub3" href="#_subfunctions" class="code">function vals=get.stridesTrial(this)</a>
+0065             vals=this.getDataAsVector(<span class="string">'trial'</span>);
+0066         <span class="keyword">end</span>
+0067         <a name="_sub4" href="#_subfunctions" class="code">function vals=get.stridesInitTime(this)</a>
+0068             vals=this.getDataAsVector(<span class="string">'initTime'</span>);
+0069         <span class="keyword">end</span>
+0070         <a name="_sub5" href="#_subfunctions" class="code">function vals=get.description(this)</a>
+0071 <span class="comment">%            if isfield(this,'description_')</span>
+0072               vals=this.description_;
+0073 <span class="comment">%            else</span>
+0074 <span class="comment">%               vals=cell(size(this.labels));</span>
+0075 <span class="comment">%            end</span>
+0076         <span class="keyword">end</span>
+0077         <a name="_sub6" href="#_subfunctions" class="code">function vals=get.trialTypes(this)</a>
+0078 <span class="comment">%             if isfield(this,'trialTypes_')</span>
+0079                vals=this.trialTypes_;
+0080 <span class="comment">%             else</span>
+0081 <span class="comment">%                 disp('trying to access trialTypes')</span>
+0082 <span class="comment">%                vals={};</span>
+0083 <span class="comment">%             end</span>
+0084         <span class="keyword">end</span>
+0085 
+0086         <span class="comment">%% I/O</span>
+0087         <a name="_sub7" href="#_subfunctions" class="code">function [bool,idx]=isaParameter(this,labels) </a><span class="comment">%Another name for isaLabel, backwards compatib</span>
+0088             [bool,idx]=this.isaLabel(labels);
+0089         <span class="keyword">end</span>
+0090 
+0091         <a name="_sub8" href="#_subfunctions" class="code">function inds=indsInTrial(this,t)</a>
+0092             <span class="keyword">if</span> nargin&lt;2 || isempty(t)
+0093                 inds=[];
+0094             <span class="keyword">else</span>
+0095                 inds=cell(length(t),1);
+0096                 <span class="keyword">for</span> ii=1:length(t)
+0097                     inds{ii,1}=find(this.stridesTrial==t(ii));
+0098                 <span class="keyword">end</span>
+0099             <span class="keyword">end</span>
+0100         <span class="keyword">end</span>
+0101 
+0102         <a name="_sub9" href="#_subfunctions" class="code">function [data,auxLabel]=getParameter(this,label) </a><span class="comment">%Backwards compat</span>
+0103             [data,~,auxLabel]=this.getDataAsVector(label);
+0104         <span class="keyword">end</span>
+0105 
+0106         <a name="_sub10" href="#_subfunctions" class="code">function newThis=incorporateDependentParameters(this,labels)</a>
+0107            ff=load(<span class="string">'DependParamRecipes.mat'</span>,<span class="string">'fieldList'</span>);
+0108            fTable=ff.fieldList;
+0109            newThis=this;
+0110            <span class="keyword">if</span> isa(labels,<span class="string">'char'</span>)
+0111                labels={labels};
+0112            <span class="keyword">end</span>
+0113            [bool,idxs] = compareLists(fTable(:,1),labels);
+0114            acceptedLabels=labels(bool);
+0115            acceptedDesc=fTable(idxs(bool),4);
+0116            acceptedHandles=fTable(idxs(bool),2);
+0117            acceptedParams=fTable(idxs(bool),3);
+0118            <span class="keyword">if</span> any(~bool)
+0119                warning(strcat(<span class="string">'Did not find recipes for some of the labels provided: '</span>, labels(~bool)))
+0120            <span class="keyword">end</span>
+0121            <span class="keyword">for</span> i=1:length(acceptedLabels)
+0122                newThis=<a href="#_sub14" class="code" title="subfunction newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)">addNewParameter</a>(newThis,acceptedLabels{i},eval(acceptedHandles{i}),acceptedParams{i},acceptedDesc{i});
+0123            <span class="keyword">end</span>
+0124         <span class="keyword">end</span>
+0125 
+0126 
+0127         <span class="comment">%% Modifiers</span>
+0128         <a name="_sub11" href="#_subfunctions" class="code">function newThis=cat(this,other)</a>
+0129             <span class="keyword">if</span> size(this.Data,1)==size(other.Data,1)
+0130                 <span class="keyword">if</span> isempty(this.description)
+0131                     thisDescription=cell(size(this.labels));
+0132                 <span class="keyword">else</span>
+0133                   thisDescription=this.description(:);
+0134                 <span class="keyword">end</span>
+0135                 <span class="keyword">if</span> isempty(other.description)
+0136                     otherDescription=cell(size(other.labels));
+0137                   <span class="keyword">else</span>
+0138                     otherDescription=other.description(:);
+0139                 <span class="keyword">end</span>
+0140                 newThis=<a href="parameterSeries.html" class="code" title="">parameterSeries</a>([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription; otherDescription],this.trialTypes);
+0141                 <span class="comment">%this.Data=[this.Data other.Data];</span>
+0142                 <span class="comment">%this.labels=[this.labels; other.labels];</span>
+0143                 <span class="comment">%this.description=[this.description; other.description];</span>
+0144             <span class="keyword">else</span>
+0145                 error(<span class="string">'parameterSeries:cat'</span>,<span class="string">'Cannot concatenate series with different number of strides'</span>);
+0146             <span class="keyword">end</span>
+0147         <span class="keyword">end</span>
+0148 
+0149         <a name="_sub12" href="#_subfunctions" class="code">function newThis=addStrides(this,other)</a>
+0150             <span class="comment">%TODO: Check that the labels are actually the same</span>
+0151             <span class="keyword">if</span> ~isempty(other.Data)
+0152                 aux=other.getDataAsVector(this.labels);
+0153                 <span class="keyword">if</span> size(this.Data,2)==size(other.Data,2)
+0154                     newThis=<a href="parameterSeries.html" class="code" title="">parameterSeries</a>([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:));
+0155                 <span class="keyword">else</span>
+0156                     warning(<span class="string">'parameterSeries:addStrides'</span>,<span class="string">'Concatenating parameterSeries with different number of parameters. Merging parameter lists &amp; filling NaNs for missing parameters. You (yes, YOU, the current user) SHOULD FIX THIS. Ask Pablo for guidance.'</span>);
+0157                     [bool2,~] = compareLists(this.labels,other.labels); <span class="comment">%Labels present in other but NOT in this</span>
+0158                     [bool1,~] = compareLists(other.labels,this.labels); <span class="comment">%Labels present in this but NOT in other</span>
+0159                     <span class="keyword">if</span> any(~bool2)
+0160                         newThis=this.appendData(nan(size(this.Data,1),sum(~bool2)),other.labels(~bool2),other.description(~bool2)); <span class="comment">%Expanding this</span>
+0161                     <span class="keyword">else</span> newThis=this;<span class="comment">%digna added this, review</span>
+0162                     <span class="keyword">end</span>
+0163                     <span class="keyword">if</span> any(~bool1)
+0164                         newOther=other.appendData(nan(size(other.Data,1),sum(~bool1)),this.labels(~bool1),this.description(~bool1)); <span class="comment">%Expanding other</span>
+0165                     <span class="keyword">else</span> newOther=other;<span class="comment">%Digna added this, review</span>
+0166                     <span class="keyword">end</span>
+0167                     newThis=<a href="#_sub13" class="code" title="subfunction newThis=addStrides(this,other)">addStrides</a>(newThis,newOther);
+0168                 <span class="keyword">end</span>
+0169             <span class="keyword">else</span>
+0170                 newThis=this; <span class="comment">%Empty second arg., adding nothing.</span>
+0171             <span class="keyword">end</span>
+0172         <span class="keyword">end</span>
+0173 
+0174         <a name="_sub13" href="#_subfunctions" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a>
+0175            <span class="comment">%This function allows to compute new parameters from other existing parameters and have them added to the data.</span>
+0176            <span class="comment">%This is useful when trying out new parameters without having to</span>
+0177            <span class="comment">%recompute all existing parameters.</span>
+0178            <span class="comment">%INPUT:</span>
+0179            <span class="comment">%newPAramLAbel: string with the name of the new parameter</span>
+0180            <span class="comment">%funHandle: a function handle with N input variables, whose</span>
+0181            <span class="comment">%result will be used to compute the new parameter</span>
+0182            <span class="comment">%inputParameterLabels: the parameters that will replace each of</span>
+0183            <span class="comment">%the variables in the funHandle</span>
+0184            <span class="comment">%EXAMPLE:</span>
+0185            <span class="comment">%I want to define a new normalized version of the contributions,</span>
+0186            <span class="comment">%that divides contributions by avg. step time and avg. step</span>
+0187            <span class="comment">%velocity, so that the velocity contribution is now a</span>
+0188            <span class="comment">%measure of belt-speed ratio. In order to do that, I will take</span>
+0189            <span class="comment">%the velocityContributionAlt (which already exists and is</span>
+0190            <span class="comment">%velocityContribution divided by strideTime, so it is just half</span>
+0191            <span class="comment">%the difference of velocities) and then divide it by velocity sum.</span>
+0192            <span class="comment">%Velocity sum can be computed by dividing stepTimeContribution</span>
+0193            <span class="comment">%by stepTimeDifference (there are other possibilities to compute</span>
+0194            <span class="comment">%the same thing. The final equation will look like this:</span>
+0195            <span class="comment">%newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)</span>
+0196            <span class="comment">%This can be implemented as:</span>
+0197            <span class="comment">%newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');</span>
+0198 
+0199            [newData]=this.computeNewParameter(newParamLabel,funHandle,inputParameterLabels);
+0200            newThis=<a href="#_sub16" class="code" title="subfunction newThis=appendData(this,newData,newLabels,newDesc) ">appendData</a>(this,newData,{newParamLabel},{newParamDescription}) ;
+0201         <span class="keyword">end</span>
+0202 
+0203         <a name="_sub14" href="#_subfunctions" class="code">function newThis=getDataAsPS(this,labels,strides,skipFixedParams)</a>
+0204             <span class="keyword">if</span> nargin&lt;2 || isempty(labels)
+0205                 labels=this.labels;
+0206             <span class="keyword">end</span>
+0207             <span class="keyword">if</span> nargin&lt;4 || isempty(skipFixedParams) || skipFixedParams~=1
+0208                 extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
+0209             <span class="keyword">else</span>
+0210                 extendedLabels=labels(:);
+0211             <span class="keyword">end</span>
+0212             [~,inds]=unique(extendedLabels); <span class="comment">%To avoid repeating bad, trial, initTime</span>
+0213             extendedLabels=extendedLabels(sort(inds)); <span class="comment">%To avoid the re-sorting 'unique' does</span>
+0214             [bool,idx]=this.isaLabel(extendedLabels);
+0215             idx=idx(bool);
+0216             <span class="keyword">if</span> nargin&lt;3 || isempty(strides)
+0217                strides=1:size(this.Data,1);
+0218             <span class="keyword">end</span>
+0219             newThis=<a href="parameterSeries.html" class="code" title="">parameterSeries</a>(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx));
+0220         <span class="keyword">end</span>
+0221 
+0222         <a name="_sub15" href="#_subfunctions" class="code">function newThis=appendData(this,newData,newLabels,newDesc) </a><span class="comment">%For back compat</span>
+0223             <span class="keyword">if</span> nargin&lt;4 || isempty(newDesc)
+0224                 newDesc=cell(size(newLabels));
+0225             <span class="keyword">end</span>
+0226             other=<a href="parameterSeries.html" class="code" title="">parameterSeries</a>(newData,newLabels,this.hiddenTime,newDesc,this.trialTypes);
+0227             newThis=<a href="#_sub12" class="code" title="subfunction newThis=cat(this,other)">cat</a>(this,other);
+0228         <span class="keyword">end</span>
+0229 
+0230         <a name="_sub16" href="#_subfunctions" class="code">function this=replaceParams(this,other)</a>
+0231            <span class="comment">%Replaces existing parameters in this, with parameter data in other</span>
+0232 
+0233           [bool,idx]=this.isaLabel(other.labels); <span class="comment">%Finding parameters that already existed</span>
+0234           this.Data(:,idx(bool))=other.Data(:,bool); <span class="comment">%Replacing data</span>
+0235           this.description_(idx(bool))=other.description(bool); <span class="comment">%Replacing descriptions (is this necessary?)</span>
+0236           <span class="comment">%catting data for parameters that DIDN'T exist</span>
+0237           <span class="keyword">if</span> any(~bool)
+0238               warning(<span class="string">'Asked to replace parameters, but found parameters that didn''t exist. Appending.'</span>)
+0239              this=this.cat(other.getDataAsPS(other.labels(~bool),[],1));
+0240           <span class="keyword">end</span>
+0241         <span class="keyword">end</span>
+0242 
+0243         <a name="_sub17" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAny(this,labels)</a>
+0244             newThis=this;
+0245             aux=this.getDataAsVector(labels);
+0246             [~,bi]=this.isaLabel(<span class="string">'bad'</span>);
+0247             newThis.Data(:,bi)=this.bad | any(isnan(aux),2);
+0248             [~,bg]=this.isaLabel(<span class="string">'good'</span>);
+0249             newThis.Data(:,bg)=~this.bad;
+0250         <span class="keyword">end</span>
+0251 
+0252         <a name="_sub18" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAll(this,labels)</a>
+0253             newThis=this;
+0254             aux=this.getDataAsVector(labels);
+0255             [~,bi]=this.isaLabel(<span class="string">'bad'</span>);
+0256             newThis.Data(:,bi)=this.bad | all(isnan(aux),2);
+0257             [~,bg]=this.isaLabel(<span class="string">'good'</span>);
+0258             newThis.Data(:,bg)=~this.bad;
+0259         <span class="keyword">end</span>
+0260 
+0261         <a name="_sub19" href="#_subfunctions" class="code">function newThis=substituteNaNs(this,method)</a>
+0262             <span class="keyword">if</span> nargin&lt;2 || isempty(method)
+0263                 method=<span class="string">'linear'</span>;
+0264             <span class="keyword">end</span>
+0265             newThis=this.substituteNaNs@labTimeSeries(method);
+0266             newThis.Data(:,1:this.fixedParams)=this.Data(:,1:this.fixedParams);
+0267 
+0268         <span class="keyword">end</span>
+0269 
+0270         <a name="_sub20" href="#_subfunctions" class="code">function this=markBadStridesAsNan(this)</a>
+0271                 inds=this.bad;
+0272                 this.Data(inds==1,this.fixedParams+1:end)=NaN;
+0273         <span class="keyword">end</span>
+0274 
+0275         <a name="_sub21" href="#_subfunctions" class="code">function this=normalizeToBaseline(this,labels,rangeValues)</a>
+0276             warning(<span class="string">'parameterSeries:normalizeToBaseline'</span>,<span class="string">'Deprecated, use linearStretch'</span>)
+0277             this=<a href="#_sub23" class="code" title="subfunction newThis=linearStretch(this,labels,rangeValues)">linearStretch</a>(this,labels,rangeValues);
+0278         <span class="keyword">end</span>
+0279 
+0280         <a name="_sub22" href="#_subfunctions" class="code">function newThis=linearStretch(this,labels,rangeValues)</a>
+0281            <span class="comment">%This normalization transforms the values of the parameters given in labels</span>
+0282            <span class="comment">%such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1</span>
+0283            <span class="comment">%It creates NEW parameters with the same name, and the 'Norm' prefix.</span>
+0284            <span class="comment">%This will generate collisions if run multiple times for the</span>
+0285            <span class="comment">%same parameters</span>
+0286            <span class="comment">%See also: adaptationData.normalizeToBaselineEpoch</span>
+0287             <span class="keyword">if</span> numel(rangeValues)~=2
+0288                 error(<span class="string">'rangeValues has to be a 2 element vector'</span>)
+0289             <span class="keyword">end</span>
+0290 <span class="comment">%             [boolFlag,labelIdx]=isaLabel(this,labels);</span>
+0291 <span class="comment">%             for i=1:length(labels)</span>
+0292 <span class="comment">%                 if boolFlag(i)</span>
+0293 <span class="comment">%                     oldDesc=this.description(labelIdx(i));</span>
+0294 <span class="comment">%                     newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];</span>
+0295 <span class="comment">%                     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);</span>
+0296 <span class="comment">%                     this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);</span>
+0297 <span class="comment">%                 end</span>
+0298 <span class="comment">%</span>
+0299 <span class="comment">%             end</span>
+0300             <span class="comment">%More efficient:</span>
+0301             N=length(labels);
+0302             newDesc=repmat({[<span class="string">'Normalized to range=['</span> num2str(rangeValues(1)) <span class="string">','</span> num2str(rangeValues(2)) <span class="string">']'</span>]},N,1);
+0303             newL=cell(N,1);
+0304             nD=zeros(size(this.Data,1),N);
+0305             <span class="keyword">for</span> i=1:N
+0306                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+0307                 newL{i}=strcat(<span class="string">'Norm'</span>,labels{i});
+0308                 nD(:,i)=this.computeNewParameter(newL{i},funHandle,labels(i));
+0309             <span class="keyword">end</span>
+0310             newThis=<a href="#_sub16" class="code" title="subfunction newThis=appendData(this,newData,newLabels,newDesc) ">appendData</a>(this,nD,newL,newDesc);
+0311         <span class="keyword">end</span>
+0312 
+0313 <span class="comment">%         function newThis=EMGnormAllData(this,labels,rangeValues)</span>
+0314 <span class="comment">%             %This get the stride by stide norm</span>
+0315 <span class="comment">%             %It creates NEW parameters with the same name, and the 'Norm' prefix.</span>
+0316 <span class="comment">%             %This will generate collisions if run multiple times for the</span>
+0317 <span class="comment">%             %same parameters</span>
+0318 <span class="comment">%             %See also: adaptationData.normalizeToBaselineEpoch</span>
+0319 <span class="comment">%             if isempty(rangeValues)</span>
+0320 <span class="comment">% %                 error('rangeValues has to be a 2 element vector')</span>
+0321 <span class="comment">%                 rangeValues=0;</span>
+0322 <span class="comment">%             end</span>
+0323 <span class="comment">%</span>
+0324 <span class="comment">%             %More efficient:</span>
+0325 <span class="comment">%             N=length(labels);</span>
+0326 <span class="comment">%             newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);</span>
+0327 <span class="comment">%             newL=cell(N,1);</span>
+0328 <span class="comment">%             nD=zeros(size(this.Data,1),N);</span>
+0329 <span class="comment">%</span>
+0330 <span class="comment">% %             for i=1:N</span>
+0331 <span class="comment">%                 %                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);</span>
+0332 <span class="comment">%</span>
+0333 <span class="comment">% %                 funHandle=@(x) vecnorm(x'-rangeValues);</span>
+0334 <span class="comment">% %                 newL=strcat('NormEMG',labels);</span>
+0335 <span class="comment">% %                 nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));</span>
+0336 <span class="comment">% %             end</span>
+0337 <span class="comment">%             newThis=appendData(this,nD,newL,newDesc);</span>
+0338 <span class="comment">%         end</span>
+0339 
+0340 
+0341         <span class="comment">%% Other functions that need redefining:</span>
+0342         <a name="_sub23" href="#_subfunctions" class="code">function [F]=fourierTransform(this)</a>
+0343             <span class="comment">%error('parameterSeries:fourierTransform','You cannot do that!')</span>
+0344             F=<a href="#_sub24" class="code" title="subfunction [F]=fourierTransform(this)">fourierTransform</a>@labTimeSeries(this);
+0345             F.TimeInfo.Units=<span class="string">'strides^{-1}'</span>;
+0346         <span class="keyword">end</span>
+0347 
+0348         <a name="_sub24" href="#_subfunctions" class="code">function newThis=resample(this) </a><span class="comment">%the newTS is respected as much as possible, but forcing it to be a divisor of the total time range</span>
+0349             error(<span class="string">'parameterSeries:resample'</span>,<span class="string">'You cannot do that!'</span>)
+0350             newThis=[];
+0351         <span class="keyword">end</span>
+0352 
+0353         <a name="_sub25" href="#_subfunctions" class="code">function newThis=resampleN(this) </a><span class="comment">%Same as resample function, but directly fixing the number of samples instead of TS</span>
+0354             error(<span class="string">'parameterSeries:resampleN'</span>,<span class="string">'You cannot do that!'</span>)
+0355             newThis=[];
+0356         <span class="keyword">end</span>
+0357 
+0358         <span class="comment">%% Display</span>
+0359         <a name="_sub26" href="#_subfunctions" class="code">function [h,h1]=plotAlt(this,h,labels,plotHandles,color)</a>
+0360             <span class="keyword">if</span> nargin&lt;5
+0361                 color=[];
+0362             <span class="keyword">end</span>
+0363             <span class="keyword">if</span> nargin&lt;4
+0364                 plotHandles=[];
+0365             <span class="keyword">end</span>
+0366             <span class="keyword">if</span> nargin&lt;3
+0367                 labels=[];
+0368             <span class="keyword">end</span>
+0369             <span class="keyword">if</span> nargin&lt;2
+0370                 h=[];
+0371             <span class="keyword">end</span>
+0372             [h,h1]=this.plot(h,labels,plotHandles,[],color,1);
+0373             ll=findobj(h,<span class="string">'Type'</span>,<span class="string">'Line'</span>);
+0374             set(ll,<span class="string">'LineStyle'</span>,<span class="string">'None'</span>,<span class="string">'Marker'</span>,<span class="string">'.'</span>)
+0375             linkaxes(h1,<span class="string">'x'</span>)
+0376         <span class="keyword">end</span>
+0377 
+0378         <span class="comment">%% Stats</span>
+0379         <a name="_sub27" href="#_subfunctions" class="code">function [p,postHocMatrix] = anova(this,params,groupIdxs,dispOpt)</a>
+0380             <span class="comment">%Function to perform one-way anova among several groups of</span>
+0381             <span class="comment">%strides, and a post-hoc analysis to</span>
+0382             <span class="keyword">if</span> nargin&lt;4 || isempty(dispOpt)
+0383                 dispOpt=<span class="string">'off'</span>;
+0384             <span class="keyword">end</span>
+0385             strides=cell2mat(groupIdxs);
+0386             Ngroups=length(groupIdxs);
+0387             <span class="keyword">for</span> i=1:Ngroups
+0388                 groupID{i}=i*ones(size(groupIdxs{i}));
+0389             <span class="keyword">end</span>
+0390             groupID=cell2mat(groupID);
+0391            <span class="keyword">if</span> isa(params,<span class="string">'char'</span>)
+0392                params={params};
+0393            <span class="keyword">end</span>
+0394            Nparams=length(params);
+0395            aux=this.getDataAsPS([],strides);
+0396            postHocMatrix=cell(Nparams,1);
+0397            <span class="keyword">for</span> i=1:Nparams
+0398                postHocMatrix{i}=nan(Ngroups);
+0399                relevantData=aux.getDataAsVector(params(i));
+0400                [p(i),ANOVATAB,STATS] = anova1(relevantData,groupID,dispOpt);
+0401                [c,MEANS,H,GNAMES] = multcompare(STATS); <span class="comment">%Default post-hoc is tukey-kramer</span>
+0402                postHocMatrix{i}(sub2ind(Ngroups*[1,1],c(:,1),c(:,2)))=c(:,6);
+0403            <span class="keyword">end</span>
+0404         <span class="keyword">end</span>
+0405     <span class="keyword">end</span>
+0406 
+0407 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeHSparameters</title>
+  <meta name="keywords" content="computeHSparameters">
+  <meta name="description" content="This function averages labTS data across given phases.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeHSparameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeHSparameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function averages labTS data across given phases.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeHSparameters(someTS,gaitEvents,eventType) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function averages labTS data across given phases.
+The output is a parameterSeries object, which can be concatenated with
+other parameterSeries objects, for example with those from
+computeTemporalParameters. 
+See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
+<a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="computeAngleParameters.html" class="code" title="function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg,eventTypes)">computeAngleParameters</a>	This function computes summary parameters per stride based on Angle data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeHSparameters(someTS,gaitEvents,eventType)</a>
+0002 <span class="comment">%This function averages labTS data across given phases.</span>
+0003 <span class="comment">%The output is a parameterSeries object, which can be concatenated with</span>
+0004 <span class="comment">%other parameterSeries objects, for example with those from</span>
+0005 <span class="comment">%computeTemporalParameters.</span>
+0006 <span class="comment">%See also computeSpatialParameters, computeTemporalParameters,</span>
+0007 <span class="comment">%computeForceParameters, parameterSeries</span>
+0008 
+0009 <span class="comment">%%INPUT:</span>
+0010 <span class="comment">%someTS: labTS object to discretize</span>
+0011 <span class="comment">%gaitEvents: eventTS</span>
+0012 <span class="comment">%eventTypes: either a cell array of strings, or a single char indicating</span>
+0013 <span class="comment">%the slow leg</span>
+0014 <span class="comment">%alignmentVector: integer vector of same size as eventType</span>
+0015 
+0016 <span class="comment">%TODO: this should be a method of labTS</span>
+0017 
+0018 <span class="comment">%get slow heel strikes times</span>
+0019 <span class="comment">% T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});</span>
+0020 T_HS=labTimeSeries.getArrayedEvents(gaitEvents,eventType);
+0021 nstrides=size(T_HS,1);
+0022 <span class="comment">%keyboard</span>
+0023 <span class="comment">% iSHS=find(ismember(someTS.Time,T_HS(2:end,1)));</span>
+0024 <span class="comment">% iFHS=find(ismember(someTS.Time,T_HS(1:end-1,2)));</span>
+0025 
+0026 <span class="comment">% iSHS=find(ismember(someTS.Time,round(strideEvents.tSHS2,6)));</span>
+0027 <span class="comment">% iFHS=find(ismember(someTS.Time,round(strideEvents.tFHS,6)));</span>
+0028 
+0029 <span class="comment">%extract parameters</span>
+0030 Ang_SHS=squeeze(someTS.getSample(T_HS(2:<span class="keyword">end</span>,1)));
+0031 
+0032 <span class="keyword">try</span>
+0033     Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1,2)));   
+0034 <span class="keyword">catch</span>
+0035     Ang_FHS=NaN(size(Ang_SHS));<span class="comment">%NEEDS FIX</span>
+0036      disp(<span class="string">'no gait events for fast leg!'</span>)
+0037 <span class="keyword">end</span>   
+0038 
+0039 <span class="comment">%rename labels</span>
+0040 Slabs=strcat(someTS.labels,{<span class="string">'AtSHS'</span>});
+0041 Flabs=strcat(someTS.labels,{<span class="string">'AtFHS'</span>});
+0042 <span class="comment">%Ang_SHS=Ang_SHS.renameLabels(Ang_SHS.labels,strcat(Ang_SHS.labels,{'@SHS'}));</span>
+0043 <span class="comment">%Ang_FHS=Ang_FHS.renameLabels(Ang_FHS.labels,strcat(Ang_FHS.labels,{'@FHS'}));</span>
+0044 PangSHS=parameterSeries(Ang_SHS(:,:),Slabs,[],Slabs);
+0045 PangFHS=parameterSeries(Ang_FHS(:,:),Flabs,[],Flabs);
+0046 out=cat(PangSHS,PangFHS);
+0047 
+0048 <span class="keyword">end</span>
+0049</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
