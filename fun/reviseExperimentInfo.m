@@ -26,7 +26,15 @@ expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
 %   2) that info.domleg is either 'left' or 'right'
 %   3) that the reference leg is the leg on the slow belt
 
-if isfield(info,'isStroke') && info.isStroke==1 %For stroke patients, reference leg is equal to affected side
+if isfield(info,'fastLeg')
+    if strcmpi(info.fastLeg,'right')
+        info.refLeg='L';
+    elseif strcmpi(info.fastLeg,'left')
+        info.refLeg = 'R';
+    else
+        warning('Reference leg could not be determined from information given. Make sure info.fastLeg is either ''Left'' or ''Right''.')
+    end
+elseif isfield(info,'isStroke') && info.isStroke==1 %For stroke patients, reference leg is equal to affected side
     if strcmpi(info.affectedSide,'right')
         info.refLeg='R';
     elseif strcmpi(info.affectedSide,'left')
@@ -58,10 +66,10 @@ end
 
 if ~isfield(info,'isStroke') || info.isStroke==0
     subData=subjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
-    info.weight,age,info.ID);
+    info.weight,age,info.ID,info.fastLeg);
 else
     subData=strokeSubjectData(DOB,info.gender,info.domleg,info.domhand,info.height,...
-    info.weight,age,info.ID,info.affectedSide); %TO DO: add stroke date
+    info.weight,age,info.ID,info.fastLeg,info.affectedSide); %TO DO: add stroke date
 end
 
 %% Trial Data

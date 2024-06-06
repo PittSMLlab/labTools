@@ -155,22 +155,29 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     if ~isempty(force.Data)
         out=cat(out,force);
     end
+end
     
-    %%
-    % If you encounter a bug with a line of code in this section (e.g.,
-    % indexing array out of bounds), comment it out, which will prevent the
-    % overground forces from being processed and output.
+%% Overground Force parameters
+% If you encounter a bug with a line of code in this section (e.g.,
+% indexing array out of bounds), comment it out, which will prevent the
+% overground forces from being processed and output.
+
+OG_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'}; % Added to only compute the parameter if you have overground force recordings. 
+OG_idx = contains(trialData.GRFData.labels, OG_names);
+
+if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - min(trialData.GRFData.Data(:,OG_idx))) > 100 % This makes sure that it will only compute when the OG force plates are recording or    
+    % there is some differences in forces through the experiment and not a
+    % constant value or NaNs
     [force_OGFP.Data] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP.Data)
         out=cat(out,force_OGFP);
     end
-
     [force_OGFP_aligned.Data] = computeForceParameters_OGFP_aligned(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
     if ~isempty(force_OGFP_aligned.Data)
         out=cat(out,force_OGFP_aligned);
-    end
-    %%%
+    end   
 end
+
 %% H-Reflex:
 fields = fieldnames(trialData); % retrieve all trialData object field names
 if any(contains(fields,'HreflexPin'))   % if 'HreflexPin' field exists, ...

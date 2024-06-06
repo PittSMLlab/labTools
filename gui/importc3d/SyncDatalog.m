@@ -46,14 +46,15 @@ for trialIdx = trials
         warning('No force data found in datlog for trial %d. Ignore datlog synching for this trial.', trialIdx)
         continue
     end
-    sampleFrq = 2000;
+
+    currTrial = rawExpData.data{trialIdx};
+    sampleFrq = currTrial.GRFData.sampFreq;
     intervalAt2000 = 0:1/sampleFrq:totalTime;
     %1st arg is time, 2nd arg is data,  %{'frame #','U time','Rfz','Lfz','Relative Time'}
     FL_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,4),intervalAt2000)';
     FR_datlog = interp1(datlog.forces.data(:,5),datlog.forces.data(:,3),intervalAt2000)';
 
     % find force data from rawExpData.
-    currTrial = rawExpData.data{trialIdx};
     labelIdx = ismember(currTrial.GRFData.labels,{'LFz','RFz'}); %TODO: add new labels here
     force_rawData = currTrial.GRFData.Data(:,labelIdx);
 %     force_rawData = [zeros(24000,2);force_rawData]; %if both fail could
@@ -64,11 +65,11 @@ for trialIdx = trials
     tR = finddelay(FR_datlog,force_rawData(:,2)); %delay from t2-t1
     %in theory tL and tR should be very similar 
     
-    %use Matlab's built function to align to the earliest signal (this should
-    %be the same to our manual approach when force_rawData starts early),
-    %we want more control to always shift datlog only regardless of which signal is easier,
-    %so will use our own approach. Remove comments for debugging and
-    %checking plot1 below.
+    % %use Matlab's built function to align to the earliest signal (this should
+    % %be the same to our manual approach when force_rawData starts early),
+    % %we want more control to always shift datlog only regardless of which signal is easier,
+    % %so will use our own approach. Remove comments for debugging and
+    % %checking plot1 below.
     % [aligndataLogL, alignFRawL] = alignsignals(FL_datlog,force_rawData(:,1));
     % [aligndataLogR, alignFRawR] = alignsignals(FR_datlog,force_rawData(:,2));
 
@@ -132,10 +133,10 @@ for trialIdx = trials
 %     E1=sum((reducedRefSync-reducedSync1).^2)/sum(refSync.^2); %Computing error energy as % of original signal energy, only considering the time interval were signals were simultaneously recorded.
             
     %% Plot to visualize alignment.    
-    % 1. Plot data from the align function call to compare with matlab aligned data, not really needed, just to make sure i'm not plotting something wrong.
-%     figure(); hold on;
-%     plot(aligndataLogL,'LineWidth',2,'DisplayName','AlignedData');
-%     plot(alignFRawL(:,1),'DisplayName','RawExpL');
+    % % 1. Plot data from the align function call to compare with matlab aligned data, not really needed, just to make sure i'm not plotting something wrong.
+    % figure(); hold on;
+    % plot(aligndataLogL,'LineWidth',2,'DisplayName','AlignedData');
+    % plot(alignFRawL(:,1),'DisplayName','RawExpL');
    
     % 2. Plot manually padded version (always shift datlog to match raw)
     f = figure('units','normalized','outerposition',[0 0 1 1]);
@@ -151,12 +152,12 @@ for trialIdx = trials
     title(sprintf('FR Corr: %.2f',signalCorrR))
     sgtitle(sprintf('Trial%02d Sync',trialIdx))
 
-    %3. Plot the raw/unaligned data, for debugging purpose.
+    % %3. Plot the raw/unaligned data, for debugging purpose.
     %     figure(); hold on;
-%     plot(force_rawData(:,1),'DisplayName','RawExpF'); legend()
-%     subplot(3,1,3); hold on;
-%     plot(FL_datlog_raw,'DisplayName','DataLogF');
-%     legend()
+    % plot(force_rawData(:,1),'DisplayName','RawExpF'); legend()
+    % subplot(3,1,3); hold on;
+    % plot(FL_datlog_raw,'DisplayName','DataLogF');
+    % legend()
 
     %If sync is bad, give a pop up
     if signalCorrL <= 0.90 && signalCorrR <= 0.90 %this is a rather arbitrary number     

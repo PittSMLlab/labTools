@@ -16,12 +16,12 @@ classdef subjectData
     properties (SetAccess=private)
         dateOfBirth=labDate.default;
         sex='';
+        fastLeg='';
         dominantLeg='';
         dominantArm='';
         height=[]; %centimeters
         weight=[]; %kgs
-        age=[]; %in years, at time of experiment
-     
+        age=[]; %in years, at time of experiment     
     end
     
     properties %other
@@ -31,13 +31,13 @@ classdef subjectData
     
     methods
         %constructor
-        function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID)
+        function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg)
             if nargin>0 && ~isempty(DOB)
                 warning('subjectData:DOB','Date of birth was provided but will be ignored for privacy.')
             end
             if nargin>1 && ~isempty(sex)
                 this.sex=sex;
-            end
+            end            
             if nargin>2 && ~isempty(dLeg)
                 this.dominantLeg=dLeg;
             end
@@ -55,6 +55,9 @@ classdef subjectData
             end
             if nargin>7 && ~isempty(ID)
                 this.ID=ID;
+            end
+            if nargin>8 && ~isempty(fLeg)
+                this.fastLeg=fLeg;
             end
         end
         
