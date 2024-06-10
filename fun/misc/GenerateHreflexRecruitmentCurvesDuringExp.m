@@ -27,13 +27,13 @@ catch   % use below two lines when processing c3d files not open in Nexus
     end
 end
 id = inputdlg({'Enter the Participant / Session ID:'},'ID',[1 50], ...
-    guessID);   % Verify ID with user first
+    guessID);   % verify ID with user first
 id = id{1};
 [~,filename] = fileparts(filenameWExt);
 trialNum = filename(end-1:end); % last two characters of file name are #
 pathFigs = [path 'HreflexCalFigs' filesep];
-if ~exist(pathFigs,'dir')   % if figure folder does not already exist, ...
-    mkdir(pathFigs);        % make it
+if ~exist(pathFigs,'dir')       % if figure folder doesn't exist, ...
+    mkdir(pathFigs);            % make it
 end
 
 H = btkReadAcquisition([path filenameWExt]);
@@ -66,15 +66,15 @@ fnameConf = [id 'Config' trialNum '.mat'];
 if isempty(fnamesConf)  % if no configuration file exists, ...
     % use the default values for the input
     definput = { ...
-        ['RTAP RTAD NA RPER RMG RLG RSOL LTAP LTAD LPER LMG LLG LSOL NA NA' ...
-        ' sync1'], ...                  muscle list
-        '1', ...                        should use stimulation trigger pulse
-        ['7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 16 18 18 ' ...
-        '18 21 21 21 25 25 25'], ...    right leg stimulation amplitudes
-        ['7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 16 18 18 ' ...
-        '18 21 21 21 25 25 25'], ...    left leg stimulation amplitudes
-        '0.0003', ...                   stimulation artifact threshold
-        '5'};                         % minimum time between stimuli
+        ['RTAP RTAD NA RPER RMG RLG RSOL LTAP LTAD LPER LMG LLG LSOL ' ...
+        'NA NA sync1'], ...                     muscle list
+        '1', ...                                should use stim trig pulse?
+        ['5 5 5 7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 ' ...
+        '16 18 18 18 21 21 21 25 25 25'], ...   right leg stim amplitudes
+        ['5 5 5 7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 ' ...
+        '16 18 18 18 21 21 21 25 25 25'], ...   left leg stim amplitudes
+        '0.0003', ...                           stim artifact threshold
+        '5'};                                 % min. time between stimuli
 elseif any(strcmpi(fnamesConf,fnameConf))   % if current trial file, ...
     load([pathFigs fnameConf],'answer');    % load configuration
     definput = answer;                      % set default input to config
@@ -94,7 +94,7 @@ if ~isfile([pathFigs fnameConf]) || (isfile([pathFigs fnameConf]) && ...
         'id','path','pathFigs','trialNum','filenameWExt','fnameConf');
 end
 
-%%
+%% 3. Extract User Input Parameters
 % TODO: add more input checks
 EMGList1 = strsplit(answer{1},' '); % list of EMG muscle labels
 if isempty(EMGList1)                % if no EMG labels input, ...
@@ -111,7 +111,7 @@ threshStimTimeSep = str2double(answer{6}); % time between stim
 numStimR = length(ampsStimR);   % number of times stimulated right leg
 numStimL = length(ampsStimL);   % number of times stimulated left leg
 
-%% 3. Retrieve EMG Data
+%% 4. Retrieve EMG Data
 % TODO: Consider making each data retrieval its own separate function for
 % modularity and easy access and use for future applications
 % NOTE: below is copied directly from 'loadTrials.m'
@@ -190,7 +190,7 @@ allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unav
 EMG=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
 clear allData* relData* auxData*
 
-%% 4. Retrieve Ground Reaction Force (GRF) Data If It Exists
+%% 5. Retrieve Ground Reaction Force (GRF) Data If It Exists
 relData=[];
 forceLabels ={};
 units={};
@@ -214,7 +214,7 @@ end
 
 clear relData
 
-%% 5. Retrieve H-Reflex Stimulator Pin Data If It Exists
+%% 6. Retrieve H-Reflex Stimulator Pin Data If It Exists
 if shouldUseStimTrig    % if stimulation trigger data should be used, ...
     % NOTE: the below code block is copied from loadTrials (implemented by SL)
     relData = [];
@@ -290,26 +290,12 @@ end
 %     throw(ME)
 % end
 
-%% 6. Define H-Reflex Calibration Trial Parameters
+%% 7. Define H-Reflex Calibration Trial Parameters
 % NOTE: should always be same across trials and should be same for forces
 period = EMG.sampPeriod;    % sampling period
 threshSamps = threshStimTimeSep / period;  % convert to samples
-% M-wave is contained by interval 5ms - 20ms
-% H-wave is contained by interval 25ms - 45ms
-% Noise is contained by interval 50ms - 100ms
-indStartM = 0.005 / period;        % 5 ms after stim artifact in samples
-indEndM = 0.020 / period;          % 20 ms
-indStartH = 0.025 / period;        % 25 ms
-indEndH = 0.045 / period;          % 45 ms
-indStartN = 0.050 / period;        % 50 ms
-indEndN = 0.100 / period;          % 100 ms
-% TODO: consider adding noise floor (50 - 150 ms after stim artifact?)
-% and background EMG (50 - 100 ms before stim artifact) intervals
-% TODO: replot extended snippet window from data with Zach to determine
-% ideal interval for computing noise floor (across standing and walking
-% trials) as well as whether there is an F-wave after the H-wave
 
-%% 7. Identify Locations of the Stimulation Artifacts
+%% 8. Identify Locations of the Stimulation Artifacts
 % extract relevant EMG data
 % TODO: still need to handle case of only recording data from one leg
 % during a trial (i.e., only want to compute parameters and plot one leg)
@@ -348,12 +334,6 @@ else            % otherwise, ...
     end
 end
 
-% for now not using Soleus muscle data at all
-% EMG_LSOL = EMG.Data(:,contains(EMG.labels,'lsol', ...
-%     'IgnoreCase',true));  % in case want to explore SOL H-reflex
-% EMG_RSOL = EMG.Data(:,contains(EMG.labels,'rsol', ...
-%     'IgnoreCase',true));
-
 % if missing any of the EMG signals used below, ...
 if any(isempty([EMG_LTAP EMG_RTAP EMG_LMG EMG_RMG]))
     % TODO: update handling of cases when one or more of these signals is
@@ -379,57 +359,14 @@ end
 % if there is stimulation trigger pulse data and it should be used to
 % identify the locations of the artifact peaks, ...
 if shouldUseStimTrig && hasStimTrig
-    % threshold to determine rising edge of stimulation trigger pulse
-    threshVolt = 2.5;
-    % extract all stimulation trigger data for each leg
-    stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-        'right','IgnoreCase',true));
-    stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-        'left','IgnoreCase',true));
-    indsStimRAll = find(stimTrigR > threshVolt);
-    indsStimLAll = find(stimTrigL > threshVolt);
+    indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
+        times,{EMG_RTAP,EMG_LTAP},HreflexStimPin);
+    locsR = indsStimArtifact{1};
+    locsL = indsStimArtifact{2};
 
-    % determine which indices correspond to start of new stimulus pulse
-    % (i.e., there is jump in index greater than 1, not just next sample)
-    indsNewPulseR = diff([0; indsStimRAll]) > 1;
-    indsNewPulseL = diff([0; indsStimLAll]) > 1;
-
-    % determine time since trial start when stim pulse began (rising edge)
-    stimTimeRAbs = HreflexStimPin.Time(indsStimRAll(indsNewPulseR));
-    stimTimeLAbs = HreflexStimPin.Time(indsStimLAll(indsNewPulseL));
-
-    % find the indices of the EMG data corresponding to the onset of the
-    % stimulation trigger pulse
-    indsEMGStimOnsetRAbs = arrayfun(@(x) find(x == times),stimTimeRAbs);
-    indsEMGStimOnsetLAbs = arrayfun(@(x) find(x == times),stimTimeLAbs);
-    if (numStimR ~= length(indsEMGStimOnsetRAbs)) || ...
-            (numStimL ~= length(indsEMGStimOnsetLAbs))
+    if (numStimR ~= length(locsR)) || (numStimL ~= length(locsL))
         error(['The number of stimulation trigger pulses does not ' ...
             'match the number of input stimulation amplitudes.']);
-    end
-
-    % initialize array of indices determined by the stim artifact
-    locsR = nan(size(indsEMGStimOnsetRAbs));
-    locsL = nan(size(indsEMGStimOnsetLAbs));
-
-    winStim = 0.1;  % +/- 100 ms of the onset of the stim trigger pulse
-
-    for stR = 1:numStimR    % for each right leg stimulus, ...
-        winSearch = (indsEMGStimOnsetRAbs(stR) - (winStim/period)): ...
-            (indsEMGStimOnsetRAbs(stR) + (winStim/period));
-        [~,indMaxTAP] = max(EMG_RTAP(winSearch));   % find artifact peak
-        timesWin = times(winSearch);
-        timeStimStart = timesWin(indMaxTAP);
-        locsR(stR) = find(times == timeStimStart);
-    end
-
-    for stL = 1:numStimL
-        winSearch = (indsEMGStimOnsetLAbs(stL) - (winStim/period)): ...
-            (indsEMGStimOnsetLAbs(stL) + (winStim/period));
-        [~,indMaxTAP] = max(EMG_LTAP(winSearch));
-        timesWin = times(winSearch);
-        timeStimStart = timesWin(indMaxTAP);
-        locsL(stL) = find(times == timeStimStart);
     end
 
     Hreflex.plotStimArtifactPeaks(times,{EMG_RTAP,EMG_LTAP}, ...
@@ -447,7 +384,16 @@ else
         {locsR,locsL},id,trialNum,threshStimArtifact,pathFigs);
 end
 
-%% 8. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
+% ask user if would like to continue after verifying artifact detection
+shouldCont = inputdlg({['Would you like to continue the script (i.e., ' ...
+    'was artifact detection accurate, ''1'' = true, ''0'' = false)?']}, ...
+    '',[1 80],{'1'});
+shouldCont = logical(str2double(shouldCont{1}));
+if ~shouldCont  % if should not continue with the script, ...
+    return;     % return from script so user can rerun artifact detection
+end
+
+%% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
 snipStart = -0.005; % 5 ms before artifact peak
 snipEnd = 0.045;    % 45 ms after artifact peak
 timesSnippet = snipStart:period:snipEnd;
@@ -631,105 +577,61 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
     %     close;
 end
 
-%% 9.1 Plot All Snippets for Each Leg Together in One Figure
+%% 10.1 Plot All Snippets for Each Leg Together in One Figure
 % if force data present and should use the stimulation trigger signal to
 % localize the artifact peaks (using as proxy for walking trial), ...
 if hasForces && shouldUseStimTrig
     Hreflex.plotSnippets(timesSnippet,{[snippetsForceRR; ...
         snippetsForceRL],[snippetsForceLL; snippetsForceLR], ...
-        snippetsHreflexR,snippetsHreflexL}, ...
+        snippetsHreflexR,snippetsHreflexL},{'Force (N)','Force (N)', ...
+        'MG Raw EMG (V)','MG Raw EMG (V)'}, ...
         {'Right & Left Fz - Right Stim','Left & Right Fz - Left Stim', ...
         'Right MG','Left MG'},id,trialNum,pathFigs);
 else        % otherwise, do not plot the forces
     Hreflex.plotSnippets(timesSnippet,{snippetsHreflexR, ...
-        snippetsHreflexL},{'Right MG','Left MG'},id,trialNum,pathFigs);
+        snippetsHreflexL},{'Raw EMG (V)','Raw EMG (V)'}, ...
+        {'Right MG','Left MG'},id,trialNum,pathFigs);
 end
 
-%% 9.2 Plot Snippets for a Given Amplitude for Each Leg Together
+%% 10.2 Plot Snippets for a Given Amplitude for Each Leg Together
 % TODO: move the finding of unique amplitudes and indices up here, make
 % this a helper function to reduce code duplication
 % TODO: Add dots to show the min and max picked out for each wave to see if
 % first/last points (i.e., if makes sense)
 
-%% 10. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
+%% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-threshWaveAmp = 0.00015;    % 0.15 mV peak-to-peak voltage threshold
-ampsMwaveR = nan(numStimR,1);
-ampsHwaveR = nan(numStimR,1);
-ampsNoiseR = nan(numStimR,1);
-ampsMwaveL = nan(numStimL,1);
-ampsHwaveL = nan(numStimL,1);
-ampsNoiseL = nan(numStimL,1);
+amps = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
 
-% TODO: put into a helper function to reduce code duplication
-for stR = 1:numStimR    % for each right leg stimulus, ...
-    winEMGM = EMG_RMG((locsR(stR)+indStartM):(locsR(stR)+indEndM));
-    winEMGH = EMG_RMG((locsR(stR)+indStartH):(locsR(stR)+indEndH));
-    winEMGN = EMG_RMG((locsR(stR)+indStartN):(locsR(stR)+indEndN));
-    [maxM,indMaxM] = max(winEMGM);
-    [minM,indMinM] = min(winEMGM);
-    [maxH,indMaxH] = max(winEMGH);
-    [minH,indMinH] = min(winEMGH);
-    if any(indMinM == [1 2]) || ...
-            any(indMaxM == [length(winEMGM)-1 length(winEMGM)])
-        ampsMwaveR(stR) = threshWaveAmp;
-    else
-        ampsMwaveR(stR) = maxM - minM;
-    end
-    if any(indMinH == [1 2]) || ...
-            any(indMaxH == [length(winEMGH)-1 length(winEMGH)])
-        ampsHwaveR(stR) = threshWaveAmp;
-    else
-        ampsHwaveR(stR) = maxH - minH;
-    end
-    ampsNoiseR(stR) = max(winEMGN) - min(winEMGN);
-end
+ampsMwaveR = amps{1,1};
+ampsHwaveR = amps{1,2};
+ampsNoiseR = amps{1,3};
+ampsMwaveL = amps{2,1};
+ampsHwaveL = amps{2,2};
+ampsNoiseL = amps{2,3};
 
-for stL = 1:numStimL    % for each left leg stimulus, ...
-    winEMGM = EMG_LMG((locsL(stL)+indStartM):(locsL(stL)+indEndM));
-    winEMGH = EMG_LMG((locsL(stL)+indStartH):(locsL(stL)+indEndH));
-    winEMGN = EMG_LMG((locsL(stL)+indStartN):(locsL(stL)+indEndN));
-    [maxM,indMaxM] = max(winEMGM);
-    [minM,indMinM] = min(winEMGM);
-    [maxH,indMaxH] = max(winEMGH);
-    [minH,indMinH] = min(winEMGH);
-    if any(indMinM == [1 2]) || ...
-            any(indMaxM == [length(winEMGM)-1 length(winEMGM)])
-        ampsMwaveL(stL) = threshWaveAmp;
-    else
-        ampsMwaveL(stL) = maxM - minM;
-    end
-    if any(indMinH == [1 2]) || ...
-            any(indMaxH == [length(winEMGH)-1 length(winEMGH)])
-        ampsHwaveL(stL) = threshWaveAmp;
-    else
-        ampsHwaveL(stL) = maxH - minH;
-    end
-    ampsNoiseL(stL) = max(winEMGN) - min(winEMGN);
-end
-
-%% 11. Compute Means and H/M Ratios for Unique Stimulation Amplitudes
+%% 12. Compute Means and H/M Ratios for Unique Stimulation Amplitudes
 ampsStimRU = unique(ampsStimR);
 ampsStimLU = unique(ampsStimL);
 % Gaussian fit function for fitting average H-wave amplitude data
 % based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
 % Journal of Neuroscience Methods, 2007)
 fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
-avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x)),ampsStimRU);
+avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
 % TODO: alternate approach would be to convert the mean H-wave amplitudes
 % to integer "frequencies" for each stim amplitude and fit a normal dist.
 % pdR = fitdist(ampsStimRU','Normal', ...
 %     'Frequency',round((avgsHwaveR / max(avgsHwaveR)) * 10000));
 % initialize coefficients
 coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
-coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
-avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x)),ampsStimRU);
-avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x)),ampsStimLU);
+% coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
+avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
+avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
 % pdL = fitdist(ampsStimLU','Normal', ...
 %     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
 coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
-coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
-avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x)),ampsStimLU);
+% coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
+avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
 % TODO: verify that these values will always be sorted in ascending order
 % and, if not, sort them
 
@@ -743,8 +645,8 @@ avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
 % compute four times the noise floor (75th percentile) to determine whether
 % to send the participant home or not (at least one leg must exceed
 % threshold)
-threshNoiseR = 4 * prctile(ampsNoiseR,75);
-threshNoiseL = 4 * prctile(ampsNoiseL,75);
+threshNoiseR = 4 * mean(ampsNoiseR); % 4 * prctile(ampsNoiseR,75);
+threshNoiseL = 4 * mean(ampsNoiseL); % 4 * prctile(ampsNoiseL,75);
 
 figure; hold on;
 histogram(ampsNoiseR*1000,0.00:0.05:0.30,'Normalization','probability');
@@ -788,9 +690,9 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 % TODO: consider displaying all raw values in mV rather than V
 incX = 0.1; % increment for curve fit (in mA)
 xR = min(ampsStimRU):incX:max(ampsStimRU);
-yR = fun(coefsR,xR);
+% yR = fun(coefsR,xR);
 xL = min(ampsStimLU):incX:max(ampsStimLU);
-yL = fun(coefsL,xL);
+% yL = fun(coefsL,xL);
 
 % compute Hmax and I_Hmax for the right and left leg
 [hMaxR,indHMaxR] = max(avgsHwaveR); % [hMaxR,indHMaxR] = max(yR);
