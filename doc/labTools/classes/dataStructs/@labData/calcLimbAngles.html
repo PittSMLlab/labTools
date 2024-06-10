@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcLimbAngles</title>
+  <meta name="keywords" content="calcLimbAngles">
+  <meta name="description" content="calcLimbAngles  Calculates angles using marker data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@labData</a> &gt; calcLimbAngles.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@labData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>calcLimbAngles
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>calcLimbAngles  Calculates angles using marker data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function angleData = calcLimbAngles(trialData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calcLimbAngles  Calculates angles using marker data   
+   angleData=clacLimbAngles(trailData) returns a labTimeSeries object
+   containg angles computed from marker data given an object of the
+   labData class.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="labData.html" class="code" title="">labData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angleData = calcLimbAngles(trialData)</a>
+0002 <span class="comment">% calcLimbAngles  Calculates angles using marker data</span>
+0003 <span class="comment">%   angleData=clacLimbAngles(trailData) returns a labTimeSeries object</span>
+0004 <span class="comment">%   containg angles computed from marker data given an object of the</span>
+0005 <span class="comment">%   labData class.</span>
+0006 
+0007 <span class="comment">%Created 5/14/2014 by HMH</span>
+0008 <span class="comment">% adapted by Digna de Kam to compute individual joint angles</span>
+0009 <span class="comment">% -hip angle is between vertical and line connecting hip and knee</span>
+0010 <span class="comment">% -knee angle is between line connecting hip and knee and line connecting</span>
+0011 <span class="comment">%  knee and ankle</span>
+0012 <span class="comment">% -ankle angle is between line connecting knee and ankle and line</span>
+0013 <span class="comment">%  connecting heel and toe</span>
+0014 
+0015 <span class="comment">%disp('TEST: computing limb angles')</span>
+0016 fs=1/trialData.markerData.sampPeriod;
+0017 
+0018 [file] = getSimpleFileName(trialData.metaData.rawDataFilename); <span class="comment">%for error printout purposes</span>
+0019 
+0020 <span class="comment">%get orientation</span>
+0021 <span class="keyword">if</span> isempty(trialData.markerData.orientation)
+0022     warning(<span class="string">'Assuming default orientation of axes for marker data.'</span>);
+0023     orientation=orientationInfo([0,0,0],<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>,1,1,1);
+0024 <span class="keyword">else</span>
+0025     orientation=trialData.markerData.orientation;
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% get hip position in fore-aft and up-down axes</span>
+0029 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RHIPx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LHIPx'</span>)
+0030     LhipPos2D=trialData.markerData.getDataAsVector({[<span class="string">'LHIP'</span> orientation.foreaftAxis],[<span class="string">'LHIP'</span> orientation.updownAxis]});
+0031     LhipPos2D=[orientation.foreaftSign* LhipPos2D(:,1),orientation.updownSign*LhipPos2D(:,2)];
+0032     RhipPos2D=trialData.markerData.getDataAsVector({[<span class="string">'RHIP'</span> orientation.foreaftAxis],[<span class="string">'RHIP'</span> orientation.updownAxis]});
+0033     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
+0034 <span class="keyword">else</span>
+0035     warning([<span class="string">'There are missing hip markers in '</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0036       angleData=[];
+0037     <span class="keyword">return</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% get ankle position in fore-aft and up-down axes</span>
+0041 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RANKx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LANKx'</span>)
+0042     LankPos2D=trialData.markerData.getDataAsVector({[<span class="string">'LANK'</span> orientation.foreaftAxis],[<span class="string">'LANK'</span> orientation.updownAxis]});
+0043     LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
+0044     RankPos2D=trialData.markerData.getDataAsVector({[<span class="string">'RANK'</span> orientation.foreaftAxis],[<span class="string">'RANK'</span> orientation.updownAxis]});
+0045     RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
+0046 <span class="keyword">else</span>    
+0047     warning([<span class="string">'There are missing ankle markers in'</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0048 <span class="comment">%    angleData=[];</span>
+0049     <span class="keyword">return</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% get knee position in fore-aft and up-down axes</span>
+0053 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RKNEx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LKNEx'</span>)
+0054     LkneePos2D=trialData.markerData.getDataAsVector({[<span class="string">'LKNE'</span> orientation.foreaftAxis],[<span class="string">'LKNE'</span> orientation.updownAxis]});
+0055     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
+0056     RkneePos2D=trialData.markerData.getDataAsVector({[<span class="string">'RKNE'</span> orientation.foreaftAxis],[<span class="string">'RKNE'</span> orientation.updownAxis]});
+0057     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
+0058 <span class="keyword">elseif</span> trialData.markerData.isaLabel(<span class="string">'RKNEEx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LKNEEx'</span>)  
+0059     LkneePos2D=trialData.markerData.getDataAsVector({[<span class="string">'LKNEE'</span> orientation.foreaftAxis],[<span class="string">'LKNEE'</span> orientation.updownAxis]});
+0060     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
+0061     RkneePos2D=trialData.markerData.getDataAsVector({[<span class="string">'RKNEE'</span> orientation.foreaftAxis],[<span class="string">'RKNEE'</span> orientation.updownAxis]});
+0062     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
+0063 <span class="keyword">else</span>
+0064     
+0065     warning([<span class="string">'There are missing knee markers in'</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0066     
+0067 <span class="comment">%     %Marcela temporal fix</span>
+0068 <span class="comment">%     temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});</span>
+0069 <span class="comment">%     LkneePos2D = nan*ones(size(temp));</span>
+0070 <span class="comment">%     RkneePos2D = nan*ones(size(temp));</span>
+0071 <span class="comment">%    % angleData=[];</span>
+0072     <span class="keyword">return</span>
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">% get toe position in fore-aft and up-down axes</span>
+0076 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RTOEx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LTOEx'</span>)
+0077     LtoePos2D=trialData.markerData.getDataAsVector({[<span class="string">'LTOE'</span> orientation.foreaftAxis],[<span class="string">'LTOE'</span> orientation.updownAxis]});
+0078     LtoePos2D=[orientation.foreaftSign* LtoePos2D(:,1),orientation.updownSign*LtoePos2D(:,2)];
+0079     RtoePos2D=trialData.markerData.getDataAsVector({[<span class="string">'RTOE'</span> orientation.foreaftAxis],[<span class="string">'RTOE'</span> orientation.updownAxis]});
+0080     RtoePos2D=[orientation.foreaftSign* RtoePos2D(:,1),orientation.updownSign*RtoePos2D(:,2)];
+0081 <span class="keyword">else</span>    
+0082     warning([<span class="string">'There are missing toe markers in'</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0083    <span class="comment">% keyboard</span>
+0084     <span class="comment">%angleData=[];</span>
+0085     <span class="keyword">return</span>
+0086 <span class="keyword">end</span>
+0087 
+0088 <span class="comment">% get heel position in fore-aft and up-down axes</span>
+0089 <span class="keyword">if</span> trialData.markerData.isaLabel(<span class="string">'RHEEx'</span>) &amp;&amp; trialData.markerData.isaLabel(<span class="string">'LHEEx'</span>)
+0090     LheelPos2D=trialData.markerData.getDataAsVector({[<span class="string">'LHEE'</span> orientation.foreaftAxis],[<span class="string">'LHEE'</span> orientation.updownAxis]});
+0091     LheelPos2D=[orientation.foreaftSign* LheelPos2D(:,1),orientation.updownSign*LheelPos2D(:,2)];
+0092     RheelPos2D=trialData.markerData.getDataAsVector({[<span class="string">'RHEE'</span> orientation.foreaftAxis],[<span class="string">'RHEE'</span> orientation.updownAxis]});
+0093     RheelPos2D=[orientation.foreaftSign* RheelPos2D(:,1),orientation.updownSign*RheelPos2D(:,2)];
+0094 <span class="keyword">else</span>    
+0095     LheelPos2D=nan(size(LtoePos2D));
+0096     RheelPos2D=nan(size(RtoePos2D));
+0097     warning([<span class="string">'There are missing heel markers in'</span>,file,<span class="string">'. Unable to claculate limb angles'</span>]);
+0098    <span class="comment">% keyboard</span>
+0099     <span class="comment">%angleData=[];</span>
+0100     <span class="keyword">return</span>
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="comment">% calculate limb angles</span>
+0104 RLimbAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;<span class="comment">%so this computes angle with the horizontal, which is why 90 deg is subtracted</span>
+0105 LLimbAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
+0106 
+0107 <span class="comment">% calculate limb angles</span>
+0108 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;</span>
+0109 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;</span>
+0110 
+0111 RThighAngle=atand([RhipPos2D(:,1)-RkneePos2D(:,1)]./[RhipPos2D(:,2)-RkneePos2D(:,2)]);
+0112 LThighAngle=atand([LhipPos2D(:,1)-LkneePos2D(:,1)]./[LhipPos2D(:,2)-LkneePos2D(:,2)]);
+0113 
+0114 RShankAngle=atand([RkneePos2D(:,1)-RankPos2D(:,1)]./[RkneePos2D(:,2)-RankPos2D(:,2)]);
+0115 LShankAngle=atand([LkneePos2D(:,1)-LankPos2D(:,1)]./[LkneePos2D(:,2)-LankPos2D(:,2)]);
+0116 
+0117 RfootAngle=atand([RtoePos2D(:,2)-RheelPos2D(:,2)]./[RtoePos2D(:,1)-RheelPos2D(:,1)]);
+0118 LfootAngle=atand([LtoePos2D(:,2)-LheelPos2D(:,2)]./[LtoePos2D(:,1)-LheelPos2D(:,1)]);
+0119 
+0120 RhipAngle=RThighAngle;<span class="comment">%assuming that trunk is vertical</span>
+0121 LhipAngle=LThighAngle;
+0122 RhipAngVel=diff(RhipAngle)*fs;RhipAngVel(end+1)=RhipAngVel(end);<span class="comment">%to ensure that vectors are the same length</span>
+0123 LhipAngVel=diff(LhipAngle)*fs;LhipAngVel(end+1)=LhipAngVel(end);
+0124 
+0125 RkneeAngle=180-((90-RThighAngle)+(90+RShankAngle));
+0126 LkneeAngle=180-((90-LThighAngle)+(90+LShankAngle));
+0127 RkneeAngVel=diff(RkneeAngle)*fs;RkneeAngVel(end+1)=RkneeAngVel(end);
+0128 LkneeAngVel=diff(LkneeAngle)*fs;LkneeAngVel(end+1)=LkneeAngVel(end);
+0129 
+0130 RankAngle=90-(RShankAngle+90+RfootAngle);
+0131 LankAngle=90-(LShankAngle+90+LfootAngle);
+0132 RankAngVel=diff(RankAngle)*fs;RankAngVel(end+1)=RankAngVel(end);
+0133 LankAngVel=diff(LankAngle)*fs;LankAngVel(end+1)=LankAngVel(end);
+0134 
+0135 <span class="comment">%keyboard</span>
+0136 <span class="comment">% RhipAngle = calcangle([RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)+100])-90;%this does not work, cosine has problem with negative values I think</span>
+0137 <span class="comment">% LhipAngle = calcangle([LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)+100])-90;</span>
+0138 <span class="comment">%</span>
+0139 <span class="comment">% RkneeAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)],[RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)])-90;</span>
+0140 <span class="comment">% LkneeAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)],[LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)])-90;</span>
+0141 <span class="comment">%</span>
+0142 <span class="comment">% RankAngle = calcangle2([RkneePos2D(:,1) RkneePos2D(:,2)]-[RankPos2D(:,1) RankPos2D(:,2)],[RtoePos2D(:,1) RtoePos2D(:,2)]-[RheelPos2D(:,1) RheelPos2D(:,2)])-90;</span>
+0143 <span class="comment">% LankAngle = calcangle2([LkneePos2D(:,1) LkneePos2D(:,2)]-[LankPos2D(:,1) LankPos2D(:,2)],[LtoePos2D(:,1) LtoePos2D(:,2)]-[LheelPos2D(:,1) LheelPos2D(:,2)])-90;</span>
+0144 <span class="comment">% %keyboard</span>
+0145 
+0146 <span class="comment">% time info needed for labtimeseries object</span>
+0147 t0=trialData.markerData.Time(1);
+0148 Ts=trialData.markerData.sampPeriod;
+0149 
+0150 angleData = labTimeSeries([RLimbAngle LLimbAngle RThighAngle LThighAngle RShankAngle LShankAngle RfootAngle LfootAngle RhipAngle LhipAngle RkneeAngle LkneeAngle RankAngle LankAngle RhipAngVel LhipAngVel RkneeAngVel LkneeAngVel RankAngVel LankAngVel]<span class="keyword">...</span>
+0151     ,t0,Ts,{<span class="string">'RLimb'</span>,<span class="string">'LLimb'</span>,<span class="string">'RThigh'</span>,<span class="string">'LThigh'</span>,<span class="string">'RShank'</span>,<span class="string">'LShank'</span>,<span class="string">'RFoot'</span>,<span class="string">'LFoot'</span>,<span class="string">'Rhip'</span>,<span class="string">'Lhip'</span>,<span class="string">'Rknee'</span>,<span class="string">'Lknee'</span>,<span class="string">'Rank'</span>,<span class="string">'Lank'</span>,<span class="string">'RhipVel'</span>,<span class="string">'LhipVel'</span>,<span class="string">'RkneeVel'</span>,<span class="string">'LkneeVel'</span>,<span class="string">'RankVel'</span>,<span class="string">'LankVel'</span>});</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

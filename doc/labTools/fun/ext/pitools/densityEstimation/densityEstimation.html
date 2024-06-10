@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of densityEstimation</title>
+  <meta name="keywords" content="densityEstimation">
+  <meta name="description" content="densityEstimation estimates a probaiblity density from data points in">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">densityEstimation</a> &gt; densityEstimation.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/densityEstimation&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>densityEstimation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>densityEstimation estimates a probaiblity density from data points in</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [p,evalCoord,bandwidth] = densityEstimation(data,evalCoord,bandwidth) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">densityEstimation estimates a probaiblity density from data points in
+data. Estimation is done by convolving with a gaussian kernel.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,evalCoord,bandwidth] = densityEstimation(data,evalCoord,bandwidth)</a>
+0002 <span class="comment">%densityEstimation estimates a probaiblity density from data points in</span>
+0003 <span class="comment">%data. Estimation is done by convolving with a gaussian kernel.</span>
+0004 
+0005 <span class="comment">%INPUTS:</span>
+0006 <span class="comment">%'data' need not be uni-dimensional. Estimated probability will have</span>
+0007 <span class="comment">%dimension equal to the number of columns in the data matrix (currently it is only supported up to 2).</span>
+0008 <span class="comment">%'binsC' specifies the centers of the points in which the probability density</span>
+0009 <span class="comment">%is to be sampled (has to be a uniform grid). Bins is a cell array such that bins{i} = vector of</span>
+0010 <span class="comment">%desired centers in the i-th dimension.</span>
+0011 <span class="comment">%'bandwidth' is the n x n matrix that determines the covariance matrix for the kernel (where n is the dimension of the data, or its number of columns). If not</span>
+0012 <span class="comment">%given, it will be taken to be (4/(d+2))^(1/(d+4))*n^(-1/(d+4))*M, donde M es la matriz de covarianza de los datos (Thanks Wikipedia!)</span>
+0013 
+0014 <span class="comment">%Check:</span>
+0015 <span class="keyword">if</span> size(data,1)&lt;=size(data,2)
+0016     data=data';
+0017 <span class="keyword">end</span>
+0018 
+0019 d=size(data,2); <span class="comment">%Dimension of data (&lt;3)</span>
+0020 <span class="keyword">if</span> d&gt;2
+0021     error(<span class="string">'High-dim (&gt;2) density estimation not yet supported.'</span>)
+0022     <span class="keyword">return</span>
+0023 <span class="keyword">end</span>
+0024 
+0025 n=size(data,1); <span class="comment">%Number of observations</span>
+0026 M=cov(data); <span class="comment">%Covariance matrix</span>
+0027 
+0028 <span class="keyword">if</span> nargin&lt;3
+0029     covariance=(4/(d+2))^(1/(d+4))*n^(-1/(d+4))*M;
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="keyword">if</span> d==1
+0033     evalCoord=evalCoord{1};
+0034     p=ksdensity(data,evalCoord);
+0035     <span class="keyword">if</span> nargin&gt;2
+0036     warning(<span class="string">'Using externally supplied kde function (Botev, Density estimation by diffusion), provided bandwidth will be ignored.'</span>)
+0037     <span class="keyword">end</span> 
+0038     [bandwidth,p,evalCoord,cdf]=kde(data,length(evalCoord),min(evalCoord),max(evalCoord));
+0039 <span class="keyword">else</span> <span class="comment">%d=2</span>
+0040     error(<span class="string">'High-dim (&gt;1) density estimation not yet supported.'</span>)
+0041     <span class="keyword">return</span>
+0042     
+0043 <span class="comment">%     T(1)=length(binsC{1});</span>
+0044 <span class="comment">%     T(2)=length(binsC{2});</span>
+0045 <span class="comment">%     bins1=reshape(binsC{1},T(1),1);</span>
+0046 <span class="comment">%     bins2=reshape(binsC{2},1,T(2));</span>
+0047 <span class="comment">%     grid=zeros(T(1),T(2),2);</span>
+0048 <span class="comment">%     grid(:,:,1)=repmat(bins1-mean(bins1),1,T(2));</span>
+0049 <span class="comment">%     grid(:,:,2)=repmat(bins2-mean(bins2),T(1),1);</span>
+0050 <span class="comment">%     coord=reshape(grid,T(1)*T(2),2);</span>
+0051 <span class="comment">%     kernel=1/sqrt(det(bandwidth)) * exp(-(coord'*(bandwidth\coord)));</span>
+0052 <span class="comment">%     kernel=reshape(kernel,T(1),T(2));</span>
+0053 <span class="keyword">end</span>
+0054 
+0055 
+0056 <span class="comment">%Multi-dim generalization:</span>
+0057 
+0058 <span class="comment">% aux=[];</span>
+0059 <span class="comment">% aux2=[];</span>
+0060 <span class="comment">% aux3=[];</span>
+0061 <span class="comment">% aux4=[];</span>
+0062 <span class="comment">%for i=1:d</span>
+0063 <span class="comment">%     aux3=[aux3',1'];</span>
+0064 <span class="comment">%     aux4=[aux4,':,'];</span>
+0065 <span class="comment">%     aux=[aux,',' num2str(T(i))];</span>
+0066 <span class="comment">%end</span>
+0067 <span class="comment">% eval([ 'grid=zeros(' aux(2:end)  ',d);' ]);</span>
+0068 
+0069 <span class="comment">% for i=1:d</span>
+0070 <span class="comment">%     T(i)=length(binsC{i});</span>
+0071 <span class="comment">%     aux=[aux,',' num2str(T(i))];</span>
+0072 <span class="comment">%     eval(['altBinC=reshape(binsC{i}',aux2, num2str(T(i)), aux3 ');']);</span>
+0073 <span class="comment">%     eval(['grid(' aux4 ',i)=repmat(altBinC' aux ');']);</span>
+0074 <span class="comment">%     aux2=[aux2,',1'];</span>
+0075 <span class="comment">%     aux3=aux3(1:end-2);</span>
+0076 <span class="comment">% end</span>
+0077 
+0078 
+0079 
+0080 
+0081     
+0082 
+0083 
+0084 
+0085 <span class="keyword">end</span>
+0086</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

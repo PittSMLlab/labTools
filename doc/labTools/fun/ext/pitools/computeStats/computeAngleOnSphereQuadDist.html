@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeAngleOnSphereQuadDist</title>
+  <meta name="keywords" content="computeAngleOnSphereQuadDist">
+  <meta name="description" content="computeAngleOnSphereDist This function computes the distribution for the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">computeStats</a> &gt; computeAngleOnSphereQuadDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/computeStats&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>computeAngleOnSphereQuadDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>computeAngleOnSphereDist This function computes the distribution for the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [distPoints,evalPoints] = computeAngleOnSphereQuadDist(sphereDim,Nrepeats,evalPoints) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">computeAngleOnSphereDist This function computes the distribution for the
+angle between two points drawn from a uniform distribution on the first quadrant 
+of a spheric shell of dimension sphereDim</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [distPoints,evalPoints] = computeAngleOnSphereQuadDist(sphereDim,Nrepeats,evalPoints)</a>
+0002 <span class="comment">%computeAngleOnSphereDist This function computes the distribution for the</span>
+0003 <span class="comment">%angle between two points drawn from a uniform distribution on the first quadrant</span>
+0004 <span class="comment">%of a spheric shell of dimension sphereDim</span>
+0005 
+0006 
+0007 <span class="keyword">if</span> nargin&lt;3 || isempty(evalPoints)
+0008     evalPoints=[.5:.5:89.5]; <span class="comment">%Degrees</span>
+0009 <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;2 || isempty(Nrepeats)
+0011     Nrepeats=10000;
+0012 <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin==0 || isempty(sphereDim)
+0014     sphereDim=3;
+0015 <span class="keyword">end</span>
+0016 
+0017 angle=zeros(Nrepeats,1);
+0018 <span class="keyword">for</span> j=1:Nrepeats
+0019     randomSample=abs(randn(2,sphereDim)); <span class="comment">%Draw random points in space</span>
+0020     <span class="comment">%I think the next line is not necessary, since the angle function is</span>
+0021     <span class="comment">%invariant to scale changes. That means that to evaluate what I want,</span>
+0022     <span class="comment">%it is sufficient to draw vectors from any distribution with spherical</span>
+0023     <span class="comment">%symmetricity and getting the abs of it to project into the first</span>
+0024     <span class="comment">%quadrant.</span>
+0025     <span class="comment">%randomSample=randomSample./repmat(columnNorm(randomSample',2)',size(randomSample,1),1); %This should make sure that they are projected onto the shell</span>
+0026     angle(j)=acosd(cosine(randomSample(1,:)',randomSample(2,:)'));
+0027 <span class="keyword">end</span>
+0028 [distPoints]=hist(angle,evalPoints)/Nrepeats;
+0029 
+0030 
+0031 <span class="keyword">end</span>
+0032</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

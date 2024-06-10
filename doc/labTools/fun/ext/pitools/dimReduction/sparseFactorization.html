@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sparseFactorization</title>
+  <meta name="keywords" content="sparseFactorization">
+  <meta name="description" content="sparseFactorization tries to find A1 and A2 such that: data=A1*A2 +e,">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">dimReduction</a> &gt; sparseFactorization.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/dimReduction&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>sparseFactorization
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>sparseFactorization tries to find A1 and A2 such that: data=A1*A2 +e,</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [A1,A2] = sparseFactorization(data,k) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">sparseFactorization tries to find A1 and A2 such that: data=A1*A2 +e,
+where e is an error term, and A1 and A2 are matrices such that their
+external dimensions match those of the data, and their internal dimensions
+are k (this is a dimensionality reduction technique). Differently from
+PCA, FA, NNMF and whatnot, this factorization tries to minimize the cost
+J= ||data-A1*A2||_2 + lambda*||A2||_1, which is equivalent to minimizing
+ the L2 norm of e plus a sparsity inducing term for the matrix A2.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A1,A2] = sparseFactorization(data,k)</a>
+0002 <span class="comment">%sparseFactorization tries to find A1 and A2 such that: data=A1*A2 +e,</span>
+0003 <span class="comment">%where e is an error term, and A1 and A2 are matrices such that their</span>
+0004 <span class="comment">%external dimensions match those of the data, and their internal dimensions</span>
+0005 <span class="comment">%are k (this is a dimensionality reduction technique). Differently from</span>
+0006 <span class="comment">%PCA, FA, NNMF and whatnot, this factorization tries to minimize the cost</span>
+0007 <span class="comment">%J= ||data-A1*A2||_2 + lambda*||A2||_1, which is equivalent to minimizing</span>
+0008 <span class="comment">% the L2 norm of e plus a sparsity inducing term for the matrix A2.</span>
+0009 
+0010 
+0011 Niter=10;
+0012 Etol=1e-8;
+0013 Ctol=1e-10;
+0014 
+0015 
+0016 
+0017 iter=0;
+0018 A2=randn(k,size(data,2));
+0019 A2=normr(A2);
+0020 A1=data/A2;
+0021 dA1=Inf;
+0022 dA2=Inf;
+0023 
+0024 lambda=1e-3;
+0025 correctedLambda=numel(data)*lambda/numel(A2); <span class="comment">%This should be less than 1, I think. Otherwise it might be problematic.</span>
+0026 
+0027 DD=norm(data,<span class="string">'fro'</span>)^2 + correctedLambda*sum(abs(A2(:)))^2;
+0028 J=zeros(Niter,1);
+0029 J(1)=DD;
+0030 prevJ=2*J(1);
+0031 
+0032 <span class="keyword">while</span> iter&lt;Niter &amp;&amp; (abs(J(iter+1)-prevJ)&gt;prevJ*Etol) &amp;&amp; ((dA1+dA2)&gt;(norm(A1,<span class="string">'fro'</span>)^2+norm(A2,<span class="string">'fro'</span>)^2)*Ctol)
+0033     iter=iter+1
+0034     <span class="comment">%Update A2:</span>
+0035     oldA2=A2;
+0036     A2=A2-0.2*(-A1'*(data-A1*A2)+correctedLambda*(sign(A2)));
+0037     A2(abs(A2)&lt;.001*abs(max(A2(:))))=0; <span class="comment">%Forcibly killing near 0 elements</span>
+0038     A2=normr(A2);
+0039     
+0040     <span class="comment">%Update A1:</span>
+0041     oldA1=A1;
+0042     A1=data*pinv(A2);
+0043     
+0044    <span class="comment">% %Normalize A1:</span>
+0045    <span class="comment">% A1=normc(A1);</span>
+0046     
+0047     
+0048     
+0049     <span class="comment">%Compute new J, dA1, dA2</span>
+0050     J(iter+1)=norm(data-A1*A2,<span class="string">'fro'</span>)^2 + correctedLambda*sum(abs(A2(:)))^2; <span class="comment">%The factor lambda is normalized so that regardless of the relative size of data and A2 it works in approximately the same way (i.e. that if data has more rows it doesn't necessarily mean that the first term will be larger than the second which is unaffected by more rows).</span>
+0051     dA1=norm(A1-oldA1,<span class="string">'fro'</span>)^2;
+0052     dA2=norm(A2-oldA2,<span class="string">'fro'</span>)^2;
+0053     prevJ=J(iter);
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="keyword">if</span> iter==Niter
+0057     disp(<span class="string">'Factorization ended because max number of iterations was reached.'</span>)
+0058 <span class="keyword">end</span>
+0059 <span class="keyword">if</span> (abs(J(iter+1)-prevJ)&lt;=prevJ*Etol)
+0060     disp(<span class="string">'Factorization converged to a local minimum within tolerance.'</span>);
+0061 <span class="keyword">end</span>
+0062 <span class="keyword">if</span> ((dA1+dA2)&lt;=(norm(A1,<span class="string">'fro'</span>)^2+norm(A2,<span class="string">'fro'</span>)^2)*Ctol)
+0063     disp(<span class="string">'Factorization converged but cost was still changing. '</span>)
+0064 <span class="keyword">end</span>
+0065     
+0066 figure
+0067 semilogy(J)
+0068 
+0069 <span class="keyword">end</span>
+0070</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

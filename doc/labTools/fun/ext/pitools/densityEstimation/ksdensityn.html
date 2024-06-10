@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ksdensityn</title>
+  <meta name="keywords" content="ksdensityn">
+  <meta name="description" content="ksdensityn estimates a probability density from data points in">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">densityEstimation</a> &gt; ksdensityn.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/densityEstimation&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>ksdensityn
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>ksdensityn estimates a probability density from data points in</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [p] = ksdensityn(data,binsC,method,bandwidth,weights,k) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ksdensityn estimates a probability density from data points in
+data. Estimation is done by convolving with a gaussian kernel.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="estimationGUI.html" class="code" title="function varargout = estimationGUI(varargin)">estimationGUI</a>	ESTIMATIONGUI MATLAB code for estimationGUI.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p] = ksdensityn(data,binsC,method,bandwidth,weights,k)</a>
+0002 <span class="comment">%ksdensityn estimates a probability density from data points in</span>
+0003 <span class="comment">%data. Estimation is done by convolving with a gaussian kernel.</span>
+0004 
+0005 <span class="comment">%INPUTS:</span>
+0006 <span class="comment">%'data' need not be uni-dimensional. Estimated probability will have</span>
+0007 <span class="comment">%dimension equal to the number of columns in the data matrix.</span>
+0008 <span class="comment">%'binsC' specifies the centers of the points in which the probability density</span>
+0009 <span class="comment">%is to be sampled (has to be a uniform grid). Bins is a cell array such that bins{i} = vector of</span>
+0010 <span class="comment">%desired centers in the i-th dimension.</span>
+0011 <span class="comment">%'bandwidth' is the n x n matrix that determines the covariance matrix for the kernel (where n is the dimension of the data, or its number of columns). If not</span>
+0012 <span class="comment">%given, it will be taken to be (4/(d+2))^(1/(d+4))*n^(-1/(d+4))*M, donde M es la matriz de covarianza de los datos (Thanks Wikipedia!)</span>
+0013 
+0014 <span class="comment">%Check:</span>
+0015 <span class="keyword">if</span> size(data,1)&lt;=size(data,2)
+0016     data=data';
+0017 <span class="keyword">end</span>
+0018 
+0019 d=size(data,2); <span class="comment">%Dimension of data (&lt;3)</span>
+0020 n=size(data,1); <span class="comment">%Number of observations</span>
+0021 
+0022 <span class="comment">%Do standardization of samples along all dimensions before applying any</span>
+0023 <span class="comment">%kernel technique</span>
+0024  <span class="keyword">for</span> i=1:length(binsC)
+0025      mu(i)=mean(data(:,i));
+0026      stddev(i)=std(data(:,i));
+0027      data(:,i)=(data(:,i)-mu(i))/stddev(i);
+0028      binsC{i}=(binsC{i}-mu(i))/stddev(i);
+0029  <span class="keyword">end</span>
+0030 
+0031 M=cov(data); <span class="comment">%Covariance matrix, with standardized data should be identity</span>
+0032 grid=[];
+0033 
+0034 <span class="keyword">if</span> nargin&lt;3 || isempty(method)
+0035 <span class="comment">%Method choice: fft is more efficient, but slightly less precise.</span>
+0036 method=<span class="string">'fft'</span>;
+0037 <span class="comment">%method='conv';</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">if</span> nargin&lt;4 || isempty(bandwidth)
+0041     bandwidth=1; <span class="comment">%No correlations</span>
+0042 <span class="keyword">end</span>
+0043 <span class="comment">%kernel=bandwidth*(4/(d+2))^(2/(d+4))*n^(-2/(d+4))*M;</span>
+0044 kernel=bandwidth*(4/(d+2))^(2/(d+4))*n^(-2/(d+4))*diag(diag(M));
+0045 
+0046 
+0047 <span class="keyword">if</span> nargin&lt;5 || isempty(weights)
+0048    weights=ones(1,d); 
+0049 <span class="keyword">else</span>
+0050     <span class="keyword">if</span> any(size(weights)~=[1,d])
+0051         <span class="keyword">if</span> all(size(weights)==[d,1])
+0052             weights=weights';
+0053         <span class="keyword">else</span>
+0054             throw(MException(<span class="string">'kdensityn:weights'</span>,<span class="string">'Size of weight vector is inappropriate for given data: it should be [1,d], where d==size(data,2).'</span>))
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">if</span> nargin&lt;6 || isempty(k)
+0060     k=5;
+0061 <span class="keyword">end</span>
+0062 
+0063 
+0064 
+0065 
+0066 <span class="keyword">if</span> d==1
+0067     p=ksdensity(data,binsC);
+0068 <span class="comment">%elseif d==2</span>
+0069 <span class="comment">%    p=ksdensity2(data,binsC,bandwidth);</span>
+0070 <span class="keyword">else</span> <span class="comment">%d&gt;2</span>
+0071     aux=[];
+0072     aux2=[];
+0073     aux3=[];
+0074     <span class="keyword">for</span> i=1:d
+0075         aux=[aux, <span class="string">'1,'</span>];
+0076         T(i)=length(binsC{i});
+0077         aux2=[aux2 <span class="string">'T('</span> num2str(i) <span class="string">'),'</span>]; <span class="comment">%This will fail when dim&gt;9</span>
+0078         aux3=[aux3 <span class="string">':,'</span>];
+0079     <span class="keyword">end</span>
+0080     <span class="keyword">for</span> i=1:d
+0081         str=[<span class="string">'binsC{i}=reshape(binsC{i},'</span> aux(1:2*i-2) <span class="string">'T(i)'</span> aux(2*i:end-1) <span class="string">');'</span>];
+0082         eval(str); <span class="comment">%Make sure vectors are in the correct dimension</span>
+0083     <span class="keyword">end</span>
+0084     str=[<span class="string">'grid=zeros('</span> aux2(1:end-1) <span class="string">',d);'</span>];
+0085     eval(str);
+0086     str=[<span class="string">'counter=zeros(size(grid('</span> aux3 <span class="string">'1)));'</span>];
+0087     eval(str);
+0088     
+0089     <span class="comment">%#############################################################################</span>
+0090     <span class="keyword">if</span> strcmp(method,<span class="string">'conv'</span>) <span class="comment">%Direct method: actually do the convolution</span>
+0091         
+0092         <span class="keyword">for</span> i=1:d
+0093             str=[<span class="string">'grid('</span> aux3 <span class="string">'i)=repmat(binsC{i},['</span> aux2(1:5*i-5) <span class="string">'1,'</span> aux2(5*i+1:end-1) <span class="string">']);'</span>];
+0094             eval(str);
+0095         <span class="keyword">end</span>
+0096         coord=reshape(grid,prod(T),d);
+0097         
+0098         <span class="keyword">for</span> i=1:n
+0099             newCoord=(coord'-repmat(data(i,:)',1,prod(T)));
+0100             convKernel=1/sqrt(det(kernel)) * exp(-sum(newCoord'.*(kernel\newCoord)',2));
+0101             str=[<span class="string">'convKernel=reshape(convKernel,'</span> aux2(1:end-1) <span class="string">');'</span>];
+0102             eval(str);
+0103             counter=counter+convKernel;
+0104         <span class="keyword">end</span>
+0105         p=counter;
+0106     
+0107     <span class="comment">%#############################################################################</span>
+0108     <span class="keyword">elseif</span> strcmp(method,<span class="string">'varconv'</span>) <span class="comment">%Convolution with variable kernel: the kernel is of different SIZE for each sample</span>
+0109         
+0110         <span class="keyword">for</span> i=1:d
+0111             str=[<span class="string">'grid('</span> aux3 <span class="string">'i)=repmat(binsC{i},['</span> aux2(1:5*i-5) <span class="string">'1,'</span> aux2(5*i+1:end-1) <span class="string">']);'</span>];
+0112             eval(str);
+0113         <span class="keyword">end</span>
+0114         coord=reshape(grid,prod(T),d);
+0115         
+0116         <span class="keyword">for</span> i=1:n
+0117             auxData=data'-repmat(data(i,:)',1,size(data,1));
+0118             dataDistance=sum((repmat(weights',1,size(data,1)).*(auxData)).^2,1);
+0119             [~,idx]=sort(dataDistance,<span class="string">'ascend'</span>);
+0120             newCov=n*diag(diag(cov(auxData(:,idx(1:k))')))/k; <span class="comment">%Covariance matrix of the k-nearest neighbours of the given sample.</span>
+0121             <span class="comment">%newCov=norm(auxData(:,idx(k)))*eye(d); %Taking just the k-th nearest neighbour distance</span>
+0122             kernel= bandwidth*(4/(d+2))^(2/(d+4))*n^(-2/(d+4))*newCov; <span class="comment">%Computing local kernel.</span>
+0123             newCoord=(coord'-repmat(data(i,:)',1,prod(T)));
+0124             convKernel=1/sqrt(det(kernel)) * exp(-sum(newCoord'.*(kernel\newCoord)',2));
+0125             str=[<span class="string">'convKernel=reshape(convKernel,'</span> aux2(1:end-1) <span class="string">');'</span>];
+0126             eval(str);
+0127             counter=counter+convKernel;
+0128         <span class="keyword">end</span>
+0129         p=counter;
+0130             <span class="comment">%#############################################################################</span>
+0131     <span class="keyword">elseif</span> strcmp(method,<span class="string">'varshapeconv'</span>) <span class="comment">%Convolution with variable kernel: the kernel is of different shape &amp; size for each sample</span>
+0132         
+0133         <span class="keyword">for</span> i=1:d
+0134             str=[<span class="string">'grid('</span> aux3 <span class="string">'i)=repmat(binsC{i},['</span> aux2(1:5*i-5) <span class="string">'1,'</span> aux2(5*i+1:end-1) <span class="string">']);'</span>];
+0135             eval(str);
+0136         <span class="keyword">end</span>
+0137         coord=reshape(grid,prod(T),d);
+0138         
+0139         <span class="keyword">for</span> i=1:n
+0140             auxData=data'-repmat(data(i,:)',1,size(data,1));
+0141             dataDistance=sum((repmat(weights',1,size(data,1)).*(auxData)).^2,1);
+0142             [~,idx]=sort(dataDistance,<span class="string">'ascend'</span>);
+0143             newCov=(n/k)*cov(auxData(:,idx(1:k))');<span class="comment">%/diag(diag(cov(auxData(:,idx(1:k))'))); %Matrix with unity eigenvalues, just gives shape</span>
+0144             kernel= bandwidth*(4/(d+2))^(2/(d+4))*n^(-2/(d+4))*newCov; <span class="comment">%Computing local kernel.</span>
+0145             newCoord=(coord'-repmat(data(i,:)',1,prod(T)));
+0146             convKernel=1/sqrt(det(kernel)) * exp(-sum(newCoord'.*(kernel\newCoord)',2));
+0147             str=[<span class="string">'convKernel=reshape(convKernel,'</span> aux2(1:end-1) <span class="string">');'</span>];
+0148             eval(str);
+0149             counter=counter+convKernel;
+0150         <span class="keyword">end</span>
+0151         p=counter;
+0152     <span class="comment">%##################################################################################</span>
+0153     <span class="keyword">elseif</span> strcmp(method,<span class="string">'fft'</span>) <span class="comment">%Indirect: do it in Fourier space, and rounding some stuff</span>
+0154          str=[<span class="string">'counter=zeros(size(grid('</span> aux3 <span class="string">'1)));'</span>];
+0155          eval(str);
+0156          <span class="keyword">for</span> i=1:n <span class="comment">%Designate each data sample to a bin in the quantized probability dist (histogram)</span>
+0157              str2=[];
+0158              <span class="keyword">for</span> j=1:d
+0159                  [~,v]=min(abs(binsC{j}-data(i,j)));
+0160                  str2=[str2 num2str(v) <span class="string">','</span>];
+0161              <span class="keyword">end</span>
+0162              str=[<span class="string">'counter('</span> str2(1:end-1) <span class="string">')=counter('</span> str2(1:end-1) <span class="string">')+1;'</span>];
+0163              eval(str);
+0164          <span class="keyword">end</span>
+0165          <span class="keyword">for</span> i=1:d
+0166              str=[<span class="string">'grid('</span> aux3 <span class="string">'i)=repmat(binsC{i}-mean(binsC{i}),['</span> aux2(1:5*i-5) <span class="string">'1,'</span> aux2(5*i+1:end-1) <span class="string">']);'</span>];
+0167              eval(str)
+0168          <span class="keyword">end</span>
+0169          coord=reshape(grid,prod(T),d);
+0170          convKernel=1/sqrt(det(kernel)) * exp(-sum(coord.*(kernel\coord')',2));
+0171          str=[<span class="string">'convKernel=reshape(convKernel,'</span> aux2(1:end-1) <span class="string">');'</span>];
+0172          eval(str);
+0173          convKernel=fftshift(convKernel);
+0174          p=real(ifftn(fftn(counter).*fftn(convKernel))); <span class="comment">%Avoid numerical errors that give rise to small imaginary parts</span>
+0175          p(p&lt;0)=0; <span class="comment">%Avoid numerical errors that give rise to small negative real parts</span>
+0176     <span class="keyword">end</span>
+0177     <span class="comment">%Normalization:</span>
+0178     p=p/sum(p(:));
+0179 <span class="keyword">end</span>
+0180 
+0181 <span class="keyword">end</span>
+0182</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

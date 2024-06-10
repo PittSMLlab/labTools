@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of scatterPlotLab</title>
+  <meta name="keywords" content="scatterPlotLab">
+  <meta name="description" content="Plots up to 3 parameters as coordinates in a single cartesian axes system">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; scatterPlotLab.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>scatterPlotLab
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>Plots up to 3 parameters as coordinates in a single cartesian axes system</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Plots up to 3 parameters as coordinates in a single cartesian axes system</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)</a>
+0002 <span class="comment">%Plots up to 3 parameters as coordinates in a single cartesian axes system</span>
+0003 
+0004 <span class="keyword">if</span> isa(adaptDataList,<span class="string">'cell'</span>)
+0005     <span class="keyword">if</span> ~isa(adaptDataList{1},<span class="string">'cell'</span>)
+0006         adaptDataList={adaptDataList};
+0007     <span class="keyword">end</span>
+0008 <span class="keyword">elseif</span> isa(adaptDataList,<span class="string">'char'</span>)
+0009     adaptDataList={{adaptDataList}};
+0010 <span class="keyword">end</span>
+0011 Ngroups=length(adaptDataList);
+0012 
+0013 <span class="keyword">if</span> nargin&lt;8 || isempty(removeBias)
+0014     removeBias=0;
+0015 <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;5 || isempty(figHandle)
+0017     figHandle=figure;
+0018 <span class="keyword">else</span>
+0019     figure(figHandle);
+0020     hold on
+0021 <span class="keyword">end</span>
+0022 markerList={<span class="string">'v'</span>,<span class="string">'o'</span>,<span class="string">'h'</span>,<span class="string">'+'</span>,<span class="string">'*'</span>,<span class="string">'s'</span>,<span class="string">'x'</span>,<span class="string">'^'</span>,<span class="string">'d'</span>,<span class="string">'.'</span>,<span class="string">'p'</span>,<span class="string">'&lt;'</span>,<span class="string">'&gt;'</span>};
+0023 poster_colors;
+0024 colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; [0 0 0];p_yellow];
+0025 color=[colorOrder;colorOrder.^5];
+0026 
+0027 
+0028 <span class="keyword">if</span> nargin&lt;3 || isempty(conditionIdxs)
+0029     conditionIdxs=[];
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> nargin&lt;4 || isempty(binSize)
+0032     binSize=[];
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> nargin&lt;9 || isempty(addID)
+0036     addID=1;
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> Ngroups&gt;1
+0040 labelID=[];
+0041 dot=[];
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% if nargin&lt;5 || isempty(marker) %Dulce</span>
+0045 <span class="comment">%     marker=markerList{randi(length(markerList),1)};</span>
+0046 <span class="comment">% end</span>
+0047 
+0048 <span class="keyword">for</span> g=1:Ngroups
+0049             marker=markerList{g};
+0050     <span class="keyword">for</span> i=1:length(adaptDataList{g})
+0051         r=(i-1)/(length(adaptDataList{g})-1);
+0052         <span class="keyword">if</span> nargin&lt;7 || isempty(trajectoryColor)
+0053             trajectoryColor=[1,0,0] + r*[-1,0,1];
+0054         <span class="keyword">elseif</span> iscell(trajectoryColor)
+0055             trajectoryColor=trajectoryColor{i};
+0056         <span class="keyword">elseif</span> size(trajectoryColor,2)==3
+0057             trajectoryColor=trajectoryColor(mod(i,size(trajectoryColor,1))+1,:);
+0058         <span class="keyword">else</span>
+0059             warning(<span class="string">'Could not interpret trajecColors input'</span>)
+0060             trajectoryColor=<span class="string">'k'</span>;
+0061         <span class="keyword">end</span>
+0062         this=adaptDataList{g}{i};
+0063         fieldList=fields(this);
+0064         a=this.(fieldList{1});
+0065         <span class="keyword">if</span> iscell(conditionIdxs) <span class="comment">%This gives the possibility to pass condition names instead of the indexes for each subject, which might be different</span>
+0066             conditionIdxs1=getConditionIdxsFromName(a,conditionIdxs);
+0067         <span class="keyword">else</span>
+0068             conditionIdxs1=conditionIdxs;
+0069         <span class="keyword">end</span>
+0070         
+0071         <span class="keyword">if</span> removeBias==1
+0072             this=this.removeBias;
+0073         <span class="keyword">end</span>
+0074         
+0075         colorScheme
+0076 
+0077         aux=cell2mat(colorConds');
+0078         set(gca,<span class="string">'ColorOrder'</span>,aux(1:length(conditionIdxs),:));
+0079         hold on
+0080         <span class="keyword">if</span> length(labels)&gt;3
+0081             error(<span class="string">'adaptationData:scatterPlot'</span>,<span class="string">'Cannot plot more than 3 parameters at a time'</span>)
+0082         <span class="keyword">end</span>
+0083   
+0084         <span class="keyword">if</span> length(labels)==3
+0085             last=[];
+0086             <span class="keyword">for</span> c=1:length(conditionIdxs)
+0087              
+0088                 [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+0089                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(binSize) &amp;&amp; binSize&gt;1
+0090          
+0091                     <span class="keyword">for</span> ii=1:size(data,2)
+0092                         data(:,ii)=smooth(data(:,ii),binSize,<span class="string">'rlowess'</span>);
+0093                     <span class="keyword">end</span>
+0094                 <span class="keyword">end</span>
+0095                 <span class="keyword">if</span> ~isempty(binSize) &amp;&amp; binSize~=0              
+0096                     hh(c)=plot3(data(:,1),data(:,2),data(:,3),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
+0097                     uistack(hh(c),<span class="string">'bottom'</span>)
+0098                 <span class="keyword">end</span>
+0099                 <span class="keyword">if</span> ~isempty(last)
+0100                      h=plot3(data(:,1),data(:,2),data(:,3),<span class="string">'Color'</span>,color(i,:),<span class="string">'LineWidth'</span>,1);
+0101                     uistack(h,<span class="string">'bottom'</span>)
+0102                     plot3([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],<span class="string">'o'</span>,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'Color'</span>,color(i,:))
+0103                 <span class="keyword">else</span>
+0104                     <span class="keyword">if</span> addID==1
+0105                         hhh=text([nanmedian(data(:,1))],[nanmedian(data(:,2))],[nanmedian(data(:,3))],this.subData.ID);
+0106                         set(hhh,<span class="string">'LineWidth'</span>,1,<span class="string">'FontSize'</span>,14);
+0107                     <span class="keyword">end</span>
+0108                 <span class="keyword">end</span>
+0109                 last=nanmedian(data,1);
+0110             <span class="keyword">end</span>
+0111             xlabel(labels{1})
+0112             ylabel(labels{2})
+0113             zlabel(labels{3})
+0114         <span class="keyword">elseif</span> length(labels)==2
+0115             last=[];
+0116             <span class="keyword">for</span> c=1:length(conditionIdxs)
+0117 
+0118                 [data,~,~,origTrials]=getParamInCond(this,labels,conditionIdxs(c));
+0119                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(binSize) &amp;&amp; binSize&gt;1
+0120                     data2=conv2(data,ones(binSize,1)/binSize);
+0121                     data=data2(1:binSize:<span class="keyword">end</span>,:);
+0122                     hh(c)=plot(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
+0123                 <span class="keyword">end</span>
+0124                 cc=aux(mod(c,size(aux,1))+1,:);
+0125                 <span class="keyword">if</span> nargin&gt;5 &amp;&amp; ~isempty(binSize) &amp;&amp; binSize==1
+0126                     hh(c)=plot(data(:,1),data(:,2),marker,<span class="string">'LineWidth'</span>,1,<span class="string">'MarkerFaceColor'</span>,color(i,:),<span class="string">'MarkerEdgeColor'</span>,color(i,:));
+0127                     uistack(hh(c),<span class="string">'bottom'</span>)
+0128                 <span class="keyword">end</span>
+0129                 <span class="keyword">if</span> ~isempty(last)
+0130                     h=plot([last(1) nanmedian(data(:,1))],[last(2) nanmedian(data(:,2))],<span class="string">'Color'</span>,color(i,:),<span class="string">'LineWidth'</span>,2);
+0131                     uistack(h,<span class="string">'bottom'</span>)
+0132                     plot([nanmedian(data(:,1))],[nanmedian(data(:,2))],<span class="string">'o'</span>,<span class="string">'Color'</span>,color(i,:),<span class="string">'MarkerFaceColor'</span>,color(i,:))
+0133                 <span class="keyword">end</span>
+0134             
+0135                 last=nanmedian(data,1);
+0136             <span class="keyword">end</span>
+0137             xlabel(labels{1})
+0138             ylabel(labels{2})
+0139         <span class="keyword">end</span>
+0140         
+0141         <span class="keyword">if</span> length(conditionIdxs)==1 &amp;&amp; Ngroups==1<span class="comment">%%Dulce</span>
+0142             labelID{i}=this.subData.ID;
+0143             dot{i}=hh;
+0144         <span class="keyword">elseif</span> length(conditionIdxs)&gt;1 &amp;&amp; Ngroups==1
+0145             labelID{i}=this.subData.ID;
+0146             dot{i}=hh(1);
+0147         <span class="keyword">elseif</span> length(conditionIdxs)&gt;1 &amp;&amp; Ngroups&gt;1
+0148             labelID2{i}=this.subData.ID;
+0149             dot2{i}=hh(1); 
+0150           
+0151         <span class="keyword">elseif</span> length(conditionIdxs)==1 &amp;&amp; Ngroups&gt;1
+0152             labelID2{i}=this.subData.ID;
+0153             dot2{i}=hh(1);
+0154         <span class="keyword">end</span>
+0155     <span class="keyword">end</span>
+0156     <span class="keyword">if</span> Ngroups&gt;1
+0157         labelID=[labelID labelID2];
+0158         dot=[dot dot2];  
+0159     <span class="keyword">end</span>
+0160                       
+0161 <span class="keyword">end</span>
+0162 
+0163 legend([dot{:}],[labelID(:)])
+0164 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

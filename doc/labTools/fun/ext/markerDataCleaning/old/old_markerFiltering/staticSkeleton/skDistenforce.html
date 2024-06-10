@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of skDistenforce</title>
+  <meta name="keywords" content="skDistenforce">
+  <meta name="description" content="Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../../index.html">fun</a> &gt; <a href="../../../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="#">old</a> &gt; <a href="../index.html">old_markerFiltering</a> &gt; <a href="index.html">staticSkeleton</a> &gt; skDistenforce.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../../index.html"><img alt="<" border="0" src="../../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/old/old_markerFiltering/staticSkeleton&nbsp;<img alt=">" border="0" src="../../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>skDistenforce
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+<div class="box"><strong>Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+<div class="box"><strong>function [xMLE] = skDistlearnenforce(x,P,s,R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the
+relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal
+(bayesian) estimate of x
+If elements of x are NaN, they are considered 'missing' and assigned an
+arbitrary value with (numerically) infinite uncertainty</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../../matlabicon.gif)">
+<li><a href="computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>	UNTITLED2 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Do,W]=linearizeDist(xo)</a></li><li><a href="#_sub2" class="code">function testLinearization(xo)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xMLE] = skDistlearnenforce(x,P,s,R)</a>
+0002 <span class="comment">%Given a prior estimate x with uncertainty P (normal dist) of some variable x, and the</span>
+0003 <span class="comment">%relative position model given by s, R [W*x~N(s,diag(R))], computes the optimal</span>
+0004 <span class="comment">%(bayesian) estimate of x</span>
+0005 <span class="comment">%If elements of x are NaN, they are considered 'missing' and assigned an</span>
+0006 <span class="comment">%arbitrary value with (numerically) infinite uncertainty</span>
+0007 [N,d]=size(x);
+0008 
+0009 <span class="comment">%Deal with NaNs in data:</span>
+0010 idx=isnan(x(:));
+0011 x(idx)=0;
+0012 aux=zeros(N*d,1);
+0013 aux(idx)=1;
+0014 P=P+1e15*max(P(:))*diag(aux);
+0015 
+0016 <span class="comment">%Iterate: linearize, find optimal solution</span>
+0017 endFlag=false;
+0018 changeTh=1e-3;
+0019 xMLE=x(:); <span class="comment">%Nd x 1</span>
+0020 <span class="comment">%Reshaping parameters for updateKF:</span>
+0021 y=zeros(N^2,1);s=s(:);R=diag(R(:));x=x(:);
+0022 lastXMLE=x; <span class="comment">%Init guess</span>
+0023 iter=0;
+0024 maxIter=25;
+0025 <span class="keyword">while</span> ~endFlag &amp;&amp; iter&lt;maxIter
+0026   <span class="comment">%Linearize distance constraints:</span>
+0027   [off,W]=<a href="#_sub1" class="code" title="subfunction [Do,W]=linearizeDist(xo)">linearizeDist</a>(reshape(lastXMLE,N,d));
+0028   <span class="comment">%Optimal bayesian solution around linearized point:</span>
+0029   [xMLE,PMLE]=updateKF(W,R,x,P,s-off(:),y);
+0030   change=sqrt(sum((xMLE-lastXMLE(:)).^2));
+0031   endFlag=change&lt;changeTh;
+0032   lastXMLE=xMLE;
+0033   iter=iter+1;
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <a name="_sub1" href="#_subfunctions" class="code">function [Do,W]=linearizeDist(xo)</a>
+0038   <span class="comment">%Computes an approximation of the function</span>
+0039   <span class="comment">%D=computedDistanceMatrix(x) around x=xo</span>
+0040   <span class="comment">%As: D(:) ~ Do(:) + W*x(:)</span>
+0041   <span class="comment">%Assumed xo is Nxd</span>
+0042   [N,d]=size(xo);
+0043   D=<a href="computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>(xo);
+0044   G1=reshape(xo,N,1,d)./(D+eye(N));
+0045   G2=reshape(xo,1,N,d)./(D+eye(N));
+0046   W1=zeros(N,N,N,d);
+0047   W2=zeros(N,N,N,d);
+0048   <span class="keyword">for</span> i=1:N
+0049     W1(i,:,i,:)=G1(:,i,:);
+0050     W2(:,i,i,:)=G2(:,i,:);
+0051   <span class="keyword">end</span>
+0052   <span class="comment">%Need to reshape G/pad with 0's, so W is NxNxNd</span>
+0053   W=W1-W2; <span class="comment">%NxNxNxd</span>
+0054   W=reshape(W,N^2,N*d);
+0055   Do=D-reshape(W*xo(:),N,N); <span class="comment">%NxN</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 <a name="_sub2" href="#_subfunctions" class="code">function testLinearization(xo)</a>
+0059 D=<a href="computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>(xo);
+0060 [Do,W]=<a href="#_sub1" class="code" title="subfunction [Do,W]=linearizeDist(xo)">linearizeDist</a>(xo);
+0061 e=1e-3;
+0062 p=e*randn(size(xo));
+0063 x=xo+p;
+0064 D1=<a href="computeDistanceMatrix.html" class="code" title="function [D] = computeDistanceMatrix(pos)">computeDistanceMatrix</a>(x);
+0065 D1app=Do(:)+W*x(:);
+0066 
+0067 <span class="comment">%Check: D1 ~ D1app</span>
+0068 norm(D1(:)-D1app) <span class="comment">%Should be very small</span>
+0069 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

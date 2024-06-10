@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeTSdiscreteParameters</title>
+  <meta name="keywords" content="computeTSdiscreteParameters">
+  <meta name="description" content="This function averages labTS data across given phases.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeTSdiscreteParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeTSdiscreteParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function averages labTS data across given phases.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function averages labTS data across given phases.
+The output is a parameterSeries object, which can be concatenated with
+other parameterSeries objects, for example with those from
+computeTemporalParameters. 
+See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
+<a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="computeAngleParameters.html" class="code" title="function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg,eventTypes)">computeAngleParameters</a>	This function computes summary parameters per stride based on Angle data.</li><li><a href="computeEMGParameters.html" class="code" title="function [out] = computeEMGParameters(EMGData,gaitEvents,slowLeg,eventTypes)">computeEMGParameters</a>	This function computes summary parameters per stride based on EMG data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)</a>
+0002 <span class="comment">%This function averages labTS data across given phases.</span>
+0003 <span class="comment">%The output is a parameterSeries object, which can be concatenated with</span>
+0004 <span class="comment">%other parameterSeries objects, for example with those from</span>
+0005 <span class="comment">%computeTemporalParameters.</span>
+0006 <span class="comment">%See also computeSpatialParameters, computeTemporalParameters,</span>
+0007 <span class="comment">%computeForceParameters, parameterSeries</span>
+0008 
+0009 <span class="comment">%%INPUT:</span>
+0010 <span class="comment">%someTS: labTS object to discretize</span>
+0011 <span class="comment">%gaitEvents: eventTS</span>
+0012 <span class="comment">%eventTypes: either a cell array of strings, or a single char indicating</span>
+0013 <span class="comment">%the slow leg</span>
+0014 <span class="comment">%alignmentVector: integer vector of same size as eventType</span>
+0015 
+0016 <span class="comment">%TODO: this should be a method of labTS</span>
+0017 
+0018 <span class="keyword">if</span> nargin&lt;4 || isempty(alignmentVector)
+0019     
+0020     <span class="keyword">if</span> ~isa(eventTypes,<span class="string">'cell'</span>) <span class="comment">%Allow to change the type of event post-processing</span>
+0021         
+0022         <span class="keyword">if</span> ~isa(eventTypes,<span class="string">'char'</span>)
+0023             error(<span class="string">'Bad argument for eventTypes'</span>)
+0024         <span class="keyword">end</span>
+0025         
+0026         s=eventTypes;    f=getOtherLeg(s);
+0027         eventTypes={[s <span class="string">'HS'</span>],[f <span class="string">'TO'</span>],[f <span class="string">'HS'</span>],[s <span class="string">'TO'</span>]};
+0028     <span class="keyword">end</span>
+0029   
+0030     alignmentVector=[2,4,2,4];
+0031     desc2={<span class="string">'SHS to mid DS1'</span>,<span class="string">'mid DS1 to FTO'</span>,<span class="keyword">...</span>
+0032         <span class="string">'FTO to 1/4 fast swing'</span>,<span class="string">'1/4 to mid fast swing'</span>,<span class="keyword">...</span>
+0033         <span class="string">'mid fast swing to 3/4'</span>,<span class="string">'3/4 fast swing to FHS'</span>,<span class="keyword">...</span>
+0034         <span class="string">'FHS to mid DS2'</span>, <span class="string">'mid DS2 to STO'</span>,<span class="keyword">...</span>
+0035         <span class="string">'STO to 1/4 slow swing'</span>,<span class="string">'1/4  to mid slow swing'</span>,<span class="keyword">...</span>
+0036         <span class="string">'mid slow swing to 3/4'</span>,<span class="string">'3/4 slow swing to SHS'</span>}';
+0037 <span class="keyword">else</span>
+0038     <span class="keyword">if</span> length(eventTypes)~=length(alignmentVector) 
+0039         <span class="keyword">if</span> ~isempty(alignmentVector)
+0040             error(<span class="string">'Inconsistent sizes of eventTypes and alignmentVector'</span>)
+0041         <span class="keyword">end</span>
+0042     <span class="keyword">end</span>
+0043     desc2=cell(sum(alignmentVector),1);
+0044 <span class="keyword">end</span>
+0045 <span class="keyword">if</span> nargin&lt;5
+0046     summaryFun=[];
+0047 <span class="keyword">end</span>
+0048 someTS.Quality=[];<span class="comment">%Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary</span>
+0049 [DTS,~]=someTS.discretize(gaitEvents,eventTypes,alignmentVector,summaryFun);
+0050 [N,M,P]=size(DTS.Data);
+0051 <span class="comment">%Make labels:</span>
+0052 ll=strcat(repmat(strcat(DTS.labels,<span class="string">'_s'</span>),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
+0053 <span class="comment">%Make descriptions:</span>
+0054 desc=strcat(strcat(strcat(<span class="string">'Mean of data in TS '</span>, repmat(DTS.labels,N,1)), <span class="string">' from '</span>), repmat(desc2,1,M));
+0055 out= parameterSeries(reshape(DTS.Data,N*M,P)',ll(:),1:P,desc(:));
+0056 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

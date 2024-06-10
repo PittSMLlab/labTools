@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoid2</title>
+  <meta name="keywords" content="ellipsoid2">
+  <meta name="description" content="ELLIPSOID Generalization of the ellipsoid function to plot ellipsoids with">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">plots</a> &gt; ellipsoid2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/plots&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>ellipsoid2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>ELLIPSOID Generalization of the ellipsoid function to plot ellipsoids with</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [X,Y,Z] = ellipsoid2 (xC,M,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ELLIPSOID Generalization of the ellipsoid function to plot ellipsoids with
+arbitrary axes.
+INPUTS: 
+ xC = coordinates of the center of the ellipsoid
+ M = symmetric positive definite matrix whose eigen vectors represent the direction
+ of the principal axes, and the eigen values represent the inverse of size of the
+ corresponding semi-axis. In this way, the ellipsoid is defined by the vectors x
+ such that x'*M*x=1.
+ N = number of points in the ellipsoid to find.
+OUTPUTS:
+ X,Y,Z = 3D coordinates of the points in the surface of the ellipsoid.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,Y,Z] = ellipsoid2 (xC,M,N)</a>
+0002 <span class="comment">%ELLIPSOID Generalization of the ellipsoid function to plot ellipsoids with</span>
+0003 <span class="comment">%arbitrary axes.</span>
+0004 <span class="comment">%INPUTS:</span>
+0005 <span class="comment">% xC = coordinates of the center of the ellipsoid</span>
+0006 <span class="comment">% M = symmetric positive definite matrix whose eigen vectors represent the direction</span>
+0007 <span class="comment">% of the principal axes, and the eigen values represent the inverse of size of the</span>
+0008 <span class="comment">% corresponding semi-axis. In this way, the ellipsoid is defined by the vectors x</span>
+0009 <span class="comment">% such that x'*M*x=1.</span>
+0010 <span class="comment">% N = number of points in the ellipsoid to find.</span>
+0011 <span class="comment">%OUTPUTS:</span>
+0012 <span class="comment">% X,Y,Z = 3D coordinates of the points in the surface of the ellipsoid.</span>
+0013 
+0014 <span class="keyword">if</span> nargin&lt;3
+0015     N=20;
+0016 <span class="keyword">end</span>
+0017 
+0018 [U,S,V]=svd(M);
+0019 <span class="comment">% %Check: U and V should be the same matrix, otherwise S is not symmetric.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% %Check: elements of S should be strictly positive.</span>
+0022 <span class="comment">% S2=sqrt(S);</span>
+0023 <span class="comment">% [X,Y,Z]=ellipsoid(xC(1),xC(2),xC(3),S2(1,1),S2(2,2),S2(3,3),N);</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% aux=[X(:)-xC(1),Y(:)-xC(2),Z(:)-xC(3)]';</span>
+0026 <span class="comment">% aux2=U'*aux;</span>
+0027 <span class="comment">% X=reshape(aux2(1,:),size(X,1),size(X,2))+xC(1);</span>
+0028 <span class="comment">% Y=reshape(aux2(2,:),size(X,1),size(X,2))+xC(2);</span>
+0029 <span class="comment">% Z=reshape(aux2(3,:),size(X,1),size(X,2))+xC(3);</span>
+0030 
+0031 [X,Y,Z]=ellipsoid(xC(1),xC(2),xC(3),1,1,1,N);
+0032 
+0033 aux=[X(:)-xC(1),Y(:)-xC(2),Z(:)-xC(3)]';
+0034 aux2=pinv(sqrtm(M))*aux;
+0035 X=reshape(aux2(1,:),size(X,1),size(X,2))+xC(1);
+0036 Y=reshape(aux2(2,:),size(X,1),size(X,2))+xC(2);
+0037 Z=reshape(aux2(3,:),size(X,1),size(X,2))+xC(3);
+0038 
+0039 
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

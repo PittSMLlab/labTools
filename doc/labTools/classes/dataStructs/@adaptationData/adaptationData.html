@@ -1,0 +1,1388 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of adaptationData</title>
+  <meta name="keywords" content="adaptationData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="../index.html">dataStructs</a> &gt; <a href="index.html">@adaptationData</a> &gt; adaptationData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/dataStructs/@adaptationData&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>adaptationData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>	Set colors order</li><li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="getBaseData.html" class="code" title="function [data,baseConds,trialTypes]=getBaseData(this,baseConds,labels)">getBaseData</a>	Returns data from last 40 strides of baseline, exempting the last 5.</li><li><a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>	obtain the earliest and late data points for conditions</li><li><a href="getEarlyLateIdxs.html" class="code" title="function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateIdxs</a>	obtain the earliest and late data points for conditions</li><li><a href="plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>	adaptDataList must be cell array of 'param.mat' file names</li><li><a href="plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>	</li><li><a href="plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>	</li><li><a href="plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>	</li><li><a href="plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>	TODO: this file should be updated to call upon plotGroupedBars</li><li><a href="removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li><li><a href="removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag, padWithNaNFlag)">removeBiasV4</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>	Plots up to 3 parameters as coordinates in a single cartesian axes system</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="adaptationData.html" class="code" title="">adaptationData</a>	</li><li><a href="removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>	</li><li><a href="removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li><li><a href="removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag, padWithNaNFlag)">removeBiasV4</a>	removeBias('condition') or removeBias({'Condition1','Condition2',...})</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=adaptationData(meta,sub,data)</a></li><li><a href="#_sub2" class="code">function this=set.data(this,data)</a></li><li><a href="#_sub3" class="code">function tT=trialTypes(this)</a></li><li><a href="#_sub4" class="code">function [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)</a></li><li><a href="#_sub5" class="code">function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag,removeBadFlag)</a></li><li><a href="#_sub6" class="code">function [newThis,baseValues,typeList]=normalizeBias(this,conditions)</a></li><li><a href="#_sub7" class="code">function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)</a></li><li><a href="#_sub8" class="code">function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch,noMinNormFlag)</a></li><li><a href="#_sub9" class="code">function [newThis]=removeBaselineEpoch(this,baseEpoch,labels)</a></li><li><a href="#_sub10" class="code">function newThis=removeBadStrides(this,markAsNaNflag)</a></li><li><a href="#_sub11" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a></li><li><a href="#_sub12" class="code">function newThis=replaceLR(this)</a></li><li><a href="#_sub13" class="code">function [biasTM,biasOG]=getBias(this,labels)</a></li><li><a href="#_sub14" class="code">function newThis=markBadWhenMissingAny(this,labels)</a></li><li><a href="#_sub15" class="code">function newThis=markBadWhenMissingAll(this,labels)</a></li><li><a href="#_sub16" class="code">function newThis=renameParams(this,oldLabels,newLabels)</a></li><li><a href="#_sub17" class="code">function newThis=getPartialParameters(this,labels)</a></li><li><a href="#_sub18" class="code">function ageInMonths=getSubjectAgeAtExperimentDate(this)</a></li><li><a href="#_sub19" class="code">function newThis=medianFilter(this,N)</a></li><li><a href="#_sub20" class="code">function newThis=monoLS(this,trialBased,order,Nregularization)</a></li><li><a href="#_sub21" class="code">function newThis=substituteNaNs(this,method)</a></li><li><a href="#_sub22" class="code">function [labelList,descriptionList]=getParameterList(this)</a></li><li><a href="#_sub23" class="code">function [data,inds,auxLabel]=getParamInTrial(this,label,trial)</a></li><li><a href="#_sub24" class="code">function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)</a></li><li><a href="#_sub25" class="code">function [boolFlag,labelIdx]=isaCondition(this,cond)</a></li><li><a href="#_sub26" class="code">function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)</a></li><li><a href="#_sub27" class="code">function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)</a></li><li><a href="#_sub28" class="code">function flags=validateEpochs(this,epochs)</a></li><li><a href="#_sub29" class="code">function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)</a></li><li><a href="#_sub30" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames)</a></li><li><a href="#_sub31" class="code">function inds=getIndsInCondition(this,conditionNames)</a></li><li><a href="#_sub32" class="code">function trialNums=getTrialsInCond(this,conditionNames)</a></li><li><a href="#_sub33" class="code">function newThis=reduce(this, parametersToKeep)</a></li><li><a href="#_sub34" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub35" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a></li><li><a href="#_sub36" class="code">function [figHandle,plotHandles]=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag,plotHandles)</a></li><li><a href="#_sub37" class="code">function dataPoints=getDataFromInds(this,inds,labels,padWithNaNFlag)</a></li><li><a href="#_sub38" class="code">function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,ph,numberOfStrides,monoLSfitFlag)</a></li><li><a href="#_sub39" class="code">function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)</a></li><li><a href="#_sub40" class="code">function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)</a></li><li><a href="#_sub41" class="code">function gAD=createSingleSubjGroup(this)</a></li><li><a href="#_sub42" class="code">function badSubj=RemoveBadMuscles(this,badMuscles)</a></li><li><a href="#_sub43" class="code">function [fh,ph,allData]=plotGroupedTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)</a></li><li><a href="#_sub44" class="code">function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag);</a></li><li><a href="#_sub45" class="code">function groupData=createGroupAdaptData(adaptDataList)</a></li><li><a href="#_sub46" class="code">function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);</a></li><li><a href="#_sub47" class="code">function this=loadobj(this)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="adaptationData.html" class="code" title="">adaptationData</a>
+0002 <span class="comment">%ADAPTATIONDATA - Class to store all parameters of interest for every stride</span>
+0003 <span class="comment">%in an experiment</span>
+0004 <span class="comment">%   Objects of this class can be generated from experimentData by calling</span>
+0005 <span class="comment">%   experimentData.makeDataObj</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%adaptationData properties:</span>
+0008 <span class="comment">%   metaData - object of the experimentMetaData class</span>
+0009 <span class="comment">%   subData - object of the subjectData class</span>
+0010 <span class="comment">%   data - object of the parameterSeries class</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%adaptationData methods:</span>
+0013 <span class="comment">%   removeBias - subtract off mean baseline values</span>
+0014 <span class="comment">%   normalizeBias -</span>
+0015 <span class="comment">%   getParameterList - obtain an array of strings with the labels of the all parameters</span>
+0016 <span class="comment">%   getParamInTrial - obtain data for a parameter in a specific trial</span>
+0017 <span class="comment">%   getParamInCond - obtain data for a parameter in a specific condition</span>
+0018 <span class="comment">%   isaCondition - check whether a condition exitsts in an experiment</span>
+0019 <span class="comment">%   getEarlyLateData -</span>
+0020 <span class="comment">%   getBias -</span>
+0021 <span class="comment">%   getConditionIdxsFromName -</span>
+0022 <span class="comment">%   getIndsInCondition -</span>
+0023 <span class="comment">%   plotParamTimeCourse - plot the time course of a parameter</span>
+0024 <span class="comment">%   plotGroupedSubjectsTimeCourse -</span>
+0025 <span class="comment">%   plotGroupedSubjects -</span>
+0026 <span class="comment">%   plotGroupedSubjectsBars -</span>
+0027 <span class="comment">%   getGroupedData -</span>
+0028 <span class="comment">%   plotAvgTimeCourse -</span>
+0029 <span class="comment">%   groupedScatterPlot -</span>
+0030 <span class="comment">%   correlations -</span>
+0031 <span class="comment">%   See also: experimentData</span>
+0032 
+0033     properties
+0034         metaData <span class="comment">%cell array with information related with the experiment (type of protocol, date, experimenter, conditions...)in a experimentMetaData object</span>
+0035         subData <span class="comment">%cell array with information of the subject (DOB, sex, height, weight...)in a subjectData object</span>
+0036         data <span class="comment">%cell array of parameterSeries type</span>
+0037     <span class="keyword">end</span>
+0038 
+0039     properties(Hidden)
+0040         TMbias_=[];
+0041         OGbias_=[];
+0042         INbias_=[];
+0043         NIMbias_=[];
+0044     <span class="keyword">end</span>
+0045 
+0046     methods
+0047         <span class="comment">%Constructor</span>
+0048         <a name="_sub0" href="#_subfunctions" class="code">function this=adaptationData(meta,sub,data)</a>
+0049 
+0050             <span class="keyword">if</span> nargin&gt;0 &amp;&amp; isa(meta,<span class="string">'experimentMetaData'</span>)
+0051                 this.metaData=meta;
+0052             <span class="keyword">else</span>
+0053                 ME=MException(<span class="string">'adaptationData:Constructor'</span>,<span class="string">'metaData is not an experimentMetaData type object.'</span>);
+0054                 throw(ME);
+0055             <span class="keyword">end</span>
+0056 
+0057             <span class="keyword">if</span> nargin&gt;1 &amp;&amp; isa(sub,<span class="string">'subjectData'</span>)
+0058                 this.subData=sub;
+0059             <span class="keyword">else</span>
+0060                 ME=MException(<span class="string">'adaptationData:Constructor'</span>,<span class="string">'Subject data is not a subjectData type object.'</span>);
+0061                 throw(ME);
+0062             <span class="keyword">end</span>
+0063 
+0064             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; (isa(data,<span class="string">'parameterSeries'</span>) || isa(data,<span class="string">'paramData'</span>))
+0065                 this.data=data;
+0066             <span class="keyword">else</span>
+0067                 ME=MException(<span class="string">'adaptationData:Constructor'</span>,<span class="string">'Data is not a parameterSeries type object.'</span>);
+0068                 throw(ME);
+0069             <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071         <a name="_sub1" href="#_subfunctions" class="code">function this=set.data(this,data)</a>
+0072           <span class="keyword">if</span> nargin&gt;1 &amp;&amp; (isa(data,<span class="string">'parameterSeries'</span>) || isa(data,<span class="string">'paramData'</span>))
+0073               this.data=data;
+0074           <span class="keyword">else</span>
+0075               ME=MException(<span class="string">'adaptationData:setData'</span>,<span class="string">'Data is not a parameterSeries type object.'</span>);
+0076               throw(ME);
+0077           <span class="keyword">end</span>
+0078         <span class="keyword">end</span>
+0079         <a name="_sub2" href="#_subfunctions" class="code">function tT=trialTypes(this)</a>
+0080             <span class="keyword">if</span> ~isempty(this.data.trialTypes)
+0081                 tT=this.data.trialTypes; <span class="comment">%Tries to read from parameterSeries' trialType field, if it was populated, as we expect it to be with newer versions</span>
+0082             <span class="keyword">else</span> <span class="comment">%If the field was not populated, make an educated guess.</span>
+0083                 tT=cell(1,this.metaData.Ntrials);
+0084                 <span class="keyword">for</span> i=1:this.metaData.Ntrials
+0085                     condInd=nan;
+0086                    <span class="keyword">for</span> j=1:length(this.metaData.conditionName)
+0087                       <span class="keyword">if</span> any(this.metaData.trialsInCondition{j}==i)
+0088                           condInd=j;
+0089                           <span class="keyword">break</span>
+0090                       <span class="keyword">end</span>
+0091                    <span class="keyword">end</span>
+0092                    <span class="keyword">if</span> isnan(condInd)
+0093                        tT{i}=<span class="string">'mis'</span>;
+0094                    <span class="keyword">elseif</span> ~isempty(strfind(this.metaData.conditionName{condInd},<span class="string">'OG'</span>))
+0095                     tT{i}=<span class="string">'OG'</span>;
+0096                    <span class="keyword">elseif</span> ~isempty(strfind(this.metaData.conditionName{condInd},<span class="string">'incline'</span>)) || ~isempty(strfind(this.metaData.conditionName{condInd},<span class="string">'hill'</span>))
+0097                        tT{i}=<span class="string">'IN'</span>;
+0098                    <span class="keyword">elseif</span> ~isempty(strfind(this.metaData.conditionName{condInd},<span class="string">'NIM'</span>))
+0099                        tT{i}=<span class="string">'NIM'</span>;
+0100                    <span class="keyword">else</span>
+0101                        tT{i}=<span class="string">'TM'</span>;
+0102                    <span class="keyword">end</span>
+0103                 <span class="keyword">end</span>
+0104             <span class="keyword">end</span>
+0105         <span class="keyword">end</span>
+0106         <span class="comment">%Modifiers</span>
+0107 
+0108         [newThis,baseValues,typeList]=<a href="removeBiasV2.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV2(this,refConditions,normalizeFlag)">removeBiasV2</a>(this,conditions,normalizeFlag) <span class="comment">%Going to deprecate in favor of removeBiasV3's simpler code</span>
+0109         [newThis,baseValues,typeList]=<a href="removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>(this,conditions,normalizeFlag)
+0110         [newThis,baseValues,typeList]=<a href="removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag, padWithNaNFlag)">removeBiasV4</a>(this,conditions,normalizeFlag,padWithNaNFlag)
+0111 
+0112         <a name="_sub3" href="#_subfunctions" class="code">function [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)</a>
+0113         <span class="comment">% Removes baseline value for all parameters.</span>
+0114         <span class="comment">% removeBias('condition') or removeBias({'Condition1','Condition2',...})</span>
+0115         <span class="comment">% removes the median value of every parameter from each trial of the</span>
+0116         <span class="comment">% same type as the condition entered. If no condition is</span>
+0117         <span class="comment">% specified, then the condition name that contains both the</span>
+0118         <span class="comment">% type string and the string 'base' is used as the baseline</span>
+0119         <span class="comment">% condition.</span>
+0120         <span class="comment">%</span>
+0121         <span class="comment">%INPUTS:</span>
+0122         <span class="comment">%this: experimentData object</span>
+0123         <span class="comment">%conditions: conditions to use as reference</span>
+0124         <span class="comment">%</span>
+0125         <span class="comment">%OUTPUTS:</span>
+0126         <span class="comment">%newThis: experimentData object with the bias remove</span>
+0127         <span class="comment">%baseValues: values used to calculated the average used to remove the bias</span>
+0128         <span class="comment">%typeList; type of condition (OG or TM)</span>
+0129         <span class="comment">%</span>
+0130         <span class="comment">%EX:[newThis,baseValues,typeList]=adaptData.removeBias('TM base');</span>
+0131 
+0132             <span class="keyword">if</span> nargin&lt;2
+0133                 conditions=[];
+0134             <span class="keyword">end</span>
+0135             
+0136             <span class="keyword">if</span> nargin&lt;3
+0137                 padWithNaNFlag=false;
+0138             <span class="keyword">end</span>
+0139             <span class="comment">%             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);</span>
+0140             <span class="comment">%             %Marcela Commented this for the R01</span>
+0141             [newThis,baseValues,typeList]=<a href="removeBiasV4.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag, padWithNaNFlag)">removeBiasV4</a>(this,conditions,[],padWithNaNFlag);
+0142             newThis.TMbias_=baseValues(strcmp(typeList,<span class="string">'TM'</span>),:);
+0143             newThis.OGbias_=baseValues(strcmp(typeList,<span class="string">'OG'</span>),:);
+0144             newThis.INbias_=baseValues(strcmp(typeList,<span class="string">'IN'</span>),:);
+0145             newThis.NIMbias_=baseValues(strcmp(typeList,<span class="string">'NIM'</span>),:);
+0146         <span class="keyword">end</span>
+0147 
+0148         <a name="_sub4" href="#_subfunctions" class="code">function [newThis]=removeAltBias(this,condName,strideNo,exemptStrides,medianFlag,normalizeFlag,removeBadFlag)</a>
+0149            <span class="comment">%Same as removeBias, but for an arbitrary subset of strides</span>
+0150            <span class="comment">%(e.g. remove the mean of the first 20 strides of adaptation)</span>
+0151            <span class="keyword">if</span> nargin&lt;7 || isempty(removeBadFlag) || removeBadFlag==0
+0152                base=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,[],condName,0,strideNo,exemptStrides,exemptStrides); <span class="comment">%Not removing bad strides</span>
+0153            <span class="keyword">else</span>
+0154                base=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this.removeBadStrides,[],condName,0,strideNo,exemptStrides,exemptStrides); <span class="comment">%Removing bad strides for the purpose of baseline computations</span>
+0155            <span class="keyword">end</span>
+0156 
+0157            <span class="keyword">if</span> nargin&lt;5 || isempty(medianFlag) || medianFlag==0
+0158                base=nanmean(squeeze(base{1}));
+0159            <span class="keyword">else</span>
+0160                base=nanmedian(squeeze(base{1}));
+0161            <span class="keyword">end</span>
+0162            newThis=this;
+0163            dataOld=this.data.Data;
+0164             <span class="keyword">if</span> normalizeFlag==0
+0165                 <span class="comment">%added lines to ensure that if certain parameters never</span>
+0166                 <span class="comment">%have a baseline to remove the bias, they are not assigned</span>
+0167                 <span class="comment">%as NaN from the bsxfun @minus.</span>
+0168                 <span class="comment">%data(isnan(data))=-100000;</span>
+0169                 base(isnan(base))=0;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0170                 newData=bsxfun(@minus,dataOld,base); <span class="comment">%Substracting baseline</span>
+0171             <span class="keyword">else</span>
+0172                 base(isnan(base))=1;<span class="comment">%do not subtract a bias if there is no bias to remove</span>
+0173                 newData=bsxfun(@rdivide,dataOld,base); <span class="comment">%Dividing by baseline</span>
+0174             <span class="keyword">end</span>
+0175             M=newThis.data.fixedParams;
+0176             newThis.data.Data(:,M+1:end)=newData(:,newThis.data.fixedParams+1:end); <span class="comment">%Not removing bias for 'fixed' params: initTime, finalTime, trial, good, bad</span>
+0177             <span class="comment">%newData(isnan(data))=nan;</span>
+0178             <span class="keyword">if</span> isempty(this.TMbias_) <span class="comment">%Default if bias was not removed previously</span>
+0179                 newThis.TMbias_=[zeros(1,M) base(M+1:end)];
+0180                 newThis.OGbias_=[zeros(1,M) base(M+1:end)];
+0181             <span class="keyword">else</span>
+0182                 <span class="keyword">if</span> normalizeFlag==0
+0183                     newThis.TMbias_=newThis.TMbias_+[zeros(1,M) base(M+1:end)];
+0184                     newThis.OGbias_=newThis.OGbias_+[zeros(1,M) base(M+1:end)];
+0185                 <span class="keyword">else</span>
+0186                     newThis.TMbias_=newThis.TMbias_.*[zeros(1,M) base(M+1:end)];
+0187                     newThis.OGbias_=newThis.OGbias_.*[zeros(1,M) base(M+1:end)];
+0188                 <span class="keyword">end</span>
+0189             <span class="keyword">end</span>
+0190         <span class="keyword">end</span>
+0191 
+0192         <a name="_sub5" href="#_subfunctions" class="code">function [newThis,baseValues,typeList]=normalizeBias(this,conditions)</a>
+0193             <span class="keyword">if</span> nargin&lt;2
+0194                 conditions=[];
+0195             <span class="keyword">end</span>
+0196             [newThis,baseValues,typeList]=<a href="removeBiasV3.html" class="code" title="function [newThis,baseValues,typeList]=removeBiasV3(this,refConditions,normalizeFlag)">removeBiasV3</a>(this,conditions,1);
+0197         <span class="keyword">end</span>
+0198 
+0199         <a name="_sub6" href="#_subfunctions" class="code">function [newThis]=normalizeToBaseline(this,labelPrefix,baseConds2)</a>
+0200            <span class="comment">%This normalization takes the last N strides from a given</span>
+0201            <span class="comment">%'baseline' condition and uses it to normalize values of the</span>
+0202            <span class="comment">%parameter for the whole experiment.</span>
+0203            <span class="comment">%Meant to be used for EMG parameters ONLY</span>
+0204            <span class="comment">%It creates NEW parameters with the same name, and the 'Norm' prefix.</span>
+0205            <span class="comment">%See also: EMGnormalization (example) parameterSeries.normalizeToBaseline</span>
+0206            error(<span class="string">'Deprecated. Use normalizeToBaselineEpoch instead.'</span>)
+0207             warning(<span class="string">'This function is meant to be used for EMG parameters only. Use at own risk.'</span>)
+0208             <span class="keyword">if</span> nargin&lt;3
+0209                 baseConds2=[];
+0210             <span class="keyword">end</span>
+0211             <span class="keyword">if</span> nargin&lt;2
+0212                 error(<span class="string">'Need to provide a prefix for parameters'</span>)
+0213             <span class="keyword">end</span>
+0214 
+0215             <span class="keyword">if</span> isa(labelPrefix,<span class="string">'char'</span>)
+0216                 labelPrefix={labelPrefix};
+0217             <span class="keyword">end</span>
+0218 
+0219             <span class="keyword">if</span> nargin&lt;2 || isempty(baseConds2)
+0220                 [baseConds,tType]=this.getBaseConditions;
+0221             <span class="keyword">else</span>
+0222                 baseConds=baseConds2;
+0223             <span class="keyword">end</span>
+0224             <span class="keyword">if</span> length(baseConds)&gt;1 <span class="comment">%More than 1 baseline found</span>
+0225                idx=find(strcmp(tType,<span class="string">'TM'</span>));
+0226                warning([<span class="string">'More than 1 baseline condition found or provided. Using the first that matches TM type trials: '</span> baseConds{idx}])
+0227                baseCond=baseConds{idx};
+0228             <span class="keyword">end</span>
+0229             <span class="keyword">for</span> i=1:length(labelPrefix)
+0230                 <span class="comment">%First: get all parameters with given prefix</span>
+0231                 labels=this.data.getLabelsThatMatch([<span class="string">'^'</span> labelPrefix{i} <span class="string">'\d+$'</span>]);
+0232                 <span class="comment">%Second: get baseline data for those</span>
+0233                 [baseData]=<a href="getBaseData.html" class="code" title="function [data,baseConds,trialTypes]=getBaseData(this,baseConds,labels)">getBaseData</a>(this,baseCond,labels);
+0234                 range=squeeze(nanmean(baseData,2));
+0235                 rangeValues=[min(range) max(range)];
+0236                 this.data=this.data.normalizeToBaseline(labels,rangeValues);
+0237             <span class="keyword">end</span>
+0238             newThis=this;
+0239         <span class="keyword">end</span>
+0240 
+0241         <a name="_sub7" href="#_subfunctions" class="code">function [newThis]=normalizeToBaselineEpoch(this,labelPrefix,baseEpoch,noMinNormFlag)</a>
+0242            <span class="comment">%This normalization takes the last N strides from a given</span>
+0243            <span class="comment">%'baseline' condition and uses it to normalize values of the</span>
+0244            <span class="comment">%parameter for the whole experiment.</span>
+0245            <span class="comment">%Meant to be used for EMG parameters ONLY</span>
+0246            <span class="comment">%It creates NEW parameters with the same name, and the 'Norm' prefix.</span>
+0247            <span class="comment">%See also: EMGnormalization (example) parameterSeries.normalizeToBaseline</span>
+0248             warning(<span class="string">'This function is meant to be used for EMG parameters only. Use at own risk.'</span>)
+0249             <span class="keyword">if</span> nargin&lt;2
+0250                 error(<span class="string">'Need to provide a prefix for parameters'</span>)
+0251             <span class="keyword">end</span>
+0252             <span class="keyword">if</span> isa(labelPrefix,<span class="string">'char'</span>)
+0253                 labelPrefix={labelPrefix};
+0254             <span class="keyword">end</span>
+0255             <span class="keyword">if</span> nargin&lt;4 || isempty(noMinNormFlag)
+0256                 noMinNormFlag=0;
+0257             <span class="keyword">end</span>
+0258 
+0259             [baseData,label]=this.getPrefixedEpochData(labelPrefix,baseEpoch);
+0260             baseData=reshape(baseData,size(label,1),numel(labelPrefix));
+0261             rangeValues=[min(baseData); max(baseData)];
+0262             <span class="keyword">if</span> noMinNormFlag==1
+0263                 rangeValues(1,:)=0;
+0264             <span class="keyword">end</span>
+0265             <span class="keyword">for</span> i=1:length(labelPrefix)
+0266                 this.data=this.data.linearStretch(label(:,i),rangeValues(:,i));
+0267             <span class="keyword">end</span>
+0268             newThis=this;
+0269         <span class="keyword">end</span>
+0270 
+0271         <a name="_sub8" href="#_subfunctions" class="code">function [newThis]=removeBaselineEpoch(this,baseEpoch,labels)</a>
+0272             <span class="keyword">if</span> nargin&lt;3 || isempty(labels)
+0273                 <span class="comment">%nop</span>
+0274                 labels=this.data.labels;
+0275             <span class="keyword">else</span>
+0276                 this=this.getPartialParameters(labels);
+0277             <span class="keyword">end</span>
+0278             [baseData]=this.getEpochData(baseEpoch,labels);
+0279             newThis=this.removeBias;
+0280             <span class="comment">%newThis.data.Data=this.data.Data-baseData';</span>
+0281 
+0282             <span class="comment">%fix any parameters that should not have bias removal</span>
+0283             [~,idxs]=this.data.isaParameter({<span class="string">'bad'</span>,<span class="string">'good'</span>,<span class="string">'trial'</span>,<span class="string">'initTime'</span>,<span class="string">'finalTime'</span>,<span class="string">'direction'</span>});
+0284             <span class="keyword">if</span> ~isempty(idxs)
+0285                 newThis.data.Data(:,idxs(idxs&gt;0))=this.data.Data(:,idxs(idxs&gt;0));
+0286             <span class="keyword">end</span>
+0287 
+0288         <span class="keyword">end</span>
+0289 
+0290         <a name="_sub9" href="#_subfunctions" class="code">function newThis=removeBadStrides(this,markAsNaNflag)</a>
+0291             <span class="keyword">if</span> nargin&lt;2 || isempty(markAsNaNflag)
+0292                markAsNaNflag=false;
+0293             <span class="keyword">end</span>
+0294             <span class="keyword">if</span> isa(this.data,<span class="string">'paramData'</span>) <span class="comment">%What does this do?</span>
+0295                 newParamData=this.data;
+0296             <span class="keyword">else</span>
+0297                 aux=this.data;
+0298                 inds=~aux.bad;
+0299                 <span class="keyword">if</span> ~markAsNaNflag
+0300                     newParamData=parameterSeries(aux.Data(inds,:),aux.labels,aux.hiddenTime(inds),aux.description);
+0301                     newParamData=newParamData.setTrialTypes(aux.trialTypes);
+0302                 <span class="keyword">else</span>
+0303                     newParamData=this.data.markBadStridesAsNan;
+0304                 <span class="keyword">end</span>
+0305             <span class="keyword">end</span>
+0306             newThis=<a href="adaptationData.html" class="code" title="">adaptationData</a>(this.metaData,this.subData,newParamData);
+0307         <span class="keyword">end</span>
+0308 
+0309         <a name="_sub10" href="#_subfunctions" class="code">function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)</a>
+0310            <span class="comment">%This function allows to compute new parameters from other existing parameters and have them added to the data.</span>
+0311            <span class="comment">%This is useful when trying out new parameters without having to</span>
+0312            <span class="comment">%recompute all existing parameters.</span>
+0313            <span class="comment">%INPUT:</span>
+0314            <span class="comment">%newPAramLAbel: string with the name of the new parameter</span>
+0315            <span class="comment">%funHandle: a function handle with N input variables, whose</span>
+0316            <span class="comment">%result will be used to compute the new parameter</span>
+0317            <span class="comment">%inputParameterLabels: the parameters that will replace each of</span>
+0318            <span class="comment">%the variables in the funHandle</span>
+0319            <span class="comment">%EXAMPLE:</span>
+0320            <span class="comment">%I want to define a new normalized version of the contributions,</span>
+0321            <span class="comment">%that divides contributions by avg. step time and avg. step</span>
+0322            <span class="comment">%velocity, so that the velocity contribution is now a</span>
+0323            <span class="comment">%measure of belt-speed ratio. In order to do that, I will take</span>
+0324            <span class="comment">%the velocityContributionAlt (which already exists and is</span>
+0325            <span class="comment">%velocityContribution divided by strideTime, so it is just half</span>
+0326            <span class="comment">%the difference of velocities) and then divide it by velocity sum.</span>
+0327            <span class="comment">%Velocity sum can be computed by dividing stepTimeContribution</span>
+0328            <span class="comment">%by stepTimeDifference (there are other possibilities to compute</span>
+0329            <span class="comment">%the same thing. The final equation will look like this:</span>
+0330            <span class="comment">%newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)</span>
+0331            <span class="comment">%This can be implemented as:</span>
+0332            <span class="comment">%newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');</span>
+0333 
+0334            newPS=this.data.addNewParameter(newParamLabel,funHandle,inputParameterLabels,newParamDescription);
+0335            this.data=newPS;
+0336            newThis=this;
+0337         <span class="keyword">end</span>
+0338 
+0339         <a name="_sub11" href="#_subfunctions" class="code">function newThis=replaceLR(this)</a>
+0340             <span class="comment">%Idea: get any label that uses 'L' or 'R' and replace it by 'S'</span>
+0341             <span class="comment">%and 'F' as corresponds.</span>
+0342             <span class="comment">%Also need to write the inverse function</span>
+0343         <span class="keyword">end</span>
+0344 
+0345         <a name="_sub12" href="#_subfunctions" class="code">function [biasTM,biasOG]=getBias(this,labels)</a>
+0346             <span class="keyword">if</span> isempty(this.TMbias_)
+0347                 warning(<span class="string">'This adaptationData object is not unbiased.'</span>)
+0348                 bias=[];
+0349             <span class="keyword">else</span>
+0350                 <span class="keyword">if</span> nargin&gt;1 &amp;&amp; ~isempty(labels)
+0351                     [boolFlag,idx]=this.data.isaLabel(labels);
+0352                     biasOG=this.OGbias_(idx(boolFlag));
+0353                     biasTM=this.TMbias_(idx(boolFlag));
+0354                 <span class="keyword">else</span> <span class="comment">%Fast eval</span>
+0355                     biasOG=this.OGbias_;
+0356                     biasTM=this.TMbias_;
+0357                 <span class="keyword">end</span>
+0358             <span class="keyword">end</span>
+0359         <span class="keyword">end</span>
+0360 
+0361         <a name="_sub13" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAny(this,labels)</a>
+0362             newThis=this;
+0363             newThis.data=newThis.data.markBadWhenMissingAny(labels);
+0364         <span class="keyword">end</span>
+0365 
+0366         <a name="_sub14" href="#_subfunctions" class="code">function newThis=markBadWhenMissingAll(this,labels)</a>
+0367             newThis=this;
+0368             newThis.data=newThis.data.markBadWhenMissingAll(labels);
+0369         <span class="keyword">end</span>
+0370 
+0371         <a name="_sub15" href="#_subfunctions" class="code">function newThis=renameParams(this,oldLabels,newLabels)</a>
+0372 
+0373               [b,ii]=isaLabel(this.data,oldLabels);
+0374               <span class="keyword">if</span> any(b)
+0375               newL=this.data.labels;
+0376               newL(ii(b))=newLabels(b);
+0377               newParam=parameterSeries(this.data.Data,newL,this.data.hiddenTime,this.data.description,this.data.trialTypes)     ;
+0378               newThis=this;
+0379               newThis.data=newParam;
+0380               <span class="comment">%unique(this.data.stridesTrial)</span>
+0381               <span class="comment">%unique(newThis.data.stridesTrial)</span>
+0382               <span class="keyword">else</span>
+0383                   newThis=this;
+0384               <span class="keyword">end</span>
+0385 
+0386         <span class="keyword">end</span>
+0387 
+0388         <a name="_sub16" href="#_subfunctions" class="code">function newThis=getPartialParameters(this,labels)</a>
+0389            newThis=this;
+0390            newThis.data=this.data.getDataAsPS(labels);
+0391         <span class="keyword">end</span>
+0392 
+0393         <a name="_sub17" href="#_subfunctions" class="code">function ageInMonths=getSubjectAgeAtExperimentDate(this)</a>
+0394             <span class="keyword">if</span> ~isempty(this.subData.age)
+0395                 ageInMonths=this.subData.age*12; <span class="comment">%In months</span>
+0396             <span class="keyword">elseif</span> ~isempty(this.subData.dateOfBirth)
+0397                 warning(<span class="string">'expData:subjectDOB'</span>,<span class="string">'subject metadata contains DOB, this may be a privacy issue.'</span>)
+0398                 dob=this.subData.dateOfBirth;
+0399                 testData=this.metaData.date;
+0400                 [ageInMonths]=testData.timeSince(dob);
+0401             <span class="keyword">else</span>
+0402                 error(<span class="string">'expData:subjectDOB'</span>,<span class="string">'Could not establish subject age at experiment time.'</span>)
+0403             <span class="keyword">end</span>
+0404         <span class="keyword">end</span>
+0405 
+0406         <a name="_sub18" href="#_subfunctions" class="code">function newThis=medianFilter(this,N)</a>
+0407             newThis=this;
+0408             newThis.data=this.data.medianFilter(N);
+0409         <span class="keyword">end</span>
+0410 
+0411         <a name="_sub19" href="#_subfunctions" class="code">function newThis=monoLS(this,trialBased,order,Nregularization)</a>
+0412             <span class="comment">%TODO: check that the submodule containing monoLS is in the</span>
+0413             <span class="comment">%path, or this will fail</span>
+0414             newThis=this;
+0415             <span class="comment">%For each condition, or trial:</span>
+0416             <span class="keyword">if</span> trialBased==1
+0417                 t=unique(this.data.getDataAsVector(<span class="string">'trial'</span>));
+0418                 <span class="keyword">for</span> i=1:length(t)
+0419                     [partialData,indData]=this.getParamInTrial([],t(i));
+0420                     aux=<a href="#_sub20" class="code" title="subfunction newThis=monoLS(this,trialBased,order,Nregularization)">monoLS</a>(partialData(:,6:end),[],order,Nregularization);
+0421                     newThis.data.Data(indData,6:end)=aux;
+0422                 <span class="keyword">end</span>
+0423             <span class="keyword">else</span> <span class="comment">%Condition based</span>
+0424                 <span class="keyword">for</span> i=1:length(this.metaData.trialsInCondition)
+0425                     [partialData,indData]=this.getParamInCond([],i);
+0426                     <span class="keyword">if</span> ~isempty(partialData)
+0427                       aux=<a href="#_sub20" class="code" title="subfunction newThis=monoLS(this,trialBased,order,Nregularization)">monoLS</a>(partialData(:,6:end),[],order,Nregularization);
+0428                       newThis.data.Data(indData,6:end)=aux;
+0429                     <span class="keyword">end</span>
+0430                 <span class="keyword">end</span>
+0431             <span class="keyword">end</span>
+0432         <span class="keyword">end</span>
+0433 
+0434         <a name="_sub20" href="#_subfunctions" class="code">function newThis=substituteNaNs(this,method)</a>
+0435             <span class="keyword">if</span> nargin&lt;2 || isempty(method)
+0436                 method=<span class="string">'linear'</span>;
+0437             <span class="keyword">end</span>
+0438             newThis=this;
+0439             newThis.data=this.data.substituteNaNs(method);
+0440         <span class="keyword">end</span>
+0441 
+0442         <span class="comment">%Other I/O functions:</span>
+0443         <a name="_sub21" href="#_subfunctions" class="code">function [labelList,descriptionList]=getParameterList(this)</a>
+0444         <span class="comment">%obtain an array of strings with the labels of the all parameters</span>
+0445         <span class="comment">%INPUT:</span>
+0446         <span class="comment">%this: experimentData object</span>
+0447         <span class="comment">%</span>
+0448         <span class="comment">%OUTPUT:</span>
+0449         <span class="comment">%labelList: array of strings with the labels name</span>
+0450         <span class="comment">%</span>
+0451         <span class="comment">%EX: labelList=adaptData.getParameters;</span>
+0452             labelList=this.data.labels;
+0453             descriptionList=this.data.description;
+0454         <span class="keyword">end</span>
+0455 
+0456         <a name="_sub22" href="#_subfunctions" class="code">function [data,inds,auxLabel]=getParamInTrial(this,label,trial)</a>
+0457         <span class="comment">%Obtain strides information for a parameter in a specific trial</span>
+0458         <span class="comment">%</span>
+0459         <span class="comment">%INPUTS:</span>
+0460         <span class="comment">%this: experimentData object</span>
+0461         <span class="comment">%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)</span>
+0462         <span class="comment">%trial: number of the trial that information is needed</span>
+0463         <span class="comment">%</span>
+0464         <span class="comment">%OUTPUTS:</span>
+0465         <span class="comment">%data: information of the parameter in the trial</span>
+0466         <span class="comment">%inds: Position of data points in the matrix</span>
+0467         <span class="comment">%auxLabel: Parameter evaluated</span>
+0468         <span class="comment">%</span>
+0469         <span class="comment">%Ex: [data,inds,auxLabel]=adaptData.getParamInTrial('alphaFast',2)</span>
+0470         <span class="comment">%See also: adaptationData.getParamInCond</span>
+0471             <span class="keyword">if</span> isempty(label)
+0472                 label=<a href="#_sub22" class="code" title="subfunction [labelList,descriptionList]=getParameterList(this)">getParameterList</a>(this);
+0473             <span class="keyword">end</span>
+0474 
+0475             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0476                 auxLabel={label};
+0477             <span class="keyword">else</span>
+0478                 auxLabel=label;
+0479             <span class="keyword">end</span>
+0480             <span class="comment">% validate label(s)</span>
+0481             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
+0482 
+0483             <span class="comment">% validate trial(s)</span>
+0484             trialNum = [];
+0485             <span class="keyword">for</span> t=trial
+0486                 <span class="keyword">if</span> isempty(this.data.indsInTrial(t))
+0487                     warning([<span class="string">'Trial number '</span> num2str(t) <span class="string">' is not a trial in this experiment.'</span>])
+0488                 <span class="keyword">else</span>
+0489                     trialNum(end+1)=t;
+0490                 <span class="keyword">end</span>
+0491             <span class="keyword">end</span>
+0492             <span class="comment">%get data</span>
+0493             inds=cell2mat(this.data.indsInTrial(trialNum));
+0494             data=this.data.Data(inds,labelIdx(boolFlag==1));
+0495             auxLabel=this.data.labels(labelIdx(boolFlag==1));
+0496         <span class="keyword">end</span>
+0497 
+0498         <a name="_sub23" href="#_subfunctions" class="code">function [data,inds,auxLabel,origTrials]=getParamInCond(this,label,condition,removeBias)</a>
+0499         <span class="comment">%Obtain strides information for a parameter in a condition.</span>
+0500         <span class="comment">%INPUTS:</span>
+0501         <span class="comment">%this: experimentData object</span>
+0502         <span class="comment">%label: Specific parameter to required information (alphaFast,Sout,velocityContribution....)</span>
+0503         <span class="comment">%condition: Specific condition that information is needed</span>
+0504         <span class="comment">%removeBias: 1 to activate function to remove bias, 0 or empty to no activate function</span>
+0505         <span class="comment">%</span>
+0506         <span class="comment">%OUTPUTS:</span>
+0507         <span class="comment">%data: information of the parameter in the trial</span>
+0508         <span class="comment">%inds: Position of data points in the matrix</span>
+0509         <span class="comment">%auxLabel: Parameter evaluated</span>
+0510         <span class="comment">%origTrials: Numbers of trials that compose the condition</span>
+0511         <span class="comment">%</span>
+0512         <span class="comment">%EX: adaptData.getParamInCond('alphaFast','OG base',0)</span>
+0513         <span class="comment">%See also: adaptationData.getParamInTrial</span>
+0514         <span class="comment">%          adaptationData.removeBias</span>
+0515 
+0516 <span class="comment">%             if nargin&lt;4 || isempty(removeBias)</span>
+0517 <span class="comment">%                 removeBias=0;</span>
+0518 <span class="comment">%             end</span>
+0519             <span class="keyword">if</span> nargin&lt;2 || isempty(label)
+0520                 label=this.data.labels;
+0521             <span class="keyword">end</span>
+0522             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0523                 auxLabel={label};
+0524             <span class="keyword">else</span>
+0525                 auxLabel=label;
+0526             <span class="keyword">end</span>
+0527             <span class="comment">% validate label(s)</span>
+0528             [boolFlag,labelIdx]=this.data.isaParameter(auxLabel);
+0529 
+0530             <span class="comment">% validate condition(s)</span>
+0531             <span class="keyword">if</span> nargin&lt;3 || isempty(condition) || (~isa(condition,<span class="string">'cell'</span>) &amp;&amp; any(isnan(condition)))
+0532                 condition=this.metaData.conditionName(~cellfun(@isempty,this.metaData.conditionName));
+0533             <span class="keyword">end</span>
+0534             condNum = [];
+0535             <span class="keyword">if</span> isa(condition,<span class="string">'char'</span>)
+0536                 condition={condition};
+0537             <span class="keyword">end</span>
+0538 
+0539             <span class="keyword">if</span> isa(condition,<span class="string">'cell'</span>)
+0540                 condNum=this.metaData.getConditionIdxsFromName(condition);
+0541                 <span class="keyword">if</span> any(isnan(condNum))
+0542                     warning([this.subData.ID <span class="string">' did not perform condition '''</span> condition{isnan(condNum)} <span class="string">''''</span>])
+0543                 <span class="keyword">end</span>
+0544                 condNum(isnan(condNum))=[];
+0545             <span class="keyword">elseif</span> isa(condition,<span class="string">'double'</span>)
+0546                 condNum=condition;
+0547             <span class="keyword">else</span>
+0548                 ME=MException(<span class="string">'AdaptData.getParamInCond'</span>,<span class="string">'Condition has to be char, cell of char, or double'</span>);
+0549                 throw(ME)
+0550             <span class="keyword">end</span>
+0551 
+0552             <span class="comment">%get data</span>
+0553             <span class="keyword">if</span> nargin&gt;3 &amp;&amp; ~isempty(<a href="#_sub4" class="code" title="subfunction [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)">removeBias</a>) <span class="comment">%Default: no bias removal</span>
+0554                 error(<span class="string">'Remove bias is no longer supported from within getParamInCond. Remove bias first and then call this function'</span>)
+0555             <span class="keyword">end</span>
+0556 
+0557             trials=cell2mat(this.metaData.trialsInCondition(condNum));
+0558             inds=cell2mat(this.data.indsInTrial(trials));
+0559             origTrials=[];
+0560             <span class="keyword">for</span> i=1:length(trials)
+0561                 origTrials(end+1:end+length(this.data.indsInTrial(i)))=i; <span class="comment">%What's the purpose of this??</span>
+0562             <span class="keyword">end</span>
+0563             data=this.data.Data(inds,labelIdx(boolFlag==1));
+0564             auxLabel=this.data.labels(labelIdx(boolFlag==1));
+0565         <span class="keyword">end</span>
+0566 
+0567         <a name="_sub24" href="#_subfunctions" class="code">function [boolFlag,labelIdx]=isaCondition(this,cond)</a>
+0568             <span class="keyword">if</span> isa(cond,<span class="string">'char'</span>)
+0569                 auxCond{1}=cond;
+0570             <span class="keyword">elseif</span> isa(cond,<span class="string">'cell'</span>)
+0571                 auxCond=cond;
+0572             <span class="keyword">elseif</span> isa(cond,<span class="string">'double'</span>)
+0573                 auxCond=this.metaData.conditionName(cond);
+0574             <span class="keyword">end</span>
+0575             N=length(auxCond);
+0576             boolFlag=false(N,1);
+0577             labelIdx=zeros(N,1);
+0578             <span class="keyword">for</span> j=1:N
+0579                 <span class="keyword">for</span> i=1:length(this.metaData.conditionName)
+0580                     <span class="keyword">if</span> strcmpi(auxCond{j},this.metaData.conditionName{i})
+0581                         boolFlag(j)=true;
+0582                         labelIdx(j)=i;
+0583                         <span class="keyword">break</span>;
+0584                     <span class="keyword">end</span>
+0585                 <span class="keyword">end</span>
+0586             <span class="keyword">end</span>
+0587             <span class="keyword">for</span> i=1:length(boolFlag)
+0588                 <span class="keyword">if</span> boolFlag(i)==0
+0589                     warning([this.subData.ID <span class="string">' did not perform condition '''</span> cond{i} <span class="string">''' or the condition is misspelled.'</span>])
+0590                 <span class="keyword">end</span>
+0591             <span class="keyword">end</span>
+0592         <span class="keyword">end</span>
+0593 
+0594         <a name="_sub25" href="#_subfunctions" class="code">function [veryEarlyPoints,earlyPoints,latePoints]=getEarlyLateData(this,labels,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast)</a>
+0595         <span class="comment">%obtain the earliest and late data points for conditions</span>
+0596         <span class="comment">%allow to eliminate very late data points</span>
+0597         <span class="comment">%Predefine values:</span>
+0598         <span class="comment">%earlyNumber=5</span>
+0599         <span class="comment">%veryEarlyPoints=3</span>
+0600         <span class="comment">%latePoints=20</span>
+0601         <span class="comment">%exemptLast=5</span>
+0602         <span class="comment">%</span>
+0603         <span class="comment">%INPUTS:</span>
+0604         <span class="comment">%this:experimentData object</span>
+0605         <span class="comment">%labels: parameters to plot</span>
+0606         <span class="comment">%conds: condition that information is needed</span>
+0607         <span class="comment">%removeBiasFlag:1 to activate function to remove bias, 0 or empty to no activate function</span>
+0608         <span class="comment">%earlyNumber:number of strides to take as earliest values</span>
+0609         <span class="comment">%lateNumber: number of strides to take as late values</span>
+0610         <span class="comment">%exemptLast: number of strides to discard</span>
+0611         <span class="comment">%OUTPUTS:</span>
+0612         <span class="comment">%veryEarlyPoints:  value of the 3 strides on the condition</span>
+0613         <span class="comment">%earlyPoints: value of the earliest strides</span>
+0614         <span class="comment">%latePoints: value of the late strides</span>
+0615         <span class="comment">%</span>
+0616         <span class="comment">%EX:[veryEarlyPoints,earlyPoints,latePoints]=adaptData.getEarlyLateData({'Sout'},{'TM base'},1,5,40,5);</span>
+0617 
+0618             N1=3;<span class="comment">%all(cellfun(@(x) isa(x,'char'),conds))</span>
+0619             <span class="keyword">if</span> isa(conds,<span class="string">'char'</span>)
+0620                 conds={conds};
+0621             <span class="keyword">elseif</span> ~isa(conds,<span class="string">'cell'</span>) &amp;&amp; ~all(cellfun(@(x) isa(x,<span class="string">'char'</span>),conds))
+0622                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Conditions must be a string or a cell array containing strings.'</span>);
+0623             <span class="keyword">end</span>
+0624             nConds=length(conds);
+0625             <span class="keyword">if</span> nargin&lt;2 || ~(isa(labels,<span class="string">'char'</span>) || (isa(labels,<span class="string">'cell'</span>) &amp;&amp; all(cellfun(@(x) isa(x,<span class="string">'char'</span>),labels)) ))
+0626                 error(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'Labels must be a string or a cell array containing strings.'</span>)
+0627             <span class="keyword">end</span>
+0628             <span class="keyword">if</span> nargin&lt;5 || isempty(earlyNumber)
+0629                 N2=5; <span class="comment">%early number of points</span>
+0630             <span class="keyword">else</span>
+0631                 N2=earlyNumber;
+0632             <span class="keyword">end</span>
+0633             <span class="keyword">if</span> nargin&lt;6 || isempty(lateNumber)
+0634                 N3=20; <span class="comment">%late number of points</span>
+0635             <span class="keyword">else</span>
+0636                 N3=lateNumber;
+0637             <span class="keyword">end</span>
+0638             <span class="keyword">if</span> nargin&lt;7 || isempty(exemptLast)
+0639                 Ne=5;
+0640             <span class="keyword">else</span>
+0641                 Ne=exemptLast;
+0642             <span class="keyword">end</span>
+0643             <span class="keyword">if</span> nargin&lt;4 || isempty(removeBiasFlag)
+0644                 removeBiasFlag=1; <span class="comment">%Default</span>
+0645             <span class="keyword">end</span>
+0646             [dataPoints]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,labels,conds,removeBiasFlag,[N1,N2,-N3],Ne,0);
+0647             veryEarlyPoints=dataPoints{1};
+0648             earlyPoints=dataPoints{2};
+0649             latePoints=dataPoints{3};
+0650             warning(<span class="string">'adaptationData:getEarlyLateData'</span>,<span class="string">'This function is being deprecated, use getEarlyLateDatav2 instead'</span>)
+0651         <span class="keyword">end</span>
+0652 
+0653         <a name="_sub26" href="#_subfunctions" class="code">function [data,validStrides,everyStrideData]=getEpochData(this,epochs,labels,padWithNaNFlag)</a>
+0654             <span class="comment">%INPUTS:</span>
+0655             <span class="comment">%this must be adaptationData object</span>
+0656             <span class="comment">%epochs must be a dataset created with defineEpochs()</span>
+0657             <span class="comment">%labels is string or cell-array of strings to be used as parameter names</span>
+0658             <span class="comment">%OUTPUT:</span>
+0659             <span class="comment">%data: length(labels) x length(epochs) matrix containing requested data</span>
+0660             <span class="comment">%Ex:[data,validStrides,everyStrideData]=adaptData.getEpochData(epochs,{'doubleSupportFast'},0);</span>
+0661 
+0662             <span class="comment">%Manage inputs:</span>
+0663             <span class="keyword">if</span> isa(labels,<span class="string">'char'</span>)
+0664                 labels={labels};
+0665             <span class="keyword">end</span>
+0666             <span class="keyword">if</span> nargin&lt;4 || isempty(padWithNaNFlag)
+0667                 padWithNaNFlag=false;
+0668             <span class="keyword">end</span>
+0669 
+0670             <span class="comment">%First: validate epochs:</span>
+0671             valid=this.validateEpochs(epochs);
+0672 
+0673             <span class="comment">%Second: get data</span>
+0674             removeBiasFlag=0;
+0675             conds=epochs.Condition;
+0676             numberOfStrides=epochs.Stride_No .* sign(epochs.EarlyOrLate-.5);
+0677             exemptLast=epochs.ExemptLast;
+0678             exemptFirst=epochs.ExemptFirst;
+0679             data=nan(length(labels),length(epochs));
+0680             validStrides=nan(length(epochs),1);
+0681             summaryFlag=epochs.summaryMethod;
+0682             allData=cell(length(valid),1);
+0683             <span class="keyword">for</span> i=1:length(valid) <span class="comment">%Each valid epoch</span>
+0684                 <span class="keyword">if</span> valid(i)
+0685                     [dataPoints]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,labels,conds{i},removeBiasFlag,numberOfStrides(i),exemptLast(i),exemptFirst(i),padWithNaNFlag);<span class="comment">%Get data</span>
+0686                     <span class="comment">%Summarize it:</span>
+0687                     summFun=str2func(summaryFlag{i});
+0688                     allData{i}=reshape(dataPoints{1},abs(numberOfStrides(i)),numel(labels));
+0689                     data(:,i)=reshape(summFun(allData{i},1),numel(labels),1);
+0690                     validStrides(i)=sum(any(~isnan(allData{i}))); <span class="comment">%Counting non-nan values for any label involved (if one parameter is non-nan for a stride, the stride is valid)</span>
+0691                 <span class="keyword">else</span>
+0692                     warning(<span class="string">'Invalid epoch found, returning NaNs'</span>)
+0693                     data(:,i)=nan(numel(labels),1);
+0694                     allData{i}=nan(abs(numberOfStrides(i)),numel(labels));
+0695                 <span class="keyword">end</span>
+0696             <span class="keyword">end</span>
+0697             <span class="keyword">if</span> nargout&gt;2
+0698                 everyStrideData=allData;
+0699             <span class="keyword">end</span>
+0700         <span class="keyword">end</span>
+0701 
+0702         <a name="_sub27" href="#_subfunctions" class="code">function flags=validateEpochs(this,epochs)</a>
+0703             flags=true(length(epochs),1);
+0704             <span class="keyword">for</span> i=1:length(epochs) <span class="comment">%for each epoch</span>
+0705                 <span class="keyword">if</span> this.isaCondition(epochs.Condition(i)) <span class="comment">%all good</span>
+0706                     <span class="comment">%nop</span>
+0707                 <span class="keyword">else</span>
+0708                     warning([<span class="string">'Invalid epoch '</span> epochs.Properties.ObsNames{i} <span class="string">' for subject '</span> this.subData.ID])
+0709                     flags(i)=false;
+0710                 <span class="keyword">end</span>
+0711             <span class="keyword">end</span>
+0712         <span class="keyword">end</span>
+0713 
+0714         <a name="_sub28" href="#_subfunctions" class="code">function [dataE,labels,allData]=getPrefixedEpochData(this,labelPrefix,epochs,padWithNaNFlag)</a>
+0715             <span class="comment">%This is meant to be used with parameters that end in</span>
+0716             <span class="comment">%'s1...s12' as are computed for EMG and angles. The 's' must be</span>
+0717             <span class="comment">%included in the labelPrefixes (to allow for other options too)</span>
+0718             <span class="keyword">if</span> isa(labelPrefix,<span class="string">'char'</span>)
+0719                 labelPrefix={labelPrefix};
+0720             <span class="keyword">end</span>
+0721             <span class="keyword">if</span> nargin&lt;4 || isempty(padWithNaNFlag)
+0722                 padWithNaNFlag=false; <span class="comment">%DMMO</span>
+0723             <span class="keyword">end</span>
+0724             labelPrefix=reshape(labelPrefix,1,numel(labelPrefix)); <span class="comment">%Putting in row form</span>
+0725             aux=this.data.getLabelsThatMatch([<span class="string">'^'</span> labelPrefix{1} <span class="string">'[ ]?\d+$'</span>]); <span class="comment">%Assuming same suffix for all</span>
+0726             <span class="keyword">if</span> isempty(aux)
+0727                 error(<span class="string">'Fail: did not find any parameters with the given prefixes'</span>)
+0728                 <span class="keyword">return</span>
+0729             <span class="keyword">end</span>
+0730             Np=length(aux);
+0731             suffixes=cellfun(@(x) x(length(labelPrefix{1})+1:end),aux,<span class="string">'UniformOutput'</span>,false); <span class="comment">%Extracting suffixes, I am lazy</span>
+0732             labels=strcat(repmat(labelPrefix,Np,1),repmat(suffixes,1,length(labelPrefix))); <span class="comment">%To do</span>
+0733             [dataE,~,allData]=this.getEpochData(epochs,labels(:),padWithNaNFlag);
+0734         <span class="keyword">end</span>
+0735 
+0736         <a name="_sub29" href="#_subfunctions" class="code">function conditionIdxs=getConditionIdxsFromName(this,conditionNames)</a>
+0737             <span class="comment">%Looks for condition names that are similar to the ones given</span>
+0738             <span class="comment">%in conditionNames and returns the corresponding condition idx</span>
+0739             <span class="comment">%ConditionNames should be a cell array containing a string or</span>
+0740             <span class="comment">%another cell array of strings in each of its cells.</span>
+0741             <span class="comment">%E.g. conditionNames={'Base','Adap',{'Post','wash'}}</span>
+0742             conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
+0743         <span class="keyword">end</span>
+0744 
+0745         <a name="_sub30" href="#_subfunctions" class="code">function inds=getIndsInCondition(this,conditionNames)</a>
+0746             <span class="comment">%Get condition indexes if not already provided:</span>
+0747             <span class="keyword">if</span> isa(conditionNames,<span class="string">'char'</span>) || isa(conditionNames,<span class="string">'cell'</span>)
+0748                 conditionIdxs=this.metaData.getConditionIdxsFromName(conditionNames);
+0749             <span class="keyword">else</span>
+0750                 conditionIdxs=conditionNames;
+0751             <span class="keyword">end</span>
+0752             inds={};
+0753             <span class="keyword">for</span> i=1:length(conditionIdxs)
+0754                 <span class="keyword">if</span> ~isnan(conditionIdxs)
+0755                     <span class="comment">%Get trials in each condition:</span>
+0756                     trials=cell2mat(this.metaData.trialsInCondition(conditionIdxs(i)));
+0757                     <span class="comment">%Now, get inds in each trial:</span>
+0758                     inds{i}=cell2mat(this.data.indsInTrial(trials));
+0759                 <span class="keyword">else</span>
+0760                     inds{i}=[];
+0761                 <span class="keyword">end</span>
+0762             <span class="keyword">end</span>
+0763         <span class="keyword">end</span>
+0764 
+0765         <a name="_sub31" href="#_subfunctions" class="code">function trialNums=getTrialsInCond(this,conditionNames)</a>
+0766             trialNums=this.metaData.getTrialsInCondition(conditionNames);
+0767         <span class="keyword">end</span>
+0768 
+0769         <a name="_sub32" href="#_subfunctions" class="code">function newThis=reduce(this, parametersToKeep)</a>
+0770             newThis=this;
+0771             newThis.data=newThis.data.getDataAsPS(parametersToKeep);
+0772         <span class="keyword">end</span>
+0773     
+0774         <span class="comment">%Stats testing:</span>
+0775         <span class="comment">% 1) Multiple groups</span>
+0776 
+0777         <a name="_sub33" href="#_subfunctions" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a>
+0778 
+0779             warning(<span class="string">'This needs to be moved to studyData or something like that'</span>)
+0780 
+0781             <span class="comment">%Post-hoc is Bonferroni corrected t-test</span>
+0782             [data]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
+0783             <span class="keyword">for</span> i=1:length(data)
+0784                 group{i}=repmat([1:length(conds)]',1,abs(groupingStrides(i))) + (i-1)*length(conds);
+0785             <span class="keyword">end</span>
+0786             newData=cell2mat(data); <span class="comment">%This concatenates (cat) the data along the second dimension by default, new Data should be a 2-D array of conditionxs x strides</span>
+0787             newGroups=cell2mat(group);
+0788             [p,anovatab,stats]=<a href="#_sub34" class="code" title="subfunction [p,anovatab,stats,postHoc,postHocEstimate,data]=anova1(this,param,conds,groupingStrides,exemptFirst,exemptLast)">anova1</a>(newData(:),newGroups(:),<span class="string">'off'</span>);
+0789             <span class="comment">%Tukey-Kramer post-hoc:</span>
+0790             c=multcompare(stats); <span class="comment">%By default uses tukey-kramer / honest signficant difference</span>
+0791             M=length(conds)*length(groupingStrides);
+0792             postHoc=nan(M);
+0793             postHocEstimate=nan(M);
+0794             postHoc(sub2ind([M,M],c(:,1),c(:,2)))=c(:,6);
+0795             postHocEstimate(sub2ind([M,M],c(:,1),c(:,2)))=c(:,4);
+0796         <span class="keyword">end</span>
+0797 
+0798         <a name="_sub34" href="#_subfunctions" class="code">function [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)</a>
+0799             warning(<span class="string">'This needs to be moved to studyData or something like that'</span>)
+0800             <span class="keyword">if</span> isa(param,<span class="string">'char'</span>)
+0801                 param={param};
+0802             <span class="keyword">end</span>
+0803             <span class="keyword">if</span> length(param)&gt;1
+0804                 <span class="keyword">for</span> i=1:length(param)
+0805                 [p{i},anovatab{i},stats{i},postHoc{i},postHocEstimate{i},data{i}]=<a href="#_sub35" class="code" title="subfunction [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)">kruskalwallis</a>(this,param{i},conds,groupingStrides,exemptFirst,exemptLast);
+0806                 <span class="keyword">end</span>
+0807             <span class="keyword">else</span>
+0808             <span class="comment">%Post-hoc is a Bonferroni corrected Mann-Whitney-Wilcoxon U</span>
+0809             <span class="comment">%(ranked sum) test.</span>
+0810             [data]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,param,conds,0,groupingStrides,exemptLast,exemptFirst);
+0811             <span class="keyword">for</span> i=1:length(data)
+0812                 group{i}=repmat([1:length(conds)]',1,abs(groupingStrides(i))) + (i-1)*length(conds);
+0813             <span class="keyword">end</span>
+0814             newData=cell2mat(data); <span class="comment">%This concatenates (cat) the data along the second dimension by default, new Data should be a 2-D array of conditionxs x strides</span>
+0815             newGroups=cell2mat(group);
+0816             [p,anovatab,stats]=<a href="#_sub35" class="code" title="subfunction [p,anovatab,stats,postHoc,postHocEstimate,data]=kruskalwallis(this,param,conds,groupingStrides,exemptFirst,exemptLast)">kruskalwallis</a>(newData(:),newGroups(:),<span class="string">'off'</span>);
+0817             M=length(conds)*length(groupingStrides);
+0818             postHoc=nan(M);
+0819             postHocEstimate=nan(M);
+0820             <span class="comment">%Tukey-Kramer post-hoc:</span>
+0821             <span class="comment">%c=multcompare(stats); %By default uses tukey-kramer / honest signficant difference</span>
+0822             <span class="comment">%postHoc(sub2ind([M,M],c(:,1),c(:,2)))=c(:,6);</span>
+0823             <span class="comment">%postHocEstimate(sub2ind([M,M],c(:,1),c(:,2)))=c(:,4);</span>
+0824             <span class="comment">%MWW-U post-hoc:</span>
+0825             <span class="keyword">for</span> i=1:M
+0826                 <span class="keyword">for</span> j=i+1:M
+0827                     [p,~,s]=ranksum(newData(newGroups==i),newData(newGroups==j));
+0828                     postHoc(i,j)=p;
+0829                     postHocEstimate(i,j)=s.zval;
+0830                 <span class="keyword">end</span>
+0831             <span class="keyword">end</span>
+0832             <span class="keyword">end</span>
+0833         <span class="keyword">end</span>
+0834         <span class="comment">%function [p,data]=twoSampleTtest()</span>
+0835         <span class="comment">%</span>
+0836         <span class="comment">%end</span>
+0837         <span class="comment">%function [p,data]=twoSampleMWWU()</span>
+0838         <span class="comment">%</span>
+0839         <span class="comment">%end</span>
+0840 
+0841         <span class="comment">%Display functions:</span>
+0842         <a name="_sub35" href="#_subfunctions" class="code">function [figHandle,plotHandles]=plotParamTimeCourse(this,label,runningBinSize,trialMarkerFlag,conditions,medianFlag,plotHandles)</a>
+0843                     <span class="comment">%Plot of the behaviour of parameters through the different conditions</span>
+0844             <span class="comment">%specify the parameter behaviour on each condition and trial</span>
+0845             <span class="comment">%</span>
+0846             <span class="comment">%INPUTS:</span>
+0847             <span class="comment">%this:experimentData object</span>
+0848             <span class="comment">%label: parameters to plot</span>
+0849             <span class="comment">%runningBinSize: number of data points to considered to make an average</span>
+0850             <span class="comment">%trialMarkerFlag: 1 to identify the different trials that compose a single condition.</span>
+0851             <span class="comment">%</span>
+0852             <span class="comment">%OUTPUT:</span>
+0853             <span class="comment">%figHandle: number of the figure where is the plot</span>
+0854             <span class="comment">%</span>
+0855             <span class="comment">%EX: adaptData.plotParamTimeCourse('spatialContribution',2,1)</span>
+0856             <span class="keyword">if</span> isa(label,<span class="string">'char'</span>)
+0857                 label={label};
+0858             <span class="keyword">end</span>
+0859             <span class="keyword">if</span> nargin&lt;4 || isempty(trialMarkerFlag)
+0860                 trialMarkerFlag=0;
+0861             <span class="keyword">end</span>
+0862             <span class="keyword">if</span> nargin&lt;3 || isempty(runningBinSize)
+0863                 runningBinSize=1;
+0864             <span class="keyword">end</span>
+0865             <span class="keyword">if</span> nargin&lt;5 || isempty(conditions)
+0866                 conditions=this.metaData.conditionName;
+0867             <span class="keyword">end</span>
+0868             <span class="keyword">if</span> nargin&lt;6 || isempty(medianFlag)
+0869                 medianFlag=[];
+0870             <span class="keyword">end</span>
+0871             <span class="keyword">if</span> nargin&lt;7
+0872                 plotHandles=[];
+0873             <span class="keyword">end</span>
+0874             figHandle=adaptationData.plotAvgTimeCourse({this},label(:)',conditions,runningBinSize,trialMarkerFlag,[],[],[],[],[],[],medianFlag,plotHandles);
+0875         <span class="keyword">end</span>
+0876 
+0877         [inds,names]=<a href="getEarlyLateIdxs.html" class="code" title="function [inds,names]=getEarlyLateIdxs(this,conds,numberOfStrides,exemptLast,exemptFirst)">getEarlyLateIdxs</a>(this,conds,numberOfStrides,exemptLast,exemptFirst)
+0878 
+0879         [dataPoints]=<a href="getEarlyLateData_v2.html" class="code" title="function [dataPoints]=getEarlyLateData_v2(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaNFlag)">getEarlyLateData_v2</a>(this,labels,conds,removeBiasFlag,numberOfStrides,exemptLast,exemptFirst,padWithNaN)
+0880 
+0881         [figHandle,plotHandles]=<a href="plotParamBarsByConditionsv2.html" class="code" title="function [figHandle,plotHandles]=plotParamBarsByConditionsv2(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles)">plotParamBarsByConditionsv2</a>(this,label,number,exemptLast,exemptFirst,condList,mode,plotHandles);
+0882 
+0883         <a name="_sub36" href="#_subfunctions" class="code">function dataPoints=getDataFromInds(this,inds,labels,padWithNaNFlag)</a>
+0884             <span class="comment">%Returns data associated to certain stride indexes (e.g. strides 1, 3, 10:15, 21)</span>
+0885             <span class="comment">%Inds comes from a call to getEarlyLateIdxs:</span>
+0886             <span class="comment">%[inds]=this.getEarlyLateIdxs(conds,numberOfStrides,exemptLast,exemptFirst);</span>
+0887             <span class="keyword">if</span> nargin&lt;3 || isempty(labels) <span class="comment">%More efficient call for when we want everything</span>
+0888                 data=this.data.Data;
+0889             <span class="keyword">else</span>
+0890                 data=this.data.getDataAsVector(labels);
+0891             <span class="keyword">end</span>
+0892             <span class="keyword">if</span> nargin&lt;4 || isempty(padWithNaNFlag)
+0893                padWithNaNFlag=false;
+0894             <span class="keyword">end</span>
+0895             nConds=size(inds{1},2);
+0896             nLabels=size(data,2);
+0897 
+0898             <span class="keyword">for</span> j=1:length(inds)
+0899                 nSteps=size(inds{j},1);
+0900                 <span class="comment">%for i=1:nConds</span>
+0901                 <span class="comment">%    dataPoints{j}(i,:,:)=data(inds{j}(:,i),:);</span>
+0902                 <span class="comment">%end</span>
+0903                 <span class="comment">%This line does the same as the for loop commented above:</span>
+0904                 <span class="keyword">if</span> any(isnan(inds{j}(:)))
+0905                     <span class="keyword">if</span> ~padWithNaNFlag
+0906                         error(<span class="string">'adaptationData:getDataFromInds'</span>,[<span class="string">'Could not retrieve for subject '</span> this.subData.ID <span class="string">' because some of the indexes given are NaN.'</span>])
+0907                     <span class="keyword">else</span>
+0908                     <span class="comment">%A less drastic option:</span>
+0909                         warning(<span class="string">'adaptationData:getDataFromInds'</span>,[<span class="string">'Index strides for '</span> this.subData.ID <span class="string">' are NaN. Data will be padded with NaNs.'</span>])
+0910                         inds{j}=inds{j}';
+0911                         auxInds=inds{j}(~isnan(inds{j}(:)));
+0912                         auxData=nan(numel(inds{j}),nLabels);
+0913                         auxData(~isnan(inds{j}(:)),:)=data(auxInds,:);
+0914                         dataPoints{j}=reshape(auxData,nConds,nSteps,nLabels);
+0915                     <span class="keyword">end</span>
+0916                 <span class="keyword">else</span>
+0917                     dataPoints{j}=reshape(data(inds{j}',:),nConds,nSteps,nLabels);
+0918                 <span class="keyword">end</span>
+0919             <span class="keyword">end</span>
+0920         <span class="keyword">end</span>
+0921 
+0922         <a name="_sub37" href="#_subfunctions" class="code">function [fh,ph]=plotTimeAndBars(this,labels,conds,binwidth,trialMarkerFlag,medianFlag,ph,numberOfStrides,monoLSfitFlag)</a>
+0923             <span class="comment">%Plots time courses and early/late averaged data in bar form</span>
+0924             <span class="comment">%INPUTS:</span>
+0925             <span class="comment">%monoLSfitFlag: a value in the [0,3] integer range. 0 plots</span>
+0926             <span class="comment">%no fits, 1 plots condition based fit, 2 plots trial based fit,</span>
+0927             <span class="comment">%3 plots condition &amp; trial based fits</span>
+0928             <span class="comment">%Ex: adaptData.plotTimeAndBars({'spatialContributionPNorm'},{'TM base'},5,1,[],[],[5 -40],[])</span>
+0929 
+0930 
+0931             fh=figure;
+0932 
+0933             M=length(labels);
+0934             <span class="keyword">if</span> nargin&lt;7 || isempty(ph) || size(ph,1)~=M || size(ph,2)~=2
+0935             clear ph
+0936             <span class="keyword">for</span> i=1:M
+0937                 ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+0938                 ph(i,2)=subplot(M,3,[3]+3*(i-1));
+0939             <span class="keyword">end</span>
+0940             <span class="keyword">end</span>
+0941 
+0942             <span class="comment">%Defaults:</span>
+0943             plotHandles=[]; <span class="comment">%Not allowed</span>
+0944             exemptFirst=1;
+0945             exemptLast=5;
+0946             mode=[];
+0947 
+0948             <span class="comment">%Time courses:</span>
+0949             this.plotParamTimeCourse(labels,binwidth,trialMarkerFlag,conds,medianFlag,ph(:,1));
+0950             <span class="keyword">if</span> mod(monoLSfitFlag,2)==1 <span class="comment">%Add condition based monoLS fits if flag=1,3</span>
+0951                 <span class="comment">% Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each condition</span>
+0952                 order=1;
+0953                 reg=1;
+0954                 medianAcrossSubj=0;
+0955                 trialBased=0;
+0956                 filterFlag=[medianAcrossSubj,order,reg,trialBased];
+0957                 colorOrder=repmat(.6*ones(1,3),3,1); <span class="comment">%Changing colors for plot</span>
+0958                 binWidth=1;
+0959                 <span class="comment">%Do the plot:</span>
+0960                 adaptationData.plotAvgTimeCourse(this,labels,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph(:,1));
+0961             <span class="keyword">end</span>
+0962             <span class="keyword">if</span> monoLSfitFlag&gt;1 <span class="comment">%Add trial based monoLS fits if flag=2,3</span>
+0963                 <span class="comment">% Third plot: use monotonic LS, constraining derivatives up to 2nd order to have no sign changes, using no regularization, and fitting a single function for each TRIAL</span>
+0964                 order=1;
+0965                 reg=1;
+0966                 medianAcrossSubj=0;
+0967                 trialBased=1;
+0968                 filterFlag=[medianAcrossSubj,order,reg,trialBased];
+0969                 colorOrder=repmat(0*ones(1,3),3,1); <span class="comment">%Changing colors for plot</span>
+0970                 binWidth=1;
+0971                 <span class="comment">%Do the plot:</span>
+0972                 adaptationData.plotAvgTimeCourse(this,labels,conds,binWidth,[],[],[],colorOrder,[],[],[],filterFlag,ph(:,1));
+0973             <span class="keyword">end</span>
+0974 
+0975 
+0976             <span class="comment">%Add bars:</span>
+0977             this.plotParamBarsByConditionsv2(labels,numberOfStrides,exemptLast,exemptFirst,conds,mode,ph(:,2));
+0978 
+0979             <span class="keyword">for</span> i=1:M
+0980                 subplot(ph(i,1));
+0981                 grid on
+0982                 axis tight
+0983                 aa=axis;
+0984                 subplot(ph(i,2));
+0985                 grid on
+0986                 ab=axis;
+0987                 axis([ab(1:2) aa(3:4)])
+0988                 <span class="keyword">if</span> i~=M
+0989                     ph(i,1).XTickLabel={};
+0990                     ph(i,2).XTickLabel={};
+0991                 <span class="keyword">else</span>
+0992                     subplot(ph(i,1))
+0993                     legend off
+0994                 <span class="keyword">end</span>
+0995                 ph(i,2).Title.String=labels{i};
+0996             <span class="keyword">end</span>
+0997         <span class="keyword">end</span>
+0998 
+0999         <a name="_sub38" href="#_subfunctions" class="code">function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)</a>
+1000             <span class="comment">%This is meant to be used with parameters that end in</span>
+1001             <span class="comment">%'s1...s12' as are computed for EMG and angles. The 's' must be</span>
+1002             <span class="comment">%included in the labelPrefixes (to allow for other options too)</span>
+1003             <span class="comment">%See also: groupAdaptationData.plotCheckerboards</span>
+1004 
+1005             <span class="keyword">if</span> nargin&lt;7 || isempty(flipLR)
+1006                 flipLR=false;
+1007             <span class="keyword">end</span>
+1008             <span class="keyword">if</span> nargin&lt;4
+1009                 fh=[];
+1010             <span class="keyword">end</span>
+1011             <span class="keyword">if</span> nargin&lt;5
+1012                 ph=[];
+1013             <span class="keyword">end</span>
+1014             <span class="keyword">if</span> nargin&lt;6
+1015                 refEpoch=[];
+1016             <span class="keyword">end</span>
+1017            [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); <span class="comment">%Call onto groupAdaptData method</span>
+1018         <span class="keyword">end</span>
+1019         
+1020         <a name="_sub39" href="#_subfunctions" class="code">function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)</a>
+1021             <span class="comment">%This is meant to be used with parameters that end in</span>
+1022             <span class="comment">%'s1...s12' as are computed for EMG and angles. The 's' must be</span>
+1023             <span class="comment">%included in the labelPrefixes (to allow for other options too)</span>
+1024             <span class="comment">%See also: groupAdaptationData.getCheckerboardsData</span>
+1025             
+1026             <span class="keyword">if</span> nargin&lt;5 || isempty(flipLR)
+1027                 flipLR=false;
+1028             <span class="keyword">end</span>
+1029          
+1030             <span class="keyword">if</span> nargin&lt;4
+1031                 refEpoch=[];
+1032             <span class="keyword">end</span>
+1033             [dataE,dataRef,labels,groups]=this.createSingleSubjGroup.getCheckerboardsData(labelPrefix,epochs,refEpoch,flipLR); <span class="comment">%Call onto groupAdaptData method</span>
+1034         <span class="keyword">end</span>
+1035 
+1036 
+1037         <a name="_sub40" href="#_subfunctions" class="code">function gAD=createSingleSubjGroup(this)</a>
+1038             gAD=groupAdaptationData({this.subData.ID},{this},this.subData.ID);
+1039         <span class="keyword">end</span>
+1040 
+1041         
+1042         <a name="_sub41" href="#_subfunctions" class="code">function badSubj=RemoveBadMuscles(this,badMuscles)</a>
+1043             <span class="comment">%This is a function that change the values of the &quot;bad&quot; muscle to NaN.</span>
+1044             
+1045             <span class="comment">%This code was developed by SL and updated by DMMO</span>
+1046  
+1047             badSubj = this;
+1048             
+1049             <span class="keyword">for</span> i = 1:numel(badMuscles)
+1050                 
+1051                 badDataIdx=find(cellfun(@(x) ~isempty(x),regexp(badSubj.data.labels,[<span class="string">'^'</span> badMuscles{i} <span class="string">'[ ]?\d+$'</span>])));
+1052                         
+1053                 <span class="keyword">if</span> isempty(badDataIdx)
+1054                     warning(<span class="string">'Label not found. No muscle removed. Make sure that you normalize the data first'</span>)
+1055                     <span class="keyword">return</span>
+1056                 <span class="keyword">end</span>
+1057                 
+1058                 badSubj.data.Data(:,badDataIdx) = nan;
+1059                 
+1060                 disp([<span class="string">'Removing (Setting NaN) of '</span> badMuscles{i} <span class="string">' from Subject: '</span> badSubj.subData.ID])
+1061                 
+1062             <span class="keyword">end</span>
+1063             
+1064         <span class="keyword">end</span>
+1065                 
+1066     <span class="keyword">end</span>
+1067 
+1068 
+1069 
+1070 
+1071     methods(Static)
+1072 
+1073          [figHandle,allData]=<a href="plotGroupedSubjectsTimeCourse.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsTimeCourse(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)">plotGroupedSubjectsTimeCourse</a>(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames)
+1074 
+1075          [figHandle,allData]=plotGroupedSubjects(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames) <span class="comment">%Will deprecate, use plotGroupedSubjectsBars instead.</span>
+1076 
+1077          [figHandle,allData]=<a href="plotGroupedSubjectsBars.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBars(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)">plotGroupedSubjectsBars</a>(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold,plotHandles,colors)
+1078 
+1079          varargout=<a href="plotAvgTimeCourse.html" class="code" title="function varargout=plotAvgTimeCourse(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,labels,filterFlag,plotHandles,alignEnd,alignIni)">plotAvgTimeCourse</a>(adaptDataList,params,conditions,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,alignEnd,alignIni)
+1080 
+1081          [figHandle]=<a href="scatterPlotLab.html" class="code" title="function figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,removeBias,addID)">scatterPlotLab</a>(adapDataList,labels,conditionIdxs,figHandle,marker,binSize,trajectoryColor,<a href="#_sub4" class="code" title="subfunction [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)">removeBias</a>,addID)
+1082 
+1083          [figHandle]=<a href="Correlations.html" class="code" title="function Correlations(adapDataList, results,params,conds,groups,colorOrder,type)">Correlations</a>(adapDataList, results,epochx,epochy,param1,groups,colorOrder,type)
+1084 
+1085         <a name="_sub42" href="#_subfunctions" class="code">function [fh,ph,allData]=plotGroupedTimeAndBars(adaptDataGroups,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,plotHandles,numberOfStrides)</a>
+1086 
+1087             fh=figure;
+1088 
+1089             M=length(labels);
+1090             clear ph
+1091             <span class="keyword">for</span> i=1:M
+1092                 ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+1093                 ph(i,2)=subplot(M,3,[3]+3*(i-1));
+1094             <span class="keyword">end</span>
+1095 
+1096             <span class="comment">%Defaults:</span>
+1097             plotHandles=[]; <span class="comment">%Not allowed</span>
+1098             <span class="keyword">if</span> nargin&lt;8 || isempty(colorOrder)
+1099                 colorScheme
+1100             colorOrder=color_palette;
+1101             <span class="keyword">end</span>
+1102             plotIndividualsFlag=indivFlag;
+1103             legendNames=[];
+1104             significanceThreshold=.05;
+1105             removeBiasFlag=0; <span class="comment">%Disallowing removeBiasFlag</span>
+1106             significancePlotMatrix=[];
+1107             alignEnd=abs(numberOfStrides(2));
+1108             signifPlotMatrixConds=[];
+1109             exemptFirst=1;
+1110             exemptLast=5;
+1111 
+1112             <span class="comment">%Time courses:</span>
+1113             adaptData=cellfun(@(x) x.adaptData,adaptDataGroups,<span class="string">'UniformOutput'</span>,false);
+1114             fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,removeBiasFlag,groupNames,medianFlag,ph(:,1),alignEnd);
+1115 
+1116             <span class="comment">%Add bars:</span>
+1117             [fh,allData]=groupAdaptationData.plotMultipleGroupsBars(adaptDataGroups,labels,removeBiasFlag,plotIndividualsFlag,conds,numberOfStrides,exemptFirst,exemptLast,groupNames,significanceThreshold,ph(:,2),colorOrder,significancePlotMatrix,medianFlag,signifPlotMatrixConds);
+1118 
+1119             <span class="keyword">for</span> i=1:M
+1120                 subplot(ph(i,2));
+1121                 grid on
+1122                 aa=axis;
+1123                 subplot(ph(i,1));
+1124                 grid on
+1125                 ab=axis;
+1126                 axis([ab(1:2) aa(3:4)])
+1127             <span class="keyword">end</span>
+1128         <span class="keyword">end</span>
+1129 
+1130         <a name="_sub43" href="#_subfunctions" class="code">function[fh,ph,allData]=plotGroupedTimeAndEpochBars(adaptDataGroups,labels,eps,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,groupNames,medianFlag,removeBaseEpochFlag,alignEnd,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag);</a>
+1131            <span class="comment">%  figure('units','normalized','outerposition',[0 0 1 1])</span>
+1132             fh=figure;
+1133 
+1134 
+1135 
+1136             M=length(labels);
+1137             clear ph
+1138             <span class="keyword">for</span> i=1:M
+1139                 ph(i,1)=subplot(M,3,[1:2]+3*(i-1));
+1140                 ph(i,2)=subplot(M,3,[3]+3*(i-1));
+1141             <span class="keyword">end</span>
+1142 
+1143             <span class="comment">%Defaults:</span>
+1144             <span class="keyword">if</span> nargin&lt;8 || isempty(colorOrder)
+1145                 colorScheme
+1146             colorOrder=color_palette;
+1147             <span class="keyword">end</span>
+1148 
+1149             conds=unique(eps.Condition,<span class="string">'stable'</span>);
+1150 <span class="comment">%             numberOfStrides=eps.Stride_No;</span>
+1151 <span class="comment">%             for i=1:length(numberOfStrides)</span>
+1152 <span class="comment">%                 if ~eps.EarlyOrLate(i)</span>
+1153 <span class="comment">%                     numberOfStrides(i)=-1*numberOfStrides(i);%last strides</span>
+1154 <span class="comment">%                 end</span>
+1155 <span class="comment">%             end</span>
+1156             plotIndividualsFlag=indivFlag;
+1157            <span class="comment">% significanceThreshold=[];%.05;</span>
+1158 
+1159             <span class="comment">%alignEnd=abs(numberOfStrides(2));</span>
+1160 
+1161             <span class="comment">%exemptFirst=1;</span>
+1162             <span class="comment">%exemptLast=5;</span>
+1163 
+1164             set(ph,<span class="string">'ActivePositionProperty'</span>,<span class="string">'outerposition'</span>)
+1165             <span class="comment">%Time courses:</span>
+1166             <span class="keyword">for</span> i=1:length(adaptDataGroups)
+1167                 adaptDataGroups{i}=adaptDataGroups{i}.removeBadStrides;
+1168             <span class="keyword">if</span> removeBaseEpochFlag==1
+1169                    adaptDataGroups2{i}=adaptDataGroups{i}.removeBaselineEpoch(eps(1,:),[]);
+1170             <span class="keyword">else</span>
+1171                  adaptDataGroups2{i}=adaptDataGroups{i};
+1172             <span class="keyword">end</span>
+1173 
+1174             <span class="keyword">end</span>
+1175             adaptData=cellfun(@(x) x.adaptData,adaptDataGroups2,<span class="string">'UniformOutput'</span>,false);
+1176            fh=adaptationData.plotAvgTimeCourse(adaptData,labels,conds,binwidth,trialMarkerFlag,indivFlag,indivSubs,colorOrder,biofeedback,0,groupNames,medianFlag,ph(:,1),alignEnd);
+1177             <span class="keyword">for</span> pl=1:size(ph,1)
+1178                 hold(ph(pl,1))
+1179                 title(ph(pl,1),ph(pl,1).YLabel.String);
+1180                 ylabel(ph(pl,1),{<span class="string">''</span>})
+1181             <span class="keyword">end</span>
+1182 
+1183             <span class="comment">%set(ph(:,2),'Clipping','off')</span>
+1184             <span class="comment">%Add bars:</span>
+1185             [fh,allData]=groupAdaptationData.plotMultipleEpochBars(adaptDataGroups,labels,eps,plotIndividualsFlag,groupNames,ph(:,2),colorOrder,medianFlag,significanceThreshold,posthocGroupFlag,posthocEpochFlag,posthocGroupByEpochFlag,posthocEpochByGroupFlag,removeBaseEpochFlag);
+1186             <span class="keyword">for</span> i=1:M
+1187                 subplot(ph(i,2));
+1188                 grid on
+1189                 aa=axis;
+1190                 subplot(ph(i,1));
+1191                 grid on
+1192                 ab=axis;
+1193                 axis([ab(1:2) aa(3:4)])
+1194             <span class="keyword">end</span>
+1195             set(ph,<span class="string">'FontSize'</span>,16,<span class="string">'TitleFontSizeMultiplier'</span>,1.1,<span class="string">'XGrid'</span>,<span class="string">'off'</span>,<span class="string">'YGrid'</span>,<span class="string">'off'</span>);
+1196             set(ph(1:end-1,:),<span class="string">'XTickLabel'</span>,{<span class="string">''</span>})
+1197             set(fh,<span class="string">'Color'</span>,[1 1 1]);
+1198             <span class="comment">%ph(1,1).Legend=ph(end,1).Legend;%ph(end,1).Legend</span>
+1199 
+1200         <span class="keyword">end</span>
+1201 
+1202         <a name="_sub44" href="#_subfunctions" class="code">function groupData=createGroupAdaptData(adaptDataList)</a>
+1203             <span class="comment">%Check that it is a single cell array of chars (subIDs):</span>
+1204             <span class="comment">%Ex: GroupName=adaptationData.createGroupAdaptData({'X1params','x2params','X3params'})</span>
+1205 
+1206             <span class="comment">%Load and construct object:</span>
+1207             <span class="keyword">for</span> i=1:length(adaptDataList)
+1208                 <span class="keyword">try</span>
+1209                     a=load(adaptDataList{i});
+1210                 <span class="keyword">catch</span> ME
+1211                     warning(<span class="string">'Could not find filename as provided. Trying alternative spellings.'</span>)
+1212                     <span class="keyword">try</span>
+1213                         a=load([adaptDataList{i} <span class="string">'Params'</span>]);
+1214                     <span class="keyword">catch</span>
+1215                         <span class="keyword">try</span>
+1216                             a=load([adaptDataList{i} <span class="string">'params'</span>]);
+1217                         <span class="keyword">catch</span>
+1218                             warning(<span class="string">'Alternative spellings failed too.'</span>)
+1219                             throw(ME)
+1220                         <span class="keyword">end</span>
+1221                     <span class="keyword">end</span>
+1222                 <span class="keyword">end</span>
+1223                 data{i}=a.(<span class="string">'adaptData'</span>);
+1224                 ID{i}=a.(<span class="string">'adaptData'</span>).subData.ID;
+1225             <span class="keyword">end</span>
+1226             groupData=groupAdaptationData(ID,data);
+1227         <span class="keyword">end</span>
+1228 
+1229         <a name="_sub45" href="#_subfunctions" class="code">function [veryEarlyPoints,earlyPoints,latePoints,pEarly,pLate,pChange,pSwitch]=getGroupedData(adaptDataList,label,conds,removeBiasFlag,earlyNumber,lateNumber,exemptLast);</a>
+1230 
+1231             <span class="keyword">if</span> ~(isa(label,<span class="string">'char'</span>) || (isa(label,<span class="string">'cell'</span>) &amp;&amp; length(label)==1 &amp;&amp; (isa(label{1},<span class="string">'char'</span>))))
+1232                 error(<span class="string">'adaptationData:getGroupedData'</span>,<span class="string">'Only one parameter can be retrieved at a time.'</span>); <span class="comment">%This is NOT true (?). Fix.</span>
+1233             <span class="keyword">end</span>
+1234 
+1235             <span class="comment">%Create a groupAdaptationData object and use it to get the</span>
+1236             <span class="comment">%requested data in matrix form:</span>
+1237             groupData=adaptationData.createGroupAdaptData(adaptDataList);
+1238             [data]=groupData.getGroupedData(label,conds,removeBiasFlag,[3,earlyNumber,-lateNumber],0,exemptLast);
+1239             earlyPoints=data{2};
+1240             veryEarlyPoints=data{1};
+1241             latePoints=data{3};
+1242 
+1243             <span class="comment">%Compute some stats (this may only work properly if length(label)==1)</span>
+1244             <span class="keyword">if</span> length(label)&gt;1
+1245                 pEarly=[];
+1246                 pLate=[];
+1247                 pChange=[];
+1248                 pSwitch=[];
+1249             <span class="keyword">else</span>
+1250                 aux1=squeeze(nanmean(earlyPoints,2)); <span class="comment">%Averaging across strides</span>
+1251                 aux2=squeeze(nanmean(latePoints,2));
+1252                 pSwitch=[];
+1253                 <span class="keyword">for</span> i=1:size(aux1,1) <span class="comment">%For all conditions requested</span>
+1254                     <span class="keyword">for</span> j=1:size(aux1,1)
+1255                         <span class="keyword">if</span> i~=j
+1256                             [~,pEarly(i,j)] =ttest(aux1(i,:),aux1(j,:)); <span class="comment">%Testing early points across all conds</span>
+1257                             [~,pLate(i,j)] =ttest(aux2(i,:),aux2(j,:)); <span class="comment">%Testing late points across all conds</span>
+1258                         <span class="keyword">else</span>
+1259                             pEarly(i,j)=NaN;
+1260                             pLate(i,j)=NaN;
+1261                         <span class="keyword">end</span>
+1262                     <span class="keyword">end</span>
+1263                     [~,pChange(i)]=ttest(aux1(i,:),aux2(i,:)); <span class="comment">%Testing changes within each condition</span>
+1264                     <span class="keyword">if</span> i&gt;1
+1265                         [~,pSwitch(i-1)]=ttest(aux2(i-1,:),aux1(i,:)); <span class="comment">%Testing changes from end of one condition to start of the next</span>
+1266                     <span class="keyword">end</span>
+1267                 <span class="keyword">end</span>
+1268             <span class="keyword">end</span>
+1269         <span class="keyword">end</span>
+1270 
+1271         <a name="_sub46" href="#_subfunctions" class="code">function this=loadobj(this)</a>
+1272             <span class="keyword">if</span> ~isempty(this.subData.dateOfBirth)
+1273                 warning(<span class="string">'adaptData:subjectDOB'</span>,[<span class="string">'Subject data contains DOB information for subject '</span> this.subData.ID <span class="string">'. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'</span>])
+1274                 <span class="comment">%Determine age (in months):</span>
+1275                 age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
+1276                 <span class="comment">%Scrub DOB from subject meta data, save age at experiment time (in years):</span>
+1277                 this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+1278             <span class="keyword">end</span>
+1279         <span class="keyword">end</span>
+1280 
+1281 <span class="comment">%         function figHandle=groupedScatterPlot(adaptDataList,labels,conditionIdxs,binSize,figHandle,trajColors,removeBias)</span>
+1282 <span class="comment">%</span>
+1283 <span class="comment">%             if isa(adaptDataList,'cell')</span>
+1284 <span class="comment">%                 if ~isa(adaptDataList{1},'cell')</span>
+1285 <span class="comment">%                     adaptDataList={adaptDataList};</span>
+1286 <span class="comment">%                 end</span>
+1287 <span class="comment">%             elseif isa(adaptDataList,'char')</span>
+1288 <span class="comment">%                 adaptDataList={{adaptDataList}};</span>
+1289 <span class="comment">%             end</span>
+1290 <span class="comment">%             Ngroups=length(adaptDataList);</span>
+1291 <span class="comment">%</span>
+1292 <span class="comment">%             if nargin&lt;7 || isempty(removeBias)</span>
+1293 <span class="comment">%                 removeBias=0;</span>
+1294 <span class="comment">%             end</span>
+1295 <span class="comment">%             if nargin&lt;5 || isempty(figHandle)</span>
+1296 <span class="comment">%                 figHandle=figure;</span>
+1297 <span class="comment">%             else</span>
+1298 <span class="comment">%                 figure(figHandle);</span>
+1299 <span class="comment">%                 hold on</span>
+1300 <span class="comment">%             end</span>
+1301 <span class="comment">%             markerList={'x','o','.','+','*','s','v','^','d'};</span>
+1302 <span class="comment">%             if nargin&lt;3 || isempty(conditionIdxs)</span>
+1303 <span class="comment">%                 conditionIdxs=[];</span>
+1304 <span class="comment">%             end</span>
+1305 <span class="comment">%             if nargin&lt;4 || isempty(binSize)</span>
+1306 <span class="comment">%                 binSize=[];</span>
+1307 <span class="comment">%             end</span>
+1308 <span class="comment">%             for g=1:Ngroups</span>
+1309 <span class="comment">%                 for i=1:length(adaptDataList{g})</span>
+1310 <span class="comment">%                     r=(i-1)/(length(adaptDataList{g})-1);</span>
+1311 <span class="comment">%                     if nargin&lt;6 || isempty(trajColors)</span>
+1312 <span class="comment">%                         trajColor=[1,0,0] + r*[-1,0,1];</span>
+1313 <span class="comment">%                     elseif iscell(trajColors)</span>
+1314 <span class="comment">%                         trajColor=trajColors{i};</span>
+1315 <span class="comment">%                     elseif size(trajColors,2)==3</span>
+1316 <span class="comment">%                         trajColor=trajColors(mod(i,size(trajColors,1))+1,:);</span>
+1317 <span class="comment">%                     else</span>
+1318 <span class="comment">%                         warning('Could not interpret trajecColors input')</span>
+1319 <span class="comment">%                         trajColor='k';</span>
+1320 <span class="comment">%                     end</span>
+1321 <span class="comment">%                     this=adaptDataList{g}{i};</span>
+1322 <span class="comment">%                     fieldList=fields(this);</span>
+1323 <span class="comment">%                     a=this.(fieldList{1});</span>
+1324 <span class="comment">%                     if iscell(conditionIdxs) %This gives the possibility to pass condition names instead of the indexes for each subject, which might be different</span>
+1325 <span class="comment">%                         conditionIdxs1=getConditionIdxsFromName(a,conditionIdxs);</span>
+1326 <span class="comment">%                     else</span>
+1327 <span class="comment">%                         conditionIdxs1=conditionIdxs;</span>
+1328 <span class="comment">%                     end</span>
+1329 <span class="comment">%                     figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList{mod(i,length(markerList))+1},binSize,trajColor,removeBias,1);</span>
+1330 <span class="comment">%                        figHandle=scatterPlotLab(adaptDataList,labels,conditionIdxs,figHandle,markerList,binSize,[],removeBias,1);</span>
+1331 <span class="comment">%                 end</span>
+1332 <span class="comment">%             end</span>
+1333 <span class="comment">%</span>
+1334 <span class="comment">%         end</span>
+1335 
+1336         [figHandle,allData]=<a href="plotGroupedSubjectsBarsv2.html" class="code" title="function [figHandle,allData]=plotGroupedSubjectsBarsv2(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)">plotGroupedSubjectsBarsv2</a>(adaptDataList,label,removeBiasFlag,plotIndividualsFlag,condList,numberOfStrides,exemptFirst,exemptLast,legendNames,significanceThreshold,plotHandles,colors,medianFlag)
+1337     <span class="keyword">end</span> <span class="comment">%static methods</span>
+1338 
+1339 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
