@@ -67,6 +67,18 @@ stimTimeSlow = nan(size(timeSHS));
 stimTimeFast = nan(size(timeFHS));
 isSingleStanceSlow = false(size(timeSHS));  % TODO: initialize true or NaN?
 isSingleStanceFast = false(size(timeFHS));
+hReflexSlow = nan(size(timeSHS));
+hReflexFast = nan(size(timeFHS));
+mWaveSlow = nan(size(timeSHS));
+mWaveFast = nan(size(timeFHS));
+hReflexNoiseSlow = nan(size(timeSHS));
+hReflexNoiseFast = nan(size(timeFHS));
+hReflexBEMGMAVSlow = nan(size(timeSHS));
+hReflexBEMGMAVFast = nan(size(timeFHS));
+hReflexBEMGRMSSlow = nan(size(timeSHS));
+hReflexBEMGRMSFast = nan(size(timeFHS));
+h2mRatioSlow = nan(size(timeSHS));
+h2mRatioFast = nan(size(timeFHS));
 
 times = EMGData.Time;   % extract time for trial
 % use proximal TA to identify stim artifact time (localize by stim trigger)
