@@ -21,12 +21,17 @@ function amps = computeHreflexAmplitudes(rawEMG_MG,indsStimArtifact)
 % threshWaveAmp = 0.00015;    % 0.15 mV peak-to-peak voltage threshold
 
 narginchk(2,2); % verify correct number of input arguments
+
+% instantiate and initialize output amplitudes cell array
+amps = cell(2,5);
+
 % if both cells are empty arrays for either input argument, ...
 if all(cellfun(@isempty,indsStimArtifact)) || ...
         all(cellfun(@isempty,rawEMG_MG))
-    error(['There is data missing necessary to compute the H-reflex ' ...
+    warning(['There is data missing necessary to compute the H-reflex ' ...
         'amplitudes.']);
-end
+    return;
+end 
 
 % NOTE: should always be same across trials and should be same for forces
 % TODO: make optional input argument
@@ -49,8 +54,6 @@ indEndB = -0.050 / period;         % -50 ms
 numStimR = length(indsStimArtifact{1});
 numStimL = length(indsStimArtifact{2});
 
-% instantiate and initialize output amplitudes cell array
-amps = cell(2,5);
 amps(1,:) = cellfun(@(x) nan(numStimR,1),amps(1,:),'UniformOutput',false);
 amps(2,:) = cellfun(@(x) nan(numStimL,1),amps(2,:),'UniformOutput',false);
 
@@ -99,9 +102,9 @@ for stR = 1:numStimR                % for each right leg stimulus, ...
         % ampsHwaveR(stR) = threshWaveAmp;
     end
     % compute mean absolute value (MAV) of background EMG window
-    amps{1,4}(stR) = mean(abs(winEMGB),'omitmissing');
+    amps{1,4}(stR) = mean(abs(winEMGB));
     % compute root mean square (RM) of background EMG window
-    amps{1,5}(stR) = sqrt(mean(winEMGB.^2,'omitmissing'));
+    amps{1,5}(stR) = sqrt(mean(winEMGB.^2));
 end
 
 for stL = 1:numStimL                % for each left leg stimulus, ...
@@ -129,8 +132,8 @@ for stL = 1:numStimL                % for each left leg stimulus, ...
     else
         % ampsHwaveL(stL) = threshWaveAmp;
     end
-    amps{2,4}(stL) = mean(abs(winEMGB),'omitmissing');
-    amps{2,5}(stL) = sqrt(mean(winEMGB.^2,'omitmissing'));
+    amps{2,4}(stL) = mean(abs(winEMGB));
+    amps{2,5}(stL) = sqrt(mean(winEMGB.^2));
 end
 
 end
