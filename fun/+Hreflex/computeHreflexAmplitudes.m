@@ -1,7 +1,7 @@
 function amps = computeHreflexAmplitudes(rawEMG_MG,indsStimArtifact)
 %COMPUTEHREFLEXAMPLITUDES Compute amplitudes of interest from H-reflex
-%   Compute the peak-to-peak amplitudes of the M-wave, H-wave, and noise
-% floor.
+%   Compute the peak-to-peak amplitudes of the M-wave, H-wave, noise floor,
+% and the background EMG.
 %
 % input:
 %   rawEMG_MG: 2 x 1 cell array of number of samples x 1 arrays for right
@@ -11,37 +11,46 @@ function amps = computeHreflexAmplitudes(rawEMG_MG,indsStimArtifact)
 %       right (cell 1) and left (cell 2) leg stimulus artifact indices for
 %       H-reflex alignment
 % output:
-%   amps: 2 x 3 cell array of number of stimuli x 1 arrays for
+%   amps: 2 x 5 cell array of number of stimuli x 1 arrays for
 %       right (row 1) and left (row 2) leg H-reflex amplitudes: M-wave
-%       (column 1), H-wave (column 2), and noise (column 3)
+%       (column 1), H-wave (column 2), noise (column 3), background EMG MAV
+%       (column 4), and background EMG RMS (column 5)
 
 % TODO: reject measurements if GRF reveals not in single stance
 % TODO: accept threshold as optional input to overwrite noise threshold
 % threshWaveAmp = 0.00015;    % 0.15 mV peak-to-peak voltage threshold
 
 narginchk(2,2); % verify correct number of input arguments
+% if both cells are empty arrays for either input argument, ...
+if all(cellfun(@isempty,indsStimArtifact)) || ...
+        all(cellfun(@isempty,rawEMG_MG))
+    error(['There is data missing necessary to compute the H-reflex ' ...
+        'amplitudes.']);
+end
 
 % NOTE: should always be same across trials and should be same for forces
 % TODO: make optional input argument
 period = 0.0005; % EMG.sampPeriod;    % sampling period
-% TODO: make indices optional input argument
-% M-wave is contained by interval:  4ms - 23ms
-% H-wave is contained by interval: 24ms - 43ms
-% Noise is contained by interval:  50ms - 99ms
+% TODO: make indices optional input argument with default option to avoid
+% having these values duplicated in multiple locations
+% M-wave is contained by interval:           4ms -  23ms
+% H-wave is contained by interval:          24ms -  43ms
+% Noise is contained by interval:           50ms -  99ms
+% Background EMG is contained by interval: -99ms - -50ms (neg. = before)
 indStartM = 0.004 / period;        % 4 ms after stim artifact in samples
 indEndM = 0.023 / period;          % 23 ms
 indStartH = 0.024 / period;        % 24 ms
 indEndH = 0.043 / period;          % 43 ms
-indStartN = 0.050 / period;        % 50 ms
+indStartN = 0.050 / period;        % 50 ms  % TODO: is noise window right?
 indEndN = 0.099 / period;          % 99 ms
-% TODO: consider adding noise floor (50 - 150 ms after stim artifact?)
-% and background EMG (50 - 100 ms before stim artifact) intervals
+indStartB = -0.099 / period;       % -99 ms
+indEndB = -0.050 / period;         % -50 ms
 
 numStimR = length(indsStimArtifact{1});
 numStimL = length(indsStimArtifact{2});
 
 % instantiate and initialize output amplitudes cell array
-amps = cell(2,3);
+amps = cell(2,5);
 amps(1,:) = cellfun(@(x) nan(numStimR,1),amps(1,:),'UniformOutput',false);
 amps(2,:) = cellfun(@(x) nan(numStimL,1),amps(2,:),'UniformOutput',false);
 
@@ -67,6 +76,8 @@ for stR = 1:numStimR                % for each right leg stimulus, ...
         (indsStimArtifact{1}(stR)+indEndM));
     winEMGH = rawEMG_MG{1}((indsStimArtifact{1}(stR)+indStartH): ...
         (indsStimArtifact{1}(stR)+indEndH));
+    winEMGB = rawEMG_MG{1}((indsStimArtifact{1}(stR)+indStartB): ...
+        (indsStimArtifact{1}(stR)+indEndB));
     [maxM,indMaxM] = max(winEMGM);
     [minM,indMinM] = min(winEMGM);
     [maxH,indMaxH] = max(winEMGH);
@@ -87,13 +98,19 @@ for stR = 1:numStimR                % for each right leg stimulus, ...
     else
         % ampsHwaveR(stR) = threshWaveAmp;
     end
+    % compute mean absolute value (MAV) of background EMG window
+    amps{1,4}(stR) = mean(abs(winEMGB),'omitmissing');
+    % compute root mean square (RM) of background EMG window
+    amps{1,5}(stR) = sqrt(mean(winEMGB.^2,'omitmissing'));
 end
 
 for stL = 1:numStimL                % for each left leg stimulus, ...
-    winEMGM = EMG_LMG((indsStimArtifact{2}(stL)+indStartM): ...
+    winEMGM = rawEMG_MG{2}((indsStimArtifact{2}(stL)+indStartM): ...
         (indsStimArtifact{2}(stL)+indEndM));
-    winEMGH = EMG_LMG((indsStimArtifact{2}(stL)+indStartH): ...
+    winEMGH = rawEMG_MG{2}((indsStimArtifact{2}(stL)+indStartH): ...
         (indsStimArtifact{2}(stL)+indEndH));
+    winEMGB = rawEMG_MG{2}((indsStimArtifact{2}(stL)+indStartB): ...
+        (indsStimArtifact{2}(stL)+indEndB));
     [maxM,indMaxM] = max(winEMGM);
     [minM,indMinM] = min(winEMGM);
     [maxH,indMaxH] = max(winEMGH);
@@ -112,6 +129,8 @@ for stL = 1:numStimL                % for each left leg stimulus, ...
     else
         % ampsHwaveL(stL) = threshWaveAmp;
     end
+    amps{2,4}(stL) = mean(abs(winEMGB),'omitmissing');
+    amps{2,5}(stL) = sqrt(mean(winEMGB.^2,'omitmissing'));
 end
 
 end

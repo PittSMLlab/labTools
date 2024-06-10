@@ -21,6 +21,11 @@ function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, ...
 
 narginchk(3,3); % verify correct number of input arguments
 % TODO: add checks that inputs are not empty or otherwise invalid
+if isempty(times) || all(cellfun(@isempty,rawEMG_TAP)) || ...
+        isempty(HreflexStimPin)
+    error(['There is data missing that is crucial for computing the ' ...
+        'stimulation artifact indices']);
+end
 
 % NOTE: it does not work to use stim trigger pulse to retrieve peak times
 % if stimulator is disabled during trial (because there will be a trigger
