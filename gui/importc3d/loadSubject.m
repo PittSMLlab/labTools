@@ -136,7 +136,7 @@ save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3')
 adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
 
 %% Add additional handling for experiments that needs trial splited
-if strcmp(info.ExpDescription,'SpinalAdaptation')
+if contains(erase(info.ExpDescription,' '),'SpinalAdaptation')
     [expData, adaptData] = SepCondsInExpByAudioCue(expData, info.save_folder, info.ID, eventClass, info.ExpDescription);
 end
 
