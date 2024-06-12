@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of figuresColorMap</title>
+  <meta name="keywords" content="figuresColorMap">
+  <meta name="description" content="Colormap:">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">plotting</a> &gt; figuresColorMap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/plotting&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>figuresColorMap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Colormap:</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Colormap:</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="prettyBarPlot.html" class="code" title="function [fh,ph]=prettyBarPlot(data,colors,medianFlag,pairingLines,groupNames, conditionNames,plotHandle)">prettyBarPlot</a>	Data is PxMxN, where:</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Colormap:</span>
+0002 warning(<span class="string">'Loading OLD figuresColorMap'</span>)
+0003 ex1=[.85,0,.1];
+0004 ex2=[0,.1,.6];
+0005 gamma=.5;
+0006 map=[bsxfun(@plus,ex1,bsxfun(@times,1-ex1,[0:.01:1]'));bsxfun(@plus,ex2,bsxfun(@times,1-ex2,[1:-.01:0]'))].^gamma;
+0007 
+0008 <span class="comment">%Alt: use external function:</span>
+0009 <span class="comment">%map=diverging_map([0:.01:1],round(ex1),round(ex2));</span>
+0010 
+0011 load(<span class="string">'CoolWarmMap.mat'</span>)
+0012 map=CoolWarmMap/255; <span class="comment">%This uses gray in the middle</span>
+0013 
+0014 <span class="comment">%Same extreme colors, but white in the middle:</span>
+0015 <span class="comment">%ex1=map(1,:);</span>
+0016 <span class="comment">%ex2=map(end,:);</span>
+0017 ex2=[0.2314    0.2980    0.7529];
+0018 ex1=[0.7255    0.0863    0.1608];
+0019 <span class="comment">%ex1=[12,35,64]/255; %Pitt blue</span>
+0020 <span class="comment">%ex2=[179, 163, 105]/255; %Pitt gold</span>
+0021 <span class="comment">%[203,192,130]/255 %Pitt gold from swanson logo</span>
+0022 
+0023 map=[bsxfun(@plus,ex1.^(1/gamma),bsxfun(@times,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@plus,ex2.^(1/gamma),bsxfun(@times,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
+0024 
+0025 condColors=[.4,.4,.4; 0,.5,.4; .5,.2,.6];</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getResults</title>
+  <meta name="keywords" content="getResults">
+  <meta name="description" content="define number of points to use for calculating values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../index.html">fun</a> &gt; <a href="../index.html">misc</a> &gt; <a href="index.html">hmhFun</a> &gt; getResults.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../index.html"><img alt="<" border="0" src="../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/misc/hmhFun&nbsp;<img alt=">" border="0" src="../../../../right.png"></a></td></tr></table>-->
+
+<h1>getResults
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>define number of points to use for calculating values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function results = getResults(Study,params,groups,maxPerturb,plotFlag,indivFlag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> define number of points to use for calculating values</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>	SMOOTHEDMAX finds the maximum value of an N-pt running average</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function results = getResults(Study,params,groups,maxPerturb,plotFlag,indivFlag)</a>
+0002 
+0003 <span class="comment">% define number of points to use for calculating values</span>
+0004 catchNumPts = 5; <span class="comment">%catch</span>
+0005 steadyNumPts = 40; <span class="comment">%end of adaptation</span>
+0006 transientNumPts = 5; <span class="comment">%OG and Washout</span>
+0007 
+0008 nParams=length(params);
+0009 
+0010 <span class="keyword">if</span> nargin&lt;3 || isempty(groups)
+0011     groups=fields(Study);  <span class="comment">%default</span>
+0012 <span class="keyword">end</span>
+0013 nGroups=length(groups);
+0014 
+0015 <span class="keyword">if</span> nargin&lt;5 || isempty(plotFlag)
+0016     plotFlag=1;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="comment">% Initialize outcome measures to compute</span>
+0020 outcomeMeasures =<span class="keyword">...</span>
+0021     {<span class="string">'OGbase'</span>,<span class="keyword">...</span>
+0022     <span class="string">'TMbase'</span>,<span class="keyword">...</span>
+0023     <span class="string">'AvgAdaptBeforeCatch'</span>,<span class="keyword">...</span>
+0024     <span class="string">'AvgAdaptAll'</span>,<span class="keyword">...</span>
+0025     <span class="string">'ErrorsOut'</span>,<span class="keyword">...</span>
+0026     <span class="string">'AdaptExtentBeforeCatch'</span>,<span class="keyword">...</span>
+0027     <span class="string">'Catch'</span>,<span class="keyword">...</span>
+0028     <span class="string">'AdaptIndex'</span>,<span class="keyword">...</span>
+0029     <span class="string">'OGafter'</span>,<span class="keyword">...</span><span class="comment"> %First 5 strides</span>
+0030     <span class="string">'OGafterEarly'</span>,<span class="keyword">...</span><span class="comment"> %From 6 to 20</span>
+0031     <span class="string">'OGafterLate'</span>,<span class="keyword">...</span>
+0032     <span class="string">'AvgOGafter'</span><span class="keyword">...</span>
+0033     <span class="string">'TMafter'</span>,<span class="keyword">...</span>
+0034     <span class="string">'TMafterEarly'</span>,<span class="keyword">...</span>
+0035     <span class="string">'TMafterLate'</span>,<span class="keyword">...</span>
+0036     <span class="string">'Transfer'</span>,<span class="keyword">...</span>
+0037     <span class="string">'Washout'</span>,<span class="keyword">...</span>
+0038     <span class="string">'Washout2'</span>,<span class="keyword">...</span>
+0039     <span class="string">'Transfer2'</span>,<span class="keyword">...</span>
+0040     };
+0041 
+0042 
+0043 <span class="keyword">for</span> i =1:length(outcomeMeasures)
+0044     results.(outcomeMeasures{i}).avg=NaN(nGroups,nParams);
+0045     results.(outcomeMeasures{i}).se=NaN(nGroups,nParams);
+0046 <span class="keyword">end</span>
+0047 
+0048 
+0049 <span class="keyword">for</span> g=1:nGroups
+0050     
+0051     <span class="comment">% get number of subjects in group</span>
+0052     nSubs=length(Study.(groups{g}).ID);
+0053     
+0054     <span class="comment">% clear/initialize measures</span>
+0055     <span class="keyword">for</span> i=1:length(outcomeMeasures)
+0056         eval([outcomeMeasures{i} <span class="string">'=NaN(nSubs,nParams);'</span>])
+0057     <span class="keyword">end</span>
+0058     
+0059     AdaptExtent=[];
+0060     
+0061     <span class="keyword">for</span> s=1:nSubs
+0062         <span class="comment">% load subject</span>
+0063         adaptData=Study.(groups{g}).adaptData{s};
+0064         
+0065         <span class="comment">% remove baseline bias</span>
+0066         adaptData=adaptData.removeBadStrides;
+0067         adaptData.data.Data= medfilt1(adaptData.data.Data);
+0068         adaptData=adaptData.removeBias;
+0069         
+0070         <span class="keyword">if</span> nargin&gt;3 &amp;&amp; maxPerturb==1
+0071             
+0072             <span class="comment">% compute TM and OG base in same manner as calculating OG after and TM after</span>
+0073             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG base'</span>), adaptData.metaData.conditionName))==1
+0074                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG base'</span>);
+0075                 OGbaseData=adaptData.getParamInCond(params,<span class="string">'OG base'</span>);
+0076                 OGbase(s,:)=<a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(OGbaseData(1:10,:),transientNumPts,stepAsymData(1:10));
+0077             <span class="keyword">end</span>
+0078             
+0079             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'TM base'</span>);
+0080             TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
+0081             <span class="keyword">if</span> isempty(TMbaseData)
+0082                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0083                 TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0084             <span class="keyword">end</span>
+0085             TMbase(s,:)=<a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(TMbaseData(1:10,:),transientNumPts,stepAsymData(1:10));
+0086             
+0087             <span class="comment">% compute catch as mean value during strides which caused a</span>
+0088             <span class="comment">% maximum deviation from zero during 'catchNumPts' consecutive</span>
+0089             <span class="comment">% strides</span>
+0090             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), lower(adaptData.metaData.conditionName)))==1
+0091                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'catch'</span>);
+0092                 tmcatchData=adaptData.getParamInCond(params,<span class="string">'catch'</span>);
+0093                 Catch(s,:)=<a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(tmcatchData,catchNumPts,stepAsymData);
+0094             <span class="keyword">end</span>
+0095             
+0096             
+0097             <span class="comment">% compute OG after as mean values during strides which cause a</span>
+0098             <span class="comment">% maximum deviation from zero in STEP LENGTH ASYMMETRY during</span>
+0099             <span class="comment">% 'transientNumPts' consecutive strides within first 10 strides</span>
+0100             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==1
+0101                 stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'OG post'</span>);
+0102                 ogafterData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
+0103                 OGafter(s,:)= <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(ogafterData(1:10,:),transientNumPts,stepAsymData(1:10));
+0104             <span class="keyword">end</span>
+0105             
+0106             <span class="comment">% compute TM after-effects same as OG after-effect</span>
+0107             stepAsymData=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'TM post'</span>);
+0108             tmafterData=adaptData.getParamInCond(params,<span class="string">'TM post'</span>);
+0109             TMafter(s,:)= <a href="smoothedMax.html" class="code" title="function Y = smoothedMax(X,N,vector)">smoothedMax</a>(tmafterData(1:10,:),transientNumPts,stepAsymData(1:10));
+0110             
+0111         <span class="keyword">else</span>
+0112             
+0113             <span class="comment">% calculate TM and OG base in same manner as calculating OG after and TM after</span>
+0114             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG base'</span>), adaptData.metaData.conditionName))==1
+0115                 OGbaseData=adaptData.getParamInCond(params,<span class="string">'OG base'</span>);
+0116                 OGbase(s,:)= nanmean(OGbaseData(1:transientNumPts,:));
+0117             <span class="keyword">end</span>
+0118             
+0119             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'TM base'</span>), adaptData.metaData.conditionName))==1
+0120                 TMbaseData=adaptData.getParamInCond(params,<span class="string">'TM base'</span>);
+0121                 <span class="keyword">if</span> isempty(TMbaseData)
+0122                     TMbaseData=adaptData.getParamInCond(params,{<span class="string">'slow base'</span>,<span class="string">'fast base'</span>});
+0123                 <span class="keyword">end</span>
+0124                 TMbase(s,:)=nanmean(TMbaseData(1:transientNumPts,:));
+0125             <span class="keyword">end</span>
+0126             
+0127             <span class="comment">% compute catch</span>
+0128             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), lower(adaptData.metaData.conditionName)))==1
+0129                 tmcatchData=adaptData.getParamInCond(params,<span class="string">'catch'</span>);
+0130                 <span class="keyword">if</span> isempty(tmcatchData)
+0131                     newtmcatchData=NaN(1,nParams);
+0132                 <span class="keyword">elseif</span> size(tmcatchData,1)&lt;3
+0133                     newtmcatchData=nanmean(tmcatchData);
+0134                 <span class="keyword">else</span>
+0135                     newtmcatchData=nanmean(tmcatchData(1:catchNumPts,:));
+0136                     <span class="comment">%newtmcatchData=nanmean(tmcatchData);</span>
+0137                 <span class="keyword">end</span>
+0138                 Catch(s,:)=newtmcatchData;
+0139             <span class="keyword">end</span>
+0140             
+0141             <span class="comment">% compute OG post</span>
+0142             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==1
+0143                 ogafterData=adaptData.getParamInCond(params,<span class="string">'OG post'</span>);
+0144                 OGafter(s,:)=nanmean(ogafterData(1:transientNumPts,:));
+0145                 OGafterEarly(s,:)=nanmean(ogafterData(transientNumPts+1:transientNumPts+20,:));
+0146                 OGafterLate(s,:)=nanmean(ogafterData((end-5)-steadyNumPts+1:(end-5),:)); <span class="comment">%Last strides</span>
+0147                 
+0148                 <span class="comment">%Sum of OG after-effects</span>
+0149                 AvgOGafter(s,:)=mean(ogafterData(1:min([end 50])));
+0150             <span class="keyword">end</span>
+0151             
+0152             <span class="comment">% compute TM post</span>
+0153             <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'TM post'</span>), adaptData.metaData.conditionName))==1
+0154                 tmafterData=adaptData.getParamInCond(params,<span class="string">'TM post'</span>);
+0155                 TMafter(s,:)=nanmean(tmafterData(1:transientNumPts,:));
+0156                 TMafterEarly(s,:)=nanmean(tmafterData(transientNumPts+1:transientNumPts+20,:));
+0157                 TMafterLate(s,:)=nanmean(tmafterData((end-5)-steadyNumPts+1:(end-5),:));
+0158             <span class="keyword">end</span>
+0159         <span class="keyword">end</span>
+0160         
+0161         
+0162         <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'catch'</span>), lower(adaptData.metaData.conditionName)))==1
+0163             <span class="comment">% compute TM steady state before catch (mean of first transinetNumPts of last transinetNumPts+5 strides)</span>
+0164             adapt1Data=adaptData.getParamInCond(params,<span class="string">'adaptation'</span>);
+0165             adapt1Velocity=adaptData.getParamInCond(<span class="string">'velocityContributionNorm2'</span>,<span class="string">'adaptation'</span>);
+0166             
+0167             <span class="comment">%       StartAdapt(s,:)=nanmean(adapt1Data(1:transientNumPts,:));</span>
+0168             AdaptExtentBeforeCatch(s,:)=nanmean(adapt1Data((end-5)-transientNumPts+1:(end-5),:)); <span class="comment">%Few strides before catch</span>
+0169             
+0170             <span class="comment">%start of step length = end of velocityCont</span>
+0171             idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
+0172             <span class="keyword">if</span> isempty(idx)
+0173                 idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
+0174             <span class="keyword">end</span>
+0175             <span class="keyword">if</span> ~isempty(idx)
+0176                 AdaptExtentBeforeCatch(s,idx)=AdaptExtentBeforeCatch(s,idx)-nanmean(adapt1Velocity((end-2)-transientNumPts+1:(end-2),:));
+0177             <span class="keyword">end</span>
+0178             
+0179             <span class="comment">% compute average adaptation value before the catch</span>
+0180             AvgAdaptBeforeCatch(s,:)= nanmean(adapt1Data);
+0181         <span class="keyword">end</span>
+0182         
+0183         <span class="comment">%</span>
+0184         
+0185         <span class="comment">% compute TM steady state before OG walking (mean of first steadyNumPts of last steadyNumPts+5 strides)</span>
+0186         adapt2Data=[];
+0187         <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), lower(adaptData.metaData.conditionName)))==1
+0188             adapt2Data=adaptData.getParamInCond(params,<span class="string">'re-adaptation'</span>);
+0189             adapt2Sasym=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'re-adaptation'</span>);
+0190             adapt2Velocity=adaptData.getParamInCond(<span class="string">'velocityContributionNorm2'</span>,<span class="string">'re-adaptation'</span>);
+0191         <span class="keyword">elseif</span> isempty(adapt2Data)
+0192             adapt2Data=adaptData.getParamInCond(params,{<span class="string">'adaptation'</span>});
+0193             adapt2Sasym=adaptData.getParamInCond(<span class="string">'stepLengthAsym'</span>,<span class="string">'adaptation'</span>);
+0194             adapt2Velocity=adaptData.getParamInCond(<span class="string">'velocityContributionNorm2'</span>,<span class="string">'adaptation'</span>);
+0195         <span class="keyword">end</span>
+0196         
+0197         
+0198         AdaptIndex(s,:)= nanmean(adapt2Data((end-5)-steadyNumPts+1:(end-5),:)); <span class="comment">%last 40 straides of adaptation</span>
+0199         
+0200         idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
+0201         <span class="keyword">if</span> isempty(idx)
+0202             idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
+0203         <span class="keyword">end</span>
+0204         <span class="keyword">if</span> ~isempty(idx)
+0205             AdaptIndex(s,idx)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
+0206         <span class="keyword">end</span>
+0207         
+0208         AdaptExtent(s,:)=nanmean(adapt2Sasym((end-5)-steadyNumPts+1:(end-5),:)-adapt2Velocity((end-5)-steadyNumPts+1:(end-5),:));
+0209         
+0210         
+0211         
+0212         
+0213         <span class="comment">% compute average adaptation of all adaptation walking (both</span>
+0214         <span class="comment">% before and after catch)</span>
+0215         adaptAllData=adaptData.getParamInCond(params,{<span class="string">'adaptation'</span>,<span class="string">'re-adaptation'</span>});
+0216         AvgAdaptAll(s,:)= nanmean(adaptAllData);
+0217         
+0218         <span class="comment">% Calculate Errors outside of baseline during adaptation</span>
+0219         mu=nanmean(TMbaseData);
+0220         sigma=nanstd(TMbaseData);
+0221         upper=mu+2.*sigma;
+0222         lowerb=mu-2.*sigma;
+0223         <span class="keyword">for</span> i=1:nParams
+0224             outside(i)=sum(adapt1Data(:,i)&gt;upper(i) | adapt1Data(:,i)&lt;lowerb(i));
+0225         <span class="keyword">end</span>
+0226         ErrorsOut(s,:)= 100.*(outside./size(adapt1Data,1));
+0227     <span class="keyword">end</span>
+0228     
+0229 
+0230 
+0231 <span class="comment">% compute extent of adaptation as difference between start and end</span>
+0232 <span class="comment">%     AdaptExtentBeforeCatch=TMsteadyBeforeCatch-StartAdapt;</span>
+0233 <span class="comment">%     AdaptExtent=TMsteady-StartAdapt;</span>
+0234 
+0235 <span class="comment">%calculate relative after-effects</span>
+0236 <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'OG post'</span>), adaptData.metaData.conditionName))==1 &amp;&amp; nansum(cellfun(@(x) strcmp(x, <span class="string">'adaptation'</span>), lower(adaptData.metaData.conditionName)))==1 || nansum(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), lower(adaptData.metaData.conditionName)))==1
+0237     idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
+0238     <span class="keyword">if</span> isempty(idx)
+0239         idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
+0240     <span class="keyword">end</span>
+0241     <span class="keyword">if</span> ~isempty(idx)
+0242         Transfer= 100*(OGafter./(Catch(:,idx)*ones(1,nParams)));
+0243     <span class="keyword">else</span>
+0244         Transfer= 100*(OGafter./Catch);
+0245     <span class="keyword">end</span>
+0246     Transfer2= 100*(OGafter./(AdaptExtent*ones(1,nParams)));
+0247 <span class="keyword">end</span>
+0248 
+0249 <span class="keyword">if</span> nansum(cellfun(@(x) strcmp(x, <span class="string">'adaptation'</span>), lower(adaptData.metaData.conditionName)))==1 || nansum(cellfun(@(x) strcmp(x, <span class="string">'re-adaptation'</span>), lower(adaptData.metaData.conditionName)))==1
+0250     idx = find(strcmpi(params, <span class="string">'stepLengthAsym'</span>));
+0251     <span class="keyword">if</span> isempty(idx)
+0252         idx = find(strcmpi(params, <span class="string">'netContributionNorm2'</span>));
+0253     <span class="keyword">end</span>
+0254     <span class="keyword">if</span> ~isempty(idx)
+0255         Washout= 100*(1-(TMafter./(Catch(:,idx)*ones(1,nParams))));
+0256     <span class="keyword">else</span>
+0257         Washout = 100*(1-(TMafter./Catch));
+0258     <span class="keyword">end</span>
+0259     Washout2= 100-(100*(TMafter./(AdaptExtent*ones(1,nParams))));
+0260 <span class="keyword">end</span>
+0261 
+0262 
+0263 <span class="keyword">for</span> j=1:length(outcomeMeasures)
+0264     eval([<span class="string">'results.(outcomeMeasures{j}).avg(g,:)=nanmean('</span> outcomeMeasures{j} <span class="string">',1);'</span>]);
+0265     eval([<span class="string">'results.(outcomeMeasures{j}).se(g,:)=nanstd('</span> outcomeMeasures{j} <span class="string">'./sqrt(nSubs));'</span>]);
+0266 <span class="keyword">end</span>
+0267 
+0268 <span class="keyword">if</span> g==1 <span class="comment">%This seems ridiculous, but I don't know of another way to do it without making MATLAB mad.</span>
+0269     
+0270     <span class="keyword">if</span> plotFlag
+0271         <span class="keyword">for</span> p=1:nParams
+0272             <span class="keyword">for</span> m = 1:length(outcomeMeasures)
+0273                 eval([<span class="string">'results.(outcomeMeasures{m}).indiv.(params{p}) = [g*ones(nSubs,1) '</span> outcomeMeasures{m} <span class="string">'(:,p)];'</span>])
+0274             <span class="keyword">end</span>
+0275         <span class="keyword">end</span>
+0276     <span class="keyword">else</span>
+0277         <span class="comment">%for stats</span>
+0278         <span class="keyword">for</span> m=1:length(outcomeMeasures)
+0279             <span class="comment">%The results.(whatever).indiv structure needs to be in this format to make life easier for using SPSS</span>
+0280             eval([<span class="string">'results.(outcomeMeasures{m}).indiv=[g*ones(nSubs,1) '</span> outcomeMeasures{m} <span class="string">'];'</span>])
+0281         <span class="keyword">end</span>
+0282     <span class="keyword">end</span>
+0283     
+0284 <span class="keyword">else</span>
+0285     <span class="keyword">if</span> plotFlag
+0286         <span class="keyword">for</span> p=1:nParams
+0287             <span class="keyword">for</span> m = 1:length(outcomeMeasures)
+0288                 eval([<span class="string">'results.(outcomeMeasures{m}).indiv.(params{p})(end+1:end+nSubs,1:2) = [g*ones(nSubs,1) '</span> outcomeMeasures{m} <span class="string">'(:,p)];'</span>])
+0289             <span class="keyword">end</span>
+0290         <span class="keyword">end</span>
+0291     <span class="keyword">else</span>
+0292         <span class="comment">%for stats</span>
+0293         <span class="keyword">for</span> m=1:length(outcomeMeasures)
+0294             eval([<span class="string">'results.(outcomeMeasures{m}).indiv(end+1:end+nSubs,:)=[g*ones(nSubs,1) '</span> outcomeMeasures{m} <span class="string">'];'</span>])
+0295         <span class="keyword">end</span>
+0296     <span class="keyword">end</span>
+0297     
+0298 <span class="keyword">end</span>
+0299 <span class="keyword">end</span>
+0300 
+0301 <span class="comment">%plot stuff</span>
+0302 <span class="keyword">if</span> plotFlag
+0303     
+0304     <span class="comment">%     % FIRST: plot baseline values against catch and transfer</span>
+0305     <span class="comment">%     epochs={'AdaptExtent','Catch','OGafter','TMafter'};</span>
+0306     <span class="comment">%     if nargin&gt;5 %I imagine there has to be a better way to do this...</span>
+0307     <span class="comment">%         barGroups(Study,results,groups,params,epochs,indivFlag)</span>
+0308     <span class="comment">%     else</span>
+0309     <span class="comment">%         barGroups(Study,results,groups,params,epochs)</span>
+0310     <span class="comment">%     end</span>
+0311     
+0312     <span class="comment">%     % SECOND: plot average adaptation values?</span>
+0313     <span class="comment">%     epochs={'AvgAdaptBeforeCatch','TMsteadyBeforeCatch','AvgAdaptAll','TMsteady'};</span>
+0314     <span class="comment">%     if nargin&gt;5</span>
+0315     <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)</span>
+0316     <span class="comment">%     else</span>
+0317     <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs)</span>
+0318     <span class="comment">%     end</span>
+0319     
+0320     <span class="comment">%     % SECOND: plot average adaptation values?</span>
+0321     <span class="comment">%     epochs={'AvgAdaptAll','TMsteady','catch','Transfer'};</span>
+0322     <span class="comment">%     if nargin&gt;5</span>
+0323     <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs,indivFlag)</span>
+0324     <span class="comment">%     else</span>
+0325     <span class="comment">%         barGroups(SMatrix,results,groups,params,epochs)</span>
+0326     <span class="comment">%     end</span>
+0327 <span class="keyword">end</span>
+0328 
+0329 
+0330</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

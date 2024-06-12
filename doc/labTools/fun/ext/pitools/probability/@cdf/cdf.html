@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cdf</title>
+  <meta name="keywords" content="cdf">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../../index.html">fun</a> &gt; <a href="../../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="../index.html">probability</a> &gt; <a href="index.html">@cdf</a> &gt; cdf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../../index.html"><img alt="<" border="0" src="../../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/probability/@cdf&nbsp;<img alt=">" border="0" src="../../../../../../right.png"></a></td></tr></table>-->
+
+<h1>cdf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="cdf.html" class="code" title="">cdf</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="cdf.html" class="code" title="">cdf</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=cdf(FValues,coordinates,name)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="cdf.html" class="code" title="">cdf</a>
+0002     <span class="comment">%cdf Summary of this class goes here</span>
+0003 
+0004     <span class="comment">%%</span>
+0005     properties
+0006        FValues=[]; <span class="comment">%Where the values of F(x) are stored</span>
+0007        coordinates=[]; <span class="comment">%The coordinates of the points x where p is evaluated</span>
+0008        name=[<span class="string">'Unnamed'</span>];
+0009     <span class="keyword">end</span>
+0010     <span class="comment">%%</span>
+0011     properties(Dependent)
+0012        supportRegionLimits
+0013        dimension
+0014     <span class="keyword">end</span>
+0015 
+0016     <span class="comment">%%</span>
+0017     methods
+0018         <span class="comment">%Constructor:</span>
+0019         <a name="_sub0" href="#_subfunctions" class="code">function this=cdf(FValues,coordinates,name) </a><span class="comment">%Constructor</span>
+0020             <span class="comment">%INPUTS:</span>
+0021             <span class="comment">%FValues an n-dimensional matrix which contains the cdf</span>
+0022             <span class="comment">%evaluated in a given grid (grid must be rectangular)</span>
+0023             <span class="comment">%Coordinates: a cell array of length n, with each cell</span>
+0024             <span class="comment">%containing a vector which specifies the evaluation points of</span>
+0025             <span class="comment">%the grid for a given dimension</span>
+0026             <span class="comment">%Example: cdf([1:5]/5'*[0:10:90]/90,{[1:5],[0:10:90]})</span>
+0027             <span class="comment">%returns the cdf of a uniform 2D distribution in the region given by</span>
+0028             <span class="comment">%[1,5]x[10,90].</span>
+0029             
+0030             <span class="comment">%Check that dimension of FValues coincides with length of</span>
+0031             <span class="comment">%coordinates</span>
+0032             <span class="keyword">if</span> nargin&lt;2
+0033                 ME = MException(<span class="string">'cdf:MissingArguments'</span>,<span class="string">'Either the values or the coordinates are missing.'</span>);
+0034                 throw(ME);
+0035             <span class="keyword">end</span>
+0036             n=ndims(FValues);
+0037             <span class="keyword">if</span> length(FValues)==numel(FValues)
+0038                 n=1;
+0039             <span class="keyword">end</span>
+0040             <span class="keyword">if</span> n~=length(coordinates)
+0041                 ME = MException(<span class="string">'cdf:InconsistentArguments'</span>,<span class="string">'The dimension of the FValues and coordinates are not consistent.'</span>);
+0042                 throw(ME);
+0043             <span class="keyword">end</span>
+0044             
+0045             <span class="comment">%Check that it is strictly non-decreasing</span>
+0046             
+0047             <span class="comment">%Check that min is 0 and max is 1, or force it to.</span>
+0048             
+0049 
+0050             
+0051             <span class="comment">%Assign properties</span>
+0052             this.FValues=FValues;
+0053             auxSize=size(FValues);
+0054             <span class="keyword">for</span> i=1:length(coordinates)
+0055                 <span class="keyword">if</span> length(coordinates{i})==auxSize(i);
+0056                     this.coordinates{i}=coordinates{i}(:);
+0057                 <span class="keyword">else</span>
+0058                     ME = MException(<span class="string">'cdf:InconsistentArguments'</span>,<span class="string">'The coordinate vectors do not have the same size as the provided FValues.'</span>);
+0059                     throw(ME);
+0060                 <span class="keyword">end</span>
+0061             <span class="keyword">end</span>
+0062             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; isa(name,<span class="string">'char'</span>)
+0063                 this.name=name;
+0064             <span class="keyword">end</span>
+0065 
+0066         <span class="keyword">end</span>
+0067         
+0068         <span class="comment">%Derive pdf from this cdf</span>
+0069         pdf=getPDF(this)
+0070         
+0071         
+0072     <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

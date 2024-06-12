@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of outlierTest</title>
+  <meta name="keywords" content="outlierTest">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">test</a> &gt; outlierTest.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/test&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>outlierTest
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%
+Idea: given some candidate outliers scored with integers based on how many
+outlier stats each marker participates, find a classification (binary) for
+the minimum number of outlier markers that explains the outlier stats.
+Only works if stats are always computed from 2 and only 2 markers.
+Let p be the outlier scores of each markers' stats, then the problem is a
+mixed-integer programming of the form:
+min 1'*x [minimum number of outlier markers possible]
+subject to 
+y+z = p - 1'*x; y&gt;=0; z&lt;=0; [y quantifies how many more outlier stats
+than there are outlier markers each marker has; z how many less, one of
+the two is always 0]
+y&gt;=x &amp; y-max(p)*x&lt;=0 [these two enforce x=(y&gt;0)]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%</span>
+0002 <span class="comment">%Idea: given some candidate outliers scored with integers based on how many</span>
+0003 <span class="comment">%outlier stats each marker participates, find a classification (binary) for</span>
+0004 <span class="comment">%the minimum number of outlier markers that explains the outlier stats.</span>
+0005 <span class="comment">%Only works if stats are always computed from 2 and only 2 markers.</span>
+0006 <span class="comment">%Let p be the outlier scores of each markers' stats, then the problem is a</span>
+0007 <span class="comment">%mixed-integer programming of the form:</span>
+0008 <span class="comment">%min 1'*x [minimum number of outlier markers possible]</span>
+0009 <span class="comment">%subject to</span>
+0010 <span class="comment">%y+z = p - 1'*x; y&gt;=0; z&lt;=0; [y quantifies how many more outlier stats</span>
+0011 <span class="comment">%than there are outlier markers each marker has; z how many less, one of</span>
+0012 <span class="comment">%the two is always 0]</span>
+0013 <span class="comment">%y&gt;=x &amp; y-max(p)*x&lt;=0 [these two enforce x=(y&gt;0)]</span>
+0014 
+0015 <span class="comment">%%</span>
+0016 beq=[1 1 4 2 3 0 1]';
+0017 M=numel(beq);
+0018 uno=ones(M,1);
+0019 cero=zeros(M,1);
+0020 
+0021 <span class="comment">%Strict equality: z+y = b-1'*x -&gt; b = 1'*x+y+z;</span>
+0022 Aeq=[ones(M) eye(M) eye(M)]; <span class="comment">%M x 3M</span>
+0023 
+0024 <span class="comment">%Inequality: y&gt;=x -&gt; x-y &lt;= 0</span>
+0025 A=[eye(M), -eye(M), zeros(M)];
+0026 b=cero;
+0027 <span class="comment">%Inequality: y-max(b)*x &lt;=0</span>
+0028 A=[A; -max(beq)*eye(M), eye(M), zeros(M)];
+0029 b=[b;cero];
+0030 
+0031 <span class="comment">%Constraints:</span>
+0032 lb=[cero;cero;-Inf*uno];
+0033 ub=[uno; Inf*uno;cero];
+0034 
+0035 <span class="comment">%% Solve</span>
+0036 f=[uno;cero;cero];
+0037 xy=intlinprog(f,1:M,A,b,Aeq,beq,lb,ub); <span class="comment">%Solving for integer (binary) x</span>
+0038 x=xy(1:M)
+0039 y=xy(M+1:2*M);
+0040 z=xy(2*M+1:end);</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

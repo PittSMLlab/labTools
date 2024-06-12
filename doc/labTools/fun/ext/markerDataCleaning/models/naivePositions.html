@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of naivePositions</title>
+  <meta name="keywords" content="naivePositions">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">markerDataCleaning</a> &gt; <a href="index.html">models</a> &gt; naivePositions.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/markerDataCleaning/models&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>naivePositions
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="markerModel.html" class="code" title="">markerModel</a>	</li><li><a href="naivePositions.html" class="code" title="">naivePositions</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="naivePositions.html" class="code" title="">naivePositions</a>	</li><li><a href="naiveRelPositions.html" class="code" title="">naiveRelPositions</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this = naivePositions(trainData,labs,components)</a></li><li><a href="#_sub2" class="code">function logL = loglikelihood(this,data)</a></li><li><a href="#_sub3" class="code">function i = indicatrix(this)</a></li><li><a href="#_sub4" class="code">function fh=seeModel(this)</a></li><li><a href="#_sub5" class="code">function [ss,g] = summaryStats(data)</a></li><li><a href="#_sub6" class="code">function this = learn(data,labels,components,noDisp)</a></li><li><a href="#_sub7" class="code">function mleData=invert(ss)</a></li><li><a href="#_sub8" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights)</a></li><li><a href="#_sub9" class="code">function dataFrame=invertAndAnchor(ss,anchorFrame,anchorWeights)</a></li><li><a href="#_sub10" class="code">function [m,s,l]=getRefData()</a></li><li><a href="#_sub11" class="code">function [D,xl,yl]=stat2Matrix(ss)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="naivePositions.html" class="code" title="">naivePositions</a> &lt; <a href="markerModel.html" class="code" title="">markerModel</a>
+0002     <span class="comment">%summary stats: pair-wise component differences</span>
+0003     <span class="comment">%model: independent normals</span>
+0004     properties
+0005         validComponents=1:3;
+0006     <span class="keyword">end</span>
+0007     methods
+0008         <a name="_sub0" href="#_subfunctions" class="code">function this = naivePositions(trainData,labs,components)    </a>
+0009             this=this@<a href="markerModel.html" class="code" title="">markerModel</a>(trainData,labs);
+0010             <span class="keyword">if</span> nargin&gt;2 &amp;&amp; ~isempty(components)
+0011                 this.validComponents=components;
+0012             <span class="keyword">end</span>
+0013         <span class="keyword">end</span>
+0014         <a name="_sub1" href="#_subfunctions" class="code">function logL = loglikelihood(this,data)</a>
+0015             ss=this.summaryStats(data);
+0016             <span class="comment">%sigma=this.statStd;</span>
+0017             sigma=this.getRobustStd(.94);
+0018             <span class="comment">%mu=this.statMean;</span>
+0019             mu=this.statMedian;
+0020             logL=markerModel.normalLogL(ss,mu,sigma);
+0021             <span class="comment">%Inefficient way of doing it: for stats corresponding to</span>
+0022             <span class="comment">%invalid components, set logL=NaN;</span>
+0023             <span class="keyword">for</span> j=1:3
+0024                <span class="keyword">if</span> ~any((j-this.validComponents)==0) 
+0025                    logL((j-1)*this.Nmarkers+[1:this.Nmarkers],:)=NaN;
+0026                <span class="keyword">end</span>
+0027             <span class="keyword">end</span>
+0028         <span class="keyword">end</span>
+0029         <a name="_sub2" href="#_subfunctions" class="code">function i = indicatrix(this) </a><span class="comment">%MxP</span>
+0030             M=this.Nmarkers;
+0031             <span class="comment">%N=length(this.validComponents);</span>
+0032             N=3;
+0033             i=zeros(M,N*M);
+0034             <span class="keyword">for</span> j=1:M
+0035                 i(j,j+[0:M:N*M-1])=1;
+0036             <span class="keyword">end</span>
+0037         <span class="keyword">end</span>
+0038         
+0039         <a name="_sub3" href="#_subfunctions" class="code">function fh=seeModel(this)</a>
+0040            fh=this.seeModel@<a href="markerModel.html" class="code" title="">markerModel</a>; 
+0041            subplot(3,2,[2,4,6])
+0042            hold on
+0043            m=nanmedian(this.trainingData,3);
+0044            i=this.indicatrix;
+0045            sigma=this.getRobustStd(.94);
+0046            mu=this.statMedian;
+0047             <span class="keyword">for</span> j=1:size(i,1) <span class="comment">%For each marker</span>
+0048                 n=mu(i(j,:)==1); <span class="comment">%the components present</span>
+0049                 q=sigma(i(j,:)==1);
+0050                 text(m(j,1),m(j,2),m(j,3)-30,[<span class="string">'mu=['</span> <span class="keyword">...</span><span class="comment"> </span>
+0051                     num2str(n(1),3) <span class="string">','</span> num2str(n(2),3) <span class="string">','</span> num2str(n(3),3) <span class="keyword">...</span>
+0052                     <span class="string">'], sigma=['</span> <span class="keyword">...</span>
+0053                     num2str(q(1),3) <span class="string">','</span> num2str(q(2),3) <span class="string">','</span> num2str(q(3),3) <span class="keyword">...</span>
+0054                     <span class="string">']'</span>]);
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         
+0058     <span class="keyword">end</span>
+0059     methods(Static)
+0060         <a name="_sub4" href="#_subfunctions" class="code">function [ss,g] = summaryStats(data)</a>
+0061            ss=reshape(data,size(data,1)*size(data,2),size(data,3)); <span class="comment">%Plain position</span>
+0062            <span class="keyword">if</span> nargout&gt;2
+0063               g=eye(size(ss,1)); <span class="comment">%Gradient of stats w.r.t</span>
+0064               <span class="comment">%each component of markers</span>
+0065               <span class="comment">%For each frame? or just mean data?</span>
+0066            <span class="keyword">end</span>
+0067         <span class="keyword">end</span>
+0068         <a name="_sub5" href="#_subfunctions" class="code">function this = learn(data,labels,components,noDisp)</a>
+0069             <span class="keyword">if</span> nargin&lt;2
+0070                 labels={};
+0071             <span class="keyword">end</span>
+0072             <span class="keyword">if</span> nargin&lt;3 || isempty(components)
+0073                 components=1:3;
+0074             <span class="keyword">end</span>
+0075             this=<a href="naivePositions.html" class="code" title="">naivePositions</a>(data,labels,components);
+0076             <span class="keyword">if</span> nargin&lt;4 || isempty(noDisp) || ~noDisp
+0077                 this.seeModel()
+0078             <span class="keyword">end</span>
+0079             
+0080         <span class="keyword">end</span>
+0081         <a name="_sub6" href="#_subfunctions" class="code">function mleData=invert(ss)</a>
+0082             mleData=[];<span class="comment">%TODO</span>
+0083         <span class="keyword">end</span>
+0084         <a name="_sub7" href="#_subfunctions" class="code">function [newDataFrame,params]=anchor(dataFrame,anchorFrame,anchorWeights) </a><span class="comment">%This needs to be model-specific, not all models require 6DoF transformation</span>
+0085            <span class="comment">%Does a 3D rotation/translation of dataFrame to best match the anchorFrame</span>
+0086            <span class="comment">%For a single frame:</span>
+0087            [R,t,newDataFrame]=getTranslationAndRotation(dataFrame,anchorFrame);
+0088            params.R=R;
+0089            params.t=t;
+0090         <span class="keyword">end</span>
+0091         <a name="_sub8" href="#_subfunctions" class="code">function dataFrame=invertAndAnchor(ss,anchorFrame,anchorWeights)</a>
+0092             [dataFrame] = [];<span class="comment">% TODO</span>
+0093         <span class="keyword">end</span>
+0094 
+0095     <span class="keyword">end</span>
+0096     methods(Static,Hidden)
+0097         <a name="_sub9" href="#_subfunctions" class="code">function [m,s,l]=getRefData()</a>
+0098             load ./data/refDataPosition.mat
+0099         <span class="keyword">end</span>
+0100         <a name="_sub10" href="#_subfunctions" class="code">function [D,xl,yl]=stat2Matrix(ss)</a>
+0101             D=reshape(ss,numel(ss)/3,3);
+0102             yl=<span class="string">'markerLabels'</span>;
+0103             xl={<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>};
+0104         <span class="keyword">end</span>
+0105     <span class="keyword">end</span>
+0106 <span class="keyword">end</span>
+0107</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

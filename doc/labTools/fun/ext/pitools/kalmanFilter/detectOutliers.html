@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of detectOutliers</title>
+  <meta name="keywords" content="detectOutliers">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../../../index.html">fun</a> &gt; <a href="../../index.html">ext</a> &gt; <a href="#">pitools</a> &gt; <a href="index.html">kalmanFilter</a> &gt; detectOutliers.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../../../index.html"><img alt="<" border="0" src="../../../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/ext/pitools/kalmanFilter&nbsp;<img alt=">" border="0" src="../../../../../right.png"></a></td></tr></table>-->
+
+<h1>detectOutliers
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="box"><strong>function [outlierIndx]=detectOutliers(y,x,P,C,R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../../matlabicon.gif)">
+<li><a href="update_wOutlierRejection.html" class="code" title="function [x,P,outlierIndx]=update_wOutlierRejection(C,R,x,P,y,d)">update_wOutlierRejection</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [outlierIndx]=detectOutliers(y,x,P,C,R)</a>
+0002 m=size(y,1);
+0003 th=9; <span class="comment">%Threshold, limit value for (x-mu)'*sigma^{-1}*(x-mu)/m</span>
+0004 expY=C*x;
+0005 Py=C*P*C' + R;
+0006 innov=y-expY;
+0007 <span class="comment">%logp=innov'*pinv(Py)*innov; %-1/2 of log(p) of observation</span>
+0008 auxTh=(1+(th-1)/sqrt(m))*m; <span class="comment">%Formally I should use the inverse of chi-square tail as we can think of auxLogP as the sum of m normally distributed variables</span>
+0009 auxLogP=pinv(Py)*innov;
+0010 <span class="comment">%innov.*auxLogP</span>
+0011 auxDist=innov.*auxLogP;
+0012 outlierSamples=sum(auxDist)&gt;auxTh; <span class="comment">%Values of 1 indicate likely outliers</span>
+0013 outlierIndx=false(size(auxDist));
+0014 outlierIndx(:,outlierSamples)=true;
+0015 outlierIndx=auxDist&gt; sqrt(2)*erfcinv(erfc(sqrt(th/2))/m) <span class="comment">%Bonferroni-corrected probability of tail. For m=1 this means more than sqrt(th) std away</span>
+0016 
+0017 <span class="comment">%if any(outlierIndx)</span>
+0018 <span class="comment">%    disp(['Found outliers:' num2str(find(outlierIndx)')])</span>
+0019 <span class="comment">%    y</span>
+0020 <span class="comment">%end</span>
+0021 
+0022 <span class="comment">%ALT: do it recursively by finding the lowest log(p), if it passes the threshold</span>
+0023 <span class="comment">%exclude it, then re-compute log(p) without considering it, find the second lowest</span>
+0024 <span class="comment">%value, and so forth.</span>
+0025 
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

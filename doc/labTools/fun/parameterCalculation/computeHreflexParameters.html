@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeHreflexParameters</title>
+  <meta name="keywords" content="computeHreflexParameters">
+  <meta name="description" content="This function computes summary parameters per stride for the H-reflex data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeHreflexParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeHreflexParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function computes summary parameters per stride for the H-reflex data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeHreflexParameters(strideEvents,HreflexData,EMGData,slowLeg) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function computes summary parameters per stride for the H-reflex data
+ The output is a parameterSeries object, which can be concatenated with
+ other parameterSeries objects, for example with those from
+ computeTemporalParameters. While this is used for Hreflex parameters
+ strictly, it should work for any labTS.
+ See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
+ <a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeHreflexParameters(strideEvents,HreflexData,EMGData,slowLeg)</a>
+0002 <span class="comment">%This function computes summary parameters per stride for the H-reflex data</span>
+0003 <span class="comment">% The output is a parameterSeries object, which can be concatenated with</span>
+0004 <span class="comment">% other parameterSeries objects, for example with those from</span>
+0005 <span class="comment">% computeTemporalParameters. While this is used for Hreflex parameters</span>
+0006 <span class="comment">% strictly, it should work for any labTS.</span>
+0007 <span class="comment">% See also computeSpatialParameters, computeTemporalParameters,</span>
+0008 <span class="comment">% computeForceParameters, parameterSeries</span>
+0009 
+0010 <span class="comment">%% Gait Stride Event Times</span>
+0011 timeSHS = strideEvents.tSHS;    <span class="comment">% array of slow heel strike event times</span>
+0012 timeFHS = strideEvents.tFHS;    <span class="comment">% array of fast heel strike event times</span>
+0013 
+0014 <span class="comment">%% Labels &amp; Descriptions:</span>
+0015 aux={<span class="string">'stimTimeSlow'</span>,        <span class="string">'time from SHS to slow leg stim (in s)'</span>; <span class="keyword">...</span>
+0016     <span class="string">'stimTimeFast'</span>,         <span class="string">'time from FHS to fast leg stim (in s)'</span>; <span class="keyword">...</span>
+0017     <span class="string">'hReflexSlow'</span>,          <span class="string">'peak-to-peak voltage of the slow leg H-wave (in V)'</span>; <span class="keyword">...</span>
+0018     <span class="string">'hReflexFast'</span>,          <span class="string">'peak-to-peak voltage of the fast leg H-wave (in V)'</span>};
+0019 
+0020 paramLabels = aux(:,1);
+0021 description = aux(:,2);
+0022 
+0023 <span class="comment">%% Compute the Parameters</span>
+0024 threshVolt = 2.5; <span class="comment">% threshold to determine stimulation trigger pulse</span>
+0025 <span class="comment">% extract all stimulation trigger data for each leg</span>
+0026 stimTrigR = HreflexData.Data(:,contains(HreflexData.labels,<span class="string">'right'</span>, <span class="keyword">...</span>
+0027     <span class="string">'IgnoreCase'</span>,true));
+0028 stimTrigL = HreflexData.Data(:,contains(HreflexData.labels,<span class="string">'left'</span>, <span class="keyword">...</span>
+0029     <span class="string">'IgnoreCase'</span>,true));
+0030 <span class="comment">% determine indices when stimulus trigger is high (to stimulate), and</span>
+0031 <span class="comment">% extract slow and fast leg EMG data for the Medial Gastrocnemius muscle</span>
+0032 <span class="keyword">switch</span> lower(slowLeg)   <span class="comment">% which leg is slow, R or L</span>
+0033     <span class="keyword">case</span> <span class="string">'r'</span>            <span class="comment">% if right leg is slow, ...</span>
+0034         indsStimSlowAll = find(stimTrigR &gt; threshVolt);
+0035         indsStimFastAll = find(stimTrigL &gt; threshVolt);
+0036         <span class="comment">% MG is the muscle used for the H-reflex</span>
+0037         EMGSlowMG = EMGData.Data(:,contains(EMGData.labels,<span class="string">'RMG'</span>));
+0038         EMGFastMG = EMGData.Data(:,contains(EMGData.labels,<span class="string">'LMG'</span>));
+0039         <span class="comment">% use the TAP to corroborate the stim artifact time</span>
+0040         EMGSlowTAP = EMGData.Data(:,contains(EMGData.labels,<span class="string">'RTAP'</span>));
+0041         EMGFastTAP = EMGData.Data(:,contains(EMGData.labels,<span class="string">'LTAP'</span>));
+0042     <span class="keyword">case</span> <span class="string">'l'</span>            <span class="comment">% if left leg is slow, ...</span>
+0043         indsStimSlowAll = find(stimTrigL &gt; threshVolt);
+0044         indsStimFastAll = find(stimTrigR &gt; threshVolt);
+0045         EMGSlowMG = EMGData.Data(:,contains(EMGData.labels,<span class="string">'LMG'</span>));
+0046         EMGFastMG = EMGData.Data(:,contains(EMGData.labels,<span class="string">'RMG'</span>));
+0047         EMGSlowTAP = EMGData.Data(:,contains(EMGData.labels,<span class="string">'LTAP'</span>));
+0048         EMGFastTAP = EMGData.Data(:,contains(EMGData.labels,<span class="string">'RTAP'</span>));
+0049     <span class="keyword">otherwise</span>           <span class="comment">% otherwise, throw an error</span>
+0050         error(<span class="string">'Invalid slow leg input argument, must be ''R'' or ''L'''</span>);
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">% determine which indices correspond to the start of a new stimulus pulse</span>
+0054 <span class="comment">% (i.e., there is a jump in index greater than 1, not the next sample)</span>
+0055 indsNewPulseSlow = diff([0; indsStimSlowAll]) &gt; 1;
+0056 indsNewPulseFast = diff([0; indsStimFastAll]) &gt; 1;
+0057 
+0058 <span class="comment">% determine time since start of trial when stim pulse started (rising edge)</span>
+0059 stimTimeSlowAbs = HreflexData.Time(indsStimSlowAll(indsNewPulseSlow));
+0060 stimTimeFastAbs = HreflexData.Time(indsStimFastAll(indsNewPulseFast));
+0061 
+0062 <span class="comment">% Romoves stims that happened too early (this happens when H reflex stim happened</span>
+0063 <span class="comment">% during transition into a new conditions and before a 1st valid HS is detected,</span>
+0064 <span class="comment">% those strides won't be counted later on)</span>
+0065 <span class="comment">% check if all stim time are after at least the 1st HS of the corresponding leg</span>
+0066 stimSlowCut = stimTimeSlowAbs - timeSHS(1) &lt;= 0; 
+0067 <span class="keyword">if</span> any(stimSlowCut) <span class="comment">%stimulation happens on or before a 1st valid stride is detected for this condition</span>
+0068     warning(<span class="string">'Hreflex stim for slow leg will be dropped, number of stim dropped: %d'</span>, sum(stimSlowCut));
+0069 <span class="keyword">end</span>
+0070 stimFastCut = stimTimeFastAbs - timeFHS(1) &lt;= 0;
+0071 <span class="keyword">if</span> any(stimFastCut)
+0072     warning(<span class="string">'Hreflex stim for fast leg will be dropped, number of stim dropped: %d'</span>, sum(stimFastCut));
+0073 <span class="keyword">end</span>
+0074 stimTimeSlowAbs = stimTimeSlowAbs(~stimSlowCut);
+0075 stimTimeFastAbs = stimTimeFastAbs(~stimFastCut);
+0076 
+0077 <span class="comment">% initialize parameter arrays: time of stimulation trigger pulse onset</span>
+0078 <span class="comment">% (i.e., rising edge) and H-wave amplitude (i.e., peak-to-peak voltage)</span>
+0079 stimTimeSlow = nan(size(timeSHS));
+0080 stimTimeFast = nan(size(timeFHS));
+0081 hReflexSlow = nan(size(timeSHS));
+0082 hReflexFast = nan(size(timeFHS));
+0083 
+0084 <span class="comment">% find the indices of the nearest stride heel strike to the time of stim</span>
+0085 <span class="comment">% NOTE: this **should** be identical but may not be due to missed</span>
+0086 <span class="comment">% stimulation pulses, especially at the start or end of a trial (however,</span>
+0087 <span class="comment">% there should not be substantial differences in the stride indices)</span>
+0088 <span class="comment">% TODO: add a data check to warn if the stride indices are considerably</span>
+0089 <span class="comment">% different (i.e., other than missed strides)</span>
+0090 indsStimStrideSlow = arrayfun(@(x) find((x-timeSHS) &gt; 0,1,<span class="string">'last'</span>), <span class="keyword">...</span>
+0091     stimTimeSlowAbs);
+0092 indsStimStrideFast = arrayfun(@(x) find((x-timeFHS) &gt; 0,1,<span class="string">'last'</span>), <span class="keyword">...</span>
+0093     stimTimeFastAbs);
+0094 
+0095 <span class="comment">% populate the times for the strides that have stimulation</span>
+0096 <span class="comment">% TODO: Update to use TAP EMG stim artifact rather than trigger pulse</span>
+0097 stimTimeSlow(indsStimStrideSlow) = stimTimeSlowAbs - <span class="keyword">...</span>
+0098     timeSHS(indsStimStrideSlow);
+0099 stimTimeFast(indsStimStrideFast) = stimTimeFastAbs - <span class="keyword">...</span>
+0100     timeFHS(indsStimStrideFast);
+0101 
+0102 <span class="comment">% find the indices of the EMG data corresponding to the onset of the</span>
+0103 <span class="comment">% stimulation trigger pulse</span>
+0104 indsEMGStimOnsetSlowAbs = arrayfun(@(x) find(x == EMGData.Time), <span class="keyword">...</span>
+0105     stimTimeSlowAbs);
+0106 indsEMGStimOnsetFastAbs = arrayfun(@(x) find(x == EMGData.Time), <span class="keyword">...</span>
+0107     stimTimeFastAbs);
+0108 
+0109 numStimSlow = length(indsEMGStimOnsetSlowAbs);  <span class="comment">% number of stimuli</span>
+0110 numStimFast = length(indsEMGStimOnsetFastAbs);
+0111 
+0112 indsEMGStimArtifactSlowAbs = nan(size(indsEMGStimOnsetSlowAbs));
+0113 indsEMGStimArtifactFastAbs = nan(size(indsEMGStimOnsetFastAbs));
+0114 
+0115 <span class="comment">% TODO: store more parameters related to the H-reflex:</span>
+0116 <span class="comment">%        - time of H-wave (peak and trough relative to stimulus pulse)</span>
+0117 <span class="comment">%        - M-wave amplitude</span>
+0118 <span class="comment">%        - time of M-wave (peak and trough)</span>
+0119 
+0120 <span class="comment">% 20 ms after stimulus trigger pulse onset divided by sample period to get</span>
+0121 <span class="comment">% the number of samples after stim onset for the start of the H-wave window</span>
+0122 <span class="comment">% sample period (in seconds) of EMG data, which should be identical to the</span>
+0123 <span class="comment">% sample period of H-reflex stimulation trigger data (i.e., 1 / 2,000 Hz)</span>
+0124 <span class="comment">% TODO: add check to ensure identical</span>
+0125 per = EMGData.sampPeriod;   <span class="comment">% sample period of data</span>
+0126 winStart = 0.020 / per;     <span class="comment">% 20 ms after TAP-aligned stim artifact</span>
+0127 winEnd = 0.050 / per;       <span class="comment">% 50 ms after TAP-aligned stim artifact</span>
+0128 winStim = 0.1 / per;    <span class="comment">% +/- 100 ms of the onset of the stim trigger pulse</span>
+0129 
+0130 <span class="keyword">for</span> stS = 1:numStimSlow     <span class="comment">% for each slow leg stimulus, ...</span>
+0131     winSearch = (indsEMGStimOnsetSlowAbs(stS) - winStim): <span class="keyword">...</span>
+0132         (indsEMGStimOnsetSlowAbs(stS) + winStim);
+0133     [~,indMaxTAP] = max(EMGSlowTAP(winSearch));
+0134     timesWin = EMGData.Time(winSearch);
+0135 
+0136     <span class="comment">% TODO: implement more robust peak finding and discrepancy handling</span>
+0137     <span class="comment">% consider moving into a function or reducing loops</span>
+0138     <span class="comment">% TODO: need to add a threshold so that data is thrown out if the</span>
+0139     <span class="comment">% TAP positive artifact peak (which appears to be typically massive</span>
+0140     <span class="comment">% relative to the EMG signal or the artifact present in other</span>
+0141     <span class="comment">% muscles) &lt; 0.0004 (from the peak finding in Omar's code)</span>
+0142     timeStimStart = timesWin(indMaxTAP);
+0143     indsEMGStimArtifactSlowAbs(stS) = find(EMGData.Time == timeStimStart);
+0144 
+0145     <span class="comment">% extract the EMG data for the time window of 20 ms - 50 ms from the</span>
+0146     <span class="comment">% onset of the stimulus pulse</span>
+0147     <span class="comment">% indWinStart = indsEMGStimOnsetSlowAbs(stS) + winStart;</span>
+0148     <span class="comment">% indWinEnd = indsEMGStimOnsetSlowAbs(stS) + winEnd;</span>
+0149     indWinStart = indsEMGStimArtifactSlowAbs(stS) + winStart;
+0150     indWinEnd = indsEMGStimArtifactSlowAbs(stS) + winEnd;
+0151     winEMG = EMGSlowMG(indWinStart:indWinEnd);
+0152     <span class="comment">% compute amplitude of the H-waveform (i.e., peak-to-peak voltage)</span>
+0153     hReflexSlow(indsStimStrideSlow(stS)) = max(winEMG) - min(winEMG);
+0154 <span class="keyword">end</span>
+0155 
+0156 <span class="keyword">for</span> stF = 1:numStimFast     <span class="comment">% for each fast leg stimulus, ...</span>
+0157     winSearch = (indsEMGStimOnsetFastAbs(stF) - winStim): <span class="keyword">...</span>
+0158         (indsEMGStimOnsetFastAbs(stF) + winStim);
+0159     [~,indMaxTAP] = max(EMGFastTAP(winSearch));
+0160     timesWin = EMGData.Time(winSearch);
+0161 
+0162     timeStimStart = timesWin(indMaxTAP);
+0163     indsEMGStimArtifactFastAbs(stF) = find(EMGData.Time == timeStimStart);
+0164 
+0165     <span class="comment">% extract the EMG data for the time window of 20 ms - 50 ms from the</span>
+0166     <span class="comment">% onset of the stimulus pulse</span>
+0167     <span class="comment">% indWinStart = indsEMGStimOnsetFastAbs(stF) + winStart;</span>
+0168     <span class="comment">% indWinEnd = indsEMGStimOnsetFastAbs(stF) + winEnd;</span>
+0169     indWinStart = indsEMGStimArtifactFastAbs(stF) + winStart;
+0170     indWinEnd = indsEMGStimArtifactFastAbs(stF) + winEnd;
+0171     winEMG = EMGFastMG(indWinStart:indWinEnd);
+0172     <span class="comment">% compute amplitude of the H-waveform (i.e., peak-to-peak voltage)</span>
+0173     hReflexFast(indsStimStrideFast(stF)) = max(winEMG) - min(winEMG);
+0174 <span class="keyword">end</span>
+0175 
+0176 <span class="comment">%% Assign Parameters to the Data Matrix</span>
+0177 data = nan(length(timeSHS),length(paramLabels));
+0178 <span class="keyword">for</span> i=1:length(paramLabels)
+0179     eval([<span class="string">'data(:,i)='</span> paramLabels{i} <span class="string">';'</span>])
+0180 <span class="keyword">end</span>
+0181 
+0182 <span class="comment">%% Create parameterSeries</span>
+0183 out = parameterSeries(data,paramLabels,[],description);
+0184 
+0185 <span class="keyword">end</span>
+0186</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

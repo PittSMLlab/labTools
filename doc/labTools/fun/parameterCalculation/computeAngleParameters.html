@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeAngleParameters</title>
+  <meta name="keywords" content="computeAngleParameters">
+  <meta name="description" content="This function computes summary parameters per stride based on Angle data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="../index.html">fun</a> &gt; <a href="index.html">parameterCalculation</a> &gt; computeAngleParameters.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/fun/parameterCalculation&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>computeAngleParameters
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function computes summary parameters per stride based on Angle data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg,eventTypes) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This function computes summary parameters per stride based on Angle data.
+The output is a parameterSeries object, which can be concatenated with
+other parameterSeries objects, for example with those from
+computeTemporalParameters. While this is used for EMG parameters strictly,
+it should work for any labTS.
+See also <a href="computeSpatialParameters.html" class="code" title="function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)">computeSpatialParameters</a>, <a href="computeTemporalParameters.html" class="code" title="function [out] = computeTemporalParameters(strideEvents)">computeTemporalParameters</a>,
+<a href="computeForceParameters.html" class="code" title="function [out] = computeForceParameters(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData, subData, FyPSat)">computeForceParameters</a>, parameterSeries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="computeHSparameters.html" class="code" title="function [out] = computeHSparameters(someTS,gaitEvents,eventType)">computeHSparameters</a>	This function averages labTS data across given phases.</li><li><a href="computeTSdiscreteParameters.html" class="code" title="function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)">computeTSdiscreteParameters</a>	This function averages labTS data across given phases.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcParameters.html" class="code" title="function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)">calcParameters</a>	out = calcParameters(trialData,subData,eventClass,initEventSide)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = computeAngleParameters(angleData,gaitEvents,slowLeg,eventTypes)</a>
+0002 <span class="comment">%This function computes summary parameters per stride based on Angle data.</span>
+0003 <span class="comment">%The output is a parameterSeries object, which can be concatenated with</span>
+0004 <span class="comment">%other parameterSeries objects, for example with those from</span>
+0005 <span class="comment">%computeTemporalParameters. While this is used for EMG parameters strictly,</span>
+0006 <span class="comment">%it should work for any labTS.</span>
+0007 <span class="comment">%See also computeSpatialParameters, computeTemporalParameters,</span>
+0008 <span class="comment">%computeForceParameters, parameterSeries</span>
+0009 
+0010 <span class="comment">%% Some pre-process:</span>
+0011 <span class="comment">%do naming as s/f not L/R:</span>
+0012 lS=angleData.getLabelsThatMatch([<span class="string">'^'</span> slowLeg]);
+0013 fastLeg=getOtherLeg(slowLeg);
+0014 lF=angleData.getLabelsThatMatch([<span class="string">'^'</span> fastLeg]);
+0015 warning(<span class="string">'off'</span>,<span class="string">'labTS:renameLabels:dont'</span>) <span class="comment">%Silencing renameLabels warning temporarily</span>
+0016 angleData=angleData.renameLabels(lS,regexprep(lS,[<span class="string">'^'</span> slowLeg],<span class="string">'s'</span>));
+0017 angleData=angleData.renameLabels(lF,regexprep(lF,[<span class="string">'^'</span> fastLeg],<span class="string">'f'</span>));
+0018 angleData=angleData.renameLabels(angleData.labels,strcat(angleData.labels,{<span class="string">'Angle'</span>}));
+0019 
+0020 
+0021 warning(<span class="string">'on'</span>,<span class="string">'labTS:renameLabels:dont'</span>)
+0022 <span class="comment">%keyboard</span>
+0023 
+0024 <span class="comment">%% Do:</span>
+0025 [Angles_alt] = <a href="computeTSdiscreteParameters.html" class="code" title="function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)">computeTSdiscreteParameters</a>(angleData,gaitEvents,eventTypes);
+0026 [Angles_HS] = <a href="computeHSparameters.html" class="code" title="function [out] = computeHSparameters(someTS,gaitEvents,eventType)">computeHSparameters</a>(angleData,gaitEvents,eventTypes);
+0027 out=cat(Angles_alt,Angles_HS);
+0028    
+0029 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>

@@ -1,0 +1,1060 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of BiofeedbackSLBF_Percp</title>
+  <meta name="keywords" content="BiofeedbackSLBF_Percp">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2003-2019 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../../index.html">Home</a> &gt;  <a href="#">labTools</a> &gt; <a href="#">classes</a> &gt; <a href="index.html">Biofeedback</a> &gt; BiofeedbackSLBF_Percp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../../index.html"><img alt="<" border="0" src="../../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for labTools/classes/Biofeedback&nbsp;<img alt=">" border="0" src="../../../right.png"></a></td></tr></table>-->
+
+<h1>BiofeedbackSLBF_Percp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function this=BiofeedbackSLBF_Percp(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)</a></li><li><a href="#_sub2" class="code">function []=AnalyzePerformance(this)</a></li><li><a href="#_sub3" class="code">function []=editTriallist(this)</a></li><li><a href="#_sub4" class="code">function []=saveit(this)</a></li><li><a href="#_sub5" class="code">function []=comparedays(this,flag)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="BiofeedbackSLBF_Percp.html" class="code" title="">BiofeedbackSLBF_Percp</a>
+0002     <span class="comment">%Class BiofeedbackMD houses metadata and methods to process step length</span>
+0003     <span class="comment">%biofeedback trials</span>
+0004     <span class="comment">%</span>
+0005     <span class="comment">%Properties:</span>
+0006     <span class="comment">%</span>
+0007     <span class="comment">%   subjectcode = '' string containing subject code, e.g. 'SLP001'</span>
+0008     <span class="comment">%   date=''  Date of the experiment, lab date object</span>
+0009     <span class="comment">%   day='' string that indicates day1 or day2 testing</span>
+0010     <span class="comment">%   sex = '' string designates subject sex e.g. 'f'</span>
+0011     <span class="comment">%   dob='' lab date object with date of birth</span>
+0012     <span class="comment">%   dominantleg='' string designate dominant leg, e.g. 'r'</span>
+0013     <span class="comment">%   dominanthand = '' string designate dominant hand e.g. 'r'</span>
+0014     <span class="comment">%   height=[];  cm</span>
+0015     <span class="comment">%   weight=[];  kg</span>
+0016     <span class="comment">%   age=[];  years</span>
+0017     <span class="comment">%</span>
+0018     <span class="comment">%   triallist={};  cell array of trial #'s, filenames, and type of</span>
+0019     <span class="comment">%   trial. construct instance with blank cell, can input data using a</span>
+0020     <span class="comment">%   method instead of copying and pasting into inputs</span>
+0021     <span class="comment">%</span>
+0022     <span class="comment">%   Rtmtarget=[]; right leg step length target as determined by treadmill baseline</span>
+0023     <span class="comment">%</span>
+0024     <span class="comment">%   Ltmtarget=[]; left leg step length target as determined by treadmill baseline</span>
+0025     <span class="comment">%</span>
+0026     <span class="comment">%   OGsteplength=[]; step length target as determined by over-ground walking</span>
+0027     <span class="comment">%</span>
+0028     <span class="comment">%    OGspeed=[]; average speed of subject during the OG trial to determine OG steplength</span>
+0029     <span class="comment">%</span>
+0030     <span class="comment">%Methods:</span>
+0031     <span class="comment">%</span>
+0032     <span class="comment">%   AnalyzePerformance(flag) -- computes step length errors for each</span>
+0033     <span class="comment">%                               biofeedback trial,</span>
+0034     <span class="comment">%</span>
+0035     <span class="comment">%   editTriallist() -- select filenames, edit trial #'s and type and</span>
+0036     <span class="comment">%                      category, input num is the # of trials, or rows in the list</span>
+0037     <span class="comment">%</span>
+0038     <span class="comment">%   saveit() -- saves the instance with filename equal to the ID</span>
+0039     <span class="comment">%</span>
+0040     <span class="comment">%   comparedays() -- makes bar plots comparing day1 and day2</span>
+0041 
+0042     
+0043     properties
+0044         subjectcode = <span class="string">''</span>
+0045         date=<span class="string">''</span>
+0046         day=<span class="string">''</span>
+0047         sex = <span class="string">''</span>
+0048         dob=<span class="string">''</span>
+0049         dominantleg=<span class="string">''</span>
+0050         dominanthand = <span class="string">''</span>
+0051         fastleg = <span class="string">''</span>
+0052         height=[];
+0053         weight=[];
+0054         age=[];
+0055         triallist={};
+0056         Rtmtarget=[];
+0057         Ltmtarget=[];
+0058         OGsteplength=[];
+0059         OGspeed=[];
+0060         datalocation=pwd;
+0061         data={};
+0062         dataheader={};
+0063         
+0064         
+0065     <span class="keyword">end</span>
+0066     
+0067     methods
+0068         <span class="comment">%constuctor</span>
+0069         <a name="_sub0" href="#_subfunctions" class="code">function this=BiofeedbackSLBF_Percp(ID,date,day,sex,dob,dleg,dhand,fastleg,height,weight,age,triallist,Rtarget,Ltarget,OGsteplength,OGspeed)</a>
+0070         
+0071             <span class="keyword">if</span> nargin ~= 16
+0072 <span class="comment">%                 disp('Error, incorrect # of input arguments provided');</span>
+0073                 cprintf(<span class="string">'err'</span>,<span class="string">'Error: incorrect # of input arguments provided\n'</span>);
+0074             <span class="keyword">else</span>
+0075                 
+0076                 <span class="keyword">if</span> ischar(ID)
+0077                     this.subjectcode=ID;
+0078                 <span class="keyword">else</span>
+0079                     this.subjectcode=<span class="string">''</span>;
+0080                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: invalid subject ID input, must be a string\n'</span>);
+0081                 <span class="keyword">end</span>
+0082                 
+0083                 <span class="keyword">if</span> isa(date,<span class="string">'labDate'</span>)
+0084                     this.date = date;
+0085                 <span class="keyword">else</span>
+0086                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect experiment date format provided, must be class labDate\n'</span>);
+0087                     this.date=<span class="string">''</span>;
+0088                 <span class="keyword">end</span>
+0089                 
+0090                 <span class="keyword">if</span> isnumeric(day)
+0091                     this.day = day;
+0092                 <span class="keyword">else</span>
+0093                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input for day must be a number\n'</span>);
+0094                     this.day=<span class="string">''</span>;
+0095                 <span class="keyword">end</span>
+0096                     
+0097                 <span class="keyword">if</span> ischar(sex)
+0098                     this.sex = sex;
+0099                 <span class="keyword">else</span>
+0100                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input for sex must be a string\n'</span>);
+0101                     this.sex=<span class="string">''</span>;
+0102                 <span class="keyword">end</span>
+0103                 
+0104                 <span class="keyword">if</span> isa(dob,<span class="string">'labDate'</span>)
+0105                     this.dob=dob;
+0106                 <span class="keyword">else</span>
+0107                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: date of birth is not the correct format\n'</span>);
+0108                     this.dob=[];
+0109                 <span class="keyword">end</span>
+0110                 
+0111                 <span class="keyword">if</span> ischar(dleg)
+0112                     this.dominantleg=dleg;
+0113                 <span class="keyword">else</span>
+0114                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant leg input, must be a string\n'</span>);
+0115                     this.dominantleg=<span class="string">''</span>;
+0116                 <span class="keyword">end</span>
+0117                 
+0118                 <span class="keyword">if</span> ischar(dhand)
+0119                     this.dominanthand=dhand;
+0120                 <span class="keyword">else</span>
+0121                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for dominant hand input, must be a string\n'</span>);
+0122                     this.dominanthand=<span class="string">''</span>;
+0123                 <span class="keyword">end</span>
+0124                 
+0125                 <span class="keyword">if</span> ischar(fastleg)
+0126                     this.fastleg=fastleg;
+0127                 <span class="keyword">else</span>
+0128                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: incorrect format for fast leg, must be a string\n'</span>);
+0129                     this.fastleg=<span class="string">''</span>;
+0130                 <span class="keyword">end</span>
+0131                 
+0132                 <span class="keyword">if</span> isnumeric(height)
+0133                     this.height = height;
+0134                 <span class="keyword">else</span>
+0135                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input height is not numeric\n'</span>);
+0136                     this.height=[];
+0137                 <span class="keyword">end</span>
+0138                 
+0139                 <span class="keyword">if</span> isnumeric(weight)
+0140                     this.weight = weight;
+0141                 <span class="keyword">else</span>
+0142                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not numeric\n'</span>);
+0143                     this.weight=[];
+0144                 <span class="keyword">end</span>
+0145                 
+0146                 <span class="keyword">if</span> isa(age,<span class="string">'labDate'</span>)
+0147                     this.age = age;
+0148                 <span class="keyword">else</span>
+0149                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: input weight is not class labDate\n'</span>);
+0150                     this.age=[];
+0151                 <span class="keyword">end</span>
+0152                 
+0153                 <span class="keyword">if</span> iscell(triallist)
+0154                     this.triallist=triallist;
+0155                 <span class="keyword">else</span>
+0156                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: triallist input is not a cell format.\n'</span>);
+0157                     this.triallist={};
+0158                 <span class="keyword">end</span>
+0159                 
+0160                 <span class="keyword">if</span> isnumeric(Rtarget)
+0161                     this.Rtmtarget = Rtarget;
+0162                 <span class="keyword">else</span>
+0163                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Right step length target is not numeric type.\n'</span>);
+0164                     this.Rtmtarget = [];
+0165                 <span class="keyword">end</span>
+0166                 
+0167                 <span class="keyword">if</span> isnumeric(Ltarget)
+0168                     this.Ltmtarget = Ltarget;
+0169                 <span class="keyword">else</span>
+0170                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: Left step length target is not numeric type.\n'</span>);
+0171                     this.Ltmtarget = [];
+0172                 <span class="keyword">end</span>
+0173                     
+0174                 <span class="keyword">if</span> isnumeric(OGsteplength)
+0175                     this.OGsteplength = OGsteplength;
+0176                 <span class="keyword">else</span>
+0177                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: OG step length target is not numeric type.\n'</span>);
+0178                     this.OGsteplength = [];
+0179                 <span class="keyword">end</span>
+0180                 
+0181                 <span class="keyword">if</span> isnumeric(OGspeed)
+0182                     this.OGspeed = OGspeed;
+0183                 <span class="keyword">else</span>
+0184                     cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: OG speed is not numeric type.\n'</span>);
+0185                     this.OGspeed = [];
+0186                 <span class="keyword">end</span>
+0187                 
+0188             <span class="keyword">end</span>
+0189 
+0190             
+0191             
+0192         <span class="keyword">end</span>
+0193         
+0194         <a name="_sub1" href="#_subfunctions" class="code">function []=AnalyzePerformance(this)</a>
+0195             <span class="comment">%compute step length error for each trial, uses instance</span>
+0196             <span class="comment">%defined target values and the default tolerance of 0.0375 m</span>
+0197             <span class="comment">%</span>
+0198             <span class="comment">%auto-saves the results</span>
+0199 
+0200             <span class="keyword">global</span> rhits
+0201             <span class="keyword">global</span> lhits
+0202             
+0203             <span class="keyword">if</span> isempty(this.triallist)
+0204                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: no trial information available to analyze'</span>);
+0205             <span class="keyword">else</span>
+0206                filename = this.triallist(:,1);
+0207 
+0208                <span class="keyword">if</span> iscell(filename)<span class="comment">%if more than one file is selected for analysis</span>
+0209 
+0210                    rhits = {0};
+0211                    lhits = {0};
+0212                    rlqr = {0};
+0213                    llqr = {0};
+0214                    WB = waitbar(0,<span class="string">'Processing Trials...'</span>);
+0215                    <span class="keyword">for</span> z = 1:length(filename)
+0216                        tempname = filename{z};
+0217                        waitbar((z-1)/length(filename),WB,[<span class="string">'Processing Trial '</span> num2str(z)]);
+0218                        
+0219                        <span class="keyword">if</span> isempty(strfind(tempname,<span class="string">'Fam'</span>))
+0220                            color{z} = <span class="string">'blue'</span>;
+0221                        <span class="keyword">else</span>
+0222                            color{z} = <span class="string">'red'</span>;
+0223                        <span class="keyword">end</span>
+0224                        
+0225                        <span class="comment">%check to see if data is already processed, it will</span>
+0226                        <span class="comment">%save time...</span>
+0227                        <span class="keyword">if</span> length(this.data)&lt;z
+0228                            disp(<span class="string">'Parsing data...'</span>);
+0229                            f = fopen(filename{z});
+0230                            g = fgetl(f);
+0231                            fclose(f);
+0232                            
+0233                            <span class="keyword">if</span> strcmp(g(1),<span class="string">'['</span>)
+0234                                [header,data] = JSONtxt2cell(filename{z});
+0235                                this.data{z} = data;
+0236                                this.dataheader = header;
+0237                            <span class="keyword">else</span>
+0238                                S = importdata(filename{z},<span class="string">','</span>,1);
+0239                                data = S.data;
+0240                                this.data{z} = S.data;
+0241                                this.dataheader = S.textdata;
+0242                            <span class="keyword">end</span>
+0243                            
+0244                        <span class="keyword">else</span>
+0245                            data = cell2mat(this.data(z));
+0246                            header = this.dataheader;
+0247                        <span class="keyword">end</span>
+0248                        [~,n] = size(data);
+0249 <span class="comment">%                        keyboard</span>
+0250                        data2 = unique(data,<span class="string">'rows'</span>,<span class="string">'stable'</span>);<span class="comment">%remove duplicate frames</span>
+0251                        data2(:,1) = data2(:,1)-data2(1,1)+1;<span class="comment">%set frame # to start at 1</span>
+0252                        
+0253                        <span class="comment">%check for monotonicity</span>
+0254                        checkers = find(diff(data2(:,1))&lt;1);
+0255                        <span class="keyword">while</span> ~isempty(checkers)
+0256                            <span class="keyword">for</span> y=1:length(checkers)
+0257                                data2(checkers(y),:)=[];
+0258                            <span class="keyword">end</span>
+0259                            checkers = find(diff(data2(:,1))&lt;1);
+0260                        <span class="keyword">end</span>
+0261 <span class="comment">%                        keyboard</span>
+0262                        <span class="keyword">for</span> zz = 1:n
+0263                            data3(data2(:,1),zz) = data2(:,zz);
+0264                        <span class="keyword">end</span>
+0265                        frame = data3(:,1);
+0266                        frame2 = 1:1:data2(<span class="keyword">end</span>,1);
+0267 <span class="comment">%                        keyboard</span>
+0268                        Rz2 = interp1(data2(:,1),data2(:,2),frame2,<span class="string">'linear'</span>);
+0269                        Lz2 = interp1(data2(:,1),data2(:,3),frame2,<span class="string">'linear'</span>);
+0270                        Rgamma2 = interp1(data2(:,1),data2(:,6),frame2,<span class="string">'linear'</span>);
+0271                        Lgamma2 = interp1(data2(:,1),data2(:,7),frame2,<span class="string">'linear'</span>);
+0272                        
+0273                        <span class="comment">%detect HS</span>
+0274                        <span class="keyword">for</span> zz = 1:length(Rz2)-1
+0275                            <span class="keyword">if</span> Rz2(zz) &gt; -10 &amp;&amp; Rz2(zz+1) &lt;= -10
+0276                                RHS(zz) = 1;
+0277                            <span class="keyword">else</span>
+0278                                RHS(zz) = 0;
+0279                            <span class="keyword">end</span>
+0280                        <span class="keyword">end</span>
+0281                        [~,trhs] = findpeaks(RHS,<span class="string">'MinPeakDistance'</span>,100);
+0282                        RHS = zeros(length(RHS),1);
+0283                        RHS(trhs) = 1;
+0284                        <span class="keyword">for</span> zz = 1:length(Lz2)-1
+0285                            <span class="keyword">if</span> Lz2(zz) &gt; -10 &amp;&amp; Lz2(zz+1) &lt;= -10
+0286                                LHS(zz) = 1;
+0287                            <span class="keyword">else</span>
+0288                                LHS(zz) = 0;
+0289                            <span class="keyword">end</span>
+0290                        <span class="keyword">end</span>
+0291                        [~,tlhs] = findpeaks(LHS,<span class="string">'MinPeakDistance'</span>,100);
+0292                        LHS = zeros(length(LHS),1);
+0293                        LHS(tlhs) = 1;
+0294 <span class="comment">%                        keyboard</span>
+0295                        <span class="comment">%%!!!!!!!!!!!!!!!!!!!!!!!%%!!!!!!!!!!!!!!!!!%%%!!!!!!!!!!!!!!!!</span>
+0296                        <span class="comment">%calculate errors</span>
+0297                        tamp = abs(Rgamma2(find(RHS)))';<span class="comment">%-this.Rtmtarget;</span>
+0298                        tamp2 = abs(Lgamma2(find(LHS)))';<span class="comment">%-this.Ltmtarget;</span>
+0299                        
+0300 <span class="comment">%                        tamp(abs(tamp)&gt;0.15)=[];%remove spurios errors</span>
+0301 <span class="comment">%                        tamp2(abs(tamp2)&gt;0.15)=[];</span>
+0302                        
+0303                        rhits{z} = tamp;
+0304                        lhits{z} = tamp2;
+0305                        
+0306                        rlqr{z} = iqr(rhits{z});
+0307                        llqr{z} = iqr(lhits{z});
+0308                         clear RHS LHS tamp tamp2
+0309                    <span class="keyword">end</span>
+0310                    
+0311                    this.saveit();
+0312                    
+0313                    waitbar(1,WB,<span class="string">'Processing complete...'</span>);
+0314                    pause(0.5);
+0315                    close(WB);
+0316                    clear z
+0317                    
+0318                    <span class="comment">%load triallist to look for categories</span>
+0319                    tlist = this.triallist;
+0320                    
+0321                    train = find(strcmp(tlist(:,4),<span class="string">'training'</span>));<span class="comment">%logicals of where training trials are</span>
+0322                    base = find(strcmp(tlist(:,4),<span class="string">'baseline'</span>));
+0323                    adapt = find(strcmp(tlist(:,4),<span class="string">'adaptation'</span>));
+0324                    wash = find(strcmp(tlist(:,4),<span class="string">'washout'</span>));
+0325                    
+0326                    figure(2)
+0327                    <span class="keyword">if</span> this.fastleg == <span class="string">'r'</span>
+0328                        subplot(2,1,1)
+0329                    <span class="keyword">else</span>
+0330                        subplot(2,1,2)
+0331                    <span class="keyword">end</span>
+0332                    hold on
+0333 <span class="comment">%                    keyboard</span>
+0334                    fill([0 length(cell2mat(rhits(train)')) length(cell2mat(rhits(train)')) 0],[0 0 0.8 0.8],[230 230 230]./256);
+0335                    fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)')) length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))],[0 0 0.8 0.8],[230 230 230]./256);
+0336                    
+0337                    <span class="comment">%add baseline walking bars</span>
+0338                    <span class="keyword">for</span> b=1:2:length(base)
+0339                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+0340 <span class="comment">%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base(1:b))')),0.125,'Base');</span>
+0341                    <span class="keyword">end</span>
+0342                    
+0343                    <span class="comment">%add adaptation walking bars</span>
+0344                    <span class="keyword">for</span> a=1:2:length(adapt)
+0345 <span class="comment">%                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0346 <span class="comment">%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt(1:a))')),0.125,'Split');</span>
+0347                    <span class="keyword">end</span>
+0348                    
+0349                    <span class="comment">%add washout walking bars</span>
+0350                    <span class="keyword">for</span> w=1:2:length(wash)
+0351                        fill([length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))-0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))+0.5 length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+0352 <span class="comment">%                        text(length(cell2mat(rhits(train)'))+length(cell2mat(rhits(base)'))+length(cell2mat(rhits(adapt)'))+length(cell2mat(rhits(wash(1:w))')),0.125,'Wash');</span>
+0353                    <span class="keyword">end</span>
+0354                    
+0355                    
+0356                    h = 0;
+0357                    <span class="keyword">for</span> z = 1:length(filename)
+0358                        figure(2)
+0359                        <span class="keyword">if</span> this.fastleg == <span class="string">'r'</span>
+0360                            subplot(2,1,1)
+0361                        <span class="keyword">else</span>
+0362                            subplot(2,1,2)
+0363                        <span class="keyword">end</span>
+0364                        hold on
+0365                        scatter([1:length(rhits{z})]+h,rhits{z},75,color{z},<span class="string">'fill'</span>);
+0366                        plot([h h+length(rhits{z})],[this.Rtmtarget+0.06 this.Rtmtarget+0.06],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%target line</span>
+0367                        plot([h h+length(rhits{z})],[this.Rtmtarget+0.06+0.0375 this.Rtmtarget+0.06+0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0368                        plot([h h+length(rhits{z})],[this.Rtmtarget+0.06-0.0375 this.Rtmtarget+0.06-0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);
+0369                        
+0370                        plot([h h+length(rhits{z})],[this.Rtmtarget-0.06 this.Rtmtarget-0.06],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%target line</span>
+0371                        plot([h h+length(rhits{z})],[this.Rtmtarget-0.06+0.0375 this.Rtmtarget-0.06+0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0372                        plot([h h+length(rhits{z})],[this.Rtmtarget-0.06-0.0375 this.Rtmtarget-0.06-0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);
+0373 <span class="comment">%                        plot([h h+length(rhits{z})],[nanmean(rhits{z})+rlqr{z}/2 nanmean(rhits{z})+rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines</span>
+0374 <span class="comment">%                        plot([h h+length(rhits{z})],[nanmean(rhits{z})-rlqr{z}/2 nanmean(rhits{z})-rlqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines</span>
+0375                        h = h+length(rhits{z});
+0376                    <span class="keyword">end</span>
+0377                    figure(2)
+0378                    <span class="keyword">if</span> this.fastleg == <span class="string">'r'</span>
+0379                        subplot(2,1,1)
+0380                        title([this.subjectcode <span class="string">' Step Length Fast Leg'</span>]);
+0381                    <span class="keyword">else</span>
+0382                        subplot(2,1,2)
+0383                        title([this.subjectcode <span class="string">' Step Length Slow Leg'</span>]);
+0384                    <span class="keyword">end</span>
+0385                    ylim([0 0.8]);
+0386                    xlim([0 h+10]);
+0387 <span class="comment">%                    title([this.subjectcode ' Step Length Error Fast Leg']);</span>
+0388                    xlabel(<span class="string">'step #'</span>);
+0389                    ylabel(<span class="string">'Error (m)'</span>);
+0390 
+0391                    figure(2)
+0392                    <span class="keyword">if</span> this.fastleg == <span class="string">'l'</span>
+0393                        subplot(2,1,1)
+0394                    <span class="keyword">else</span>
+0395                        subplot(2,1,2)
+0396                    <span class="keyword">end</span>
+0397                    hold on
+0398                    fill([0 length(cell2mat(lhits(train)')) length(cell2mat(lhits(train)')) 0],[0 0 0.8 0.8],[230 230 230]./256);
+0399                    fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)')) length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))],[0 0 0.8 0.8],[230 230 230]./256);
+0400                    
+0401                    <span class="comment">%add baseline walking bars</span>
+0402                    <span class="keyword">for</span> b=1:2:length(base)
+0403                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+0404 <span class="comment">%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base(1:b))')),0.125,'Base');</span>
+0405                    <span class="keyword">end</span>
+0406                    
+0407                    <span class="comment">%add adaptation walking bars</span>
+0408                    <span class="keyword">for</span> a=1:2:length(adapt)
+0409 <span class="comment">%                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0410 <span class="comment">%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt(1:a))')),0.125,'Split');</span>
+0411                    <span class="keyword">end</span>
+0412                    
+0413                    <span class="comment">%add washout walking bars</span>
+0414                    <span class="keyword">for</span> w=1:2:length(wash)
+0415                        fill([length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))-0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))+0.5 length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))'))-0.5],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);
+0416 <span class="comment">%                        text(length(cell2mat(lhits(train)'))+length(cell2mat(lhits(base)'))+length(cell2mat(lhits(adapt)'))+length(cell2mat(lhits(wash(1:w))')),0.125,'Wash');</span>
+0417                    <span class="keyword">end</span>
+0418                    
+0419                    h = 0;
+0420                    <span class="keyword">for</span> z = 1:length(filename)
+0421                        figure(2)
+0422                        <span class="keyword">if</span> this.fastleg == <span class="string">'l'</span>
+0423                            subplot(2,1,1)
+0424                        <span class="keyword">else</span>
+0425                            subplot(2,1,2)
+0426                        <span class="keyword">end</span>
+0427                        scatter([1:length(lhits{z})]+h,lhits{z},75,color{z},<span class="string">'fill'</span>);
+0428                        plot([h h+length(lhits{z})],[this.Rtmtarget+0.06 this.Rtmtarget+0.06],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%target line</span>
+0429                        plot([h h+length(lhits{z})],[this.Rtmtarget+0.06+0.0375 this.Rtmtarget+0.06+0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0430                        plot([h h+length(lhits{z})],[this.Rtmtarget+0.06-0.0375 this.Rtmtarget+0.06-0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);
+0431                        
+0432                        plot([h h+length(lhits{z})],[this.Rtmtarget-0.06 this.Rtmtarget-0.06],<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%target line</span>
+0433                        plot([h h+length(lhits{z})],[this.Rtmtarget-0.06+0.0375 this.Rtmtarget-0.06+0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0434                        plot([h h+length(lhits{z})],[this.Rtmtarget-0.06-0.0375 this.Rtmtarget-0.06-0.0375],<span class="string">':k'</span>,<span class="string">'LineWidth'</span>,2);
+0435 <span class="comment">%                        plot([h h+length(lhits{z})],[nanmean(lhits{z})+llqr{z}/2 nanmean(lhits{z})+llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines</span>
+0436 <span class="comment">%                        plot([h h+length(lhits{z})],[nanmean(lhits{z})-llqr{z}/2 nanmean(lhits{z})-llqr{z}/2],'Color',[0.5 0 0.5],'LineWidth',2);%tolerance lines</span>
+0437                        h = h+length(lhits{z});
+0438                        <span class="comment">%         h = h+length(lhits{z});</span>
+0439                    <span class="keyword">end</span>
+0440                    figure(2)
+0441                    <span class="keyword">if</span> this.fastleg == <span class="string">'l'</span>
+0442                        subplot(2,1,1)
+0443                        title([this.subjectcode <span class="string">' Step Length Fast Leg'</span>]);
+0444                    <span class="keyword">else</span>
+0445                        subplot(2,1,2)
+0446                        title([this.subjectcode <span class="string">' Step Length Slow Leg'</span>]);
+0447                    <span class="keyword">end</span>
+0448                    ylim([0 0.8]);
+0449                    xlim([0 h+10]);
+0450 <span class="comment">%                    title([this.subjectcode ' Step Length Error Slow Leg']);</span>
+0451                    xlabel(<span class="string">'step #'</span>);
+0452                    ylabel(<span class="string">'Error (m)'</span>);
+0453                    
+0454 <span class="comment">%</span>
+0455 <span class="comment">% keyboard</span>
+0456 <span class="comment">%                    for z=1:length(rhits)</span>
+0457 <span class="comment">%                        temp = rhits{z};</span>
+0458 <span class="comment">%                        temp(abs(temp) &gt; 0.1) = [];</span>
+0459 <span class="comment">%                        meanrhits1(z) = mean(temp);</span>
+0460 <span class="comment">%                        stdrhits1(z) = std(temp);</span>
+0461 <span class="comment">% %                        keyboard</span>
+0462 <span class="comment">%                        rscore(z) = length(temp(abs(temp)&lt;0.0375))/length(temp);</span>
+0463 <span class="comment">% %                        meanrhits2(z) = mean(temp(end-2:end));</span>
+0464 <span class="comment">% %                        stdrhits2(z) = std(temp(end-2:end));</span>
+0465 <span class="comment">%                    end</span>
+0466 <span class="comment">%                    for z=1:length(lhits)</span>
+0467 <span class="comment">%                        temp = lhits{z};</span>
+0468 <span class="comment">%                        temp(abs(temp) &gt; 0.1) = [];</span>
+0469 <span class="comment">%                        meanlhits1(z) = mean(temp);</span>
+0470 <span class="comment">%                        stdlhits1(z) = std(temp);</span>
+0471 <span class="comment">%                        lscore(z) = length(temp(abs(temp)&lt;0.0375))/length(temp);</span>
+0472 <span class="comment">% %                        meanlhits2(z) = mean(temp(end-2:end));</span>
+0473 <span class="comment">% %                        stdlhits2(z) = std(temp(end-2:end));</span>
+0474 <span class="comment">%                    end</span>
+0475 <span class="comment">%</span>
+0476 <span class="comment">%                    figure(5)</span>
+0477 <span class="comment">%                    if this.fastleg == 'r'</span>
+0478 <span class="comment">%                        subplot(2,1,1)</span>
+0479 <span class="comment">%                    else</span>
+0480 <span class="comment">%                        subplot(2,1,2)</span>
+0481 <span class="comment">%                    end</span>
+0482 <span class="comment">%                    hold on</span>
+0483 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0484 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0485 <span class="comment">%</span>
+0486 <span class="comment">%                    %add baseline bars</span>
+0487 <span class="comment">%                    for b=1:2:length(base)</span>
+0488 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0489 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,0.125,'Base');</span>
+0490 <span class="comment">%                    end</span>
+0491 <span class="comment">%</span>
+0492 <span class="comment">%                    %add adaptation bars</span>
+0493 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0494 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0495 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');</span>
+0496 <span class="comment">%                    end</span>
+0497 <span class="comment">%</span>
+0498 <span class="comment">%                    %add washout bars</span>
+0499 <span class="comment">%                    for w=1:2:length(wash)</span>
+0500 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0501 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');</span>
+0502 <span class="comment">%                    end</span>
+0503 <span class="comment">%</span>
+0504 <span class="comment">%                    h = 1:1:length(meanrhits1);</span>
+0505 <span class="comment">% %                    h2 = 2:2:2*length(meanrhits2);</span>
+0506 <span class="comment">%                    errorbar(h,meanrhits1,stdrhits1,'k','LineWidth',1.5);</span>
+0507 <span class="comment">% %                    errorbar(h2,meanrhits2,stdrhits2,'k','LineWidth',1.5);</span>
+0508 <span class="comment">%                    plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0509 <span class="comment">%                    plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0510 <span class="comment">%                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]</span>
+0511 <span class="comment">%                    for z = 1:length(h)</span>
+0512 <span class="comment">%                        figure(5)</span>
+0513 <span class="comment">%                        if this.fastleg == 'r'</span>
+0514 <span class="comment">%                            subplot(2,1,1)</span>
+0515 <span class="comment">%                            title([this.subjectcode ' Fast Leg Errors']);</span>
+0516 <span class="comment">%                        else</span>
+0517 <span class="comment">%                            subplot(2,1,2)</span>
+0518 <span class="comment">%                            title([this.subjectcode ' Slow Leg Errors']);</span>
+0519 <span class="comment">%                        end</span>
+0520 <span class="comment">%                        bar(h(z),meanrhits1(z),0.5,'FaceColor',color{z});%color2(z,:));</span>
+0521 <span class="comment">%                    end</span>
+0522 <span class="comment">%                    ylim([-0.15 0.15]);</span>
+0523 <span class="comment">%                    xlim([0 length(meanrhits1)+0.5]);</span>
+0524 <span class="comment">% %                    title([this.subjectcode ' Fast Leg Errors']);</span>
+0525 <span class="comment">%                    ylabel('Error (m)');</span>
+0526 <span class="comment">%</span>
+0527 <span class="comment">%</span>
+0528 <span class="comment">%                    figure(5)</span>
+0529 <span class="comment">%                    if this.fastleg == 'l'</span>
+0530 <span class="comment">%                        subplot(2,1,1)</span>
+0531 <span class="comment">%                    else</span>
+0532 <span class="comment">%                        subplot(2,1,2)</span>
+0533 <span class="comment">%                    end</span>
+0534 <span class="comment">%                    hold on</span>
+0535 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0536 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0537 <span class="comment">%</span>
+0538 <span class="comment">%                    %add baseline bars</span>
+0539 <span class="comment">%                    for b=1:2:length(base)</span>
+0540 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0541 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,0.125,'Base');</span>
+0542 <span class="comment">%                    end</span>
+0543 <span class="comment">%</span>
+0544 <span class="comment">%                    %add adaptation bars</span>
+0545 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0546 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0547 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,0.125,'Split');</span>
+0548 <span class="comment">%                    end</span>
+0549 <span class="comment">%</span>
+0550 <span class="comment">%                    %add washout bars</span>
+0551 <span class="comment">%                    for w=1:2:length(wash)</span>
+0552 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0553 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,0.125,'Wash');</span>
+0554 <span class="comment">%                    end</span>
+0555 <span class="comment">%</span>
+0556 <span class="comment">%                    h = 1:1:length(meanlhits1);</span>
+0557 <span class="comment">% %                    h2 = 2:2:2*length(meanlhits2);</span>
+0558 <span class="comment">%                    errorbar(h,meanlhits1,stdlhits1,'k','LineWidth',1.5);</span>
+0559 <span class="comment">% %                    errorbar(h2,meanlhits2,stdlhits2,'k','LineWidth',1.5);</span>
+0560 <span class="comment">%                    plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0561 <span class="comment">%                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0562 <span class="comment">%                    for z = 1:length(h)</span>
+0563 <span class="comment">%                        figure(5)</span>
+0564 <span class="comment">%                        if this.fastleg == 'l'</span>
+0565 <span class="comment">%                            subplot(2,1,1)</span>
+0566 <span class="comment">%                            title([this.subjectcode ' Fast Leg Errors'])</span>
+0567 <span class="comment">%                        else</span>
+0568 <span class="comment">%                            subplot(2,1,2)</span>
+0569 <span class="comment">%                            title([this.subjectcode ' Slow Leg Errors'])</span>
+0570 <span class="comment">%                        end</span>
+0571 <span class="comment">%                        bar(h(z),meanlhits1(z),0.5,'FaceColor',color{z});</span>
+0572 <span class="comment">%                    end</span>
+0573 <span class="comment">%                    ylim([-0.15 0.15]);</span>
+0574 <span class="comment">%                    xlim([0 length(meanrhits1)+0.5]);</span>
+0575 <span class="comment">% %                    title([this.subjectcode ' Slow Leg Errors'])</span>
+0576 <span class="comment">%                    ylabel('Error (m)');</span>
+0577 <span class="comment">%</span>
+0578 <span class="comment">%</span>
+0579 <span class="comment">%</span>
+0580 <span class="comment">%</span>
+0581 <span class="comment">%                    figure(6)%plot of mean squared errors</span>
+0582 <span class="comment">%                    if this.fastleg == 'r'</span>
+0583 <span class="comment">%                        subplot(2,1,1)</span>
+0584 <span class="comment">%                    else</span>
+0585 <span class="comment">%                        subplot(2,1,2)</span>
+0586 <span class="comment">%                    end</span>
+0587 <span class="comment">%                    hold on</span>
+0588 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0589 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0590 <span class="comment">%</span>
+0591 <span class="comment">%                    %add baseline bars</span>
+0592 <span class="comment">%                    for b=1:2:length(base)</span>
+0593 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0594 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,max(meanrhits1.^2)+0.05*max(meanrhits1.^2),'Base');</span>
+0595 <span class="comment">%                    end</span>
+0596 <span class="comment">%</span>
+0597 <span class="comment">%                    %add adaptation bars</span>
+0598 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0599 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0600 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Split');</span>
+0601 <span class="comment">%                    end</span>
+0602 <span class="comment">%</span>
+0603 <span class="comment">%                    %add washout bars</span>
+0604 <span class="comment">%                    for w=1:2:length(wash)</span>
+0605 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0606 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanrhits1.^2)+0.1*max(meanrhits1.^2),'Wash');</span>
+0607 <span class="comment">%                    end</span>
+0608 <span class="comment">%</span>
+0609 <span class="comment">%                    h = 1:1:length(meanrhits1);</span>
+0610 <span class="comment">%                    plot([0 length(meanrhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0611 <span class="comment">% %                    plot([0 length(meanrhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0612 <span class="comment">%                    %     plot([0 2*length(meanrhits1)+1],[nanmean(rhits{z})+rlqr{z} nanmean(rhits{z})+rlqr{z}]</span>
+0613 <span class="comment">%                    for z = 1:length(h)</span>
+0614 <span class="comment">%                        figure(6)</span>
+0615 <span class="comment">%                        if this.fastleg == 'r'</span>
+0616 <span class="comment">%                            subplot(2,1,1)</span>
+0617 <span class="comment">%                            title([this.subjectcode ' Fast Leg Errors']);</span>
+0618 <span class="comment">%                        else</span>
+0619 <span class="comment">%                            subplot(2,1,2)</span>
+0620 <span class="comment">%                            title([this.subjectcode ' Slow Leg Errors']);</span>
+0621 <span class="comment">%                        end</span>
+0622 <span class="comment">%                        bar(h(z),meanrhits1(z).^2,0.5,'FaceColor',color{z});%color2(z,:));</span>
+0623 <span class="comment">%                    end</span>
+0624 <span class="comment">%                    ylim([0 max(meanrhits1.^2)+0.1*max(meanrhits1.^2)]);</span>
+0625 <span class="comment">%                    xlim([0 length(meanrhits1)+0.5]);</span>
+0626 <span class="comment">%                    title([this.subjectcode ' Fast Leg Errors']);</span>
+0627 <span class="comment">%                    ylabel('Error (m)');</span>
+0628 <span class="comment">%</span>
+0629 <span class="comment">%                    figure(6)</span>
+0630 <span class="comment">%                    if this.fastleg == 'l'</span>
+0631 <span class="comment">%                        subplot(2,1,1)</span>
+0632 <span class="comment">%                    else</span>
+0633 <span class="comment">%                        subplot(2,1,2)</span>
+0634 <span class="comment">%                    end</span>
+0635 <span class="comment">%                    hold on</span>
+0636 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0637 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[0.255 0.255 -0.255 -0.255],[230 230 230]./256);</span>
+0638 <span class="comment">%</span>
+0639 <span class="comment">%                    %add baseline bars</span>
+0640 <span class="comment">%                    for b=1:2:length(base)</span>
+0641 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0642 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Base');</span>
+0643 <span class="comment">%                    end</span>
+0644 <span class="comment">%</span>
+0645 <span class="comment">%                    %add adaptation bars</span>
+0646 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0647 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0648 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Split');</span>
+0649 <span class="comment">%                    end</span>
+0650 <span class="comment">%</span>
+0651 <span class="comment">%                    %add washout bars</span>
+0652 <span class="comment">%                    for w=1:2:length(wash)</span>
+0653 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[0.1 0.1 -0.1 -0.1],[20 20 20]./256);</span>
+0654 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,max(meanlhits1.^2)+0.05*max(meanlhits1.^2),'Wash');</span>
+0655 <span class="comment">%                    end</span>
+0656 <span class="comment">%</span>
+0657 <span class="comment">%                    h = 1:1:length(meanlhits1);</span>
+0658 <span class="comment">%                    plot([0 length(meanlhits1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0659 <span class="comment">% %                    plot([0 length(meanlhits1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0660 <span class="comment">%                    for z = 1:length(h)</span>
+0661 <span class="comment">%                        figure(6)</span>
+0662 <span class="comment">%                        if this.fastleg == 'l'</span>
+0663 <span class="comment">%                            subplot(2,1,1)</span>
+0664 <span class="comment">%                            title([this.subjectcode ' Fast Leg Errors'])</span>
+0665 <span class="comment">%                        else</span>
+0666 <span class="comment">%                            subplot(2,1,2)</span>
+0667 <span class="comment">%                            title([this.subjectcode ' Slow Leg Errors'])</span>
+0668 <span class="comment">%                        end</span>
+0669 <span class="comment">%                        bar(h(z),meanlhits1(z).^2,0.5,'FaceColor',color{z});</span>
+0670 <span class="comment">%                    end</span>
+0671 <span class="comment">%                    ylim([0 max(meanlhits1.^2)+0.1*max(meanlhits1.^2)]);</span>
+0672 <span class="comment">%                    xlim([0 length(meanrhits1)+0.5]);</span>
+0673 <span class="comment">% %                    title([this.subjectcode ' Slow Leg Errors'])</span>
+0674 <span class="comment">%                    ylabel('Error (m)');</span>
+0675 <span class="comment">%</span>
+0676 <span class="comment">%</span>
+0677 <span class="comment">%                    figure(7)</span>
+0678 <span class="comment">%                    if this.fastleg == 'r'</span>
+0679 <span class="comment">%                        subplot(2,1,1)</span>
+0680 <span class="comment">%                        title([this.subjectcode ' Fast Leg Accuracy'])</span>
+0681 <span class="comment">%                    else</span>
+0682 <span class="comment">%                        subplot(2,1,2)</span>
+0683 <span class="comment">%                        title([this.subjectcode ' Slow Leg Accuracy'])</span>
+0684 <span class="comment">%                    end</span>
+0685 <span class="comment">%                    hold on</span>
+0686 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);</span>
+0687 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);</span>
+0688 <span class="comment">%                    %add baseline bars</span>
+0689 <span class="comment">%                    for b=1:2:length(base)</span>
+0690 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0691 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,105,'Base');</span>
+0692 <span class="comment">%                    end</span>
+0693 <span class="comment">%                    %add adaptation bars</span>
+0694 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0695 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0696 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');</span>
+0697 <span class="comment">%                    end</span>
+0698 <span class="comment">%                    %add washout bars</span>
+0699 <span class="comment">%                    for w=1:2:length(wash)</span>
+0700 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0701 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');</span>
+0702 <span class="comment">%                    end</span>
+0703 <span class="comment">%                    plot([0 length(meanrhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines</span>
+0704 <span class="comment">%                    plot([0 length(meanrhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines</span>
+0705 <span class="comment">%                    for z=1:length(rscore)</span>
+0706 <span class="comment">%                        bar(z,rscore(z)*100,0.5,'FaceColor',color{z});</span>
+0707 <span class="comment">%                    end</span>
+0708 <span class="comment">%                    ylim([0 110]);</span>
+0709 <span class="comment">%                    ylabel('Accuracy (%)')</span>
+0710 <span class="comment">% %                    title([this.subjectcode ' Fast Leg Accuracy'])</span>
+0711 <span class="comment">%</span>
+0712 <span class="comment">%                    if this.fastleg == 'l'</span>
+0713 <span class="comment">%                        subplot(2,1,1)</span>
+0714 <span class="comment">%                        title([this.subjectcode ' Fast Leg Accuracy'])</span>
+0715 <span class="comment">%                    else</span>
+0716 <span class="comment">%                        subplot(2,1,2)</span>
+0717 <span class="comment">%                        title([this.subjectcode ' Slow Leg Accuracy'])</span>
+0718 <span class="comment">%                    end</span>
+0719 <span class="comment">%                    hold on</span>
+0720 <span class="comment">%                    fill([0 length(train)+0.5 length(train)+0.5 0],[120 120 0 0],[230 230 230]./256);</span>
+0721 <span class="comment">%                    fill([length(train)+0.5+length(base) length(train)+length(base)+length(adapt)+0.5 length(train)+length(base)+length(adapt)+0.5 length(train)+0.5+length(base)],[120 120 0 0],[230 230 230]./256);</span>
+0722 <span class="comment">%                    %add baseline bars</span>
+0723 <span class="comment">%                    for b=1:2:length(base)</span>
+0724 <span class="comment">%                        fill([length(train)+length(base(1:b))+0.45 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.55 length(train)+length(base(1:b))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0725 <span class="comment">%                        text(length(train)+length(base(1:b))+0.45,105,'Base');</span>
+0726 <span class="comment">%                    end</span>
+0727 <span class="comment">%                    %add adaptation bars</span>
+0728 <span class="comment">%                    for a=1:2:length(adapt)</span>
+0729 <span class="comment">%                        fill([length(train)+length(base)+length(adapt(1:a))+0.45 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.55 length(train)+length(base)+length(adapt(1:a))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0730 <span class="comment">%                        text(length(train)+length(base)+length(adapt(1:a))+0.45,105,'Split');</span>
+0731 <span class="comment">%                    end</span>
+0732 <span class="comment">%                    %add washout bars</span>
+0733 <span class="comment">%                    for w=1:2:length(wash)</span>
+0734 <span class="comment">%                        fill([length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.55 length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45],[100 100 0 0],[20 20 20]./256);</span>
+0735 <span class="comment">%                        text(length(train)+length(base)+length(adapt)+length(wash(1:w))+0.45,105,'Wash');</span>
+0736 <span class="comment">%                    end</span>
+0737 <span class="comment">%                    plot([0 length(meanlhits1)+1],[80 80],'--k','LineWidth',2);%tolerance lines</span>
+0738 <span class="comment">%                    plot([0 length(meanlhits1)+1],[100 100],'k','LineWidth',1);%tolerance lines</span>
+0739 <span class="comment">%                    for z=1:length(lscore)</span>
+0740 <span class="comment">%                        bar(z,lscore(z)*100,0.5,'FaceColor',color{z});</span>
+0741 <span class="comment">%                    end</span>
+0742 <span class="comment">%                    ylim([0 110]);</span>
+0743 <span class="comment">%                    ylabel('Accuracy (%)')</span>
+0744 <span class="comment">% %                    title([this.subjectcode ' Slow Leg Accuracy'])</span>
+0745                    
+0746                <span class="keyword">end</span>
+0747             <span class="keyword">end</span>
+0748         <span class="keyword">end</span>
+0749         
+0750         <a name="_sub2" href="#_subfunctions" class="code">function []=editTriallist(this)</a>
+0751             <span class="keyword">global</span> t
+0752             <span class="keyword">global</span> ID
+0753             ID = this.subjectcode;
+0754 
+0755             <span class="keyword">if</span> isempty(this.triallist)<span class="comment">%if triallist is empty, start from scratch</span>
+0756                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
+0757                 this.data = cell(length(filenames),1);
+0758                 <span class="keyword">if</span> iscell(filenames)
+0759                     f = figure;
+0760                     data = cell(length(filenames),4);
+0761                     data(:,1)=filenames;
+0762                     
+0763 <span class="comment">%                     for z=1:length(filenames)%autodetect if a trial was a train for evaluation</span>
+0764 <span class="comment">%                         tname = filenames{z};</span>
+0765 <span class="comment">%                         if strcmp(tname(end-5:end-4),'V3')</span>
+0766 <span class="comment">%                             data{z,3} = 'train';</span>
+0767 <span class="comment">%                         else</span>
+0768 <span class="comment">%                             data{z,3} = 'eval';</span>
+0769 <span class="comment">%                         end</span>
+0770 <span class="comment">%                     end</span>
+0771                     
+0772                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0773                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'training'</span>,<span class="string">'baseline'</span>,<span class="string">'adaptation'</span>,<span class="string">'washout'</span>}};
+0774                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0775                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0776                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0777                 <span class="keyword">else</span>
+0778                     f = figure;
+0779                     data = cell(1,4);
+0780                     data(1,1) = filenames;
+0781                     <span class="keyword">if</span> strcmp(filenames(end-5:end-4),<span class="string">'V3'</span>)
+0782                         data(1,3) = <span class="string">'train'</span>;
+0783                     <span class="keyword">else</span>
+0784                         data(1,3) = <span class="string">'eval'</span>;
+0785                     <span class="keyword">end</span>
+0786                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0787                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'training'</span>,<span class="string">'baseline'</span>,<span class="string">'adaptation'</span>,<span class="string">'washout'</span>}};
+0788                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0789                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0790                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0791                 <span class="keyword">end</span>
+0792                 
+0793             <span class="keyword">else</span> <span class="comment">%if triallist is already populated, just edit what is already there</span>
+0794                 [filenames,~] = uigetfiles(<span class="string">'*.*'</span>,<span class="string">'Select filenames'</span>);
+0795                 this.data = cell(length(filenames),1);
+0796                 <span class="keyword">if</span> iscell(filenames)
+0797                     f = figure;
+0798                     data = cell(length(filenames),4);
+0799                     data(:,1)=filenames;
+0800                     data(:,2:4) = this.triallist(:,2:4);
+0801                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0802                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'training'</span>,<span class="string">'baseline'</span>,<span class="string">'adaptation'</span>,<span class="string">'washout'</span>}};
+0803                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0804                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0805                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0806                 <span class="keyword">else</span>
+0807                     f = figure;
+0808                     data = cell(1,4);
+0809                     data(1,1) = filenames;
+0810                     data(1,2:4) = this.triallist(1,2:4);
+0811                     colnames = {<span class="string">'Filename'</span>,<span class="string">'#'</span>,<span class="string">'type'</span>,<span class="string">'category'</span>};
+0812                     columnformat = {<span class="string">'char'</span>,<span class="string">'numeric'</span>,{<span class="string">'train'</span>,<span class="string">'eval'</span>},{<span class="string">'training'</span>,<span class="string">'baseline'</span>,<span class="string">'adaptation'</span>,<span class="string">'washout'</span>}};
+0813                     t=uitable(f,<span class="string">'Position'</span>,[10,10,375,375],<span class="string">'Data'</span>,data,<span class="string">'ColumnName'</span>,colnames,<span class="string">'ColumnFormat'</span>,columnformat,<span class="string">'ColumnEditable'</span>,[true true true true]);
+0814                     set(t,<span class="string">'celleditcallback'</span>,<span class="string">'global ID;global t;temp = get(t,''Data'');eval([ID ''.triallist = temp;'']);'</span>);
+0815                     set(t,<span class="string">'DeleteFcn'</span>,<span class="string">'global ID;eval([ID ''.saveit()'']);'</span>);
+0816                 <span class="keyword">end</span>
+0817                 
+0818             <span class="keyword">end</span>
+0819         <span class="keyword">end</span>
+0820         
+0821         <a name="_sub3" href="#_subfunctions" class="code">function []=saveit(this)</a><span class="comment">%save instance as the &quot;subjectcode_SLBF&quot;</span>
+0822             
+0823             <span class="keyword">if</span> isempty(this.subjectcode)
+0824                 cprintf(<span class="string">'err'</span>,<span class="string">'WARNING: save failed, no valid ID present'</span>);
+0825             <span class="keyword">else</span>
+0826                 savename = [this.subjectcode <span class="string">'_SLBF_day'</span> num2str(this.day) <span class="string">'.mat'</span>];
+0827                 eval([this.subjectcode <span class="string">'=this;'</span>]);
+0828                 save(savename,this.subjectcode);
+0829             <span class="keyword">end</span>
+0830         <span class="keyword">end</span>
+0831         
+0832         <a name="_sub4" href="#_subfunctions" class="code">function []=comparedays(this,flag)</a>
+0833             <span class="comment">%make bar plots of day1 and day2 means to compare performances</span>
+0834             <span class="comment">%no inputs required, data is located from a uitable</span>
+0835             <span class="comment">%</span>
+0836             <span class="comment">%creates figures of bar plots for fast and slow legs, day 1 and</span>
+0837             <span class="comment">%day 2</span>
+0838             <span class="comment">%</span>
+0839             <span class="comment">%flag indicates whether to normalize data by last training</span>
+0840             <span class="comment">%phase evaluation, 0 for no, 1 for yes</span>
+0841             <span class="comment">%</span>
+0842             <span class="comment">%use a uitable to assign the locations of each Results.mat</span>
+0843             <span class="comment">%file, should be 4 of them, 2 per day</span>
+0844 
+0845             [file1,path1] = uigetfile(<span class="string">'*.*'</span>,<span class="string">'Select Day 1 File'</span>);
+0846             [file2,path2] = uigetfile(<span class="string">'*.*'</span>,<span class="string">'Select Day 2 File'</span>);
+0847             
+0848             <span class="comment">%deal with day 1</span>
+0849             load([path1,<span class="string">'Results.mat'</span>]);
+0850             tlist1 = this.triallist;<span class="comment">% must be day1 instance loaded as this</span>
+0851             <span class="keyword">if</span> strcmp(this.dominantleg,<span class="string">'R'</span>)
+0852                 fast1 = rhits;
+0853                 slow1 = lhits;
+0854             <span class="keyword">else</span>
+0855                 fast1 = lhits;
+0856                 slow1 = rhits;
+0857             <span class="keyword">end</span>
+0858             
+0859             clear rhits lhits
+0860             
+0861             load([path2,<span class="string">'Results.mat'</span>]);
+0862             load([path2,file2]);<span class="comment">%make sure this is the day2 instance otherwise will probably crash</span>
+0863             file3 = [file2(1:6) file2(end-8:end-4)];
+0864             eval([<span class="string">'tlist2 = '</span> file3 <span class="string">'.triallist;'</span>]);
+0865             <span class="keyword">if</span> strcmp(this.dominantleg,<span class="string">'R'</span>)
+0866                 fast2 = rhits;
+0867                 slow2 = lhits;
+0868             <span class="keyword">else</span>
+0869                 fast2 = lhits;
+0870                 slow2 = rhits;
+0871             <span class="keyword">end</span>
+0872             clear rhits lhits
+0873             
+0874             <span class="keyword">if</span> length(tlist1)==length(tlist2)
+0875                 train = find(strcmp(tlist1(:,4),<span class="string">'training'</span>));<span class="comment">%logicals of where training trials are</span>
+0876                 base = find(strcmp(tlist1(:,4),<span class="string">'baseline'</span>));
+0877                 adapt = find(strcmp(tlist1(:,4),<span class="string">'adaptation'</span>));
+0878                 wash = find(strcmp(tlist1(:,4),<span class="string">'washout'</span>));
+0879                 
+0880                 colors1 = cell(length(tlist1),1);
+0881                 colors2 = cell(length(tlist1),1);
+0882                 <span class="keyword">for</span> z=1:length(tlist1)
+0883                    <span class="keyword">if</span> strcmp(<span class="string">'train'</span>,tlist1(z,3))
+0884                        colors1{z}=[0 102/256 204/256];
+0885                        colors2{z}=[0 1 1];
+0886                    <span class="keyword">else</span>
+0887                        colors1{z}=[1 0 0];
+0888                        colors2{z}=[1 128/256 0];
+0889                    <span class="keyword">end</span>
+0890                 <span class="keyword">end</span>
+0891                 
+0892                 <span class="keyword">for</span> z=1:length(fast1)
+0893                     temp1 = fast1{z};
+0894                     temp2 = fast2{z};
+0895                     temp1(abs(temp1) &gt; 0.1) = [];
+0896                     temp2(abs(temp2) &gt; 0.1) = [];
+0897                     <span class="keyword">if</span> flag<span class="comment">%normalize</span>
+0898                         temp1 = (temp1-mean(fast1{length(train)}))./abs(mean(fast1{length(train)}))*100;
+0899                         temp2 = (temp2-mean(fast2{length(train)}))./abs(mean(fast2{length(train)}))*100;
+0900                     <span class="keyword">end</span>
+0901                     meanfast1(z) = mean(temp1);
+0902                     meanfast2(z) = mean(temp2);
+0903                     stdfast1(z) = std(temp1);
+0904                     stdfast2(z) = std(temp2);
+0905                 <span class="keyword">end</span>
+0906                 
+0907                 <span class="keyword">for</span> z=1:length(slow1)
+0908                     temp1 = slow1{z};
+0909                     temp2 = slow2{z};
+0910                     temp1(abs(temp1) &gt; 0.1) = [];
+0911                     temp2(abs(temp2) &gt; 0.1) = [];
+0912                     <span class="keyword">if</span> flag<span class="comment">%normalize</span>
+0913                         temp1 = (temp1-mean(slow1{length(train)}))./abs(mean(slow1{length(train)}))*100;
+0914                         temp2 = (temp2-mean(slow2{length(train)}))./abs(mean(slow2{length(train)}))*100;
+0915                     <span class="keyword">end</span>
+0916                     meanslow1(z) = mean(temp1);
+0917                     meanslow2(z) = mean(temp2);
+0918                     stdslow1(z) = std(temp1);
+0919                     stdslow2(z) = std(temp2);
+0920                 <span class="keyword">end</span>
+0921                 
+0922                 hand = zeros(4,1);
+0923                 <span class="comment">%fast leg</span>
+0924                 figure(7)
+0925                 subplot(2,1,1)
+0926                 hold on
+0927                 fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[max([meanfast1 meanfast2])+1000 max([meanfast1 meanfast2])+1000 -1*max([meanfast1 meanfast2])-1000 -1*max([meanfast1 meanfast2])-1000],[230 230 230]./256);
+0928                 fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[max([meanfast1 meanfast2])+1000 max([meanfast1 meanfast2])+1000 -1*max([meanfast1 meanfast2])-1000 -1*max([meanfast1 meanfast2])-1000],[230 230 230]./256);
+0929                 h = 1:2:2*length(meanfast1);
+0930                 h2 = 1.5:2:2*length(meanfast2);
+0931 <span class="comment">%                 plot([0 2*length(meanfast1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0932 <span class="comment">%                 plot([0 2*length(meanfast1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0933 <span class="comment">%                 keyboard</span>
+0934                 <span class="keyword">for</span> z = 1:2:length(h)<span class="comment">%trainings</span>
+0935 <span class="comment">%                     figure(7)</span>
+0936                     hand(1) = bar(h(z),meanfast1(z),0.5,<span class="string">'FaceColor'</span>,colors1{z});
+0937                 <span class="keyword">end</span>
+0938                 <span class="keyword">for</span> z = 2:2:length(h)<span class="comment">%evaluations</span>
+0939 <span class="comment">%                     figure(7)</span>
+0940                     hand(2) = bar(h(z),meanfast1(z),0.5,<span class="string">'FaceColor'</span>,colors1{z});
+0941                 <span class="keyword">end</span>
+0942                 <span class="keyword">for</span> z=1:2:length(h2)
+0943 <span class="comment">%                     figure(7)</span>
+0944                     hand(3) = bar(h2(z),meanfast2(z),0.5,<span class="string">'FaceColor'</span>,colors2{z});
+0945                 <span class="keyword">end</span>
+0946                 <span class="keyword">for</span> z=2:2:length(h2)
+0947 <span class="comment">%                     figure(7)</span>
+0948                     hand(4) = bar(h2(z),meanfast2(z),0.5,<span class="string">'FaceColor'</span>,colors2{z});
+0949                 <span class="keyword">end</span>
+0950                 <span class="keyword">if</span> ~flag
+0951                     errorbar(h,meanfast1,stdfast1,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1.5);
+0952                     errorbar(h2,meanfast2,stdfast2,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1.5);
+0953                     plot([0 2*length(meanfast1)+1],[0.0375 0.0375],<span class="string">'--k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0954                     plot([0 2*length(meanfast1)+1],[-0.0375 -0.0375],<span class="string">'--k'</span>,<span class="string">'LineWidth'</span>,2);
+0955                     ylim([-1*max([meanfast1 meanfast2 stdfast1 stdfast2])-0.05 max([meanfast1 meanfast2 stdfast1 stdfast2])+0.05]);
+0956                 <span class="keyword">else</span>
+0957                     ylim([-1*abs(min([meanfast1 meanfast2]))-50 max([meanfast1 meanfast2])+50]);
+0958                 <span class="keyword">end</span>
+0959                 title([this.subjectcode <span class="string">' Fast Leg Day 1 vs. Day 2 Errors'</span>]);
+0960                 ylabel(<span class="string">'% Error from Baseline'</span>);
+0961                 legend(hand,<span class="string">'train D1'</span>,<span class="string">'eval D1'</span>,<span class="string">'train D2'</span>,<span class="string">'eval D2'</span>)
+0962 <span class="comment">%                 keyboard</span>
+0963 
+0964 <span class="comment">%                 figure(7)</span>
+0965                 subplot(2,1,2)
+0966                 hold on
+0967                 fill([0 2*length(train)+0.5 2*length(train)+0.5 0],[max([meanslow1 meanslow2])+1000 max([meanslow1 meanslow2])+1000 -1*max([meanslow1 meanslow2])-1000 -1*max([meanslow1 meanslow2])-1000],[230 230 230]./256);
+0968                 fill([2*length(train)+0.5+2*length(base) 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+2*length(base)+2*length(adapt)+0.5 2*length(train)+0.5+2*length(base)],[max([meanslow1 meanslow2])+1000 max([meanslow1 meanslow2])+1000 -1*max([meanslow1 meanslow2])-1000 -1*max([meanslow1 meanslow2])-1000],[230 230 230]./256);
+0969                 h = 1:2:2*length(meanslow1);
+0970                 h2 = 1.5:2:2*length(meanslow2);
+0971 <span class="comment">%                 plot([0 2*length(meanslow1)+1],[0.0375 0.0375],'--k','LineWidth',2);%tolerance lines</span>
+0972 <span class="comment">%                 plot([0 2*length(meanslow1)+1],[-0.0375 -0.0375],'--k','LineWidth',2);</span>
+0973                 <span class="keyword">for</span> z = 1:2:length(h)<span class="comment">%trainings</span>
+0974 <span class="comment">%                     figure(8)</span>
+0975                     hand(1) = bar(h(z),meanslow1(z),0.5,<span class="string">'FaceColor'</span>,colors1{z});
+0976                 <span class="keyword">end</span>
+0977                 <span class="keyword">for</span> z = 2:2:length(h)<span class="comment">%evaluations</span>
+0978 <span class="comment">%                     figure(8)</span>
+0979                     hand(2) = bar(h(z),meanslow1(z),0.5,<span class="string">'FaceColor'</span>,colors1{z});
+0980                 <span class="keyword">end</span>
+0981                 <span class="keyword">for</span> z=1:2:length(h2)
+0982 <span class="comment">%                     figure(8)</span>
+0983                     hand(3) = bar(h2(z),meanslow2(z),0.5,<span class="string">'FaceColor'</span>,colors2{z});
+0984                 <span class="keyword">end</span>
+0985                 <span class="keyword">for</span> z=2:2:length(h2)
+0986 <span class="comment">%                     figure(8)</span>
+0987                     hand(4) = bar(h2(z),meanslow2(z),0.5,<span class="string">'FaceColor'</span>,colors2{z});
+0988                 <span class="keyword">end</span>
+0989                 <span class="keyword">if</span> ~flag
+0990                     errorbar(h,meanslow1,stdslow1,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1.5);
+0991                     errorbar(h2,meanslow2,stdslow2,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,1.5);
+0992                     plot([0 2*length(meanslow1)+1],[0.0375 0.0375],<span class="string">'--k'</span>,<span class="string">'LineWidth'</span>,2);<span class="comment">%tolerance lines</span>
+0993                     plot([0 2*length(meanslow1)+1],[-0.0375 -0.0375],<span class="string">'--k'</span>,<span class="string">'LineWidth'</span>,2);
+0994                     ylim([-1*max([meanslow1 meanslow2 stdslow1 stdslow2])-0.05 max([meanslow1 meanslow2 stdslow1 stdslow2])+0.05]);
+0995                 <span class="keyword">else</span>
+0996                     ylim([-1*abs(min([meanslow1 meanslow2]))-50 max([meanslow1 meanslow2])+50]);
+0997                 <span class="keyword">end</span>
+0998                 title([this.subjectcode <span class="string">' Slow Leg Day 1 vs. Day 2 Errors'</span>]);
+0999                 ylabel(<span class="string">'% Error from Baseline'</span>);
+1000                 legend(hand,<span class="string">'train D1'</span>,<span class="string">'eval D1'</span>,<span class="string">'train D2'</span>,<span class="string">'eval D2'</span>)
+1001 
+1002                             <span class="keyword">end</span>
+1003             
+1004 <span class="comment">%             keyboard</span>
+1005             
+1006         <span class="keyword">end</span>
+1007             
+1008     <span class="keyword">end</span>
+1009     
+1010 <span class="keyword">end</span>
+1011</pre></div>
+<hr><address>Generated on Thu 06-Jun-2024 12:15:54 by <strong><a href="https://github.com/gllmflndn/m2html">m2html</a></strong> &copy; 2003-2022</address>
+</body>
+</html>
