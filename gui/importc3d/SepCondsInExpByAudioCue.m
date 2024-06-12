@@ -47,7 +47,7 @@ triggerEvent=eventTypes{4}; %in calc parameter trial starts with sHS, so separat
 newExpData = expData;
 trialData = expData.data;
 
-if strcmpi(studyName, 'SpinalAdaptation')
+if contains(erase(studyName,' '),'SpinalAdaptation')
     condsToUpdate = contains(expData.metaData.conditionName,'Split Train') | contains(expData.metaData.conditionName,'Practice');
     if sum(condsToUpdate) ~= 9
         condsToUpdate = find(condsToUpdate)
@@ -78,7 +78,7 @@ for origTrialIdx = origTrials
     msg = datlog.audioCues.audio_instruction_message;
     msgTime = datlog.audioCues.startInRelativeTime + datlog.dataLogTimeOffsetBest;
     %filter out relevant messages only (study specific decisions)
-    if strcmpi(studyName, 'SpinalAdaptation')
+    if contains(erase(studyName,' '),'SpinalAdaptation')
         if contains(origCondName,'Practice')
             relMsg = contains(msg, 'DccRamp2Split') | contains(msg, 'Split');
         elseif contains(origCondName,'Split Train')
@@ -98,7 +98,7 @@ for origTrialIdx = origTrials
     for trialIdx = trialsInCond %usually only have 1.
         curTrl = trialData{trialIdx};
         for msgIdx = 1:numel(msg) 
-            if strcmpi(studyName, 'SpinalAdaptation')
+            if contains(erase(studyName,' '),'SpinalAdaptation')
                 %StudySpecific logic: create new trial from event time and after, update curTrl to only keep 1 to eventtime -1 , and update trial meta data
                 if startsWith(msg{msgIdx},'Rest') %change to ramp2Tied
                     newName = [origCondName ' Ramp2Tied' msg{msgIdx}(end)];
@@ -160,7 +160,7 @@ for origTrialIdx = origTrials
 end
 
 %rename the trials for readability (study specific naming convention)
-if strcmpi(studyName, 'SpinalAdaptation')
+if contains(erase(studyName,' '),'SpinalAdaptation')
     newName = regexprep(newExpData.metaData.conditionName,...
         {'^TM Split Train Pre 1$','^TM Split Train Pre 2$','^TM Split Train Post 1$','^TM Split Train Post 2$'},...
         {'TM Split Train Pre 1 Ramp2Tied1','TM Split Train Pre 2 Ramp2Tied1','TM Split Train Post 1 Mid1','TM Split Train Post 2 Ramp2Tied1'});
@@ -189,7 +189,7 @@ end
 toc
 
 %% special handling for the 1st ramp2start in SAS01Session2 to get rid of some rest to help get good strides out when computing params.
-if strcmpi(studyName, 'SpinalAdaptation') & strcmp(subjectID,'SAS01V02') %hard coded for now
+if contains(erase(studyName,' '),'SpinalAdaptation') && strcmp(subjectID,'SAS01V02') %hard coded for now
     newExpDataBackup = newExpData;
     newExpData = newExpDataBackup;
     figure(); plot(newExpData.data{1,9}.GRFData.Time,newExpData.data{1,9}.GRFData.Data(:,3))
