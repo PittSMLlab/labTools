@@ -138,7 +138,7 @@ else %Treadmill trial
             if sum(contains(fields(trialData.metaData.datlog), 'dataLogTimeOffsetBest'))>0
                 startCue = trialData.metaData.datlog.audioCues.start + trialData.metaData.datlog.dataLogTimeOffsetBest;
                 endCue = trialData.metaData.datlog.audioCues.stop + trialData.metaData.datlog.dataLogTimeOffsetBest;
-            else
+            else %proceed with caution because the relative times in matlab is not synchronized with nexus
                 startCue = trialData.metaData.datlog.audioCues.start;
                 endCue = trialData.metaData.datlog.audioCues.stop;
             end
