@@ -57,25 +57,39 @@ SLAnotPercTask = slaParam;
 % of the start of the perceptual task
 % TODO: add a data check to warn if the stride indices are considerably
 % different of what was expected
-indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
-    timePercInit); %initTime is the stride initial times
-indsEndStride = arrayfun(@(x) find((x-endTime) < 0,1,'first'), ...
-    timePercEnd); %timePercEnd is the stride final times
+if ~isempty(timePercInit) && ~isempty(timePercEnd)
+    if (timePercInit(1) > initTime(1)) && (timePercEnd(end) < endTime(end))
+        indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
+            timePercInit); %initTime is the stride initial times
+        indsEndStride = arrayfun(@(x) find((x-endTime) < 0,1,'first'), ...
+            timePercEnd); %timePercEnd is the stride final times
 
-% populate the times for the strides that have perceptual tasks
-percTaskInitStride(indsInitStride) = 1;
-percTaskEndStride(indsEndStride) = 1;
+        % populate the times for the strides that have perceptual tasks
+        percTaskInitStride(indsInitStride) = 1;
+        percTaskEndStride(indsEndStride) = 1;
 
-for i = 1:length(indsInitStride)
-    percTask(indsInitStride(i):indsEndStride(i)) = 1;
-    SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
-    SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
-    if length(speedDiffPercTask) >= i
-        pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+        for i = 1:length(indsInitStride)
+            percTask(indsInitStride(i):indsEndStride(i)) = 1;
+            SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
+            SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
+            if length(speedDiffPercTask) >= i
+                pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+            end
+        end
+
+    else
+        % TODO: As of right now there is no way to properly synchronize the
+        % datlogs and nexus files for the data collected before April 2024,
+        % since we were not saving forces or marker data. The relative times there are the best we can do but sometimes this times are very off.
+        warning('The information from the datlogs and nexus files is not synchronized, we could not establish an approximate time where the perceptual task took place for this trial. Filling the parameters with NaNs.');
+        percTaskInitStride = nan(size(initTime));
+        percTaskEndStride = nan(size(initTime));
+        percTask = nan(size(initTime));
+        pertSizePercTask = nan(size(initTime));
+        SLAinPercTask = nan(size(initTime));
+        SLAnotPercTask = nan(size(initTime));
     end
 end
-
-
 %% Assign Parameters to the Data Matrix
 data = nan(length(initTime),length(paramLabels));
 for i=1:length(paramLabels)
