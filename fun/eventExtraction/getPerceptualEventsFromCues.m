@@ -1,7 +1,9 @@
 function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(datlog, infoLHSevent, infoRHSevent) 
  
-startCue = datlog.audioCues.start;
-stopCue = datlog.audioCues.stop;
+% Grab auditory cues time from the datlog. This information has to be
+% offset following the synchronization process between datlogs and Nexus
+startCue = datlog.audioCues.start + datlog.dataLogTimeOffsetBest;
+stopCue = datlog.audioCues.stop + datlog.dataLogTimeOffsetBest;
 
 %% Compare the start and stop cue times to the events data to match the start and stop of perceptual trial 
 LHSstartCue = zeros(length(infoLHSevent),1); 
