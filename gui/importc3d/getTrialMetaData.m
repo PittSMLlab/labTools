@@ -69,10 +69,10 @@ for cond = sort(info.cond)
          if info.perceptualTasks ==1 || datlogExist
                % constructor: (name,desc,obs,refLeg,cond,filename,type)
             trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.datlog{cond});   
+                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.ExpDescription,info.datlog{cond});   
          else
             trialMD{t}=trialMetaData(info.conditionNames{cond},info.conditionDescriptions{cond},...
-                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks); 
+                info.trialObs{t},info.refLeg,cond,filename,info.type{cond},info.schenleyLab,info.perceptualTasks,info.ExpDescription); 
          end
     end 
    

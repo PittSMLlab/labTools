@@ -186,5 +186,6 @@ for trialIdx = trials
     datlog.dataLogTimeOffsetBest = datlogDelay/sampleFrq; %in seconds.
    
     rawExpData.metaData.datlog{trialIdx} = datlog; %update to have the log with time shift info.
+    rawExpData.data{trialIdx}.metaData.datlog = datlog; %most likely redundant but need it for perceptual task syncronization later
 end
 end
