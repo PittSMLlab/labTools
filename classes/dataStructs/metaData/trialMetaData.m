@@ -21,6 +21,7 @@ classdef trialMetaData
         type='';
         schenleyLab='';
         perceptualTasks='';
+        ID='';
         datlog='';
     end
 
@@ -28,7 +29,7 @@ classdef trialMetaData
     methods
         %Constructor
         %trialMetaData(desc,obs,refLeg,cond,filename,type)
-        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab,perceptualTasks,datlog)                  
+        function this=trialMetaData(name,desc,obs,refLeg,cond,filename,type,schenleyLab,perceptualTasks,ID,datlog)                  
             if isa(name,'char')
                 this.name=name;
             end
@@ -76,14 +77,18 @@ classdef trialMetaData
                 this.perceptualTasks=0;
                 warning('Assuming this experiment does not have any perceptual tasks (2AFC tasks).')
             end
-            if nargin>9 && (isa(datlog,'struct'))
+             if nargin>9 && (isa(ID,'char'))
+                this.ID = ID;               
+            else
+                this.ID='';                
+            end
+            if nargin>10 && (isa(datlog,'struct'))
                 this.datlog = datlog;
                 if isfield(datlog,'datlog') %datlog is saved in datlog.datlog, this will be true depends on how the datlog was loaded.
                     this.datlog = this.datlog.datlog;
                 end
             else
-                this.datlog='';
-    
+                this.datlog='';    
             end
             
         end

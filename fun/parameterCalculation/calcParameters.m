@@ -189,6 +189,14 @@ if any(contains(fields,'HreflexPin'))   % if 'HreflexPin' field exists, ...
         out = cat(out,Hreflex);
     end
 end
+
+%% Perceptual task:
+slaIdx = strcmpi(spat.labels,'netContributionNorm2');
+if any(contains(trialData.gaitEvents.labels, 'perc')) %there are gait events indicating the start and stop of the perceptual trial
+    PerceptualTasks = computePercParameters(trialData,initTime,endTime,spat.Data(:,slaIdx));
+    out = cat(out,PerceptualTasks);
+end
+
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
 %badStart=bad; %make a copy to compare at the end

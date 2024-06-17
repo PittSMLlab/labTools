@@ -21,7 +21,16 @@ if mod(N1,2)==0
 end
 forces=medfilt1(Fz,N1);
 forces=medfilt1(forces,N); 
-%forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
+% forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
+
+
+%Sanity check: correct non-zeroed force-plates:
+if mode(forces)~=0
+    disp(['Warning: Left z-axis forces have non-zero mode. Subtracting mode from force data before event detection']);
+    forces=forces-mode(forces);
+end
+
+% forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 forceSign=sign(nanmean(Fz));
 forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
 
