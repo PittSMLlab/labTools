@@ -585,8 +585,10 @@ for t=cell2mat(info.trialnums) %loop through each trial
         %Ts (1/sampling frequency), labels
 
         %sanity check, the # of frames should match GRF data
-        if (GRFData.Length ~= HreflexStimPinData.Length)
-            error('Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.')
+        if ~isempty(GRFData)
+            if (GRFData.Length ~= HreflexStimPinData.Length)
+                error('Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.')
+            end
         end
     else
         %This is needed to work with expeirments that doesn't have this pin.
