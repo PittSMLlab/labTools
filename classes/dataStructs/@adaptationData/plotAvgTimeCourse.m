@@ -172,7 +172,12 @@ for group=1:Ngroups
         if removeBiasFlag==1
             adaptData = adaptData.removeBias;
         elseif removeBiasFlag==2
-            adaptData = adaptData.normalizeBias;
+            if any(contains(params,'hreflex','IgnoreCase',true))
+                numStrides = -100;  % last 100 strides for 10 stimuli
+                adaptData = removeBiasV4(adaptData,[],1,[],numStrides);
+            else
+                adaptData = adaptData.normalizeBias;
+            end
         end
 
         for c=1:nConds
@@ -258,7 +263,7 @@ for group=1:Ngroups
     Xstart=1;
     lineX=0;
     for c=1:nConds
-        for t=1:length(fields(values(group).(params{p}).(cond{c})));
+        for t=1:length(fields(values(group).(params{p}).(cond{c})))
 
             % 1) find the length of each trial
             if maxNumPts
