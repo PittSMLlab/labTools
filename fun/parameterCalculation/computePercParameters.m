@@ -57,24 +57,27 @@ SLAnotPercTask = slaParam;
 % of the start of the perceptual task
 % TODO: add a data check to warn if the stride indices are considerably
 % different of what was expected
-indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
-    timePercInit); %initTime is the stride initial times
-indsEndStride = arrayfun(@(x) find((x-endTime) < 0,1,'first'), ...
-    timePercEnd); %timePercEnd is the stride final times
+if ~isempty(timePercInit) && ~isempty(timePercEnd)
+    indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
+        timePercInit); %initTime is the stride initial times
+    indsEndStride = arrayfun(@(x) find((x-endTime) < 0,1,'first'), ...
+        timePercEnd); %timePercEnd is the stride final times
 
-% populate the times for the strides that have perceptual tasks
-percTaskInitStride(indsInitStride) = 1;
-percTaskEndStride(indsEndStride) = 1;
+    % populate the times for the strides that have perceptual tasks
+    percTaskInitStride(indsInitStride) = 1;
+    percTaskEndStride(indsEndStride) = 1;
 
-for i = 1:length(indsInitStride)
-    percTask(indsInitStride(i):indsEndStride(i)) = 1;
-    SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
-    SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
-    if length(speedDiffPercTask) >= i
-        pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+    SLAnotPercTask = slaParam;
+    for i = 1:length(indsInitStride)
+        percTask(indsInitStride(i):indsEndStride(i)) = 1;
+        SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
+        SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
+        if length(speedDiffPercTask) >= i
+            pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+        end
     end
-end
 
+end
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(initTime),length(paramLabels));
