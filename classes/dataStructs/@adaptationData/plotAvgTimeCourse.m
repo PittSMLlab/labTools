@@ -559,14 +559,13 @@ set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
 
     if size(legendStr(:),2)>10
-
-        legend([Li{:}],[legendStr{:}],'NumColumns',3)
+        legend([Li{:}],[legendStr{:}],'NumColumns',3,'Location','Best','AutoUpdate',false)
     else
-        legend([Li{:}],[legendStr{:}])
+        legend([Li{:}],[legendStr{:}],'Location','Best','AutoUpdate',false)
     end
 else
 labels={labels}';
-legend([Li{:}],[labels{:}])
+legend([Li{:}],[labels{:}],'Location','Best','AutoUpdate',false)
 end
 %% outputs
 if nargout<2
