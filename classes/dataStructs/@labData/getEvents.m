@@ -133,42 +133,41 @@ else %Treadmill trial
 
             % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
 
-            % Grab auditory cues time from the datlog. This information has to be
-            % offset following the synchronization process between datlogs and Nexus
-            if sum(contains(fields(trialData.metaData.datlog), 'dataLogTimeOffsetBest'))>0
-                startCue = trialData.metaData.datlog.audioCues.start + trialData.metaData.datlog.dataLogTimeOffsetBest;
-                endCue = trialData.metaData.datlog.audioCues.stop + trialData.metaData.datlog.dataLogTimeOffsetBest;
-            else %proceed with caution because the relative times in matlab is not synchronized with nexus
-                startCue = trialData.metaData.datlog.audioCues.start;
-                endCue = trialData.metaData.datlog.audioCues.stop;
-            end
-
             % Actual frame number for the stride whose time is closer to
             % the perceptual trial start and end cues
             percStartCue = zeros(1, length(RTOeventForce));
             percEndCue = zeros(1, length(RTOeventForce));
             percEndRamp = zeros(1, length(RTOeventForce));
 
-            % Compare the start and stop cue times to the events data to
-            % match the start and stop of perceptual trial (this will have the frame number)
-            if ~isempty(startCue)
-                idxStrideScue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), startCue); % the controller for the experiments increases stride cound starting form RTO.
-                ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
-                    idxStrideEcue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), endCue);
+            % Grab auditory cues time from the datlog. This information has to be
+            % offset following the synchronization process between datlogs and Nexus
+            if sum(contains(fields(trialData.metaData.datlog), 'dataLogTimeOffsetBest'))>0
+                startCue = trialData.metaData.datlog.audioCues.start + trialData.metaData.datlog.dataLogTimeOffsetBest;
+                endCue = trialData.metaData.datlog.audioCues.stop + trialData.metaData.datlog.dataLogTimeOffsetBest;
 
-                % Add logical value where there is an event related to the cues
-                framesRTO = find(RTOeventForce==1);
-                idxFrameStart = framesRTO(idxStrideScue); percStartCue(idxFrameStart) = true;
-                idxFrameEnd = framesRTO(idxStrideEcue); percEndCue(idxFrameEnd) = true;
+                % Compare the start and stop cue times to the events data to
+                % match the start and stop of perceptual trial (this will have the frame number)
 
-                % Currently for Weber Perception I have a ramp down of 3
-                % strides which might change in the future. TODO: make it
-                % more robust such that this is only computed for Weber
-                % Study
-                idxFrameEndRamp = framesRTO(idxStrideEcue+3); percEndRamp(idxFrameEndRamp) = true;
+                if ~isempty(startCue)
+                    idxStrideScue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), startCue); % the controller for the experiments increases stride cound starting form RTO.
+                    ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
+                        idxStrideEcue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), endCue);
 
+                    % Add logical value where there is an event related to the cues
+                    framesRTO = find(RTOeventForce==1);
+                    idxFrameStart = framesRTO(idxStrideScue); percStartCue(idxFrameStart) = true;
+                    idxFrameEnd = framesRTO(idxStrideEcue); percEndCue(idxFrameEnd) = true;
+
+                    % Currently for Weber Perception I have a ramp down of 3
+                    % strides which might change in the future. TODO: make it
+                    % more robust such that this is only computed for Weber
+                    % Study
+                    idxFrameEndRamp = framesRTO(idxStrideEcue+3); percEndRamp(idxFrameEndRamp) = true;
+
+                end
+            else %proceed with caution because the relative times in matlab is not synchronized with nexus
+                warning("Datalogs can't be synchronized with Nexus data");
             end
-
         end
 
     end

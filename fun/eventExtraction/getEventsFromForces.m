@@ -1,7 +1,7 @@
 function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
 
 %% Get stance phases
-th=10; %Detection threshold in Newtons
+th=30; %Detection threshold in Newtons
 [stanceL] = getStanceFromForces(FzL, th, fsample);
 [stanceR] = getStanceFromForces(FzR, th, fsample);
 %[stanceL] = getStanceFromForcesAlt(FzL, [], fsample); %New method
