@@ -299,8 +299,16 @@ for group=1:Ngroups
                 % 2) average across subjuects within bins
 
                 %Find (running) averages and standard deviations for bin data
-                start=1:size(allValues,2)-(binwidth-1);
-                stop=start+binwidth-1;
+                binwidthNew = binwidth;
+                numVals = size(allValues,2);
+                if binwidth > numVals
+                    warning(['Specified bin width exceeds the number ' ...
+                        'of strides in trial. Reducing bin width to be' ...
+                        ' number of strides.']);
+                    binwidthNew = numVals;
+                end
+                start=1:numVals-(binwidthNew-1);
+                stop = start + (binwidthNew-1);
 %                 %Find (simple) averages and standard deviations for bin data
 %                 start = 1:binwidth:(size(allValues,2)-binwidth+1);
 %                 stop = start+(binwidth-1);
@@ -331,11 +339,11 @@ for group=1:Ngroups
                         if medianFlag==0
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(reshape(bin,1,numel(bin)));
                             indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmean(bin,2);
-                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidth);
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidthNew);
                         else
                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
                             indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmedian(bin,2);
-                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidth);
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidthNew);
                         end
                     end
                 end
@@ -370,7 +378,7 @@ for group=1:Ngroups
                     Cdiv=1;
                 end
                 hold on
-                afterTrialPad=5; %adds empty sapce to end of trial/condition (in strides)
+                afterTrialPad=5; %adds empty space to end of trial/condition (in strides)
                 y=[avg(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
 %                 condLength=length(y);
