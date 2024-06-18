@@ -107,7 +107,7 @@ classdef adaptationData
 
         [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag) %Going to deprecate in favor of removeBiasV3's simpler code
         [newThis,baseValues,typeList]=removeBiasV3(this,conditions,normalizeFlag)
-        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag,padWithNaNFlag)
+        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag,padWithNaNFlag,numStrides)
 
         function [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)
         % Removes baseline value for all parameters.
