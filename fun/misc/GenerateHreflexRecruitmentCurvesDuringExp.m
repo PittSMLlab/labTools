@@ -3,10 +3,17 @@
 % date (started): 05 May 2024
 % purpose: to extract the M-wave and H-wave amplitudes from the H-reflex
 % calibration EMG data shortly after the creation of the calibration trial
-% C3D file in a Vicon Nexus software processing pipeline during an
-% experiment.
+% C3D file in a Vicon Nexus software processing pipeline during experiment.
 % NOTE: this processing script uses 'SL_Realtime.m' as a template to use
 % the Vicon Nexus sofware tools.
+
+% TODO:
+%   1. use the feature of the stimulator to set the current output
+%   based on the voltage of the trigger pulse to eliminate the need for
+%   asking the user to input the stimulation amplitudes
+%   2. use the Vicon SDK to update the recruitment curve and ratio figures
+%   in real time (if possible)
+%   3. adaptively choose the next stimulation amplitude
 
 %% 1. Load the C3D File Data
 try     % if Vicon Nexus is running with a file open, use that
@@ -41,9 +48,6 @@ H = btkReadAcquisition([path filenameWExt]);
 [analogs,analogsInfo] = btkGetAnalogs(H);
 
 %% 2. Retrieve User Input Data
-% TODO: use the feature of the stimulator to set the current output
-% based on the voltage of the trigger pulse to eliminate the need for
-% asking the user to input the stimulation amplitudes
 prompt = { ...
     ['Enter the EMG sensor muscles in sensor number order for all 16 ' ...
     'sensors of Box 1 (using ''NA'' for sensors not in use):'], ...
@@ -95,7 +99,6 @@ if ~isfile([pathFigs fnameConf]) || (isfile([pathFigs fnameConf]) && ...
 end
 
 %% 3. Extract User Input Parameters
-% TODO: add more input checks
 EMGList1 = strsplit(answer{1},' '); % list of EMG muscle labels
 if isempty(EMGList1)                % if no EMG labels input, ...
     error(['No EMG labels have been provided. It is not possible to ' ...
@@ -395,7 +398,7 @@ end
 
 %% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
 snipStart = -0.005; % 5 ms before artifact peak
-snipEnd = 0.045;    % 45 ms after artifact peak
+snipEnd = 0.055;    % 55 ms after artifact peak
 timesSnippet = snipStart:period:snipEnd;
 numSamps = length(timesSnippet);
 
@@ -408,7 +411,6 @@ snippetsForceRL = nan(numStimR,numSamps);   % contra to stim
 snippetsForceLL = nan(numStimL,numSamps);
 snippetsForceLR = nan(numStimL,numSamps);
 % plot the right leg stimuli
-% TODO: add checks for trials without stimuli for one leg or the other
 for stR = 1:numStimR    % for each right leg stimulus, ...
     winPlotR = (locsR(stR) + (snipStart/period)):(locsR(stR) + (snipEnd/period));
     timesWinPlotR = times(winPlotR);
@@ -417,84 +419,6 @@ for stR = 1:numStimR    % for each right leg stimulus, ...
         snippetsForceRR(stR,:) = GRFRFz(winPlotR);
         snippetsForceRL(stR,:) = GRFLFz(winPlotR);
     end
-
-    % snipsStimAllMuscles = [EMG_RTAP(winPlotR); EMG_RMG(winPlotR); ...
-    %     EMG_RSOL(winPlotR)];
-    % ymin = min(snipsStimAllMuscles,[],'all');
-    % ymax = max(snipsStimAllMuscles,[],'all');
-
-    % TODO: make showing snippet plots an input so that user can decide
-    %     figure('Units','normalized','OuterPosition',[0 0 1 1]);
-
-    % TODO: throw error if EMG arrays and GRF arrays are different length
-    % (should be identical since sampled at the same rate)
-    %     if hasForces
-    %         tl = tiledlayout(5,1,'TileSpacing','tight');
-    %
-    %         nexttile; hold on;
-    %         xline(times(locsR(stR)),'k','LineWidth',2);
-    %         plot(timesWinPlotR,GRFRFz(winPlotR));
-    %         xlim([timesWinPlotR(1) timesWinPlotR(end)]);
-    %         hold off;
-    %         ylabel('Force (N)');
-    %         title('Right Fz');
-    %
-    %         nexttile; hold on;
-    %         xline(times(locsR(stR)),'k','LineWidth',2);
-    %         plot(timesWinPlotR,GRFLFz(winPlotR));
-    %         xlim([timesWinPlotR(1) timesWinPlotR(end)]);
-    %         hold off;
-    %         ylabel('Force (N)');
-    %         title('Left Fz');
-    %     else
-    %         tl = tiledlayout(3,1,'TileSpacing','tight');
-    %     end
-    %
-    %     ax1 = nexttile; hold on;
-    %     xline(times(locsR(stR)),'k','LineWidth',2);
-    %     xline(times(locsR(stR)+indStartM),'b');
-    %     xline(times(locsR(stR)+indEndM),'b');
-    %     xline(times(locsR(stR)+indStartH),'g');
-    %     xline(times(locsR(stR)+indEndH),'g');
-    %     % only plot the stimulation artifact threshold if it is used
-    %     % if ~(hasStimTrig && shouldUseStimTrig)
-    %         yline(threshStimArtifact,'r','Stim Artifact Thresh');
-    %     % end
-    %     plot(timesWinPlotR,EMG_RTAP(winPlotR));
-    %     title('Right TA - Proximal');
-    %     hold off;
-    %
-    %     ax2 = nexttile; hold on;
-    %     xline(times(locsR(stR)),'k','LineWidth',2);
-    %     xline(times(locsR(stR)+indStartM),'b');
-    %     xline(times(locsR(stR)+indEndM),'b');
-    %     xline(times(locsR(stR)+indStartH),'g');
-    %     xline(times(locsR(stR)+indEndH),'g');
-    %     plot(timesWinPlotR,EMG_RMG(winPlotR));
-    %     ylabel('Raw EMG (V)');
-    %     title('Right MG');
-    %     hold off;
-    %
-    %     ax3 = nexttile; hold on;
-    %     xline(times(locsR(stR)),'k','LineWidth',2);
-    %     xline(times(locsR(stR)+indStartM),'b');
-    %     xline(times(locsR(stR)+indEndM),'b');
-    %     xline(times(locsR(stR)+indStartH),'g');
-    %     xline(times(locsR(stR)+indEndH),'g');
-    %     plot(timesWinPlotR,EMG_RSOL(winPlotR));
-    %     title('Right SOL');
-    %     hold off;
-    %
-    %     linkaxes([ax1 ax2 ax3]);
-    %     xlabel(tl,'time (s)');
-    %     xlim([timesWinPlotR(1) timesWinPlotR(end)]);
-    %     ylim([ymin ymax]);
-    %     title(tl,[id ' - Right Leg - Trial' trialNum ' - Stim ' num2str(stR)]);
-    %     saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...
-    %         '_Stim' num2str(stR) '.png']);
-    %     saveas(gcf,[pathFigs id '_StimEMGSnippets_RightLeg_Trial' trialNum ...
-    %         '_Stim' num2str(stR) '.fig']);
-    %     close;
 end
 
 % plot the left leg stimuli
@@ -506,78 +430,10 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
         snippetsForceLL(stL,:) = GRFLFz(winPlotL);
         snippetsForceLR(stL,:) = GRFRFz(winPlotL);
     end
-
-    % snipsStimAllMuscles = [EMG_LTAP(winPlotL); EMG_LMG(winPlotL); ...
-    %     EMG_LSOL(winPlotL)];
-    % ymin = min(snipsStimAllMuscles,[],'all');
-    % ymax = max(snipsStimAllMuscles,[],'all');
-
-    %     figure('Units','normalized','OuterPosition',[0 0 1 1]);
-    %     tl = tiledlayout(5,1,'TileSpacing','tight');
-    %
-    %     if hasForces    % if force data is present, ...
-    %         nexttile; hold on;
-    %         xline(times(locsL(stL)),'k','LineWidth',2);
-    %         plot(timesWinPlotL,GRFLFz(winPlotL));
-    %         xlim([timesWinPlotL(1) timesWinPlotL(end)]);
-    %         hold off;
-    %         ylabel('Force (N)');
-    %         title('Left Fz');
-    %
-    %         nexttile; hold on;
-    %         xline(times(locsL(stL)),'k','LineWidth',2);
-    %         plot(timesWinPlotL,GRFRFz(winPlotL));
-    %         xlim([timesWinPlotL(1) timesWinPlotL(end)]);
-    %         hold off;
-    %         ylabel('Force (N)');
-    %         title('Right Fz');
-    %     end
-    %
-    %     ax1 = nexttile; hold on;
-    %     xline(times(locsL(stL)),'k','LineWidth',2);
-    %     xline(times(locsL(stL)+indStartM),'b');
-    %     xline(times(locsL(stL)+indEndM),'b');
-    %     xline(times(locsL(stL)+indStartH),'g');
-    %     xline(times(locsL(stL)+indEndH),'g');
-    %     yline(threshStimArtifact,'r','Stim Artifact Thresh');
-    %     plot(timesWinPlotL,EMG_LTAP(winPlotL));
-    %     title('Left TA - Proximal');
-    %     hold off;
-    %
-    %     ax2 = nexttile; hold on;
-    %     xline(times(locsL(stL)),'k','LineWidth',2);
-    %     xline(times(locsL(stL)+indStartM),'b');
-    %     xline(times(locsL(stL)+indEndM),'b');
-    %     xline(times(locsL(stL)+indStartH),'g');
-    %     xline(times(locsL(stL)+indEndH),'g');
-    %     plot(timesWinPlotL,EMG_LMG(winPlotL));
-    %     ylabel('Raw EMG (V)');
-    %     title('Left MG');
-    %     hold off;
-    %
-    %     ax3 = nexttile; hold on;
-    %     xline(times(locsL(stL)),'k','LineWidth',2);
-    %     xline(times(locsL(stL)+indStartM),'b');
-    %     xline(times(locsL(stL)+indEndM),'b');
-    %     xline(times(locsL(stL)+indStartH),'g');
-    %     xline(times(locsL(stL)+indEndH),'g');
-    %     plot(timesWinPlotL,EMG_LSOL(winPlotL));
-    %     title('Left SOL');
-    %     hold off;
-    %
-    %     linkaxes([ax1 ax2 ax3]);
-    %     xlabel(tl,'time (s)');
-    %     xlim([timesWinPlotL(1) timesWinPlotL(end)]);
-    %     ylim([ymin ymax]);
-    %     title(tl,[id ' - Left Leg - Trial' trialNum ' - Stim ' num2str(stL)]);
-    %     saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...
-    %         '_Stim' num2str(stL) '.png']);
-    %     saveas(gcf,[pathFigs id '_StimEMGSnippets_LeftLeg_Trial' trialNum ...
-    %         '_Stim' num2str(stL) '.fig']);
-    %     close;
 end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
+% TODO: add stim artifact threshold line if helpful?
 % if force data present and should use the stimulation trigger signal to
 % localize the artifact peaks (using as proxy for walking trial), ...
 if hasForces && shouldUseStimTrig
@@ -594,8 +450,8 @@ else        % otherwise, do not plot the forces
 end
 
 %% 10.2 Plot Snippets for a Given Amplitude for Each Leg Together
-% TODO: move the finding of unique amplitudes and indices up here, make
-% this a helper function to reduce code duplication
+% TODO: move the finding of unique amplitudes and indices up here
+% TODO: make this a helper function to reduce code duplication
 % TODO: Add dots to show the min and max picked out for each wave to see if
 % first/last points (i.e., if makes sense)
 
