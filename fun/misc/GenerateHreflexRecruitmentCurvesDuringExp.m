@@ -457,7 +457,7 @@ end
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-amps = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
+[amps,durs] = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
 
 ampsMwaveR = amps{1,1};
 ampsHwaveR = amps{1,2};
@@ -465,6 +465,18 @@ ampsNoiseR = amps{1,3};
 ampsMwaveL = amps{2,1};
 ampsHwaveL = amps{2,2};
 ampsNoiseL = amps{2,3};
+
+% figure;
+% hold on;
+% histogram(durs{1,1},0.000:period:0.020,'EdgeColor','none');
+% xline(0.008,'r-','LineWidth',3);
+% hold off;
+% xlim([0.000 0.020]);
+% xlabel('M-Wave Width (s)');
+% ylabel('Frequency');
+% title([id ' - Right Leg']);
+% saveas(gcf,[pathFigs id '_MwaveDurDistribution_Trial' trialNum '_RightLeg.png']);
+% saveas(gcf,[pathFigs id '_MwaveDurDistribution_Trial' trialNum '_RightLeg.fig']);
 
 %% 12. Compute Means and H/M Ratios for Unique Stimulation Amplitudes
 ampsStimRU = unique(ampsStimR);
