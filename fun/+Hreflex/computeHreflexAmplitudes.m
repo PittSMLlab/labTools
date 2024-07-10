@@ -49,7 +49,14 @@ durs(2,:) = cellfun(@(x) nan(numStimL,1),durs(2,:),'UniformOutput',false);
 % NOTE: should always be same across trials and should be same for forces
 % TODO: make optional input argument
 period = 0.0005; % EMG.sampPeriod;    % sampling period
-threshDur = 0.008;  % 8ms is longest M- or H-wave duration considered valid
+% NOTE: increased threshold from 8ms to 10ms to be more liberal in
+% including waveforms
+% TODO: update to include the M- and H-wave value by default and only set
+% to NaN if determined to be an invalid measurement by more stringent
+% criteria, store the indices at which the min and max occur to determine
+% the mode (or median?) samples at which the wave peak and trough occur to
+% compute values in the cases when errant points are selected
+threshDur = 0.010;  % 8ms is longest M- or H-wave duration considered valid
 % TODO: make indices optional input argument with default option to avoid
 % having these values duplicated in multiple locations
 % M-wave is contained by interval:           4ms -  23ms after stim. art.
@@ -125,8 +132,8 @@ for stL = 1:numStimL                    % for each left leg stimulus, ...
             case {1,2}                  % M-wave or H-wave
                 durs{2,win}(stL) = period * abs(indMax - indMin);
                 % if wave duration is less than threshold, ...
-                if durs{1,win}(stR) <= threshDur
-                    amps{1,win}(stR) = valMax - valMin;
+                if durs{2,win}(stL) <= threshDur
+                    amps{2,win}(stL) = valMax - valMin;
                 else                    % otherwise, ...
                     % leave as NaN
                 end

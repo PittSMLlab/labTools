@@ -11,9 +11,13 @@
 %   1. use the feature of the stimulator to set the current output
 %   based on the voltage of the trigger pulse to eliminate the need for
 %   asking the user to input the stimulation amplitudes
-%   2. use the Vicon SDK to update the recruitment curve and ratio figures
+%   2. handle case of only stimulating one leg during a trial (i.e., only
+%   want to compute parameters and plot one leg)
+%   3. use the Vicon SDK to update the recruitment curve and ratio figures
 %   in real time (if possible)
-%   3. adaptively choose the next stimulation amplitude
+%   4. consider making each data retrieval its own function for modularity
+%   and easy access and use for future applications
+%   5. adaptively choose the next stimulation amplitude
 
 %% 1. Load the C3D File Data
 try     % if Vicon Nexus is running with a file open, use that
@@ -115,8 +119,6 @@ numStimR = length(ampsStimR);   % number of times stimulated right leg
 numStimL = length(ampsStimL);   % number of times stimulated left leg
 
 %% 4. Retrieve EMG Data
-% TODO: Consider making each data retrieval its own separate function for
-% modularity and easy access and use for future applications
 % NOTE: below is copied directly from 'loadTrials.m'
 % below are the muscle names (abbrev.) in the desired order
 % NOTE: thigh and hip muscles have been removed since not currently
@@ -255,15 +257,6 @@ end
 
 % clear analogs* %Save memory space, no longer need analog data, it was already loaded
 
-%% Extract Events
-% TODO: add back in to script if helpful to check the times to verify
-% stimulation is during single stance if it is a walking calibration trial
-
-% [~,~,lfz] = intersect('LFz',forceLabels);
-% [~,~,rfz] = intersect('RFz',forceLabels);
-%
-% [LHS,RHS,LTO,RTO] = getEventsFromForces(forces(:,lfz),forces(:,rfz),100);
-
 %% Save the Data
 % TODO: implement if valuable for this script
 
@@ -300,9 +293,6 @@ threshSamps = threshStimTimeSep / period;  % convert to samples
 
 %% 8. Identify Locations of the Stimulation Artifacts
 % extract relevant EMG data
-% TODO: still need to handle case of only recording data from one leg
-% during a trial (i.e., only want to compute parameters and plot one leg)
-
 % MG is the muscle used for the H-reflex
 hasMG = contains(EMG.labels,'MG');
 if ~any(hasMG)  % if no medial gastrocnemius muscle data, ...
@@ -339,8 +329,7 @@ end
 
 % if missing any of the EMG signals used below, ...
 if any(isempty([EMG_LTAP EMG_RTAP EMG_LMG EMG_RMG]))
-    % TODO: update handling of cases when one or more of these signals is
-    % missing (e.g., only conducting calibration on one leg)
+    % TODO: update handling of one or more missing signals
     error('Missing one or more EMG signals.');
 end
 
@@ -458,6 +447,8 @@ end
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
 [amps,durs] = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
+% convert wave amplitudes from Volts to Millivolts
+amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
 
 ampsMwaveR = amps{1,1};
 ampsHwaveR = amps{1,2};
@@ -484,20 +475,20 @@ ampsStimLU = unique(ampsStimL);
 % Gaussian fit function for fitting average H-wave amplitude data
 % based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
 % Journal of Neuroscience Methods, 2007)
-fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
+% fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
 avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
 % TODO: alternate approach would be to convert the mean H-wave amplitudes
 % to integer "frequencies" for each stim amplitude and fit a normal dist.
 % pdR = fitdist(ampsStimRU','Normal', ...
 %     'Frequency',round((avgsHwaveR / max(avgsHwaveR)) * 10000));
 % initialize coefficients
-coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
+% coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
 % coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
 avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
 avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
 % pdL = fitdist(ampsStimLU','Normal', ...
 %     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
-coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
+% coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
 % coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
 avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
 % TODO: verify that these values will always be sorted in ascending order
@@ -510,20 +501,19 @@ avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
 
 %% Plot the Noise Distributions for Both Legs
 
-% compute four times the noise floor (75th percentile) to determine whether
-% to send the participant home or not (at least one leg must exceed
-% threshold)
-threshNoiseR = 4 * mean(ampsNoiseR); % 4 * prctile(ampsNoiseR,75);
-threshNoiseL = 4 * mean(ampsNoiseL); % 4 * prctile(ampsNoiseL,75);
+% compute four times noise floor (mean) to determine whether
+% to send participant home or not (at least one leg must exceed threshold)
+threshNoiseR = 4 * mean(ampsNoiseR);
+threshNoiseL = 4 * mean(ampsNoiseL);
 
 figure; hold on;
-histogram(ampsNoiseR*1000,0.00:0.05:0.30,'Normalization','probability');
-xline(mean(ampsNoiseR*1000),'r',sprintf('Mean = %.2f mV', ...
-    mean(ampsNoiseR*1000)),'LineWidth',2);
-xline(median(ampsNoiseR*1000),'g',sprintf('Median = %.2f mV', ...
-    median(ampsNoiseR*1000)),'LineWidth',2);
-xline(prctile(ampsNoiseR*1000,75),'k',sprintf( ...
-    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseR*1000,75)),'LineWidth',2);
+histogram(ampsNoiseR,0.00:0.05:0.30,'Normalization','probability');
+xline(mean(ampsNoiseR),'r',sprintf('Mean = %.2f mV', ...
+    mean(ampsNoiseR)),'LineWidth',2);
+xline(median(ampsNoiseR),'g',sprintf('Median = %.2f mV', ...
+    median(ampsNoiseR)),'LineWidth',2);
+xline(prctile(ampsNoiseR,75),'k',sprintf( ...
+    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseR,75)),'LineWidth',2);
 hold off;
 axis([0 0.3 0 0.8]);
 xlabel('Noise Amplitude Peak-to-Peak (mV)');
@@ -535,13 +525,13 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
     '_RightLeg.fig']);
 
 figure; hold on;
-histogram(ampsNoiseL*1000,0.00:0.05:0.30,'Normalization','probability');
-xline(mean(ampsNoiseL*1000),'r',sprintf('Mean = %.2f mV', ...
-    mean(ampsNoiseL*1000)),'LineWidth',2);
-xline(median(ampsNoiseL*1000),'g',sprintf('Median = %.2f mV', ...
-    median(ampsNoiseL*1000)),'LineWidth',2);
-xline(prctile(ampsNoiseL*1000,75),'k',sprintf( ...
-    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseL*1000,75)),'LineWidth',2);
+histogram(ampsNoiseL,0.00:0.05:0.30,'Normalization','probability');
+xline(mean(ampsNoiseL),'r',sprintf('Mean = %.2f mV', ...
+    mean(ampsNoiseL)),'LineWidth',2);
+xline(median(ampsNoiseL),'g',sprintf('Median = %.2f mV', ...
+    median(ampsNoiseL)),'LineWidth',2);
+xline(prctile(ampsNoiseL,75),'k',sprintf( ...
+    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseL,75)),'LineWidth',2);
 hold off;
 axis([0 0.3 0 0.8]);
 xlabel('Noise Amplitude Peak-to-Peak (mV)');
@@ -555,11 +545,10 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 %% 12. Plot Recruitment Curve for Both Legs
 % TODO: add normal distribution fit to H-wave recruitment curve to pick out
 % peak amplitude and current at which peak occurs
-% TODO: consider displaying all raw values in mV rather than V
-incX = 0.1; % increment for curve fit (in mA)
-xR = min(ampsStimRU):incX:max(ampsStimRU);
+% incX = 0.1; % increment for curve fit (in mA)
+% xR = min(ampsStimRU):incX:max(ampsStimRU);
 % yR = fun(coefsR,xR);
-xL = min(ampsStimLU):incX:max(ampsStimLU);
+% xL = min(ampsStimLU):incX:max(ampsStimLU);
 % yL = fun(coefsL,xL);
 
 % compute Hmax and I_Hmax for the right and left leg
@@ -577,14 +566,14 @@ ampsHwaveL = ampsHwaveL(indsOrderL);
 ampsMwaveL = ampsMwaveL(indsOrderL);
 
 figure; hold on;
-% TODO: Change Vpp threshold line to a noise floor line with the computed
-% value printed above the line in mV
-% TODO: consider also showing a 4xNoise line for decision making during exp
+yline(mean(ampsNoiseR),'r--');
 yline(threshNoiseR,'r','H-Wave V_{pp} Threshold');
 plot(ampsStimR,ampsMwaveR,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
-p1 = plot(ampsStimRU,avgsMwaveR,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+p1 = plot(ampsStimRU(~isnan(avgsMwaveR)),avgsMwaveR(~isnan(avgsMwaveR)),...
+    'LineWidth',2,'Color',[0.5 0.5 0.5]);
 plot(ampsStimR,ampsHwaveR,'ok','MarkerSize',10);
-p2 = plot(ampsStimRU,avgsHwaveR,'k','LineWidth',2);
+p2 = plot(ampsStimRU(~isnan(avgsHwaveR)),avgsHwaveR(~isnan(avgsHwaveR)),...
+    'k','LineWidth',2);
 % p2 = plot(xR,pdf(pdR,xR)*(max(avgsHwaveR)*10),'k','LineWidth',2);
 % p3 = plot(xR,yR,'b--','LineWidth',2);
 plot([IhMaxR IhMaxR],[0 hMaxR],'k-.');  % vertical line from I_Hmax to Hmax
@@ -597,11 +586,11 @@ plot([min(ampsStimR)-1 IhMaxR],[hMaxR hMaxR],'k-.');    % horizontal line to Hma
 % add label to horizontal line (Hmax)
 text(min(ampsStimR)-1 + 0.1, ...
     hMaxR + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
-    sprintf('H_{max} = %.5f V',hMaxR));
+    sprintf('H_{max} = %.2f mV',hMaxR));
 hold off;
 xlim([min(ampsStimR)-1 max(ampsStimR)+1]);
 xlabel('Stimulation Amplitude (mA)');
-ylabel('MG EMG Amplitude (V)');
+ylabel('MG EMG Amplitude (mV)');
 legend([p1 p2],'M-wave','H-wave','Location','best');
 title([id ' - Trial' trialNum ' - Right Leg - Recruitment Curve']);
 saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
@@ -610,11 +599,14 @@ saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
     trialNum '_RightLeg.fig']);
 
 figure; hold on;
+yline(mean(ampsNoiseL),'r--');
 yline(threshNoiseL,'r','H-Wave V_{pp} Threshold');
 plot(ampsStimL,ampsMwaveL,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
-p1 = plot(ampsStimLU,avgsMwaveL,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+p1 = plot(ampsStimLU(~isnan(avgsMwaveL)),avgsMwaveL(~isnan(avgsMwaveL)),...
+    'LineWidth',2,'Color',[0.5 0.5 0.5]);
 plot(ampsStimL,ampsHwaveL,'ok','MarkerSize',10);
-p2 = plot(ampsStimLU,avgsHwaveL,'k','LineWidth',2);
+p2 = plot(ampsStimLU(~isnan(avgsHwaveL)),avgsHwaveL(~isnan(avgsHwaveL)),...
+    'k','LineWidth',2);
 % p3 = plot(xL,yL,'b--','LineWidth',2);
 plot([IhMaxL IhMaxL],[0 hMaxL],'k-.');  % vertical line from I_Hmax to Hmax
 % add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
@@ -625,11 +617,11 @@ text(IhMaxL + 0.1,0 + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
 plot([min(ampsStimL) IhMaxL],[hMaxL hMaxL],'k-.'); % horizontal line to Hmax
 % add label to horizontal line (Hmax)
 text(min(ampsStimL) + 0.1,hMaxL + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
-    sprintf('H_{max} = %.5f V',hMaxL));
+    sprintf('H_{max} = %.2f mV',hMaxL));
 hold off;
 xlim([min(ampsStimL)-1 max(ampsStimL)+1]);
 xlabel('Stimulation Amplitude (mA)');
-ylabel('MG EMG Amplitude (V)');
+ylabel('MG EMG Amplitude (mV)');
 legend([p1 p2],'M-wave','H-wave','Location','best');
 title([id ' - Trial' trialNum ' - Left Leg - Recruitment Curve']);
 saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
@@ -650,7 +642,8 @@ ratioL = ratioL(indsOrderL);
 figure; hold on;
 % yline(threshWaveAmp,'r','V_{pp} Threshold');
 plot(ampsStimR,ratioR,'ok','MarkerSize',10);
-plot(ampsStimRU,avgsRatioR,'k','LineWidth',2);
+plot(ampsStimRU(~isnan(avgsRatioR)),avgsRatioR(~isnan(avgsRatioR)),'k', ...
+    'LineWidth',2);
 plot([IRatioMaxR IRatioMaxR],[0 ratioMaxR],'k-.');  % vertical line from I_Ratio_max to Ratio_max
 % add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of
 % max y value and over from the line by 0.1 mA
@@ -674,7 +667,8 @@ saveas(gcf,[pathFigs id '_HreflexRatioCurve_Trial' trialNum ...
 figure; hold on;
 % yline(threshWaveAmp,'r','V_{pp} Threshold');
 plot(ampsStimL,ratioL,'ok','MarkerSize',10);
-plot(ampsStimLU,avgsRatioL,'k','LineWidth',2);
+plot(ampsStimLU(~isnan(avgsRatioL)),avgsRatioL(~isnan(avgsRatioL)),'k', ...
+    'LineWidth',2);
 plot([IRatioMaxL IRatioMaxL],[0 ratioMaxL],'k-.');  % vertical line from I_Ratio_max to Ratio_max
 % add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of
 % max y value and over from the line by 0.1 mA
