@@ -551,141 +551,16 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 % xL = min(ampsStimLU):incX:max(ampsStimLU);
 % yL = fun(coefsL,xL);
 
-% compute Hmax and I_Hmax for the right and left leg
-[hMaxR,indHMaxR] = max(avgsHwaveR); % [hMaxR,indHMaxR] = max(yR);
-IhMaxR = ampsStimRU(indHMaxR); % IhMaxR = xR(indHMaxR);
-[hMaxL,indHMaxL] = max(avgsHwaveL); % [hMaxL,indHMaxL] = max(yL);
-IhMaxL = ampsStimLU(indHMaxL); % IhMaxL = xL(indHMaxL);
-
-[ampsStimR,indsOrderR] = sort(ampsStimR);
-ampsHwaveR = ampsHwaveR(indsOrderR);
-ampsMwaveR = ampsMwaveR(indsOrderR);
-
-[ampsStimL,indsOrderL] = sort(ampsStimL);
-ampsHwaveL = ampsHwaveL(indsOrderL);
-ampsMwaveL = ampsMwaveL(indsOrderL);
-
-figure; hold on;
-yline(mean(ampsNoiseR),'r--');
-yline(threshNoiseR,'r','H-Wave V_{pp} Threshold');
-plot(ampsStimR,ampsMwaveR,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
-p1 = plot(ampsStimRU(~isnan(avgsMwaveR)),avgsMwaveR(~isnan(avgsMwaveR)),...
-    'LineWidth',2,'Color',[0.5 0.5 0.5]);
-plot(ampsStimR,ampsHwaveR,'ok','MarkerSize',10);
-p2 = plot(ampsStimRU(~isnan(avgsHwaveR)),avgsHwaveR(~isnan(avgsHwaveR)),...
-    'k','LineWidth',2);
-% p2 = plot(xR,pdf(pdR,xR)*(max(avgsHwaveR)*10),'k','LineWidth',2);
-% p3 = plot(xR,yR,'b--','LineWidth',2);
-plot([IhMaxR IhMaxR],[0 hMaxR],'k-.');  % vertical line from I_Hmax to Hmax
-% add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
-% value and over from the line by 0.1 mA
-% TODO: do not hardcode x offset for label
-text(IhMaxR + 0.1,0 + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
-    sprintf('I_{H_{max}} = %.1f mA',IhMaxR));
-plot([min(ampsStimR)-1 IhMaxR],[hMaxR hMaxR],'k-.');    % horizontal line to Hmax
-% add label to horizontal line (Hmax)
-text(min(ampsStimR)-1 + 0.1, ...
-    hMaxR + (0.05*max([ampsMwaveR; ampsHwaveR])), ...
-    sprintf('H_{max} = %.2f mV',hMaxR));
-hold off;
-xlim([min(ampsStimR)-1 max(ampsStimR)+1]);
-xlabel('Stimulation Amplitude (mA)');
-ylabel('MG EMG Amplitude (mV)');
-legend([p1 p2],'M-wave','H-wave','Location','best');
-title([id ' - Trial' trialNum ' - Right Leg - Recruitment Curve']);
-saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
-    trialNum '_RightLeg.png']);
-saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
-    trialNum '_RightLeg.fig']);
-
-figure; hold on;
-yline(mean(ampsNoiseL),'r--');
-yline(threshNoiseL,'r','H-Wave V_{pp} Threshold');
-plot(ampsStimL,ampsMwaveL,'x','Color',[0.5 0.5 0.5],'MarkerSize',10);
-p1 = plot(ampsStimLU(~isnan(avgsMwaveL)),avgsMwaveL(~isnan(avgsMwaveL)),...
-    'LineWidth',2,'Color',[0.5 0.5 0.5]);
-plot(ampsStimL,ampsHwaveL,'ok','MarkerSize',10);
-p2 = plot(ampsStimLU(~isnan(avgsHwaveL)),avgsHwaveL(~isnan(avgsHwaveL)),...
-    'k','LineWidth',2);
-% p3 = plot(xL,yL,'b--','LineWidth',2);
-plot([IhMaxL IhMaxL],[0 hMaxL],'k-.');  % vertical line from I_Hmax to Hmax
-% add label to vertical line (I_Hmax) shifted up from x-axis by 5% of max y
-% value and over from the line by 0.1 mA
-% TODO: do not hardcode x offset for label
-text(IhMaxL + 0.1,0 + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
-    sprintf('I_{H_{max}} = %.1f mA',IhMaxL));
-plot([min(ampsStimL) IhMaxL],[hMaxL hMaxL],'k-.'); % horizontal line to Hmax
-% add label to horizontal line (Hmax)
-text(min(ampsStimL) + 0.1,hMaxL + (0.05*max([ampsMwaveL; ampsHwaveL])), ...
-    sprintf('H_{max} = %.2f mV',hMaxL));
-hold off;
-xlim([min(ampsStimL)-1 max(ampsStimL)+1]);
-xlabel('Stimulation Amplitude (mA)');
-ylabel('MG EMG Amplitude (mV)');
-legend([p1 p2],'M-wave','H-wave','Location','best');
-title([id ' - Trial' trialNum ' - Left Leg - Recruitment Curve']);
-saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
-    trialNum '_LeftLeg.png']);
-saveas(gcf,[pathFigs id '_HreflexRecruitmentCurve_Trial' ...
-    trialNum '_LeftLeg.fig']);
+Hreflex.plotCal(ampsStimR,{ampsMwaveR; ampsHwaveR}, ...
+    'MG EMG Amplitude (mV)','Right Leg',id,trialNum,mean(ampsNoiseR), ...
+    pathFigs);
+Hreflex.plotCal(ampsStimL,{ampsMwaveL; ampsHwaveL}, ...
+    'MG EMG Amplitude (mV)','Left Leg',id,trialNum,mean(ampsNoiseL), ...
+    pathFigs);
 
 %% 13. Plot Ratio of H-wave to M-wave amplitude
-% compute Ratio_max and I_Ratio_max for the right and left leg
-[ratioMaxR,indRatioMaxR] = max(avgsRatioR);
-IRatioMaxR = ampsStimRU(indRatioMaxR);
-[ratioMaxL,indRatioMaxL] = max(avgsRatioL);
-IRatioMaxL = ampsStimLU(indRatioMaxL);
-
-ratioR = ratioR(indsOrderR);
-ratioL = ratioL(indsOrderL);
-
-figure; hold on;
-% yline(threshWaveAmp,'r','V_{pp} Threshold');
-plot(ampsStimR,ratioR,'ok','MarkerSize',10);
-plot(ampsStimRU(~isnan(avgsRatioR)),avgsRatioR(~isnan(avgsRatioR)),'k', ...
-    'LineWidth',2);
-plot([IRatioMaxR IRatioMaxR],[0 ratioMaxR],'k-.');  % vertical line from I_Ratio_max to Ratio_max
-% add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of
-% max y value and over from the line by 0.1 mA
-% TODO: do not hardcode x offset for label
-text(IRatioMaxR + 0.1,0 + (0.05*max(ratioR)), ...
-    sprintf('I_{Ratio_{max}} = %.1f mA',IRatioMaxR));
-plot([min(ampsStimR) IRatioMaxR],[ratioMaxR ratioMaxR],'k-.'); % horizontal line to Ratio_max
-% add label to horizontal line (Ratio_max)
-text(min(ampsStimR) + 0.1,ratioMaxR + (0.05*max(ratioR)), ...
-    sprintf('Ratio_{max} = %.5f',ratioMaxR));
-hold off;
-xlim([min(ampsStimR)-1 max(ampsStimR)+1]);
-xlabel('Stimulation Amplitude (mA)');
-ylabel('H:M Ratio');
-title([id ' - Trial' trialNum ' - Right Leg']);
-saveas(gcf,[pathFigs id '_HreflexRatioCurve_Trial' trialNum ...
-    '_RightLeg.png']);
-saveas(gcf,[pathFigs id '_HreflexRatioCurve_Trial' trialNum ...
-    '_RightLeg.fig']);
-
-figure; hold on;
-% yline(threshWaveAmp,'r','V_{pp} Threshold');
-plot(ampsStimL,ratioL,'ok','MarkerSize',10);
-plot(ampsStimLU(~isnan(avgsRatioL)),avgsRatioL(~isnan(avgsRatioL)),'k', ...
-    'LineWidth',2);
-plot([IRatioMaxL IRatioMaxL],[0 ratioMaxL],'k-.');  % vertical line from I_Ratio_max to Ratio_max
-% add label to vertical line (I_Ratio_max) shifted up from x-axis by 5% of
-% max y value and over from the line by 0.1 mA
-% TODO: do not hardcode x offset for label
-text(IRatioMaxL + 0.1,0 + (0.05*max(ratioL)), ...
-    sprintf('I_{Ratio_{max}} = %.1f mA',IRatioMaxL));
-plot([min(ampsStimL) IRatioMaxL],[ratioMaxL ratioMaxL],'k-.'); % horizontal line to Ratio_max
-% add label to horizontal line (Ratio_max)
-text(min(ampsStimL) + 0.1,ratioMaxL + (0.05*max(ratioL)), ...
-    sprintf('Ratio_{max} = %.5f',ratioMaxL));
-hold off;
-xlim([min(ampsStimL)-1 max(ampsStimL)+1]);
-xlabel('Stimulation Amplitude (mA)');
-ylabel('H:M Ratio');
-title([id ' - Trial' trialNum ' - Left Leg']);
-saveas(gcf,[pathFigs id '_HreflexRatioCurve_Trial' trialNum ...
-    '_LeftLeg.png']);
-saveas(gcf,[pathFigs id '_HreflexRatioCurve_Trial' trialNum ...
-    '_LeftLeg.fig']);
+Hreflex.plotCal(ampsStimR,{ratioR},'H:M Ratio','Right Leg',id,trialNum, ...
+    pathFigs);
+Hreflex.plotCal(ampsStimL,{ratioL},'H:M Ratio','Left Leg',id,trialNum, ...
+    pathFigs);
 
