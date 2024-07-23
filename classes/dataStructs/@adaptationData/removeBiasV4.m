@@ -1,4 +1,4 @@
-function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag, padWithNaNFlag)
+function [newThis,baseValues,typeList]=removeBiasV4(this,refConditions,normalizeFlag,padWithNaNFlag,numStrides)
 % removeBias('condition') or removeBias({'Condition1','Condition2',...})
 % removes the median value of EVERY parameter (phaseShift, temporal parameters, etc included!)
 % from each trial that is the same type as the condition entered. If no
@@ -37,6 +37,10 @@ if nargin<4 || isempty(padWithNaNFlag)
     padWithNaNFlag=false;
 end
 
+if (nargin < 5) || isempty(numStrides)
+    numStrides = -40;   % default last 40 strides (backward compatibility)
+end
+
 trialsInCond=this.metaData.trialsInCondition;
 % trialTypes=this.data.trialTypes;
 trialTypes=this.trialTypes; %Pablo added this on 5/18 and a function in adaptationData that makes this code back compatible
@@ -61,7 +65,11 @@ for itype=1:length(types)
     %Remove baseline tendencies from all itype trials
     if ~isempty(baseCond)
         % CJS NEW 1/16/2019 -- treats OG and TM the same, subtracts the last 40-5 strides of baseline
-        base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,-40,5,1,padWithNaNFlag); %Last 40, exempting very last 5 and first 10
+        if numStrides == -100
+            base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,numStrides,0,0,padWithNaNFlag); %Last 40, exempting very last 5 and first 10
+        else
+            base=getEarlyLateData_v2(this.removeBadStrides,labels,baseCond,0,numStrides,5,1,padWithNaNFlag); %Last 40, exempting very last 5 and first 10
+        end
         base=nanmean(squeeze(base{1}));
         [data, inds]=this.getParamInTrial(labels,allTrials);
         if normalizeFlag==0
