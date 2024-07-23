@@ -133,7 +133,6 @@ else %Treadmill trial
 
             % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
 
-
             % Actual frame number for the stride whose time is closer to
             % the perceptual trial start and end cues
             percStartCue = zeros(1, length(RTOeventForce));
