@@ -6,14 +6,16 @@ function [out] = computePercParameters(trialData,initTime,endTime,slaParam)
 % strictly, it should work for any labTS.
 % See also computeSpatialParameters, computeTemporalParameters,
 % computeForceParameters, parameterSeries
-% Author: MGR 
+% This code will only add the parameters using the events information, if
+% the events doesn't exist all parameters will most likely be NaNs or zeros
+% Author: MGR
 % Date: 06/12/24
 
 %% Gait perceptual task gait event times
 idxPstart = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percStartCue'))));
 timePercInit = trialData.gaitEvents.Time(idxPstart);
 
-if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation 
+if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation
     idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndRamp'))));
     timePercEnd = trialData.gaitEvents.Time(idxPend);
 else
@@ -21,12 +23,12 @@ else
     timePercEnd = trialData.gaitEvents.Time(idxPend);
 end
 
-%% Perturbation sizes 
+%% Perturbation sizes
 % Grab the perturbation sizes tested from the speed profiles in the
 % datlogs
 
 profile = trialData.metaData.datlog.speedprofile.velR-trialData.metaData.datlog.speedprofile.velL; % negative perturbation sizes mean that the right leg was slower
-nanProfile = isnan(profile); 
+nanProfile = isnan(profile);
 
 isNextOne = arrayfun(@(i) (nanProfile(i) == 1 && nanProfile(i-1) == 0 && nanProfile(i+1) == 1), 2:length(nanProfile)-1);
 speedDiffPercTask = profile(isNextOne); % This are the values of pert size in mm/s that will be saved in the params
@@ -49,7 +51,7 @@ percTaskEndStride = zeros(size(initTime));
 percTask = zeros(size(initTime));
 pertSizePercTask = nan(size(initTime));
 SLAinPercTask = nan(size(initTime));
-SLAnotPercTask = slaParam;
+SLAnotPercTask = nan(size(initTime));
 
 %% Compute the Parameters
 
@@ -78,7 +80,6 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
     end
 
 end
-
 %% Assign Parameters to the Data Matrix
 data = nan(length(initTime),length(paramLabels));
 for i=1:length(paramLabels)
