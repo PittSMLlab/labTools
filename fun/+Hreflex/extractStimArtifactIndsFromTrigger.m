@@ -77,6 +77,8 @@ winStim = 0.1 / period; % +/- 100 ms of the onset of the stim trigger pulse
 for stR = 1:numStimR                    % for each right leg stimulus, ...
     winSearch = (indsEMGStimOnsetRAbs(stR) - winStim): ...
         (indsEMGStimOnsetRAbs(stR) + winStim);
+    % ensure window does not exceed EMG data in case stim near end of trial
+    winSearch = winSearch(winSearch < length(rawEMG_TAP{1}));
     [~,indMaxTAP] = max(rawEMG_TAP{1}(winSearch));  % find artifact peak
     timesWin = times(winSearch);
     timeStimStart = timesWin(indMaxTAP);
@@ -86,6 +88,7 @@ end
 for stL = 1:numStimL                    % for each left leg stimulus, ...
     winSearch = (indsEMGStimOnsetLAbs(stL) - winStim): ...
         (indsEMGStimOnsetLAbs(stL) + winStim);
+    winSearch = winSearch(winSearch < length(rawEMG_TAP{2}));
     [~,indMaxTAP] = max(rawEMG_TAP{2}(winSearch));
     timesWin = times(winSearch);
     timeStimStart = timesWin(indMaxTAP);
