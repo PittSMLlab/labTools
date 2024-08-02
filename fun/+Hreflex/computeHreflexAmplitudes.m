@@ -74,11 +74,18 @@ numWins = length(indsStart);    % number of windows to extract data from
 for stR = 1:numStimR                    % for each right leg stimulus, ...
     indStim = indsStimArtifact{1}(stR); % stimulation index
     for win = 1:numWins                 % for each stim snippet window, ...
+        indsWin = (indStim+indsStart(win)):(indStim+indsEnd(win));
+        % ensure do not index outside of EMG bounds if stim near end trial
+        indsWin = indsWin(indsWin < length(rawEMG_MG{1}));
         % extract EMG data for time windows from stim artifact onset
-        winEMG = rawEMG_MG{1}((indStim+indsStart(win)): ...
-            (indStim+indsEnd(win)));
-        [valMax,indMax] = max(winEMG);
-        [valMin,indMin] = min(winEMG);
+        if ~isempty(indsWin)
+            winEMG = rawEMG_MG{1}(indsWin);
+            [valMax,indMax] = max(winEMG);
+            [valMin,indMin] = min(winEMG);
+        else
+            valMax = nan; indMax = nan;
+            valMin = nan; indMin = nan;
+        end
         % TODO: add check that M-wave and H-wave are not too broad in lieu
         % of or in addition to check that min or max are not early or late
         % in EMG window
@@ -124,10 +131,17 @@ end
 for stL = 1:numStimL                    % for each left leg stimulus, ...
     indStim = indsStimArtifact{2}(stL); % stimulation index
     for win = 1:numWins                 % for each stim snippet window, ...
-        winEMG = rawEMG_MG{2}((indStim+indsStart(win)): ...
-            (indStim+indsEnd(win)));    % extract EMG time window data
-        [valMax,indMax] = max(winEMG);
-        [valMin,indMin] = min(winEMG);
+        indsWin = (indStim+indsStart(win)):(indStim+indsEnd(win));
+        % ensure do not index outside of EMG bounds if stim near end trial
+        indsWin = indsWin(indsWin < length(rawEMG_MG{2}));
+        if ~isempty(indsWin)
+            winEMG = rawEMG_MG{2}(indsWin); % extract EMG time window data
+            [valMax,indMax] = max(winEMG);
+            [valMin,indMin] = min(winEMG);
+        else
+            valMax = nan; indMax = nan;
+            valMin = nan; indMin = nan;
+        end
         switch win
             case {1,2}                  % M-wave or H-wave
                 durs{2,win}(stL) = period * abs(indMax - indMin);
