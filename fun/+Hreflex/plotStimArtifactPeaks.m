@@ -58,8 +58,6 @@ elseif numLegs == 2             % if right and left TAP data present, ...
         error(['Missing stimulation artifact peak index data for one ' ...
             'or both legs.']);
     end
-    % TODO: consider adding other subplots besides TAP EMG (e.g., forces
-    % or MG EMG)
     tl = tiledlayout(2,1,'TileSpacing','tight');
     if ~isnan(thresh)           % if threshold is input argument, ...
         plotSignalWithPeaks(times,rawEMG_TAP{1},indsPeaks{1},thresh);
@@ -91,7 +89,7 @@ end
 
 % TODO: should y-axis limits be the same in case of both legs present?
 % TODO: consider accepting labels as optional input argument
-xlabel(tl,'time (s)');  % TODO: make work for either sample number or time
+xlabel(tl,'time (s)');
 ylabel(tl,'Raw EMG (V)');
 title(tl,[id ' - Trial' trialNum ' - Stimulation Artifact Peak Finding']);
 

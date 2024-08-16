@@ -26,9 +26,7 @@ isSlowFirst = all(timeSHS(indsComp) < timeFHS(indsComp));
 % TODO: convert to mV rather than V here for readability of figures?
 % TODO: add convenience parameter for percentage of stance phase
 % TODO: add 'Amp' in parameter names for clarity?
-% TODO: add background EMG activity parameter (e.g., RMS, or
-%       Wilson Amplitude based of the literature for possible future
-%       normalization or analysis?
+% TODO: consider implementing Wilson Amplitude background EMG parameter
 % TODO: noise floor EMG window is definitely incorrect for all
 %       participants (e.g., SAH12 has EMG data in the window).
 % TODO: store timing of the H- and M-waves?
@@ -112,7 +110,7 @@ timeStimFast = times(indsStimArtifact{indFast});
 
 % discard stimuli that occur too early (e.g., when H-reflex stim happens
 % during a transition into a new condition or before a first valid HS is
-% detected) or too late (e.g., more than 1 second after HS)
+% detected) or too late (e.g., more than 1 second after final HS)
 % TODO: 1 second may not be the correct threshold here
 shouldDiscardStimSlow = (timeStimSlow <= timeSHS(1)) | ...
     (timeStimSlow >= (timeSHS(end)+1));
@@ -142,7 +140,7 @@ stimTimeSlow(indsStimStrideSlow) = timeStimSlow - ...
 stimTimeFast(indsStimStrideFast) = timeStimFast - ...
     timeFHS(indsStimStrideFast);
 if isSlowFirst  % if slow leg heel strikes first, ...
-    % TODO: conditions return false if time is NaN implement handling
+    % TODO: conditions return false if time is NaN - implement handling
     isSingleStanceSlow(indsStimStrideSlow) = ...
         (timeStimSlow > timeSHS(indsStimStrideSlow)) & ...
         (timeStimSlow < timeFHS(indsStimStrideSlow));
@@ -176,13 +174,6 @@ hReflexBEMGRMSSlow(indsStimStrideSlow) = amps{indSlow,5};
 hReflexBEMGRMSFast(indsStimStrideFast) = amps{indFast,5};
 h2mRatioSlow(indsStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};
 h2mRatioFast(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};
-
-% 20 ms after stimulus trigger pulse onset divided by sample period to get
-% the number of samples after stim onset for the start of the H-wave window
-% sample period (in seconds) of EMG data, which should be identical to the
-% sample period of H-reflex stimulation trigger data (i.e., 1 / 2,000 Hz)
-% TODO: add check to ensure identical
-% per = EMGData.sampPeriod;   % sample period of data
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
