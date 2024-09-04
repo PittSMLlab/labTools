@@ -20,7 +20,6 @@ function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, ...
 %       right (cell 1) and left (cell 2) leg stimulation artifact indices
 
 narginchk(3,3); % verify correct number of input arguments
-% TODO: add checks that inputs are not empty or otherwise invalid
 if isempty(times) || all(cellfun(@isempty,rawEMG_TAP)) || ...
         isempty(HreflexStimPin)
     error(['There is data missing that is crucial for computing the ' ...
@@ -70,14 +69,23 @@ indsStimArtifactL = nan(size(indsEMGStimOnsetLAbs));
 
 winStim = 0.1 / period; % +/- 100 ms of the onset of the stim trigger pulse
 
-% TODO: handle case of two peaks within window and smaller one is closer to
-% time of stimulus onset and the correct peak for H-reflex alignment
-% TODO: implement more robust peak finding and discrepancy handling
-% consider moving into a function or reducing loops
+% TODO: consider moving into function to reduce loops, discrepancy handling
 for stR = 1:numStimR                    % for each right leg stimulus, ...
     winSearch = (indsEMGStimOnsetRAbs(stR) - winStim): ...
         (indsEMGStimOnsetRAbs(stR) + winStim);
-    [~,indMaxTAP] = max(rawEMG_TAP{1}(winSearch));  % find artifact peak
+    % ensure window does not exceed EMG data in case stim near end of trial
+    winSearch = winSearch(winSearch < length(rawEMG_TAP{1}));
+    % TODO: is this a good peak threshold?
+    [~,locs] = findpeaks(rawEMG_TAP{1}(winSearch),'MinPeakHeight',0.001);
+    if isscalar(locs)           % if only one location value, ...
+        indMaxTAP = locs;       % that is artifact peak to align by
+    elseif length(locs) == 2    % if two peaks, ...
+        indMaxTAP = locs(1);    % use earliest peak
+        % [~,indLoc] = min(abs(locs - winStim));    % use peak nearest stim
+        % indMaxTAP = locs(indLoc);
+    else
+        [~,indMaxTAP] = max(rawEMG_TAP{1}(winSearch));  % use max
+    end
     timesWin = times(winSearch);
     timeStimStart = timesWin(indMaxTAP);
     indsStimArtifactR(stR) = find(times == timeStimStart);
@@ -86,7 +94,17 @@ end
 for stL = 1:numStimL                    % for each left leg stimulus, ...
     winSearch = (indsEMGStimOnsetLAbs(stL) - winStim): ...
         (indsEMGStimOnsetLAbs(stL) + winStim);
-    [~,indMaxTAP] = max(rawEMG_TAP{2}(winSearch));
+    winSearch = winSearch(winSearch < length(rawEMG_TAP{2}));
+    [~,locs] = findpeaks(rawEMG_TAP{2}(winSearch),'MinPeakHeight',0.0015);
+    if isscalar(locs)           % if only one location value, ...
+        indMaxTAP = locs;       % that is artifact peak to align by
+    elseif length(locs) == 2    % if two peaks, ...
+        indMaxTAP = locs(1);    % use earliest peak
+        % [~,indLoc] = min(abs(locs - winStim));      % use peak nearest stim
+        % indMaxTAP = locs(indLoc);
+    else
+        [~,indMaxTAP] = max(rawEMG_TAP{2}(winSearch));  % use max
+    end
     timesWin = times(winSearch);
     timeStimStart = timesWin(indMaxTAP);
     indsStimArtifactL(stL) = find(times == timeStimStart);

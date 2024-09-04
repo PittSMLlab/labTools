@@ -26,9 +26,7 @@ isSlowFirst = all(timeSHS(indsComp) < timeFHS(indsComp));
 % TODO: convert to mV rather than V here for readability of figures?
 % TODO: add convenience parameter for percentage of stance phase
 % TODO: add 'Amp' in parameter names for clarity?
-% TODO: add background EMG activity parameter (e.g., RMS, or
-%       Wilson Amplitude based of the literature for possible future
-%       normalization or analysis?
+% TODO: consider implementing Wilson Amplitude background EMG parameter
 % TODO: noise floor EMG window is definitely incorrect for all
 %       participants (e.g., SAH12 has EMG data in the window).
 % TODO: store timing of the H- and M-waves?
@@ -60,7 +58,6 @@ paramLabels = aux(:,1);
 description = aux(:,2);
 
 %% Compute the Parameters
-
 % initialize parameter arrays: time of stimulation trigger pulse onset
 % (i.e., rising edge) and H-wave amplitude (i.e., peak-to-peak voltage)
 stimTimeSlow = nan(size(timeSHS));
@@ -110,6 +107,28 @@ end
 % different (i.e., other than missed strides)
 timeStimSlow = times(indsStimArtifact{indSlow});
 timeStimFast = times(indsStimArtifact{indFast});
+
+% discard stimuli that occur too early (e.g., when H-reflex stim happens
+% during a transition into a new condition or before a first valid HS is
+% detected) or too late (e.g., more than 1 second after final HS)
+% TODO: 1 second may not be the correct threshold here
+shouldDiscardStimSlow = (timeStimSlow <= timeSHS(1)) | ...
+    (timeStimSlow >= (timeSHS(end)+1));
+shouldDiscardStimFast = (timeStimFast <= timeFHS(1)) | ...
+    (timeStimFast >= (timeFHS(end)+1));
+timeStimSlow = timeStimSlow(~shouldDiscardStimSlow);
+timeStimFast = timeStimFast(~shouldDiscardStimFast);
+
+if any(shouldDiscardStimSlow)   % if discarding any stim, ...
+    warning('Dropping %d stimuli for the slow leg', ...
+        sum(shouldDiscardStimSlow));
+end
+
+if any(shouldDiscardStimFast)
+    warning('Dropping %d stimuli for the fast leg', ...
+        sum(shouldDiscardStimFast));
+end
+
 indsStimStrideSlow = arrayfun(@(x) ...
     find((x - timeSHS) > 0,1,'last'),timeStimSlow);
 indsStimStrideFast = arrayfun(@(x) ...
@@ -121,6 +140,7 @@ stimTimeSlow(indsStimStrideSlow) = timeStimSlow - ...
 stimTimeFast(indsStimStrideFast) = timeStimFast - ...
     timeFHS(indsStimStrideFast);
 if isSlowFirst  % if slow leg heel strikes first, ...
+    % TODO: conditions return false if time is NaN - implement handling
     isSingleStanceSlow(indsStimStrideSlow) = ...
         (timeStimSlow > timeSHS(indsStimStrideSlow)) & ...
         (timeStimSlow < timeFHS(indsStimStrideSlow));
@@ -136,6 +156,12 @@ else            % otherwise, fast leg heel strikes first, ...
         (timeStimSlow < timeFHS2(indsStimStrideSlow));
 end
 
+% remove stim values for steps to discard for each leg
+amps(indSlow,:) = cellfun(@(x) x(~shouldDiscardStimSlow), ...
+    amps(indSlow,:),'UniformOutput',false);
+amps(indFast,:) = cellfun(@(x) x(~shouldDiscardStimFast), ...
+    amps(indFast,:),'UniformOutput',false);
+
 hReflexSlow(indsStimStrideSlow) = amps{indSlow,2};
 hReflexFast(indsStimStrideFast) = amps{indFast,2};
 mWaveSlow(indsStimStrideSlow) = amps{indSlow,1};
@@ -148,29 +174,6 @@ hReflexBEMGRMSSlow(indsStimStrideSlow) = amps{indSlow,5};
 hReflexBEMGRMSFast(indsStimStrideFast) = amps{indFast,5};
 h2mRatioSlow(indsStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};
 h2mRatioFast(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};
-
-% TODO: incorporate below code block from Shuqi into updated functions
-% Removes stims that happened too early (this happens when H reflex stim happened 
-% during transition into a new conditions and before a 1st valid HS is detected,
-% those strides won't be counted later on)
-% check if all stim time are after at least the 1st HS of the corresponding leg
-% stimSlowCut = stimTimeSlowAbs - timeSHS(1) <= 0; 
-% if any(stimSlowCut) %stimulation happens on or before a 1st valid stride is detected for this condition
-%     warning('Hreflex stim for slow leg will be dropped, number of stim dropped: %d', sum(stimSlowCut));
-% end
-% stimFastCut = stimTimeFastAbs - timeFHS(1) <= 0;
-% if any(stimFastCut)
-%     warning('Hreflex stim for fast leg will be dropped, number of stim dropped: %d', sum(stimFastCut));
-% end
-% stimTimeSlowAbs = stimTimeSlowAbs(~stimSlowCut);
-% stimTimeFastAbs = stimTimeFastAbs(~stimFastCut);
-
-% 20 ms after stimulus trigger pulse onset divided by sample period to get
-% the number of samples after stim onset for the start of the H-wave window
-% sample period (in seconds) of EMG data, which should be identical to the
-% sample period of H-reflex stimulation trigger data (i.e., 1 / 2,000 Hz)
-% TODO: add check to ensure identical
-% per = EMGData.sampPeriod;   % sample period of data
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));

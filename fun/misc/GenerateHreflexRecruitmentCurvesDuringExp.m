@@ -422,7 +422,6 @@ for stL = 1:numStimL    % for each left leg stimulus, ...
 end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
-% TODO: add stim artifact threshold line if helpful?
 % if force data present and should use the stimulation trigger signal to
 % localize the artifact peaks (using as proxy for walking trial), ...
 if hasForces && shouldUseStimTrig
@@ -446,7 +445,7 @@ end
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-[amps,durs] = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
+[amps,durs] = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},{locsR;locsL});
 % convert wave amplitudes from Volts to Millivolts
 amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
 
@@ -499,7 +498,7 @@ ratioL = ampsHwaveL ./ ampsMwaveL;
 avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x)),ampsStimRU);
 avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
 
-%% Plot the Noise Distributions for Both Legs
+%% 13. Plot the Noise Distributions for Both Legs
 
 % compute four times noise floor (mean) to determine whether
 % to send participant home or not (at least one leg must exceed threshold)
@@ -542,7 +541,7 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
     '_LeftLeg.fig']);
 
-%% 12. Plot Recruitment Curve for Both Legs
+%% 14. Plot Recruitment Curve for Both Legs
 % TODO: add normal distribution fit to H-wave recruitment curve to pick out
 % peak amplitude and current at which peak occurs
 % incX = 0.1; % increment for curve fit (in mA)
@@ -558,7 +557,7 @@ Hreflex.plotCal(ampsStimL,{ampsMwaveL; ampsHwaveL}, ...
     'MG EMG Amplitude (mV)','Left Leg',id,trialNum,mean(ampsNoiseL), ...
     pathFigs);
 
-%% 13. Plot Ratio of H-wave to M-wave amplitude
+%% 15. Plot Ratio of H-wave to M-wave amplitude
 Hreflex.plotCal(ampsStimR,{ratioR},'H:M Ratio','Right Leg',id,trialNum, ...
     pathFigs);
 Hreflex.plotCal(ampsStimL,{ratioL},'H:M Ratio','Left Leg',id,trialNum, ...
