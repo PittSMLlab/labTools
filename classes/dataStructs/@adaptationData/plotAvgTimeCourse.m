@@ -204,7 +204,11 @@ for group=1:Ngroups
                         dataPts=[dataPts; aux];
                     end
                 else
-                    dataPts=adaptData.getParamInTrial(params,trials{t});
+                    try % It is an experiment with perceptual tasks
+                        dataPts=adaptData.getParamInTrial({params,'percTaskInitStride','percTaskEndStride'},trials{t});
+                    catch
+                        dataPts=adaptData.getParamInTrial(params,trials{t});
+                    end
 %                     dataPts=dataPts(2:end-5);
                 end
                 nPoints=size(dataPts,1);
@@ -221,16 +225,33 @@ for group=1:Ngroups
                         end
                     end
                 end
-                for p=1:length(params)
-                    %initialize so there are no inconsistant dimensions or out of bounds errors
-                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
-                    values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
-                    if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
-                        if strcmpi(cond{c},'catch')
-                            values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
-                            values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
-                        else
-                        values(group).(params{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
+                try
+                    paramsTemp=[params,'percTaskInitStride','percTaskEndStride'];
+                    for p=1:length(paramsTemp) % It is an experiment with perceptual tasks
+                        %initialize so there are no inconsistant dimensions or out of bounds errors
+                        values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                        values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                            if strcmpi(cond{c},'catch')
+                                values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                                values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                            else
+                                values(group).(paramsTemp{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
+                            end
+                        end
+                    end
+                catch
+                    for p=1:length(params)
+                        %initialize so there are no inconsistant dimensions or out of bounds errors
+                        values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                        values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
+                            if strcmpi(cond{c},'catch')
+                                values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                                values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                            else
+                                values(group).(params{p}).([cond{c} 'End']).(['trial' num2str(t)])(subject,:)=[nan(50,1); dataPts(end-alignEnd+1:end,p)];
+                            end
                         end
                     end
                 end
@@ -246,7 +267,7 @@ avg=struct([]);
 se=struct([]);
 indiv=struct([]);
 if ~isempty(alignEnd)
-    newCond=cell(2*length(cond),1);
+   newCond=cell(2*length(cond),1);
    newCond(1:2:end)=cond;
    newCond(2:2:end)=strcat(cond,'End');
    catchindx=find(strcmpi(newCond,'catchEnd'));
@@ -259,6 +280,7 @@ if ~isempty(alignEnd)
    nConds=length(cond);
 end
 
+p=length(params);
 for group=1:Ngroups
     Xstart=1;
     lineX=0;
@@ -327,7 +349,7 @@ for group=1:Ngroups
                         end
                         if medianFlag==0
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin); %Mean across subjects
-                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));  
                         else %Using median and 15.87-84.13 percentiles
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(subBin);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(subBin,[16,84]))/sqrt(length(subBin));
@@ -341,7 +363,7 @@ for group=1:Ngroups
                             indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmean(bin,2);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(reshape(bin,1,numel(bin)))/sqrt(binwidthNew);
                         else
-                           avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
+                            avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(reshape(bin,1,numel(bin)));
                             indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=nanmedian(bin,2);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(reshape(bin,1,numel(bin)),[16,84]))/sqrt(binwidthNew);
                         end
@@ -377,11 +399,13 @@ for group=1:Ngroups
                     g=group;
                     Cdiv=1;
                 end
-                hold on
+                hold on                
                 afterTrialPad=5; %adds empty space to end of trial/condition (in strides)
                 y=[avg(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
-%                 condLength=length(y);
+
+
+               %                 condLength=length(y);
 %                 x=Xstart:Xstart+condLength-1;
 
                 if isempty(alignIni) %DULCE
@@ -396,7 +420,7 @@ for group=1:Ngroups
                     E=E(1:length(x));
                     condLength=length(y);
                 end
-
+          
                 %Biofeedback
                 if nargin>8 && ~isempty(biofeedback)
                     if biofeedback==1 && strcmp(params{p},'alphaFast')
@@ -459,8 +483,22 @@ for group=1:Ngroups
                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
                         end
                         %set(Li{c},'Clipping','off')
-                        H=get(Li{c},'Parent');
-                        legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
+                        H=get(Li{c},'Parent');                        
+                        try    
+                            if length(adaptDataList{group}) == 1
+                                initIdx=find(values.percTaskInitStride.(cond{c}).(['trial' num2str(t)])==1);
+                                finalIdx=find(values.percTaskEndStride.(cond{c}).(['trial' num2str(t)])==1);
+                                for i=1:length(initIdx)
+                                    pp=patch(x(1)+[initIdx(i) finalIdx(i) finalIdx(i) initIdx(i)],[-0.25 -0.25 0.25 0.25],.85*ones(1,3),'FaceAlpha',.9,'EdgeColor','none','DisplayName','task');
+                                    uistack(pp,'bottom');
+                                end
+                                legendStr={[adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)), {'task'}]};
+                            end
+                        catch
+                            % Skip for know since there are no perceptual
+                            % trials on this trial or experiment
+                            legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
+                        end
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(mod(g-1,size(colorOrder,1))+1,:)./Cdiv;
@@ -565,15 +603,22 @@ end
 set(gcf,'color','w');
 set(gcf,'Renderer','painters');
 if nargin<11 || isempty(labels) || indivFlag==1
-
     if size(legendStr(:),2)>10
-        legend([Li{:}],[legendStr{:}],'NumColumns',3,'Location','Best','AutoUpdate',false)
+        try
+            legend([Li{:},pp],[legendStr{:}],'NumColumns',3,'Location','Best','AutoUpdate',false)
+        catch
+            legend([Li{:}],[legendStr{:}],'NumColumns',3,'Location','Best','AutoUpdate',false)
+        end
     else
-        legend([Li{:}],[legendStr{:}],'Location','Best','AutoUpdate',false)
+        try
+            legend([Li{:},pp],[legendStr{:}],'Location','Best','AutoUpdate',false)
+        catch
+            legend([Li{:}],[legendStr{:}],'Location','Best','AutoUpdate',false)
+        end
     end
 else
-labels={labels}';
-legend([Li{:}],[labels{:}],'Location','Best','AutoUpdate',false)
+    labels={labels}';
+    legend([Li{:}],[labels{:}],'Location','Best','AutoUpdate',false)
 end
 %% outputs
 if nargout<2
