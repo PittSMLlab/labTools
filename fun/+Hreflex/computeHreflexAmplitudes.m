@@ -21,6 +21,9 @@ function [amps,durs] = computeHreflexAmplitudes(rawEMG_MG,indsStimArtifact)
 %       durations (i.e., absolute time difference between the minimum and
 %       maximum values) for determining whether a valid wave
 
+% TODO: Incorporate call to H-reflex snippet extraction here for modularity
+% so that there is a clean linear process of extracting stimulation
+% indices, then snippets, then amplitudes?
 % TODO: reject measurements if GRF reveals not in single stance (prefer
 % outside of this function so do not have to pass as input parameter and
 % this function gives more or less the 'raw' amplitudes besides more basic

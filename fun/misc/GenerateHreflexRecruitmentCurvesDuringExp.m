@@ -386,39 +386,12 @@ if ~shouldCont  % if should not continue with the script, ...
 end
 
 %% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
-snipStart = -0.005; % 5 ms before artifact peak
-snipEnd = 0.055;    % 55 ms after artifact peak
-timesSnippet = snipStart:period:snipEnd;
-numSamps = length(timesSnippet);
-
-% store H-reflex snippets to plot them together
-snippetsHreflexR = nan(numStimR,numSamps);
-snippetsHreflexL = nan(numStimL,numSamps);
-% store force snippets to plot them together
-snippetsForceRR = nan(numStimR,numSamps);   % ipsi to stim
-snippetsForceRL = nan(numStimR,numSamps);   % contra to stim
-snippetsForceLL = nan(numStimL,numSamps);
-snippetsForceLR = nan(numStimL,numSamps);
-% plot the right leg stimuli
-for stR = 1:numStimR    % for each right leg stimulus, ...
-    winPlotR = (locsR(stR) + (snipStart/period)):(locsR(stR) + (snipEnd/period));
-    timesWinPlotR = times(winPlotR);
-    snippetsHreflexR(stR,:) = EMG_RMG(winPlotR);
-    if hasForces && shouldUseStimTrig
-        snippetsForceRR(stR,:) = GRFRFz(winPlotR);
-        snippetsForceRL(stR,:) = GRFLFz(winPlotR);
-    end
-end
-
-% plot the left leg stimuli
-for stL = 1:numStimL    % for each left leg stimulus, ...
-    winPlotL = (locsL(stL) + (snipStart/period)):(locsL(stL) + (snipEnd/period));
-    timesWinPlotL = times(winPlotL);
-    snippetsHreflexL(stL,:) = EMG_LMG(winPlotL);
-    if hasForces && shouldUseStimTrig
-        snippetsForceLL(stL,:) = GRFLFz(winPlotL);
-        snippetsForceLR(stL,:) = GRFRFz(winPlotL);
-    end
+if hasForces && shouldUseStimTrig
+    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
+        {EMG_RMG;EMG_LMG},{GRFRFz;GRFLFz});
+else
+    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
+        {EMG_RMG;EMG_LMG},cell(2,1));
 end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
