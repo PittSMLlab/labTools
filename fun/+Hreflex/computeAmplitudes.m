@@ -1,4 +1,4 @@
-function [amps,durs] = computeHreflexAmplitudes(rawEMG_MG,indsStimArtifact)
+function [amps,durs] = computeAmplitudes(rawEMG_MG,indsStimArtifact)
 %COMPUTEHREFLEXAMPLITUDES Compute amplitudes of interest from H-reflex
 %   Compute the peak-to-peak amplitudes of the M-wave, H-wave, noise floor,
 % and the mean absolute value (MAV) and root mean square (RMS) of the
