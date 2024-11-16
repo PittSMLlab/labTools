@@ -51,58 +51,74 @@ end
 for tr = indsTrials     % for each trial specified, ...
     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
-    
+
     % run reconstruct and label pipeline on the trial
-    %     dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
-    
+    % dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+
     % extract marker gaps to be filled
     markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
-    
+
     % fill small marker gaps using spline interpolation
     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
         pathTrial,vicon);
-    markers = fieldnames(markerGaps);
-    
-    % fill remaining gaps using pattern fill
+
+    % define reference and target markers for pattern-based gap filling
     markersRef = {'GT','KNEE','GT','ANK'};
-    numMarkersRef = length(markersRef);
     markersTargGT = {'ASIS','PSIS','THI','KNEE'};
     markersTargKNEE = {'GT','ANK'};
     markersTargANK = {'SHANK','HEEL','TOE'};
     markersTarg = {markersTargGT,markersTargKNEE, ...
         markersTargGT,markersTargANK};
-    
+
     % TODO: better to pass entire 'markerGaps' as input with optional
     % target markers list as input?
-    for ref = 1:numMarkersRef       % for each reference marker, ...
-        numMarkersTarg = length(markersTarg{ref});
-        mrkrsTargR = cellfun(@(s) ['R' s],markersTarg{ref}, ...
-            'UniformOutput',false);
-        tmpGapsR = struct();
-        for targ = 1:numMarkersTarg
-            if any(strcmp(markers,mrkrsTargR{targ}))
-                tmpGapsR.(mrkrsTargR{targ}) = markerGaps.(mrkrsTargR{targ});
+    % fill gaps using pattern fill for each reference marker
+    for ref = 1:numel(markersRef)       % for each reference marker, ...
+        refMarker = markersRef{ref};    % retrieve reference marker name
+        targetMarkers = markersTarg{ref};
+
+        % process right side markers
+        gapsR = struct();
+        for targ = 1:numel(targetMarkers)
+            markerName = ['R' targetMarkers{targ}];
+            if isfield(markerGaps,markerName)
+                gapsR.(markerName) = markerGaps.(markerName);
             end
         end
-        
-        if ~isempty(fieldnames(tmpGapsR))
-            dataMotion.fillMarkerGapsPattern(tmpGapsR,pathTrial,['R' markersRef{ref}],vicon);
-        end
-        
-        mrkrsTargL = cellfun(@(s) ['L' s],markersTarg{ref}, ...
-            'UniformOutput',false);
-        tmpGapsL = struct();
-        for targ = 1:numMarkersTarg
-            if any(strcmp(markers,mrkrsTargL{targ}))
-                tmpGapsL.(mrkrsTargL{targ}) = markerGaps.(mrkrsTargL{targ});
+
+        if ~isempty(fieldnames(gapsR))
+            remainingGapsR = dataMotion.fillMarkerGapsPattern( ...
+                gapsR,pathTrial,['R' refMarker],vicon);
+            % update 'markerGaps' structure with remaining gaps
+            markerNames = fieldnames(remainingGapsR);
+            for i = 1:numel(markerNames)
+                markerGaps.(markerNames{i}) = ...
+                    remainingGapsR.(markerNames{i});
             end
         end
-        
-        if ~isempty(fieldnames(tmpGapsL))
-            dataMotion.fillMarkerGapsPattern(tmpGapsL,pathTrial,['L' markersRef{ref}],vicon);
+
+        % process left side markers
+        gapsL = struct();
+        for targ = 1:numel(targetMarkers)
+            markerName = ['L' targetMarkers{targ}];
+            if isfield(markerGaps,markerName)
+                gapsL.(markerName) = markerGaps.(markerName);
+            end
+        end
+
+        if ~isempty(fieldnames(gapsL))
+            remainingGapsL = dataMotion.fillMarkerGapsPattern( ...
+                gapsL,pathTrial,['L' refMarker],vicon);
+            % update 'markerGaps' structure with remaining gaps
+            markerNames = fieldnames(remainingGapsL);
+            for i = 1:numel(markerNames)
+                markerGaps.(markerNames{i}) = ...
+                    remainingGapsL.(markerNames{i});
+            end
         end
     end
 end
 
+fprintf('All specified trials have been processed.\n');
 end
 
