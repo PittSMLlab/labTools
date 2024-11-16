@@ -51,20 +51,57 @@ end
 for tr = indsTrials     % for each trial specified, ...
     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
-
+    
     % run reconstruct and label pipeline on the trial
-    dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
-
+    %     dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+    
     % extract marker gaps to be filled
     markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
-
-    % fill small marker gaps using spline interpolation
-    dataMotion.fillSmallMarkerGapsSpline(markerGaps,pathTrial,vicon);
-
-    % fill any remaining GT marker gaps using the knee pattern
     
-    markerGapsUpdated = ...
-    fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon)
+    % fill small marker gaps using spline interpolation
+    markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
+        pathTrial,vicon);
+    markers = fieldnames(markerGaps);
+    
+    % fill remaining gaps using pattern fill
+    markersRef = {'GT','KNEE','GT','ANK'};
+    numMarkersRef = length(markersRef);
+    markersTargGT = {'ASIS','PSIS','THI','KNEE'};
+    markersTargKNEE = {'GT','ANK'};
+    markersTargANK = {'SHANK','HEEL','TOE'};
+    markersTarg = {markersTargGT,markersTargKNEE, ...
+        markersTargGT,markersTargANK};
+    
+    % TODO: better to pass entire 'markerGaps' as input with optional
+    % target markers list as input?
+    for ref = 1:numMarkersRef       % for each reference marker, ...
+        numMarkersTarg = length(markersTarg{ref});
+        mrkrsTargR = cellfun(@(s) ['R' s],markersTarg{ref}, ...
+            'UniformOutput',false);
+        tmpGapsR = struct();
+        for targ = 1:numMarkersTarg
+            if any(strcmp(markers,mrkrsTargR{targ}))
+                tmpGapsR.(mrkrsTargR{targ}) = markerGaps.(mrkrsTargR{targ});
+            end
+        end
+        
+        if ~isempty(fieldnames(tmpGapsR))
+            dataMotion.fillMarkerGapsPattern(tmpGapsR,pathTrial,['R' markersRef{ref}],vicon);
+        end
+        
+        mrkrsTargL = cellfun(@(s) ['L' s],markersTarg{ref}, ...
+            'UniformOutput',false);
+        tmpGapsL = struct();
+        for targ = 1:numMarkersTarg
+            if any(strcmp(markers,mrkrsTargL{targ}))
+                tmpGapsL.(mrkrsTargL{targ}) = markerGaps.(mrkrsTargL{targ});
+            end
+        end
+        
+        if ~isempty(fieldnames(tmpGapsL))
+            dataMotion.fillMarkerGapsPattern(tmpGapsL,pathTrial,['L' markersRef{ref}],vicon);
+        end
+    end
 end
 
 end
