@@ -30,7 +30,7 @@ if isempty(trialFiles)      % if no trial files found, ...
 end
 
 % extract trial indices from filenames
-[~,namesFiles] = cellfun(@(s) fileparts(s),{trialFiles.name}, ...
+[~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
     'UniformOutput',false);
 indsTrialsAll = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
 
@@ -48,6 +48,15 @@ if nargin < 3 || isempty(vicon)
     vicon = ViconNexus();
 end
 
+% define reference and target markers for pattern-based gap filling
+markersRef = {'GT','KNEE','GT','ANK'};
+markersTarg = {
+    {'ASIS','PSIS','THI','KNEE'}, ...
+    {'GT','ANK'}, ...
+    {'ASIS','PSIS','THI','KNEE'}, ...
+    {'SHANK','HEEL','TOE'}
+    };
+
 for tr = indsTrials     % for each trial specified, ...
     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
@@ -62,63 +71,54 @@ for tr = indsTrials     % for each trial specified, ...
     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
         pathTrial,vicon);
 
-    % define reference and target markers for pattern-based gap filling
-    markersRef = {'GT','KNEE','GT','ANK'};
-    markersTargGT = {'ASIS','PSIS','THI','KNEE'};
-    markersTargKNEE = {'GT','ANK'};
-    markersTargANK = {'SHANK','HEEL','TOE'};
-    markersTarg = {markersTargGT,markersTargKNEE, ...
-        markersTargGT,markersTargANK};
-
-    % TODO: better to pass entire 'markerGaps' as input with optional
-    % target markers list as input?
     % fill gaps using pattern fill for each reference marker
     for ref = 1:numel(markersRef)       % for each reference marker, ...
         refMarker = markersRef{ref};    % retrieve reference marker name
         targetMarkers = markersTarg{ref};
 
-        % process right side markers
-        gapsR = struct();
-        for targ = 1:numel(targetMarkers)
-            markerName = ['R' targetMarkers{targ}];
-            if isfield(markerGaps,markerName)
-                gapsR.(markerName) = markerGaps.(markerName);
-            end
-        end
-
-        if ~isempty(fieldnames(gapsR))
-            remainingGapsR = dataMotion.fillMarkerGapsPattern( ...
-                gapsR,pathTrial,['R' refMarker],vicon);
-            % update 'markerGaps' structure with remaining gaps
-            markerNames = fieldnames(remainingGapsR);
-            for i = 1:numel(markerNames)
-                markerGaps.(markerNames{i}) = ...
-                    remainingGapsR.(markerNames{i});
-            end
-        end
-
-        % process left side markers
-        gapsL = struct();
-        for targ = 1:numel(targetMarkers)
-            markerName = ['L' targetMarkers{targ}];
-            if isfield(markerGaps,markerName)
-                gapsL.(markerName) = markerGaps.(markerName);
-            end
-        end
-
-        if ~isempty(fieldnames(gapsL))
-            remainingGapsL = dataMotion.fillMarkerGapsPattern( ...
-                gapsL,pathTrial,['L' refMarker],vicon);
-            % update 'markerGaps' structure with remaining gaps
-            markerNames = fieldnames(remainingGapsL);
-            for i = 1:numel(markerNames)
-                markerGaps.(markerNames{i}) = ...
-                    remainingGapsL.(markerNames{i});
-            end
-        end
+        % Process gaps for the current reference marker
+        markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
+            markerGaps,targetMarkers,refMarker,pathTrial,vicon);
     end
 end
 
 fprintf('All specified trials have been processed.\n');
+end
+
+function markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
+    markerGaps,targetMarkers,refMarker,pathTrial,vicon)
+%PROCESSREFERENCEMARKERGAPS Process marker gaps for a reference marker
+%   Helper function to perform a pattern-based fill of marker gaps for
+% specified target markers and a referencefor right and left markers.
+
+sides = {'R','L'};
+for side = sides
+    sidePrefix = side{1};
+    gaps = struct();
+
+    % collect gaps for the target markers
+    for targ = 1:numel(targetMarkers)
+        markerName = [sidePrefix targetMarkers{targ}];
+        if isfield(markerGaps,markerName)
+            gaps.(markerName) = markerGaps.(markerName);
+        end
+    end
+
+    % skip if no gaps to process
+    if isempty(fieldnames(gaps))
+        continue;
+    end
+
+    % fill gaps using pattern-based method
+    remainingGaps = dataMotion.fillMarkerGapsPattern( ...
+        gaps,pathTrial,[sidePrefix refMarker],vicon);
+
+    % update the marker gaps structure with the remaining gaps
+    markerNames = fieldnames(remainingGaps);
+    for mrkr = 1:numel(markerNames)
+        markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
+    end
+end
+
 end
 
