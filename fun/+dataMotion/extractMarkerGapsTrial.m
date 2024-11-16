@@ -50,9 +50,13 @@ end
 
 for mrkr = 1:length(markers)        % for each marker, ...
     nameMarker = markers{mrkr};     % get marker name
-
-    % get trajectory existence flags
-    [~,~,~,existsTraj] = vicon.GetTrajectory(subject,nameMarker);
+    try                             % get marker trajectory existence flags
+        [~,~,~,existsTraj] = vicon.GetTrajectory(subject,nameMarker);
+    catch
+        warning(['Failed to retrieve trajectory for marker %s. ' ...
+            'Skipping...'],nameMarker);
+        continue;
+    end
 
     % identify gaps as sequences where trajExists is false
     indsGap = find(~existsTraj);

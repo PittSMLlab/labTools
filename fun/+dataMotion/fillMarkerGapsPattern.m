@@ -45,11 +45,18 @@ if isempty(subject)
 end
 subject = subject{1};
 
-% get reference marker trajectory data
-[refX,refY,refZ,refExists] = vicon.GetTrajectory(subject,refMarker);
+try     % get reference marker trajectory data
+    [refX,refY,refZ,refExists] = vicon.GetTrajectory(subject,refMarker);
+catch
+    warning(['Failed to retrieve reference marker (%s) trajectory. ' ...
+        'Exiting...'],refMarker);
+    markerGapsUpdated = markerGaps;
+    return;
+end
 
 % process each marker gap in the 'markerGaps' struct
-fprintf('Filling marker gaps using pattern fill...\n');
+fprintf(['Filling marker gaps using reference marker %s pattern ' ...
+    'fill...\n'],refMarker);
 for mrkr = 1:numel(markers)
     nameMarker = markers{mrkr};      % get marker name
     gaps = markerGaps.(nameMarker);  % retrieve gap indices for marker
@@ -119,7 +126,8 @@ for mrkr = 1:numel(markers)
     % update trajectory in Vicon Nexus
     vicon.SetTrajectory(subject,nameMarker,trajX,trajY,trajZ,existsTraj);
 end
-fprintf('Pattern-based marker gap filling complete.\n');
+fprintf('%s reference pattern-based marker gap filling complete.\n', ...
+    refMarker);
 
 % saves the changes made back to the trial file
 fprintf('Saving the trial...\n');
