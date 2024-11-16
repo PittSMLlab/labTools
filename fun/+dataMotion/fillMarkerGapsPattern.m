@@ -86,14 +86,24 @@ for mrkr = 1:numel(markers)
             refPatternZ = refZ(gapStart:gapEnd);
 
             % align reference pattern to target marker’s trajectory
-            preGapIdx = max(find(existsTraj(1:gapStart-1),1,'last'),1);
-            postGapIdx = min(find( ...
+            indPreGap = max(find(existsTraj(1:gapStart-1),1,'last'),1);
+            indPostGap = min(find( ...
                 existsTraj(gapEnd+1:end),1,'first')+gapEnd,length(trajX));
 
+            % Skip gap if preGapIdx or postGapIdx is empty
+            if isempty(indPreGap) || isempty(indPostGap)
+                fprintf(['Skipping gap from frame %d to %d as no valid' ...
+                    ' pre-gap or post-gap indices exist.\n'], ...
+                    gapStart,gapEnd);
+                gapsRemaining(indNextGap,:) = gaps(indGap,:);
+                indNextGap = indNextGap + 1;
+                continue;
+            end
+
             % get scaling and offset based on target pre- & post-gap data
-            preGapX = trajX(preGapIdx); postGapX = trajX(postGapIdx);
-            preGapY = trajY(preGapIdx); postGapY = trajY(postGapIdx);
-            preGapZ = trajZ(preGapIdx); postGapZ = trajZ(postGapIdx);
+            preGapX = trajX(indPreGap); postGapX = trajX(indPostGap);
+            preGapY = trajY(indPreGap); postGapY = trajY(indPostGap);
+            preGapZ = trajZ(indPreGap); postGapZ = trajZ(indPostGap);
 
             % calculate scale and offset for pattern adjustment
             scaleX = (postGapX - preGapX) / ...
