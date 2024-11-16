@@ -99,6 +99,7 @@ for mrkr = 1:numel(markers)
 end
 fprintf('Small marker gap spline filling complete.\n');
 
+% TODO: update to only save if any gaps were filled by function
 % saves the changes made back to the trial file
 fprintf('Saving the trial...\n');
 try                     % try saving the processed trial
