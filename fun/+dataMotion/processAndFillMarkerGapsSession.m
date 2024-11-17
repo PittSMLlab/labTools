@@ -62,7 +62,7 @@ for tr = indsTrials     % for each trial specified, ...
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
 
     % run reconstruct and label pipeline on the trial
-    % dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+    dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
 
     % extract marker gaps to be filled
     markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);

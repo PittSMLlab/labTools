@@ -144,6 +144,7 @@ end
 fprintf('%s reference pattern-based marker gap filling complete.\n', ...
     refMarker);
 
+% TODO: update to only save if any gaps were filled by function
 % saves the changes made back to the trial file
 fprintf('Saving the trial...\n');
 try
