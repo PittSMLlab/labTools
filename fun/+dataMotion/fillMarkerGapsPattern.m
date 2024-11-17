@@ -128,11 +128,16 @@ for mrkr = 1:numel(markers)
             indNextGap = indNextGap + 1;
         end
     end
-
-    % remove any unused rows in gapsRemaining
+    
+    % remove any unused preallocated rows in 'gapsRemaining'
     gapsRemaining(indNextGap:end,:) = [];
-    markerGaps.(nameMarker) = gapsRemaining;
-
+    if ~isempty(gapsRemaining)          % if there are gaps remaining, ...
+        % update 'markerGaps' with only the remaining gaps
+        markerGaps.(nameMarker) = gapsRemaining;
+    else                                % otherwise, remove marker field
+        markerGaps = rmfield(markerGaps,nameMarker);
+    end
+    
     % update trajectory in Vicon Nexus
     vicon.SetTrajectory(subject,nameMarker,trajX,trajY,trajZ,existsTraj);
 end
