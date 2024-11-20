@@ -79,58 +79,59 @@ for mrkr = 1:numel(markers)
     for indGap = 1:size(gaps,1)
         gapStart = gaps(indGap,1);
         gapEnd = gaps(indGap,2);
+        indPreGap = gapStart - 1;   % frame before gap
+        indPostGap = gapEnd + 1;    % frame after gap
 
-        % check if reference trajectory exists over the gap range
-        if all(refExists(gapStart:gapEnd))
-            % align reference pattern to target marker’s trajectory
-            indPreGap = max(find(existsTraj(1:gapStart-1),1,'last'),1);
-            indPostGap = min(find( ...
-                existsTraj(gapEnd+1:end),1,'first')+gapEnd,length(trajX));
+        % skip gap if 'indPreGap' or 'indPostGap' is empty
+        if isempty(indPreGap) || (indPreGap <= 1) || ...
+                isempty(indPostGap) || (indPostGap >= length(refExists))
+            fprintf(['Skipping gap from frame %d to %d as pre- or ' ...
+                'post-gap index is invalid.\n'],gapStart,gapEnd);
+            gapsRemaining(indNextGap,:) = gaps(indGap,:);
+            indNextGap = indNextGap + 1;
+            continue;
+        end
 
-            % skip gap if 'indPreGap' or 'indPostGap' is empty
-            if isempty(indPreGap) || isempty(indPostGap)
-                fprintf(['Skipping gap from frame %d to %d as no valid' ...
-                    ' pre-gap or post-gap indices exist.\n'], ...
-                    gapStart,gapEnd);
-                gapsRemaining(indNextGap,:) = gaps(indGap,:);
-                indNextGap = indNextGap + 1;
-                continue;
-            end
-
-            % get reference trajectory values at pre- and post-gap indices
-            refPreGapX = refX(indPreGap); refPostGapX = refX(indPostGap);
-            refPreGapY = refY(indPreGap); refPostGapY = refY(indPostGap);
-            refPreGapZ = refZ(indPreGap); refPostGapZ = refZ(indPostGap);
-
-            % get scaling and offset based on target pre- & post-gap data
-            preGapX = trajX(indPreGap); postGapX = trajX(indPostGap);
-            preGapY = trajY(indPreGap); postGapY = trajY(indPostGap);
-            preGapZ = trajZ(indPreGap); postGapZ = trajZ(indPostGap);
-
-            % calculate scale and offset for pattern adjustment
-            scaleX = (postGapX - preGapX) / (refPostGapX - refPreGapX);
-            scaleY = (postGapY - preGapY) / (refPostGapY - refPreGapY);
-            scaleZ = (postGapZ - preGapZ) / (refPostGapZ - refPreGapZ);
-
-            offsetX = preGapX - refPreGapX * scaleX;
-            offsetY = preGapY - refPreGapY * scaleY;
-            offsetZ = preGapZ - refPreGapZ * scaleZ;
-
-            % fill gap with adjusted pattern from the reference marker
-            refPatternX = refX(gapStart:gapEnd);
-            refPatternY = refY(gapStart:gapEnd);
-            refPatternZ = refZ(gapStart:gapEnd);
-
-            trajX(gapStart:gapEnd) = refPatternX * scaleX + offsetX;
-            trajY(gapStart:gapEnd) = refPatternY * scaleY + offsetY;
-            trajZ(gapStart:gapEnd) = refPatternZ * scaleZ + offsetZ;
-            existsTraj(gapStart:gapEnd) = true;     % update existence
-            wasChanged = true;                      % mark changes made
-        else
+        % check if reference trajectory exists over the entire gap range
+        if ~all(refExists(indPreGap:indPostGap))
+            fprintf(['Skipping gap from frame %d to %d as reference ' ...
+                'marker data does not exist for this range.\n'], ...
+                gapStart, gapEnd);
             % keep gaps that can't be filled with reference pattern
             gapsRemaining(indNextGap,:) = gaps(indGap,:);
             indNextGap = indNextGap + 1;
+            continue;
         end
+
+        % get reference trajectory values at pre- and post-gap indices
+        refPreGapX = refX(indPreGap); refPostGapX = refX(indPostGap);
+        refPreGapY = refY(indPreGap); refPostGapY = refY(indPostGap);
+        refPreGapZ = refZ(indPreGap); refPostGapZ = refZ(indPostGap);
+
+        % get scaling and offset based on target pre- & post-gap data
+        preGapX = trajX(indPreGap); postGapX = trajX(indPostGap);
+        preGapY = trajY(indPreGap); postGapY = trajY(indPostGap);
+        preGapZ = trajZ(indPreGap); postGapZ = trajZ(indPostGap);
+
+        % calculate scale and offset for pattern adjustment
+        scaleX = (postGapX - preGapX) / (refPostGapX - refPreGapX);
+        scaleY = (postGapY - preGapY) / (refPostGapY - refPreGapY);
+        scaleZ = (postGapZ - preGapZ) / (refPostGapZ - refPreGapZ);
+
+        offsetX = preGapX - refPreGapX * scaleX;
+        offsetY = preGapY - refPreGapY * scaleY;
+        offsetZ = preGapZ - refPreGapZ * scaleZ;
+
+        % fill gap with adjusted pattern from the reference marker
+        refPatternX = refX(gapStart:gapEnd);
+        refPatternY = refY(gapStart:gapEnd);
+        refPatternZ = refZ(gapStart:gapEnd);
+
+        trajX(gapStart:gapEnd) = refPatternX * scaleX + offsetX;
+        trajY(gapStart:gapEnd) = refPatternY * scaleY + offsetY;
+        trajZ(gapStart:gapEnd) = refPatternZ * scaleZ + offsetZ;
+        existsTraj(gapStart:gapEnd) = true;     % update existence
+        wasChanged = true;                      % mark changes made
     end
 
     % remove any unused preallocated rows in 'gapsRemaining'
