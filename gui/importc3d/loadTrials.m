@@ -439,7 +439,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
                 hold off
             end
-            saveFig(h,'./',['Trial ' num2str(t) ' Synchronization'])
+            saveFig(h,[info.save_folder filesep 'EMGSyncFile' filesep],['Trial ' num2str(t) ' Synchronization'])
             %         uiwait(h)
         else
             warning('No sync signals were present, using data as-is.')
