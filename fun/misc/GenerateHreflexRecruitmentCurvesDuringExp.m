@@ -8,16 +8,16 @@
 % the Vicon Nexus sofware tools.
 
 % TODO:
-%   1. use the feature of the stimulator to set the current output
+%   1. handle case of only stimulating one leg during a trial (i.e., only
+%   want to compute parameters and plot one leg)
+%   2. use the feature of the stimulator to set the current output
 %   based on the voltage of the trigger pulse to eliminate the need for
 %   asking the user to input the stimulation amplitudes
-%   2. handle case of only stimulating one leg during a trial (i.e., only
-%   want to compute parameters and plot one leg)
 %   3. use the Vicon SDK to update the recruitment curve and ratio figures
 %   in real time (if possible)
-%   4. consider making each data retrieval its own function for modularity
+%   4. adaptively choose the next stimulation amplitude
+%   5. consider making each data retrieval its own function for modularity
 %   and easy access and use for future applications
-%   5. adaptively choose the next stimulation amplitude
 
 %% 1. Load the C3D File Data
 try     % if Vicon Nexus is running with a file open, use that
@@ -258,8 +258,7 @@ end
 % clear analogs* %Save memory space, no longer need analog data, it was already loaded
 
 %% Save the Data
-% TODO: implement if valuable for this script
-
+% TODO: implement data saving if valuable for this script
 % try
 %     RTdata = struct();%initialize save structure
 %     RTdata.trialname = filename;
@@ -341,6 +340,7 @@ times = EMG.Time;   % if want to plot, can use the time array
 % useful forces are present
 % if forces are present and useful to examine (i.e., walking trial), ...
 if hasForces && shouldUseStimTrig
+    % extract Fz data from TM force plates 1 & 2
     GRFRFz = GRF.Data(:,contains(GRF.labels,'fz2','IgnoreCase',true));
     GRFLFz = GRF.Data(:,contains(GRF.labels,'fz1','IgnoreCase',true));
 end
@@ -386,66 +386,36 @@ if ~shouldCont  % if should not continue with the script, ...
 end
 
 %% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
-snipStart = -0.005; % 5 ms before artifact peak
-snipEnd = 0.055;    % 55 ms after artifact peak
-timesSnippet = snipStart:period:snipEnd;
-numSamps = length(timesSnippet);
-
-% store H-reflex snippets to plot them together
-snippetsHreflexR = nan(numStimR,numSamps);
-snippetsHreflexL = nan(numStimL,numSamps);
-% store force snippets to plot them together
-snippetsForceRR = nan(numStimR,numSamps);   % ipsi to stim
-snippetsForceRL = nan(numStimR,numSamps);   % contra to stim
-snippetsForceLL = nan(numStimL,numSamps);
-snippetsForceLR = nan(numStimL,numSamps);
-% plot the right leg stimuli
-for stR = 1:numStimR    % for each right leg stimulus, ...
-    winPlotR = (locsR(stR) + (snipStart/period)):(locsR(stR) + (snipEnd/period));
-    timesWinPlotR = times(winPlotR);
-    snippetsHreflexR(stR,:) = EMG_RMG(winPlotR);
-    if hasForces && shouldUseStimTrig
-        snippetsForceRR(stR,:) = GRFRFz(winPlotR);
-        snippetsForceRL(stR,:) = GRFLFz(winPlotR);
-    end
-end
-
-% plot the left leg stimuli
-for stL = 1:numStimL    % for each left leg stimulus, ...
-    winPlotL = (locsL(stL) + (snipStart/period)):(locsL(stL) + (snipEnd/period));
-    timesWinPlotL = times(winPlotL);
-    snippetsHreflexL(stL,:) = EMG_LMG(winPlotL);
-    if hasForces && shouldUseStimTrig
-        snippetsForceLL(stL,:) = GRFLFz(winPlotL);
-        snippetsForceLR(stL,:) = GRFRFz(winPlotL);
-    end
+if hasForces && shouldUseStimTrig
+    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
+        {EMG_RMG;EMG_LMG},{GRFRFz;GRFLFz});
+else
+    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
+        {EMG_RMG;EMG_LMG},cell(2,1));
 end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
+% TODO: add stim intensity array input to color snippets by amplitude
 % if force data present and should use the stimulation trigger signal to
 % localize the artifact peaks (using as proxy for walking trial), ...
 if hasForces && shouldUseStimTrig
-    Hreflex.plotSnippets(timesSnippet,{[snippetsForceRR; ...
-        snippetsForceRL],[snippetsForceLL; snippetsForceLR], ...
-        snippetsHreflexR,snippetsHreflexL},{'Force (N)','Force (N)', ...
-        'MG Raw EMG (V)','MG Raw EMG (V)'}, ...
+    Hreflex.plotSnippets(timesSnippet,snippets,{'Force (N)', ...
+        'Force (N)','MG Raw EMG (V)','MG Raw EMG (V)'}, ...
         {'Right & Left Fz - Right Stim','Left & Right Fz - Left Stim', ...
         'Right MG','Left MG'},id,trialNum,pathFigs);
 else        % otherwise, do not plot the forces
-    Hreflex.plotSnippets(timesSnippet,{snippetsHreflexR, ...
-        snippetsHreflexL},{'Raw EMG (V)','Raw EMG (V)'}, ...
-        {'Right MG','Left MG'},id,trialNum,pathFigs);
+    Hreflex.plotSnippets(timesSnippet,snippets(:,1),{'Raw EMG (V)', ...
+        'Raw EMG (V)'},{'Right MG','Left MG'},id,trialNum,pathFigs);
 end
 
 %% 10.2 Plot Snippets for a Given Amplitude for Each Leg Together
 % TODO: move the finding of unique amplitudes and indices up here
-% TODO: make this a helper function to reduce code duplication
 % TODO: Add dots to show the min and max picked out for each wave to see if
 % first/last points (i.e., if makes sense)
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-[amps,durs] = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},{locsR;locsL});
+[amps,durs] = Hreflex.computeAmplitudes({EMG_RMG;EMG_LMG},{locsR;locsL});
 % convert wave amplitudes from Volts to Millivolts
 amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
 
@@ -456,6 +426,8 @@ ampsMwaveL = amps{2,1};
 ampsHwaveL = amps{2,2};
 ampsNoiseL = amps{2,3};
 
+% plot the H-wave / M-wave duration (i.e., time difference between minimum
+% and maximum) to determine whether valid waveform or not
 % figure;
 % hold on;
 % histogram(durs{1,1},0.000:period:0.020,'EdgeColor','none');
@@ -499,7 +471,6 @@ avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x)),ampsStimRU);
 avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
 
 %% 13. Plot the Noise Distributions for Both Legs
-
 % compute four times noise floor (mean) to determine whether
 % to send participant home or not (at least one leg must exceed threshold)
 threshNoiseR = 4 * mean(ampsNoiseR);
@@ -549,7 +520,6 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 % yR = fun(coefsR,xR);
 % xL = min(ampsStimLU):incX:max(ampsStimLU);
 % yL = fun(coefsL,xL);
-
 Hreflex.plotCal(ampsStimR,{ampsMwaveR; ampsHwaveR}, ...
     'MG EMG Amplitude (mV)','Right Leg',id,trialNum,mean(ampsNoiseR), ...
     pathFigs);

@@ -87,7 +87,7 @@ indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger(times, ...
 % use MG to compute H-reflex amplitudes
 EMG_RMG = EMGData.Data(:,contains(EMGData.labels,'RMG'));
 EMG_LMG = EMGData.Data(:,contains(EMGData.labels,'LMG'));
-amps = Hreflex.computeHreflexAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
+amps = Hreflex.computeAmplitudes({EMG_RMG;EMG_LMG},indsStimArtifact);
 switch lower(slowLeg)   % which leg is slow, R or L
     case 'r'            % if right leg is slow, ...
         indSlow = 1;

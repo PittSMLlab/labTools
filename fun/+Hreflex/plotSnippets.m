@@ -1,12 +1,12 @@
 function fig = plotSnippets(times,snippets,yLabels,titles,id,trialNum,path)
-%PLOTSNIPPETS Plot H-reflex snippets
+%PLOTSNIPPETS Plot H-reflex snippets with GRFs if available
 %   Plot the H-reflex snippets for desired muscles or forces (if desired)
 % with the window bounds for M-wave and H-wave indicated by vertical lines.
 %
 % input:
 %   times: number of samples x 1 array of the time in seconds with 0
 %       indicating the identified stimulation artifact peak
-%   snippets: N x 1 cell array of number of snippets x number of samples
+%   snippets: 2 x N cell array of number of snippets x number of samples
 %       arrays of force or raw EMG data (NOTE: no cells may be empty, and
 %       every cell must have a corresponding label)
 %   yLabels: N x 1 cell array of strings or character arrays of the tile
@@ -21,8 +21,9 @@ function fig = plotSnippets(times,snippets,yLabels,titles,id,trialNum,path)
 
 narginchk(6,7); % verify correct number of input arguments
 
-hasSameNumSamples = length(unique( ...
-    [cellfun(@(x) size(x,2),snippets) length(times)]));
+numSnipSamps = cellfun(@(x) size(x,2),snippets);
+numSnipSamps = reshape(numSnipSamps,1,[]);
+hasSameNumSamples = length(unique([numSnipSamps length(times)]));
 if ~hasSameNumSamples   % if not same number of samples for all arrays, ...
     error('There are different numbers of samples across arrays.');
 end
@@ -40,13 +41,13 @@ numTiles = length(titles);             % number of tile titles
 % create new figure
 % TODO: do we want the figure to be full screen?
 %       figure('Units','normalized','OuterPosition',[0 0 1 1]);
-fig = figure('Units','normalized','OuterPosition',[0 0 1 1]);
+fig = figure;
 tl = tiledlayout(numTiles,1,'TileSpacing','tight'); % orient vertically
 
 indsForce = contains(titles,{'force','fz'},'IgnoreCase',true);
 numForce = sum(indsForce);          % number of force labels
 hasForce = any(indsForce);          % is there force data present?
-numNonForce = numTiles - numForce; % number of non-force labels
+numNonForce = numTiles - numForce;  % number of non-force labels
 
 % NOTE: assuming inputs in desired plot order from top to bottom
 % TODO: consider plotting ipsilateral and contralateral leg force in the
@@ -54,9 +55,11 @@ numNonForce = numTiles - numForce; % number of non-force labels
 % occurred can more easily be deciphered; this would require changing the
 % format of the snippets input and labeling
 if hasForce     % if force provided for plotting, ...
-    for ii = 1:numForce     % for each force label, ...
-        plotTile(times,snippets{ii},yLabels{ii},titles{ii});
-    end
+    % NOTE: assuming always either two force tiles or none
+    plotTile(times,[snippets{1,2}; snippets{1,3}],yLabels{1},titles{1});
+    xlim([times(1) times(end)]);
+    plotTile(times,[snippets{2,2}; snippets{2,3}],yLabels{2},titles{2});
+    xlim([times(1) times(end)]);
 end
 
 ax = gobjects(1,numNonForce);   % initialize array of Axes objects
@@ -66,9 +69,9 @@ indsYLims = times > 0.005;
 ymin = 0;                   % initialize minimum y-axis value to be 0
 ymax = 0;
 for ii = 1:numNonForce      % for each non-force signal, ...
-    ax(ii) = plotTile(times,snippets{ii+numForce},yLabels{ii+numForce},titles{ii+numForce});
-    newYmin = min(snippets{ii+numForce}(:,indsYLims),[],'all');
-    newYmax = max(snippets{ii+numForce}(:,indsYLims),[],'all');
+    ax(ii) = plotTile(times,snippets{ii,1},yLabels{ii},titles{ii});
+    newYmin = min(snippets{ii,1}(:,indsYLims),[],'all');
+    newYmax = max(snippets{ii,1}(:,indsYLims),[],'all');
     if newYmin < ymin       % if minimum y-value less than previous, ...
         ymin = newYmin;     % update minimum y-axis value
     end
@@ -109,7 +112,7 @@ if ~contains(yLbl,{'force','fz'},'IgnoreCase',true)  % if EMG snippet, ...
     xline(0.004,'b');           % M-wave start:  4 ms after stim artifact
     xline(0.023,'b');           % M-wave end:   23 ms
     xline(0.024,'g');           % H-wave start: 24 ms after stim artifact
-    xline(0.043,'g');           % H-wave end:   43 ms
+    xline(0.049,'g');           % H-wave end:   43 ms
 end
 plot(t,y);
 hold off;
