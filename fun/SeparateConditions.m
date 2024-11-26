@@ -1,6 +1,6 @@
 %Chagingparams, create new conditions in 1 trial, currently only need to
 %use it fors the first block for preintervention trials.
-function adaptDataToSep = AddingConditionsNirs(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask)
+function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, newConditionName, Tied2Split, speedDiff, newDecription, plotSpeed, containsPercTask)
 % Separate 1 condition given by oldConditionName into 2: {oldConditionName, newConditionName}
 % the newConditionName needs to happen after the oldConditionName
 % chronologically, otherwise it doesn't make sense and the code is not handling that right now.
