@@ -43,7 +43,7 @@ id = id{1};
 [~,filename] = fileparts(filenameWExt);
 trialNum = filename(end-1:end); % last two characters of file name are #
 pathFigs = [path 'HreflexCalFigs' filesep];
-if ~exist(pathFigs,'dir')       % if figure folder doesn't exist, ...
+if ~isfolder(pathFigs)          % if figure folder doesn't exist, ...
     mkdir(pathFigs);            % make it
 end
 
