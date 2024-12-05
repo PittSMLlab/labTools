@@ -23,7 +23,7 @@ if nargin < 4 || isempty(maxGapSize)
     maxGapSize = 10;
 end
 
-% validate markerGaps structure format
+% validate 'markerGaps' structure format
 markers = fieldnames(markerGaps);
 for i = 1:numel(markers)
     gaps = markerGaps.(markers{i});
@@ -42,7 +42,7 @@ end
 
 % open the trial if not already open
 if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-    return;  % exit if the trial could not be opened
+    return;                         % exit if the trial could not be opened
 end
 
 % get subject name (assuming only one subject in the trial)
@@ -54,11 +54,13 @@ subject = subject{1};
 
 % process each marker gap in the 'markerGaps' struct
 fprintf('Filling small marker gaps with spline interpolation...\n');
-for mrkr = 1:numel(markers)
-    nameMarker = markers{mrkr};      % get marker name
-    gaps = markerGaps.(nameMarker);  % retrieve gap indices for marker
+wasChanged = false;                     % track whether changes were made
 
-    try     % get marker trajectory data
+for mrkr = 1:numel(markers)
+    nameMarker = markers{mrkr};         % get marker name
+    gaps = markerGaps.(nameMarker);     % retrieve gap indices for marker
+
+    try                                 % get marker trajectory data
         [trajX,trajY,trajZ,existsTraj] = ...
             vicon.GetTrajectory(subject,nameMarker);
     catch
@@ -81,6 +83,7 @@ for mrkr = 1:numel(markers)
         if gapLength <= maxGapSize && any(existsTraj)
             [trajX,trajY,trajZ,existsTraj] = ...
                 fillGap(trajX,trajY,trajZ,existsTraj,gaps(indGap,:));
+            wasChanged = true;              % mark changes made
         else
             % retain the gap in 'gapsRemaining' if it exceeds 'maxGapSize'
             % that is, if gap was not filled, add it to 'gapsRemaining'
@@ -88,7 +91,7 @@ for mrkr = 1:numel(markers)
             indNextGap = indNextGap + 1;    % increment gap index
         end
     end
-    
+
     % remove any excess preallocated rows in 'gapsRemaining'
     gapsRemaining(indNextGap:end,:) = [];
     if ~isempty(gapsRemaining)          % if there are gaps remaining, ...
@@ -97,20 +100,23 @@ for mrkr = 1:numel(markers)
     else                                % otherwise, remove marker field
         markerGaps = rmfield(markerGaps,nameMarker);
     end
-    
+
     % update trajectory in Vicon Nexus
     vicon.SetTrajectory(subject,nameMarker,trajX,trajY,trajZ,existsTraj);
 end
 fprintf('Small marker gap spline filling complete.\n');
 
-% TODO: update to only save if any gaps were filled by function
-% saves the changes made back to the trial file
-fprintf('Saving the trial...\n');
-try                     % try saving the processed trial
-    vicon.SaveTrial(200);
-    fprintf('Trial saved successfully.\n');
-catch ME
-    warning(ME.identifier,'%s',ME.message);
+% save the trial only if changes were made
+if wasChanged
+    fprintf('Saving the trial with changes...\n');
+    try
+        vicon.SaveTrial(200);
+        fprintf('Trial saved successfully.\n');
+    catch ME
+        warning(ME.identifier,'%s',ME.message);
+    end
+else
+    fprintf('No changes made; trial not saved.\n');
 end
 
 % output the updated markerGaps with only remaining gaps

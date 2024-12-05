@@ -16,13 +16,13 @@ function markerGapsUpdated = ...
 
 narginchk(3,4);         % verify correct number of input arguments
 
-% validate markerGaps structure format
+% validate 'markerGaps' structure format
 markers = fieldnames(markerGaps);
-for i = 1:numel(markers)
-    gaps = markerGaps.(markers{i});
-    if isempty(gaps) || size(gaps,2) ~= 2
+for mrkr = 1:numel(markers)                 % for each marker, ...
+    gaps = markerGaps.(markers{mrkr});      % retrieve the 'gaps' array
+    if isempty(gaps) || size(gaps,2) ~= 2   % if empty or bad size, ...
         error(['Invalid format in markerGaps for marker %s. Expecting ' ...
-            'a non-empty Nx2 matrix.'],markers{i});
+            'a non-empty Nx2 matrix.'],markers{mrkr});
     end
 end
 
@@ -45,7 +45,7 @@ if isempty(subject)
 end
 subject = subject{1};
 
-try     % get reference marker trajectory data
+try                                 % get reference marker trajectory data
     [refX,refY,refZ,refExists] = vicon.GetTrajectory(subject,refMarker);
 catch
     warning(['Failed to retrieve reference marker (%s) trajectory. ' ...
@@ -63,7 +63,7 @@ for mrkr = 1:numel(markers)
     nameMarker = markers{mrkr};         % get marker name
     gaps = markerGaps.(nameMarker);     % retrieve gap indices for marker
 
-    try     % get marker trajectory data
+    try                                 % get marker trajectory data
         [trajX,trajY,trajZ,existsTraj] = ...
             vicon.GetTrajectory(subject,nameMarker);
     catch
@@ -72,21 +72,20 @@ for mrkr = 1:numel(markers)
         continue;
     end
 
-    % preallocate remaining gaps array
-    gapsRemaining = gaps;
+    gapsRemaining = gaps;               % preallocate remaining gaps array
     indNextGap = 1;
 
-    for indGap = 1:size(gaps,1)
+    for indGap = 1:size(gaps,1)         % for each target marker gap, ...
         gapStart = gaps(indGap,1);
         gapEnd = gaps(indGap,2);
-        indPreGap = gapStart - 1;   % frame before gap
-        indPostGap = gapEnd + 1;    % frame after gap
+        indPreGap = gapStart - 1;       % frame before gap
+        indPostGap = gapEnd + 1;        % frame after gap
 
-        % skip gap if 'indPreGap' or 'indPostGap' is empty
-        if isempty(indPreGap) || (indPreGap <= 1) || ...
-                isempty(indPostGap) || (indPostGap >= length(refExists))
+        % skip gap if 'indPreGap' or 'indPostGap' is invalid
+        if (indPreGap <= 1) || (indPostGap >= length(refExists))
             fprintf(['Skipping gap from frame %d to %d as pre- or ' ...
                 'post-gap index is invalid.\n'],gapStart,gapEnd);
+            % keep gaps that can't be filled with reference pattern
             gapsRemaining(indNextGap,:) = gaps(indGap,:);
             indNextGap = indNextGap + 1;
             continue;
@@ -96,8 +95,7 @@ for mrkr = 1:numel(markers)
         if ~all(refExists(indPreGap:indPostGap))
             fprintf(['Skipping gap from frame %d to %d as reference ' ...
                 'marker data does not exist for this range.\n'], ...
-                gapStart, gapEnd);
-            % keep gaps that can't be filled with reference pattern
+                gapStart,gapEnd);
             gapsRemaining(indNextGap,:) = gaps(indGap,:);
             indNextGap = indNextGap + 1;
             continue;
@@ -134,7 +132,7 @@ for mrkr = 1:numel(markers)
         wasChanged = true;                      % mark changes made
     end
 
-    % remove any unused preallocated rows in 'gapsRemaining'
+    % remove any excess preallocated rows in 'gapsRemaining'
     gapsRemaining(indNextGap:end,:) = [];
     if ~isempty(gapsRemaining)          % if there are gaps remaining, ...
         % update 'markerGaps' with only the remaining gaps
