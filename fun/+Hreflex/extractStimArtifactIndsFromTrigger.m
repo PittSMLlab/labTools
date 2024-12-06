@@ -1,5 +1,5 @@
 function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, ...
-    rawEMG_TAP,HreflexStimPin)
+    rawEMG_TAP,pinHreflexStim,varargin)
 %EXTRACTSTIMARTIFACTINDSFROMTRIGGER Extract TAP stim artifact peak indices
 %   Extract the indices of the stimulation artifact peaks in the proximal
 % tibialis anterior muscle raw EMG signal (which seems to be more robust
@@ -7,21 +7,27 @@ function indsStimArtifact = extractStimArtifactIndsFromTrigger(times, ...
 % or soleus, during walking) using the rising edge of the stimulation
 % trigger pulse to localize the artifact peak.
 %
-% input:
-%   times: number of samples x 1 array with the time in seconds from the
+% input(s):
+%   times: number of samples x 1 array of the time in seconds from the
 %       start of the trial for each sample
 %   rawEMG_TAP: 2 x 1 cell array of number of samples x 1 arrays for right
 %       (cell 1) and left (cell 2) leg proximal TA muscle EMG signal (NOTE:
 %       if one cell is input as empty array, that leg will not be computed)
-%   HreflexStimPin: labTimeSeries object of the data from the H-reflex
-%       stimulation trigger pulse pin
+%   pinHreflexStim: 2 x 1 cell array of number of samples x 1 arrays for
+%       right (cell 1) and left (cell 2) H-reflex stimulator trigger pulses
+%   varargin: optional inputs (name-value pairs)
+%       - 'threshStim': stimulation trigger pulse detection threshold
+%                       (default: 2.5 V)
+%       - 'winDurStim': search window duration around trigger pulse
+%                       (default: 0.1 seconds)
+%       - 'minArtifactPeak': minimum stimulation artifact peak height for
+%                            detection (default: 0.001 V)
 % output:
 %   indsStimArtifact: 2 x 1 cell array of number of stimuli x 1 arrays for
 %       right (cell 1) and left (cell 2) leg stimulation artifact indices
 
-narginchk(3,3); % verify correct number of input arguments
 if isempty(times) || all(cellfun(@isempty,rawEMG_TAP)) || ...
-        isempty(HreflexStimPin)
+        all(cellfun(@isempty,pinHreflexStim))   % validate input arguments
     error(['There is data missing that is crucial for computing the ' ...
         'stimulation artifact indices']);
 end
@@ -30,37 +36,34 @@ end
 % if stimulator is disabled during trial (because there will be a trigger
 % pulse but the participant will not have been stimulated)
 
-% threshold to determine rising edge of stimulation trigger pulse
-% TODO: consider making an optional input parameter
-threshVolt = 2.5;
-winStim = 0.1;          % +/- 100 ms of the onset of the stim trigger pulse
-minPeakHeight = 0.001;  % 1 mV minimum stim artifact peak height
+p = inputParser;        % parse optional inputs
+addParameter(p,'threshStim',2.5,@(x) isnumeric(x) && x > 0);
+addParameter(p,'winDurStim',0.1,@(x) isnumeric(x) && x > 0);
+addParameter(p,'minArtifactPeak',0.001,@(x) isnumeric(x) && x > 0);
+parse(p,varargin{:});
 
-% extract all stimulation trigger data for each leg
-% TODO: update to work in case of only one leg
-stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-    'right','IgnoreCase',true));
-stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-    'left','IgnoreCase',true));
+threshStim = p.Results.threshStim;  % stim trigger pulse threshold (V)
+winDurStim = p.Results.winDurStim;  % +/- 100 ms of stim pulse onset
+minPeak = p.Results.minArtifactPeak;% 1 mV min. stim artifact peak height
 
 % get stimulation onset times
-stimTimeRAbs = getStimOnsetTimes(stimTrigR,times,threshVolt);
-stimTimeLAbs = getStimOnsetTimes(stimTrigL,times,threshVolt);
+stimTimeRAbs = getStimOnsetTimes(pinHreflexStim{1},times,threshStim);
+stimTimeLAbs = getStimOnsetTimes(pinHreflexStim{2},times,threshStim);
 
 % convert stimulation times to indices in the EMG signal
 indsStimArtifact = cell(2, 1);
 indsStimArtifact{1} = findStimArtifactInds(times,rawEMG_TAP{1}, ...
-    stimTimeRAbs,winStim,minPeakHeight);
+    stimTimeRAbs,winDurStim,minPeak);
 indsStimArtifact{2} = findStimArtifactInds(times,rawEMG_TAP{2}, ...
-    stimTimeLAbs,winStim,minPeakHeight);
+    stimTimeLAbs,winDurStim,minPeak);
 
 end
 
 %% Helper Functions
 
-function stimTimes = getStimOnsetTimes(stimTrig,times,threshVolt)
+function stimTimes = getStimOnsetTimes(stimTrig,times,threshStim)
 % detect rising edges of stimulation trigger pulses
-indsStimAll = find(stimTrig > threshVolt);
+indsStimAll = find(stimTrig > threshStim);
 % determine which indices correspond to start of new stimulus pulse
 % (i.e., there is jump in index greater than 1, not just next sample)
 indsNewPulse = diff([0; indsStimAll]) > 1;      % rising edges
@@ -69,7 +72,7 @@ stimTimes = times(indsStimAll(indsNewPulse));
 end
 
 function indsStimArtifact = findStimArtifactInds(times,rawEMG, ...
-    stimTimes,winStim,minPeakHeight)
+    stimTimes,winDurStim,minPeakHeight)
 % identify stim artifact indices in EMG signal around stimulation times
 if isempty(rawEMG) || isempty(stimTimes)    % if no EMG or stim data, ...
     indsStimArtifact = [];                  % return empty array
@@ -77,7 +80,7 @@ if isempty(rawEMG) || isempty(stimTimes)    % if no EMG or stim data, ...
 end
 
 period = mean(diff(times));                 % sampling period
-winSamples = round(winStim / period);       % search window dur. in samples
+winSamples = round(winDurStim / period);    % search window dur. in samples
 numStim = numel(stimTimes);                 % number of stimuli
 indsStimArtifact = nan(numStim,1);          % initialize array of indices
 
