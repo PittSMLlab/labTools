@@ -27,38 +27,42 @@ try     % if Vicon Nexus is running with a file open, use that
     filenameWExt = [filenameWOExt '.c3d'];
     guessID = vicon.GetSubjectNames;    % retrieve participant / session ID
 catch   % use below two lines when processing c3d files not open in Nexus
-    commandwindow();
     [filenameWExt,path] = uigetfile('*.c3d', ...
         'Please select the c3d file of interest:');
     compsPath = strsplit(path,filesep);
-    compsPath = compsPath(cellfun(@(x) ~isempty(x),compsPath));
+    compsPath = compsPath(~cellfun(@isempty,compsPath));
     guessID = compsPath(contains(compsPath,'SA'));
     if isempty(guessID)
         guessID = compsPath(end);
     end
 end
-id = inputdlg({'Enter the Participant / Session ID:'},'ID',[1 50], ...
-    guessID);   % verify ID with user first
+
+% verify participant / session ID with experimenter first
+id = inputdlg({'Enter the Participant / Session ID:'},'ID',[1 50],guessID);
+if isempty(id)  % if no ID provided, ...
+    error('Participant / Session ID input is required.');
+end
 id = id{1};
+
+% process filename and paths
 [~,filename] = fileparts(filenameWExt);
 trialNum = filename(end-1:end); % last two characters of file name are #
-pathFigs = [path 'HreflexCalFigs' filesep];
+pathFigs = fullfile(path,'HreflexCalFigs');
 if ~isfolder(pathFigs)          % if figure folder doesn't exist, ...
     mkdir(pathFigs);            % make it
 end
 
-H = btkReadAcquisition([path filenameWExt]);
+H = btkReadAcquisition(fullfile(path,filenameWExt));    % load C3D data
 % using the same method as labtools, retrieve the analog data
 [analogs,analogsInfo] = btkGetAnalogs(H);
 
-%% 2. Retrieve User Input Data
+%% 2. Retrieve Existing Configuration or User Input Data
 prompt = { ...
     ['Enter the EMG sensor muscles in sensor number order for all 16 ' ...
-    'sensors of Box 1 (using ''NA'' for sensors not in use):'], ...
-    ['Should stimulation trigger pulse data be used to identify ' ...
-    'artifact peak times? (''1'' = true (TM calibration where all ' ...
-    'triggers in Vicon are valid and have a stim current written ' ...
-    'down), ''0'' = false (otherwise))'], ...
+    'sensors of Box 1 (use ''NA'' for unused sensors):'], ...
+    ['Use stimulation trigger pulse data to identify artifact peak ' ...
+    'times? (''1'' = true (TM calibration where all triggers in Vicon ' ...
+    'are valid and have a stim current written down), ''0'' = false)'], ...
     'Enter the right leg stimulation amplitudes (numbers only):', ...
     'Enter the left leg stimulation amplitudes (numbers only):', ...
     ['Stimulation Artifact Threshold (V) (NOTE: only relevant if not ' ...
@@ -68,38 +72,43 @@ prompt = { ...
 dlgtitle = 'H-Reflex Calibration Input';
 fieldsize = [1 200; 1 200; 1 200; 1 200; 1 200; 1 200];
 
-filesConf = dir([pathFigs id 'Config*.mat']);
+% determine default input
+filesConf = dir(fullfile(pathFigs,[id 'Config*.mat']));
 fnamesConf = {filesConf.name};
 fnameConf = [id 'Config' trialNum '.mat'];
-if isempty(fnamesConf)  % if no configuration file exists, ...
-    % use the default values for the input
-    definput = { ...
+if isempty(fnamesConf)              % if no configuration file exists, ...
+    definput = { ...                % use the default values for the input
         ['RTAP RTAD NA RPER RMG RLG RSOL LTAP LTAD LPER LMG LLG LSOL ' ...
         'NA NA sync1'], ...                     muscle list
         '1', ...                                should use stim trig pulse?
-        ['5 5 5 7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 ' ...
-        '16 18 18 18 21 21 21 25 25 25'], ...   right leg stim amplitudes
-        ['5 5 5 7 7 7 9 9 9 11 11 11 12 12 12 13 13 13 14 14 14 16 16 ' ...
-        '16 18 18 18 21 21 21 25 25 25'], ...   left leg stim amplitudes
-        '0.0003', ...                           stim artifact threshold
-        '5'};                                 % min. time between stimuli
+        ['5 5 5 5 5 5 7 7 7 7 7 7 9 9 9 9 9 9 11 11 11 11 11 11 13 13 ' ...
+        '13 13 13 13 15 15 15 15 15 15 17 17 17 17 17 17 20 20 20 20 ' ...
+        '20 20 23 23 23 23 23 23 26 26 26 26 26 26'], ...   right leg amps
+        ['5 5 5 5 5 5 7 7 7 7 7 7 9 9 9 9 9 9 11 11 11 11 11 11 13 13 ' ...
+        '13 13 13 13 15 15 15 15 15 15 17 17 17 17 17 17 20 20 20 20 ' ...
+        '20 20 23 23 23 23 23 23 26 26 26 26 26 26'], ...   left leg amps
+        '0.0003', ...                           stim artifact threshold (V)
+        '5'};                                 % min. time between stim. (s)
 elseif any(strcmpi(fnamesConf,fnameConf))   % if current trial file, ...
-    load([pathFigs fnameConf],'answer');    % load configuration
+    load(fullfile(pathFigs,fnameConf),'answer');
     definput = answer;                      % set default input to config
-elseif ~isempty(fnamesConf) % if there is config but not current trial, ...
-    load([pathFigs fnamesConf{end}],'answer');  % load config of last trial
-    definput = answer;                      % set default input to config
-else    % otherwise, ...
-    % do something else
+else                                        % otherwise, ...
+    load(fullfile(pathFigs,fnamesConf{end}),'answer');
+    definput = answer;                      % use most recent trial config
 end
 
+% retrieve input from experimenter
 answer = inputdlg(prompt,dlgtitle,fieldsize,definput);
+if isempty(answer)                          % if no input provided, ...
+    error('User input is required for calibration.');
+end
+
 % if config file does not exist (save new file) or if it does exist but ...
 % has changed (overwrite previous file), ...
-if ~isfile([pathFigs fnameConf]) || (isfile([pathFigs fnameConf]) && ...
-        ~isequal(definput,answer))
-    save([pathFigs fnameConf],'answer','analogs','analogsInfo','H', ...
-        'id','path','pathFigs','trialNum','filenameWExt','fnameConf');
+if ~isfile(fullfile(pathFigs,fnameConf)) || ...
+        (isfile(fullfile(pathFigs,fnameConf)) && ~isequal(definput,answer))
+    save(fullfile(pathFigs,fnameConf),'answer','analogs','analogsInfo', ...
+        'H','id','path','pathFigs','trialNum','filenameWExt','fnameConf');
 end
 
 %% 3. Extract User Input Parameters
@@ -110,13 +119,22 @@ if isempty(EMGList1)                % if no EMG labels input, ...
 end
 % currently using below as a proxy for standing vs. walking trials
 shouldUseStimTrig = logical(str2double(answer{2}));
-ampsStimR = str2num(answer{3});
-ampsStimL = str2num(answer{4});
+ampsStimR = str2num(answer{3}); %#ok<ST2NM>
+ampsStimL = str2num(answer{4}); %#ok<ST2NM>
 threshStimArtifact = str2double(answer{5});% stimulation artifact threshold
 threshStimTimeSep = str2double(answer{6}); % time between stim
 
-numStimR = length(ampsStimR);   % number of times stimulated right leg
-numStimL = length(ampsStimL);   % number of times stimulated left leg
+numStimR = numel(ampsStimR);   % number of times stimulated right leg
+numStimL = numel(ampsStimL);   % number of times stimulated left leg
+
+%% Provide Summary of Extracted Data
+fprintf('Participant/Session ID: %s\n',id);
+fprintf('Trial Number: %s\n',trialNum);
+fprintf('Number of Right Leg Stimulations: %d\n',numStimR);
+fprintf('Number of Left Leg Stimulations: %d\n',numStimL);
+fprintf('Artifact Threshold (V): %.4f\n',threshStimArtifact);
+fprintf('Minimum Time Between Stimuli (s): %.2f\n',threshStimTimeSep);
+disp('Data extraction completed successfully.');
 
 %% 4. Retrieve EMG Data
 % NOTE: below is copied directly from 'loadTrials.m'
@@ -326,6 +344,13 @@ else            % otherwise, ...
     end
 end
 
+% extract all stimulation trigger data for each leg
+% TODO: update to work in case of only one leg
+stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
+    'right','IgnoreCase',true));
+stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
+    'left','IgnoreCase',true));
+
 % if missing any of the EMG signals used below, ...
 if any(isempty([EMG_LTAP EMG_RTAP EMG_LSOL EMG_RSOL]))
     % TODO: update handling of one or more missing signals
@@ -352,7 +377,7 @@ end
 % identify the locations of the artifact peaks, ...
 if shouldUseStimTrig && hasStimTrig
     indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
-        times,{EMG_RTAP,EMG_LTAP},HreflexStimPin);
+        times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
     locsR = indsStimArtifact{1};
     locsL = indsStimArtifact{2};
 
