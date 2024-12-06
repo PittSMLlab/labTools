@@ -69,35 +69,30 @@ stimTimes = times(indsStimAll(indsNewPulse));
 end
 
 function indsStimArtifact = findStimArtifactInds(times,rawEMG, ...
-    stimTimes,winStim,MinPeakHeight)
-% find stimulation artifact indices in EMG signal around stimulation times
+    stimTimes,winStim,minPeakHeight)
+% identify stim artifact indices in EMG signal around stimulation times
 if isempty(rawEMG) || isempty(stimTimes)    % if no EMG or stim data, ...
     indsStimArtifact = [];                  % return empty array
     return;
 end
 
 period = mean(diff(times));                 % sampling period
-winSamples = round(winStim / period);       % window in samples
+winSamples = round(winStim / period);       % search window dur. in samples
 numStim = numel(stimTimes);                 % number of stimuli
 indsStimArtifact = nan(numStim,1);          % initialize array of indices
 
 for st = 1:numStim                          % for each stimulus, ...
-    % find EMG data indices corresponding to onset of stim trigger pulse
-    indStim = find(times == stimTimes(st));
-    if isempty(indStim)                     % if no exact match, ...
-        continue;                           % skip to next stimulus
-    end
+    % locate EMG data index corresponding to onset of stim trigger pulse
+    [~,indStim] = min(abs(times - stimTimes(st)));
     % ensure window does not exceed EMG data in case stim near trial end
     winSearch = max(1,indStim - winSamples): ...    % search window around
         min(length(rawEMG),indStim + winSamples);   % stimulation time
-    [~,locs] = findpeaks(rawEMG(winSearch),'MinPeakHeight',MinPeakHeight);
+    [~,locs] = findpeaks(rawEMG(winSearch),'MinPeakHeight',minPeakHeight);
 
     if isempty(locs)                        % if no peaks detected, ...
         [~,indMaxTAP] = max(rawEMG(winSearch)); % use maximum value as peak
-    elseif isscalar(locs)                   % if only one peak found, ...
-        indMaxTAP = locs;                   % that is artifact peak align
     else                                    % otherwise, ...
-        indMaxTAP = locs(1);                % use earliest peak
+        indMaxTAP = locs(1);                % use first (earliest) peak
     end
 
     indsStimArtifact(st) = winSearch(indMaxTAP);
