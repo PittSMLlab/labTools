@@ -33,7 +33,8 @@ end
 % threshold to determine rising edge of stimulation trigger pulse
 % TODO: consider making an optional input parameter
 threshVolt = 2.5;
-period = HreflexStimPin.sampPeriod;
+winStim = 0.1;          % +/- 100 ms of the onset of the stim trigger pulse
+minPeakHeight = 0.001;  % 1 mV minimum stim artifact peak height
 
 % extract all stimulation trigger data for each leg
 % TODO: update to work in case of only one leg
@@ -42,79 +43,65 @@ stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
 stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
     'left','IgnoreCase',true));
 
-% determine indices when stimulus trigger is high (to stimulate)
-indsStimRAll = find(stimTrigR > threshVolt);
-indsStimLAll = find(stimTrigL > threshVolt);
+% get stimulation onset times
+stimTimeRAbs = getStimOnsetTimes(stimTrigR,times,threshVolt);
+stimTimeLAbs = getStimOnsetTimes(stimTrigL,times,threshVolt);
 
+% convert stimulation times to indices in the EMG signal
+indsStimArtifact = cell(2, 1);
+indsStimArtifact{1} = findStimArtifactInds(times,rawEMG_TAP{1}, ...
+    stimTimeRAbs,winStim,minPeakHeight);
+indsStimArtifact{2} = findStimArtifactInds(times,rawEMG_TAP{2}, ...
+    stimTimeLAbs,winStim,minPeakHeight);
+
+end
+
+%% Helper Functions
+
+function stimTimes = getStimOnsetTimes(stimTrig,times,threshVolt)
+% detect rising edges of stimulation trigger pulses
+indsStimAll = find(stimTrig > threshVolt);
 % determine which indices correspond to start of new stimulus pulse
 % (i.e., there is jump in index greater than 1, not just next sample)
-indsNewPulseR = diff([0; indsStimRAll]) > 1;
-indsNewPulseL = diff([0; indsStimLAll]) > 1;
-
+indsNewPulse = diff([0; indsStimAll]) > 1;      % rising edges
 % determine time since trial start when stim pulse began (rising edge)
-stimTimeRAbs = HreflexStimPin.Time(indsStimRAll(indsNewPulseR));
-stimTimeLAbs = HreflexStimPin.Time(indsStimLAll(indsNewPulseL));
-
-% find the indices of the EMG data corresponding to the onset of the
-% stimulation trigger pulse
-indsEMGStimOnsetRAbs = arrayfun(@(x) find(x == times),stimTimeRAbs);
-indsEMGStimOnsetLAbs = arrayfun(@(x) find(x == times),stimTimeLAbs);
-
-numStimR = length(indsEMGStimOnsetRAbs);    % number of stimuli
-numStimL = length(indsEMGStimOnsetLAbs);
-
-% initialize array of indices determined by the stim artifact
-indsStimArtifactR = nan(size(indsEMGStimOnsetRAbs));
-indsStimArtifactL = nan(size(indsEMGStimOnsetLAbs));
-
-winStim = 0.1 / period; % +/- 100 ms of the onset of the stim trigger pulse
-
-% TODO: consider moving into function to reduce loops, discrepancy handling
-for stR = 1:numStimR                    % for each right leg stimulus, ...
-    winSearch = (indsEMGStimOnsetRAbs(stR) - winStim): ...
-        (indsEMGStimOnsetRAbs(stR) + winStim);
-    % ensure window does not exceed EMG data in case stim near end of trial
-    winSearch = winSearch(winSearch < length(rawEMG_TAP{1}));
-    % TODO: is this a good peak threshold?
-    [~,locs] = findpeaks(rawEMG_TAP{1}(winSearch),'MinPeakHeight',0.001);
-    if isscalar(locs)           % if only one location value, ...
-        indMaxTAP = locs;       % that is artifact peak to align by
-    elseif length(locs) == 2    % if two peaks, ...
-        indMaxTAP = locs(1);    % use earliest peak
-        % [~,indLoc] = min(abs(locs - winStim));    % use peak nearest stim
-        % indMaxTAP = locs(indLoc);
-    else
-        [~,indMaxTAP] = max(rawEMG_TAP{1}(winSearch));  % use max
-    end
-    timesWin = times(winSearch);
-    timeStimStart = timesWin(indMaxTAP);
-    indsStimArtifactR(stR) = find(times == timeStimStart);
+stimTimes = times(indsStimAll(indsNewPulse));
 end
 
-for stL = 1:numStimL                    % for each left leg stimulus, ...
-    winSearch = (indsEMGStimOnsetLAbs(stL) - winStim): ...
-        (indsEMGStimOnsetLAbs(stL) + winStim);
-    winSearch = winSearch(winSearch < length(rawEMG_TAP{2}));
-    [~,locs] = findpeaks(rawEMG_TAP{2}(winSearch),'MinPeakHeight',0.0015);
-    if isscalar(locs)           % if only one location value, ...
-        indMaxTAP = locs;       % that is artifact peak to align by
-    elseif length(locs) == 2    % if two peaks, ...
-        indMaxTAP = locs(1);    % use earliest peak
-        % [~,indLoc] = min(abs(locs - winStim));      % use peak nearest stim
-        % indMaxTAP = locs(indLoc);
-    else
-        [~,indMaxTAP] = max(rawEMG_TAP{2}(winSearch));  % use max
-    end
-    timesWin = times(winSearch);
-    timeStimStart = timesWin(indMaxTAP);
-    indsStimArtifactL(stL) = find(times == timeStimStart);
+function indsStimArtifact = findStimArtifactInds(times,rawEMG, ...
+    stimTimes,winStim,MinPeakHeight)
+% find stimulation artifact indices in EMG signal around stimulation times
+if isempty(rawEMG) || isempty(stimTimes)    % if no EMG or stim data, ...
+    indsStimArtifact = [];                  % return empty array
+    return;
 end
 
-indsStimArtifact = {indsStimArtifactR;indsStimArtifactL};
+period = mean(diff(times));                 % sampling period
+winSamples = round(winStim / period);       % window in samples
+numStim = numel(stimTimes);                 % number of stimuli
+indsStimArtifact = nan(numStim,1);          % initialize array of indices
 
-% TODO: accept plot optional input
-% Hreflex.plotStimArtifactPeaks(times,{EMG_RTAP,EMG_LTAP}, ...
-%     {locsR,locsL},id,trialNum,pathFigs);
+for st = 1:numStim                          % for each stimulus, ...
+    % find EMG data indices corresponding to onset of stim trigger pulse
+    indStim = find(times == stimTimes(st));
+    if isempty(indStim)                     % if no exact match, ...
+        continue;                           % skip to next stimulus
+    end
+    % ensure window does not exceed EMG data in case stim near trial end
+    winSearch = max(1,indStim - winSamples): ...    % search window around
+        min(length(rawEMG),indStim + winSamples);   % stimulation time
+    [~,locs] = findpeaks(rawEMG(winSearch),'MinPeakHeight',MinPeakHeight);
+
+    if isempty(locs)                        % if no peaks detected, ...
+        [~,indMaxTAP] = max(rawEMG(winSearch)); % use maximum value as peak
+    elseif isscalar(locs)                   % if only one peak found, ...
+        indMaxTAP = locs;                   % that is artifact peak align
+    else                                    % otherwise, ...
+        indMaxTAP = locs(1);                % use earliest peak
+    end
+
+    indsStimArtifact(st) = winSearch(indMaxTAP);
+end
 
 end
 
