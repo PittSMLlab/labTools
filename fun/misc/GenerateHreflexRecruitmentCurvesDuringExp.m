@@ -1,4 +1,4 @@
-%% Generate H-Reflex Calibration Recruitment Curves During the Experiment
+%% Generate H-Reflex Calibration Recruitment Curves & Other Figures
 % author: NWB
 % date (started): 05 May 2024
 % purpose: to extract the M-wave and H-wave amplitudes from the H-reflex
@@ -298,12 +298,12 @@ if ~any(hasMG)  % if no medial gastrocnemius muscle data, ...
     error('There is no medial gastrocnemius muscle data present.');
 else            % otherwise, ...
     if sum(hasMG) == 2  % if data from both MG's present, ...
-        EMG_LMG = EMG.Data(:,contains(EMG.labels,'LMG'));
-        EMG_RMG = EMG.Data(:,contains(EMG.labels,'RMG'));
+        EMG_LSOL = EMG.Data(:,contains(EMG.labels,'LSOL'));
+        EMG_RSOL = EMG.Data(:,contains(EMG.labels,'RSOL'));
     elseif contains(EMG.labels{hasMG},'L')  % if left MG only, ...
-        EMG_LMG = EMG.Data(:,contains(EMG.labels,'LMG'));
+        EMG_LSOL = EMG.Data(:,contains(EMG.labels,'LSOL'));
     elseif contains(EMG.labels{hasMG},'R')  % if right MG only, ...
-        EMG_RMG = EMG.Data(:,contains(EMG.labels,'RMG'));
+        EMG_RSOL = EMG.Data(:,contains(EMG.labels,'RSOL'));
     else                % otherwise, ...
         % throw an error
     end
@@ -327,7 +327,7 @@ else            % otherwise, ...
 end
 
 % if missing any of the EMG signals used below, ...
-if any(isempty([EMG_LTAP EMG_RTAP EMG_LMG EMG_RMG]))
+if any(isempty([EMG_LTAP EMG_RTAP EMG_LSOL EMG_RSOL]))
     % TODO: update handling of one or more missing signals
     error('Missing one or more EMG signals.');
 end
@@ -388,10 +388,10 @@ end
 %% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
 if hasForces && shouldUseStimTrig
     [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
-        {EMG_RMG;EMG_LMG},{GRFRFz;GRFLFz});
+        {EMG_RSOL;EMG_LSOL},{GRFRFz;GRFLFz});
 else
     [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
-        {EMG_RMG;EMG_LMG},cell(2,1));
+        {EMG_RSOL;EMG_LSOL},cell(2,1));
 end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
@@ -415,7 +415,7 @@ end
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-[amps,durs] = Hreflex.computeAmplitudes({EMG_RMG;EMG_LMG},{locsR;locsL});
+[amps,durs] = Hreflex.computeAmplitudes({EMG_RSOL;EMG_LSOL},{locsR;locsL});
 % convert wave amplitudes from Volts to Millivolts
 amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
 
