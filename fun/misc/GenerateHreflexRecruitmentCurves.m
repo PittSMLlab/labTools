@@ -438,7 +438,7 @@ ampsStimLU = unique(ampsStimL);
 % based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
 % Journal of Neuroscience Methods, 2007)
 % fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
-avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
+avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
 % TODO: alternate approach would be to convert the mean H-wave amplitudes
 % to integer "frequencies" for each stim amplitude and fit a normal dist.
 % pdR = fitdist(ampsStimRU','Normal', ...
@@ -446,13 +446,13 @@ avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitmissing'),ampsSt
 % initialize coefficients
 % coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
 % coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
-avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitmissing'),ampsStimRU);
-avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
+avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
+avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
 % pdL = fitdist(ampsStimLU','Normal', ...
 %     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
 % coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
 % coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
-avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitmissing'),ampsStimLU);
+avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
 % TODO: verify that these values will always be sorted in ascending order
 % and, if not, sort them
 
