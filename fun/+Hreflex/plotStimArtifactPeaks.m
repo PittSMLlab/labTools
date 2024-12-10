@@ -19,109 +19,101 @@ function fig = plotStimArtifactPeaks(times,rawEMG_TAP,indsPeaks,id, ...
 %   thresh: OPTIONAL input for the threshold used to determine peaks
 %   path: OPTIONAL input for saving figures (not saved if not provided)
 % output:
-%   fig: handle object to the figure generated
+%   fig: handle object to the figure generated for further customization
 
 narginchk(5,7); % verify correct number of input arguments
 
-% TODO: consider converting to a date object before performing the
-% comparison, although string comparison seems to work just fine
 if string(version('-release')) < "2019b" % if version older than 2019b, ...
-    error('MATLAB version is not compatible with ''tiledlayout''.');
+    error(['MATLAB version must support ''tiledlayout'' (R2019b or ' ...
+        'later).']);
+end
+
+% TODO: add check of correct dimensions for cell arrays
+if isempty(times) || all(cellfun(@isempty,rawEMG_TAP)) || ...
+        all(cellfun(@isempty,indsPeaks))    % validate input arguments
+    error(['There is critical data missing for plotting the EMG ' ...
+        'signal with detected artifact peaks.']);
 end
 
 numOptArgs = length(varargin);
 switch numOptArgs
     case 0
-        thresh = nan;   % default to Not-a-Number
-        path = '';      % default to empty
-    case 1  % one optional argument provided
+        thresh = nan;               % default to Not-a-Number
+        path = '';                  % default to empty
+    case 1                          % one optional argument provided
         if isnumeric(varargin{1})   % if a number, ...
             thresh = varargin{1};   % it is the threshold
             path = '';
         else                        % otherwise, ...
-            path = varargin{1};     % is is the file saving path
-            thresh = nan;
+            thresh = NaN;
+            path = varargin{1};     % it is the file saving path
         end
-    case 2  % both optional arguments provided
-        thresh = varargin{1};   % first always stim artifact threshold
-        path = varargin{2};     % second always file saving path
+    case 2                          % both optional arguments provided
+        thresh = varargin{1};       % first always stim artifact threshold
+        path = varargin{2};         % second always file saving path
+    otherwise
+        error('Too many optional arguments. Provide at most 2.');
+end
+
+numLegs = sum(cellfun(@(x) ~isempty(x),rawEMG_TAP));% number of legs
+if numLegs > 2                                      % if more than 2, ...
+    error('Input EMG signals must be limited to 2 legs (right and left).');
 end
 
 % set the figure to be full screen
 fig = figure('Units','normalized','OuterPosition',[0 0 1 1]);
+tl = tiledlayout(numLegs,1,'TileSpacing','tight');
 
-numLegs = sum(cellfun(@(x) ~isempty(x),rawEMG_TAP)); % number of legs
-if numLegs > 2                  % if cell array input incorrect length, ...
-    error('There must not be more than two input EMG signals.');
-elseif numLegs == 2             % if right and left TAP data present, ...
-    if any(cellfun(@isempty,indsPeaks)) % if missing peak index data, ...
-        error(['Missing stimulation artifact peak index data for one ' ...
-            'or both legs.']);
+labelsLegs = {'Right TAP','Left TAP'};
+for leg = 1:2                       % for each leg, ...
+    if ~isempty(rawEMG_TAP{leg})    % if EMG data is available, ...
+        nexttile;                   % plot signal with detected peaks
+        plotSignalWithPeaks(times, rawEMG_TAP{leg}, indsPeaks{leg}, thresh);
+        title(labelsLegs(leg));
     end
-    tl = tiledlayout(2,1,'TileSpacing','tight');
-    if ~isnan(thresh)           % if threshold is input argument, ...
-        plotSignalWithPeaks(times,rawEMG_TAP{1},indsPeaks{1},thresh);
-        title('Right TAP');
-        plotSignalWithPeaks(times,rawEMG_TAP{2},indsPeaks{2},thresh);
-        title('Left TAP');
-    else                        % otherwise, ...
-        plotSignalWithPeaks(times,rawEMG_TAP{1},indsPeaks{1});
-        title('Right TAP');
-        plotSignalWithPeaks(times,rawEMG_TAP{2},indsPeaks{2});
-        title('Left TAP');
-    end
-elseif numLegs == 1             % if TAP data from only one leg, ...
-    indLeg = find(cellfun(@(x) ~isempty(x),rawEMG_TAP));    % leg index
-    if isempty(indsPeaks{indLeg})
-        error('Missing stimulation artifact peak index data.');
-    end
-    tl = tiledlayout(1,1,'TileSpacing','tight');
-    if indLeg == 1              % if right leg, ...
-        plotSignalWithPeaks(times,rawEMG_TAP{indLeg},indsPeaks{indLeg});
-        title('Right TAP');
-    elseif indLeg == 2          % if left leg, ...
-        plotSignalWithPeaks(times,rawEMG_TAP{indLeg},indsPeaks{indLeg});
-        title('Left TAP');
-    end
-else                            % otherwise, ...
-    error('There are no input EMG signals.');   % no EMG data present
 end
 
 % TODO: should y-axis limits be the same in case of both legs present?
 % TODO: consider accepting labels as optional input argument
-xlabel(tl,'time (s)');
+% global labels and title
+xlabel(tl,'Time (s)');
 ylabel(tl,'Raw EMG (V)');
-title(tl,[id ' - Trial' trialNum ' - Stimulation Artifact Peak Finding']);
+title(tl,sprintf( ...
+    '%s - Trial %s - Stimulation Artifact Peak Finding',id,trialNum));
 
 if ~isempty(path)   % if figure saving path provided as input argument, ...
-    % save figure
-    saveas(gcf,[path id '_StimArtifactPeakFinding_Trial' trialNum '.png']);
-    saveas(gcf,[path id '_StimArtifactPeakFinding_Trial' trialNum '.fig']);
+    saveFigure(fig,path,id,trialNum);
 end
 
 end
 
 function plotSignalWithPeaks(x,y,inds,thresh)
-
+% plot EMG signals with detected peaks
 % TODO: consider moving tile title into this helper function
-narginchk(3,4);                         % only fourth input optional
 
-nexttile;   % advance to the next tile in tiled layout figure
 hold on;
 % below code is copied from MATLAB 'findpeaks' function to replicate
 hLine = plot(x,y,'Tag','Signal');       % plot signal line
 hAxes = ancestor(hLine,'Axes');
 grid on;                                % turn on grid
-if length(y) > 1
+if numel(y) > 1
     hAxes.XLim = hLine.XData([1 end]);  % restrict x-axis limits
 end
 color = get(hLine,'Color');             % use the color of the line
 line(hLine.XData(inds),y(inds),'Parent',hAxes,'Marker','v', ...
     'MarkerFaceColor',color,'LineStyle','none','Color',color,'tag','Peak');
-hold off;
-if nargin == 4  % if there is a threshold input, ...
+if ~isnan(thresh)                       % if threshold is not NaN, ...
     yline(thresh,'r','Peak Finding Threshold');     % plot it
 end
+hold off;
 
+end
+
+function saveFigure(fig,path,id,trialNum)
+% save figure in PNG and FIG formats
+fileBase = fullfile(path, ...
+    sprintf('%s_StimArtifactPeakFinding_Trial%s',id,trialNum));
+saveas(fig,[fileBase '.png']);
+saveas(fig,[fileBase '.fig']);
 end
 
