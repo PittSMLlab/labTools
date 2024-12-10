@@ -305,59 +305,27 @@ end
 
 %% 7. Define H-Reflex Calibration Trial Parameters
 % NOTE: should always be same across trials and should be same for forces
-period = EMG.sampPeriod;    % sampling period
-threshSamps = threshStimTimeSep / period;  % convert to samples
+period = EMG.sampPeriod;                    % sampling period
+threshSamps = threshStimTimeSep / period;   % convert to samples
 
 %% 8. Identify Locations of the Stimulation Artifacts
-% extract relevant EMG data
-% MG is the muscle used for the H-reflex
-hasMG = contains(EMG.labels,'MG');
-if ~any(hasMG)  % if no medial gastrocnemius muscle data, ...
-    error('There is no medial gastrocnemius muscle data present.');
-else            % otherwise, ...
-    if sum(hasMG) == 2  % if data from both MG's present, ...
-        EMG_LSOL = EMG.Data(:,contains(EMG.labels,'LSOL'));
-        EMG_RSOL = EMG.Data(:,contains(EMG.labels,'RSOL'));
-    elseif contains(EMG.labels{hasMG},'L')  % if left MG only, ...
-        EMG_LSOL = EMG.Data(:,contains(EMG.labels,'LSOL'));
-    elseif contains(EMG.labels{hasMG},'R')  % if right MG only, ...
-        EMG_RSOL = EMG.Data(:,contains(EMG.labels,'RSOL'));
-    else                % otherwise, ...
-        % throw an error
-    end
-end
-
-% use proximal TA to determine stim artifact time
-hasTAP = contains(EMG.labels,'TAP');
-if ~any(hasTAP) % if no proximal tibialis anterior muscle data, ...
-    error('There is no tibialis anterior muscle data present.');
-else            % otherwise, ...
-    if sum(hasTAP) == 2  % if data from both TAP's present, ...
-        EMG_LTAP = EMG.Data(:,contains(EMG.labels,'LTAP'));
-        EMG_RTAP = EMG.Data(:,contains(EMG.labels,'RTAP'));
-    elseif contains(EMG.labels{hasTAP},'L')  % if left TAP only, ...
-        EMG_LTAP = EMG.Data(:,contains(EMG.labels,'LTAP'));
-    elseif contains(EMG.labels{hasTAP},'R')  % if right TAP only, ...
-        EMG_RTAP = EMG.Data(:,contains(EMG.labels,'RTAP'));
-    else                % otherwise, ...
-        % throw an error
-    end
-end
-
-% extract all stimulation trigger data for each leg
 % TODO: update to work in case of only one leg
-stimTrigR = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-    'right','IgnoreCase',true));
-stimTrigL = HreflexStimPin.Data(:,contains(HreflexStimPin.labels, ...
-    'left','IgnoreCase',true));
+% extract relevant EMG data
+[EMG_RTAP,times] = EMG.getDataAsVector('RTAP'); % time array for plotting
+EMG_LTAP = EMG.getDataAsVector('LTAP'); % TA proximal is for stim artifact
+EMG_RH = EMG.getDataAsVector('RSOL');
+EMG_LH = EMG.getDataAsVector('LSOL');   % H-reflex muscle (usually Soleus)
 
 % if missing any of the EMG signals used below, ...
-if any(isempty([EMG_LTAP EMG_RTAP EMG_LSOL EMG_RSOL]))
-    % TODO: update handling of one or more missing signals
+if any(cellfun(@isempty,{EMG_RTAP,EMG_LTAP,EMG_RH,EMG_LH}))
     error('Missing one or more EMG signals.');
 end
 
-times = EMG.Time;   % if want to plot, can use the time array
+% extract all stimulation trigger data for each leg
+stimTrigR = HreflexStimPin.getDataAsVector( ...
+    'Stimulator_Trigger_Sync_Right_Stimulator');
+stimTrigL = HreflexStimPin.getDataAsVector( ...
+    'Stimulator_Trigger_Sync_Left__Stimulator');
 
 % TODO: implement check for if forces should be used in case of standing on
 % the treadmill but not walking during calibration
@@ -366,8 +334,11 @@ times = EMG.Time;   % if want to plot, can use the time array
 % if forces are present and useful to examine (i.e., walking trial), ...
 if hasForces && shouldUseStimTrig
     % extract Fz data from TM force plates 1 & 2
-    GRFRFz = GRF.Data(:,contains(GRF.labels,'fz2','IgnoreCase',true));
-    GRFLFz = GRF.Data(:,contains(GRF.labels,'fz1','IgnoreCase',true));
+    GRFRFz = GRF.getDataAsVector('Force_Fz2');
+    GRFLFz = GRF.getDataAsVector('Force_Fz1');
+else                % otherwise, ...
+    GRFRFz = [];    % create empty arrays
+    GRFLFz = [];
 end
 
 % NOTE: it does not work to use stim trigger pulse to retrieve peak times
@@ -381,7 +352,8 @@ if shouldUseStimTrig && hasStimTrig
     locsR = indsStimArtifact{1};
     locsL = indsStimArtifact{2};
 
-    if (numStimR ~= length(locsR)) || (numStimL ~= length(locsL))
+    % validate the number of detected stimulation triggers
+    if (numStimR ~= numel(locsR)) || (numStimL ~= numel(locsL))
         error(['The number of stimulation trigger pulses does not ' ...
             'match the number of input stimulation amplitudes.']);
     end
@@ -392,6 +364,7 @@ else
     warning(['No stimulation trigger signal being used. Artifact ' ...
         'identification may not be as accurate.']);
 
+    % detect stimulation artifact locations without using stim triggers
     [~,locsR] = findpeaks(EMG_RTAP,'NPeaks',numStimR, ...
         'MinPeakHeight',threshStimArtifact,'MinPeakDistance',threshSamps);
     [~,locsL] = findpeaks(EMG_LTAP,'NPeaks',numStimL, ...
@@ -402,22 +375,15 @@ else
 end
 
 % ask user if would like to continue after verifying artifact detection
-shouldCont = inputdlg({['Would you like to continue the script (i.e., ' ...
-    'was artifact detection accurate, ''1'' = true, ''0'' = false)?']}, ...
-    '',[1 80],{'1'});
-shouldCont = logical(str2double(shouldCont{1}));
-if ~shouldCont  % if should not continue with the script, ...
-    return;     % return from script so user can rerun artifact detection
+shouldCont = questdlg('Was stimulation artifact detection accurate?', ...
+    'Continue Script','Yes','No','Yes');
+if strcmp(shouldCont,'No')      % if should not continue script, ...
+    return;                     % stop script execution for adjustments
 end
 
 %% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
-if hasForces && shouldUseStimTrig
-    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
-        {EMG_RSOL;EMG_LSOL},{GRFRFz;GRFLFz});
-else
-    [snippets,timesSnippet] = Hreflex.extractSnippets({locsR;locsL}, ...
-        {EMG_RSOL;EMG_LSOL},cell(2,1));
-end
+[snippets,timesSnippet] = Hreflex.extractSnippets( ...
+    {locsR;locsL},{EMG_RH;EMG_LH},{GRFRFz;GRFLFz});
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
 % TODO: add stim intensity array input to color snippets by amplitude
@@ -440,7 +406,7 @@ end
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance
-[amps,durs] = Hreflex.computeAmplitudes({EMG_RSOL;EMG_LSOL},{locsR;locsL});
+[amps,durs] = Hreflex.computeAmplitudes({EMG_RH;EMG_LH},{locsR;locsL});
 % convert wave amplitudes from Volts to Millivolts
 amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
 
