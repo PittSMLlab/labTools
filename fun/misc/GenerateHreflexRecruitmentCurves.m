@@ -387,22 +387,13 @@ end
 
 %% 10.1 Plot All Snippets for Each Leg Together in One Figure
 % TODO: add stim intensity array input to color snippets by amplitude
-% if force data present and should use the stimulation trigger signal to
-% localize the artifact peaks (using as proxy for walking trial), ...
-if hasForces && shouldUseStimTrig
-    Hreflex.plotSnippets(timesSnippet,snippets,{'Force (N)', ...
-        'Force (N)','MG Raw EMG (V)','MG Raw EMG (V)'}, ...
-        {'Right & Left Fz - Right Stim','Left & Right Fz - Left Stim', ...
-        'Right MG','Left MG'},id,trialNum,pathFigs);
-else        % otherwise, do not plot the forces
-    Hreflex.plotSnippets(timesSnippet,snippets(:,1),{'Raw EMG (V)', ...
-        'Raw EMG (V)'},{'Right MG','Left MG'},id,trialNum,pathFigs);
-end
+Hreflex.plotSnippets(timesSnippet,snippets,{'Force (N)','Force (N)', ...
+    'Raw EMG (V)','Raw EMG (V)'}, ...
+    {'Right & Left Fz - Right Stim','Left & Right Fz - Left Stim', ...
+    'Right Sol','Left Sol'},id,trialNum,pathFigs);
 
 %% 10.2 Plot Snippets for a Given Amplitude for Each Leg Together
 % TODO: move the finding of unique amplitudes and indices up here
-% TODO: Add dots to show the min and max picked out for each wave to see if
-% first/last points (i.e., if makes sense)
 
 %% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
 % TODO: reject measurements if GRF reveals not in single stance

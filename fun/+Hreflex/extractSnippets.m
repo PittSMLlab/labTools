@@ -14,9 +14,9 @@ function [snippets,timesSnippet] = extractSnippets(indsPeaks,rawEMG,GRFz)
 %   GRFz (optional): 2 x 1 cell array of number of samples x 1 arrays for
 %       right (cell 1) and left (cell 2) treadmill force plate z-axis GRFs
 % output:
-%   snippets: 2 x 3 cell array of number of stimuli x 1 arrays for
-%       right (row 1) and left (row 2) leg H-reflex (col 1), ipsilateral
-%       (col 2) and contralateral (col 3) GRF snippets for later plotting
+%   snippets: 2 x 3 cell array of number of stimuli x number of samples
+%       arrays for right (row 1) and left (row 2) leg H-reflex (col 1),
+%       ipsilateral (col 2) and contralateral (col 3) GRF snippets to plot
 %   timesSnippet: number of samples x 1 array with relative time in seconds
 %       of each snippet (t=0s is stimulation artifact peak alignment time)
 
