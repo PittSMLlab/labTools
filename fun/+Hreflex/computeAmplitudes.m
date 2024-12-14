@@ -1,13 +1,12 @@
-function [amplitudes,durations] = computeAmplitudes(rawEMG_MG, ...
-    indsStimArtifact)
+function [amplitudes,durations] = computeAmplitudes(rawEMG,indsStimArtifact)
 %COMPUTEHREFLEXAMPLITUDES Compute amplitudes of interest from H-reflex
 %   Compute the peak-to-peak amplitudes of the M-wave, H-wave, noise floor,
 % and the mean absolute value (MAV) and root mean square (RMS) of the
 % background EMG (for possible future normalization).
 %
 % input:
-%   rawEMG_MG: 2 x 1 cell array of number of samples x 1 arrays for right
-%       (cell 1) and left (cell 2) leg MG muscle EMG signal (NOTE: if one
+%   rawEMG: 2 x 1 cell array of number of samples x 1 arrays for right
+%       (cell 1) and left (cell 2) leg EMG signal (NOTE: if one
 %       cell is input as empty array, that leg will not be computed)
 %   indsStimArtifact: 2 x 1 cell array of number of stimuli x 1 arrays for
 %       right (cell 1) and left (cell 2) leg stimulus artifact indices for
@@ -21,6 +20,46 @@ function [amplitudes,durations] = computeAmplitudes(rawEMG_MG, ...
 %       (row 1) and left (row 2) leg M-wave (column 1) and H-wave (column
 %       2) durations (i.e., absolute time difference between the minimum
 %       and maximum values) for determining whether a valid wave
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Alternative Approaches
+% If you want to explore alternatives, here are some potential methods:
+% 
+% Peak-to-Peak Ratio Validation:
+% 
+% Compute the peak-to-peak amplitude within the window and compare it to the signal's baseline noise level (e.g., using a window before the stimulus). Discard measurements only if the peak-to-peak amplitude is below a threshold that reflects the noise floor.
+% Weighted Amplitude Computation:
+% 
+% Instead of selecting the peak and trough directly, fit the M-wave or H-wave region to a template or mathematical model (e.g., Gaussian or sigmoid curve) and compute the amplitude as the difference between the fitted maxima and minima.
+% Energy-Based Measure:
+% 
+% Use the root-mean-square (RMS) amplitude of the EMG signal within the M-wave and H-wave windows. This approach is less sensitive to noise-induced spikes and provides a more global representation of the signal energy.
+% Cross-Validation With Expected Waveform Characteristics:
+% 
+% If you have prior knowledge of the typical M-wave or H-wave morphology, you can cross-check your measurements with these expectations. For example:
+% Ensure the peak and trough occur within a physiologically plausible time range.
+% Confirm their relative amplitude aligns with what is typically observed.
+% Cluster Analysis:
+% 
+% Cluster the peak and trough times within the M-wave and H-wave windows across multiple snippets. Discard outliers that fall far from the cluster centroid and compute amplitudes from the remaining valid peaks and troughs.
+% Signal-To-Noise Ratio (SNR) Criterion:
+% 
+% Define a threshold for a valid measurement based on the SNR. For example, if the amplitude of the M-wave or H-wave is more than twice the baseline noise level, consider it valid.
+% Recommended Hybrid Approach
+% Baseline Validation:
+% 
+% Measure the baseline noise level in a pre-stimulation window (e.g., -50 to 0 ms relative to the stimulation artifact).
+% Discard any peak-to-peak amplitudes within the M- or H-wave window that are below a threshold (e.g., 2–3× the baseline noise).
+% Peak and Trough Timing Validation:
+% 
+% Check that the time difference between the detected peak and trough is physiologically reasonable (e.g., within a fixed range of milliseconds).
+% Median Backup:
+% 
+% If the amplitude fails validation due to noise or outliers, compute the EMG amplitude at the median time point of the distribution as a backup measure.
+% Cross-Check with RMS or Energy:
+% 
+% Supplement the peak-to-peak amplitude with RMS or another energy-based metric for a more holistic view of the wave's characteristics.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % TODO:
 %   1. incorporate call to H-reflex snippet extraction here for modularity
@@ -50,7 +89,7 @@ durations = cell(2,2);      % instantiate output wave durations cell array
 
 % if both cells are empty arrays for either input argument, ...
 if all(cellfun(@isempty,indsStimArtifact)) || ...
-        all(cellfun(@isempty,rawEMG_MG))
+        all(cellfun(@isempty,rawEMG))
     warning(['There is data missing necessary to compute the H-reflex ' ...
         'amplitudes.']);
     return;
@@ -59,25 +98,25 @@ end
 % NOTE: should always be same across trials and should be same for forces
 % TODO: make optional input argument
 period = 0.0005;                                    % sampling period
-% M-wave is contained by interval:           4ms -  23ms after stim. art.
-% H-wave is contained by interval:          24ms -  43ms
+% M-wave is contained by interval:           4.5ms -  20ms after stim. art.
+% H-wave is contained by interval:          25  ms -  45ms
 % TODO: is noise window correct? GTO requested between M- & H-waves
 % Noise is contained by interval:           20ms -  25ms
-% Background EMG is contained by interval: -99ms - -50ms (neg. = before)
-indsWindows = [0.004 0.024 0.020 -0.099;
-    0.023 0.049 0.025 -0.050] ./ period; % convert to samples
+% Background EMG is contained by interval: -59ms - -10ms (neg. = before)
+indsWindows = [0.0045 0.025 0.020 -0.059;
+               0.020 0.045 0.025 -0.010] ./ period; % convert to samples
 
 % compute H-reflex amplitudes for each leg
-[amplitudes(1,:),durations(1,:)] = computeAmpsOneLeg(rawEMG_MG{1}, ...
+[amplitudes(1,:),durations(1,:)] = computeAmpsOneLeg(rawEMG{1}, ...
     indsStimArtifact{1},indsWindows,period);
-[amplitudes(2,:),durations(2,:)] = computeAmpsOneLeg(rawEMG_MG{2}, ...
+[amplitudes(2,:),durations(2,:)] = computeAmpsOneLeg(rawEMG{2}, ...
     indsStimArtifact{2},indsWindows,period);
 
 end
 
 function [amps,durs] = computeAmpsOneLeg(rawEMG,indsStimArt,indsWinsRel,per)
 %COMPUTEAMPSONESTIM Computes H-reflex amplitudes for a single leg
-%   This function accepts the raw EMG data (from the MG muscle of a single
+%   This function accepts the raw EMG data (from the MG, LG, or SOL) muscle of a single
 % leg) as input along with the stimulation artifact indices for alignment
 % and computes the H-reflex amplitudes for the M-wave, H-wave, noise, and
 % background EMG (MAV and RMS) for one leg. The purpose of this helper
