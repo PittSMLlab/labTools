@@ -1,8 +1,7 @@
-function [amplitudes,durations] = computeAmplitudes(rawEMG,indsStimArtifact)
+function amplitudes = computeAmplitudes(rawEMG,indsStimArtifact)
 %COMPUTEHREFLEXAMPLITUDES Compute amplitudes of interest from H-reflex
-%   Compute the peak-to-peak amplitudes of the M-wave, H-wave, noise floor,
-% and the mean absolute value (MAV) and root mean square (RMS) of the
-% background EMG (for possible future normalization).
+%   Compute the peak-to-peak amplitudes of the M-wave, H-wave, and noise
+% floor.
 %
 % input:
 %   rawEMG: 2 x 1 cell array of number of samples x 1 arrays for right
@@ -14,12 +13,7 @@ function [amplitudes,durations] = computeAmplitudes(rawEMG,indsStimArtifact)
 % output:
 %   amplitudes: 2 x 5 cell array of number of stimuli x 1 arrays for right
 %       (row 1) and left (row 2) leg H-reflex amplitudes: M-wave (column
-%       1), H-wave (column 2), noise (column 3), background EMG MAV (column
-%       4), and background EMG RMS (column 5)
-%   durations: 2 x 2 cell array of number of stimuli x 1 arrays for right
-%       (row 1) and left (row 2) leg M-wave (column 1) and H-wave (column
-%       2) durations (i.e., absolute time difference between the minimum
-%       and maximum values) for determining whether a valid wave
+%       1), H-wave (column 2), noise (column 3)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alternative Approaches
@@ -84,8 +78,7 @@ function [amplitudes,durations] = computeAmplitudes(rawEMG,indsStimArtifact)
 %   broader than it currently is)
 
 narginchk(2,2);             % verify correct number of input arguments
-amplitudes = cell(2,5);     % instantiate output amplitudes cell array
-durations = cell(2,2);      % instantiate output wave durations cell array
+amplitudes = cell(2,3);     % instantiate output amplitudes cell array
 
 % if both cells are empty arrays for either input argument, ...
 if all(cellfun(@isempty,indsStimArtifact)) || ...
@@ -106,21 +99,21 @@ indsWindows = [0.0045 0.025 0.020;
     0.020 0.045 0.025] ./ period; % convert to samples
 
 % compute H-reflex amplitudes for each leg
-[amplitudes(1,:),durations(1,:)] = computeAmpsOneLeg(rawEMG{1}, ...
-    indsStimArtifact{1},indsWindows,period);
-[amplitudes(2,:),durations(2,:)] = computeAmpsOneLeg(rawEMG{2}, ...
-    indsStimArtifact{2},indsWindows,period);
+amplitudes(1,:) = computeAmpsOneLeg(rawEMG{1},indsStimArtifact{1}, ...
+    indsWindows,period);
+amplitudes(2,:) = computeAmpsOneLeg(rawEMG{2},indsStimArtifact{2}, ...
+    indsWindows,period);
 
 end
 
-function [amps,durs] = computeAmpsOneLeg(rawEMG,indsStimArt,indsWinsRel,per)
+function amps = computeAmpsOneLeg(rawEMG,indsStimArt,indsWinsRel,per)
 %COMPUTEAMPSONESTIM Computes H-reflex amplitudes for a single leg
 %   This function accepts the raw EMG data (from the MG, LG, or SOL) muscle of a single
 % leg) as input along with the stimulation artifact indices for alignment
-% and computes the H-reflex amplitudes for the M-wave, H-wave, noise, and
-% background EMG (MAV and RMS) for one leg. The purpose of this helper
-% function is to consolidate the H-reflex computations rather than
-% duplicating the same code across both legs.
+% and computes the H-reflex amplitudes for the M-wave, H-wave, and noise
+% for one leg. The purpose of this helper function is to consolidate the
+% H-reflex computations rather than duplicating the same code across both
+% legs.
 %
 % input(s):
 %   rawEMG: number of samples x 1 array of right or left leg MG muscle EMG
@@ -133,12 +126,7 @@ function [amps,durs] = computeAmpsOneLeg(rawEMG,indsStimArt,indsWinsRel,per)
 % output(s):
 %   amps: 1 x 5 cell array of number of stimuli x 1 arrays for right or
 %       left leg H-reflex amplitudes: M-wave (column 1), H-wave (column 2),
-%       noise (column 3), background EMG MAV (column 4), and background EMG
-%       RMS (column 5)
-%   durs: 1 x 2 cell array of number of stimuli x 1 arrays for right or
-%       left leg M-wave (column 1) and H-wave (column 2) durations (i.e.,
-%       absolute time difference between the minimum and maximum values)
-%       for determining whether a valid wave
+%       noise (column 3)
 
 narginchk(4,4);                 % verify correct number of input arguments
 
@@ -153,11 +141,9 @@ threshDur = 0.010;              % 10ms is longest valid M/H-wave duration
 numWins = size(indsWinsRel,2);  % number of windows to extract data from
 % TODO: add inputs checks (e.g., indStim not outside rawEMG array bounds)
 
-amps = cell(1,5);           % instantiate output amplitudes cell array
-durs = cell(1,2);           % instantiate output wave durations cell array
-% initialize output amplitudes and durations arrays
+amps = cell(1,3);           % instantiate output amplitudes cell array
+% initialize output amplitudes array
 amps = cellfun(@(x) nan(numStim,1),amps,'UniformOutput',false);
-durs = cellfun(@(x) nan(numStim,1),durs,'UniformOutput',false);
 
 if isempty(rawEMG)              % if no EMG data provided, ...
     warning(['There is no EMG data provided from which to extract the ' ...
@@ -185,7 +171,6 @@ for st = 1:numStim                      % for each stimulus, ...
         % addition to check that min or max are not early or late in window
         switch win
             case {1,2}                  % M-wave or H-wave
-                durs{win}(st) = per * abs(indMax - indMin);
                 % TODO: improve sample rejection (want to be liberal in
                 % keeping samples unless good reason to reject and even
                 % then may want the noisy value as long as it's not
@@ -194,7 +179,7 @@ for st = 1:numStim                      % for each stimulus, ...
                 % on the location of the peaks alone since the H-wave can
                 % vary in latency based on age, height, and other factors
                 % if wave duration is less than threshold, ...
-                if durs{win}(st) <= threshDur
+                if per * abs(indMax - indMin) <= threshDur
                     amps{win}(st) = valMax - valMin;
                 end
             case 3                      % noise window
