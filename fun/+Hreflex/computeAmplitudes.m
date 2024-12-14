@@ -24,40 +24,40 @@ function [amplitudes,durations] = computeAmplitudes(rawEMG,indsStimArtifact)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alternative Approaches
 % If you want to explore alternatives, here are some potential methods:
-% 
+%
 % Peak-to-Peak Ratio Validation:
-% 
+%
 % Compute the peak-to-peak amplitude within the window and compare it to the signal's baseline noise level (e.g., using a window before the stimulus). Discard measurements only if the peak-to-peak amplitude is below a threshold that reflects the noise floor.
 % Weighted Amplitude Computation:
-% 
+%
 % Instead of selecting the peak and trough directly, fit the M-wave or H-wave region to a template or mathematical model (e.g., Gaussian or sigmoid curve) and compute the amplitude as the difference between the fitted maxima and minima.
 % Energy-Based Measure:
-% 
+%
 % Use the root-mean-square (RMS) amplitude of the EMG signal within the M-wave and H-wave windows. This approach is less sensitive to noise-induced spikes and provides a more global representation of the signal energy.
 % Cross-Validation With Expected Waveform Characteristics:
-% 
+%
 % If you have prior knowledge of the typical M-wave or H-wave morphology, you can cross-check your measurements with these expectations. For example:
 % Ensure the peak and trough occur within a physiologically plausible time range.
 % Confirm their relative amplitude aligns with what is typically observed.
 % Cluster Analysis:
-% 
+%
 % Cluster the peak and trough times within the M-wave and H-wave windows across multiple snippets. Discard outliers that fall far from the cluster centroid and compute amplitudes from the remaining valid peaks and troughs.
 % Signal-To-Noise Ratio (SNR) Criterion:
-% 
+%
 % Define a threshold for a valid measurement based on the SNR. For example, if the amplitude of the M-wave or H-wave is more than twice the baseline noise level, consider it valid.
 % Recommended Hybrid Approach
 % Baseline Validation:
-% 
+%
 % Measure the baseline noise level in a pre-stimulation window (e.g., -50 to 0 ms relative to the stimulation artifact).
 % Discard any peak-to-peak amplitudes within the M- or H-wave window that are below a threshold (e.g., 2–3× the baseline noise).
 % Peak and Trough Timing Validation:
-% 
+%
 % Check that the time difference between the detected peak and trough is physiologically reasonable (e.g., within a fixed range of milliseconds).
 % Median Backup:
-% 
+%
 % If the amplitude fails validation due to noise or outliers, compute the EMG amplitude at the median time point of the distribution as a backup measure.
 % Cross-Check with RMS or Energy:
-% 
+%
 % Supplement the peak-to-peak amplitude with RMS or another energy-based metric for a more holistic view of the wave's characteristics.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -102,9 +102,8 @@ period = 0.0005;                                    % sampling period
 % H-wave is contained by interval:          25  ms -  45ms
 % TODO: is noise window correct? GTO requested between M- & H-waves
 % Noise is contained by interval:           20ms -  25ms
-% Background EMG is contained by interval: -59ms - -10ms (neg. = before)
-indsWindows = [0.0045 0.025 0.020 -0.059;
-               0.020 0.045 0.025 -0.010] ./ period; % convert to samples
+indsWindows = [0.0045 0.025 0.020;
+    0.020 0.045 0.025] ./ period; % convert to samples
 
 % compute H-reflex amplitudes for each leg
 [amplitudes(1,:),durations(1,:)] = computeAmpsOneLeg(rawEMG{1}, ...
@@ -197,28 +196,9 @@ for st = 1:numStim                      % for each stimulus, ...
                 % if wave duration is less than threshold, ...
                 if durs{win}(st) <= threshDur
                     amps{win}(st) = valMax - valMin;
-                else                    % otherwise, ...
-                    % leave as NaN
                 end
-                % if min or max index not w/in 1st or last two samps, ...
-                % numPnts = length(winEMG);   % number of points in window
-                % if ~(any(indMin == [1 2]) || any(indMax == [1 2]) || ...
-                %         any(indMin == [numPnts-1 numPnts]) || ...
-                %         any(indMax == [numPnts-1 numPnts]))
-                %     % compute peak-to-peak voltage
-                %     amps(win) = valMax - valMin;
-                % else                    % otherwise, ...
-                %     % leave as NaN (previously set to noise floor thresh.)
-                % end
             case 3                      % noise window
                 amps{win}(st) = valMax - valMin;
-            case 4                      % background EMG window
-                % compute mean absolute value (MAV) of background EMG wind.
-                amps{win}(st) = mean(abs(winEMG));
-                % compute root mean square (RMS) of background EMG window
-                amps{win+1}(st) = sqrt(mean(winEMG.^2));
-            otherwise
-                % not possible to enter this statement
         end
     end
 end
