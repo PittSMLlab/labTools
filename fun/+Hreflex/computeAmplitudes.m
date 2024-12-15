@@ -1,16 +1,25 @@
-function [amplitudes,rms,usedMedMinMaxInds] = computeAmplitudes(snippets)
-%COMPUTEAMPLITUDES Compute amplitudes of interest from H-reflex snippets
-%   Compute the peak-to-peak amplitudes of the M-wave, H-wave, and noise
-% floor.
+function [amplitudes,rms,usedMedMinMaxInds] = ...
+    computeAmplitudes(snippets,varargin)
+%COMPUTEAMPLITUDES Compute amplitudes of H-reflex components from EMG data
+%   Compute the peak-to-peak amplitudes and RMS values of the M-wave,
+% H-wave, and noise floor from EMG signal snippets for both legs.
 %
 % input:
 %   snippets: 2 x 1 cell array of number of stimuli x number of samples
-%       arrays for right (cell 1) and left (cell 2) leg EMG signal (NOTE:
-%       if one cell is input as empty array, that leg will not be computed)
+%       arrays for right (cell 1) and left (cell 2) leg EMG signal
+%   varargin: (optional)
+%     'WindowDefinitions': 3 x 2 array Time (s) for M-, H-wave, and noise
+%       intervals as [startM endM; startH endH; startNoise endNoise].
+%       Default: [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3].
+%     'SamplingPeriod': scalar Time (s) between samples. Default: 0.0005 s.
+%
 % output:
 %   amplitudes: 2 x 3 cell array of number of stimuli x 1 arrays for right
 %       (row 1) and left (row 2) leg H-reflex amplitudes: M-wave (column
 %       1), H-wave (column 2), noise (column 3)
+%   rms: 2 x 3 cell array of RMS values for each wave.
+%   usedMedMinMaxInds: 2 x 2 cell array indicating stimuli with outlier
+%       durations and where median indices were used.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Alternative Approaches
@@ -39,39 +48,37 @@ function [amplitudes,rms,usedMedMinMaxInds] = computeAmplitudes(snippets)
 %   based on the H-reflex data (this may allow the noise window to be
 %   broader than it currently is)
 
-narginchk(1,1);                     % verify correct number of input args
-if all(cellfun(@isempty,snippets))  % if no input snippet data, ...
-    warning('There is no data to compute the H-reflex amplitudes.');
-    return;
-end
+p = inputParser;                    % parse optional input arguments
+% M-wave is contained by interval:  4.5ms - 20ms after stimulation artifact
+% H-wave is contained by interval: 25  ms - 45ms
+% Noise is contained by interval:  20  ms - 25ms
+% TODO: is noise window correct? GTO requested between M- and H-wave
+addParameter(p,'WindowDefinitions', ...
+    [4.5e-3 20e-3; 25e-3 45e-3; 20e-3 25e-3]);
+% NOTE: should always be same across trials and should be same for forces
+addParameter(p,'SamplingPeriod',0.0005);
+parse(p,varargin{:});
+windowDefs = p.Results.WindowDefinitions;
+period = p.Results.SamplingPeriod;
 
 amplitudes = cell(2,3);             % instantiate amplitudes cell array
 rms = cell(2,3);                    % instantiate output RMS cell array
 usedMedMinMaxInds = cell(2,2);      % used averaged peak-trough method?
 
-% NOTE: should always be same across trials and should be same for forces
-% TODO: make optional input argument?
-period = 0.0005;                    % sampling period
-% M-wave is contained by interval:           4.5ms -  20ms after stim. art.
-% H-wave is contained by interval:          25  ms -  45ms
-% TODO: is noise window correct? GTO requested between M- & H-waves
-% Noise is contained by interval:           20ms   -  25ms
-indsWindows = [0.0045 0.025 0.020;
-    0.020 0.045 0.025] ./ period;   % convert to samples
-indsWindows = indsWindows + 11;     % offset since snippet starts at -5ms
+% convert window definitions from time to sample indices
+indsWindows = round(windowDefs ./ period) + 11;     % offset for -5ms start
 
 for leg = 1:2                       % for each leg, ...
     snips = snippets{leg,1};        % extract EMG snippets for current leg
-    numStim = size(snips,1);        % number of stimuli for trial
     if isempty(snips)               % if no snippets for current leg, ...
         warning('No snippets provided for leg %d.',leg);
         continue;
     end
 
-    % extract M- and H-wave windows and noise window
-    winsMwave = snips(:,indsWindows(1,1):indsWindows(2,1));
-    winsHwave = snips(:,indsWindows(1,2):indsWindows(2,2));
-    winsNoise = snips(:,indsWindows(1,3):indsWindows(2,3));
+    % extract M-wave, H-wave, and noise windows
+    winsMwave = snips(:,indsWindows(1,1):indsWindows(1,2));
+    winsHwave = snips(:,indsWindows(2,1):indsWindows(2,2));
+    winsNoise = snips(:,indsWindows(3,1):indsWindows(3,2));
 
     [amplitudes{leg,1},usedMedMinMaxInds{leg,1}] = ...
         computeWaveAmplitudes(winsMwave);       % M-wave amplitudes
