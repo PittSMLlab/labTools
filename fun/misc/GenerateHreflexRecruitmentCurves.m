@@ -381,55 +381,51 @@ if strcmp(shouldCont,'No')      % if should not continue script, ...
     return;                     % stop script execution for adjustments
 end
 
-%% 9. Plot All Stimuli to Verify the Waveforms & Timing (Via GRFs)
-[snippets,timesSnippet] = Hreflex.extractSnippets( ...
-    {locsR;locsL},{EMG_RH;EMG_LH},{GRFRFz;GRFLFz});
+%% 9. Extract & Plot All Snippets to Verify Waveforms & Timing (Via GRFs)
+[snippets,timesSnippet] = Hreflex.extractSnippets( ...  % extract EMG and
+    {locsR;locsL},{EMG_RH;EMG_LH},{GRFRFz;GRFLFz});     % GRF snippets
 
-%% 10.1 Plot All Snippets for Each Leg Together in One Figure
 % TODO: add stim intensity array input to color snippets by amplitude
-Hreflex.plotSnippets(timesSnippet,snippets,{'Force (N)','Force (N)', ...
-    'Raw EMG (V)','Raw EMG (V)'}, ...
-    {'Right & Left Fz - Right Stim','Left & Right Fz - Left Stim', ...
-    'Right Sol','Left Sol'},id,trialNum,pathFigs);
-
-%% 10.2 Plot Snippets for a Given Amplitude for Each Leg Together
 % TODO: move the finding of unique amplitudes and indices up here
+% TODO: plot snippets for a given amplitude for each leg together
+tileTitles = {'Right & Left Fz - Right Stim', ...
+    'Left & Right Fz - Left Stim','Right Sol','Left Sol'};
+yLabels = {'Force (N)','Force (N)','Raw EMG (V)','Raw EMG (V)'};
+Hreflex.plotSnippets(timesSnippet,snippets,yLabels,tileTitles, ...
+    id,trialNum,pathFigs);      % plot all snippets for visual verification
 
-%% 11. Compute M-wave & H-wave Amplitude (assuming waveforms are correct)
+%% 10. Compute M- & H-wave Amplitudes
 % TODO: reject measurements if GRF reveals not in single stance
-[amps,durs] = Hreflex.computeAmplitudes({EMG_RH;EMG_LH},{locsR;locsL});
-% convert wave amplitudes from Volts to Millivolts
-amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
+amps = Hreflex.computeAmplitudes(snippets(:,1));        % EMG snippets only
+amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);% convert V to mV
 
-ampsMwaveR = amps{1,1};
+ampsMwaveR = amps{1,1}; % unpack amplitudes for readability
 ampsHwaveR = amps{1,2};
 ampsNoiseR = amps{1,3};
 ampsMwaveL = amps{2,1};
 ampsHwaveL = amps{2,2};
 ampsNoiseL = amps{2,3};
 
-% plot the H-wave / M-wave duration (i.e., time difference between minimum
-% and maximum) to determine whether valid waveform or not
-% figure;
-% hold on;
-% histogram(durs{1,1},0.000:period:0.020,'EdgeColor','none');
-% xline(0.008,'r-','LineWidth',3);
-% hold off;
-% xlim([0.000 0.020]);
-% xlabel('M-Wave Width (s)');
-% ylabel('Frequency');
-% title([id ' - Right Leg']);
-% saveas(gcf,[pathFigs id '_MwaveDurDistribution_Trial' trialNum '_RightLeg.png']);
-% saveas(gcf,[pathFigs id '_MwaveDurDistribution_Trial' trialNum '_RightLeg.fig']);
-
-%% 12. Compute Means and H/M Ratios for Unique Stimulation Amplitudes
-ampsStimRU = unique(ampsStimR);
+%% 11. Compute Means & Ratios for Unique Stimulation Amplitudes
+ampsStimRU = unique(ampsStimR); % find unique stimulation amplitudes
 ampsStimLU = unique(ampsStimL);
+
+% compute average amplitudes
+avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
+avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
+avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
+avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
+
+% compute average H/M ratios
+ratioR = ampsHwaveR ./ ampsMwaveR;
+ratioL = ampsHwaveL ./ ampsMwaveL;
+avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x),'omitnan'),ampsStimRU);
+avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x),'omitnan'),ampsStimLU);
+
 % Gaussian fit function for fitting average H-wave amplitude data
 % based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
 % Journal of Neuroscience Methods, 2007)
 % fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
-avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
 % TODO: alternate approach would be to convert the mean H-wave amplitudes
 % to integer "frequencies" for each stim amplitude and fit a normal dist.
 % pdR = fitdist(ampsStimRU','Normal', ...
@@ -437,20 +433,18 @@ avgsHwaveR = arrayfun(@(x) mean(ampsHwaveR(ampsStimR == x),'omitnan'),ampsStimRU
 % initialize coefficients
 % coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
 % coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
-avgsMwaveR = arrayfun(@(x) mean(ampsMwaveR(ampsStimR == x),'omitnan'),ampsStimRU);
-avgsHwaveL = arrayfun(@(x) mean(ampsHwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
 % pdL = fitdist(ampsStimLU','Normal', ...
 %     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
 % coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
 % coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
-avgsMwaveL = arrayfun(@(x) mean(ampsMwaveL(ampsStimL == x),'omitnan'),ampsStimLU);
-% TODO: verify that these values will always be sorted in ascending order
-% and, if not, sort them
 
-ratioR = ampsHwaveR ./ ampsMwaveR;
-ratioL = ampsHwaveL ./ ampsMwaveL;
-avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x)),ampsStimRU);
-avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x)),ampsStimLU);
+%% 12. (Optional) Fit Gaussian to Average H-wave Amplitudes
+% TODO: Move to separate function if necessary
+% Gaussian fitting for Brinkworth's 2007 method
+% Gaussian equation: a * exp(-(((x^b - c)/d)^2) / 2)
+% fitFunc = @(coeffs, x) coeffs(1) * exp(-((((x.^coeffs(3)) - coeffs(4)) / coeffs(2)).^2) / 2);
+% initialGuess = [max(avgsHwaveR), std(ampsStimRU), 1, mean(ampsStimRU)];
+% coeffsR = lsqcurvefit(fitFunc, initialGuess, ampsStimRU, avgsHwaveR);
 
 %% 13. Plot the Noise Distributions for Both Legs
 % compute four times noise floor (mean) to determine whether
@@ -503,11 +497,9 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 % xL = min(ampsStimLU):incX:max(ampsStimLU);
 % yL = fun(coefsL,xL);
 Hreflex.plotCal(ampsStimR,{ampsMwaveR; ampsHwaveR}, ...
-    'MG EMG Amplitude (mV)','Right Leg',id,trialNum,mean(ampsNoiseR), ...
-    pathFigs);
+    'EMG Amplitude (mV)','Right Leg',id,trialNum,mean(ampsNoiseR),pathFigs);
 Hreflex.plotCal(ampsStimL,{ampsMwaveL; ampsHwaveL}, ...
-    'MG EMG Amplitude (mV)','Left Leg',id,trialNum,mean(ampsNoiseL), ...
-    pathFigs);
+    'EMG Amplitude (mV)','Left Leg',id,trialNum,mean(ampsNoiseL),pathFigs);
 
 %% 15. Plot Ratio of H-wave to M-wave amplitude
 Hreflex.plotCal(ampsStimR,{ratioR},'H:M Ratio','Right Leg',id,trialNum, ...
