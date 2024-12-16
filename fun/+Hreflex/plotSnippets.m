@@ -90,10 +90,11 @@ for ii = 1:2                % for each EMG H-reflex snippets array, ...
     hold on;
     xline(0,'k','LineWidth',2); % stimulation artifact alignment
     % M-wave and H-wave range
-    xline(0.004,'b');       % M-wave start: 4 ms after stim artifact
-    xline(0.023,'b');       % M-wave end: 23 ms
-    xline(0.024,'g');       % H-wave start: 24 ms after stim artifact
-    xline(0.049,'g');       % H-wave end: 43 ms
+    % TODO: update to accept as function input rather than hard-coding
+    xline(0.0045,'b','LineWidth',1.5);  % M-wave start: 4.5 ms after stim
+    xline(0.0200,'b','LineWidth',1.5);  % M-wave end: 20 ms    artifact
+    xline(0.0250,'g','LineWidth',1.5);  % H-wave start: 25 ms after stim
+    xline(0.0450,'g','LineWidth',1.5);  % H-wave end: 45 ms   artifact
     plot(times,snippets{ii,1},'LineWidth',1.5);
     hold off;
     title(titles{ii+2}); % EMG titles are in positions 3 and 4
