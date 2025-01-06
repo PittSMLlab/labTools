@@ -1,5 +1,5 @@
-function markerGapsUpdated = ...
-    fillSmallMarkerGapsSpline(markerGaps,pathTrial,vicon,maxGapSize)
+function markerGapsUpdated = fillSmallMarkerGapsSpline( ...
+    markerGaps,pathTrial,vicon,shouldSave,maxGapSize)
 %FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline
 %   This function fills gaps in all marker trajectories identified in
 % markerGaps using spline interpolation for gaps smaller than the specified
@@ -10,17 +10,22 @@ function markerGapsUpdated = ...
 %       marker's trajectory, as obtained from extractMarkerGapsTrial
 %   pathTrial: string or character array of the full path to the trial
 %   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
+%   shouldSave: (optional) logical, whether to save changes (default: true)
 %   maxGapSize: (optional) integer specifying maximum gap size to fill,
 %       (default: 10 frames)
 % output(s):
 %   updatedMarkerGaps: struct with only remaining gaps after processing
 
 % TODO: add a GUI input option if helpful
-narginchk(2,4);         % verify correct number of input arguments
+narginchk(2,5);         % verify correct number of input arguments
 
 % set default value for maxGapSize if not provided
-if nargin < 4 || isempty(maxGapSize)
+if nargin < 5 || isempty(maxGapSize)
     maxGapSize = 10;
+end
+
+if nargin < 4 || isempty(shouldSave)       % if no 'shouldSave' input
+    shouldSave = true;                     % default to saving changes
 end
 
 % validate 'markerGaps' structure format
@@ -106,8 +111,8 @@ for mrkr = 1:numel(markers)
 end
 fprintf('Small marker gap spline filling complete.\n');
 
-% save the trial only if changes were made
-if wasChanged
+% save the trial if changes were made and 'shouldSave' is true
+if wasChanged && shouldSave
     fprintf('Saving the trial with changes...\n');
     try
         vicon.SaveTrial(200);
@@ -115,8 +120,10 @@ if wasChanged
     catch ME
         warning(ME.identifier,'%s',ME.message);
     end
-else
+elseif ~wasChanged
     fprintf('No changes made; trial not saved.\n');
+elseif ~shouldSave
+    fprintf('Save option is disabled; trial not saved.\n');
 end
 
 % output the updated markerGaps with only remaining gaps

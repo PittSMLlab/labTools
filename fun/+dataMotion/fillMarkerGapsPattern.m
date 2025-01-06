@@ -1,5 +1,5 @@
 function markerGapsUpdated = ...
-    fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon)
+    fillMarkerGapsPattern(markerGaps,pathTrial,refMarker,vicon,shouldSave)
 %FILLMARKERGAPSPATTERN Fills marker gaps using reference marker pattern
 %   This function fills gaps in all marker trajectories identified in
 % markerGaps by applying a transformed pattern from a specified reference
@@ -11,10 +11,15 @@ function markerGapsUpdated = ...
 %   pathTrial: string or character array of the full path to the trial
 %   refMarker: name of the reference marker to use for gap filling pattern
 %   vicon: (optional) Vicon Nexus SDK object; connects if not supplied
+%   shouldSave: (optional) logical, whether to save changes (default: true)
 % output(s):
 %   updatedMarkerGaps: struct with only remaining gaps after processing
 
-narginchk(3,4);         % verify correct number of input arguments
+narginchk(3,5);                 % verify correct number of input arguments
+
+if nargin < 5 || isempty(shouldSave)        % if no 'shouldSave' input
+    shouldSave = true;                      % default to saving changes
+end
 
 % validate 'markerGaps' structure format
 markers = fieldnames(markerGaps);
@@ -147,8 +152,8 @@ end
 fprintf('%s reference pattern-based marker gap filling complete.\n', ...
     refMarker);
 
-% save the trial only if changes were made
-if wasChanged
+% save the trial if changes were made and 'shouldSave' is true
+if wasChanged && shouldSave
     fprintf('Saving the trial with changes...\n');
     try
         vicon.SaveTrial(200);
@@ -156,8 +161,10 @@ if wasChanged
     catch ME
         warning(ME.identifier,'%s',ME.message);
     end
-else
+elseif ~wasChanged
     fprintf('No changes made; trial not saved.\n');
+elseif ~shouldSave
+    fprintf('Save option is disabled; trial not saved.\n');
 end
 
 % output the updated markerGaps with only remaining gaps

@@ -1,4 +1,4 @@
-function reconstructAndLabelTrial(pathTrial,vicon)
+function reconstructAndLabelTrial(pathTrial,vicon,shouldSave)
 %RECONSTRUCTANDLABEL Run reconstruct and label pipeline on Vicon trial data
 %   This function accepts as input the full path to the trial to process by
 % running the reconstruct and label pipelines and saving the processed
@@ -9,9 +9,14 @@ function reconstructAndLabelTrial(pathTrial,vicon)
 %   pathTrial: string or character array of the full path of the trial on
 %       which to run the reconstruct and label processing pipeline
 %   vicon: (optional) Vicon Nexus SDK object; connects if not supplied.
+%   shouldSave: (optional) logical, whether to save changes (default: true)
 
 % TODO: add a GUI input option if helpful
-narginchk(1,2);         % verify correct number of input arguments
+narginchk(1,3);         % verify correct number of input arguments
+
+if nargin < 3 || isempty(shouldSave)       % if no 'shouldSave' input
+    shouldSave = true;                     % default to saving changes
+end
 
 % initialize the Vicon Nexus object if not provided
 if nargin < 2 || isempty(vicon)
@@ -36,13 +41,17 @@ catch ME
     warning(ME.identifier,'%s',ME.message);
 end
 
-% saves the changes made (reconstruction and labeling) back to trial file
-fprintf('Saving the trial...\n');
-try                     % try saving the processed trial
-    vicon.SaveTrial(200);
-    fprintf('Trial saved successfully.\n');
-catch ME
-    warning(ME.identifier,'%s',ME.message);
+% saves the trial changes made if 'shouldSave' is true back to trial file
+if shouldSave
+    fprintf('Saving the trial...\n');
+    try                     % try saving the processed trial
+        vicon.SaveTrial(200);
+        fprintf('Trial saved successfully.\n');
+    catch ME
+        warning(ME.identifier,'%s',ME.message);
+    end
+else
+    fprintf('Save option is disabled; trial not saved.\n');
 end
 
 end
