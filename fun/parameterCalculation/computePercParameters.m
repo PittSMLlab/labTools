@@ -71,9 +71,18 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
 
     SLAnotPercTask = slaParam;
     for i = 1:length(indsInitStride)
-        percTask(indsInitStride(i):indsEndStride(i)) = 1;
-        SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
-        SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
+        % percTask(indsInitStride(i):indsEndStride(i)) = 1; % befor I
+        % consider the changes in the belt speed when going back to tied,
+        % sometime it takes a couple of strides to reach this fully
+        % SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i));
+        % SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan;
+        % if length(speedDiffPercTask) >= i
+        %     pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+        % end
+
+        percTask(indsInitStride(i):indsEndStride(i)+3) = 1;
+        SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i)); % This one I do not consider the back to tied strides, since I want the true end of perceptual task
+        SLAnotPercTask(indsInitStride(i):indsEndStride(i)+3) = nan;
         if length(speedDiffPercTask) >= i
             pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
         end

@@ -212,7 +212,7 @@ for group=1:Ngroups
 %                     dataPts=dataPts(2:end-5);
                 end
                 nPoints=size(dataPts,1);
-                M=2000; %this assumes that the max number of data points that could exist in a single conition or trial is M
+                M=5000; %this assumes that the max number of data points that could exist in a single conition or trial is M
                 if nPoints == 0
                     numPts.(cond{c}).(['trial' num2str(t)])(s)=NaN;
                 else
