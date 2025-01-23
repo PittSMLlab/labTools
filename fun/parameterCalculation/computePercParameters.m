@@ -59,6 +59,8 @@ SLAnotPercTask = nan(size(initTime));
 % of the start of the perceptual task
 % TODO: add a data check to warn if the stride indices are considerably
 % different of what was expected
+
+SLAnotPercTask = slaParam;
 if ~isempty(timePercInit) && ~isempty(timePercEnd)
     indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
         timePercInit); %initTime is the stride initial times
@@ -69,7 +71,7 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
     percTaskInitStride(indsInitStride) = 1;
     percTaskEndStride(indsEndStride) = 1;
 
-    SLAnotPercTask = slaParam;
+    
     for i = 1:length(indsInitStride)
         % percTask(indsInitStride(i):indsEndStride(i)) = 1; % befor I
         % consider the changes in the belt speed when going back to tied,
