@@ -144,6 +144,12 @@ framesToFill = gapRange(1):gapRange(2);
 existingFrames = find(existsTraj);      % get frames with data
 
 % interpolate missing frames
+% TODO: consider switching to 'spline' with 'ppval' or 'griddedInterpolant'
+% instead of 'interp1' to reduce computation time if duration becomes an
+% issue (although results should be identical)
+% TODO: consider other interpolation methods ('pchip','cubic','v5cubic',
+% 'makima') to see if they have better trajectories (especially for longer
+% gaps) in addition to possibly reducing computation time.
 trajX(framesToFill) = interp1(existingFrames,trajX(existingFrames), ...
     framesToFill,'spline');
 trajY(framesToFill) = interp1(existingFrames,trajY(existingFrames), ...

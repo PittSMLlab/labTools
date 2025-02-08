@@ -15,7 +15,7 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id, ...
 %   trialNum: string or character array of the trial number for naming
 %   noise: OPTIONAL input for the background noise level for the
 %       eligibility threshold
-%   path: OPTIONAL input for saving figures (not saved if not provided)
+%   pathFig: OPTIONAL input for saving figures (not saved if not provided)
 % output:
 %   fig: handle object to the figure generated
 
