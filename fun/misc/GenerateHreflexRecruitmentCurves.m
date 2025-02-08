@@ -321,12 +321,6 @@ if any(cellfun(@isempty,{EMG_RTAP,EMG_LTAP,EMG_RH,EMG_LH}))
     error('Missing one or more EMG signals.');
 end
 
-% extract all stimulation trigger data for each leg
-stimTrigR = HreflexStimPin.getDataAsVector( ...
-    'Stimulator_Trigger_Sync_Right_Stimulator');
-stimTrigL = HreflexStimPin.getDataAsVector( ...
-    'Stimulator_Trigger_Sync_Left__Stimulator');
-
 % TODO: implement check for if forces should be used in case of standing on
 % the treadmill but not walking during calibration
 % NOTE: using 'shouldUseStimTrig' as a proxy for walking trials where
@@ -347,6 +341,12 @@ end
 % if there is stimulation trigger pulse data and it should be used to
 % identify the locations of the artifact peaks, ...
 if shouldUseStimTrig && hasStimTrig
+    % extract all stimulation trigger data for each leg
+    stimTrigR = HreflexStimPin.getDataAsVector( ...
+        'Stimulator_Trigger_Sync_Right_Stimulator');
+    stimTrigL = HreflexStimPin.getDataAsVector( ...
+        'Stimulator_Trigger_Sync_Left__Stimulator');
+
     indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
         times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
     locsR = indsStimArtifact{1};
