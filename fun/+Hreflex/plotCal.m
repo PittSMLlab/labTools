@@ -1,21 +1,22 @@
-function fig = plotCal(amplitudesStim,values,yLabel,leg,id, ...
-    trialNum,varargin)
-%PLOTCAL Plot either the recruitment or ratio H-reflex calibration curve
+function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
+    varargin)
+%PLOTCAL Plot the H-reflex recruitment or ratio calibration curve
 %   Plot the calibration curve (H-wave and M-wave recruitment or H-to-M
 % ratio) for a single leg.
 %
-% input:
+% input(s):
 %   amplitudesStim: 1 x number of samples array of stimulation current
 %       intensities (in mA)
 %   values: 2 x 1 or 1 x 1 cell array of number of samples x 1 array(s) of
 %       the H-wave and M-wave amplitudes (in mV) or ratios
-%   yLabel: character array or string of the y-axis label
-%   leg: either 'Right Leg' or 'Left Leg' are the two possible values
+%   yLabel: string or character array of the y-axis label
+%   leg: 'Right Leg' or 'Left Leg' are the two possible values
 %   id: string or character array of participant / session ID for naming
 %   trialNum: string or character array of the trial number for naming
 %   noise: OPTIONAL input for the background noise level for the
 %       eligibility threshold
 %   pathFig: OPTIONAL input for saving figures (not saved if not provided)
+%
 % output:
 %   fig: handle object to the figure generated
 
@@ -77,16 +78,18 @@ else        % otherwise, this is an H- and M-wave recruitment curve
     % p3 = plot(xL,yL,'b--','LineWidth',2);
 end
 
+
+% Highlight max values with lines and labels
+maxYOffset = 0.05 * max(cell2mat(values));
 plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
 % add label to vertical line (I_max) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
-% TODO: do not hardcode x offset for label
 % TODO: add handle of title
 if isRatio
-    text(I_max + 0.1,0 + (0.05*max(cell2mat(values))), ...
+    text(I_max + 0.1,maxYOffset, ...
         sprintf('I_{Ratio_{max}} = %.1f mA',I_max));
 else
-    text(I_max + 0.1,0 + (0.05*max(cell2mat(values))), ...
+    text(I_max + 0.1,maxYOffset, ...
         sprintf('I_{H_{max}} = %.1f mA',I_max));
 end
 
@@ -94,11 +97,11 @@ end
 plot([min(amplitudesStim)-1 I_max],[valMax valMax],'k-.');
 % add label to horizontal line (valMax)
 if isRatio
-    text(min(amplitudesStim)-1 + 0.1,valMax + ...
-        (0.05*max(cell2mat(values))),sprintf('Ratio_{max} = %.2f',valMax));
+    text(min(amplitudesStim)-1 + 0.1,valMax + maxYOffset, ...
+        sprintf('Ratio_{max} = %.2f',valMax));
 else
-    text(min(amplitudesStim)-1 + 0.1,valMax + ...
-        (0.05*max(cell2mat(values))),sprintf('H_{max} = %.2f mV',valMax));
+    text(min(amplitudesStim)-1 + 0.1,valMax + maxYOffset, ...
+        sprintf('H_{max} = %.2f mV',valMax));
 end
 hold off;
 
