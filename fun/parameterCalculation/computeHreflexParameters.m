@@ -171,11 +171,9 @@ H2MRMSRatioSlowLG = nan(size(timeSHS));
 H2MRMSRatioFastLG = nan(size(timeFHS));
 
 %% Identify Stimulus Artifact Indices
-times = EMGData.Time;   % extract time for trial
-% use proximal TA to identify stim artifact time (localize by stim trigger)
-EMG_RTAP = EMGData.Data(:,contains(EMGData.labels,'RTAP'));
-EMG_LTAP = EMGData.Data(:,contains(EMGData.labels,'LTAP'));
-
+% extract time for the trial, and use proximal TA to localize stim artifact
+[EMG_RTAP,times] = EMGData.getDataAsVector('RTAP');
+EMG_LTAP = EMGData.getDataAsVector('LTAP');
 stimTrigR = HreflexData.getDataAsVector( ...
     'Stimulator_Trigger_Sync_Right_Stimulator');
 stimTrigL = HreflexData.getDataAsVector( ...
@@ -183,10 +181,10 @@ stimTrigL = HreflexData.getDataAsVector( ...
 indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
     times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
 
-if all(cellfun(@isempty,indsStimArtifact))
+if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
     data = nan(length(timeSHS),length(paramLabels));
-    for i=1:length(paramLabels)
-        eval(['data(:,i)=' paramLabels{i} ';'])
+    for ii = 1:length(paramLabels)
+        eval(['data(:,i)=' paramLabels{ii} ';']);
     end
     out = parameterSeries(data,paramLabels,[],description);
     return;
@@ -292,10 +290,6 @@ MwaveAmpSlowSOL(indsStimStrideSlow) = amps{indSlow,1};
 MwaveAmpFastSOL(indsStimStrideFast) = amps{indFast,1};
 HreflexNoiseSlowSOL(indsStimStrideSlow) = amps{indSlow,3};
 HreflexNoiseFastSOL(indsStimStrideFast) = amps{indFast,3};
-% HreflexBEMGMAVSlow(indsStimStrideSlow) = amps{indSlow,4};
-% HreflexBEMGMAVFast(indsStimStrideFast) = amps{indFast,4};
-% HreflexBEMGRMSSlow(indsStimStrideSlow) = amps{indSlow,5};
-% HreflexBEMGRMSFast(indsStimStrideFast) = amps{indFast,5};
 H2MratioSlowSOL(indsStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};
 H2MratioFastSOL(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};
 
