@@ -190,22 +190,7 @@ if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
     return;
 end
 
-%% Extract EMG Signal for Each Muscle of Interest
-EMG_RSOL = EMGData.Data(:, contains(EMGData.labels, 'RSOL'));
-EMG_LSOL = EMGData.Data(:, contains(EMGData.labels, 'LSOL'));
-EMG_RMG = EMGData.Data(:, contains(EMGData.labels, 'RMG'));
-EMG_LMG = EMGData.Data(:, contains(EMGData.labels, 'LMG'));
-EMG_RLG = EMGData.Data(:, contains(EMGData.labels, 'RLG'));
-EMG_LLG = EMGData.Data(:, contains(EMGData.labels, 'LLG'));
-
-% use MG to compute H-reflex amplitudes
-EMG_RSOL = EMGData.Data(:,contains(EMGData.labels,'RSOL'));
-EMG_LSOL = EMGData.Data(:,contains(EMGData.labels,'LSOL'));
-
-snippets = Hreflex.extractSnippets(indsStimArtifact,{EMG_RSOL; EMG_LSOL});
-amps = Hreflex.computeAmplitudes(snippets(:,1));
-% convert wave amplitudes from Volts to Millivolts
-amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
+%% Determine Which Leg is Slow and Which Leg is Fast
 switch lower(slowLeg)   % which leg is slow, R or L
     case 'r'            % if right leg is slow, ...
         indSlow = 1;
@@ -217,6 +202,7 @@ switch lower(slowLeg)   % which leg is slow, R or L
         error('Invalid slow leg input argument, must be ''R'' or ''L''');
 end
 
+%%
 % find indices of nearest stride heel strike to the time of stim
 % NOTE: this **should** be identical but may not be due to missed
 % stimulation pulses, especially at start or end of trial (however,
@@ -237,11 +223,10 @@ shouldDiscardStimFast = (timeStimFast <= timeFHS(1)) | ...
 timeStimSlow = timeStimSlow(~shouldDiscardStimSlow);
 timeStimFast = timeStimFast(~shouldDiscardStimFast);
 
-if any(shouldDiscardStimSlow)   % if discarding any stim, ...
+if any(shouldDiscardStimSlow)               % if discarding any stim, ...
     warning('Dropping %d stimuli for the slow leg', ...
         sum(shouldDiscardStimSlow));
 end
-
 if any(shouldDiscardStimFast)
     warning('Dropping %d stimuli for the fast leg', ...
         sum(shouldDiscardStimFast));
@@ -278,6 +263,24 @@ else            % otherwise, fast leg heel strikes first, ...
         (timeStimSlow < timeFHS2(indsStimStrideSlow));
 end
 
+%% Extract EMG Signal for Each Muscle of Interest
+EMG_RSOL = EMGData.Data(:, contains(EMGData.labels, 'RSOL'));
+EMG_LSOL = EMGData.Data(:, contains(EMGData.labels, 'LSOL'));
+EMG_RMG = EMGData.Data(:, contains(EMGData.labels, 'RMG'));
+EMG_LMG = EMGData.Data(:, contains(EMGData.labels, 'LMG'));
+EMG_RLG = EMGData.Data(:, contains(EMGData.labels, 'RLG'));
+EMG_LLG = EMGData.Data(:, contains(EMGData.labels, 'LLG'));
+
+% use MG to compute H-reflex amplitudes
+EMG_RSOL = EMGData.Data(:,contains(EMGData.labels,'RSOL'));
+EMG_LSOL = EMGData.Data(:,contains(EMGData.labels,'LSOL'));
+
+snippets = Hreflex.extractSnippets(indsStimArtifact,{EMG_RSOL; EMG_LSOL});
+amps = Hreflex.computeAmplitudes(snippets(:,1));
+% convert wave amplitudes from Volts to Millivolts
+amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
+
+
 % remove stim values for steps to discard for each leg
 amps(indSlow,:) = cellfun(@(x) x(~shouldDiscardStimSlow), ...
     amps(indSlow,:),'UniformOutput',false);
@@ -295,8 +298,8 @@ H2MratioFastSOL(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
-for i=1:length(paramLabels)
-    eval(['data(:,i)=' paramLabels{i} ';'])
+for ii=1:length(paramLabels)
+    eval(['data(:,i)=' paramLabels{ii} ';']);
 end
 
 %% Output the Computed Parameters
