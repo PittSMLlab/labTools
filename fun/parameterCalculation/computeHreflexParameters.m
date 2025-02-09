@@ -13,6 +13,8 @@ function out = computeHreflexParameters(strideEvents,HreflexData, ...
 
 % TODO: accept GRF data as input argument (if necessary) to leave as NaN
 % strides for which stim occurs during double rather than single stance
+% TODO: store parameters as a structure if possible to convert to
+% 'parameterSeries' object to code readability (i.e., far fewer lines)
 
 %% Gait Stride Event Times
 timeSHS = strideEvents.tSHS;    % array of slow heel strike event times
@@ -263,38 +265,56 @@ else            % otherwise, fast leg heel strikes first, ...
         (timeStimSlow < timeFHS2(indsStimStrideSlow));
 end
 
-%% Extract EMG Signal for Each Muscle of Interest
-EMG_RSOL = EMGData.Data(:, contains(EMGData.labels, 'RSOL'));
-EMG_LSOL = EMGData.Data(:, contains(EMGData.labels, 'LSOL'));
-EMG_RMG = EMGData.Data(:, contains(EMGData.labels, 'RMG'));
-EMG_LMG = EMGData.Data(:, contains(EMGData.labels, 'LMG'));
-EMG_RLG = EMGData.Data(:, contains(EMGData.labels, 'RLG'));
-EMG_LLG = EMGData.Data(:, contains(EMGData.labels, 'LLG'));
+%% Extract EMG Signal for Each H-Reflex Muscle of Interest
+EMG_RSOL = EMGData.getDataAsVector('RSOL');
+EMG_LSOL = EMGData.getDataAsVector('LSOL');
+EMG_RMG = EMGData.getDataAsVector('RMG');
+EMG_LMG = EMGData.getDataAsVector('LMG');
+EMG_RLG = EMGData.getDataAsVector('RLG');
+EMG_LLG = EMGData.getDataAsVector('LLG');
 
-% use MG to compute H-reflex amplitudes
-EMG_RSOL = EMGData.Data(:,contains(EMGData.labels,'RSOL'));
-EMG_LSOL = EMGData.Data(:,contains(EMGData.labels,'LSOL'));
+% organize EMG Data for Each Muscle
+EMGDataByMuscle = {EMG_RSOL,EMG_LSOL; EMG_RMG,EMG_LMG; EMG_RLG,EMG_LLG};
 
-snippets = Hreflex.extractSnippets(indsStimArtifact,{EMG_RSOL; EMG_LSOL});
-amps = Hreflex.computeAmplitudes(snippets(:,1));
-% convert wave amplitudes from Volts to Millivolts
-amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
+%% Compute H-Reflex Parameters for Each Muscle of Interest
+% TODO: further consolidate and optimize the below code
+for m = 1:length(muscles)               % for each muscle of interest, ...
+    muscle = muscles{m};                % name of current muscle
+    snippets = Hreflex.extractSnippets( ...
+        indsStimArtifact,EMGDataByMuscle(m,:)');
+    [amps,rms] = Hreflex.computeAmplitudes(snippets(:,1));
+    % convert wave amplitudes from Volts to Millivolts
+    amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
+    rms = cellfun(@(x) 1000.*x,rms,'UniformOutput',false);
 
+    % remove stim values for steps to discard for each leg
+    amps(indSlow,:) = cellfun(@(x) x(~shouldDiscardStimSlow), ...
+        amps(indSlow,:),'UniformOutput',false);
+    amps(indFast,:) = cellfun(@(x) x(~shouldDiscardStimFast), ...
+        amps(indFast,:),'UniformOutput',false);
+    rms(indSlow,:) = cellfun(@(x) x(~shouldDiscardStimSlow), ...
+        rms(indSlow,:),'UniformOutput',false);
+    rms(indFast,:) = cellfun(@(x) x(~shouldDiscardStimFast), ...
+        rms(indFast,:),'UniformOutput',false);
 
-% remove stim values for steps to discard for each leg
-amps(indSlow,:) = cellfun(@(x) x(~shouldDiscardStimSlow), ...
-    amps(indSlow,:),'UniformOutput',false);
-amps(indFast,:) = cellfun(@(x) x(~shouldDiscardStimFast), ...
-    amps(indFast,:),'UniformOutput',false);
-
-HwaveAmpSlowSOL(indsStimStrideSlow) = amps{indSlow,2};
-HwaveAmpFastSOL(indsStimStrideFast) = amps{indFast,2};
-MwaveAmpSlowSOL(indsStimStrideSlow) = amps{indSlow,1};
-MwaveAmpFastSOL(indsStimStrideFast) = amps{indFast,1};
-HreflexNoiseSlowSOL(indsStimStrideSlow) = amps{indSlow,3};
-HreflexNoiseFastSOL(indsStimStrideFast) = amps{indFast,3};
-H2MratioSlowSOL(indsStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};
-H2MratioFastSOL(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};
+    % assign data to correct parameter
+    eval(['HwaveAmpSlow' muscle '(indsStimStrideSlow) = amps{indSlow,2};']);
+    eval(['HwaveAmpFast' muscle '(indsStimStrideFast) = amps{indFast,2};']);
+    eval(['MwaveAmpSlow' muscle '(indsStimStrideSlow) = amps{indSlow,1};']);
+    eval(['MwaveAmpFast' muscle '(indsStimStrideFast) = amps{indFast,1};']);
+    eval(['HreflexNoiseAmpSlow' muscle '(indsStimStrideSlow) = amps{indSlow,3};']);
+    eval(['HreflexNoiseAmpFast' muscle '(indsStimStrideFast) = amps{indFast,3};']);
+    eval(['H2MAmpRatioSlow' muscle '(indsStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};']);
+    eval(['H2MAmpRatioFast' muscle '(indsStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};']);
+    eval(['HwaveRMSSlow' muscle '(indsStimStrideSlow) = rms{indSlow,2};']);
+    eval(['HwaveRMSFast' muscle '(indsStimStrideFast) = rms{indFast,2};']);
+    eval(['MwaveRMSSlow' muscle '(indsStimStrideSlow) = rms{indSlow,1};']);
+    eval(['MwaveRMSFast' muscle '(indsStimStrideFast) = rms{indFast,1};']);
+    eval(['HreflexNoiseRMSSlow' muscle '(indsStimStrideSlow) = rms{indSlow,3};']);
+    eval(['HreflexNoiseRMSFast' muscle '(indsStimStrideFast) = rms{indFast,3};']);
+    eval(['H2MRMSRatioSlow' muscle '(indsStimStrideSlow) = rms{indSlow,2} ./ rms{indSlow,1};']);
+    eval(['H2MRMSRatioFast' muscle '(indsStimStrideFast) = rms{indFast,2} ./ rms{indFast,1};']);
+end
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
