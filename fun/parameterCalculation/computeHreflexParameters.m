@@ -24,13 +24,9 @@ timeFTO = strideEvents.tFTO;    % Fast Toe Off event times
 timeSHS2 = strideEvents.tSHS2;  % 2nd Slow Heel Strike event times
 timeFHS2 = strideEvents.tFHS2;  % 2nd Fast Heel Strike event times
 
-% NaN values give false in logical comparison
-indsComp = all(~isnan([timeSHS timeFHS]),2);    % comparison inds (no NaNs)
-% TODO: could also check the SHS2 and FHS2 times to be ultra safe
-isSlowFirst = all(timeSHS(indsComp) < timeFHS(indsComp));
-
 %% Labels & Descriptions
 muscles = {'SOL','MG','LG'};
+legs = {'Slow','Fast'};
 % H-reflex stimulation timing and amplitude parameters
 % TODO: add convenience parameter for percentage of stance phase
 % TODO: consider implementing Wilson Amplitude background EMG parameter
@@ -114,7 +110,7 @@ aux = { ...
 paramLabels = aux(:,1);
 description = aux(:,2);
 
-%% Compute the Parameters
+%% Initialize All Parameter Arrays
 % initialize parameter arrays: stimulation timing and H-reflex amplitudes
 % (i.e., peak-to-peak voltages and RMS)
 stimTimeFromStanceSlow = nan(size(timeSHS));
@@ -123,54 +119,22 @@ stimTimeFromSingleStanceSlow = nan(size(timeSHS));
 stimTimeFromSingleStanceFast = nan(size(timeFHS));
 isSingleStanceSlow = false(size(timeSHS));  % TODO: initialize true or NaN?
 isSingleStanceFast = false(size(timeFHS));
-HwaveAmpSlowSOL = nan(size(timeSHS));
-HwaveAmpFastSOL = nan(size(timeFHS));
-MwaveAmpSlowSOL = nan(size(timeSHS));
-MwaveAmpFastSOL = nan(size(timeFHS));
-HreflexNoiseAmpSlowSOL = nan(size(timeSHS));
-HreflexNoiseAmpFastSOL = nan(size(timeFHS));
-H2MAmpRatioSlowSOL = nan(size(timeSHS));
-H2MAmpRatioFastSOL = nan(size(timeFHS));
-HwaveRMSSlowSOL = nan(size(timeSHS));
-HwaveRMSFastSOL = nan(size(timeFHS));
-MwaveRMSSlowSOL = nan(size(timeSHS));
-MwaveRMSFastSOL = nan(size(timeFHS));
-HreflexNoiseRMSSlowSOL = nan(size(timeSHS));
-HreflexNoiseRMSFastSOL = nan(size(timeFHS));
-H2MRMSRatioSlowSOL = nan(size(timeSHS));
-H2MRMSRatioFastSOL = nan(size(timeFHS));
-HwaveAmpSlowMG = nan(size(timeSHS));
-HwaveAmpFastMG = nan(size(timeFHS));
-MwaveAmpSlowMG = nan(size(timeSHS));
-MwaveAmpFastMG = nan(size(timeFHS));
-HreflexNoiseAmpSlowMG = nan(size(timeSHS));
-HreflexNoiseAmpFastMG = nan(size(timeFHS));
-H2MAmpRatioSlowMG = nan(size(timeSHS));
-H2MAmpRatioFastMG = nan(size(timeFHS));
-HwaveRMSSlowMG = nan(size(timeSHS));
-HwaveRMSFastMG = nan(size(timeFHS));
-MwaveRMSSlowMG = nan(size(timeSHS));
-MwaveRMSFastMG = nan(size(timeFHS));
-HreflexNoiseRMSSlowMG = nan(size(timeSHS));
-HreflexNoiseRMSFastMG = nan(size(timeFHS));
-H2MRMSRatioSlowMG = nan(size(timeSHS));
-H2MRMSRatioFastMG = nan(size(timeFHS));
-HwaveAmpSlowLG = nan(size(timeSHS));
-HwaveAmpFastLG = nan(size(timeFHS));
-MwaveAmpSlowLG = nan(size(timeSHS));
-MwaveAmpFastLG = nan(size(timeFHS));
-HreflexNoiseAmpSlowLG = nan(size(timeSHS));
-HreflexNoiseAmpFastLG = nan(size(timeFHS));
-H2MAmpRatioSlowLG = nan(size(timeSHS));
-H2MAmpRatioFastLG = nan(size(timeFHS));
-HwaveRMSSlowLG = nan(size(timeSHS));
-HwaveRMSFastLG = nan(size(timeFHS));
-MwaveRMSSlowLG = nan(size(timeSHS));
-MwaveRMSFastLG = nan(size(timeFHS));
-HreflexNoiseRMSSlowLG = nan(size(timeSHS));
-HreflexNoiseRMSFastLG = nan(size(timeFHS));
-H2MRMSRatioSlowLG = nan(size(timeSHS));
-H2MRMSRatioFastLG = nan(size(timeFHS));
+
+for m = 1:length(muscles)               % for each muscle of interest, ...
+    muscle = muscles{m};                % name of current muscle
+    for l = 1:2                         % for slow (1) & fast (2) leg, ...
+        leg = legs{l};                  % name of current leg
+        % initialize parameter data arrays
+        eval(['HwaveAmp' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['MwaveAmp' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['HreflexNoiseAmp' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['H2MAmpRatio' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['HwaveRMS' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['MwaveRMS' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['HreflexNoiseRMS' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+        eval(['H2MRMSRatio' leg muscle ' = nan(size(time' leg(1) 'HS));']);
+    end
+end
 
 %% Identify Stimulus Artifact Indices
 % extract time for the trial, and use proximal TA to localize stim artifact
@@ -186,10 +150,10 @@ indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
 if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
     data = nan(length(timeSHS),length(paramLabels));
     for ii = 1:length(paramLabels)
-        eval(['data(:,i)=' paramLabels{ii} ';']);
+        eval(['data(:,i) = ' paramLabels{ii} ';']);
     end
     out = parameterSeries(data,paramLabels,[],description);
-    return;
+    return;                                         % return from function
 end
 
 %% Determine Which Leg is Slow and Which Leg is Fast
@@ -204,7 +168,12 @@ switch lower(slowLeg)   % which leg is slow, R or L
         error('Invalid slow leg input argument, must be ''R'' or ''L''');
 end
 
-%%
+%% Compute H-Reflex Temporal Parameters
+% NaN values give false in logical comparison
+indsComp = all(~isnan([timeSHS timeFHS]),2);    % comparison inds (no NaNs)
+% TODO: could also check the SHS2 and FHS2 times to be ultra safe
+isSlowFirst = all(timeSHS(indsComp) < timeFHS(indsComp));
+
 % find indices of nearest stride heel strike to the time of stim
 % NOTE: this **should** be identical but may not be due to missed
 % stimulation pulses, especially at start or end of trial (however,
@@ -319,7 +288,7 @@ end
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
 for ii=1:length(paramLabels)
-    eval(['data(:,i)=' paramLabels{ii} ';']);
+    eval(['data(:,i) = ' paramLabels{ii} ';']);
 end
 
 %% Output the Computed Parameters
