@@ -447,46 +447,8 @@ avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x),'omitnan'),ampsStimLU);
 % coeffsR = lsqcurvefit(fitFunc, initialGuess, ampsStimRU, avgsHwaveR);
 
 %% 13. Plot the Noise Distributions for Both Legs
-% compute four times noise floor (mean) to determine whether
-% to send participant home or not (at least one leg must exceed threshold)
-threshNoiseR = 4 * mean(ampsNoiseR);
-threshNoiseL = 4 * mean(ampsNoiseL);
-
-figure; hold on;
-histogram(ampsNoiseR,0.00:0.05:0.30,'Normalization','probability');
-xline(mean(ampsNoiseR),'r',sprintf('Mean = %.2f mV', ...
-    mean(ampsNoiseR)),'LineWidth',2);
-xline(median(ampsNoiseR),'g',sprintf('Median = %.2f mV', ...
-    median(ampsNoiseR)),'LineWidth',2);
-xline(prctile(ampsNoiseR,75),'k',sprintf( ...
-    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseR,75)),'LineWidth',2);
-hold off;
-axis([0 0.3 0 0.8]);
-xlabel('Noise Amplitude Peak-to-Peak (mV)');
-ylabel('Proportion of Stimuli');
-title([id ' - Trial' trialNum ' - Right Leg - Noise Distribution']);
-saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
-    '_RightLeg.png']);
-saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
-    '_RightLeg.fig']);
-
-figure; hold on;
-histogram(ampsNoiseL,0.00:0.05:0.30,'Normalization','probability');
-xline(mean(ampsNoiseL),'r',sprintf('Mean = %.2f mV', ...
-    mean(ampsNoiseL)),'LineWidth',2);
-xline(median(ampsNoiseL),'g',sprintf('Median = %.2f mV', ...
-    median(ampsNoiseL)),'LineWidth',2);
-xline(prctile(ampsNoiseL,75),'k',sprintf( ...
-    '75^{th} Percentile = %.2f mV',prctile(ampsNoiseL,75)),'LineWidth',2);
-hold off;
-axis([0 0.3 0 0.8]);
-xlabel('Noise Amplitude Peak-to-Peak (mV)');
-ylabel('Proportion of Stimuli');
-title([id ' - Trial' trialNum ' - Left Leg - Noise Distribution']);
-saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
-    '_LeftLeg.png']);
-saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
-    '_LeftLeg.fig']);
+Hreflex.plotNoiseHistogram(ampsNoiseR,'Right Leg',id,trialNum,pathFigs);
+Hreflex.plotNoiseHistogram(ampsNoiseL,'Left Leg',id,trialNum,pathFigs);
 
 %% 14. Plot Recruitment Curve for Both Legs
 % TODO: add normal distribution fit to H-wave recruitment curve to pick out
@@ -496,6 +458,9 @@ saveas(gcf,[pathFigs id '_NoiseDistribution_Trial' trialNum ...
 % yR = fun(coefsR,xR);
 % xL = min(ampsStimLU):incX:max(ampsStimLU);
 % yL = fun(coefsL,xL);
+
+% compute four times noise floor (mean) to determine whether
+% to send participant home or not (at least one leg must exceed threshold)
 Hreflex.plotCal(ampsStimR,{ampsMwaveR; ampsHwaveR}, ...
     'EMG Amplitude (mV)','Right Leg',id,trialNum,mean(ampsNoiseR),pathFigs);
 Hreflex.plotCal(ampsStimL,{ampsMwaveL; ampsHwaveL}, ...
