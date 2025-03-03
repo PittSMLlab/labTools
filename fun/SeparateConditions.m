@@ -106,21 +106,24 @@ function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, n
         %get the 1st stride that have [0 1 1 1 1 ..] pattern where speed
         %difference is <speedDiffThreshold, then continuously >
         %speedDiffThreshold for n strides. (went from tied to split)
-        thresholdFramesMask = [0, ones(1, thresholdStrides)]; %build a mask to find out continuous steps with speed difference matching the threshold.
+        thresholdFramesMask = [zeros(1,thresholdStrides), ones(1, thresholdStrides)]; %build a mask to find out continuous steps with speed difference matching the threshold.
         %TODO: this can be more robust probably by checking continuos strides at speeddiff= 0 then continuous stride at diff > speeddiff
         %TODO: i don't think the 0 padding in diffmask is needed because speed change shouldn't happen at the first or last stride of the
         %condition, that will separate a new condition that includes only 1 strides which doesn't make sense.
         
-        idxSplit = strfind([0,diffMask],[thresholdFramesMask]); %get the first stride that speeds changed
+        idxSplit = strfind([zeros(1,thresholdStrides),diffMask],[thresholdFramesMask]); %get the first stride that speeds changed
         % strfind is a pattern matching algorithm. pad 0 to diffMask in case started difference at frame 1, the 2nd argument is the pattern
         % to match, find the index where the previous frame didn't have speed diff > speedDiff and the 
         % next 150 frames have speed diff > speedDiff
     else
-        %get the 1st stride that have [1 1 1 1 .. 0 ] pattern where speed
+        %get the 1st stride that have [1 1 1 1 .. 0 0 0 0 ] pattern where speed
         %difference continuously > speedDiffThreshold for n strides, then
-        %< diffThreshold (went from split to tied)
-        thresholdFramesMask = [ones(1, thresholdStrides),0]; 
-        idxSplit = strfind([diffMask,0],[thresholdFramesMask]); %get the first stride where 4 stride later speed changed
+        %< diffThreshold continuously for n strides (went from split to
+        %tied), both need to be continuously for n strides to avoid
+        %separating condition at a noisy speed stride. Need to consistently
+        %be above then below threshold to count as real-split
+        thresholdFramesMask = [ones(1, thresholdStrides),zeros(1,thresholdStrides)]; 
+        idxSplit = strfind([diffMask,zeros(1,thresholdStrides)],[thresholdFramesMask]); %get the first stride where 4 stride later speed changed
         idxSplit = idxSplit + thresholdStrides; %shift to the first stride where speed is tied now. 
     end
     
