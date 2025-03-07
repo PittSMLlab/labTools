@@ -23,6 +23,15 @@ function [fit,amplitudesWavesNorm] = fitCalAndNormalize(intensitiesStim,amplitud
 %       normalized to the maximum M-wave fit value: M-wave (column 1),
 %       H-wave (column 2)
 
+% TODO:
+%   1. compare fits using only the averages at each intensity with all data
+%   2. compare fits using weighted least squares (by variance at each
+%   amplitude) with a mixed effects model approach
+%   3. compare fits of modified hyperbolic, standard hyperbolic, and
+%   logistic sigmoid for M-wave recruitment data
+%   4. compare fits of standard Gaussian, asymmetric Gaussian (power on
+%   intensities), and asymmetric Gaussian (shift of denominator) for H-wave
+
 % define the modified hyperbolic function for M-wave fitting: p(1) = Mmax,
 % p(2) = I_50 (half-saturation intensity), p(3) = c (slope parameter)
 modHyperbolic = @(p,I) (p(1) * (p(3).^I)) ./ (p(2) + (p(3).^I));
@@ -62,6 +71,19 @@ for leg = 1:2                       % for each leg, ...
         paramsM = [max(M) median(I) 1.2];       % default fallback params
     end
 
+    % TODO: consider moving into a helper function rather than duplicating
+    % compute goodness of fit metrics
+    numParamsM = numel(paramsM);                % number of parameters
+    numPntsM = numel(M);                        % number of data points
+    predM = modHyperbolic(paramsM,I);           % model-predicted values
+    residualsM = M - predM;
+    SSRM = sum(residualsM.^2);                  % sum of squared residuals
+    R2M = 1 - (SSRM / sum((M - mean(M)).^2));   % R^2 calculation
+    % Akaike information criterion
+    AICM = numPntsM * log(SSRM / numPntsM) + 2 * numParamsM;
+    % Bayesian information criterion
+    BICM = numPntsM * log(SSRM / numPntsM) + numParamsM * log(numPntsM);
+
     MmaxFit = paramsM(1);           % extract fit Mmax for normalization
     amplitudesWavesNorm{leg,1} = M ./ MmaxFit;  % normalize M-wave data
     amplitudesWavesNorm{leg,2} = H ./ MmaxFit;  % normalize H-wave data
@@ -84,6 +106,18 @@ for leg = 1:2                       % for each leg, ...
         paramsH = [max(H) median(I) std(I) 1];  % default fallback params
     end
 
+    % compute goodness of fit metrics
+    numParamsH = numel(paramsH);                % number of parameters
+    numPntsH = numel(H);                        % number of data points
+    predH = asymGaussian(paramsH,I);            % model-predicted values
+    residualsH = H - predH;
+    SSRH = sum(residualsH.^2);                  % sum of squared residuals
+    R2H = 1 - (SSRH / sum((H - mean(H)).^2));   % R^2 calculation
+    % Akaike information criterion
+    AICH = numPntsH * log(SSRH / numPntsH) + 2 * numParamsH;
+    % Bayesian information criterion
+    BICH = numPntsH * log(SSRH / numPntsH) + numParamsH * log(numPntsH);
+
     if leg == 1                     % if right leg, ...
         idLeg = 'R';
     else                            % otherwise, left leg
@@ -92,7 +126,13 @@ for leg = 1:2                       % for each leg, ...
 
     fit.M.(idLeg).params = paramsM;
     fit.M.(idLeg).Mmax = MmaxFit;
+    fit.M.(idLeg).R2 = R2M;
+    fit.M.(idLeg).AIC = AICM;
+    fit.M.(idLeg).BIC = BICM;
     fit.H.(idLeg).params = paramsH;
+    fit.H.(idLeg).R2 = R2H;
+    fit.H.(idLeg).AIC = AICH;
+    fit.H.(idLeg).BIC = BICH;
 end
 
 end
