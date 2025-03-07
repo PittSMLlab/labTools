@@ -2,10 +2,11 @@ function [fit,amplitudesWavesNorm] = fitCalAndNormalize(intensitiesStim,amplitud
 %FITCALANDNORMALIZE Fit M- & H-wave recruitment curves & normalize data
 %   This function accepts the stimulation intensities and H- and M-wave
 % amplitudes for the right and left legs as input and fits a modified
-% hyperbolic function to the M-wave data and an asymmetric Gaussian to the
-% H-wave data based on the Brinkworth et al. (J. Neurosci. Methods, 2007)
-% paper (Section 2.4 Curve Fitting) and outputs normalized data for
-% convenience (by the fitted Mmax value).
+% hyperbolic function to the M-wave data (equation 1) and an asymmetric
+% Gaussian to the H-wave data (modified from equation 2) based on the
+% Brinkworth et al. (J. Neurosci. Methods, 2007) paper (Section 2.4 Curve
+% Fitting) and outputs normalized data for convenience (by the fitted Mmax
+% value).
 %
 % input(s):
 %   intensitiesStim: 2 x 1 cell array of number of stimuli x 1 arrays for
@@ -40,56 +41,58 @@ fit.M.modHyperbolic = modHyperbolic;
 fit.H.asymGaussian = asymGaussian;
 amplitudesWavesNorm = cell(2,2);    % initialized normalized data output
 
-for leg = 1:2                           % for each leg, ...
+for leg = 1:2                       % for each leg, ...
     % if no data for one leg, ...
     if isempty(intensitiesStim{leg}) || isempty(amplitudesWaves{leg,1})
         warning("No data available for leg %d. Skipping.",leg);
-        continue;                       % advance to next leg
+        continue;                   % advance to next leg
     end
 
-    I = intensitiesStim{leg};           % stimulation intensities (mA)
-    M = amplitudesWaves{leg,1};         % M-wave amplitudes
-    H = amplitudesWaves{leg,2};         % H-wave amplitudes
+    I = intensitiesStim{leg};       % stimulation intensities (mA)
+    M = amplitudesWaves{leg,1};     % M-wave amplitudes
+    H = amplitudesWaves{leg,2};     % H-wave amplitudes
 
-    % ===== fit M-wave data using non-linear least squares =====
+    % ========== fit M-wave data using non-linear least squares ==========
     try
-        p0M = [max(M) median(I) 1.2];   % initial guess: Mmax, I50, c
+        % initialize coefficients: Mmax, I_50, c
+        p0M = [max(M) median(I) 1.2];
         paramsM = nlinfit(I,M,modHyperbolic,p0M);
     catch
         warning("M-wave fitting failed for leg %d. Using defaults.",leg);
-        paramsM = [max(M) median(I) 1.2];   % default fallback
+        paramsM = [max(M) median(I) 1.2];       % default fallback params
     end
 
-    MmaxFit = paramsM(1);       % extract Mmax from fit for normalization
-    amplitudesWavesNorm{leg,1} = M ./ MmaxFit;      % normalize M-wave data
-    amplitudesWavesNorm{leg,2} = H ./ MmaxFit;      % normalize H-wave data
+    MmaxFit = paramsM(1);           % extract fit Mmax for normalization
+    amplitudesWavesNorm{leg,1} = M ./ MmaxFit;  % normalize M-wave data
+    amplitudesWavesNorm{leg,2} = H ./ MmaxFit;  % normalize H-wave data
 
-    % ===== fit H-wave data using non-linear least squares =====
+    % ========== fit H-wave data using non-linear least squares ==========
     try
-        IU = unique(I);         % find unique stimulation amplitudes
+        IU = unique(I);             % find unique stimulation amplitudes
         avgsH = arrayfun(@(x) mean(H(I == x),'omitnan'),IU);
         [valHmax,locHmax,width] = findpeaks(avgsH,IU,'NPeaks',1);
-        if isempty(valHmax)
-            [valHmax,indHmax] = max(H);
-            locHmax = I(indHmax);
+        if isempty(valHmax)         % if no peak found, ...
+            [valHmax,indHmax] = max(H);         % compute maximum
+            locHmax = I(indHmax);               % intensity at maximum
             width = std(I);
         end
-        p0H = [valHmax locHmax width 1];% initial guess: Hmax, Ipeak, sigma, c
+        % initialize coefficients: Hmax, Ipeak (mu/mean), sigma (stdev), c
+        p0H = [valHmax locHmax width 1];
         paramsH = nlinfit(I,H,asymGaussian,p0H);
     catch
         warning("H-wave fitting failed for leg %d. Using defaults.",leg);
-        paramsH = [max(H) median(I) std(I) 1];  % default fallback
+        paramsH = [max(H) median(I) std(I) 1];  % default fallback params
     end
 
-    if leg == 1     % if right leg, ...
-        fit.M.R.params = paramsM;
-        fit.M.R.Mmax = MmaxFit;
-        fit.H.R.params = paramsH;
-    else            % otherwise, left leg
-        fit.M.L.params = paramsM;
-        fit.M.L.Mmax = MmaxFit;
-        fit.H.L.params = paramsH;
+    if leg == 1                     % if right leg, ...
+        idLeg = 'R';
+    else                            % otherwise, left leg
+        idLeg = 'L';
     end
+
+    fit.M.(idLeg).params = paramsM;
+    fit.M.(idLeg).Mmax = MmaxFit;
+    fit.H.(idLeg).params = paramsH;
 end
 
 end
