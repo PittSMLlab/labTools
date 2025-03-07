@@ -23,13 +23,13 @@
 try     % if Vicon Nexus is running with a file open, use that
     % Vicon Nexus must be open, offline, and the desired trial loaded
     vicon = ViconNexus();
-    [path,filenameWOExt] = vicon.GetTrialName;   % get trial open in Nexus
+    [pathTr,filenameWOExt] = vicon.GetTrialName;% get trial open in Nexus
     filenameWExt = [filenameWOExt '.c3d'];
     guessID = vicon.GetSubjectNames;    % retrieve participant / session ID
 catch   % use below two lines when processing c3d files not open in Nexus
-    [filenameWExt,path] = uigetfile('*.c3d', ...
+    [filenameWExt,pathTr] = uigetfile('*.c3d', ...
         'Please select the c3d file of interest:');
-    compsPath = strsplit(path,filesep);
+    compsPath = strsplit(pathTr,filesep);
     compsPath = compsPath(~cellfun(@isempty,compsPath));
     guessID = compsPath(contains(compsPath,'SA'));
     if isempty(guessID)
@@ -47,12 +47,12 @@ id = id{1};
 % process filename and paths
 [~,filename] = fileparts(filenameWExt);
 trialNum = filename(end-1:end); % last two characters of file name are #
-pathFigs = fullfile(path,'HreflexCalFigs');
+pathFigs = fullfile(pathTr,'HreflexCalFigs');
 if ~isfolder(pathFigs)          % if figure folder doesn't exist, ...
     mkdir(pathFigs);            % make it
 end
 
-H = btkReadAcquisition(fullfile(path,filenameWExt));    % load C3D data
+H = btkReadAcquisition(fullfile(pathTr,filenameWExt));    % load C3D data
 % using the same method as labtools, retrieve the analog data
 [analogs,analogsInfo] = btkGetAnalogs(H);
 
@@ -108,7 +108,7 @@ end
 if ~isfile(fullfile(pathFigs,fnameConf)) || ...
         (isfile(fullfile(pathFigs,fnameConf)) && ~isequal(definput,answer))
     save(fullfile(pathFigs,fnameConf),'answer','analogs','analogsInfo', ...
-        'H','id','path','pathFigs','trialNum','filenameWExt','fnameConf');
+        'H','id','pathTr','pathFigs','trialNum','filenameWExt','fnameConf');
 end
 
 %% 3. Extract User Input Parameters
@@ -426,15 +426,9 @@ avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x),'omitnan'),ampsStimLU);
 % based on equation 2 (section 2.4. Curve fitting from Brinkworth et al.,
 % Journal of Neuroscience Methods, 2007)
 % fun = @(x,xdata)x(1).*exp(-((((((xdata).^(x(3)))-x(4))./(x(2))).^2)./2));
-% TODO: alternate approach would be to convert the mean H-wave amplitudes
-% to integer "frequencies" for each stim amplitude and fit a normal dist.
-% pdR = fitdist(ampsStimRU','Normal', ...
-%     'Frequency',round((avgsHwaveR / max(avgsHwaveR)) * 10000));
 % initialize coefficients
 % coefsR0 = [max(avgsHwaveR) std(ampsStimRU) 1 mean(ampsStimRU)];
 % coefsR = lsqcurvefit(fun,coefsR0,ampsStimRU,avgsHwaveR);
-% pdL = fitdist(ampsStimLU','Normal', ...
-%     'Frequency',round((avgsHwaveL / max(avgsHwaveL)) * 10000));
 % coefsL0 = [max(avgsHwaveL) std(ampsStimLU) 1 mean(ampsStimLU)];
 % coefsL = lsqcurvefit(fun,coefsL0,ampsStimLU,avgsHwaveL);
 
@@ -451,8 +445,6 @@ Hreflex.plotNoiseHistogram(ampsNoiseR,'Right Leg',id,trialNum,pathFigs);
 Hreflex.plotNoiseHistogram(ampsNoiseL,'Left Leg',id,trialNum,pathFigs);
 
 %% 14. Plot Recruitment Curve for Both Legs
-% TODO: add normal distribution fit to H-wave recruitment curve to pick out
-% peak amplitude and current at which peak occurs
 % incX = 0.1; % increment for curve fit (in mA)
 % xR = min(ampsStimRU):incX:max(ampsStimRU);
 % yR = fun(coefsR,xR);
