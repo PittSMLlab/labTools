@@ -119,10 +119,12 @@ if ~isRatio                                             % if not ratio, ...
     legend([p1 p2],'M-wave','H-wave','Location','best');% add legend
 end
 
-% TODO: make figure title and filename optional inputs
+legNoSpace = strsplit(leg);
+legNoSpace = [legNoSpace{1} legNoSpace{2}];
 if ~isempty(pathFig)                % if figure saving path provided, ...
+    % TODO: make figure title and filename optional inputs
     nameFile = fullfile(pathFig,sprintf('%s_Hreflex%sCurve_Trial%s_%s', ...
-        id,type,trialNum,erase(leg,' ')));
+        id,type,trialNum,legNoSpace));
     saveas(fig,nameFile + ".png");  % save figure
     saveas(fig,nameFile + ".fig");  % TODO: just use 'fullfile' if readable
 end

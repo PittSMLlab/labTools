@@ -39,10 +39,12 @@ txtTitle = sprintf('%s - Trial %s - %s - Noise Distribution', ...
     id,trialNum,leg);
 title(txtTitle);
 
-% TODO: make figure title and filename optional inputs
+legNoSpace = strsplit(leg);
+legNoSpace = [legNoSpace{1} legNoSpace{2}];
 if ~isempty(pathFig)                % if figure saving path provided, ...
+    % TODO: make figure title and filename optional inputs
     nameFile = fullfile(pathFig,sprintf( ...
-        '%s_NoiseDistribution_Trial%s_%s',id,trialNum,erase(leg,' ')));
+        '%s_NoiseDistribution_Trial%s_%s',id,trialNum,legNoSpace));
     saveas(fig,nameFile + ".png");  % save figure
     saveas(fig,nameFile + ".fig");  % TODO: just use 'fullfile' if readable
 end

@@ -78,12 +78,12 @@ for leg = 1:2                       % for each leg, ...
         paramsM = [max(M) median(I) 1.2];       % default fallback params
     end
 
+    MmaxFit = paramsM(1);           % extract fit Mmax for normalization
     fit.M.(idLeg).params = paramsM;
     fit.M.(idLeg).Mmax = MmaxFit;
     [fit.M.(idLeg).R2,fit.M.(idLeg).AIC,fit.M.(idLeg).BIC] = ...
         computeFitQuality(I,M,modHyperbolic,paramsM);
 
-    MmaxFit = paramsM(1);           % extract fit Mmax for normalization
     amplitudesWavesNorm{leg,1} = M ./ MmaxFit;  % normalize M-wave data
     amplitudesWavesNorm{leg,2} = H ./ MmaxFit;  % normalize H-wave data
 
