@@ -13,6 +13,7 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
 %   leg: 'Right Leg' or 'Left Leg' are the two possible values
 %   id: string or character array of participant / session ID for naming
 %   trialNum: string or character array of the trial number for naming
+%   fit: OPTIONAL input structure of the M-wave and H-wave model fits
 %   noise: OPTIONAL input for the background noise level for the
 %       eligibility threshold
 %   pathFig: OPTIONAL input for saving figures (not saved if not provided)
@@ -20,27 +21,47 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
 % output:
 %   fig: handle object to the figure generated
 
-narginchk(6,8); % verify correct number of input arguments
+narginchk(6,9); % verify correct number of input arguments
 
 numOptArgs = length(varargin);
 switch numOptArgs
     case 0
-        noise = nan;   % default to Not-a-Number
-        pathFig = '';      % default to empty
+        fit = struct();                 % default to empty structure
+        noise = NaN;                    % default to not-a-number
+        pathFig = '';                   % default to empty
     case 1  % one optional argument provided
-        if isnumeric(varargin{1})   % if a number, ...
-            noise = varargin{1};   % it is the threshold
+        if isnumeric(varargin{1})       % if a number, ...
+            fit = struct();
+            noise = varargin{1};        % it is the threshold
             pathFig = '';
-        else                        % otherwise, ...
-            pathFig = varargin{1};     % is is the file saving path
-            noise = nan;
+        elseif isstruct(varargin{1})    % if a structure, ...
+            fit = varargin{1};          % it is the model fits
+            noise = NaN;
+            pathFig = '';
+        else                            % otherwise, ...
+            fit = struct();
+            noise = NaN;
+            pathFig = varargin{1};      % it is the file saving path
         end
-    case 2  % both optional arguments provided
-        noise = varargin{1};   % first always threshold
-        pathFig = varargin{2};     % second always file saving path
+    case 2
+        fit = varargin{1};
+        noise = varargin{2};
+        pathFig = '';
+    case 3
+        fit = varargin{1};              % first always model fit structure
+        noise = varargin{2};            % second always noise threshold
+        pathFig = varargin{3};          % third always file saving path
 end
 
 isRatio = contains(yLabel,'ratio','IgnoreCase',true);   % is ratio plot?
+
+legID = leg(1);
+
+if ~isempty(fieldnames(fit))            % if model fit available, ...
+    I_fit = linspace(min(amplitudesStim),max(amplitudesStim),100);
+    M_fit = fit.M.modHyperbolic(fit.M.(legID).params,I_fit);
+    H_fit = fit.H.asymGaussian(fit.H.(legID).params,I_fit);
+end
 
 amplitudesStimU = unique(amplitudesStim);   % unique stimulation amplitudes
 avgs = cellfun(@(x) arrayfun(@(u) mean(x(amplitudesStim == u), ...
@@ -70,14 +91,16 @@ if isRatio  % if this is an H:M ratio curve, ...
 else        % otherwise, this is an H- and M-wave recruitment curve
     plot(amplitudesStim,values{1},'x','Color',[0.5 0.5 0.5], ...
         'MarkerSize',10);                       % raw M-wave points
-    p1 = plot(amplitudesStimU(hasVals{1}),avgs{1}(hasVals{1}), ...
+    p1 = plot(amplitudesStimU(hasVals{1}),avgs{1}(hasVals{1}),'--', ...
         'LineWidth',2,'Color',[0.5 0.5 0.5]);   % averaged M-wave
     plot(amplitudesStim,values{2},'ok','MarkerSize',10);    % raw H-wave
-    p2 = plot(amplitudesStimU(hasVals{2}),avgs{2}(hasVals{2}),'k', ...
+    p2 = plot(amplitudesStimU(hasVals{2}),avgs{2}(hasVals{2}),'k--', ...
         'LineWidth',2);                         % averaged H-wave
-    % p3 = plot(xL,yL,'b--','LineWidth',2);
+    if ~isempty(fieldnames(fit))
+        p3 = plot(I_fit,M_fit,'LineWidth',2,'Color',[0.5 0.5 0.5]); % fit
+        p4 = plot(I_fit,H_fit,'k','LineWidth',2);
+    end
 end
-
 
 % Highlight max values with lines and labels
 maxYOffset = 0.05 * max(cell2mat(values));
