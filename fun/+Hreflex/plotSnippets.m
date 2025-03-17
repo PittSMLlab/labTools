@@ -6,13 +6,13 @@ function fig = plotSnippets(times,snippets,yLabels,titles,id,trialNum,path)
 % input:
 %   times: number of samples x 1 array of the time in seconds with 0
 %       indicating the identified stimulation artifact peak
-%   snippets: 2 x N cell array of number of snippets x number of samples
-%       arrays of force or raw EMG data (NOTE: no cells may be empty, and
-%       every cell must have a corresponding label)
+%   snippets: 2 x 3 cell array of number of snippets x number of samples
+%       arrays for right (row 1) and left (row 2) leg H-reflex (col 1),
+%       ipsilateral (col 2) and contralateral (col 3) GRF snippets
 %   yLabels: N x 1 cell array of strings or character arrays of the tile
-%       y-axis labels for each of the snippets plot
+%       y-axis labels for each of the snippets plotted
 %   titles: N x 1 cell array of strings or character arrays of the tile
-%       titles for each of the snippets plot
+%       titles for each of the snippets plotted
 %   id: string or character array of participant / session ID for naming
 %   trialNum: string or character array of the trial number for naming
 %   path: OPTIONAL input for saving figures (not saved if not provided)
@@ -20,6 +20,16 @@ function fig = plotSnippets(times,snippets,yLabels,titles,id,trialNum,path)
 %   fig: handle object to the figure generated
 
 narginchk(6,7); % verify correct number of input arguments
+
+if string(version('-release')) < "2019b" % if version older than 2019b, ...
+    error(['MATLAB version must support ''tiledlayout'' (R2019b or ' ...
+        'later.']);
+end
+
+% validate the size of 'snippets' and ensure it matches the expected format
+if size(snippets,1) ~= 2 || size(snippets,2) ~= 3
+    error('Expected `snippets` to be a 2x3 cell array.');
+end
 
 numSnipSamps = cellfun(@(x) size(x,2),snippets);
 numSnipSamps = reshape(numSnipSamps,1,[]);
@@ -30,46 +40,65 @@ end
 % TODO: ensure that there is at least one snippet
 % TODO: adapt this function to work for generating any snippets plot
 
-% TODO: consider converting to a date object before performing the
-% comparison, although string comparison seems to work just fine
-if string(version('-release')) < "2019b" % if version older than 2019b, ...
-    error('MATLAB version is not compatible with ''tiledlayout''.');
+% ensure the number of titles and labels matches the number of tiles
+if all(cellfun(@isempty,snippets(:,2:3)))
+    numTiles = 2;           % right and left EMG
+else
+    numTiles = 4;           % right GRFs, left GRFs, right EMG, left EMG
+    if length(titles) ~= numTiles || length(yLabels) ~= numTiles
+        error('Mismatch between the number of tiles, titles, or yLabels.');
+    end
 end
 
-numTiles = length(titles);             % number of tile titles
-
-% create new figure
-% TODO: do we want the figure to be full screen?
-%       figure('Units','normalized','OuterPosition',[0 0 1 1]);
+% create new figure - a vertically oriented tiled layout
+% ('Units','normalized','OuterPosition',UPDATETHIS)
 fig = figure;
-tl = tiledlayout(numTiles,1,'TileSpacing','tight'); % orient vertically
-
-indsForce = contains(titles,{'force','fz'},'IgnoreCase',true);
-numForce = sum(indsForce);          % number of force labels
-hasForce = any(indsForce);          % is there force data present?
-numNonForce = numTiles - numForce;  % number of non-force labels
+tl = tiledlayout(numTiles,1,'TileSpacing','tight','Padding','compact');
 
 % NOTE: assuming inputs in desired plot order from top to bottom
-% TODO: consider plotting ipsilateral and contralateral leg force in the
-% same tile but with different colors so that the gait phase in which stim
-% occurred can more easily be deciphered; this would require changing the
-% format of the snippets input and labeling
-if hasForce     % if force provided for plotting, ...
-    % NOTE: assuming always either two force tiles or none
-    plotTile(times,[snippets{1,2}; snippets{1,3}],yLabels{1},titles{1});
+% check for force data (columns 2 & 3) and plot combined GRFs if available
+if ~isempty(snippets{1,2}) && ~isempty(snippets{1,3})
+    nexttile;           % plot right leg ipsilateral and contralateral GRFs
+    hold on;
+    plot(times,snippets{1,2},'LineWidth',1.5,'Color',[0.000 0.447 0.741]);
+    plot(times,snippets{1,3},'LineWidth',1.5,'Color',[0.850 0.325 0.098]);
+    title(titles{1});
+    ylabel(yLabels{1});
     xlim([times(1) times(end)]);
-    plotTile(times,[snippets{2,2}; snippets{2,3}],yLabels{2},titles{2});
-    xlim([times(1) times(end)]);
+    hold off;
 end
 
-ax = gobjects(1,numNonForce);   % initialize array of Axes objects
+if ~isempty(snippets{2,2}) && ~isempty(snippets{2,3})
+    nexttile;           % plot left leg ipsilateral and contralateral GRFs
+    hold on;
+    plot(times,snippets{2,2},'LineWidth',1.5,'Color',[0.000 0.447 0.741]);
+    plot(times,snippets{2,3},'LineWidth',1.5,'Color',[0.850 0.325 0.098]);
+    title(titles{2});
+    ylabel(yLabels{2});
+    xlim([times(1) times(end)]);
+    hold off;
+end
+
+ax = gobjects(1,2);         % initialize array of Axes objects
 % TODO: move y-axis limit code outside this function or make optional input
 % (e.g., which index to start from) for more flexibility
 indsYLims = times > 0.005;
 ymin = 0;                   % initialize minimum y-axis value to be 0
 ymax = 0;
-for ii = 1:numNonForce      % for each non-force signal, ...
-    ax(ii) = plotTile(times,snippets{ii,1},yLabels{ii},titles{ii});
+for ii = 1:2                % for each EMG H-reflex snippets array, ...
+    ax(ii) = nexttile;      % advance to next figure tile
+    hold on;
+    xline(0,'k','LineWidth',2); % stimulation artifact alignment
+    % M-wave and H-wave range
+    % TODO: update to accept as function input rather than hard-coding
+    xline(0.0045,'b','LineWidth',1.5);  % M-wave start: 4.5 ms after stim
+    xline(0.0200,'b','LineWidth',1.5);  % M-wave end: 20 ms    artifact
+    xline(0.0250,'g','LineWidth',1.5);  % H-wave start: 25 ms after stim
+    xline(0.0450,'g','LineWidth',1.5);  % H-wave end: 45 ms   artifact
+    plot(times,snippets{ii,1},'LineWidth',1.5);
+    hold off;
+    title(titles{ii+2}); % EMG titles are in positions 3 and 4
+    ylabel(yLabels{ii+2});
     newYmin = min(snippets{ii,1}(:,indsYLims),[],'all');
     newYmax = max(snippets{ii,1}(:,indsYLims),[],'all');
     if newYmin < ymin       % if minimum y-value less than previous, ...
@@ -81,48 +110,23 @@ for ii = 1:numNonForce      % for each non-force signal, ...
 end
 
 linkaxes(ax);
-xlabel(tl,'time (s)');
 xlim([times(1) times(end)]);
 ylim([ymin ymax]);
 
+xlabel(tl,'Time (s)');
+title(tl,sprintf('%s - Trial %s - H-Reflex Snippets',id,trialNum));
+
 % TODO: should y-axis limits be the same in case of both legs present?
 % TODO: consider accepting labels as optional input argument
-xlabel(tl,'time (s)');  % TODO: make work for either sample number or time
+% TODO: make work for either sample number or time
 % TODO: make figure title and filename optional inputs
-title(tl,[id ' - Trial' trialNum ' - H-Reflex Snippets']);
 
-if ~isempty(path)   % if figure saving path provided as input argument, ...
-    % save figure
-    saveas(gcf,[path id '_HreflexSnippets_Trial' trialNum '.png']);
-    saveas(gcf,[path id '_HreflexSnippets_Trial' trialNum '.fig']);
+if nargin == 7 && ~isempty(path)    % if figure saving path provided, ...
+    saveas(fig,fullfile(path, ...
+        sprintf('%s_HreflexSnippets_Trial%s.fig',id,trialNum)));
+    saveas(fig,fullfile(path, ...
+        sprintf('%s_HreflexSnippets_Trial%s.png',id,trialNum)));
 end
-
-end
-
-function ax = plotTile(t,y,yLbl,ttl)
-% TODO: make this helper function in separate file to use elsewhere
-
-ax = nexttile;  % advance to the next tile in tiled layout figure
-hold on;
-xline(0,'k','LineWidth',2);     % indicate stim artifact alignment
-if ~contains(yLbl,{'force','fz'},'IgnoreCase',true)  % if EMG snippet, ...
-    % plot lines indicating M-wave and H-wave range
-    % TODO: make this optional input
-    % TODO: do not hardcode start and stop times
-    xline(0.004,'b');           % M-wave start:  4 ms after stim artifact
-    xline(0.023,'b');           % M-wave end:   23 ms
-    xline(0.024,'g');           % H-wave start: 24 ms after stim artifact
-    xline(0.049,'g');           % H-wave end:   43 ms
-end
-plot(t,y);
-hold off;
-ylabel(yLbl);
-% if contains(ttl,{'force','fz'},'IgnoreCase',true)   % if force snippet, ...
-%     ylabel('Force (N)');
-% else                                                % otherwise, ...
-%     ylabel('Raw EMG (V)');                          % EMG snippet(s)
-% end
-title(ttl);
 
 end
 

@@ -62,14 +62,14 @@ for tr = indsTrials     % for each trial specified, ...
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
 
     % run reconstruct and label pipeline on the trial
-    dataMotion.reconstructAndLabelTrial(pathTrial,vicon);
+    dataMotion.reconstructAndLabelTrial(pathTrial,vicon,false);
 
     % extract marker gaps to be filled
     markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
 
     % fill small marker gaps using spline interpolation
     markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
-        pathTrial,vicon);
+        pathTrial,vicon,false);
 
     % fill gaps using pattern fill for each reference marker
     for ref = 1:numel(markersRef)       % for each reference marker, ...
@@ -79,6 +79,14 @@ for tr = indsTrials     % for each trial specified, ...
         % Process gaps for the current reference marker
         markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
             markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+    end
+
+    fprintf('Saving trial %d: %s\n',tr,pathTrial);
+    try
+        vicon.SaveTrial(200);
+        fprintf('Trial saved successfully.\n');
+    catch ME
+        warning(ME.identifier,'%s',ME.message);
     end
 end
 
@@ -111,7 +119,7 @@ for side = sides
 
     % fill gaps using pattern-based method
     remainingGaps = dataMotion.fillMarkerGapsPattern( ...
-        gaps,pathTrial,[sidePrefix refMarker],vicon);
+        gaps,pathTrial,[sidePrefix refMarker],vicon,false);
 
     % update the marker gaps structure with the remaining gaps
     markerNames = fieldnames(remainingGaps);
