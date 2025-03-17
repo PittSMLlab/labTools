@@ -100,10 +100,13 @@ else
     fAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
 end
 
-%% Compute:
-% find walking direction, y difference slow ankle marker from STO to SHS2
+%% Compute Walking Direction
+% direction is determined from y-axis difference of slow ankle marker
+% between mid-stance and terminal stance (STO to SHS2)
 % TODO: would using SHS and STO work just as well?
 direction = sign(diff(sAnk(:,4:5,2),1,2));
+
+% handle missing values in direction vector
 indsDirNans = find(isnan(direction));   % identify any NaN values
 numNans = length(indsDirNans);          % number of NaN values
 for miss = 1:numNans                    % for each missing value, ...
@@ -115,8 +118,9 @@ for miss = 1:numNans                    % for each missing value, ...
     direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), ...
         [find(hasVal,1) find(hasVal,1,'last')],2),1,2));
 end
-% find invalid measurements (0 or 1 non-NaN y-values so difference is 0)
+
 % TODO: would it be best to simply leave the zeros since unclear?
+% handle invalid direction values (cases where only one valid y-value exists)
 indsDirZeros = find(direction == 0);
 numZeros = length(indsDirZeros);
 for inv = 1:numZeros                    % for each invalid measure, ...
@@ -135,13 +139,15 @@ end
 % set invalid direction values to previous stride direction value
 % direction(indsDirZeros) = direction([indsDirZeros(2:end); false]);
 
+%% Compute Ankle Positions Relative to Hip
 hipPos3D = 0.5 * (sHip + fHip);
+hipPosFwd = hipPos3D(:,:,2);    % extract y-axis component
 hipPos3DRel = 0.5 * (sHipRel + fHipRel);    % just for check, should be all zeros
-hipPosFwd = hipPos3D(:,:,2);    % y-axis component
 % hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
-hipPosSHS = hipPosFwd(:,1);
-hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % average Hip Position from SHS to STO2
-hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % average Hip Position from SHS to STO2
+hipPosSHS = hipPosFwd(:,1);     % hip position at SHS
+% compute average hip position over gait cycle
+hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % average hip position from SHS to STO2
+hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % average hip position from SHS to STO2
 
 %rotate coordinates to be aligned wiht walking dierection
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
@@ -155,21 +161,21 @@ hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % average Hip Position from
 %sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
 %fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
 
-%NEED TO ROTATE
-
-hipPos2D = hipPos3D(:,:,1:2);
-%Compute ankle position relative to average hip position
+% NEED TO ROTATE
+% compute ankle positions relative to average hip position
 sAnkFwd = sAnk(:,:,2) - hipPosFwd;
 fAnkFwd = fAnk(:,:,2) - hipPosFwd;
-sAnk2D = sAnk(:,:,1:2) - hipPos2D;
-fAnk2D = fAnk(:,:,1:2) - hipPos2D;
+sAnk2D = sAnk(:,:,1:2) - hipPos3D(:,:,1:2);
+fAnk2D = fAnk(:,:,1:2) - hipPos3D(:,:,1:2);
 sAnk_fromAvgHip = sAnk(:,:,2) - hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
 fAnk_fromAvgHip = fAnk(:,:,2) - hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
-% Set all steps to have the same slope (a negative slope during stance phase is assumed)
+
+% set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
 
-aux = sign(diff(sAnk(:,[3,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indFHS,2). Doesn't use HIP to avoid HIP fluctuation issues.
+% adjust stride data to ensure consistent slope during stance phase
+aux = sign(diff(sAnk(:,[3 5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indFHS,2). Doesn't use HIP to avoid HIP fluctuation issues.
 sAnkFwd = bsxfun(@times,sAnkFwd,aux);
 fAnkFwd = bsxfun(@times,fAnkFwd,aux);
 sAnk2D = bsxfun(@times,sAnk2D,aux);
