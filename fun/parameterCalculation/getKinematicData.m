@@ -1,5 +1,7 @@
-function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip]=getKinematicData(eventTimes,markerData,angleData,s)
-%getKinematicData   loads marker data sampled only at time of gait events
+function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle, ...
+    fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip] = ...
+    getKinematicData(eventTimes,markerData,angleData,s)
+%GETKINEMATICDATA loads marker data sampled only at time of gait events
 %
 %getKinematicData generates:
 %
@@ -97,9 +99,39 @@ else
 end
     
 %% Compute:
-%find walking direction
-direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on the y-axis, between fTO and fHS
+% find walking direction, y difference slow ankle marker from STO to SHS2
+% TODO: would using SHS and STO work just as well?
+direction = sign(diff(sAnk(:,4:5,2),1,2));
+indsDirNans = find(isnan(direction));   % identify any NaN values
+numNans = length(indsDirNans);          % number of NaN values
+for miss = 1:numNans                    % for each missing value, ...
+    % check only y-axis values for current stride (i.e., none of gait
+    % events with '2' in the name since could be at or approaching a turn)
+    hasVal = ~isnan(sAnk(indsDirNans(miss),1:4,2));
+    % use two most disparate gait events in time to try to account for
+    % noise in the ankle marker y-axis position during stance phase
+    direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), ...
+        [find(hasVal,1) find(hasVal,1,'last')],2),1,2));
+end
+% find invalid measurements (0 or 1 non-NaN y-values so difference is 0)
+% TODO: would it be best to simply leave the zeros since unclear?
+indsDirZeros = find(direction == 0);
+numZeros = length(indsDirZeros);
+for inv = 1:numZeros                    % for each invalid measure, ...
+    if indsDirZeros(inv) == 1           % if first stride is invalid, ...
+        direction(1) = direction(2);    % set to be same as stride 2
+    else                                % otherwise, ...
+        % set invalid direction value to be previous stride direction value
+        direction(indsDirZeros(inv)) = direction(indsDirZeros(inv)-1);
+    end
+end
 
+% if find(indsDirZeros,1) == 1        % if first stride is invalid, ...
+%     direction(1) = direction(2);    % set to be same as stride 2
+%     indsDirZeros = direction == 0;  % remove stride 1 from invalid list
+% end
+% set invalid direction values to previous stride direction value
+% direction(indsDirZeros) = direction([indsDirZeros(2:end); false]);
 
 hipPos3D=.5*(sHip+fHip);
 hipPos3DRel=.5*(sHipRel+fHipRel); %Just for check, should be all zeros
