@@ -57,12 +57,20 @@ for t=cell2mat(info.trialnums) %loop through each trial
                     warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
                 else
                     switch fieldList{j}(end)%parse devices
-                        case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt
-                            forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
+                        case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt for the forward configuration and right for the backward configuration
+                            if info.backwardCheck == 1
+                                forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
+                            else
+                                forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
+                            end
                             units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                             relData=[relData,analogs.(fieldList{j})];
-                        case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt
-                            forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
+                        case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt for the forward configuration and left for the backward configuration
+                            if info.backwardCheck == 1
+                                forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
+                            else
+                                forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
+                            end
                             units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
                             relData=[relData,analogs.(fieldList{j})];
                         case '3' %Forces/moments ending in '4' area assumed to be of handrail %NIV

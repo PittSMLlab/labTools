@@ -17,6 +17,8 @@ classdef derivedMetaData < trialMetaData
                 schenleyLab=parentMeta.schenleyLab;
                 perceptualTasks=parentMeta.perceptualTasks;
                 datlog=parentMeta.datlog;
+                % fastLeg=parentMeta.fastLeg;
+                % backwardCheck=parentMeta.backwardCheck;
             end
             if ~exist('condition','var') %no condition provided & hasn't been set by parent meta.
                 condition = []; %default to empty (the type of default to set see @trialMetaData properties default)
@@ -39,6 +41,10 @@ classdef derivedMetaData < trialMetaData
 
             if ~exist('fastLeg','var') %no condition provided
                 fastLeg = refLeg; %default to empty
+            end
+
+            if ~exist('backwardCheck','var') %no condition provided
+                backwardCheck = ""; %default to empty
             end
             
             this@trialMetaData(ID,desc,obs,refLeg,condition,rawDataFilename,parentMeta.type,schenleyLab,perceptualTasks,datlog) 

@@ -5,7 +5,7 @@ function varargout = GetInfoGUI(varargin)
 %
 % See also: importc3d/ExpDetails, errorProofInfo
 
-% Last Modified by GUIDE v2.5 29-May-2024 13:58:42
+% Last Modified by GUIDE v2.5 18-Mar-2025 13:58:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -314,6 +314,16 @@ function  schenleyLab_Callback(hObject, eventdata, handles)
 % guidata(hObject,handles);
 
 function  perceptualTasks_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of force_check
+% set(handles.schenleyLab,'enable','on')
+% guidata(hObject,handles);
+
+% function  fastLeg_Callback(hObject, eventdata, handles)
+% % Hint: get(hObject,'Value') returns toggle state of force_check
+% % set(handles.schenleyLab,'enable','on')
+% % guidata(hObject,handles);
+
+function  backwardCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of force_check
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
@@ -745,7 +755,13 @@ if file~=0
            subInfo.perceptualTasks = 0;
            set(handles.perceptualTasks,'Value',subInfo.perceptualTasks);
         end
-
+        
+         if isfield(subInfo, 'backwardCheck')
+            set(handles.backwardCheck,'Value',subInfo.backwardCheck);
+        else 
+           subInfo.backwardCheck = 0;
+           set(handles.backwardCheck,'Value',subInfo.backwardCheck);
+        end
         
         if isfield(subInfo, 'emg_check')
             set(handles.emg_check,'Value',subInfo.EMGs);
@@ -1381,6 +1397,11 @@ function perceptualTasks_CreateFcn(hObject, eventdata, handles)
 %     set(hObject,'BackgroundColor','white');
 % end
 
+function backwardCheck_CreateFcn(hObject, eventdata, handles)
+% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+%     set(hObject,'BackgroundColor','white');
+% end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------ButtonDownFcns-----------------------------%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1663,8 +1684,4 @@ function type20_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-
-
 
