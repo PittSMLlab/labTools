@@ -31,7 +31,7 @@ classdef experimentMetaData
         trialsInCondition={};
         Ntrials=[];
         SchenleyPlace = [];
-        PerceptualTasks = [];
+        PerceptualTasks = []; 
         datlog;
     end
 
