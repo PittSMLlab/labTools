@@ -134,7 +134,7 @@ for miss = 1:numNans                    % for each missing value, ...
 end
 
 % TODO: would it be best to simply leave the zeros since unclear?
-% handle invalid direction values (cases where only one valid y-value exists)
+% handle invalid direction values (where only one valid y-value exists)
 indsDirZeros = find(direction == 0);
 numZeros = length(indsDirZeros);
 for inv = 1:numZeros                    % for each invalid measure, ...
@@ -145,13 +145,6 @@ for inv = 1:numZeros                    % for each invalid measure, ...
         direction(indsDirZeros(inv)) = direction(indsDirZeros(inv)-1);
     end
 end
-
-% if find(indsDirZeros,1) == 1        % if first stride is invalid, ...
-%     direction(1) = direction(2);    % set to be same as stride 2
-%     indsDirZeros = direction == 0;  % remove stride 1 from invalid list
-% end
-% set invalid direction values to previous stride direction value
-% direction(indsDirZeros) = direction([indsDirZeros(2:end); false]);
 
 %% Compute Ankle Positions Relative to Hip
 hipPos3D = 0.5 * (sHip + fHip);
