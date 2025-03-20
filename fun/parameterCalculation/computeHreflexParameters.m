@@ -14,7 +14,7 @@ function out = computeHreflexParameters(strideEvents,HreflexData, ...
 % TODO: accept GRF data as input argument (if necessary) to leave as NaN
 % strides for which stim occurs during double rather than single stance
 % TODO: store parameters as a structure if possible to convert to
-% 'parameterSeries' object to code readability (i.e., far fewer lines)
+% 'parameterSeries' object to help code readability (i.e., far fewer lines)
 
 %% Gait Stride Event Times
 timeSHS = strideEvents.tSHS;    % array of slow heel strike event times
@@ -29,7 +29,12 @@ muscles = {'SOL','MG','LG'};
 legs = {'Slow','Fast'};
 % H-reflex stimulation timing and amplitude parameters
 % TODO: add convenience parameter for percentage of stance phase
-% TODO: consider implementing Wilson Amplitude background EMG parameter
+% TODO: consider implementing Wilson Amplitude, sample entropy, skewness,
+%       kurtosis, or power spectrum deformation EMG parameters? Integrated
+%       EMG or sample entropy can be used for onset detection (perhaps for
+%       distinguishing H-reflex from background regions). Sample entropy is
+%       especially robust to noise and can be used for EMG filtering.
+%       Sample entropy can distinguish stroke (spastic) from healthy EMG.
 % TODO: store timing of the H- and M-waves?
 % "The H-reflex amplitude is simply the peak-to-peak measurement of reflex,
 % and the BEMG is the average rectified EMG amplitude present in the muscle
@@ -187,10 +192,12 @@ timeStimFast = times(indsStimArtifact{indFast});
 % during a transition into a new condition or before a first valid HS is
 % detected) or too late (e.g., more than 1 second after final HS)
 % TODO: 1 second may not be the correct threshold here
-shouldDiscardStimSlow = (timeStimSlow <= timeSHS(1)) | ...
-    (timeStimSlow >= (timeSHS(end)+1));
-shouldDiscardStimFast = (timeStimFast <= timeFHS(1)) | ...
-    (timeStimFast >= (timeFHS(end)+1));
+timeSHSNoNaNs = timeSHS(~isnan(timeSHS));
+timeFHSNoNaNs = timeFHS(~isnan(timeFHS));
+shouldDiscardStimSlow = (timeStimSlow <= timeSHSNoNaNs(1)) | ...
+    (timeStimSlow >= (timeSHSNoNaNs(end)+1));
+shouldDiscardStimFast = (timeStimFast <= timeFHSNoNaNs(1)) | ...
+    (timeStimFast >= (timeFHSNoNaNs(end)+1));
 timeStimSlow = timeStimSlow(~shouldDiscardStimSlow);
 timeStimFast = timeStimFast(~shouldDiscardStimFast);
 
@@ -288,7 +295,7 @@ end
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
 for ii=1:length(paramLabels)
-    eval(['data(:,i) = ' paramLabels{ii} ';']);
+    eval(['data(:,ii) = ' paramLabels{ii} ';']);
 end
 
 %% Output the Computed Parameters
