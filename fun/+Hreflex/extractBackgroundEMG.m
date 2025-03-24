@@ -56,7 +56,7 @@ for leg = 1:2                           % for right and left leg, ...
         % check boundaries: if window exceeds signal limits, fill with NaN
         % TODO: may be overkill since likely would never occur (or just at
         % first and last strides), snippets{leg}(ii,:) = rawEMG{leg}(win);
-        valid = (win >= 1) & (win <= length(rawEMG{leg}));
+        valid = (win >= 1) & (win <= numel(rawEMG{leg}));
         if any(valid)
             temp = nan(1,numSamps);
             temp(valid) = rawEMG{leg}(win(valid));

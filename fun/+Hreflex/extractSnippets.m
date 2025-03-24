@@ -51,36 +51,59 @@ for leg = 1:2                           % for right and left leg, ...
 end
 
 for leg = 1:2                           % for right and left leg, ...
-    if ~isempty(indsPeaks{leg})         % if stim. artifact peaks, ...
-        snippets = extractSnippetsLeg(leg,indsPeaks,rawEMG,GRFz, ...
-            snippets,snipStart,snipEnd,period);
+    if isempty(indsPeaks{leg}) || isempty(rawEMG{leg})
+        continue;                       % advance to next leg
     end
+    snippets(leg,:) = extractSnippetsLeg(indsPeaks{leg},rawEMG{leg},GRFz,leg,numSamps,snipStart,snipEnd,period);
 end
 
 end
 
-function snippets = extractSnippetsLeg(leg,indsPeaks,rawEMG,GRFz, ...
-    snippets,snipStart,snipEnd,period)
-% extract H-reflex snippets for a single leg
+function snipCell = extractSnippetsLeg(indsPeaks,EMG,GRFz,leg, ...
+    numSamples,snipStart,snipEnd,period)
+%EXTRACTSNIPPETSLEG Extract snippets for a single leg (EMG and GRF)
+%   This function loops over each provided index, extracts the window
+% relative to the index, and fills any out-of-bound indices with 'NaN'.
 
-numStim = numel(indsPeaks{leg});        % number of stimuli for current leg
+numStim = numel(indsPeaks);             % number of stimuli for current leg
+snipEMG = nan(numStim,numSamples);      % EMG snippets
+snipIpsi = nan(numStim,numSamples);     % ipsilateral GRFz snippets
+snipContra = nan(numStim,numSamples);   % contralateral GRFz snippets
+
 for st = 1:numStim                      % for each stimulus, ...
-    win = (indsPeaks{leg}(st) + (snipStart / period)) : ...
-        (indsPeaks{leg}(st) + (snipEnd / period));    % snippet window
-
-    if ~isempty(rawEMG{leg})            % if EMG data available, ...
-        snippets{leg,1}(st,:) = rawEMG{leg}(win);       % H-reflex snippet
+    win = (indsPeaks(st) + round(snipStart / period)) : ...
+        (indsPeaks(st) + round(snipEnd / period));      % snippet window
+    % create a temporary array for the snippet filled with 'NaN'
+    temp = nan(1,numSamples);
+    % determine valid indices within bounds for EMG
+    valid = (win >= 1) & (win <= numel(EMG));
+    if any(valid)                       % if any data within bounds, ...
+        temp(valid) = EMG(win(valid));  % H-reflex snippet
     end
+    snipEMG(st,:) = temp;
 
     if ~isempty(GRFz{leg})              % if GRFz data available, ...
-        snippets{leg,2}(st,:) = GRFz{leg}(win);         % ipsilateral GRF
+        temp = nan(1,numSamps);
+        valid = (win >= 1) & (win <= numel(GRFz{leg}));
+        if any(valid)
+            temp(valid) = GRFz{leg}(win(valid));        % ipsilateral GRFz
+        end
+        snipIpsi(st,:) = temp;
     end
 
     legContra = 3 - leg;                % contralat. index (1 -> 2, 2 -> 1)
     if ~isempty(GRFz{legContra})        % if GRFz data available, ...
-        snippets{leg,3}(st,:) = GRFz{legContra}(win);   % contralateral GRF
+        temp = nan(1,numSamps);
+        valid = (win >= 1) & (win <= numel(GRFz{contraLeg}));
+        if any(valid)
+            temp(valid) = GRFz{contraLeg}(win(valid));  % contralateral GRF
+        end
+        snipContra(st,:) = temp;
     end
 end
+
+% return as a cell array [EMG, Ipsilateral GRF, Contralateral GRF]
+snipCell = {snipEMG, snipIpsi, snipContra};
 
 end
 
