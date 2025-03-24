@@ -1,11 +1,11 @@
 function [snippets,timesSnippet] = extractSnippets(indsPeaks,rawEMG,GRFz)
-%EXTRACTSNIPPETS Extract H-reflex & optional GRF snippets for plotting
+%EXTRACTSNIPPETS Extract H-reflex and optional GRF snippets for plotting
 %   Extract the snippets of the H-reflex from the muscle raw EMG signal
 % based on the stimulation artifact peak alignment. Optionally, extract the
 % ground reaction force (GRF) snippets for visualizing if stimulation
 % occurs during single stance.
 %
-% input:
+% input(s):
 %   indsPeaks: 2 x 1 cell array of number of peaks x 1 arrays of the
 %       stimulation artifact peaks found by the algorithm
 %   rawEMG: 2 x 1 cell array of number of samples x 1 arrays for right
@@ -13,7 +13,7 @@ function [snippets,timesSnippet] = extractSnippets(indsPeaks,rawEMG,GRFz)
 %       input as empty array, that leg will not be computed)
 %   GRFz (optional): 2 x 1 cell array of number of samples x 1 arrays for
 %       right (cell 1) and left (cell 2) treadmill force plate z-axis GRFs
-% output:
+% output(s):
 %   snippets: 2 x 3 cell array of number of stimuli x number of samples
 %       arrays for right (row 1) and left (row 2) leg H-reflex (col 1),
 %       ipsilateral (col 2) and contralateral (col 3) GRF snippets to plot
@@ -23,46 +23,38 @@ function [snippets,timesSnippet] = extractSnippets(indsPeaks,rawEMG,GRFz)
 narginchk(2,3);         % verify correct number of input arguments
 
 if nargin == 2          % if only two input arguments, ...
-    GRFz = {[], []};    % default to empty GRFz array
+    GRFz = {[], []};    % default to empty GRFz cell array
 end
 
 if all(cellfun(@isempty,indsPeaks)) || all(cellfun(@isempty,rawEMG))
-    error(['There is data missing that is critical for extracting the ' ...
-        'H-reflex snippets.']);     % return with error
+    error('Critical data missing for extracting the H-reflex snippets.');
 end
 
 % NOTE: should always be same across trials and should be same for forces
 % TODO: make optional input argument?
-% constants for snippet extraction
+% parameters for snippet extraction
 period = 0.0005;                        % sampling period (seconds)
 snipStart = -0.005;                     % include 5 ms before artifact peak
 snipEnd = 0.055;                        % include 55 ms after artifact peak
 timesSnippet = snipStart:period:snipEnd;% snippet sample times for plotting
 numSamps = numel(timesSnippet);         % number of samples in EMG snippet
 
-snippets = initializeSnippets(indsPeaks,numSamps);
+% initialize the snippets cell array to be populated by extraction
+numStim = cellfun(@length,indsPeaks);   % number of stimuli for each leg
+% store right (row 1) and left (row 2) leg H-reflex (col 1), ipsilateral
+% (col 2) and contralateral (col 3) GRF snippets for plotting
+snippets = cell(2,3);                   % store snippets for each leg
+for leg = 1:2                           % for right and left leg, ...
+    snippets{leg,1} = nan(numStim(leg),numSamps);   % EMG snippets
+    snippets{leg,2} = nan(numStim(leg),numSamps);   % ipsilateral GRF
+    snippets{leg,3} = nan(numStim(leg),numSamps);   % contralateral GRF
+end
 
 for leg = 1:2                           % for right and left leg, ...
     if ~isempty(indsPeaks{leg})         % if stim. artifact peaks, ...
         snippets = extractSnippetsLeg(leg,indsPeaks,rawEMG,GRFz, ...
             snippets,snipStart,snipEnd,period);
     end
-end
-
-end
-
-function snippets = initializeSnippets(indsPeaks,numSamps)
-% initialize the snippets cell array to be populated by extraction
-
-numStim = cellfun(@length,indsPeaks);   % number of stimuli for each leg
-
-% store right (row 1) and left (row 2) leg H-reflex (col 1), ipsilateral
-% (col 2) and contralateral (col 3) GRF snippets for plotting
-snippets = cell(2,3);   % store snippets for each leg
-for leg = 1:2           % for right and left leg, ...
-    snippets(leg,:) = {nan(numStim(leg),numSamps), ...
-        nan(numStim(leg),numSamps), ...
-        nan(numStim(leg),numSamps)};
 end
 
 end
