@@ -10,8 +10,8 @@ function snippets = extractBackgroundEMG(inds,rawEMG,opts)
 %       (cell 1) and left (cell 2) leg EMG signal (NOTE: if one cell is
 %       input as empty array, that leg will not be computed)
 %   opts (optional): structure with fields:
-%       .dur        : background window duration (seconds, default = 0.050)
-%       .sampsBefore: number of samples to skip before index (default = 0)
+%       .dur: background window duration (seconds, default = 0.050)
+%       .numSampsBefore: number samples to skip before index (default = 0)
 % output:
 %   snippets: 2 x 1 cell array of number of indices x number of samples
 %       arrays for right (row 1) and left (row 2) leg background EMG
@@ -24,13 +24,14 @@ if all(cellfun(@isempty,inds)) || all(cellfun(@isempty,rawEMG))
 end
 
 % set default options if 'opts' not provided
-if nargin < 3                           % if no opt. 3rd input arg., ...
-    dur = 0.050;                        % 50 ms background EMG window
+if nargin < 3                               % if no 3rd input argument, ...
+    dur = 0.050;                            % 50 ms background EMG window
     % create a cell array of zeros matching each cell in 'inds'
-    sampsBefore = cellfun(@(x) zeros(size(x)),inds,'UniformOutput',false);
-else                                    % otherwise, ...
-    dur = opts.dur;                     % use input arguments
-    sampsBefore = opts.sampsBefore;     % samples to skip before index
+    numSampsBefore = cellfun(@(x) zeros(size(x)),inds, ...
+        'UniformOutput',false);
+else                                        % otherwise, ...
+    dur = opts.dur;                         % use input arguments
+    numSampsBefore = opts.numSampsBefore;   % samples to skip before index
 end
 
 % NOTE: assuming sampling period remains constant
@@ -49,7 +50,7 @@ for leg = 1:2                           % for right and left leg, ...
     numInds = numel(inds{leg});         % number of indices for current leg
     snipLeg = nan(numInds,numSamps);    % initialize snippet array for leg
     for ii = 1:numInds                  % for each index, ...
-        numSkip = sampsBefore{leg}(ii); % number of samples to skip
+        numSkip = numSampsBefore{leg}(ii);  % number of samples to skip
         % relative window start and end index
         relStart = -numSamps - numSkip + 1;
         relEnd = -numSkip;
