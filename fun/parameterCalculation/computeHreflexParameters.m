@@ -324,37 +324,35 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
     amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
     rms = cellfun(@(x) 1000.*x,rms,'UniformOutput',false);
 
-    snippetsNoStimBEMG = Hreflex.extractBackgroundEMG( ...
-        indsNoStimBEMG,EMGDataByMuscle(m,:)');
+    if any(cellfun(@(x) ~isempty(x),indsNoStimBEMG))
+        snippetsNoStimBEMG = Hreflex.extractBackgroundEMG( ...
+            indsNoStimBEMG,EMGDataByMuscle(m,:)');
+        % compute root mean square of background EMG windows
+        rmsNoStimBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2,2,'omitnan')),...
+            snippetsNoStimBEMG,'UniformOutput',false);
+        eval(['NoStimBEMGRMSSlow' muscle '(~isStimStrideSlow) = rmsNoStimBEMG{indSlow};']);
+        eval(['NoStimBEMGRMSFast' muscle '(~isStimStrideFast) = rmsNoStimBEMG{indFast};']);
+    end
+
     snippetsHreflexBEMG = Hreflex.extractBackgroundEMG( ...
         indsStimArtValid,EMGDataByMuscle(m,:)',opts);
     % compute root mean square of background EMG windows
-    rmsNoStimBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2,2,'omitnan')), ...
-        snippetsNoStimBEMG,'UniformOutput',false);
     rmsHreflexBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2,2,'omitnan')), ...
         snippetsHreflexBEMG,'UniformOutput',false);
 
-    % assign data to correct parameter
-    eval(['HwaveAmpSlow' muscle '(isStimStrideSlow) = amps{indSlow,2};']);
-    eval(['HwaveAmpFast' muscle '(isStimStrideFast) = amps{indFast,2};']);
-    eval(['MwaveAmpSlow' muscle '(isStimStrideSlow) = amps{indSlow,1};']);
-    eval(['MwaveAmpFast' muscle '(isStimStrideFast) = amps{indFast,1};']);
-    eval(['HreflexNoiseAmpSlow' muscle '(isStimStrideSlow) = amps{indSlow,3};']);
-    eval(['HreflexNoiseAmpFast' muscle '(isStimStrideFast) = amps{indFast,3};']);
-    eval(['H2MAmpRatioSlow' muscle '(isStimStrideSlow) = amps{indSlow,2} ./ amps{indSlow,1};']);
-    eval(['H2MAmpRatioFast' muscle '(isStimStrideFast) = amps{indFast,2} ./ amps{indFast,1};']);
-    eval(['HwaveRMSSlow' muscle '(isStimStrideSlow) = rms{indSlow,2};']);
-    eval(['HwaveRMSFast' muscle '(isStimStrideFast) = rms{indFast,2};']);
-    eval(['MwaveRMSSlow' muscle '(isStimStrideSlow) = rms{indSlow,1};']);
-    eval(['MwaveRMSFast' muscle '(isStimStrideFast) = rms{indFast,1};']);
-    eval(['HreflexNoiseRMSSlow' muscle '(isStimStrideSlow) = rms{indSlow,3};']);
-    eval(['HreflexNoiseRMSFast' muscle '(isStimStrideFast) = rms{indFast,3};']);
-    eval(['H2MRMSRatioSlow' muscle '(isStimStrideSlow) = rms{indSlow,2} ./ rms{indSlow,1};']);
-    eval(['H2MRMSRatioFast' muscle '(isStimStrideFast) = rms{indFast,2} ./ rms{indFast,1};']);
-    eval(['HreflexBEMGRMSSlow' muscle '(isStimStrideSlow) = rmsHreflexBEMG{indSlow};']);
-    eval(['HreflexBEMGRMSFast' muscle '(isStimStrideFast) = rmsHreflexBEMG{indFast};']);
-    eval(['NoStimBEMGRMSSlow' muscle '(~isStimStrideSlow) = rmsNoStimBEMG{indSlow};']);
-    eval(['NoStimBEMGRMSFast' muscle '(~isStimStrideFast) = rmsNoStimBEMG{indFast};']);
+    for l = 1:2                         % for slow (1) & fast (2) leg, ...
+        leg = legs{l};                  % name of current leg
+        % assign data to correct parameter
+        eval(['HwaveAmp' leg muscle '(isStimStride' leg ') = amps{ind' leg ',2};']);
+        eval(['MwaveAmp' leg muscle '(isStimStride' leg ') = amps{ind' leg ',1};']);
+        eval(['HreflexNoiseAmp' leg muscle '(isStimStride' leg ') = amps{ind' leg ',3};']);
+        eval(['H2MAmpRatio' leg muscle '(isStimStride' leg ') = amps{ind' leg ',2} ./ amps{ind' leg ',1};']);
+        eval(['HwaveRMS' leg muscle '(isStimStride' leg ') = rms{ind' leg ',2};']);
+        eval(['MwaveRMS' leg muscle '(isStimStride' leg ') = rms{ind' leg ',1};']);
+        eval(['HreflexNoiseRMS' leg muscle '(isStimStride' leg ') = rms{ind' leg ',3};']);
+        eval(['H2MRMSRatio' leg muscle '(isStimStride' leg ') = rms{ind' leg ',2} ./ rms{ind' leg ',1};']);
+        eval(['HreflexBEMGRMS' leg muscle '(isStimStride' leg ') = rmsHreflexBEMG{ind' leg '};']);
+    end
 end
 
 %% Assign Parameters to the Data Matrix
