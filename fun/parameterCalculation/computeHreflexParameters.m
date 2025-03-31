@@ -22,9 +22,7 @@ timeFTO = strideEvents.tFTO;    % fast toe off event times
 timeFHS = strideEvents.tFHS;    % fast heel strike event times
 timeSTO = strideEvents.tSTO;    % slow toe off event times
 timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
-timeFTO2 = strideEvents.tFTO2;  % 2nd fast toe off event times
 timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
-timeSTO2 = strideEvents.tSTO2;  % 2nd slow toe off event times
 
 %% Labels & Descriptions
 muscles = {'SOL','MG','LG'};
@@ -161,7 +159,6 @@ stimTrigL = HreflexData.getDataAsVector( ...
     'Stimulator_Trigger_Sync_Left__Stimulator');
 indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
     times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
-
 if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
     data = nan(length(timeSHS),length(paramLabels));
     for ii = 1:length(paramLabels)
@@ -217,7 +214,6 @@ else                % otherwise, right leg is fast, ...
     indsStimArtValid = {indsStimArtifact{1}(~shouldDiscardStimFast); ...
         indsStimArtifact{2}(~shouldDiscardStimSlow)};
 end
-
 if any(shouldDiscardStimSlow)               % if discarding any stim, ...
     warning('Dropping %d stimuli for the slow leg', ...
         sum(shouldDiscardStimSlow));
@@ -227,7 +223,7 @@ if any(shouldDiscardStimFast)
         sum(shouldDiscardStimFast));
 end
 
-% compute stride indices corresponding to the valid stim times
+% compute valid stride indices corresponding from the filtered stim times
 indsStimStrideSlow = arrayfun(@(x) ...
     find((x - timeSHS) > 0,1,'last'),timeStimSlow);
 indsStimStrideFast = arrayfun(@(x) ...
@@ -273,7 +269,6 @@ EMG_RMG = EMGData.getDataAsVector('RMG');
 EMG_LMG = EMGData.getDataAsVector('LMG');
 EMG_RLG = EMGData.getDataAsVector('RLG');
 EMG_LLG = EMGData.getDataAsVector('LLG');
-
 % organize EMG Data for Each Muscle
 EMGDataByMuscle = {EMG_RSOL,EMG_LSOL; EMG_RMG,EMG_LMG; EMG_RLG,EMG_LLG};
 
@@ -301,6 +296,7 @@ numSampsSingleStanceFast = f * (timeSHS2 - timeSTO);
 numSampsBeforeSlow = round(numSampsSingleStanceSlow * percentBefore);
 numSampsBeforeFast = round(numSampsSingleStanceFast * percentBefore);
 opts.dur = 0.050;                           % 50 ms background EMG window
+% use valid stimulation strides only when setting opts.numSampsBefore
 if indSlow == 1                             % if right leg is slow, ...
     opts.numSampsBefore = {numSampsBeforeSlow(isStimStrideSlow); ...
         numSampsBeforeFast(isStimStrideFast)};
