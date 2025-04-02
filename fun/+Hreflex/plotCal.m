@@ -142,9 +142,8 @@ if ~isRatio                                             % if not ratio, ...
     legend([p1 p2],'M-wave','H-wave','Location','best');% add legend
 end
 
-legNoSpace = strsplit(leg);
-legNoSpace = [legNoSpace{1} legNoSpace{2}];
 if ~isempty(pathFig)                % if figure saving path provided, ...
+    legNoSpace = regexprep(leg,'\s+','');
     % TODO: make figure title and filename optional inputs
     nameFile = fullfile(pathFig,sprintf('%s_Hreflex%sCurve_Trial%s_%s', ...
         id,type,trialNum,legNoSpace));

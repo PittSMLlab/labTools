@@ -39,9 +39,8 @@ txtTitle = sprintf('%s - Trial %s - %s - Noise Distribution', ...
     id,trialNum,leg);
 title(txtTitle);
 
-legNoSpace = strsplit(leg);
-legNoSpace = [legNoSpace{1} legNoSpace{2}];
 if ~isempty(pathFig)                % if figure saving path provided, ...
+    legNoSpace = regexprep(leg,'\s+','');
     % TODO: make figure title and filename optional inputs
     nameFile = fullfile(pathFig,sprintf( ...
         '%s_NoiseDistribution_Trial%s_%s',id,trialNum,legNoSpace));
