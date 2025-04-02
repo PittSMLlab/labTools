@@ -13,49 +13,42 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
 %   leg: 'Right Leg' or 'Left Leg' are the two possible values
 %   id: string or character array of participant / session ID for naming
 %   trialNum: string or character array of the trial number for naming
-%   fit: OPTIONAL input structure of the M-wave and H-wave model fits
-%   noise: OPTIONAL input for the background noise level for the
-%       eligibility threshold
-%   pathFig: OPTIONAL input for saving figures (not saved if not provided)
+%   OPTIONAL PARAMETERS (passed as name/value pairs):
+%       fit: input structure of the M-wave and H-wave model fits (default:
+%           empty structure). If provided and 'shouldNormalize' is true,
+%           data are normalized to Mmax.
+%       shouldNormalize: logical indicating whether to normalize data by
+%           Mmax (default: false).
+%       noise: input for the background noise level for the eligibility
+%           threshold (default: NaN).
+%       pathFig: input for saving figures (default: '', i.e., not saved)
 %
 % output:
 %   fig: handle object to the figure generated
 
-narginchk(6,9); % verify correct number of input arguments
+narginchk(6,10);                % verify correct number of input arguments
 
-numOptArgs = length(varargin);
-switch numOptArgs
-    case 0
-        fit = struct();                 % default to empty structure
-        noise = NaN;                    % default to not-a-number
-        pathFig = '';                   % default to empty
-    case 1  % one optional argument provided
-        if isnumeric(varargin{1})       % if a number, ...
-            fit = struct();
-            noise = varargin{1};        % it is the threshold
-            pathFig = '';
-        elseif isstruct(varargin{1})    % if a structure, ...
-            fit = varargin{1};          % it is the model fits
-            noise = NaN;
-            pathFig = '';
-        else                            % otherwise, ...
-            fit = struct();
-            noise = NaN;
-            pathFig = varargin{1};      % it is the file saving path
-        end
-    case 2
-        fit = varargin{1};
-        noise = varargin{2};
-        pathFig = '';
-    case 3
-        fit = varargin{1};              % first always model fit structure
-        noise = varargin{2};            % second always noise threshold
-        pathFig = varargin{3};          % third always file saving path
-end
+p = inputParser;                % create and parse input arguments
+addRequired(p,'amplitudesStim',@(x) isnumeric(x) && isvector(x));
+addRequired(p,'values',@iscell);
+addRequired(p,'yLabel',@(x) ischar(x) || isstring(x));
+addRequired(p,'leg',@(x) ischar(x) || isstring(x));
+addRequired(p,'id',@(x) ischar(x) || isstring(x));
+addRequired(p,'trialNum',@(x) ischar(x) || isstring(x));
+addParameter(p,'fit',struct(),@isstruct);
+addParameter(p,'shouldNormalize',false,@islogical);
+addParameter(p,'noise',NaN,@isnumeric);
+addParameter(p,'pathFig','',@(x) ischar(x) || isstring(x));
+parse(p,amplitudesStim,values,yLabel,leg,id,trialNum,varargin{:});
+% retrieve option input arguments
+fit = p.Results.fit;
+shouldNormalize = p.Results.shouldNormalize;
+noise = p.Results.noise;
+pathFig = p.Results.pathFig;
 
+% determine if this is a ratio curve based on yLabel
 isRatio = contains(yLabel,'ratio','IgnoreCase',true);   % is ratio plot?
-
-legID = leg(1);
+legID = leg(1);     % use 1st character to select field (e.g., 'R' or 'L')
 
 if ~isempty(fieldnames(fit))            % if model fit available, ...
     I_fit = linspace(min(amplitudesStim),max(amplitudesStim),100);
@@ -64,6 +57,7 @@ if ~isempty(fieldnames(fit))            % if model fit available, ...
 end
 
 amplitudesStimU = unique(amplitudesStim);   % unique stimulation amplitudes
+% calculate average values at each intensity
 avgs = cellfun(@(x) arrayfun(@(u) mean(x(amplitudesStim == u), ...
     'omitnan'),amplitudesStimU),values,'UniformOutput',false);
 hasVals = cellfun(@(x) ~isnan(x),avgs,'UniformOutput',false);
@@ -102,7 +96,7 @@ else        % otherwise, this is an H- and M-wave recruitment curve
     end
 end
 
-% Highlight max values with lines and labels
+% highlight maximum values with lines and labels
 maxYOffset = 0.05 * max(cell2mat(values));
 plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
 % add label to vertical line (I_max) shifted up from x-axis by 5% of max y
@@ -120,10 +114,10 @@ end
 plot([min(amplitudesStim)-1 I_max],[valMax valMax],'k-.');
 % add label to horizontal line (valMax)
 if isRatio
-    text(min(amplitudesStim)-1 + 0.1,valMax + maxYOffset, ...
+    text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
         sprintf('Ratio_{max} = %.2f',valMax));
 else
-    text(min(amplitudesStim)-1 + 0.1,valMax + maxYOffset, ...
+    text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
         sprintf('H_{max} = %.2f mV',valMax));
 end
 hold off;
