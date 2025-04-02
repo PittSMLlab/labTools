@@ -83,7 +83,7 @@ for st = 1:numStim                      % for each stimulus, ...
     snipEMG(st,:) = temp;
 
     if ~isempty(GRFz{leg})              % if GRFz data available, ...
-        temp = nan(1,numSamps);
+        temp = nan(1,numSamples);
         valid = (win >= 1) & (win <= numel(GRFz{leg}));
         if any(valid)
             temp(valid) = GRFz{leg}(win(valid));        % ipsilateral GRFz
@@ -93,17 +93,17 @@ for st = 1:numStim                      % for each stimulus, ...
 
     legContra = 3 - leg;                % contralat. index (1 -> 2, 2 -> 1)
     if ~isempty(GRFz{legContra})        % if GRFz data available, ...
-        temp = nan(1,numSamps);
-        valid = (win >= 1) & (win <= numel(GRFz{contraLeg}));
+        temp = nan(1,numSamples);
+        valid = (win >= 1) & (win <= numel(GRFz{legContra}));
         if any(valid)
-            temp(valid) = GRFz{contraLeg}(win(valid));  % contralateral GRF
+            temp(valid) = GRFz{legContra}(win(valid));  % contralateral GRF
         end
         snipContra(st,:) = temp;
     end
 end
 
 % return as a cell array [EMG, Ipsilateral GRF, Contralateral GRF]
-snipCell = {snipEMG, snipIpsi, snipContra};
+snipCell = {snipEMG,snipIpsi,snipContra};
 
 end
 
