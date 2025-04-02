@@ -424,20 +424,19 @@ avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x),'omitnan'),ampsStimRU);
 avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x),'omitnan'),ampsStimLU);
 
 %% 12. (Optional) Fit Gaussian to Average H-wave Amplitudes
-[fit,ampsWavesNorm] = Hreflex.fitCalAndNormalize( ...
-    {ampsStimR';ampsStimL'},amps(:,1:2));
+fit = Hreflex.fitCal({ampsStimR';ampsStimL'},amps(:,1:2));
 
-I_fit = linspace(min(ampsStimR),max(ampsStimR),100);
+I_fit = linspace(min(ampsStimR),max(ampsStimR),1000);   % fit intensities
 MR_fit = fit.M.modHyperbolic(fit.M.R.params,I_fit);     % right M-wave fit
 ML_fit = fit.M.modHyperbolic(fit.M.L.params,I_fit);     % left M-wave fit
 
-[~,indR] = findpeaks(diff(diff(MR_fit)));
-[~,indL] = findpeaks(diff(diff(ML_fit)));
+[~,indR] = max(diff(diff(MR_fit)));
+[~,indL] = max(diff(diff(ML_fit)));
 
 intensityR = I_fit(indR);
 intensityL = I_fit(indL);
 
-if fit.M.R.R2 > 0.95
+if fit.M.R.R2 > 0.95                            % if fit quality high, ...
     fprintf(['Right leg M-wave fit R2: %0.2f > 0.95.\nExperiment ' ...
         'stimulation current: %.1f mA.\n'],fit.M.R.R2,intensityR);
 else
