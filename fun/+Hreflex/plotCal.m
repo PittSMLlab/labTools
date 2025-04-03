@@ -26,8 +26,6 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
 % output:
 %   fig: handle object to the figure generated
 
-narginchk(6,10);                % verify correct number of input arguments
-
 p = inputParser;                % create and parse input arguments
 addRequired(p,'amplitudesStim',@(x) isnumeric(x) && isvector(x));
 addRequired(p,'values',@iscell);
@@ -50,10 +48,10 @@ pathFig = p.Results.pathFig;
 isRatio = contains(yLabel,'ratio','IgnoreCase',true);   % is ratio plot?
 legID = leg(1);     % use 1st character to select field (e.g., 'R' or 'L')
 
-if ~isempty(fieldnames(fit))            % if model fit available, ...
-    I_fit = linspace(min(amplitudesStim),max(amplitudesStim),100);
-    M_fit = fit.M.modHyperbolic(fit.M.(legID).params,I_fit);
-    H_fit = fit.H.asymGaussian(fit.H.(legID).params,I_fit);
+% if requested data normalized and valid fit provided, ...
+if shouldNormalize && ~isempty(fieldnames(fit))
+    values = cellfun(@(x) x ./ fit.M.(legID).Mmax,values, ...
+        'UniformOutput',false);
 end
 
 amplitudesStimU = unique(amplitudesStim);   % unique stimulation amplitudes
@@ -73,7 +71,7 @@ I_max = amplitudesStimU(indMax);
 
 fig = figure;                           % create a figure
 hold on;
-if ~isnan(noise)                        % if noise threshold provided, ...
+if ~isnan(noise) && ~shouldNormalize    % if noise threshold provided, ...
     yline(noise,'r--','LineWidth',1.5); % plot it
     yline(4*noise,'r','H-Wave V_{pp} Threshold');
 end
@@ -90,9 +88,22 @@ else        % otherwise, this is an H- and M-wave recruitment curve
     plot(amplitudesStim,values{2},'ok','MarkerSize',10);    % raw H-wave
     p2 = plot(amplitudesStimU(hasVals{2}),avgs{2}(hasVals{2}),'k--', ...
         'LineWidth',2);                         % averaged H-wave
-    if ~isempty(fieldnames(fit))
-        p3 = plot(I_fit,M_fit,'LineWidth',2,'Color',[0.5 0.5 0.5]); % fit
-        p4 = plot(I_fit,H_fit,'k','LineWidth',2);
+    if ~isempty(fieldnames(fit))                % if fit provided, ...
+        I_fit = linspace(min(amplitudesStim),max(amplitudesStim),1000);
+        if fit.M.(legID).R2 > 0.5               % if fit quality high, ...
+            M_fit = fit.M.modHyperbolic(fit.M.(legID).params,I_fit);
+            if shouldNormalize                  % if normalizing data, ...
+                M_fit = M_fit ./ fit.M.(legID).Mmax;
+            end
+            plot(I_fit,M_fit,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+        end
+        if fit.H.(legID).R2 > 0.5               % if fit quality high, ...
+            H_fit = fit.H.asymGaussian(fit.H.(legID).params,I_fit);
+            if shouldNormalize                      % if normalizing data, ...
+                H_fit = H_fit ./ fit.M.(legID).Mmax;
+            end
+            plot(I_fit,H_fit,'k','LineWidth',2);
+        end
     end
 end
 
@@ -102,13 +113,13 @@ plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
 % add label to vertical line (I_max) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
 % TODO: add handle of title
-if isRatio
-    text(I_max + 0.1,maxYOffset, ...
-        sprintf('I_{Ratio_{max}} = %.1f mA',I_max));
-else
-    text(I_max + 0.1,maxYOffset, ...
-        sprintf('I_{H_{max}} = %.1f mA',I_max));
-end
+% if isRatio
+%     text(I_max + 0.1,maxYOffset, ...
+%         sprintf('I_{Ratio_{max}} = %.1f mA',I_max));
+% else
+%     text(I_max + 0.1,maxYOffset, ...
+%         sprintf('I_{H_{max}} = %.1f mA',I_max));
+% end
 
 % horizontal line to valMax
 plot([min(amplitudesStim)-1 I_max],[valMax valMax],'k-.');
@@ -117,8 +128,13 @@ if isRatio
     text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
         sprintf('Ratio_{max} = %.2f',valMax));
 else
-    text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
-        sprintf('H_{max} = %.2f mV',valMax));
+    if shouldNormalize
+        text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
+            sprintf('H_{max} = %.2f',valMax));
+    else
+        text(min(amplitudesStim)-0.9,valMax + maxYOffset, ...
+            sprintf('H_{max} = %.2f mV',valMax));
+    end
 end
 hold off;
 
@@ -130,7 +146,13 @@ if isRatio              % if ratio curve, ...
 else
     type = 'Recruitment';
 end
-txtTitle = sprintf('%s - Trial %s - %s - %s Curve',id,trialNum,leg,type);
+if shouldNormalize
+    txtTitle = sprintf('%s - Trial %s - %s - Normalized %s Curve', ...
+        id,trialNum,leg,type);
+else
+    txtTitle = sprintf('%s - Trial %s - %s - %s Curve', ...
+        id,trialNum,leg,type);
+end
 title(txtTitle);
 if ~isRatio                                             % if not ratio, ...
     legend([p1 p2],'M-wave','H-wave','Location','best');% add legend
@@ -139,8 +161,14 @@ end
 if ~isempty(pathFig)                % if figure saving path provided, ...
     legNoSpace = regexprep(leg,'\s+','');
     % TODO: make figure title and filename optional inputs
-    nameFile = fullfile(pathFig,sprintf('%s_Hreflex%sCurve_Trial%s_%s', ...
-        id,type,trialNum,legNoSpace));
+    if shouldNormalize
+        nameFile = fullfile(pathFig,sprintf( ...
+            '%s_Hreflex%sCurveNormalized_Trial%s_%s', ...
+            id,type,trialNum,legNoSpace));
+    else
+        nameFile = fullfile(pathFig,sprintf( ...
+            '%s_Hreflex%sCurve_Trial%s_%s',id,type,trialNum,legNoSpace));
+    end
     saveas(fig,nameFile + ".png");  % save figure
     saveas(fig,nameFile + ".fig");  % TODO: just use 'fullfile' if readable
 end
