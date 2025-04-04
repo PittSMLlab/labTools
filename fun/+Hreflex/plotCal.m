@@ -21,11 +21,16 @@ function fig = plotCal(amplitudesStim,values,yLabel,leg,id,trialNum, ...
 %           Mmax (default: false).
 %       noise: input for the background noise level for the eligibility
 %           threshold (default: NaN).
-%       pathFig: input for saving figures (default: '', i.e., not saved)
+%       pathFig: input for saving figures (default: '', i.e., not saved).
+%       shouldAnnotate: logical indicating whether to add annotations
+%           (default: true).
+%       nameFile: string or character array of custom filename (default:
+%           generated automatically)
 %
 % output:
 %   fig: handle object to the figure generated
 
+%% Input Parsing
 p = inputParser;                % create and parse input arguments
 addRequired(p,'amplitudesStim',@(x) isnumeric(x) && isvector(x));
 addRequired(p,'values',@iscell);
@@ -37,29 +42,34 @@ addParameter(p,'fit',struct(),@isstruct);
 addParameter(p,'shouldNormalize',false,@islogical);
 addParameter(p,'noise',NaN,@isnumeric);
 addParameter(p,'pathFig','',@(x) ischar(x) || isstring(x));
+addParameter(p,'shouldAnnotate',true,@islogical);
+addParameter(p,'nameFile','',@(x) ischar(x) || isstring(x));
 parse(p,amplitudesStim,values,yLabel,leg,id,trialNum,varargin{:});
 % retrieve option input arguments
 fit = p.Results.fit;
 shouldNormalize = p.Results.shouldNormalize;
 noise = p.Results.noise;
 pathFig = p.Results.pathFig;
+shouldAnnotate = p.Results.shouldAnnotate;
+nameFile = p.Results.nameFile;
 
-% determine if this is a ratio curve based on yLabel
+%% Determine Plot Type & Leg Identifier
 isRatio = contains(yLabel,'ratio','IgnoreCase',true);   % is ratio plot?
 legID = leg(1);     % use 1st character to select field (e.g., 'R' or 'L')
 
-% if requested data normalized and valid fit provided, ...
-if shouldNormalize && ~isempty(fieldnames(fit))
+%% Normalize Data if Requested & Fit Provided
+if shouldNormalize && ~isempty(fieldnames(fit)) && ...
+        isfield(fit,'M') && isfield(fit.M,legID)
     values = cellfun(@(x) x ./ fit.M.(legID).Mmax,values, ...
         'UniformOutput',false);
 end
 
+%% Compute Unique Stimulation Intensities & Averages
 amplitudesStimU = unique(amplitudesStim);   % unique stimulation amplitudes
 % calculate average values at each intensity
 avgs = cellfun(@(x) arrayfun(@(u) mean(x(amplitudesStim == u), ...
     'omitnan'),amplitudesStimU),values,'UniformOutput',false);
 hasVals = cellfun(@(x) ~isnan(x),avgs,'UniformOutput',false);
-
 % compute maximum values and corresponding stimulation amplitudes
 [valMax,indMax] = max(avgs{end});
 I_max = amplitudesStimU(indMax);
@@ -69,6 +79,9 @@ I_max = amplitudesStimU(indMax);
 % ampsHwaveR = ampsHwaveR(indsOrderR);
 % ampsMwaveR = ampsMwaveR(indsOrderR);
 
+gray = [0.5 0.5 0.5];                   % define color for convenience
+
+%% Create Figure & Plot
 fig = figure;                           % create a figure
 hold on;
 if ~isnan(noise) && ~shouldNormalize    % if noise threshold provided, ...
@@ -81,25 +94,25 @@ if isRatio  % if this is an H:M ratio curve, ...
     plot(amplitudesStimU(hasVals{1}),avgs{1}(hasVals{1}),'k', ...
         'LineWidth',2);                                     % avg curve
 else        % otherwise, this is an H- and M-wave recruitment curve
-    plot(amplitudesStim,values{1},'x','Color',[0.5 0.5 0.5], ...
+    plot(amplitudesStim,values{1},'x','Color',gray, ...
         'MarkerSize',10);                       % raw M-wave points
     p1 = plot(amplitudesStimU(hasVals{1}),avgs{1}(hasVals{1}),'--', ...
-        'LineWidth',2,'Color',[0.5 0.5 0.5]);   % averaged M-wave
+        'LineWidth',2,'Color',gray);            % averaged M-wave
     plot(amplitudesStim,values{2},'ok','MarkerSize',10);    % raw H-wave
     p2 = plot(amplitudesStimU(hasVals{2}),avgs{2}(hasVals{2}),'k--', ...
         'LineWidth',2);                         % averaged H-wave
     if ~isempty(fieldnames(fit))                % if fit provided, ...
         I_fit = linspace(min(amplitudesStim),max(amplitudesStim),1000);
-        if fit.M.(legID).R2 > 0.8               % if fit quality high, ...
+        if isfield(fit.M.(legID),'R2') && fit.M.(legID).R2 > 0.8
             M_fit = fit.M.modHyperbolic(fit.M.(legID).params,I_fit);
             if shouldNormalize                  % if normalizing data, ...
                 M_fit = M_fit ./ fit.M.(legID).Mmax;
             end
-            plot(I_fit,M_fit,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+            plot(I_fit,M_fit,'LineWidth',2,'Color',gray);
         else
             % TODO: display warning that fit quality is low not adding
         end
-        if fit.H.(legID).R2 > 0.5               % if fit quality high, ...
+        if isfield(fit.H.(legID),'R2') && fit.H.(legID).R2 > 0.5
             H_fit = fit.H.asymGaussian(fit.H.(legID).params,I_fit);
             if shouldNormalize                      % if normalizing data, ...
                 H_fit = H_fit ./ fit.M.(legID).Mmax;
@@ -110,7 +123,7 @@ else        % otherwise, this is an H- and M-wave recruitment curve
 end
 
 % highlight maximum values with lines and labels
-maxYOffset = 0.05 * max(cell2mat(values));
+maxYOffset = 0.05 * max(cell2mat(values),[],'omitnan');
 % plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
 % add label to vertical line (I_max) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
@@ -139,25 +152,27 @@ else
     end
 end
 
-if ~isempty(fieldnames(fit))
-    if fit.M.(legID).R2 > 0.8                           % if good fit, ...
-        [~,ind2ndDeriv] = max(diff(diff(M_fit)));
-        I_star = I_fit(ind2ndDeriv);
-        M_star = M_fit(ind2ndDeriv);
-        plot([I_star I_star],[0 M_star],'k-.');         % vertical line
-        text(I_star + 0.1,maxYOffset,sprintf('I* = %.1f mA',I_star));
-        plot([min(amplitudesStim)-1 I_star],[M_star M_star],'k-.');
-        if shouldNormalize
-            text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
-                sprintf('M* = %.2f',M_star));
-        else
-            text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
-                sprintf('M* = %.2f mV',M_star));
-        end
+% optional: annotate additional features if fit quality is high
+if ~isempty(fieldnames(fit)) && isfield(fit.M.(legID),'R2') && ...
+        fit.M.(legID).R2 > 0.8 && shouldAnnotate
+    % find second derivative maximum index as a feature (M*)
+    [~,ind2ndDeriv] = max(diff(diff(M_fit)));
+    I_star = I_fit(ind2ndDeriv);
+    M_star = M_fit(ind2ndDeriv);
+    plot([I_star I_star],[0 M_star],'k-.');         % vertical line
+    text(I_star + 0.1,maxYOffset,sprintf('I* = %.1f mA',I_star));
+    plot([min(amplitudesStim)-1 I_star],[M_star M_star],'k-.');
+    if shouldNormalize
+        text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
+            sprintf('M* = %.2f',M_star));
+    else
+        text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
+            sprintf('M* = %.2f mV',M_star));
     end
 end
 
 if ~isRatio && ~isempty(fieldnames(fit)) && ~shouldNormalize
+    % display additional metrics if available
     % TODO: should use H-wave curve fit if good R2?
     text(min(amplitudesStim)-0.9,max(values{1})*0.75, ...
         sprintf('H_{max}/M_{max} = %.2f',valMax/fit.M.(legID).Mmax));
@@ -165,7 +180,6 @@ if ~isRatio && ~isempty(fieldnames(fit)) && ~shouldNormalize
         sprintf('M*/M_{max} = %.2f',M_star/fit.M.(legID).Mmax));
 end
 hold off;
-
 xlim([min(amplitudesStim)-1 max(amplitudesStim)+1]);
 xlabel('Stimulation Amplitude (mA)');
 ylabel(yLabel);
@@ -174,6 +188,7 @@ if isRatio              % if ratio curve, ...
 else
     type = 'Recruitment';
 end
+
 if shouldNormalize
     txtTitle = sprintf('%s - Trial %s - %s - Normalized %s Curve', ...
         id,trialNum,leg,type);
@@ -182,23 +197,24 @@ else
         id,trialNum,leg,type);
 end
 title(txtTitle);
+
 if ~isRatio                                             % if not ratio, ...
     legend([p1 p2],'M-wave','H-wave','Location','best','Box','off');
 end
 
 if ~isempty(pathFig)                % if figure saving path provided, ...
     legNoSpace = regexprep(leg,'\s+','');
-    % TODO: make figure title and filename optional inputs
-    if shouldNormalize
-        nameFile = fullfile(pathFig,sprintf( ...
-            '%s_Hreflex%sCurveNormalized_Trial%s_%s', ...
-            id,type,trialNum,legNoSpace));
-    else
-        nameFile = fullfile(pathFig,sprintf( ...
-            '%s_Hreflex%sCurve_Trial%s_%s',id,type,trialNum,legNoSpace));
+    if isempty(nameFile)
+        if shouldNormalize
+            nameFile = sprintf('%s_Hreflex%sCurveNormalized_Trial%s_%s',...
+                id,type,trialNum,legNoSpace);
+        else
+            nameFile = sprintf('%s_Hreflex%sCurve_Trial%s_%s', ...
+                id,type,trialNum,legNoSpace);
+        end
     end
-    saveas(fig,nameFile + ".png");  % save figure
-    saveas(fig,nameFile + ".fig");  % TODO: just use 'fullfile' if readable
+    saveas(fig,fullfile(pathFig,nameFile + ".png"));    % save figure
+    saveas(fig,fullfile(pathFig,nameFile + ".fig"));
 end
 
 end

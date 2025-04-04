@@ -429,10 +429,8 @@ fit = Hreflex.fitCal({ampsStimR';ampsStimL'},amps(:,1:2));
 I_fit = linspace(min(ampsStimR),max(ampsStimR),1000);   % fit intensities
 MR_fit = fit.M.modHyperbolic(fit.M.R.params,I_fit);     % right M-wave fit
 ML_fit = fit.M.modHyperbolic(fit.M.L.params,I_fit);     % left M-wave fit
-
 [~,indR] = max(diff(diff(MR_fit)));
 [~,indL] = max(diff(diff(ML_fit)));
-
 intensityR = I_fit(indR);
 intensityL = I_fit(indL);
 
@@ -443,7 +441,6 @@ else
     warning(['Right leg M-wave fit R2: %0.2f < 0.95.\nUse old approach' ...
         ' to select experiment stimulation current.\n'],fit.M.R.R2);
 end
-
 if fit.M.L.R2 > 0.95
     fprintf(['Left leg M-wave fit R2: %0.2f > 0.95.\nExperiment ' ...
         'stimulation current: %.1f mA.\n'],fit.M.L.R2,intensityL);
