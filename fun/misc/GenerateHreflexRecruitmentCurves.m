@@ -476,7 +476,7 @@ Hreflex.plotCal(ampsStimL,{ampsMwaveL;ampsHwaveL},'Proportion M_{max}', ...
 
 %% 16. Plot Ratio of H-wave to M-wave amplitude
 Hreflex.plotCal(ampsStimR,{ratioR},'H:M Ratio','Right Leg',id,trialNum, ...
-    pathFigs);
+    'pathFig',pathFigs);
 Hreflex.plotCal(ampsStimL,{ratioL},'H:M Ratio','Left Leg',id,trialNum, ...
-    pathFigs);
+    'pathFig',pathFigs);
 

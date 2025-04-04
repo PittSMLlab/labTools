@@ -90,12 +90,14 @@ else        % otherwise, this is an H- and M-wave recruitment curve
         'LineWidth',2);                         % averaged H-wave
     if ~isempty(fieldnames(fit))                % if fit provided, ...
         I_fit = linspace(min(amplitudesStim),max(amplitudesStim),1000);
-        if fit.M.(legID).R2 > 0.5               % if fit quality high, ...
+        if fit.M.(legID).R2 > 0.8               % if fit quality high, ...
             M_fit = fit.M.modHyperbolic(fit.M.(legID).params,I_fit);
             if shouldNormalize                  % if normalizing data, ...
                 M_fit = M_fit ./ fit.M.(legID).Mmax;
             end
             plot(I_fit,M_fit,'LineWidth',2,'Color',[0.5 0.5 0.5]);
+        else
+            % TODO: display warning that fit quality is low not adding
         end
         if fit.H.(legID).R2 > 0.5               % if fit quality high, ...
             H_fit = fit.H.asymGaussian(fit.H.(legID).params,I_fit);
@@ -109,7 +111,7 @@ end
 
 % highlight maximum values with lines and labels
 maxYOffset = 0.05 * max(cell2mat(values));
-plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
+% plot([I_max I_max],[0 valMax],'k-.');  % vertical line from I_max to valMax
 % add label to vertical line (I_max) shifted up from x-axis by 5% of max y
 % value and over from the line by 0.1 mA
 % TODO: add handle of title
@@ -136,6 +138,32 @@ else
             sprintf('H_{max} = %.2f mV',valMax));
     end
 end
+
+if ~isempty(fieldnames(fit))
+    if fit.M.(legID).R2 > 0.8                           % if good fit, ...
+        [~,ind2ndDeriv] = max(diff(diff(M_fit)));
+        I_star = I_fit(ind2ndDeriv);
+        M_star = M_fit(ind2ndDeriv);
+        plot([I_star I_star],[0 M_star],'k-.');         % vertical line
+        text(I_star + 0.1,maxYOffset,sprintf('I* = %.1f mA',I_star));
+        plot([min(amplitudesStim)-1 I_star],[M_star M_star],'k-.');
+        if shouldNormalize
+            text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
+                sprintf('M* = %.2f',M_star));
+        else
+            text(min(amplitudesStim)-0.9,M_star + maxYOffset, ...
+                sprintf('M* = %.2f mV',M_star));
+        end
+    end
+end
+
+if ~isRatio && ~isempty(fieldnames(fit)) && ~shouldNormalize
+    % TODO: should use H-wave curve fit if good R2?
+    text(min(amplitudesStim)-0.9,max(values{1})*0.75, ...
+        sprintf('H_{max}/M_{max} = %.2f',valMax/fit.M.(legID).Mmax));
+    text(min(amplitudesStim)-0.9,max(values{1})*0.65, ...
+        sprintf('M*/M_{max} = %.2f',M_star/fit.M.(legID).Mmax));
+end
 hold off;
 
 xlim([min(amplitudesStim)-1 max(amplitudesStim)+1]);
@@ -155,7 +183,7 @@ else
 end
 title(txtTitle);
 if ~isRatio                                             % if not ratio, ...
-    legend([p1 p2],'M-wave','H-wave','Location','best');% add legend
+    legend([p1 p2],'M-wave','H-wave','Location','best','Box','off');
 end
 
 if ~isempty(pathFig)                % if figure saving path provided, ...
