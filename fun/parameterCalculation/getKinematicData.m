@@ -150,7 +150,7 @@ end
 hipPos3D = 0.5 * (sHip + fHip);
 hipPosFwd = hipPos3D(:,:,2);    % extract y-axis component
 hipPos3DRel = 0.5 * (sHipRel + fHipRel);    % just for check, should be all zeros
-% hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
+% hipPos = mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPosSHS = hipPosFwd(:,1);     % hip position at SHS
 % compute average hip position over gait cycle
 hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % average hip position from SHS to STO2
@@ -182,7 +182,7 @@ fAnk_fromAvgHip = fAnk(:,:,2) - hipPosAvg_forFast; % y positon of fast ankle cor
 %DOESN'T?
 
 % adjust stride data to ensure consistent slope during stance phase
-aux = sign(diff(sAnk(:,[3 5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indFHS,2). Doesn't use HIP to avoid HIP fluctuation issues.
+aux = sign(diff(sAnk(:,[3 5],2),1,2));  % checks for: sAnk(indSHS2,2) < sAnk(indFHS,2) (doesn't use HIP to avoid HIP fluctuation issues)
 sAnkFwd = bsxfun(@times,sAnkFwd,aux);
 fAnkFwd = bsxfun(@times,fAnkFwd,aux);
 sAnk2D = bsxfun(@times,sAnk2D,aux);

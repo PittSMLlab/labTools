@@ -1,36 +1,32 @@
 function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D, ...
     sAngle,fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip] =...
     getKinematicDataAbs(eventTimes,markerData,angleData,s)
-%getKinematicData   loads marker data sampled only at time of gait events
+%GETKINEMATICDATAABS extract marker data at specified gait event times
 %
-%getKinematicData generates:
+%   This function loads marker and angle data at predefined gait events and
+% computes:
 %
-% Three dimensional matrices in the format:
-%   number of strides x 6 events (SHS thru FTO2) x 2 dimensions (x,y)
-% whith variable names:
-%   sAnk2D, fAnk2D
+% Three-dimensional matrices in the format:
+%   number of strides x 6 events (SHS through FTO2) x 2 dimensions (x,y)
+%   Variables: sAnk2D, fAnk2D (slow and fast ankle positions in 2D space)
 %
-% Two dimensional matrices in the format:
-%   number of strides x 6 events (SHS thru FTO2)
-% with variable names:
-%   sAnkFwd, fAnkFwd: ankle position in fore-aft direction with respect to avg hip
-%   sAngle, fAngle: limb angles (angle of hip-ankle vector with respect to verticle)
+% Two-dimensional matrices in the format:
+%   number of strides x 6 events (SHS through FTO2)
+%   Variables:
+%    - sAnkFwd, fAnkFwd: ankle position in fore-aft direction relative to
+%       average hip position
+%    - sAngle, fAngle: limb angles (angle of hip-ankle vector with respect
+%       to vertical)
 %
-% direction: a vector with length equal to the number of strides and
-%   values of 1 if walking towards the door in the lab and -1 if walking
-%   towards the window.
+% Scalar:
+%    - direction: number of strides x 1 array of walking direction (+1 if
+%       walking toward lab door, -1 if walking toward window)
+%
+% Additional outputs in the format:
+%   number of strides x 6 events (SHS through FTO2) x 3 dimensions (x,y,z)
+%    - sHIP, fHIP, sANK, fANK, sTOE, fTOE
 
-% Three dimensional matrices in the format:
-%   number of strides x 6 events (SHS thru FTO2) x 3 dimensions (x,y,z)
-% whith variable names:
-%   sHip
-%   fHip
-%   sAnk
-%   fAnk
-%   sToe
-%   fToe
-
-refMarker3D=[0,0,0]; %Absolute lab reference
+refMarker3D = [0 0 0];  % absolute lab reference
 
 %Ref axis option 2 (assuming the subject walks only along the y axis):
 refAxis=squeeze(diff(markerData.getOrientedData({'LANK','RANK'}),1,2)); %So that only ankle markers are needed to determine walking direction
