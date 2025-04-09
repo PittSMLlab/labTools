@@ -112,9 +112,37 @@ else
     fAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
 end
 
-%find walking direction
-direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on the y-axis, between fTO and fHS
+%% Compute Walking Direction
+% direction is determined from y-axis difference of slow ankle marker
+% during swing phase (STO to SHS2)
+% TODO: would using SHS and STO work just as well?
+direction = sign(diff(sAnk(:,4:5,2),1,2));
 
+% handle missing values in direction vector
+indsDirNans = find(isnan(direction));   % identify any NaN values
+numNans = length(indsDirNans);          % number of NaN values
+for miss = 1:numNans                    % for each missing value, ...
+    % check only y-axis values for current stride (i.e., none of gait
+    % events with '2' in the name since could be at or approaching a turn)
+    hasVal = ~isnan(sAnk(indsDirNans(miss),1:4,2));
+    % use two most disparate gait events in time to try to account for
+    % noise in the ankle marker y-axis position during stance phase
+    direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), ...
+        [find(hasVal,1) find(hasVal,1,'last')],2),1,2));
+end
+
+% TODO: would it be best to simply leave the zeros since unclear?
+% handle invalid direction values (where only one valid y-value exists)
+indsDirZeros = find(direction == 0);
+numZeros = length(indsDirZeros);
+for inv = 1:numZeros                    % for each invalid measure, ...
+    if indsDirZeros(inv) == 1           % if first stride is invalid, ...
+        direction(1) = direction(2);    % set to be same as stride 2
+    else                                % otherwise, ...
+        % set invalid direction value to be previous stride direction value
+        direction(indsDirZeros(inv)) = direction(indsDirZeros(inv)-1);
+    end
+end
 
 %% Compute Ankle Positions Relative to Hip
 hipPos3D = 0.5 * (sHip + fHip);
