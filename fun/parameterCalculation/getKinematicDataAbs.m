@@ -37,71 +37,84 @@ refAxis=squeeze(diff(markerData.getOrientedData({'LANK','RANK'}),1,2)); %So that
 refAxis=refAxis*[1,0,0]' *[1,0,0]; %Projecting along x direction, this is equivalent to just determining forward/backward sign
 rotatedMarkerData=markerData.translate(-squeeze(refMarker3D)).alignRotate(refAxis,[0,0,1]);
 
-%% Get relevant sample of data (using interpolation)
+%% Get Relevant Sample of Data (Using Interpolation)
+% 's' represents the slow limb, 'f' represents the fast limb
 if strcmp(s,'L')
-    f='R';
+    f = 'R';
 elseif strcmp(s,'R')
-    f='L';
+    f = 'L';
 else
-    error();
+    error('Invalid limb specification. Must be ''L'' or ''R''.');
 end
-orientation=markerData.orientation;
-directions={orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
-signs=[orientation.sideSign,orientation.foreaftSign,orientation.updownSign];
-markers={'HIP','ANK','TOE'};
-labels={};
-legs={s,f};
-legs2={'s','f'};
-for j=1:length(markers)
-    for leg=1:2
-        labels{end+1}=[legs{leg} markers{j}]; %Odd are s, Even are f
+
+% extract marker orientation and axis information
+orientation = markerData.orientation;
+directions = {orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
+signs = [orientation.sideSign orientation.foreaftSign orientation.updownSign];
+
+% define markers of interest
+markers = {'HIP','ANK','TOE'};
+labels = {};
+legs = {s,f};
+legs2 = {'s','f'};
+
+% construct labels for markers (e.g., 'sHIP', 'fANK', etc.)
+for j = 1:length(markers)
+    for leg = 1:2
+        labels{end+1} = [legs{leg} markers{j}]; % odd indices: slow leg, even indices: fast leg
     end
 end
-[bool,idx]=isaLabelPrefix(markerData,labels);
+
+% check for missing markers
+[bool,idx] = isaLabelPrefix(markerData,labels);
 if ~all(bool)
-    warning(['Markers are missing: ' cell2mat(strcat(labels(~bool),','))])
+    warning(['Markers are missing: ' cell2mat(strcat(labels(~bool),','))]);
 end
-for j=1:length(labels) %Assign each marker data to a x3 str
-    aux=markerData.getDataAsTS(markerData.addLabelSuffix(labels{j}));
+
+% extract marker data at gait event times
+for j = 1:length(labels)    % assign each marker data to a x3 str
+    aux = markerData.getDataAsTS(markerData.addLabelSuffix(labels{j}));
     if ~isempty(aux.Data)
-        newMarkerData=aux.getSample(eventTimes,'closest'); %Closest point interpolation
-        aux=rotatedMarkerData.getDataAsTS(rotatedMarkerData.addLabelSuffix(labels{j}));
-        relMarkerData=aux.getSample(eventTimes,'closest'); %Closest point interpolation
-    else %Missing marker
+        % extract data by finding the closest available sample at each event time
+        newMarkerData = aux.getSample(eventTimes,'closest');
+        relMarkerData = rotatedMarkerData.getDataAsTS(rotatedMarkerData.addLabelSuffix(labels{j}));
+        relMarkerData = relMarkerData.getSample(eventTimes,'closest');
+    else    % otherwise, a marker is missing
         warning(['Marker ' labels{j} ' is missing. All references to it will return NaN.']);
-        newMarkerData=nan([size(eventTimes),3]);
-        relMarkerData=nan([size(eventTimes),3]);
+        newMarkerData = nan([size(eventTimes) 3]);
+        relMarkerData = nan([size(eventTimes) 3]);
     end
 
-    if strcmp(labels{j}(1),s) %s markers
-        eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) '=newMarkerData;']);
-        eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel=relMarkerData;']);
-    elseif strcmp(labels{j}(1),f)
-        eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) '=newMarkerData;']);
-        eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel=relMarkerData;']);
-    else
-        error('Marker labels have to begin with ''R'' or ''L''');
+    % assign extracted marker data to corresponding variables
+    if strcmp(labels{j}(1),s)       % if slow leg markers, ...
+        eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) ' = newMarkerData;']);
+        eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel = relMarkerData;']);
+    elseif strcmp(labels{j}(1),f)   % if fast leg markers, ...
+        eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) ' = newMarkerData;']);
+        eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel = relMarkerData;']);
+    else                            % otherwise, ...
+        error('Marker labels must begin with ''R'' or ''L''.');
     end
 end
 
-%get angle data
+%% Extract Angle Data at Gait Event Times
 if ~isempty(angleData)
-    newAngleData=angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
-    newAngleData=newAngleData.getSample(eventTimes,'closest');
-    sAngle=newAngleData(:,:,1);
-    fAngle=newAngleData(:,:,2);
+    newAngleData = angleData.getDataAsTS({[s 'Limb'],[f 'Limb']});
+    newAngleData = newAngleData.getSample(eventTimes,'closest');
+    sAngle = newAngleData(:,:,1);
+    fAngle = newAngleData(:,:,2);
 else
-    sAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
-    fAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
+    sAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
+    fAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
 end
 
-%% Compute:
 %find walking direction
 direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on the y-axis, between fTO and fHS
 
 
-hipPos3D=.5*(sHip+fHip);
-hipPos3DRel=.5*(sHipRel+fHipRel); %Just for check, should be all zeros
+%% Compute Ankle Positions Relative to Hip
+hipPos3D = 0.5 * (sHip + fHip);
+hipPos3DRel = 0.5 * (sHipRel + fHipRel); %Just for check, should be all zeros
 hipPosFwd=hipPos3D(:,:,2);%Y-axis component
 %hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPosSHS=hipPosFwd(:,1);
@@ -120,25 +133,24 @@ hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % Average Hip Position from
 %sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
 %fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
 
-%NEED TO ROTATE
-
-hipPos2D=hipPos3D(:,:,1:2);
+% NEED TO ROTATE
+hipPos2D = hipPos3D(:,:,1:2);
 %Compute ankle position relative to average hip position
-sAnkFwd=sAnk(:,:,2);
-fAnkFwd=fAnk(:,:,2);
-sAnk2D=sAnk(:,:,1:2);
-fAnk2D=fAnk(:,:,1:2);
-sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
-fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
+sAnkFwd = sAnk(:,:,2);
+fAnkFwd = fAnk(:,:,2);
+sAnk2D = sAnk(:,:,1:2);
+fAnk2D = fAnk(:,:,1:2);
+sAnk_fromAvgHip = sAnk(:,:,2) - hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
+fAnk_fromAvgHip = fAnk(:,:,2) - hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
 % Set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
 
-aux=sign(diff(sAnk(:,[4,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.
-sAnkFwd=bsxfun(@times,sAnkFwd,aux);
-fAnkFwd=bsxfun(@times,fAnkFwd,aux);
-sAnk2D=bsxfun(@times,sAnk2D,aux);
-fAnk2D=bsxfun(@times,fAnk2D,aux);
+aux = sign(diff(sAnk(:,[4,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.
+sAnkFwd = bsxfun(@times,sAnkFwd,aux);
+fAnkFwd = bsxfun(@times,fAnkFwd,aux);
+sAnk2D = bsxfun(@times,sAnk2D,aux);
+fAnk2D = bsxfun(@times,fAnk2D,aux);
 
 %Alternative definition: should be equivalent, since we reference to midHip
 %when doing the rotation. Only difference may be in sign of walking, since
@@ -154,9 +166,9 @@ fAnk2D=bsxfun(@times,fAnk2D,aux);
 %sAnk2D=sAnkRel(:,:,1:2);
 %fAnk2D=fAnkRel(:,:,1:2);
 
-aux=sign(sAngle(:,1)); %Checks for sAngle(indSHS)<0
-sAngle=bsxfun(@times,sAngle,aux);
-fAngle=bsxfun(@times,fAngle,aux);
+aux = sign(sAngle(:,1));            % checks for sAngle(indSHS) < 0
+sAngle = bsxfun(@times,sAngle,aux);
+fAngle = bsxfun(@times,fAngle,aux);
 
 end
 
