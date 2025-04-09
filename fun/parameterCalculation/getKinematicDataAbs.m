@@ -28,10 +28,18 @@ function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D, ...
 
 refMarker3D = [0 0 0];  % absolute lab reference
 
-%Ref axis option 2 (assuming the subject walks only along the y axis):
-refAxis=squeeze(diff(markerData.getOrientedData({'LANK','RANK'}),1,2)); %So that only ankle markers are needed to determine walking direction
-refAxis=refAxis*[1,0,0]' *[1,0,0]; %Projecting along x direction, this is equivalent to just determining forward/backward sign
-rotatedMarkerData=markerData.translate(-squeeze(refMarker3D)).alignRotate(refAxis,[0,0,1]);
+% define reference axis:
+% option 1 (ideal): body reference (vector from left to right hip)
+refAxis = squeeze(diff(markerData.getOrientedData({'LANK','RANK'}),1,2));
+
+% Ref axis option 2 (assuming the subject walks only along the y axis):
+% option 2: assuming the subject walks primarily along the y-axis,
+% project onto the x-direction to determine forward/backward motion
+refAxis = refAxis * [1 0 0]' * [1 0 0]; % projecting along x direction, this is equivalent to just determining forward/backward sign
+
+% align marker data by translating to the reference marker (mid-hip)
+% and rotating so that the reference axis aligns with the vertical axis
+rotatedMarkerData = markerData.translate(-squeeze(refMarker3D)).alignRotate(refAxis,[0 0 1]);
 
 %% Get Relevant Sample of Data (Using Interpolation)
 % 's' represents the slow limb, 'f' represents the fast limb
