@@ -1,5 +1,5 @@
-function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle, ...
-    fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip] = ...
+function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D, ...
+    sAngle,fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip] =...
     getKinematicData(eventTimes,markerData,angleData,s)
 %GETKINEMATICDATA extract marker data at specified gait event times
 %
@@ -202,7 +202,7 @@ fAnk2D = bsxfun(@times,fAnk2D,aux);
 %sAnk2D=sAnkRel(:,:,1:2);
 %fAnk2D=fAnkRel(:,:,1:2);
 
-aux = sign(sAngle(:,1)); %Checks for sAngle(indSHS)<0
+aux = sign(sAngle(:,1));            % checks for sAngle(indSHS) < 0
 sAngle = bsxfun(@times,sAngle,aux);
 fAngle = bsxfun(@times,fAngle,aux);
 

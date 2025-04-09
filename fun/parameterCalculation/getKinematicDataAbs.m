@@ -1,4 +1,6 @@
-function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip]=getKinematicDataAbs(eventTimes,markerData,angleData,s)
+function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D, ...
+    sAngle,fAngle,direction,hipPosSHS,sAnk_fromAvgHip,fAnk_fromAvgHip] =...
+    getKinematicDataAbs(eventTimes,markerData,angleData,s)
 %getKinematicData   loads marker data sampled only at time of gait events
 %
 %getKinematicData generates:
@@ -6,13 +8,13 @@ function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,directio
 % Three dimensional matrices in the format:
 %   number of strides x 6 events (SHS thru FTO2) x 2 dimensions (x,y)
 % whith variable names:
-%   sAnk2D, fAnk2D 
+%   sAnk2D, fAnk2D
 %
 % Two dimensional matrices in the format:
 %   number of strides x 6 events (SHS thru FTO2)
 % with variable names:
 %   sAnkFwd, fAnkFwd: ankle position in fore-aft direction with respect to avg hip
-%   sAngle, fAngle: limb angles (angle of hip-ankle vector with respect to verticle)                         
+%   sAngle, fAngle: limb angles (angle of hip-ankle vector with respect to verticle)
 %
 % direction: a vector with length equal to the number of strides and
 %   values of 1 if walking towards the door in the lab and -1 if walking
@@ -21,7 +23,7 @@ function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,directio
 % Three dimensional matrices in the format:
 %   number of strides x 6 events (SHS thru FTO2) x 3 dimensions (x,y,z)
 % whith variable names:
-%   sHip 
+%   sHip
 %   fHip
 %   sAnk
 %   fAnk
@@ -42,7 +44,7 @@ elseif strcmp(s,'R')
     f='L';
 else
     error();
-end 
+end
 orientation=markerData.orientation;
 directions={orientation.sideAxis,orientation.foreaftAxis,orientation.updownAxis};
 signs=[orientation.sideSign,orientation.foreaftSign,orientation.updownSign];
@@ -70,18 +72,18 @@ for j=1:length(labels) %Assign each marker data to a x3 str
         newMarkerData=nan([size(eventTimes),3]);
         relMarkerData=nan([size(eventTimes),3]);
     end
-    
+
     if strcmp(labels{j}(1),s) %s markers
-    	eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) '=newMarkerData;']);
+        eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) '=newMarkerData;']);
         eval(['s' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel=relMarkerData;']);
     elseif strcmp(labels{j}(1),f)
         eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) '=newMarkerData;']);
         eval(['f' upper(labels{j}(2)) lower(labels{j}(3:4)) 'Rel=relMarkerData;']);
     else
-       error('Marker labels have to begin with ''R'' or ''L'''); 
+        error('Marker labels have to begin with ''R'' or ''L''');
     end
-end 
-    
+end
+
 %get angle data
 if ~isempty(angleData)
     newAngleData=angleData.getDataAsTS({[s,'Limb'],[f,'Limb']});
@@ -92,7 +94,7 @@ else
     sAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
     fAngle=nan(size(eventTimes,1),size(eventTimes,2),1);
 end
-    
+
 %% Compute:
 %find walking direction
 direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on the y-axis, between fTO and fHS
@@ -100,13 +102,13 @@ direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on
 
 hipPos3D=.5*(sHip+fHip);
 hipPos3DRel=.5*(sHipRel+fHipRel); %Just for check, should be all zeros
-hipPosFwd=hipPos3D(:,:,2);%Y-axis component    
+hipPosFwd=hipPos3D(:,:,2);%Y-axis component
 %hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPosSHS=hipPosFwd(:,1);
 hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % Average Hip Position from SHS to STO2
 hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % Average Hip Position from SHS to STO2
 
-%rotate coordinates to be aligned wiht walking dierection                      
+%rotate coordinates to be aligned wiht walking dierection
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
 %fRotation = calcangle(fAnk(indFHS,1:2),fAnk(indFTO,1:2),[fAnk(indFTO,1)-100*direction fAnk(indFTO,2)])-90;
 
@@ -126,8 +128,8 @@ sAnkFwd=sAnk(:,:,2);
 fAnkFwd=fAnk(:,:,2);
 sAnk2D=sAnk(:,:,1:2);
 fAnk2D=fAnk(:,:,1:2);
-sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion 
-fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion 
+sAnk_fromAvgHip = sAnk(:,:,2)-hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
+fAnk_fromAvgHip = fAnk(:,:,2)-hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
 % Set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
@@ -157,3 +159,4 @@ sAngle=bsxfun(@times,sAngle,aux);
 fAngle=bsxfun(@times,fAngle,aux);
 
 end
+
