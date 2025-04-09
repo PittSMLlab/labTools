@@ -118,12 +118,13 @@ direction=sign(diff(sAnk(:,2:3,2),1,2)); %Difference in ankle marker position on
 
 %% Compute Ankle Positions Relative to Hip
 hipPos3D = 0.5 * (sHip + fHip);
-hipPos3DRel = 0.5 * (sHipRel + fHipRel); %Just for check, should be all zeros
-hipPosFwd=hipPos3D(:,:,2);%Y-axis component
-%hipPos= mean([sHip(indSHS,2) fHip(indSHS,2)]);
-hipPosSHS=hipPosFwd(:,1);
-hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % Average Hip Position from SHS to STO2
-hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % Average Hip Position from SHS to STO2
+hipPosFwd = hipPos3D(:,:,2);    % extract y-axis component
+hipPos3DRel = 0.5 * (sHipRel + fHipRel);    % just for check, should be all zeros
+% hipPos = mean([sHip(indSHS,2) fHip(indSHS,2)]);
+hipPosSHS = hipPosFwd(:,1);     % hip position at SHS
+% compute average hip position over gait cycle
+hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % average hip position from SHS to STO2
+hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % average hip position from SHS to STO2
 
 %rotate coordinates to be aligned wiht walking dierection
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
@@ -139,18 +140,20 @@ hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % Average Hip Position from
 
 % NEED TO ROTATE
 hipPos2D = hipPos3D(:,:,1:2);
-%Compute ankle position relative to average hip position
+% compute ankle positions
 sAnkFwd = sAnk(:,:,2);
 fAnkFwd = fAnk(:,:,2);
 sAnk2D = sAnk(:,:,1:2);
 fAnk2D = fAnk(:,:,1:2);
 sAnk_fromAvgHip = sAnk(:,:,2) - hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
 fAnk_fromAvgHip = fAnk(:,:,2) - hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
-% Set all steps to have the same slope (a negative slope during stance phase is assumed)
+
+% set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
 
-aux = sign(diff(sAnk(:,[4,5],2),1,2)); %Checks for: sAnk(indSHS2,2)<sAnk(indSTO,2). Doesn't use HIP to avoid HIP fluctuation issues.
+% adjust stride data to ensure consistent slope during stance phase
+aux = sign(diff(sAnk(:,[4 5],2),1,2));  % checks for: sAnk(indSHS2,2) < sAnk(indSTO,2) (doesn't use HIP to avoid HIP fluctuation issues)
 sAnkFwd = bsxfun(@times,sAnkFwd,aux);
 fAnkFwd = bsxfun(@times,fAnkFwd,aux);
 sAnk2D = bsxfun(@times,sAnk2D,aux);
