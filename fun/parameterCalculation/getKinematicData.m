@@ -28,19 +28,24 @@ function [rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D, ...
 
 % THE FOLLOWING RELIES ON HAVING A DECENT RECONSTRUCTION OF HIP MARKERS:
 % define reference marker as midpoint between left and right hip markers
-refMarker3D = 0.5 * sum(markerData.getOrientedData({'LHIP','RHIP'}),2); % mid-hip
+% compute the average of LHIP and RHIP across the x, y, and z dimensions
+refMarker3D = 0.5 * sum(markerData.getOrientedData({'LHIP','RHIP'}),2);     % mid-hip
 
 % define reference axis:
 % option 1 (ideal): body reference (vector from left to right hip)
+% compute difference between LHIP and RHIP (i.e., RHIP - LHIP) for x, y, z
 refAxis = squeeze(diff(markerData.getOrientedData({'LHIP','RHIP'}),1,2));   % L to R
 
 % Ref axis option 2 (assuming the subject walks only along the y axis):
 % option 2: assuming the subject walks primarily along the y-axis,
 % project onto the x-direction to determine forward/backward motion
+% merely makes the y and z columns zeros and leaves the x column as is
 refAxis = refAxis * [1 0 0]' * [1 0 0]; % projecting along x direction, this is equivalent to just determining forward/backward sign
 
 % align marker data by translating to the reference marker (mid-hip)
 % and rotating so that the reference axis aligns with the vertical axis
+% call to 'alignRotate' appears equivalent to swapping the signs of the x
+% and y columns (but not z) of the output from 'translate'
 rotatedMarkerData = markerData.translate(-squeeze(refMarker3D)).alignRotate(refAxis,[0 0 1]);
 
 %% Get Relevant Sample of Data (Using Interpolation)
