@@ -1,17 +1,29 @@
-function [out] = computeSpatialParameters(strideEvents,markerData,angleData,s)
-%%
+function out = computeSpatialParameters(strideEvents,markerData,angleData,s)
+%This function computes summary spatial parameters per stride
+%   This function outputs a 'parameterSeries' object, which can be
+% concatenated with other 'parameterSeries' objects, for example, with
+% those from 'computeTemporalParameters'. While this function is used for
+% spatial parameters exclusively, it should work for any 'labTS' object.
+% This function computes summary spatial parameters.
+%
+% See also computeHreflexParameters, computeTemporalParameters,
+% computeForceParameters, parameterSeries
 
-timeSHS=strideEvents.tSHS;
-timeFTO=strideEvents.tFTO;
-timeFHS=strideEvents.tFHS;
-timeSTO=strideEvents.tSTO;
-timeSHS2=strideEvents.tSHS2;
-timeFTO2=strideEvents.tFTO2;
-timeFHS2=strideEvents.tFHS2;
-timeSTO2=strideEvents.tSTO2;
-eventTimes=[timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2 timeFHS2 timeSTO2];
-SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6; FHS2=7; STO2=8; %numbers correspond to column of eventTimes matrix
-%% Labels and descriptions:
+%% Gait Stride Event Times
+timeSHS  = strideEvents.tSHS;
+timeFTO  = strideEvents.tFTO;
+timeFHS  = strideEvents.tFHS;
+timeSTO  = strideEvents.tSTO;
+timeSHS2 = strideEvents.tSHS2;
+timeFTO2 = strideEvents.tFTO2;
+timeFHS2 = strideEvents.tFHS2;
+timeSTO2 = strideEvents.tSTO2;
+eventTimes = [timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2 ...
+    timeFHS2 timeSTO2];
+% numbers correspond to the column of the 'eventTimes' matrix
+SHS = 1; FTO = 2; FHS = 3; STO = 4; SHS2 = 5; FTO2 = 6; FHS2 = 7; STO2 = 8;
+
+%% Labels & Descriptions
 aux={'direction',               '-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)';...
     'hipPos',                   'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)';...
     'stepLengthSlow',           'distance between ankle markers at SHS2 (in mm)';...
@@ -19,7 +31,7 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'takeOffLengthSlow',        'sAnkle position, with respect to fAnkle at STO (in mm)';...
     'takeOffLengthFast',        'fAnkle position with respect to sAnkle at FTO (in mm)';...
     'alphaSlow',                'ankle placement of slow leg at SHS2 (realtive to avg hip marker) (in mm)';...
-	'alphaTemp',                'ankle placement of slow leg at SHS (realtive to avg hip marker) (in mm)';...
+    'alphaTemp',                'ankle placement of slow leg at SHS (realtive to avg hip marker) (in mm)';...
     'alphaFast',                'ankle placement of fast leg at FHS (in mm)';...
     'alphaDiff',                 'alphaFast-alphaSlow';...
     'alphaAsym',                 '(alphaFast-alphaSlow)/(SLf+SLs)';...
@@ -27,11 +39,11 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'alphaAngFast',             'fast leg angle at FHS (in deg)';...
     'betaSlow',                 'ankle placement of slow leg at STO (relative avg hip marker) (in mm)';...
     'betaFast',                 'ankle placement of fast leg at FTO2 (in mm)';...
-	'XSlow',                    'ankle postion of the slow leg @FHS (in mm)';...
+    'XSlow',                    'ankle postion of the slow leg @FHS (in mm)';...
     'XFast',                    'ankle position of Fast leg @SHS (in mm)';...
     'Xdiff',                     'Xdiff Fast - Slow';...
     'Xasym',                     'Xdiff/(SLf+SLs)';...
-	'RFastPos',                 'Ratio of FTO/FHS';...
+    'RFastPos',                 'Ratio of FTO/FHS';...
     'RSloWPos',                 'Ratio of STO/SHS';...
     'RFastPosSHS',              'Ratio of fank@SHS/FHS';...
     'RSlowPosFHS',              'Ratio of sank@FHS/SHS';...
@@ -126,8 +138,8 @@ aux={'direction',               '-1 if walking towards window, 1 if walking towa
     'singleStanceSpeedFast',     'Single stance speed for ankle relative to the hip for the fast leg during contralateral swing';...
     'singleStanceSpeedAvg',     'Single stance speed for ankle relative to the hip averaged accross the legs';...
     'singleStanceSpeedDiff',    'Single stance speed difference, fast single stance speed minus slow single stance speed (ankle relative to the hip)';...
-%    'avgRotation',            'Angle that the coordinates were rotated by';...
-   }; 
+    %    'avgRotation',            'Angle that the coordinates were rotated by';...
+    };
 
 paramLabels=aux(:,1);
 description=aux(:,2);
@@ -138,7 +150,7 @@ dd=permute(dd,[1,3,2]);
 ee=all(dd==0,2);
 if any(ee(:))
     msg=['Markers were reconstructed at the origin. Setting to NaN for spatial parameter computation.'];
-    
+
     for i=1:size(ee,3)
         if any(ee(:,1,i)) && sum(ee(:,1,i))*markerData.sampPeriod > 1
             msg=[msg ' ' ll{i} ' was at origin for ' num2str(sum(ee(:,1,i))*markerData.sampPeriod) 's.'];
@@ -157,8 +169,13 @@ if any(ee(:))
     error('Setting markers at the origin to NaN did not work')
 end
 %% Get rotated data
-[rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle,direction,hipPos,sAnk_fromAvgHip,fAnk_fromAvgHip]=getKinematicData(eventTimes,markerData,angleData,s);
-[rotatedMarkerDataAbs,sAnkFwdAbs,fAnkFwdAbs,sAnk2DAbs,fAnk2DAbs,sAngleAbs,fAngleAbs,directionAbs,hipPosSHSAbs,sAnk_fromAvgHipAbs,fAnk_fromAvgHipAbs]=getKinematicDataAbs(eventTimes,markerData,angleData,s);
+[rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle, ...
+    direction,hipPos,sAnk_fromAvgHip,fAnk_fromAvgHip] = ...
+    getKinematicData(eventTimes,markerData,angleData,s);
+[rotatedMarkerDataAbs,sAnkFwdAbs,fAnkFwdAbs,sAnk2DAbs,fAnk2DAbs, ...
+    sAngleAbs,fAngleAbs,directionAbs,hipPosSHSAbs, ...
+    sAnk_fromAvgHipAbs,fAnk_fromAvgHipAbs] = ...
+    getKinematicDataAbs(eventTimes,markerData,angleData,s);
 
 %% Intralimb
 if strcmp(s,'L')
@@ -167,7 +184,7 @@ elseif strcmp(s,'R')
     f='L';
 else
     error();
-end 
+end
 
 %step lengths (1D)
 stepLengthSlow=sAnkFwd(:,SHS2)-fAnkFwd(:,SHS2); %If sAnkFwd and fAnkFwd are measured with respect to the same reference, this is the same as just subtracting the marker positions
@@ -215,7 +232,7 @@ swingRangeFastAbs=fAnkFwdAbs(:,FHS)-fAnkFwdAbs(:,FTO);
 
 %Ratio TO./HS
 RFastPos=abs(betaFast./alphaFast);
-RSloWPos=abs(betaSlow./alphaTemp); 
+RSloWPos=abs(betaSlow./alphaTemp);
 
 %Ratio ankle position @HS of contralateral leg./HS
 RFastPosSHS=abs(XFast./alphaFast);
@@ -267,7 +284,7 @@ SerrorOld=alphaRatioFast./alphaRatioSlow;
 Sgoal=(stanceRangeFast-stanceRangeSlow)./(stanceRangeFast+stanceRangeSlow);
 centerSlow=(alphaAngSlow+betaAngSlow)./2;
 centerFast=(alphaAngFast+betaAngFast)./2;
-angleOfOscillationAsym=(centerFast-centerSlow);            
+angleOfOscillationAsym=(centerFast-centerSlow);
 Xasym=Xdiff./(stepLengthFast+stepLengthSlow);
 alphaAsym=alphaDiff./(stepLengthFast+stepLengthSlow);
 %phase shift (using angles)
@@ -277,7 +294,7 @@ alphaAsym=alphaDiff./(stepLengthFast+stepLengthSlow);
 % fastlimb=fastlimb-mean(fastlimb);
 % % Circular correlation
 % phaseShift=circCorr(slowlimb,fastlimb);
-% 
+%
 % %phase shift (using marker locations)
 % slowlimb=sAnkPos(indSHS:indSHS2);
 % fastlimb=fAnkPos(indSHS:indSHS2);
@@ -297,7 +314,7 @@ for i=1:T
                 phaseShift(i)=circCorr(sLimb,fLimb);
             end
         end
-        Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,'ANK'],[f,'ANK']});    
+        Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,'ANK'],[f,'ANK']});
         if ~isempty(Pos)
             phaseShiftPos(i)=circCorr(Pos(:,1,2),Pos(:,2,2)); %Using y components only, which is equivalent to sAnkFwd
         end
@@ -309,25 +326,25 @@ end
 
 % Compute spatial contribution (1D)
 spatialFast=fAnkFwd(:,FHS) - sAnkFwd(:,SHS);
-spatialSlow=sAnkFwd(:,SHS2) - fAnkFwd(:,FHS);    
+spatialSlow=sAnkFwd(:,SHS2) - fAnkFwd(:,FHS);
 
 % Compute temporal contributions
-ts=(timeFHS-timeSHS); 
-tf=(timeSHS2-timeFHS); 
+ts=(timeFHS-timeSHS);
+tf=(timeSHS2-timeFHS);
 difft=ts-tf;
 
 dispSlow=abs(sAnkFwd(:,FHS)-sAnkFwd(:,SHS)); %FIXME: This SHOULD NOT use an abs(), if the sign is supposed to be the opposite one, just make it so. Abs() makes it murky to know what this quantity means.
 dispFast=abs(fAnkFwd(:,SHS2)-fAnkFwd(:,FHS));
 
 velocitySlow=dispSlow./ts; % Velocity of foot relative to hip, should be close to actual belt speed in TM trials
-velocityFast=dispFast./tf;            
-avgVel=mean([velocitySlow velocityFast],2);           
+velocityFast=dispFast./tf;
+avgVel=mean([velocitySlow velocityFast],2);
 avgStepTime=mean([ts tf],2); %This is half strideTimeSlow!
 
-spatialContribution=spatialFast-spatialSlow;            
-stepTimeContribution=avgVel.*difft;            
-velocityContribution=avgStepTime.*(velocitySlow-velocityFast);            
-netContribution=spatialContribution+stepTimeContribution+velocityContribution; 
+spatialContribution=spatialFast-spatialSlow;
+stepTimeContribution=avgVel.*difft;
+velocityContribution=avgStepTime.*(velocitySlow-velocityFast);
+netContribution=spatialContribution+stepTimeContribution+velocityContribution;
 
 %Alternative and normalized contributions
 strideTimeSlow=timeSHS2-timeSHS; %Exactly the same definition as in computeTemporalParameters
@@ -412,7 +429,7 @@ stepTimeErrorS=stepTimeIdealS-stepTimeContributionNorm2;
 
 
 
-%% Speed calculations            
+%% Speed calculations
 equivalentSpeed=(dispSlow+dispFast)./(ts+tf); %= (ts./tf+ts)*dispSlow./ts + (tf./tf+ts)*dispFast./tf = (ts./tf+ts)*vs + (tf./tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average
 
 % sStanceIdxs=indFTO:indFHS;
@@ -485,7 +502,7 @@ for i=1:length(paramLabels)
 end
 
 %% Create parameterSeries
-out=parameterSeries(data,paramLabels,[],description);        
+out=parameterSeries(data,paramLabels,[],description);
 
 end
 
