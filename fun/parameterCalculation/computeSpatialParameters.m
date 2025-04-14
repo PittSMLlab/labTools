@@ -146,28 +146,28 @@ paramLabels = aux(:,1);
 description = aux(:,2);
 
 %% Sanity check & correction: look for markers at (0,0,0) and set data to NaN
-[dd,ll]=markerData.getOrientedData;
-dd=permute(dd,[1,3,2]);
-ee=all(dd==0,2);
+[dd,ll] = markerData.getOrientedData;
+dd = permute(dd,[1 3 2]);
+ee = all(dd == 0,2);
 if any(ee(:))
-    msg=['Markers were reconstructed at the origin. Setting to NaN for spatial parameter computation.'];
-
-    for i=1:size(ee,3)
-        if any(ee(:,1,i)) && sum(ee(:,1,i))*markerData.sampPeriod > 1
-            msg=[msg ' ' ll{i} ' was at origin for ' num2str(sum(ee(:,1,i))*markerData.sampPeriod) 's.'];
+    msg = ['Markers were reconstructed at the origin. Setting to NaN ' ...
+        'for spatial parameter computation.'];
+    for ii = 1:size(ee,3)
+        if any(ee(:,1,ii)) && sum(ee(:,1,ii)) * markerData.sampPeriod > 1
+            msg = [msg ' ' ll{i} ' was at origin for ' ...
+                num2str(sum(ee(:,1,i)) * markerData.sampPeriod) 's.'];
         end
     end
-    warning(msg)
+    warning(msg);
 end
 
-ee=repmat(ee,1,3,1);
-
-markerData.Data(ee)=NaN;
-dd=markerData.getOrientedData;
-dd=permute(dd,[1,3,2]);
-ee=all(dd==0,2);
+ee = repmat(ee,1,3,1);
+markerData.Data(ee) = NaN;
+dd = markerData.getOrientedData;
+dd = permute(dd,[1 3 2]);
+ee = all(dd == 0,2);
 if any(ee(:))
-    error('Setting markers at the origin to NaN did not work')
+    error('Setting markers at the origin to NaN did not work.');
 end
 
 %% Get Rotated Data
@@ -180,11 +180,11 @@ end
     getKinematicDataAbs(eventTimes,markerData,angleData,s);
 
 %% Intralimb
-if strcmp(s,'L')
-    f='R';
-elseif strcmp(s,'R')
-    f='L';
-else
+if strcmp(s,'L')        % if slow leg is left, ...
+    f = 'R';            % fast is right
+elseif strcmp(s,'R')    % if slow leg is right, ...
+    f = 'L';
+else                    % otherwise, invalid leg ID
     error();
 end
 
