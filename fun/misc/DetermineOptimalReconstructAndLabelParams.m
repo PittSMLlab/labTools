@@ -12,7 +12,7 @@
 %   3. Generate and save trajectory figures for GT and ANK markers
 
 %% Define Data Path, Identify Trials to Process, & Initialize SDK
-pathSess = 'Z:\Nathan\ViconNexusReconstructAndLabel';
+pathSess = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon';
 % get all trial files that start with 'Trial'
 trialFiles = dir(fullfile(pathSess,'Trial*.x1d'));
 if isempty(trialFiles)      % if no trial files found, ...
@@ -27,6 +27,20 @@ indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
 
 % initialize the Vicon Nexus object
 vicon = ViconNexus();
+
+%% Set of Parameters to Loop Through
+predict3D = [true false];
+envDriftTolerance = 0.5:1.0:2.5;
+minCamerasToStartTraj = 2:3;
+minCamerasToContTraj = 1:2;
+minSeparation = 14:5:34;
+minCentroidRadius = 0:2:4;
+maxCentroidRadius = 30:10:50;
+paramGrid = allcomb(predict3D,envDriftTolerance,minCamerasToStartTraj, ...
+    minCamerasToContTraj,minSeparation,minCentroidRadius,maxCentroidRadius);
+numParamSets = size(paramGrid,1);
+params = readlines(['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
+    'Configurations\Pipelines\Reconstruct And Label Test.Pipeline']);
 
 %% Process All Trials
 % define reference and target markers for pattern-based gap filling
@@ -46,7 +60,7 @@ for tr = indsTrials     % for each trial specified, ...
     % the reconstructed markers based on the Vicon Nexus labeling scheme.
     fprintf('Running reconstruction and labeling pipeline...\n');
     try                     % try running reconstruct and label pipeline
-        vicon.RunPipeline('Reconstruct And Label','',200);
+        vicon.RunPipeline('Reconstruct And Label Test','',200);
         fprintf('Reconstruction and labeling complete.\n');
     catch ME
         warning(ME.identifier,'%s',ME.message);
