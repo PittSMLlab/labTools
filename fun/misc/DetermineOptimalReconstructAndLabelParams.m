@@ -1,5 +1,5 @@
 %% Determine the Optimal Reconstruct & Label Pipeline Parameters
-% author: NWB
+% author: NWB (with assistance from ChatGPT)
 % date (created): 18 May 2025
 % purpose: to iterate through various Vicon Nexus 'Reconstruct & Label'
 % pipeline parameters to determine the optimal configuration based on
@@ -11,26 +11,60 @@
 %       analysis just in case
 %   3. Generate and save trajectory figures for GT and ANK markers
 
-%% Define Data Path, Identify Trials to Process, & Initialize SDK
-pathSess = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\';
-pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\';
-% get all trial files that start with 'Trial'
+%% 1) Define Paths & Trial List
+pathSess   = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\';
+pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\Results.csv';
+
+% get all trial files that start with 'Trial' and end in '.x1d'
 trialFiles = dir(fullfile(pathSess,'Trial*.x1d'));
 if isempty(trialFiles)                      % if no trial files found, ...
-    fprintf('No trials found in session folder: %s\n',pathSess);
-    return;
+    error('No trials found in session folder: %s\n',pathSess);
 end
 
-results = struct('Trial',{},'Subject',{},'Marker',{}, ...
-    'DropPct',{},'NumGaps',{},'MaxGapLength',{});
-
-% extract trial indices from filenames
+% extract numeric trial indices from filenames (assumes 'TrialXX.x1d')
 [~,namesFiles] = cellfun(@fileparts,{trialFiles.name}, ...
     'UniformOutput',false);
 indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
 
-% initialize the Vicon Nexus object
-vicon = ViconNexus();
+%% 2) Initialize Vicon Nexus SDK & Prepare Results Container
+vicon = ViconNexus();   % assumes ViconNexus() is on the MATLAB path
+
+% preallocate a struct array to hold summary results:
+%   • TrialID           (e.g. 1, 2, …)
+%   • SubjectName       (string)
+%   • Use3DPredictions  (logical)
+%   • DropPct_All       (numeric)
+%   • NumGapsPerMarker_All
+%   • MaxGapLength_All
+%   • DropPct_Subset    (numeric)
+%   • NumGapsPerMarker_Subset
+%   • MaxGapLength_Subset
+results = struct( ...
+    'TrialID',                {}, ...
+    'SubjectName',            {}, ...
+    'Use3DPredictions',       {}, ...
+    'DropPct_All',            {}, ...
+    'NumGapsPerMarker_All',   {}, ...
+    'MaxGapLength_All',       {}, ...
+    'DropPct_Subset',         {}, ...
+    'NumGapsPerMarker_Subset',{}, ...
+    'MaxGapLength_Subset',    {} ...
+    );
+
+%% 3) Locate & Read the “Reconstruct And Label Test.Pipeline” File
+pipelineFile = ['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
+    'Configurations\Pipelines\Reconstruct And Label Test.Pipeline'];
+
+% read in all lines once and search for the 3DPredictions line index
+params         = readlines(pipelineFile);
+ind3DPredict   = contains(params,'Reconstructor.3DPredictions');
+if nnz(ind3DPredict) ~= 1
+    error(['Could not find exactly one line containing ' ...
+        '"Reconstructor.3DPredictions" in pipeline file.']);
+end
+
+%% 4) Define the Subset of Markers to Compute Separately
+subsetMarkers = {'RGT','LGT','RANK','LANK'};
 
 %% Specify Set of Reconstruct & Label Parameters to Loop Through
 predict3D = [true false];
@@ -41,109 +75,154 @@ minSeparation = 14; % 14:5:34;
 minCentroidRadius = 0; % 0:2:4;
 maxCentroidRadius = 50; % 30:10:50;
 % create set of parameter combinations
-paramSets = allcomb(predict3D,envDriftTolerance, ...
-    minCamerasToStartTraj,minCamerasToContTraj,minSeparation, ...
-    minCentroidRadius,maxCentroidRadius);
+% paramSets = allcomb(predict3D,envDriftTolerance, ...
+%     minCamerasToStartTraj,minCamerasToContTraj,minSeparation, ...
+%     minCentroidRadius,maxCentroidRadius);
+
+%% 5) Loop Over All Trials & Parameter Sets
+paramSets = [true; false];  % only two rows: true (row 1), false (row 2)
 numParamSets = size(paramSets,1);           % number of parameter sets
 
-%%
-pipelineFile = ['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
-    'Configurations\Pipelines\Reconstruct And Label Test.Pipeline'];
-% load the test 'Reconstruct And Label' pipeline text file for editing
-params = readlines(pipelineFile);
-ind3DPredict = contains(params,'3DPredictions');
-
 for set = 1:numParamSets                    % for each parameter set, ...
-    % update parameter strings in pipeline XML file
-    if paramSets(set,1)                     % if 3D predictions on, ...
-        params(ind3DPredict) = "      <Param name=""Reconstructor.3DPredictions"" value=""true""/>";
+    use3D = paramSets(set);
+
+    % 5a) overwrite just the '3DPredictions' line in pipeline XML file
+    if use3D                                % if 3D predictions on, ...
+        params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="true"/>';
     else
-        params(ind3DPredict) = "      <Param name=""Reconstructor.3DPredictions"" value=""false""/>";
+        params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="false"/>';
     end
 
-    % overwrite pipeline XML file with current parameter set
+    % 5b) overwrite ALL 209 lines back into the pipeline file
     % if MATLAB R2022a or later
     % writelines(params,pipelineFile);
-    fid = fopen(pipelineFile,'w');          % open the file to overwrite
-    for line = 1:numel(params)              % for each line in file, ...
-        fprintf(fid,'%s\n',params(line));   % overwrite it
+    fidW = fopen(pipelineFile,'w');     % open the file to overwrite
+    if fidW < 0                         % if file did not open, ...
+        error('Could not open pipeline file for writing: %s',pipelineFile);
     end
-    fclose(fid);                            % close file
+    for line = 1:numel(params)          % for each line in file, ...
+        fprintf(fidW,'%s\n',params(line));  % overwrite it
+    end
+    fclose(fidW);                       % close file
 
     % process all trials
-    for tr = indsTrials     % for each trial specified, ...
-        pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
-        fprintf('Processing trial %d: %s\n',tr,pathTrial);
+    for tr = 1:numel(indsTrials)     % for each trial specified, ...
+        trialID = indsTrials(tr);
+        trialName = sprintf('Trial%02d',trialID);
+        pathTrial = fullfile(pathSess,trialName);
+        fprintf('---\nProcessing %s (Trial %d)\n',trialName,trialID);
 
-        % open the trial if needed
+        % 5c) open the trial in Nexus (if not already open)
         if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
-            return;     % exit if the trial could not be opened
+            warning('  • Could not open %s. Skipping.\n',trialName);
+            continue;   % skip trial if coule not be opened
         end
 
-        % The reconstruct and label step processes raw camera data and
-        % reconstructs 3D marker positions. The labeling step assigns names
-        % to reconstructed markers based on Vicon Nexus labeling scheme.
-        fprintf('Running reconstruction and labeling pipeline...\n');
+        % 5d) run the "Reconstruct And Label Test" pipeline (batch mode)
+        fprintf('  • Running pipeline with 3D Predictions = %d...\n',use3D);
         try                 % try running reconstruct and label pipeline
             vicon.RunPipeline('Reconstruct And Label Test','',200);
-            fprintf('Reconstruction and labeling complete.\n');
         catch ME
-            warning(ME.identifier,'%s',ME.message);
+            warning(ME.identifier,'  • Nexus.RunPipeline failed: %s\n', ...
+                ME.message);
+            continue;
         end
 
-        % get subject name (assuming only one subject in the trial)
+        % 5e) get subject name (assuming only one subject in the trial)
         subject = vicon.GetSubjectNames();
         if isempty(subject)
-            error('No subject found in the trial.');
+            warning('  • No subject found in %s. Skipping.\n',trialName);
+            continue;
         end
         subject = subject{1};
 
-        markers = vicon.GetMarkerNames(subject);    % retrieve all markers
-        if isempty(markers)             % if empty array of markers, ...
-            warning('No markers found for the subject in the trial.');
-            return;
+        % 5f) retrieve all marker names for this subject
+        allMarkers = vicon.GetMarkerNames(subject);
+        numMarkers   = numel(allMarkers);
+        if numMarkers == 0
+            warning('  • No markers found for subject %s. Skipping.\n',subject);
+            continue;
         end
 
-        for mrkr = 1:numel(markers)         % for each marker, ...
-            nameMarker = markers{mrkr};     % get marker name
+        % 5g) preallocate temporary arrays to store per-marker metrics
+        dropPctArr       = zeros(nMarkers,1);  % percentage of missing frames
+        numGapsArr       = zeros(nMarkers,1);  % number of gap events
+        maxGapLenArr     = zeros(nMarkers,1);  % largest gap length for each marker
+        isInSubsetMask   = false(nMarkers,1);
+
+        % 5h) For each marker: grab trajectory, compute missing‐frames & gaps
+        for mrkr = 1:numMarkers         % for each marker, ...
+            nameMarker = allMarkers{mrkr};
+            isInSubsetMask(mrkr) = any(strcmp(nameMarker,subsetMarkers));
+
             try
-                [xTraj,yTraj,zTraj,existsTraj] = ...
+                [~,~,~,existsTraj] = ...
                     vicon.GetTrajectory(subject,nameMarker);
+                % existsTraj is logical vector: true=visible, false=occluded
             catch
-                warning(['Failed to retrieve trajectory for marker %s.' ...
-                    ' Skipping...'],nameMarker);
-                continue;
+                warning('    • Could not retrieve trajectory for %s. Treating as fully missing.\n',nameMarker);
+                existsTraj = false(vicon.GetFrameCount(),1);
             end
 
-            % identify gaps as sequences where trajExists is false
-            indsGap = find(~existsTraj);
-            if isempty(indsGap)             % if no gaps for a marker, ...
-                continue;
+            totalFrames = numel(existsTraj);
+            numMissing    = sum(~existsTraj);
+            dropPctArr(mrkr) = (numMissing / totalFrames) * 100;
+
+            % find runs of consecutive missing frames:
+            missingFlags = ~existsTraj;          % true = a missing frame
+            dv = diff([0; missingFlags; 0]);
+            runBoundaries = find(dv~=0);         % changes
+            runLengths    = diff(runBoundaries); % lengths of each run (present and missing)
+            runValues     = dv(runBoundaries);   % +1=run of missing starts, -1=ends
+            gapRuns       = runLengths(runValues==1);  % only lengths where runValues==+1
+            numGapsArr(mrkr)   = numel(gapRuns);
+            if isempty(gapRuns)
+                maxGapLenArr(mrkr) = 0;
+            else
+                maxGapLenArr(mrkr) = max(gapRuns);
             end
 
-            % identify start and end indices of each trajectory gap
-            gapsStarts = indsGap([true diff(indsGap) > 1])';
-            gapsEnds = indsGap([diff(indsGap) > 1 true])';
+            % 5i) compute aggregate measures over ALL markers
+            DropPct_All          = mean(dropPctArr);
+            NumGapsPerMarker_All = sum(numGapsArr) / nMarkers;
+            MaxGapLength_All     = max(maxGapLenArr);
 
-            % compute metrics
-            dropPct = (sum(~existsTraj) / numel(existsTraj)) * 100;
-            numGaps = numel(gapsStarts);
-            gapMax = max(diff([gapsStarts gapsEnds]));
+            % 5j) compute aggregate measures over SUBSET markers
+            subsetIdx = find(isInSubsetMask);
+            if isempty(subsetIdx)
+                % if subset markers not found, set NaN:
+                DropPct_Subset          = NaN;
+                NumGapsPerMarker_Subset = NaN;
+                MaxGapLength_Subset     = NaN;
+            else
+                DropPct_Subset          = mean(dropPctArr(subsetIdx));
+                NumGapsPerMarker_Subset = sum(numGapsArr(subsetIdx)) / numel(subsetIdx);
+                MaxGapLength_Subset     = max(maxGapLenArr(subsetIdx));
+            end
 
-            % append to results
-            results(end+1) = struct(...
-                'Trial',       trialName, ...
-                'Subject',     subject, ...
-                'Marker',      marker, ...
-                'DropPct',     dropPct, ...
-                'NumGaps',     numGaps, ...
-                'MaxGapLength',maxG);
+            % 5k) Append a single row to "results"
+            results(end+1) = struct( ...
+                'TrialID',                trialID, ...
+                'SubjectName',            subject, ...
+                'Use3DPredictions',       use3D, ...
+                'DropPct_All',            DropPct_All, ...
+                'NumGapsPerMarker_All',   NumGapsPerMarker_All, ...
+                'MaxGapLength_All',       MaxGapLength_All, ...
+                'DropPct_Subset',         DropPct_Subset, ...
+                'NumGapsPerMarker_Subset',NumGapsPerMarker_Subset, ...
+                'MaxGapLength_Subset',    MaxGapLength_Subset ...
+                );
+
+            fprintf('    • 3D=%d → DropPct_All=%.2f%%, Gaps/Marker_All=%.2f, MaxGap_All=%d frames\n', ...
+                use3D, DropPct_All, NumGapsPerMarker_All, MaxGapLength_All);
+            fprintf('      Subset → DropPct=%.2f%%, Gaps/Marker=%.2f, MaxGap=%d frames\n', ...
+                DropPct_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset);
         end
     end
 end
 
-%% Save Results to a CSV File
+%% 6) Save Summary Results to a CSV File
 T = struct2table(results);
 writetable(T,pathOutCSV);
-fprintf('QC complete. Results written to %s.\n',pathOutCSV);
+fprintf('\nQC complete. Summary written to:\n   %s\n',pathOutCSV);
 
