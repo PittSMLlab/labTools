@@ -85,14 +85,14 @@ numParamSets = size(paramSets,1);           % number of parameter sets
 
 for set = 1:numParamSets                    % for each parameter set, ...
     use3D = paramSets(set);
-
+    
     % 5a) overwrite just the '3DPredictions' line in pipeline XML file
     if use3D                                % if 3D predictions on, ...
         params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="true"/>';
     else
         params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="false"/>';
     end
-
+    
     % 5b) overwrite ALL 209 lines back into the pipeline file
     % if MATLAB R2022a or later
     % writelines(params,pipelineFile);
@@ -104,20 +104,20 @@ for set = 1:numParamSets                    % for each parameter set, ...
         fprintf(fidW,'%s\n',params(line));  % overwrite it
     end
     fclose(fidW);                       % close file
-
+    
     % process all trials
     for tr = 1:numel(indsTrials)     % for each trial specified, ...
         trialID = indsTrials(tr);
         trialName = sprintf('Trial%02d',trialID);
         pathTrial = fullfile(pathSess,trialName);
         fprintf('---\nProcessing %s (Trial %d)\n',trialName,trialID);
-
+        
         % 5c) open the trial in Nexus (if not already open)
         if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
             warning('  • Could not open %s. Skipping.\n',trialName);
             continue;   % skip trial if coule not be opened
         end
-
+        
         % 5d) run the "Reconstruct And Label Test" pipeline (batch mode)
         fprintf('  • Running pipeline with 3D Predictions = %d...\n',use3D);
         try                 % try running reconstruct and label pipeline
@@ -127,7 +127,7 @@ for set = 1:numParamSets                    % for each parameter set, ...
                 ME.message);
             continue;
         end
-
+        
         % 5e) get subject name (assuming only one subject in the trial)
         subject = vicon.GetSubjectNames();
         if isempty(subject)
@@ -135,7 +135,7 @@ for set = 1:numParamSets                    % for each parameter set, ...
             continue;
         end
         subject = subject{1};
-
+        
         % 5f) retrieve all marker names for this subject
         allMarkers = vicon.GetMarkerNames(subject);
         numMarkers   = numel(allMarkers);
@@ -143,18 +143,18 @@ for set = 1:numParamSets                    % for each parameter set, ...
             warning('  • No markers found for subject %s. Skipping.\n',subject);
             continue;
         end
-
+        
         % 5g) preallocate temporary arrays to store per-marker metrics
-        dropPctArr       = zeros(nMarkers,1);  % percentage of missing frames
-        numGapsArr       = zeros(nMarkers,1);  % number of gap events
-        maxGapLenArr     = zeros(nMarkers,1);  % largest gap length for each marker
-        isInSubsetMask   = false(nMarkers,1);
-
+        dropPctArr       = zeros(numMarkers,1);	% percentage of missing frames
+        numGapsArr       = zeros(numMarkers,1);	% number of gap events
+        maxGapLenArr     = zeros(numMarkers,1);	% largest gap length for each marker
+        isInSubsetMask   = false(numMarkers,1);
+        
         % 5h) For each marker: grab trajectory, compute missing‐frames & gaps
         for mrkr = 1:numMarkers         % for each marker, ...
             nameMarker = allMarkers{mrkr};
             isInSubsetMask(mrkr) = any(strcmp(nameMarker,subsetMarkers));
-
+            
             try
                 [~,~,~,existsTraj] = ...
                     vicon.GetTrajectory(subject,nameMarker);
@@ -163,14 +163,14 @@ for set = 1:numParamSets                    % for each parameter set, ...
                 warning('    • Could not retrieve trajectory for %s. Treating as fully missing.\n',nameMarker);
                 existsTraj = false(vicon.GetFrameCount(),1);
             end
-
+            
             totalFrames = numel(existsTraj);
             numMissing    = sum(~existsTraj);
             dropPctArr(mrkr) = (numMissing / totalFrames) * 100;
-
+            
             % find runs of consecutive missing frames:
             missingFlags = ~existsTraj;          % true = a missing frame
-            dv = diff([0; missingFlags; 0]);
+            dv = diff([0; missingFlags'; 0]);
             runBoundaries = find(dv~=0);         % changes
             runLengths    = diff(runBoundaries); % lengths of each run (present and missing)
             runValues     = dv(runBoundaries);   % +1=run of missing starts, -1=ends
@@ -181,43 +181,43 @@ for set = 1:numParamSets                    % for each parameter set, ...
             else
                 maxGapLenArr(mrkr) = max(gapRuns);
             end
-
-            % 5i) compute aggregate measures over ALL markers
-            DropPct_All          = mean(dropPctArr);
-            NumGapsPerMarker_All = sum(numGapsArr) / nMarkers;
-            MaxGapLength_All     = max(maxGapLenArr);
-
-            % 5j) compute aggregate measures over SUBSET markers
-            subsetIdx = find(isInSubsetMask);
-            if isempty(subsetIdx)
-                % if subset markers not found, set NaN:
-                DropPct_Subset          = NaN;
-                NumGapsPerMarker_Subset = NaN;
-                MaxGapLength_Subset     = NaN;
-            else
-                DropPct_Subset          = mean(dropPctArr(subsetIdx));
-                NumGapsPerMarker_Subset = sum(numGapsArr(subsetIdx)) / numel(subsetIdx);
-                MaxGapLength_Subset     = max(maxGapLenArr(subsetIdx));
-            end
-
-            % 5k) Append a single row to "results"
-            results(end+1) = struct( ...
-                'TrialID',                trialID, ...
-                'SubjectName',            subject, ...
-                'Use3DPredictions',       use3D, ...
-                'DropPct_All',            DropPct_All, ...
-                'NumGapsPerMarker_All',   NumGapsPerMarker_All, ...
-                'MaxGapLength_All',       MaxGapLength_All, ...
-                'DropPct_Subset',         DropPct_Subset, ...
-                'NumGapsPerMarker_Subset',NumGapsPerMarker_Subset, ...
-                'MaxGapLength_Subset',    MaxGapLength_Subset ...
-                );
-
-            fprintf('    • 3D=%d → DropPct_All=%.2f%%, Gaps/Marker_All=%.2f, MaxGap_All=%d frames\n', ...
-                use3D, DropPct_All, NumGapsPerMarker_All, MaxGapLength_All);
-            fprintf('      Subset → DropPct=%.2f%%, Gaps/Marker=%.2f, MaxGap=%d frames\n', ...
-                DropPct_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset);
         end
+        
+        % 5i) compute aggregate measures over ALL markers
+        DropPct_All          = mean(dropPctArr);
+        NumGapsPerMarker_All = sum(numGapsArr) / numMarkers;
+        MaxGapLength_All     = max(maxGapLenArr);
+        
+        % 5j) compute aggregate measures over SUBSET markers
+        subsetIdx = find(isInSubsetMask);
+        if isempty(subsetIdx)
+            % if subset markers not found, set NaN:
+            DropPct_Subset          = NaN;
+            NumGapsPerMarker_Subset = NaN;
+            MaxGapLength_Subset     = NaN;
+        else
+            DropPct_Subset          = mean(dropPctArr(subsetIdx));
+            NumGapsPerMarker_Subset = sum(numGapsArr(subsetIdx)) / numel(subsetIdx);
+            MaxGapLength_Subset     = max(maxGapLenArr(subsetIdx));
+        end
+        
+        % 5k) Append a single row to "results"
+        results(end+1) = struct( ...
+            'TrialID',                trialID, ...
+            'SubjectName',            subject, ...
+            'Use3DPredictions',       use3D, ...
+            'DropPct_All',            DropPct_All, ...
+            'NumGapsPerMarker_All',   NumGapsPerMarker_All, ...
+            'MaxGapLength_All',       MaxGapLength_All, ...
+            'DropPct_Subset',         DropPct_Subset, ...
+            'NumGapsPerMarker_Subset',NumGapsPerMarker_Subset, ...
+            'MaxGapLength_Subset',    MaxGapLength_Subset ...
+            );
+        
+        fprintf('    • 3D=%d → DropPct_All=%.2f%%, Gaps/Marker_All=%.2f, MaxGap_All=%d frames\n', ...
+            use3D, DropPct_All, NumGapsPerMarker_All, MaxGapLength_All);
+        fprintf('      Subset → DropPct=%.2f%%, Gaps/Marker=%.2f, MaxGap=%d frames\n', ...
+            DropPct_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset);
     end
 end
 
