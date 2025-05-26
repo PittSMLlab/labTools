@@ -3,7 +3,8 @@
 % date (created): 18 May 2025
 % purpose: to iterate through various Vicon Nexus 'Reconstruct & Label'
 % pipeline parameters to determine the optimal configuration based on
-% various metrics.
+% metrics such as the percentage of frames missing, the average number of
+% gaps per marker, and the maximum gap length.
 
 % TODO:
 %   1. Loop through exemplar trials from all SML Lab studies or study types
@@ -26,101 +27,143 @@ end
     'UniformOutput',false);
 indsTrials = cellfun(@(s) str2double(s(end-1:end)),namesFiles);
 
-%% 2) Initialize Vicon Nexus SDK & Prepare Results Container
+%% 2) Initialize Vicon Nexus SDK & Prepare the Results Container Structure
 vicon = ViconNexus();   % assumes ViconNexus() is on the MATLAB path
 
 % preallocate a struct array to hold summary results:
-%   • TrialID           (e.g. 1, 2, …)
-%   • SubjectName       (string)
-%   • Use3DPredictions  (logical)
-%   • DropPct_All       (numeric)
-%   • NumGapsPerMarker_All
-%   • MaxGapLength_All
-%   • DropPct_Subset    (numeric)
-%   • NumGapsPerMarker_Subset
-%   • MaxGapLength_Subset
+%   • ParticipantName               (string)
+%   • TrialID                       (e.g., 1, 2, …)
+%   • Use3DPredictions              (logical)
+%   • EnvironmentalDriftTolerance	(numeric)
+%   • MinCamerasToStartTraj         (unsigned integer)
+%   • MinCamerasToContTraj          (unsigned integer)
+%   • PercentMissing_All            (numeric)
+%   • NumGapsPerMarker_All          (numeric)
+%   • MaxGapLength_All              (numeric)
+%   • MedianGapLength_All           (numeric)
+%   • PercentMissing_Subset         (numeric)
+%   • NumGapsPerMarker_Subset       (numeric)
+%   • MaxGapLength_Subset           (numeric)
+%   • MedianGapLength_Subset        (numeric)
 results = struct( ...
-    'TrialID',                {}, ...
-    'SubjectName',            {}, ...
-    'Use3DPredictions',       {}, ...
-    'DropPct_All',            {}, ...
-    'NumGapsPerMarker_All',   {}, ...
-    'MaxGapLength_All',       {}, ...
-    'DropPct_Subset',         {}, ...
-    'NumGapsPerMarker_Subset',{}, ...
-    'MaxGapLength_Subset',    {} ...
+    'ParticipantName',              {}, ...
+    'TrialID',                      {}, ...
+    'Use3DPredictions',             {}, ...
+    'EnvironmentalDriftTolerance',	{}, ...
+    'MinCamerasToStartTraj',        {}, ...
+    'MinCamerasToContTraj',         {}, ...
+    'PercentMissing_All',           {}, ...
+    'NumGapsPerMarker_All',         {}, ...
+    'MaxGapLength_All',             {}, ...
+    'MedianGapLength_All',          {}, ...
+    'PercentMissing_Subset',        {}, ...
+    'NumGapsPerMarker_Subset',      {}, ...
+    'MaxGapLength_Subset',          {}, ...
+    'MedianGapLength_Subset',          {} ...
     );
 
-%% 3) Locate & Read the “Reconstruct And Label Test.Pipeline” File
-pipelineFile = ['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
+%% 3) Locate & Read the 'Reconstruct And Label Test.Pipeline' File
+pathPipeline = ['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
     'Configurations\Pipelines\Reconstruct And Label Test.Pipeline'];
 
-% read in all lines once and search for the 3DPredictions line index
-params         = readlines(pipelineFile);
-ind3DPredict   = contains(params,'Reconstructor.3DPredictions');
-if nnz(ind3DPredict) ~= 1
+% read in all lines once and search for the pertinent parameter lines
+params = readlines(pathPipeline);
+ind3DPredict = contains(params,'Reconstructor.3DPredictions');
+if nnz(ind3DPredict) ~= 1                   % if not one index, ...
     error(['Could not find exactly one line containing ' ...
         '"Reconstructor.3DPredictions" in pipeline file.']);
 end
+indEnvDriftTol = contains(params,'EnvironmentalDriftTolerance');
+if nnz(indEnvDriftTol) ~= 1                 % if not one index, ...
+    error(['Could not find exactly one line containing ' ...
+        '"EnvironmentalDriftTolerance" in pipeline file.']);
+end
+indMinCamsToStartTraj = contains(params,'"MinCams"');
+if nnz(indMinCamsToStartTraj) ~= 1          % if not one index, ...
+    error(['Could not find exactly one line containing ' ...
+        '"MinCams" in pipeline file.']);
+end
+indMinCamsToContTraj = contains(params,'MinCamsWithPrediction');
+if nnz(indMinCamsToContTraj) ~= 1           % if not one index, ...
+    error(['Could not find exactly one line containing ' ...
+        '"MinCamsWithPrediction" in pipeline file.']);
+end
 
-%% 4) Define the Subset of Markers to Compute Separately
-subsetMarkers = {'RGT','LGT','RANK','LANK'};
+%% 4) Define the Subset of Critical Markers to Compute Separately
+markersSubset = {'RGT','LGT','RANK','LANK'};
 
-%% Specify Set of Reconstruct & Label Parameters to Loop Through
-predict3D = [true false];
-envDriftTolerance = 1.5; % 0.5:1.0:2.5;
-minCamerasToStartTraj = 3; % 2:3;
-minCamerasToContTraj = 2; % 1:2;
-minSeparation = 14; % 14:5:34;
-minCentroidRadius = 0; % 0:2:4;
-maxCentroidRadius = 50; % 30:10:50;
+%% 5) Specify Set of Reconstruct & Label Parameters to Loop Through
+predict3D = [true false];                   % should use 3D predictions
+envDriftTol = 0.5:1.0:2.5;                  % environmental drift tolerance
+minCamsToStartTraj = 2:3;                   % minimum cameras to start
+minCamsToContTraj = 1:2;                    % minimum cameras to continue
+% minSeparation = 14; % 14:5:34;
+% minCentroidRadius = 0; % 0:2:4;
+% maxCentroidRadius = 50; % 30:10:50;
 % create set of parameter combinations
-% paramSets = allcomb(predict3D,envDriftTolerance, ...
-%     minCamerasToStartTraj,minCamerasToContTraj,minSeparation, ...
-%     minCentroidRadius,maxCentroidRadius);
-
-%% 5) Loop Over All Trials & Parameter Sets
-paramSets = [true; false];  % only two rows: true (row 1), false (row 2)
+paramSets = allcomb(predict3D,envDriftTol, ...
+    minCamsToStartTraj,minCamsToContTraj);  % create parameters sets array
 numParamSets = size(paramSets,1);           % number of parameter sets
 
+%% 6) Loop Over All Parameters Sets & Trials & Compute Outcome Measures
 for set = 1:numParamSets                    % for each parameter set, ...
-    use3D = paramSets(set);
-    
-    % 5a) overwrite just the '3DPredictions' line in pipeline XML file
-    if use3D                                % if 3D predictions on, ...
-        params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="true"/>';
-    else
-        params(ind3DPredict) = '      <Param name="Reconstructor.3DPredictions" value="false"/>';
+    % 6a) overwrite the pertinent parameters lines in the pipeline XML file
+    shouldPredict3D = paramSets(set,1);     % should use 3D predictions?
+    if shouldPredict3D                      % if 3D predictions is on, ...
+        params(ind3DPredict) = ['      ' ...  enable it in pipeline file
+            '<Param name="Reconstructor.3DPredictions" value="true"/>'];
+    else                                    % otherwise, ...
+        params(ind3DPredict) = ['      ' ...  disable it in pipeline file
+            '<Param name="Reconstructor.3DPredictions" value="false"/>'];
     end
+    params(indEnvDriftTol) = sprintf(['      <Param name="' ...
+        'EnvironmentalDriftTolerance" value="%03.1f"/>'],paramSets(set,2));
+    params(indMinCamsToStartTraj) = sprintf(['      <Param name="' ...
+        'MinCams" value="%u"/>'],paramSets(set,3));
+    params(indMinCamsToContTraj) = sprintf(['      <Param name="' ...
+        'MinCamsWithPrediction" value="2"/>'],paramSets(set,4));
     
-    % 5b) overwrite ALL 209 lines back into the pipeline file
-    % if MATLAB R2022a or later
-    % writelines(params,pipelineFile);
-    fidW = fopen(pipelineFile,'w');     % open the file to overwrite
-    if fidW < 0                         % if file did not open, ...
-        error('Could not open pipeline file for writing: %s',pipelineFile);
+    % 6b) overwrite ALL 209 lines back into the pipeline XML file
+    % if MATLAB R2022a or later, use 'writelines(params,pipelineFile);'
+    fidW = fopen(pathPipeline,'w');         % open the file to overwrite
+    if fidW < 0                             % if file did not open, ...
+        error('Could not open pipeline file for writing: %s',pathPipeline);
     end
-    for line = 1:numel(params)          % for each line in file, ...
+    for line = 1:numel(params)              % for each line in file, ...
         fprintf(fidW,'%s\n',params(line));  % overwrite it
     end
-    fclose(fidW);                       % close file
+    fclose(fidW);                           % close file
     
-    % process all trials
-    for tr = 1:numel(indsTrials)     % for each trial specified, ...
-        trialID = indsTrials(tr);
+    % 6i) compute aggregate measures over ALL markers
+    PercentMissing_All_ParamSet = nan(numel(indsTrials),1);
+    NumGapsPerMarker_All_ParamSet = nan(numel(indsTrials),1);
+    MaxGapLength_All_ParamSet = nan(numel(indsTrials),1);
+    MedianGapLength_All_ParamSet = nan(numel(indsTrials),1);
+    PercentMissing_Subset_ParamSet = nan(numel(indsTrials),1);
+    NumGapsPerMarker_Subset_ParamSet = nan(numel(indsTrials),1);
+    MaxGapLength_Subset_ParamSet = nan(numel(indsTrials),1);
+    MedianGapLength_Subset_ParamSet = nan(numel(indsTrials),1);
+    
+    for tr = 1:numel(indsTrials)            % for each trial specified, ...
+        trialID = indsTrials(tr);           % retrieve trial number
         trialName = sprintf('Trial%02d',trialID);
         pathTrial = fullfile(pathSess,trialName);
         fprintf('---\nProcessing %s (Trial %d)\n',trialName,trialID);
         
-        % 5c) open the trial in Nexus (if not already open)
+        % 6c) open the trial in Nexus (if not already open)
         if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
             warning('  • Could not open %s. Skipping.\n',trialName);
-            continue;   % skip trial if coule not be opened
+            continue;                       % skip trial if could not open
         end
         
-        % 5d) run the "Reconstruct And Label Test" pipeline (batch mode)
-        fprintf('  • Running pipeline with 3D Predictions = %d...\n',use3D);
-        try                 % try running reconstruct and label pipeline
+        % 6d) run the "Reconstruct And Label Test" pipeline (batch mode)
+        fprintf(['  • Running pipeline with 3D Predictions = %u;\n' ...
+            '    Environmental Drift Tolerance = %03.1f;\n' ...
+            '    Minimum Cameras to Start Trajectory = %u;\n' ...
+            '    Minimum Cameras to Continue Trajectory = %u...\n'], ...
+            paramSets(set,1),paramSets(set,2), ...
+            paramSets(set,3),paramSets(set,4));
+        try                                 % try running pipeline
             vicon.RunPipeline('Reconstruct And Label Test','',200);
         catch ME
             warning(ME.identifier,'  • Nexus.RunPipeline failed: %s\n', ...
@@ -128,7 +171,7 @@ for set = 1:numParamSets                    % for each parameter set, ...
             continue;
         end
         
-        % 5e) get subject name (assuming only one subject in the trial)
+        % 6e) get participant name (assuming only one per trial)
         subject = vicon.GetSubjectNames();
         if isempty(subject)
             warning('  • No subject found in %s. Skipping.\n',trialName);
@@ -136,93 +179,146 @@ for set = 1:numParamSets                    % for each parameter set, ...
         end
         subject = subject{1};
         
-        % 5f) retrieve all marker names for this subject
-        allMarkers = vicon.GetMarkerNames(subject);
-        numMarkers   = numel(allMarkers);
+        % 6f) retrieve all marker names for this subject
+        markersAll = vicon.GetMarkerNames(subject);
+        numMarkers = numel(markersAll);
         if numMarkers == 0
-            warning('  • No markers found for subject %s. Skipping.\n',subject);
+            warning(['  • No markers found for participant %s. ' ...
+                'Skipping.\n'],subject);
             continue;
         end
         
-        % 5g) preallocate temporary arrays to store per-marker metrics
-        dropPctArr       = zeros(numMarkers,1);	% percentage of missing frames
-        numGapsArr       = zeros(numMarkers,1);	% number of gap events
-        maxGapLenArr     = zeros(numMarkers,1);	% largest gap length for each marker
-        isInSubsetMask   = false(numMarkers,1);
+        % 6g) preallocate temporary arrays to store per-marker metrics
+        percentMissing = nan(numMarkers,1);	% percentage frames missing
+        numGaps = nan(numMarkers,1);        % number of gap events
+        gapLengths = nan(numMarkers,1000);  % largest gap length
+        isInSubset = false(numMarkers,1);   % is marker in critical subset?
         
-        % 5h) For each marker: grab trajectory, compute missing‐frames & gaps
-        for mrkr = 1:numMarkers         % for each marker, ...
-            nameMarker = allMarkers{mrkr};
-            isInSubsetMask(mrkr) = any(strcmp(nameMarker,subsetMarkers));
+        % 6h) retrieve marker trajectory & compute missing frames & gaps
+        for mrkr = 1:numMarkers             % for each marker, ...
+            nameMarker = markersAll{mrkr};  % name of current marker
+            isInSubset(mrkr) = any(strcmp(nameMarker,markersSubset));
             
-            try
+            try                             % try to get marker trajectory
                 [~,~,~,existsTraj] = ...
                     vicon.GetTrajectory(subject,nameMarker);
-                % existsTraj is logical vector: true=visible, false=occluded
+                % existsTraj is logical vector: true  = visible,
+                %                               false = occluded (missing)
             catch
-                warning('    • Could not retrieve trajectory for %s. Treating as fully missing.\n',nameMarker);
+                warning(['    • Could not retrieve trajectory for %s. ' ...
+                    'Treating as fully missing.\n'],nameMarker);
                 existsTraj = false(vicon.GetFrameCount(),1);
             end
             
-            totalFrames = numel(existsTraj);
-            numMissing    = sum(~existsTraj);
-            dropPctArr(mrkr) = (numMissing / totalFrames) * 100;
+            totalFrames = numel(existsTraj);% total number of frames
+            numMissing = sum(~existsTraj);  % number of missing frames
+            percentMissing(mrkr) = (numMissing / totalFrames) * 100;
             
-            % find runs of consecutive missing frames:
-            missingFlags = ~existsTraj;          % true = a missing frame
-            dv = diff([0; missingFlags'; 0]);
-            runBoundaries = find(dv~=0);         % changes
-            runLengths    = diff(runBoundaries); % lengths of each run (present and missing)
-            runValues     = dv(runBoundaries);   % +1=run of missing starts, -1=ends
-            gapRuns       = runLengths(runValues==1);  % only lengths where runValues==+1
-            numGapsArr(mrkr)   = numel(gapRuns);
-            if isempty(gapRuns)
-                maxGapLenArr(mrkr) = 0;
-            else
-                maxGapLenArr(mrkr) = max(gapRuns);
-            end
+            dv = diff([0; (~existsTraj)'; 0]);  % find marker gaps
+            runBoundaries = find(dv~=0);        % changes
+            runLengths = diff(runBoundaries);   % present & gap run lengths
+            runValues = dv(runBoundaries);      % +1 = gap starts, -1 =ends
+            gapRuns = runLengths(runValues==1);
+            numGaps(mrkr) = numel(gapRuns);     % number of marker gaps
+            gapLengths(mrkr,1:numGaps(mrkr)) = gapRuns';
         end
         
-        % 5i) compute aggregate measures over ALL markers
-        DropPct_All          = mean(dropPctArr);
-        NumGapsPerMarker_All = sum(numGapsArr) / numMarkers;
-        MaxGapLength_All     = max(maxGapLenArr);
+        % 6i) compute aggregate measures over ALL markers
+        PercentMissing_All = mean(percentMissing);
+        NumGapsPerMarker_All = sum(numGaps) / numMarkers;
+        MaxGapLength_All = max(gapLengths,[],'all');
+        MedianGapLength_All = median(gapLengths,'all','omitnan');
         
-        % 5j) compute aggregate measures over SUBSET markers
-        subsetIdx = find(isInSubsetMask);
-        if isempty(subsetIdx)
-            % if subset markers not found, set NaN:
-            DropPct_Subset          = NaN;
+        % 6j) compute aggregate measures over SUBSET markers
+        indsMarkersSubset = find(isInSubset);
+        if isempty(indsMarkersSubset)       % if no subset markers, ...
+            PercentMissing_Subset = NaN;    % set all values to 'NaN'
             NumGapsPerMarker_Subset = NaN;
-            MaxGapLength_Subset     = NaN;
-        else
-            DropPct_Subset          = mean(dropPctArr(subsetIdx));
-            NumGapsPerMarker_Subset = sum(numGapsArr(subsetIdx)) / numel(subsetIdx);
-            MaxGapLength_Subset     = max(maxGapLenArr(subsetIdx));
+            MaxGapLength_Subset = NaN;
+            MedianGapLength_Subset = NaN;
+        else                                % otherwise, ...
+            PercentMissing_Subset = ...
+                mean(percentMissing(indsMarkersSubset));
+            NumGapsPerMarker_Subset = ...
+                sum(numGaps(indsMarkersSubset)) / numel(indsMarkersSubset);
+            MaxGapLength_Subset = ...
+                max(gapLengths(indsMarkersSubset),[],'all');
+            MedianGapLength_Subset = ...
+                median(gapLengths(indsMarkersSubset),'all','omitnan');
         end
         
-        % 5k) Append a single row to "results"
+        % 6k) append a single row to the 'results' structure
         results(end+1) = struct( ...
-            'TrialID',                trialID, ...
-            'SubjectName',            subject, ...
-            'Use3DPredictions',       use3D, ...
-            'DropPct_All',            DropPct_All, ...
-            'NumGapsPerMarker_All',   NumGapsPerMarker_All, ...
-            'MaxGapLength_All',       MaxGapLength_All, ...
-            'DropPct_Subset',         DropPct_Subset, ...
-            'NumGapsPerMarker_Subset',NumGapsPerMarker_Subset, ...
-            'MaxGapLength_Subset',    MaxGapLength_Subset ...
+            'ParticipantName',              subject, ...
+            'TrialID',                      trialID, ...
+            'Use3DPredictions',            	shouldPredict3D, ...
+            'EnvironmentalDriftTolerance',	paramSets(set,2), ...
+            'MinCamerasToStartTraj',        paramSets(set,3), ...
+            'MinCamerasToContTraj',         paramSets(set,4), ...
+            'PercentMissing_All',           PercentMissing_All, ...
+            'NumGapsPerMarker_All',         NumGapsPerMarker_All, ...
+            'MaxGapLength_All',             MaxGapLength_All, ...
+            'MedianGapLength_All',          MedianGapLength_All, ...
+            'PercentMissing_Subset',        PercentMissing_Subset, ...
+            'NumGapsPerMarker_Subset',      NumGapsPerMarker_Subset, ...
+            'MaxGapLength_Subset',          MaxGapLength_Subset, ...
+            'MedianGapLength_Subset',       MedianGapLength_Subset ...
             );
         
-        fprintf('    • 3D=%d → DropPct_All=%.2f%%, Gaps/Marker_All=%.2f, MaxGap_All=%d frames\n', ...
-            use3D, DropPct_All, NumGapsPerMarker_All, MaxGapLength_All);
-        fprintf('      Subset → DropPct=%.2f%%, Gaps/Marker=%.2f, MaxGap=%d frames\n', ...
-            DropPct_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset);
+        PercentMissing_All_ParamSet(tr) = PercentMissing_All;
+        NumGapsPerMarker_All_ParamSet(tr) = NumGapsPerMarker_All;
+        MaxGapLength_All_ParamSet(tr) = MaxGapLength_All;
+        MedianGapLength_All_ParamSet(tr) = MedianGapLength_All;
+        PercentMissing_Subset_ParamSet(tr) = PercentMissing_Subset;
+        NumGapsPerMarker_Subset_ParamSet(tr) = NumGapsPerMarker_Subset;
+        MaxGapLength_Subset_ParamSet(tr) = MaxGapLength_Subset;
+        MedianGapLength_Subset_ParamSet(tr) = MedianGapLength_Subset;
+        
+        fprintf(['    • PercentMissing_All=%.2f%%, Gaps/Marker_All=' ...
+            '%.2f, MaxGap_All=%u frames, MedianGap_All=%.2f frames\n'], ...
+            PercentMissing_All,NumGapsPerMarker_All, ...
+            MaxGapLength_All,MedianGapLength_All);
+        fprintf(['      Subset → PercentMissing=%.2f%%, Gaps/Marker=' ...
+            '%.2f, MaxGap=%u frames, MedianGap=%.2f frames\n'], ...
+            PercentMissing_Subset,NumGapsPerMarker_Subset, ...
+            MaxGapLength_Subset,MedianGapLength_Subset);
     end
+    
+    % 6l) compute averages across trials for parameter set
+    results(end+1) = struct( ...
+        'ParticipantName',              subject, ...
+        'TrialID',                      NaN, ...
+        'Use3DPredictions',            	shouldPredict3D, ...
+        'EnvironmentalDriftTolerance',	paramSets(set,2), ...
+        'MinCamerasToStartTraj',        paramSets(set,3), ...
+        'MinCamerasToContTraj',         paramSets(set,4), ...
+        'PercentMissing_All',           mean(PercentMissing_All_ParamSet), ...
+        'NumGapsPerMarker_All',         mean(NumGapsPerMarker_All_ParamSet), ...
+        'MaxGapLength_All',             mean(MaxGapLength_All_ParamSet), ...
+        'MedianGapLength_All',          mean(MedianGapLength_All_ParamSet), ...
+        'PercentMissing_Subset',        mean(PercentMissing_Subset_ParamSet), ...
+        'NumGapsPerMarker_Subset',      mean(NumGapsPerMarker_Subset_ParamSet), ...
+        'MaxGapLength_Subset',          mean(MaxGapLength_Subset_ParamSet), ...
+        'MedianGapLength_Subset',       mean(MedianGapLength_Subset_ParamSet) ...
+        );
+    
+    fprintf(['---\nParameter Set Means Across All Trials:\n' ...
+        '    • PercentMissing_All=%.2f%%, Gaps/Marker_All=' ...
+        '%.2f, MaxGap_All=%.2f frames, MedianGap_All=%.2f frames\n'], ...
+        mean(PercentMissing_All_ParamSet), ...
+        mean(NumGapsPerMarker_All_ParamSet), ...
+        mean(MaxGapLength_All_ParamSet), ...
+        mean(MedianGapLength_All_ParamSet));
+    fprintf(['      Subset → PercentMissing=%.2f%%, Gaps/Marker=' ...
+        '%.2f, MaxGap=%.2f frames, MedianGap=%.2f frames\n'], ...
+        mean(PercentMissing_Subset_ParamSet), ...
+        mean(NumGapsPerMarker_Subset_ParamSet), ...
+        mean(MaxGapLength_Subset_ParamSet), ...
+        mean(MedianGapLength_Subset_ParamSet));
 end
 
-%% 6) Save Summary Results to a CSV File
+%% 7) Save Summary Results to a CSV File
 T = struct2table(results);
 writetable(T,pathOutCSV);
-fprintf('\nQC complete. Summary written to:\n   %s\n',pathOutCSV);
+fprintf('\nSummary written to:\n   %s\n',pathOutCSV);
 
