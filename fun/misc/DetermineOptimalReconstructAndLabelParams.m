@@ -19,6 +19,7 @@ pathOutCSV = 'Z:\Nathan\ViconNexusReconstructAndLabel\Results_C3S_S1_OGPost.csv'
 % get all sessions in data directory
 dirsSess = dir(pathData);
 dirsSess = dirsSess(~ismember({dirsSess.name},{'.','..'}));
+numSess = numel(dirsSess);
 
 %% 2) Initialize Vicon Nexus SDK & Prepare the Results Container Structure
 vicon = ViconNexus();   % assumes ViconNexus() is on the MATLAB path
@@ -137,14 +138,14 @@ for set = 1:numParamSets                    % for each parameter set, ...
         'Label Test'' pipeline XML file.\n\n']);
 
     % 6i) compute aggregate measures over ALL sessions and trials
-    PercentMissing_All_ParamSet = nan(numel(indsTrials),1);
-    NumGapsPerMarker_All_ParamSet = nan(numel(indsTrials),1);
-    MaxGapLength_All_ParamSet = nan(numel(indsTrials),1);
-    MedianGapLength_All_ParamSet = nan(numel(indsTrials),1);
-    PercentMissing_Subset_ParamSet = nan(numel(indsTrials),1);
-    NumGapsPerMarker_Subset_ParamSet = nan(numel(indsTrials),1);
-    MaxGapLength_Subset_ParamSet = nan(numel(indsTrials),1);
-    MedianGapLength_Subset_ParamSet = nan(numel(indsTrials),1);
+    PercentMissing_All_ParamSet = nan(numSess,1);
+    NumGapsPerMarker_All_ParamSet = nan(numSess,1);
+    MaxGapLength_All_ParamSet = nan(numSess,1);
+    MedianGapLength_All_ParamSet = nan(numSess,1);
+    PercentMissing_Subset_ParamSet = nan(numSess,1);
+    NumGapsPerMarker_Subset_ParamSet = nan(numSess,1);
+    MaxGapLength_Subset_ParamSet = nan(numSess,1);
+    MedianGapLength_Subset_ParamSet = nan(numSess,1);
 
     for sess = 1:numel(dirsSess)            % for each session, ...
         nameSess = dirsSess(sess).name;
@@ -165,7 +166,7 @@ for set = 1:numParamSets                    % for each parameter set, ...
         for tr = 1:numel(indsTrials)            % for each trial specified, ...
             trialID = indsTrials(tr);           % retrieve trial number
             trialName = sprintf('Trial%02d',trialID);
-            pathTrial = fullfile(pathData,trialName);
+            pathTrial = fullfile(pathSess,trialName);
             fprintf('Processing %s\n',trialName);
 
             % 6c) open the trial in Nexus (if not already open)
