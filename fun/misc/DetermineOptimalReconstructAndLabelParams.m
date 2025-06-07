@@ -19,28 +19,23 @@ pathOutCSV = ['Z:\Nathan\ViconNexusReconstructAndLabel\' ...
 
 % get all sessions in data directory not including current and parent
 dirsSess = dir(pathData);
-dirsSess = dirsSess(~ismember({dirsSess.name},{'.','..'}));
+dirsSess = dirsSess([dirsSess.isdir] & ...
+    ~ismember({dirsSess.name},{'.','..'}));
 numSess = numel(dirsSess);                  % number of sessions to process
+if numSess == 0                             % if no session folders, ...
+    error('No session folders found in %s',pathData);
+end
 
 %% 2) Initialize Vicon Nexus SDK & Prepare the Results Container Structure
 vicon = ViconNexus();   % assumes ViconNexus() is on the MATLAB path
 
-% preallocate a struct array to hold summary results:
-%   • ParticipantName               (string)
-%   • TrialID                       (e.g., 1, 2, …)
-%   • Use3DPredictions              (logical)
-%   • EnvironmentalDriftTolerance	(numeric)
-%   • MinCamerasToStartTraj         (unsigned integer)
-%   • MinCamerasToContTraj          (unsigned integer)
-%   • MinSeparation                 (unsigned integer)
-%   • PercentMissing_All            (numeric)
-%   • NumGapsPerMarker_All          (numeric)
-%   • MaxGapLength_All              (numeric)
-%   • MedianGapLength_All           (numeric)
-%   • PercentMissing_Subset         (numeric)
-%   • NumGapsPerMarker_Subset       (numeric)
-%   • MaxGapLength_Subset           (numeric)
-%   • MedianGapLength_Subset        (numeric)
+% preallocate a struct array to hold per-trial results:
+%   • ParticipantName, TrialID, Use3DPredictions,
+%     EnvironmentalDriftTolerance, MinCamerasToStartTraj,
+%     MinCamerasToContTraj, MinSeparation, PercentMissing_All,
+%     NumGapsPerMarker_All, MaxGapLength_All, MedianGapLength_All,
+%     PercentMissing_Subset, NumGapsPerMarker_Subset, MaxGapLength_Subset,
+%     MedianGapLength_Subset
 results = struct( ...
     'ParticipantName',              {}, ...
     'TrialID',                      {}, ...
@@ -65,30 +60,20 @@ pathPipeline = ['C:\Users\Public\Documents\Vicon\Nexus2.x\' ...
 
 % read in all lines once and search for the pertinent parameter lines
 params = readlines(pathPipeline);
-ind3DPredict = contains(params,'Reconstructor.3DPredictions');
-if nnz(ind3DPredict) ~= 1                   % if not one index, ...
-    error(['Could not find exactly one line containing ' ...
-        '"Reconstructor.3DPredictions" in pipeline file.']);
-end
-indEnvDriftTol = contains(params,'EnvironmentalDriftTolerance');
-if nnz(indEnvDriftTol) ~= 1                 % if not one index, ...
-    error(['Could not find exactly one line containing ' ...
-        '"EnvironmentalDriftTolerance" in pipeline file.']);
-end
-indMinCamsToStartTraj = contains(params,'"MinCams"');
-if nnz(indMinCamsToStartTraj) ~= 1          % if not one index, ...
-    error(['Could not find exactly one line containing ' ...
-        '"MinCams" in pipeline file.']);
-end
-indMinCamsToContTraj = contains(params,'MinCamsWithPrediction');
-if nnz(indMinCamsToContTraj) ~= 1           % if not one index, ...
-    error(['Could not find exactly one line containing ' ...
-        '"MinCamsWithPrediction" in pipeline file.']);
-end
-indMinSeparation = contains(params,'MinSeparation');
-if nnz(indMinSeparation) ~= 1               % if not one index, ...
-    error(['Could not find exactly one line containing ' ...
-        '"MinSeparation" in pipeline file.']);
+
+% find exactly one line index for each parameter
+ind3DPredict = find(contains(params,'Reconstructor.3DPredictions'));
+indEnvDriftTol = find(contains(params,'EnvironmentalDriftTolerance'));
+indMinCamsToStartTraj = find(contains(params,'"MinCams"'));
+indMinCamsToContTraj = find(contains(params,'MinCamsWithPrediction'));
+indMinSeparation = find(contains(params,'MinSeparation'));
+
+% sanity check
+if any([numel(ind3DPredict) numel(indEnvDriftTol) ...
+        numel(indMinCamsToStartTraj) numel(indMinCamsToContTraj) ...
+        numel(indMinSeparation)] ~= 1)
+    error(['Each pipeline parameter must appear exactly once in the ' ...
+        'XML file.']);
 end
 
 %% 4) Define the Subset of Critical Markers to Compute Separately
