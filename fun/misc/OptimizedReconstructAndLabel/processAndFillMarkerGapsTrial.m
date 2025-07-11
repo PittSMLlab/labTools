@@ -1,4 +1,4 @@
-function processAndFillMarkerGapsTrial(pathTrial, vicon)
+function mrkrTrajs = processAndFillMarkerGapsTrial(pathTrial, vicon)
 %PROCESSANDFILLMARKERGAPSTRIAL Process a single trial and fill marker gaps
 %   This function runs reconstruct and label pipelines, fills small marker
 %   gaps using spline interpolation, and then attempts pattern-based filling.
@@ -26,15 +26,21 @@ markersTarg = {
     {'SHANK','HEEL','TOE'}
 };
 
+mrkrTrajs = struct();
+
 % run reconstruct and label pipeline
 fprintf('Running reconstruct and label on: %s\n', pathTrial);
 dataMotion.reconstructAndLabelTrial(pathTrial, vicon, false);
+pause(3);
+mrkrTrajs.Step1RandL = getRelevantMrkrTrajs(vicon);
 
 % extract marker gaps
 markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial, vicon);
 
 % fill small gaps with spline interpolation
 markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false);
+
+mrkrTrajs.Step2Spline = getRelevantMrkrTrajs(vicon);
 
 % fill gaps using pattern fill for each reference marker
 for ref = 1:numel(markersRef)
@@ -45,6 +51,8 @@ for ref = 1:numel(markersRef)
     markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
         markerGaps, targetMarkers, refMarker, pathTrial, vicon);
 end
+
+mrkrTrajs.Step3Pattern = getRelevantMrkrTrajs(vicon);
 
 % save trial
 fprintf('Saving trial: %s\n', pathTrial);
@@ -88,4 +96,31 @@ for side = sides
         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
     end
 end
+end
+
+function mrkrTrajs = getRelevantMrkrTrajs(vicon)
+
+mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
+mrkrTrajs = struct();
+
+subjects = vicon.GetSubjectNames();
+if isempty(subjects)
+    error('No subject found in trial.');
+end
+subject = subjects{1};
+
+for i = 1:numel(mrkrsRelevant)
+    marker = mrkrsRelevant{i};
+    [trajX, trajY, trajZ, existsTraj] = vicon.GetTrajectory(subject, marker);
+    
+    trajX(~existsTraj) = NaN;
+    trajY(~existsTraj) = NaN;
+    trajZ(~existsTraj) = NaN;
+    
+    mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];%, double(exists(:))];
+end
+% for mrkr = mrkrsRelevant
+%     [trajX,trajY,trajZ,exists] = vicon.getTrajectory(mrkrsRelevant{mrkr});
+%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
+% end
 end

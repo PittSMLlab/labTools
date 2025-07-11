@@ -1,5 +1,5 @@
 %% Take 1 at Optimizing Reconstruct & Label Pipeline
-% author: SB + ChatGPT
+% author: SB
 % date (created): 13 May 2025
 
 %% 1) Define Paths & Trial List
@@ -134,6 +134,4 @@ for i = 1:numel(trialFiles)
         warning('Error during post pattern processing for %s: %s', trialName, ME.message);
         continue;
     end
-end
-
-    
+end    

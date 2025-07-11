@@ -1,6 +1,6 @@
 markersToCompare = {'LGT'};
 subject = 'C3S24';
-trialPath = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\(2)Trial16';
+trialPath = 'Z:\Nathan\ViconNexusReconstructAndLabel\Vicon\C3S24_S1\Trial16';
 
 % Connect to Vicon and open trial
 fprintf('Connecting to Vicon Nexus...\n');
@@ -10,7 +10,7 @@ pause(2);
 
 % Run the optimized pipeline function (assumes this saves the trial)
 fprintf('Running optimized pipeline...\n');
-processAndFillMarkerGapsTrial(trialPath, vicon);  
+Part1RL(trialPath);  
 pause(5);
 
 trajData = struct();
