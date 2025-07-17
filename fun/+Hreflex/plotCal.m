@@ -155,10 +155,10 @@ end
 % optional: annotate additional features if fit quality is high
 if ~isempty(fieldnames(fit)) && isfield(fit.M.(legID),'R2') && ...
         fit.M.(legID).R2 > 0.8 && shouldAnnotate
-    % find second derivative maximum index as a feature (M*)
-    [~,ind2ndDeriv] = max(diff(diff(M_fit)));
-    I_star = I_fit(ind2ndDeriv);
-    M_star = M_fit(ind2ndDeriv);
+    % find third derivative maximum index as a feature (M*)
+    [~,ind3rdDeriv] = findpeaks(diff(diff(diff(M_fit))),'NPeaks',1);
+    I_star = I_fit(ind3rdDeriv);
+    M_star = M_fit(ind3rdDeriv);
     plot([I_star I_star],[0 M_star],'k-.');         % vertical line
     text(I_star + 0.1,maxYOffset,sprintf('I* = %.1f mA',I_star));
     plot([min(amplitudesStim)-1 I_star],[M_star M_star],'k-.');
@@ -171,13 +171,24 @@ if ~isempty(fieldnames(fit)) && isfield(fit.M.(legID),'R2') && ...
     end
 end
 
+if ~isRatio && ~isempty(fieldnames(fit)) && ...
+        isfield(fit.M.(legID),'R2') && isfield(fit.H.(legID),'R2') && ...
+        shouldAnnotate
+    text(max(amplitudesStim)-3.0,max(values{1})*0.75, ...
+        sprintf('{R^{2}}_{H} = %.2f',fit.H.(legID).R2));
+    text(max(amplitudesStim)-3.0,max(values{1})*0.65, ...
+        sprintf('{R^{2}}_{M} = %.2f',fit.M.(legID).R2));
+end
+
 if ~isRatio && ~isempty(fieldnames(fit)) && ~shouldNormalize
     % display additional metrics if available
     % TODO: should use H-wave curve fit if good R2?
     text(min(amplitudesStim)-0.9,max(values{1})*0.75, ...
         sprintf('H_{max}/M_{max} = %.2f',valMax/fit.M.(legID).Mmax));
-    text(min(amplitudesStim)-0.9,max(values{1})*0.65, ...
-        sprintf('M*/M_{max} = %.2f',M_star/fit.M.(legID).Mmax));
+    if exist('M_star')
+        text(min(amplitudesStim)-0.9,max(values{1})*0.65, ...
+            sprintf('M*/M_{max} = %.2f',M_star/fit.M.(legID).Mmax));
+    end
 end
 hold off;
 xlim([min(amplitudesStim)-1 max(amplitudesStim)+1]);

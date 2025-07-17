@@ -423,33 +423,29 @@ ratioL = ampsHwaveL ./ ampsMwaveL;
 avgsRatioR = arrayfun(@(x) mean(ratioR(ampsStimR == x),'omitnan'),ampsStimRU);
 avgsRatioL = arrayfun(@(x) mean(ratioL(ampsStimL == x),'omitnan'),ampsStimLU);
 
-%% 12. (Optional) Fit Gaussian to Average H-wave Amplitudes
+%% 12. Fit M- & H-Wave Recruitment Curves & Identify Experiment Stim. Amp.
 fit = Hreflex.fitCal({ampsStimR';ampsStimL'},amps(:,1:2));
 
 I_fit = linspace(min(ampsStimR),max(ampsStimR),1000);   % fit intensities
 MR_fit = fit.M.modHyperbolic(fit.M.R.params,I_fit);     % right M-wave fit
 ML_fit = fit.M.modHyperbolic(fit.M.L.params,I_fit);     % left M-wave fit
-[~,indR2] = max(diff(diff(MR_fit)));
-[~,indL2] = max(diff(diff(ML_fit)));
+% find index at which peak of 3rd derivative of modified hyperbolic occurs
 [~,indR3] = findpeaks(diff(diff(diff(MR_fit))),'NPeaks',1);
 [~,indL3] = findpeaks(diff(diff(diff(ML_fit))),'NPeaks',1);
-intensityR2 = I_fit(indR2);
-intensityL2 = I_fit(indL2);
 intensityR3 = I_fit(indR3);
 intensityL3 = I_fit(indL3);
 
 if fit.M.R.R2 > 0.95                            % if fit quality high, ...
-    fprintf(['Right leg M-wave fit R2: %0.2f > 0.95.\n2nd derivative ' ...
-        'current: %.1f mA.\n3rd derivative current: %.1f mA.\n'], ...
-        fit.M.R.R2,intensityR2,intensityR3);
-else
+    % display stimulation current at which peak of third derivative occurs
+    fprintf(['Right leg M-wave fit R2: %0.2f > 0.95.\n3rd derivative ' ...
+        'current: %.1f mA.\n'],fit.M.R.R2,intensityR3);
+else                                            % otherwise, ...
     warning(['Right leg M-wave fit R2: %0.2f < 0.95.\nUse old approach' ...
         ' to select experiment stimulation current.\n'],fit.M.R.R2);
 end
 if fit.M.L.R2 > 0.95
-    fprintf(['Left leg M-wave fit R2: %0.2f > 0.95.\n2nd derivative ' ...
-        'current: %.1f mA.\n3rd derivative current: %.1f mA.\n'], ...
-        fit.M.L.R2,intensityL2,intensityL3);
+    fprintf(['Left leg M-wave fit R2: %0.2f > 0.95.\n3rd derivative ' ...
+        'current: %.1f mA.\n'],fit.M.L.R2,intensityL3);
 else
     fprintf(['Left leg M-wave fit R2: %0.2f < 0.95.\nUse old approach' ...
         ' to select experiment stimulation current.\n'],fit.M.L.R2);
