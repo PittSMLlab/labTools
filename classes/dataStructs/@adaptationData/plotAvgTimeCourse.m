@@ -153,9 +153,9 @@ legendStr=cell(1);
 if nargin<8 || isempty(colorOrder) || size(colorOrder,2)~=3
     poster_colors;
     colorOrder=[p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1];p_red; p_orange; p_fade_green; p_fade_blue; p_plum; p_green; p_blue; p_fade_red; p_lime; p_yellow; [0 0 0];[0 1 1]];
-     colorOrder=[ colorOrder; colorOrder;colorOrder];
+    colorOrder=[ colorOrder; colorOrder;colorOrder];
 end
-
+colorIdxBounded = @(x) mod(x-1,size(colorOrder,1))+1; %assures the colorOrder index will always stay between [1,size(colorOrder)]
 lineOrder={'-','--','-.',':'};
 
 %% determine length of trials or conditions
@@ -462,7 +462,7 @@ for group=1:Ngroups
                         %%to plot as dots:
                         %plot(x,y_ind,'o','MarkerSize',3,'MarkerEdgeColor',colorOrder(subInd,:),'MarkerFaceColor',colorOrder(subInd,:));
                         %%to plot as lines:
-                        Li{group}(s)=plot(x,y_indiv(1:length(x)),lineOrder{g},'color',colorOrder(mod(subInd-1,size(colorOrder,1))+1,:),'Tag',id);
+                        Li{group}(s)=plot(x,y_indiv(1:length(x)),lineOrder{g},'color',colorOrder(colorIdxBounded(subInd),:),'Tag',id);
                         if ~legacyVersion
                             legendStr{group}(s)={subsToPlot{s}.subData.ID};
                         else
@@ -478,9 +478,9 @@ for group=1:Ngroups
                 else %only plot group averages
                      if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
                         if isempty(biofeedback)
-                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity);
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity);
                         else
-                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
+                            [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
                         end
                         %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');                        
@@ -501,13 +501,13 @@ for group=1:Ngroups
                         end
                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
-                        color=colorOrder(mod(g-1,size(colorOrder,1))+1,:)./Cdiv;
+                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
                 elseif  isempty(biofeedback) %Each group colored differently
-                        color=colorOrder(g,:)./Cdiv;
+                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
@@ -526,7 +526,7 @@ for group=1:Ngroups
 
                         end
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
-                        color=colorOrder(g,:)./Cdiv;
+                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');
@@ -534,12 +534,12 @@ for group=1:Ngroups
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
                         elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
-                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(c,:),colorOrder(c,:)+0.5.*abs(colorOrder(c,:)-1),Opacity,w);
+                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
                         %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
                     elseif ~(size(params,1)>1) && ~isempty(biofeedback)
-                        color=colorOrder(g,:)./Cdiv;
+                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
                         %set(Li{g},'Clipping','off')
                         H=get(Li{g},'Parent');

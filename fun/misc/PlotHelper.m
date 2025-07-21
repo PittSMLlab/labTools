@@ -217,8 +217,8 @@ classdef PlotHelper
                         %Outliers are defined as elements more than three scaled MAD from the median.
                         outlierSubj = isoutlier(dataToPlot{1},'mean');
                         if any(outlierSubj)
-%                             fprintf('\n%s: Outlier in %s column %s',titleStr, dataAxis, curLabel)
-%                             disp(subjectIDs(outlierSubj))
+                            fprintf('\n%s: Outlier in %s column %s',titleStr, dataAxis, curLabel)
+                            disp(subjectIDs(outlierSubj))
                         end
                         curLabel = ylabels{rowIdx};
                         dataAxis = 'Y';
@@ -283,7 +283,7 @@ classdef PlotHelper
             end
         end
         
-        function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs)
+        function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs, xlabelString, ylabelString,partialVar, pointColor, groupName, textLocRatio, rmOutlier, plotRegDiagnostics)
         %Plot on the current figure (a subplot should have 
         %been opened and configured before calling this function) correlations
         %between x and yToPlot
@@ -297,48 +297,159 @@ classdef PlotHelper
         %               -yToPlot: a row vector of double to plot on y-axis
         %               -subjectIDs: cell array of string of subjectIDs
         %               for legend.
-        %
+        %               -xlabel: OPTIONAL. A string for x axis label.
+        %               -ylabel: OPTIONAL. A string for y axis label.
+        %               -partialVar: OPTIONAL. a row vector of data to be
+        %               controlled for as a partial correlation.
+        %               -pointColor:
+        %               -groupName:
+        %               -textLocRatio:
+        %               -rmOutlier: OPTIONAL. default false, boolean  true
+        %                   to remove outliers in x or y before running
+        %                   correlations
+        %               -plotDiagnostics: OPTIONAL. plot diagnostic from
+        %               the linear mdl fit. Default false.
             hold on;
-            colorOrder = PlotHelper.colorOrder;
-            colorLength = size(colorOrder, 1);
-            for dIdx = 1:length(xToPlot)
-                plot(xToPlot(dIdx),yToPlot(dIdx),'o','Color',colorOrder(mod(dIdx-1, colorLength)+1,:),'LineWidth',2,'MarkerSize',7,'DisplayName',subjectIDs{dIdx});
+            
+            if nargin < 11 || isempty(plotRegDiagnostics)
+                plotRegDiagnostics = false; %default to false, don't remove data.
             end
+            
+            if nargin < 10 || isempty(rmOutlier)
+                rmOutlier = false; %default to false, don't remove data.
+            end
+            
+            if nargin < 8 || any(isnan(groupName)) || (isempty(groupName))
+                groupName = ''; %give empty for default.
+            end
+            
+            if rmOutlier
+                outliersFound = isoutlier(xToPlot) | isoutlier(yToPlot);
+                fprintf('Outliers found: %s. They will be removed from the scatter plot and correlations\n',strjoin(subjectIDs(outliersFound),' '))
+                %over lay these points to mark them as removed in grey
+                scatter(xToPlot(outliersFound),yToPlot(outliersFound),55,'Marker','x','MarkerEdgeColor',pointColor,'LineWidth',0.5,'MarkerFaceColor',[0.5 0.5 0.5],'DisplayName','excluded')
+                xToPlot = xToPlot(~outliersFound);                
+                yToPlot = yToPlot(~outliersFound);
+                if all(~isnan(partialVar)) && (~isempty(partialVar)) %remove corresponding rows in the partial control var to for size consistency
+                    partialVar = partialVar(:,~outliersFound);
+                end
+            end
+            
+            if nargin >= 7 && (~isnan(pointColor)) && (~isempty(pointColor))
+                scatter(xToPlot,yToPlot,35,'MarkerEdgeColor','k','LineWidth',0.5,'MarkerFaceColor',pointColor,'DisplayName',groupName)
+            else
+                colorOrder = PlotHelper.colorOrder;
+                colorLength = size(colorOrder, 1);
+                for dIdx = 1:length(xToPlot)
+                    scatter(xToPlot(dIdx),yToPlot(dIdx),35,'MarkerFaceColor',colorOrder(mod(dIdx-1, colorLength)+1,:),'MarkerEdgeColor','k','DisplayName',subjectIDs{dIdx},'LineWidth',0);
+                end
+            end
+
             numNans = sum(isnan(xToPlot),'all') + sum(isnan(yToPlot),'all');
             if numNans
                 warning([num2str(numNans) ' NAN Value found in the data. Will only use non-nan values to compute correlation'])
             end
-            [rho,p] = corr(xToPlot',yToPlot','Rows','complete');
-            [rhoSpearman,pSpearman] = corr(xToPlot',yToPlot','Type','Spearman','Rows','complete');
-            linFit = fitlm(xToPlot,yToPlot);
-            plotFitX = xlim;
-            if pSpearman < 0.1 %plot reg line only if corr for pearson is significant
-                plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
-                if pSpearman < 0.05 %solid line for significant
-                    plot(xlim,plotFitY,'k','LineWidth',2.5,'handleVisibility','off');
-                else %dashed line for trending.
-                    plot(xlim,plotFitY,'k--','LineWidth',2.5,'handleVisibility','off');
+            
+            if nargin >= 6 && all(~isnan(partialVar)) && (~isempty(partialVar))
+                [rho,p] = partialcorr(xToPlot',yToPlot',partialVar','Rows','complete');
+                [rhoSpearman,pSpearman] = partialcorr(xToPlot',yToPlot',partialVar','Type','Spearman','Rows','complete');
+            else
+                [rho,p] = corr(xToPlot',yToPlot','Rows','complete');
+                [rhoSpearman,pSpearman] = corr(xToPlot',yToPlot','Type','Spearman','Rows','complete');
+            end
+                                  
+            %check assumptions for pearson's corr: no outlier, and data is
+            %bivariate normal (harder to test, so test individual normal)
+            [hx, px] = kstest(normalize(xToPlot)); %0 = normal)
+            [hy, py] = kstest(normalize(yToPlot)); 
+            if hx
+                warning('\nX data failed normality test (0=normal): p=%.3f. Should NOT use Pearson Correlation.',px) %pearson is not robust against violation of normality
+            else
+                fprintf('\nX data normality test pass (0=normal): p=%.3f.',px)
+            end
+            if hy
+                warning('\nY data failed normality test (0=normal): p=%.3f. Should NOT use Pearson Correlation.',py)
+            else
+                fprintf('\nY data normality test pass (0=normal): p=%.3f.',py)
+            end
+            
+            %put the correlation result on the figure.
+            txtY = ylim;
+            if hx || hy
+                textColorPearson = [0.5 0.5 0.5]; %grey if failed assumptions.
+            else
+                if p < 0.05 %show the text in red
+                    textColorPearson = 'r';
+                else
+                    textColorPearson = 'k';
                 end
             end
-            txtY = ylim;
-            if p < 0.05 %show the text in red
-                textColorPearson = 'r';
-            else
-                textColorPearson = 'k';
-            end
+            
             if pSpearman < 0.05 %show the text in red
                 textColorSpearman = 'r';
             else
                 textColorSpearman = 'k';
             end
-            %0.15, 25 for top; 7 and .8 for btm
-            text(plotFitX(1),txtY(2)-range(txtY)*0.7,sprintf('P:r=%.3f,p=%.3f',rho,p),'FontSize',20,'Color',textColorPearson)
-            text(plotFitX(1),txtY(2)-range(txtY)*0.8,sprintf('S:\\rho=%.3f,p=%.3f',rhoSpearman,pSpearman),'FontSize',20,'Color',textColorSpearman)
-            xlim(plotFitX)
+
+            linFit = fitlm(xToPlot,yToPlot);
+            plotFitX = xlim;
+            if ((hx || hy) && pSpearman < 0.1) || ((~hx) && (~hy) && p < 0.1) %plot reg line only if corr for pearson is significant with normal data, or corr of spearson is significant with non-normal data.
+                plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
+                if ((hx || hy) && pSpearman < 0.05) || ((~hx) && (~hy) && p < 0.05)  %solid line for significant
+                    plot(xlim,plotFitY,'LineWidth',2.5,'handleVisibility','off','Color',pointColor);
+                else %dashed line for trending.
+                    plot(xlim,plotFitY,'--','LineWidth',2.5,'handleVisibility','off','Color',pointColor);
+                end
+            end
+
+            if nargin >= 9 && all(~isnan(textLocRatio)) && (~isempty(textLocRatio))
+                text(plotFitX(1),txtY(2)-range(txtY)*(textLocRatio-0.1),sprintf('%s DataNormal:%d',groupName,(~hx) && (~hy)),'FontSize',12,'Color','k')
+                if hx || hy %show spearman only, normality failed, 
+                %this is right thing to do, show 1 result only but in exploration phase will keep both texts on
+                    text(plotFitX(1),txtY(2)-range(txtY)*(textLocRatio+0.1),sprintf('%s S:\\rho=%.3f,p=%.3f',groupName,rhoSpearman,pSpearman),'FontSize',12,'Color',textColorSpearman)
+                else %show pearson when normality satisfied
+                    text(plotFitX(1),txtY(2)-range(txtY)*textLocRatio,sprintf('%s P:r=%.3f,p=%.3f',groupName,rho,p),'FontSize',12,'Color',textColorPearson)            
+                end
+            else
+                %0.15, 25 for top; 7 and .8 for btm
+                text(plotFitX(1),txtY(2)-range(txtY)*0.6,sprintf('%s DataNormal:%d',groupName,(~hx) && (~hy)),'FontSize',12,'Color','k')
+                if hx || hy %show spearman only, normality failed
+                    text(plotFitX(1),txtY(2)-range(txtY)*0.8,sprintf('%s S:\\rho=%.3f,p=%.3f',groupName,rhoSpearman,pSpearman),'FontSize',12,'Color',textColorSpearman)
+                else%show pearson when normality satisfied
+                    text(plotFitX(1),txtY(2)-range(txtY)*0.7,sprintf('%s P:r=%.3f,p=%.3f',groupName,rho,p),'FontSize',12,'Color',textColorPearson)
+                end
+            end
+            
+%             xlim(plotFitX)
             axis square
+            
+            if nargin >= 4 && all(~isnan(xlabelString)) && (~isempty(xlabelString))
+                xlabel(xlabelString)
+            end
+            
+            if nargin >= 5 && all(~isnan(ylabelString)) && (~isempty(ylabelString))
+                ylabel(ylabelString)
+            end
+            
+            if plotRegDiagnostics
+                %plot these in the end in new figures bc this function
+                %doesn't create a canvas and plot on existing canvas
+                %instead so don't want to lose focus to original canvas
+                %untill we are donw drawing there.
+%                 figure(); 
+%                 plotDiagnostics(linFit);
+%                 sgtitle([groupName ' ' xlabelString ' vs ' ylabelString]);
+%                 PlotHelper.plotRegressionDiagnostics(linFit, yToPlot, false,'') %no info at this level to save, so don't save it for now.
+                %plot the histrogram of the data to visualize normality
+                figure(); subplot(2,2,1)
+                qqplot(xToPlot); title([groupName ' ' xlabelString]);
+                subplot(2,2,2); histogram(xToPlot);title([groupName ' ' xlabelString]);
+                subplot(2,2,3); qqplot(yToPlot); title([groupName ' ' ylabelString]);
+                subplot(2,2,4); histogram(yToPlot);title([groupName ' ' ylabelString]);
+            end
         end
         
-        function barPlotWithIndiv(dataToPlot, subjectIDs, xlabelStrings, ylabelString, titleString, saveResAndFigure, savePath, f, addJitter, MarkerColor,connectLine)
+        function barPlotWithIndiv(dataToPlot, subjectIDs, xlabelStrings, ylabelString, titleString, saveResAndFigure, savePath, f, addJitter, MarkerColor,connectLine,performTtest)
         %Plot bar graph with dataToPlot, 1 bar per row in data, also plot
         %individual subjects and connect them with a line across bars (if
         %connectLine is true or default). Plot on existing figure if a
@@ -371,6 +482,8 @@ classdef PlotHelper
         %              see MATLAB documentation). Default rotate through PlotHelper.colorOrder
         %              - connectLine: OPTIONAL. Default true. Connect the
         %              dots from the same subjects with a line across bars.
+        %              - performTtest: OPTIONAL. Default true. Will do
+        %              paired t-test (ttest) if it's 2 rows of data
             if nargin < 8 || isempty(f) || isnan(double(f)) %no figure handle provided, create a new figure; if figure is provided, simply plot
                 f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
             end
@@ -381,6 +494,9 @@ classdef PlotHelper
                 markerSymbol = '.-'; %default connect line
             else %specified not connect line, plot symbol only.
                 markerSymbol = '.'; 
+            end
+            if nargin < 12 || isempty(performTtest) || isnan(performTtest)
+                performTtest = true;
             end
             colorOrder = PlotHelper.colorOrder;
             colorLength = size(colorOrder, 1);
@@ -400,7 +516,7 @@ classdef PlotHelper
                 else %default just shift all data slightly to the side of the error bar.
                     jitter = 0.1;
                 end
-                if nargin >= 10 && ~any(isnan(MarkerColor)) && ~isempty(MarkerColor)
+                if nargin >= 10 &&  ~isempty(MarkerColor) && ~any(isnan(MarkerColor))
                     plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',MarkerColor,'LineWidth',2.5,'MarkerSize',17,'DisplayName',subjectIDs{dIdx});
                 else
                     plot([1:length(avgPerf)]+jitter,dataToPlot(:,dIdx)',markerSymbol,'Color',colorOrder(mod(dIdx-1, colorLength)+1,:),'LineWidth',2.5,'MarkerSize',17,'DisplayName',subjectIDs{dIdx});
@@ -409,8 +525,8 @@ classdef PlotHelper
             legend();%,'Location','bestoutside') %legend on 2nd plot only
             ylabel(ylabelString) 
             
-            if length(avgPerf) == 2 %perform t-tests
-                [h,p] = ttest(dataToPlot(1,:)',dataToPlot(2,:)');
+            if length(avgPerf) == 2 && performTtest %perform t-tests
+                [h,p] = ttest(dataToPlot(1,:)',dataToPlot(2,:)'); %this is test for x-y = 0
                 txtY = ylim;
                 if p < 0.05
                     textColor = 'r';
@@ -424,7 +540,7 @@ classdef PlotHelper
             if saveResAndFigure
                 set(gcf,'renderer','painters')
                 saveas(f,savePath)
-                s = findobj('type','legend'); delete(s)
+%                 s = findobj('type','legend'); delete(s)
                 saveas(f,[savePath '.png'])
             end
         end
