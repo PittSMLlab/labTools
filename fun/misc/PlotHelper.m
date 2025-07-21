@@ -535,7 +535,7 @@ classdef PlotHelper
                 end
                 text(2.3,txtY(2)-range(txtY)*0.80,sprintf('T:p=%.3f',p),'FontSize',20,'Color',textColor);
             end
-            sgtitle(titleString)
+            title(titleString)
             set(findall(gcf,'-property','FontSize'),'FontSize',25)
             if saveResAndFigure
                 set(gcf,'renderer','painters')
@@ -622,12 +622,89 @@ classdef PlotHelper
 %             fprintf('\n%s: Range[min, max]: [%f, %f]; Mean: %f, CI: [%f, %f]\n',dataLabel, miny, maxy, yMean, yCI95);
         end
         
-        function plotRegressionDiagnostics(mdl, actualYs, saveResAndFigure, savePath)
+        function f = plotRegression(mdl, xVariable, yVariable, saveResAndFigure, savePath, f, lineColor)
+            %Plot scatter point of x,y in a regression model, and plot a
+            %line if the mdl fit is significant
+            % 
+            % [Example]: plotRegressionDiagnostics(linearModel, 'Age', 'AGI', true,'C:/Documents/saveMyData.png')
+            %
+            % [OUTPUTARGS]: none. 
+            % [InputArgs]:    
+            %           - mdl: a LinearModel object from matlab (regression output)
+            %           - xVariable: a string, the variable/column name in the
+            %                   mdl.Variables to plot on the x-axis
+            %           - yVariable: a string, the variable/column name in the
+            %                   mdl.Variables to plot on the y-axis
+            %           - saveResAndFigure: OPTIONAL, default false. Boolean determining if plot should
+            %                    be saved.
+            %           - savePath: OPTIONAL, default empty, but should be provided if saveResAndFigure is true
+            %                   of the location and name to save the
+            %                   figure (absolute path recommended)
+            %           - f: OPTIONAL. figure or subplot handle, if given will plot
+            %                   on the given handle,
+            %           - lineColor: OPTIONAL, default 1st color in PlotHelper.colorOrder. 
+            %                   a 1x3 numeric array of colors to plot the line
+            if nargin < 4 || isempty(saveResAndFigure) || isnan(double(saveResAndFigure)) %no figure handle provided, create a new figure; if figure is provided, simply plot
+                saveResAndFigure = false; %default false
+                savePath = [];
+            end
+            if nargin < 5 || isempty(f) || isnan(double(f)) %no figure handle provided, create a new figure; if figure is provided, simply plot
+                f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
+            end
+            if nargin < 6 || isempty(lineColor) || all(isnan(double(lineColor)))
+                lineColor = PlotHelper.colorOrder(1,:); %use a default random one
+            end
+            
+            hold on;
+            scatter(eval(['mdl.Variables.' xVariable]),eval(['mdl.Variables.' yVariable]),400,'k','.');
+            xlabel(xVariable);
+            ylabel(yVariable);
+            axis square
+            
+            [p,f] = coefTest(mdl);
+            if p < 0.1 %plot reg line only if corr for pearson is significant
+                plotFitX = xlim;
+                plotFitY = mdl.Coefficients.Estimate(2) * plotFitX + mdl.Coefficients.Estimate(1);
+%                 h = plot(linFit);
+%                 for i = 2:4
+%                     h(i).Color = colorByNetwork(networks,:);
+%                     h(i).LineWidth = 2.5;
+%                     h(i).HandleVisibility = 'off';
+%                 end
+%                 h(2).LineWidth = 4;%the middle fitted line
+                if p < 0.05 %solid line for significant
+                    plot(xlim,plotFitY,'Color',lineColor,'LineWidth',4.5,'handleVisibility','off');
+                    title(sprintf('Model-p = %.3f,\nR^2 Adjusted = %.3f',p,mdl.Rsquared.Adjusted),'FontSize',20,'Color','r');
+%                     h(2).LineStyle ='-';
+                else %dashed line for trending.
+                    plot(xlim,plotFitY,'--','Color',lineColor,'LineWidth',4.5,'handleVisibility','off');
+                    title(sprintf('Model-p = %.3f,\nR^2 Adjusted = %.3f',p,mdl.Rsquared.Adjusted),'FontSize',20,'Color','y');
+%                     h(2).LineStyle ='--'; %the middle fitted line 
+                end
+            end
+            set(findall(gcf,'-property','FontSize'),'FontSize',20)
+            
+            if saveResAndFigure
+                set(gcf,'renderer','painters')
+                saveas(f,[savePath])
+                saveas(f,[savePath], 'png')
+            end
+        end
+        
+        function [high_leveragePts,high_cookdPts, p_norm, p_scedasticity]=plotRegressionDiagnostics(mdl, actualYs, saveResAndFigure, savePath)
         %Plot diagnosis plot of the linear regression model from mdl.
-        %Top left: residual histogram for visualization of normality; top right: QQ plot for normality test. 
-        %Bottom left: residual vs yhat for homeoscadesticity (equal
-        %variance across all y values). Bottom right: fitted vs actual y to
-        %evalute the fit results.
+        %Top left: residual histogram for visualization of normality; top
+        %right: QQ plot for normality test. (expect to be normal)
+        %Middle left: residual vs yhat for homeoscadesticity (equal
+        %variance across all y values). Middle right: fitted vs actual y to
+        %evalute the fit results (expected to follow a diagonal line). 
+        % Bottom left: points with high leverage
+        %(outliers in x that can change regression results). 
+        %Bottom right: cook's D distribution (points whose removal change the fit
+        %drastically)
+        %influential points are usually outlier in x or y, and they are
+        %defined as point whose deletion causes a substatnail change in the
+        %fitted model
         % 
         % [Example]: plotRegressionDiagnostics(linearModel, ys, true, 'C:/Documents/saveMyData.png')
         %
@@ -641,30 +718,97 @@ classdef PlotHelper
         %               figure (absolute path recommended)
         %
             f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
-            subplot(2,2,1); histogram(mdl.Residuals.Raw); %histogram(mdl.Residuals.Studentized); 
+            subplot(3,2,1); histogram(mdl.Residuals.Raw); %histogram(mdl.Residuals.Studentized); 
             title('Residual Histogram'); xlabel('Residuals (y-yhat)');
     %         xRange = xlim;
     %         hold on; plot(xRange(1):0.1:xRange(2), normpdf(xRange(1):0.1:xRange(2), 0,1))
             pd = fitdist(mdl.Residuals.Raw,'Normal'); %pd = fitdist(mdl.Residuals.Studentized,'Normal'); 
-            [h, p] = kstest(normalize(mdl.Residuals.Raw)); %[h, p] = kstest(mdl.Residuals.Studentized); 
-            subplot(2,2,2); qqplot(mdl.Residuals.Raw); %qqplot(mdl.Residuals.Studentized); 
+            [h, p_norm] = kstest(normalize(mdl.Residuals.Raw)); %[h, p] = kstest(mdl.Residuals.Studentized); 
+            
+            subplot(3,2,2); qqplot(mdl.Residuals.Raw); %qqplot(mdl.Residuals.Studentized); 
             title(['Residual vs Standard Normal: kstest (0:normal) = ' num2str(h)]);
-            fprintf('Residual is normal (kstest, 0 = normal): %d, p = %f',h,p)
-            subplot(2,2,3); scatter(mdl.Fitted, mdl.Residuals.Raw);%scatter(mdl.Fitted, mdl.Residuals.Studentized);
+            fprintf('\nResidual is normal (kstest, 0 = normal): %d, p = %f',h,p_norm)
+            
+            subplot(3,2,3); scatter(mdl.Fitted, mdl.Residuals.Raw);%scatter(mdl.Fitted, mdl.Residuals.Studentized);
             hold on; yline(0);
             xlabel('Fitted'); ylabel('Residuals'); title('Homoscedasticity Check');
-            subplot(2,2,4); scatter(mdl.Fitted, actualYs);
+            %test for it
+            [BPstats, p_scedasticity, df] = BPtest(mdl, false); %use original formula
+            if p_scedasticity < 0.05
+                fprintf('\nHomoscedasticity violated, p = %.2f, df =  %.2f, BPstats = %.2f',p_scedasticity,df,BPstats)
+            else
+                fprintf('\nHomoscedasticity pass, p = %.2f, df =  %.2f, BPstats = %.2f',p_scedasticity,df,BPstats)
+            end
+            
+            subplot(3,2,4); scatter(mdl.Fitted, actualYs);
             hold on; plot(xlim, xlim); legend({'Data','y=x'});
             ylabel('ActualY'); xlabel('Fitted'); title('Fitted vs Actual Data Check');
+            axis square
+            
+            %Now inspect influential points (deletion causes substantial
+            %change to the fitted model), 
+            %High leverage points are outliers in the x-space, they 
+            %tend to have extreme values in one or more of the x’s 
+            %or represent an unusual combo of x values. A point with
+            %leverage > 2p/n where p = # of coefficient can be a high
+            %leverage point. Ref: https://www.mathworks.com/help/stats/leverage.html
+            %Cook’s distance measures the influence of each data point on
+            %the fitted response. A point with cook's D > 3x mean(Cook's d)
+            %could be an outlier. Ref: https://www.mathworks.com/help/stats/cooks-distance.html
+            %Other options: DFFITS quantify how much the fitted values change if the ith observation was deleted from the dataset
+            %DFBETAs quantify how much each coefficient would change (in s.e. units) if the ith observation was deleted from the dataset
+            subplot(3,2,5); 
+            plotDiagnostics(mdl);
+            ref_leverage = 2*mdl.NumCoefficients/mdl.NumObservations;
+            hold on;
+            yline(ref_leverage,'--','r','LineWidth',2);
+            high_leveragePts = mdl.Diagnostics.Leverage > ref_leverage;
+            fprintf(['\nHigh leverage points index: ' num2str(find(high_leveragePts)')])
+            
+            subplot(3,2,6); 
+            plotDiagnostics(mdl,'cookd');
+            ref_cookd = 3*mean(mdl.Diagnostics.CooksDistance,'omitnan');
+            hold on;
+            yline(ref_cookd,'--','r','LineWidth',2);
+            high_cookdPts = mdl.Diagnostics.CooksDistance > ref_cookd;
+            fprintf(['\nHigh cooks d (influential) points index: ' num2str(find(high_cookdPts)') '\n'])
+            
             figureTitleStr = split(savePath, filesep);
             sgtitle(figureTitleStr{end}); %last part is file name and figure title.
-            %TODO: sgtitle find the last part of the saveRes
             set(findall(gcf,'-property','FontSize'),'FontSize',15)
+            
+            %Now plot where the influential points are in the original data
+            %space, are they problematic? 
+            f2 = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
+            cols = 3;
+            rows = ceil(length(mdl.PredictorNames)/cols);
+            ys = eval(['mdl.Variables.' mdl.ResponseName]);
+            for i = 1:length(mdl.PredictorNames)
+                subplot(rows,cols,i); hold on; 
+                xs = eval(['mdl.Variables.' mdl.PredictorNames{i}]);
+                scatter(xs,ys,225,'k.');
+                scatter(xs(high_leveragePts),ys(high_leveragePts),225,'r.');
+                scatter(xs(high_cookdPts),ys(high_cookdPts),110,'bo');
+
+                xlabel(mdl.PredictorNames{i})
+                ylabel(mdl.ResponseName)
+                axis square
+            end
+            subplot(rows,cols,1); legend({'AllData','HighLeverage','High CookD'}); %put legend in subplot1
+            sgtitle('High Leverage or CookD Point')
+            set(findall(gcf,'-property','FontSize'),'FontSize',20)
+            
             if saveResAndFigure
-                set(gcf,'renderer','painters')
+                figure(f); set(gcf,'renderer','painters')
                 saveas(f,savePath)
 %                 s = findobj('type','legend'); delete(s)
                 saveas(f,[savePath '.png'])
+                
+                figure(f2);
+                set(gcf,'renderer','painters')
+                saveas(f2,[savePath 'InfluentPointLoc'])
+%                 s = findobj('type','legend'); delete(s)
+                saveas(f2,[savePath 'InfluentPointLoc.png'])
             end
         end
         
@@ -748,7 +892,7 @@ classdef PlotHelper
             end
         end
         
-        function [SigMdlSum] = compileModelSummaries(mdl, SigMdlSum)
+        function [SigMdlSum] = compileModelSummaries(mdl, SigMdlSum, modelType)
             % Generate and save summaries for linear models into SigMdlSum.
             %
             % [Example[ [modelSumCell] = compileModelSummaries(newMdl,modelSumCell)
@@ -759,11 +903,20 @@ classdef PlotHelper
             % [InputArgs]:    
             %    - mdl: A matlab linear model object.
             %    - SigMdlSum: OPTIONAL. the model summary arrays to append the data
-            %    to. The same object with new entries will be the returned. If not provided, will create a new one and return it. 
+            %           to. The same object with new entries will be the returned. If not provided or given [], will create a new one and return it. 
+            %   - modelType: OPTIONAL. The model/analysis type:
+            %           primary/secondary/sensitivity/confirmatory, etc. for
+            %           tracking the planned analysis
+            %           Default '', when not provided, or passed in [] or ''.
+            %    
             alpha = 0.05;
 %             trendingThreshold = 0.1;
-            if nargin < 2 %no existing mdlSum array provided, intialize, first row is header.
-                SigMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','CogVarBeta','pValue','AIC','BIC','ResidualAbnormal(0Normal)','LackOfFit(1lack)','RobustOpt','NumSub','Model'};
+            if nargin < 2 || isempty(SigMdlSum) %no existing mdlSum array provided, intialize, first row is header.
+                SigMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','CogVarBeta','pValue','AIC','BIC','ResidualAbnormal(0Normal)','LackOfFit(1lack)','RobustOpt','NumSub','Model','AnalysisType(Primary,Secondary, etc.)'};
+            end
+            
+            if nargin < 3 || isempty(modelType)
+                modelType = ''; %default type is empty
             end
 %             if nargin < 3 %no existing mdlSum array provided, intialize, first row is header.
 %                 trendingMdlSum = {'ResponseName','Predictors','SigRegressor','R2Ordinary','R2Adjusted','ResidualAbnormal(0Normal)'};
@@ -797,7 +950,7 @@ classdef PlotHelper
             end
             
             SigMdlSum(end+1,:) = {mdl.Formula.ResponseName,mdl.Formula.LinearPredictor,sigCoef,mdl.Rsquared.Ordinary,mdl.Rsquared.Adjusted,...
-                cogVarBeta,mdlStats{'Model','pValue'},mdl.ModelCriterion.AIC, mdl.ModelCriterion.BIC,h,lackOfFit,mdl.Robust,mdl.NumObservations,mdl};
+                cogVarBeta,mdlStats{'Model','pValue'},mdl.ModelCriterion.AIC, mdl.ModelCriterion.BIC,h,lackOfFit,mdl.Robust,mdl.NumObservations,mdl, modelType};
         end
         
         function tightMargin(ax)
