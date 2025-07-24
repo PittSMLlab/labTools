@@ -1199,11 +1199,22 @@ classdef adaptationData
 
         end
 
-        function groupData=createGroupAdaptData(adaptDataList)
+        function groupData=createGroupAdaptData(adaptDataList, parametersToKeep)
             %Check that it is a single cell array of chars (subIDs):
             %Ex: GroupName=adaptationData.createGroupAdaptData({'X1params','x2params','X3params'})
-
+            %Input
+            % - adaptDataList: cell array of strings that represent file paths to
+            %       load the adaptData objects to create the group
+            %       adaptation. The string file name should be either SubID
+            %       or SubIDparams, e.g., {'AUC01V01param.mat','AUC02V01param.mat'}
+            % - parametersToKeep: OPTIONAL. cell array of strings with
+            %       parameter labels to keep in the group data. This is
+            %       added to make the group object more light weighted and
+            %       avoid out of memory error. Not provided or leave empty
+            %       [] will create the group object with the full
+            %       parameters.
             %Load and construct object:
+                       
             for i=1:length(adaptDataList)
                 try
                     a=load(adaptDataList{i});
@@ -1221,6 +1232,9 @@ classdef adaptationData
                     end
                 end
                 data{i}=a.('adaptData');
+                if nargin == 2 && ~isempty(parametersToKeep) %valid parameters given, now reduce it to only keep the parameters given.
+                    data{i}=data{i}.reduce(parametersToKeep);
+                end
                 ID{i}=a.('adaptData').subData.ID;
             end
             groupData=groupAdaptationData(ID,data);
