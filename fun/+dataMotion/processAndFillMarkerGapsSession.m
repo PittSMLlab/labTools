@@ -60,33 +60,80 @@ markersTarg = {
 for tr = indsTrials     % for each trial specified, ...
     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
-
+    
+    % open the trial if needed
+    if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+        return;     % exit if the trial could not be opened
+    end
+    
     % run reconstruct and label pipeline on the trial
-    dataMotion.reconstructAndLabelTrial(pathTrial,vicon,false);
-
+    disp('Running RLPrePatternFill1...');
+    try
+        vicon.RunPipeline('RLPrePatternFill1','',900);
+    catch ME
+        warning('Failed to run RLPrePatternFill1 for trial %d: %s', tr, ME.message);
+        fprintf('Skipping to next trial...\n');
+        continue;
+    end
+    
+    % run woltring gap filling pipeline on the trial
+    disp('Running RLPrePatternFill2...');
+    try
+        vicon.RunPipeline('RLPrePatternFill2','',900);
+    catch ME
+        warning('Failed to run RLPrePatternFill2 for trial %d: %s', tr, ME.message);
+        fprintf('Skipping to next trial...\n');
+        continue;
+    end
+    
     % extract marker gaps to be filled
-    markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
-
-    % fill small marker gaps using spline interpolation
-    markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
-        pathTrial,vicon,false);
-
+    try
+        markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
+    catch ME
+        warning('Failed to extract marker gaps for trial %d: %s', tr, ME.message);
+        markerGaps = struct();
+    end
+    
+    disp('Running Pattern Fill...');
     % fill gaps using pattern fill for each reference marker
     for ref = 1:numel(markersRef)       % for each reference marker, ...
         refMarker = markersRef{ref};    % retrieve reference marker name
         targetMarkers = markersTarg{ref};
-
-        % Process gaps for the current reference marker
-        markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
-            markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+        
+        try
+            % Process gaps for the current reference marker
+            markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
+                markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+        catch ME
+            warning('Failed to fill gaps for reference marker %s for trial %d: %s', refMarker, tr, ME.message)
+        end
     end
-
+    
+    disp('Running RLPostPatternFill...');
+    try
+        vicon.RunPipeline('RLPostPatternFill','',900);
+    catch ME
+        warning('Failed to run RLPostPatternFill for trial %d: %s', tr, ME.message); 
+    end
+    
     fprintf('Saving trial %d: %s\n',tr,pathTrial);
     try
-        vicon.SaveTrial(200);
-        fprintf('Trial saved successfully.\n');
+        vicon.SaveTrial(900);
+        fprintf('Vicon trial saved. Now creating trajectory figures...\n');        
+        
+        % Save trajectory figures
+        try
+            saveTrajectoryFigures(pathSess, pathTrial, tr, vicon);
+            fprintf('Trajectory figures saved successfully for trial %d.\n', tr);
+        catch ME
+            warning('Failed to save trajectory figures for trial %d: %s', tr, ME.message);
+            fprintf('Error details: %s\n', getReport(ME));
+        end
+        
+        fprintf('Trial %d processing completed.\n', tr);
+
     catch ME
-        warning(ME.identifier,'%s',ME.message);
+        warning(ME.identifier,'Failed to save trial %d: %s', tr, ME.message);
     end
 end
 
@@ -129,4 +176,102 @@ for side = sides
 end
 
 end
+
+function mrkrTrajs = getRelevantMrkrTrajs(newVicon)
+
+mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
+mrkrTrajs = struct();
+
+subjects = newVicon.GetSubjectNames();
+if isempty(subjects)
+    warning('No subject found in trial.'); mrkrTrajs = struct(); return;
+    return;
+end
+subject = subjects{1};
+fprintf('Getting trajectories for subject: %s\n', subject);
+
+for i = 1:numel(mrkrsRelevant)
+    marker = mrkrsRelevant{i};
+    try
+        [trajX, trajY, trajZ, existsTraj] = newVicon.GetTrajectory(subject, marker);
+
+        trajX(~existsTraj) = NaN;
+        trajY(~existsTraj) = NaN;
+        trajZ(~existsTraj) = NaN;
+
+        mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];%, double(exists(:))];
+        fprintf('Successfully retrieved trajectory for marker: %s\n', marker);
+    catch ME
+        warning('Failed to get trajectory for marker %s: %s', marker, ME.message);
+        mrkrTrajs.(marker) = [];  % Empty array for failed markers
+    end
+end
+% for mrkr = mrkrsRelevant
+%     [trajX,trajY,trajZ,exists] = newVicon.getTrajectory(mrkrsRelevant{mrkr});
+%     mrkrTrajs.(mrkrsRelevant{mrkr}) = [trajX; trajY; trajZ; double(exists)];
+% end
+end
+
+function saveTrajectoryFigures(pathSess, pathTrial, trialNum, vicon)
+
+markers = {'RGT', 'LGT', 'RANK', 'LANK'};
+mrkrTrajs = getRelevantMrkrTrajs(vicon);
+
+[outParent, ~] = fileparts(pathSess);      
+outDir = fullfile(outParent, 'TrajectoryFigures');
+figDir = fullfile(outDir, 'fig');
+pngDir = fullfile(outDir, 'png');
+
+if ~exist(figDir, 'dir'), mkdir(figDir); end
+if ~exist(pngDir, 'dir'), mkdir(pngDir); end
+
+for i = 1:numel(markers)
+    markerName = markers{i};
+    
+    if ~isfield(mrkrTrajs, markerName)
+        warning('Marker %s not found in trial.', markerName);
+        continue;
+    end
+
+    traj = mrkrTrajs.(markerName);
+    if isempty(traj) || all(isnan(traj(:)))
+        warning('No valid data for marker %s in trial %d.', markerName, trialNum);
+        continue;
+    end
+
+    frames = 1:size(traj, 1);
+
+    % Create stacked plot
+    fig = figure('Visible','off', 'Name', ['Trajectories for ' markerName], 'NumberTitle', 'off');
+    tl = tiledlayout(3,1, 'TileSpacing', 'Compact');
+    title(tl, sprintf('%s Trajectory - Trial %02d', markerName, trialNum), 'Interpreter', 'none');
+
+    % X Component
+    nexttile;
+    plot(frames, traj(:,1));
+    ylabel('X (mm)');
+    title('X');
+
+    % Y Component
+    nexttile;
+    plot(frames, traj(:,2));
+    ylabel('Y (mm)');
+    title('Y');
+
+    % Z Component
+    nexttile;
+    plot(frames, traj(:,3));
+    ylabel('Z (mm)');
+    xlabel('Frame');
+    title('Z');
+
+    % Save .fig and .png
+    baseName = sprintf('%s_Trial%02d', markerName, trialNum);
+    savefig(fig, fullfile(figDir, [baseName '.fig']));
+    saveas(fig, fullfile(pngDir, [baseName '.png']));
+
+    close(fig);
+end
+end
+    
 
