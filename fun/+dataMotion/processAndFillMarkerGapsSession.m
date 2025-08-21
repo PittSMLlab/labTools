@@ -69,8 +69,7 @@ for tr = indsTrials     % for each trial specified, ...
     % run reconstruct and label pipeline on the trial
     disp('Running RLPrePatternFill1...');
     try
-        vicon.RunPipeline('RLPrePatternFill1','',800);
-        pause(30);
+        vicon.RunPipeline('RLPrePatternFill1','',900);
     catch ME
         warning('Failed to run RLPrePatternFill1 for trial %d: %s', tr, ME.message);
         fprintf('Skipping to next trial...\n');
@@ -80,8 +79,7 @@ for tr = indsTrials     % for each trial specified, ...
     % run woltring gap filling pipeline on the trial
     disp('Running RLPrePatternFill2...');
     try
-        vicon.RunPipeline('RLPrePatternFill2','',800);
-        pause(30);
+        vicon.RunPipeline('RLPrePatternFill2','',900);
     catch ME
         warning('Failed to run RLPrePatternFill2 for trial %d: %s', tr, ME.message);
         fprintf('Skipping to next trial...\n');
@@ -110,19 +108,17 @@ for tr = indsTrials     % for each trial specified, ...
             warning('Failed to fill gaps for reference marker %s for trial %d: %s', refMarker, tr, ME.message)
         end
     end
-    pause(5);
     
     disp('Running RLPostPatternFill...');
     try
-        vicon.RunPipeline('RLPostPatternFill','',200);
-        pause(5);
+        vicon.RunPipeline('RLPostPatternFill','',900);
     catch ME
         warning('Failed to run RLPostPatternFill for trial %d: %s', tr, ME.message); 
     end
     
     fprintf('Saving trial %d: %s\n',tr,pathTrial);
     try
-        vicon.SaveTrial(200);
+        vicon.SaveTrial(900);
         fprintf('Vicon trial saved. Now creating trajectory figures...\n');        
         
         % Save trajectory figures
