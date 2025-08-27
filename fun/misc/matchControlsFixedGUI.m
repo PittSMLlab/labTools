@@ -1,19 +1,22 @@
 function matchControlsFixedGUI(demoFile)
 % matchControlsFixedGUI  Fixed GUI to choose demographic matching factors
 % Compatible with MATLAB R2024a.
+% This tool was created via ChatGPT. NWB
 %
 % Usage:
 %   matchControlsFixedGUI()                      % choose file with dialog
 %   matchControlsFixedGUI('Demographics.xlsx')   % pass path
 %
-% GUI fields shown: Sex, Age (via DOB), Height, Weight, Years formal education, Race, Ethnicity
-% Computes weighted distance across numeric variables and returns the top-2 matches.
+% GUI fields shown: Sex, Age (via DOB), Height, Weight, Years formal
+% education, Race, Ethnicity
+% Computes weighted distance across numeric variables and returns the top-2
+% matches.
 %
 % Changes in this version:
 %  - BOTH candidate and target height/weight values are converted to a
 %    canonical unit (meters for height, kilograms for weight) *before*
 %    computing distance and tolerance comparisons.
-%  - Tolerances for height/weight are also converted into the canonical unit.
+%  - Tolerances for height/weight are also converted into canonical unit.
 %  - Adjusted layout: results area given more vertical space; left-panel
 %    Weight / Tolerance / Data-units columns narrowed for readability.
 
@@ -27,19 +30,21 @@ end
 fixedVars = struct;
 fixedVars.sex = {'sex','gender'};
 fixedVars.age = {'age','age_years','age_year'};
-fixedVars.dob = {'dob','birthdate','dateofbirth'};  % optional (used to compute age)
+fixedVars.dob = {'dob','birthdate','dateofbirth'};  % optional (for age)
 fixedVars.height = {'height','ht','stature'};
 fixedVars.weight = {'weight','wt','mass','bodymass'};
 fixedVars.education = {'education','years_education','yrs_education', ...
     'yearsformaleducation','years_formal_education','years_schooling'};
 fixedVars.race = {'race'};
 fixedVars.ethnicity = {'ethnicity'};
+fixedVars.matched = {'match'};
 
 %% -----------------------------
-% 1. Load table (your working readtable call)
+% 1. Load table
 % -----------------------------
 if isempty(demoFile)
-    [file, path] = uigetfile({'*.xlsx;*.xls;*.csv','Demographic files (*.xlsx,*.xls,*.csv)'}, ...
+    [file,path] = uigetfile( ...
+        {'*.xlsx;*.xls;*.csv','Demographic files (*.xlsx,*.xls,*.csv)'},...
         'Select demographic file');
     if isequal(file,0)
         disp('No file selected. Aborting.');
@@ -49,24 +54,25 @@ if isempty(demoFile)
 end
 
 try
-    % this is the version you had working
     T = readtable(demoFile,'PreserveVariableNames',true);
 catch ME
-    error('Could not read demographic file: %s', ME.message);
+    error('Could not read demographic file: %s',ME.message);
 end
 
 % store sanitized variable names from table
 varNames = T.Properties.VariableNames;
+% TODO: sanitize 'varNames' to remove any whitespace and handle units,
+% especially important for categorical variables used as 'struct' fields
 nCols = numel(varNames);
 
 % helper to find column by keywords (first match)
     function idx = findColumnByKeywords(keywords)
         idx = [];
-        for j=1:nCols
-            vn = lower(varNames{j});
-            for kk=1:numel(keywords)
-                if contains(vn, lower(keywords{kk}))
-                    idx = j;
+        for jj = 1:nCols
+            vn = lower(varNames{jj});
+            for kk = 1:numel(keywords)
+                if contains(vn,lower(keywords{kk}))
+                    idx = jj;
                     return;
                 end
             end
@@ -82,13 +88,14 @@ colIdx.weight = findColumnByKeywords(fixedVars.weight);
 colIdx.education = findColumnByKeywords(fixedVars.education);
 colIdx.race = findColumnByKeywords(fixedVars.race);
 colIdx.ethnicity = findColumnByKeywords(fixedVars.ethnicity);
+colIdx.matched = findColumnByKeywords(fixedVars.matched);
 
 %% -----------------------------
 % 2. Prepare defaults (tolerances, unit assumptions)
 % -----------------------------
 numericVars = {'age','height','weight','education'};
 defaultTol = struct();
-for i=1:numel(numericVars)
+for i = 1:numel(numericVars)
     key = numericVars{i};
     idx = colIdx.(key);
     if ~isempty(idx)
@@ -96,7 +103,9 @@ for i=1:numel(numericVars)
         if isnumeric(col)
             vals = col(~isnan(col));
             s = std(double(vals));
-            if isempty(s) || s<=0, s = 1; end
+            if isempty(s) || s <= 0
+                s = 1;
+            end
             defaultTol.(key) = s;
         else
             defaultTol.(key) = 1;
@@ -117,50 +126,62 @@ canonicalUnits.weight = 'kilograms';
 %% -----------------------------
 % 3. Build GUI (fixed layout) - R2024a: set Layout.* AFTER creation
 % -----------------------------
-fig = uifigure('Name','Match Controls (Fixed GUI)','Position',[150 100 980 760]);
-g = uigridlayout(fig,[11,6]); % extra row so we can give more space to results
-% Give more vertical space to results row (last row) by using '2x'
-g.RowHeight = {'fit','fit','fit','1x','fit','fit','fit','fit','fit','fit','2x'};
-% Narrow some left-panel columns (weight/tolerance/data units) so 'Variable' shows better
+fig = uifigure('Name','Match Controls (Fixed GUI)', ...
+    'Position',[150 100 980 760]);
+g = uigridlayout(fig,[11 6]);   % extra row for more space for results
+% give more vertical space to results row (last row) by using '2x'
+g.RowHeight = ...
+    {'fit','fit','fit','1x','fit','fit','fit','fit','fit','fit','2x'};
+% narrow some left-panel columns (weight/tolerance/data units) so
+% 'Variable' shows better
 g.ColumnWidth = {'1x','1x','1x','1x','1x','1x'};
 
-% Title label
+% title label
 lblTitle = uilabel(g);
-lblTitle.Text = sprintf('Demographic file: %s', demoFile);
+lblTitle.Text = sprintf('Demographic file: %s',demoFile);
 lblTitle.FontWeight = 'bold';
 lblTitle.FontSize = 13;
 lblTitle.Layout.Row = 1;
 lblTitle.Layout.Column = [1 6];
 
-% Instruction label
+% instruction label
 instr = uilabel(g);
-instr.Text = 'Select variables to use for matching, set weights & tolerances (numeric variables). Enter target participant info (right).';
+instr.Text = ['Select variables to use for matching, set weights & ' ...
+    'tolerances (numbers). Enter target participant info (right).'];
 instr.Layout.Row = 2;
 instr.Layout.Column = [1 6];
 
-% Left block: checkboxes + weight/tol + units
+% left block: checkboxes + weight/tol + units
 varsPanel = uipanel(g);
-varsPanel.Title = 'Matching factors & numeric settings';
+varsPanel.Title = 'Matching Factors & Numeric Settings';
 varsPanel.Layout.Row = [3 9];
 varsPanel.Layout.Column = [1 3];
 
-% grid inside panel: columns: Use | Variable | Weight | Tolerance | DataUnit (if applicable)
+% grid inside panel: columns:
+%   Use | Variable | Weight | Tolerance | DataUnit (if applicable)
 numVars = 7;
-pv = uigridlayout(varsPanel,[numVars+1,6]);
+pv = uigridlayout(varsPanel,[numVars+1 6]);
 
-% --- Narrow these internal columns so Variable column has more room:
-% Use 'fit' for checkbox column; '1x' wide for variable label; numeric columns narrower in px
+% --- narrow these internal columns so 'Variable' column has more room:
+% use 'fit' for checkbox column, '1x' wide for variable label, numeric
+% columns narrower in px
 pv.RowHeight = repmat({'fit'},1,numVars+1);
-pv.ColumnWidth = {'fit','1x',70,70,90,'fit'}; % columns 3..5 narrowed
+pv.ColumnWidth = {'fit','1x',60,60,80,'fit'};   % columns 3..5 narrowed
 
 % header labels
-h1 = uilabel(pv); h1.Text='Use'; h1.FontWeight='bold'; h1.Layout.Row=1; h1.Layout.Column=1;
-h2 = uilabel(pv); h2.Text='Variable'; h2.FontWeight='bold'; h2.Layout.Row=1; h2.Layout.Column=2;
-h3 = uilabel(pv); h3.Text='Weight'; h3.FontWeight='bold'; h3.Layout.Row=1; h3.Layout.Column=3;
-h4 = uilabel(pv); h4.Text='Tolerance'; h4.FontWeight='bold'; h4.Layout.Row=1; h4.Layout.Column=4;
-h5 = uilabel(pv); h5.Text='Data units (if applicable)'; h5.FontWeight='bold'; h5.Layout.Row=1; h5.Layout.Column=5;
+h1 = uilabel(pv); h1.Text = 'Use';
+h2 = uilabel(pv); h2.Text = 'Variable';
+h3 = uilabel(pv); h3.Text = 'Weight';
+h4 = uilabel(pv); h4.Text = 'Tolerance';
+h5 = uilabel(pv); h5.Text = 'Data Units';
+h1.FontWeight = 'bold'; h1.Layout.Row = 1; h1.Layout.Column = 1;
+h2.FontWeight = 'bold'; h2.Layout.Row = 1; h2.Layout.Column = 2;
+h3.FontWeight = 'bold'; h3.Layout.Row = 1; h3.Layout.Column = 3;
+h4.FontWeight = 'bold'; h4.Layout.Row = 1; h4.Layout.Column = 4;
+h5.FontWeight = 'bold'; h5.Layout.Row = 1; h5.Layout.Column = 5;
 
-labels = {'Sex','Age','Height','Weight','Years formal education','Race','Ethnicity'};
+labels = ...
+    {'Sex','Age','Height','Weight','Education (years)','Race','Ethnicity'};
 isNumericArr = [false true true true true false false];
 
 chkUse = gobjects(1,numVars);
@@ -168,18 +189,22 @@ edWeight = gobjects(1,numVars);
 edTol = gobjects(1,numVars);
 dataUnitDd = gobjects(1,numVars);
 
-for i=1:numVars
-    row = i+1;
+for i = 1:numVars
+    row = i + 1;
     % checkbox: include this variable in the matching
-    chkUse(i) = uicheckbox(pv); chkUse(i).Text = ''; chkUse(i).Value = false;
+    chkUse(i) = uicheckbox(pv);
+    chkUse(i).Text = ''; chkUse(i).Value = false;
     chkUse(i).Layout.Row = row; chkUse(i).Layout.Column = 1;
 
     % variable name label
-    lbl = uilabel(pv); lbl.Text = labels{i}; lbl.Layout.Row = row; lbl.Layout.Column = 2; lbl.HorizontalAlignment = 'left';
+    lbl = uilabel(pv); lbl.Text = labels{i};
+    lbl.Layout.Row = row; lbl.Layout.Column = 2;
+    lbl.HorizontalAlignment = 'left';
 
     if isNumericArr(i)
         % numeric: weight & tolerance numeric fields
-        edWeight(i) = uieditfield(pv,'numeric'); edWeight(i).Value = 1; edWeight(i).Limits = [0 Inf];
+        edWeight(i) = uieditfield(pv,'numeric');
+        edWeight(i).Value = 1; edWeight(i).Limits = [0 Inf];
         edTol(i) = uieditfield(pv,'numeric');
         switch i
             case 2, edTol(i).Value = defaultTol.age;
@@ -192,40 +217,51 @@ for i=1:numVars
         edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
     else
         % non-numeric: show 'N/A' placeholders (disabled)
-        edWeight(i) = uieditfield(pv,'text'); edWeight(i).Value = 'N/A'; edWeight(i).Editable = 'off';
-        edTol(i) = uieditfield(pv,'text'); edTol(i).Value = 'N/A'; edTol(i).Editable = 'off';
+        edWeight(i) = uieditfield(pv,'text');
+        edWeight(i).Value = 'N/A'; edWeight(i).Editable = 'off';
         edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
+        edTol(i) = uieditfield(pv,'text');
+        edTol(i).Value = 'N/A'; edTol(i).Editable = 'off';
         edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
     end
 
-    % Data unit dropdown only for height/weight rows (indices 3 and 4)
-    if i==3
-        % dataset unit for height (user should pick the units that the table stores)
-        dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {'meters','centimeters','inches'}; dataUnitDd(i).Value = defaultDataUnits.height;
+    % data unit dropdown only for height/weight rows (indices 3 and 4)
+    if i == 3
+        % dataset unit for height (user should pick units from table)
+        dataUnitDd(i) = uidropdown(pv);
+        dataUnitDd(i).Items = {'meters','centimeters','inches'};
+        dataUnitDd(i).Value = defaultDataUnits.height;
         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
-    elseif i==4
+    elseif i == 4
         % dataset unit for weight
-        dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {'kilograms','pounds'}; dataUnitDd(i).Value = defaultDataUnits.weight;
+        dataUnitDd(i) = uidropdown(pv);
+        dataUnitDd(i).Items = {'kilograms','pounds'};
+        dataUnitDd(i).Value = defaultDataUnits.weight;
         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
     else
-        dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {'--'}; dataUnitDd(i).Value = '--'; dataUnitDd(i).Enable = 'off';
+        dataUnitDd(i) = uidropdown(pv); dataUnitDd(i).Items = {'--'};
+        dataUnitDd(i).Value = '--'; dataUnitDd(i).Enable = 'off';
         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
     end
 end
 
-% Right block: target participant entries
+% right block: target participant entries
 targetPanel = uipanel(g);
-targetPanel.Title = 'Target participant values';
+targetPanel.Title = 'Target Participant Values';
 targetPanel.Layout.Row = [3 9];
 targetPanel.Layout.Column = [4 6];
 
-pt = uigridlayout(targetPanel,[12,2]);
+pt = uigridlayout(targetPanel,[12 2]);
 pt.RowHeight = repmat({'fit'},1,12);
 pt.ColumnWidth = {'1x','1x'};
 
-% Header labels for target panel
-lblVarHeader = uilabel(pt); lblVarHeader.Text = 'Variable'; lblVarHeader.FontWeight = 'bold'; lblVarHeader.Layout.Row = 1; lblVarHeader.Layout.Column = 1;
-lblEntryHeader = uilabel(pt); lblEntryHeader.Text = 'Entry'; lblEntryHeader.FontWeight = 'bold'; lblEntryHeader.Layout.Row = 1; lblEntryHeader.Layout.Column = 2;
+% header labels for target panel
+lblVarHeader = uilabel(pt);
+lblVarHeader.Text = 'Variable'; lblVarHeader.FontWeight = 'bold';
+lblVarHeader.Layout.Row = 1; lblVarHeader.Layout.Column = 1;
+lblEntryHeader = uilabel(pt);
+lblEntryHeader.Text = 'Entry'; lblEntryHeader.FontWeight = 'bold';
+lblEntryHeader.Layout.Row = 1; lblEntryHeader.Layout.Column = 2;
 
 % Row 2: Sex (dropdown)
 lblSex = uilabel(pt); lblSex.Text = 'Sex'; lblSex.Layout.Row = 2; lblSex.Layout.Column = 1;
@@ -323,27 +359,49 @@ statusLabel = uilabel(g);
 statusLabel.Text = 'Status: ready';
 statusLabel.Layout.Row = 1; statusLabel.Layout.Column = 6;
 
-% Disable checkboxes for missing columns and warn user
+% disable checkboxes for missing columns and warn user
 mappingMessages = {};
-if isempty(colIdx.sex), mappingMessages{end+1} = 'Sex column not found. Sex matching disabled.'; chkUse(1).Enable = 'off'; end
-if isempty(colIdx.age) && isempty(colIdx.dob), mappingMessages{end+1} = 'Neither Age nor DOB found. Age disabled.'; chkUse(2).Enable = 'off'; end
-if isempty(colIdx.height), mappingMessages{end+1} = 'Height not found. Height disabled.'; chkUse(3).Enable = 'off'; end
-if isempty(colIdx.weight), mappingMessages{end+1} = 'Weight not found. Weight disabled.'; chkUse(4).Enable = 'off'; end
-if isempty(colIdx.education), mappingMessages{end+1} = 'Education not found. Education disabled.'; chkUse(5).Enable = 'off'; end
-if isempty(colIdx.race), mappingMessages{end+1} = 'Race not found. Race disabled.'; chkUse(6).Enable = 'off'; end
-if isempty(colIdx.ethnicity), mappingMessages{end+1} = 'Ethnicity not found. Ethnicity disabled.'; chkUse(7).Enable = 'off'; end
+if isempty(colIdx.sex)
+    mappingMessages{end+1} = ...
+        'Sex column not found. Sex matching disabled.';
+    chkUse(1).Enable = 'off';
+end
+if isempty(colIdx.age) && isempty(colIdx.dob)
+    mappingMessages{end+1} = 'Neither Age nor DOB found. Age disabled.';
+    chkUse(2).Enable = 'off';
+end
+if isempty(colIdx.height)
+    mappingMessages{end+1} = 'Height not found. Height disabled.';
+    chkUse(3).Enable = 'off';
+end
+if isempty(colIdx.weight)
+    mappingMessages{end+1} = 'Weight not found. Weight disabled.';
+    chkUse(4).Enable = 'off';
+end
+if isempty(colIdx.education)
+    mappingMessages{end+1} = 'Education not found. Education disabled.';
+    chkUse(5).Enable = 'off';
+end
+if isempty(colIdx.race)
+    mappingMessages{end+1} = 'Race not found. Race disabled.';
+    chkUse(6).Enable = 'off';
+end
+if isempty(colIdx.ethnicity)
+    mappingMessages{end+1} = 'Ethnicity not found. Ethnicity disabled.';
+    chkUse(7).Enable = 'off';
+end
 
 if ~isempty(mappingMessages)
     statusLabel.Text = strjoin(mappingMessages,' ');
 end
 
 %% -----------------------------
-% Helper: normalize categorical values for reliable comparison
-% - Special handling for Sex: maps common short codes to canonical labels.
-% - For other categorical variables we use trimmed lowercase strings.
+% helper function: normalize categorical values for reliable comparison
+% - special handling for Sex: maps common short codes to canonical labels.
+% - for other categorical variables we use trimmed lowercase strings.
 % -----------------------------
-    function out = normalizeCategorical(vals, varKey)
-        % Normalize input values (vals can be string array, char, numeric, cell)
+    function out = normalizeCategorical(vals,varKey)
+        % normalize input values (vals can be string array, char, numeric, cell)
         % varKey: name of the variable (e.g., 'sex','race') to allow special-casing
         s = string(vals);              % convert to string array (handles mixed types)
         s = lower(strtrim(s));         % lowercase and trim whitespace
@@ -422,7 +480,7 @@ end
     end
 
 %% -----------------------------
-% Update computed age display (DOB -> decimal years)
+% update computed age display (DOB -> decimal years)
 % -----------------------------
     function updateComputedAge()
         dob = targetDOB.Value;
@@ -437,46 +495,68 @@ end
     end
 
 %% -----------------------------
-% Preview candidates (categorical filters) - uses normalized categorical comparison
+% preview candidates (categorical filters)
+%   uses normalized categorical comparison
 % -----------------------------
     function previewCandidates()
         selCats = struct();
         if chkUse(1).Value && ~isempty(colIdx.sex)
             val = string(targetSex.Value);
-            if strlength(strtrim(val))==0
-                uialert(fig,'Please enter target Sex (or uncheck Sex).','Missing input'); return;
+            if strlength(strtrim(val)) == 0
+                uialert(fig, ...
+                    'Please enter target Sex (or uncheck Sex).', ...
+                    'Missing input');
+                return;
             end
             selCats.(varNames{colIdx.sex}) = val;
         end
         if chkUse(6).Value && ~isempty(colIdx.race)
             val = strtrim(targetRace.Value);
-            if isempty(val), uialert(fig,'Please enter target Race (or uncheck Race).','Missing input'); return; end
+            if isempty(val)
+                uialert(fig, ...
+                    'Please enter target Race (or uncheck Race).', ...
+                    'Missing input');
+                return;
+            end
             selCats.(varNames{colIdx.race}) = val;
         end
         if chkUse(7).Value && ~isempty(colIdx.ethnicity)
             val = strtrim(targetEthnicity.Value);
-            if isempty(val), uialert(fig,'Please enter target Ethnicity (or uncheck Ethnicity).','Missing input'); return; end
+            if isempty(val)
+                uialert(fig, ...
+                    ['Please enter target Ethnicity (or uncheck ' ...
+                    'Ethnicity).'],'Missing input');
+                return;
+            end
             selCats.(varNames{colIdx.ethnicity}) = val;
+        end
+        if ~isempty(colIdx.matched)
+            selCats.(varNames{colIdx.matched}) = "";
         end
 
         if isempty(fieldnames(selCats))
-            uialert(fig,'No categorical filters selected; all rows are candidates.','Preview');
+            uialert(fig,['No categorical filters selected or assigned ' ...
+                'matched control; all rows are candidates.'],'Preview');
             tblToShow = T;
         else
             mask = true(height(T),1);
             fn = fieldnames(selCats);
-            for ii=1:numel(fn)
+            for ii = 1:numel(fn)
                 colname = fn{ii};
                 targ = selCats.(colname);
                 col = T.(colname);
 
-                % Normalize both column and target for comparison
-                colNorm = normalizeCategorical(col, colname);
-                targNorm = normalizeCategorical(targ, colname);
+                % normalize both column and target for comparison
+                colNorm = normalizeCategorical(col,colname);
+                targNorm = normalizeCategorical(targ,colname);
 
                 if isnumeric(col)
                     tn = str2double(targ);
-                    if ~isnan(tn), mask = mask & (col == tn); else mask = mask & false; end
+                    if ~isnan(tn)
+                        mask = mask & (col == tn);
+                    else
+                        mask = mask & false;
+                    end
                 else
                     mask = mask & (colNorm == targNorm);
                 end
@@ -484,107 +564,160 @@ end
             tblToShow = T(mask,:);
         end
 
-        if isempty(tblToShow) || height(tblToShow)==0
-            uialert(fig,'No candidates remain after categorical filters.','Preview');
+        if isempty(tblToShow) || height(tblToShow) == 0
+            uialert(fig,['No candidates remain after categorical ' ...
+                'filters.'],'Preview');
         else
-            w = uifigure('Name','Filtered candidates','Position',[300 200 900 450]);
+            w = uifigure('Name','Filtered Candidates', ...
+                'Position',[300 200 900 450]);
             uitable(w,'Data',tblToShow,'Position',[10 10 880 430]);
         end
     end
 
 %% -----------------------------
-% Open table (full demographics)
+% open table (full demographics)
 % -----------------------------
     function openTable()
-        if isempty(T) || height(T)==0
+        if isempty(T) || height(T) == 0
             uialert(fig,'Table empty.','Table');
             return;
         end
-        w = uifigure('Name','Demographic table','Position',[300 200 900 450]);
+        w = uifigure('Name','Demographic Table', ...
+            'Position',[300 200 900 450]);
         uitable(w,'Data',T,'Position',[10 10 880 430]);
     end
 
 %% -----------------------------
-% Main: computeMatches
-% - Applies categorical filters using normalizeCategorical (robust)
-% - Converts target & candidate height/weight to canonical units BEFORE distance
-% - Converts tolerance into canonical units too
+% main: computeMatches
+% - applies categorical filters using normalizeCategorical (robust)
+% - converts target & candidate height/weight to canonical units BEFORE
+%   computing distance
+% - converts tolerance into canonical units too
 % -----------------------------
     function computeMatches()
         % which checkboxes selected
-        useIdx = find(arrayfun(@(c) c.Value, chkUse));
+        useIdx = find(arrayfun(@(c) c.Value,chkUse));
         if isempty(useIdx)
-            uialert(fig,'Please select at least one variable to use for matching.','No variables'); return;
+            uialert(fig,['Please select at least one variable to use ' ...
+                'for matching.'],'No variables');
+            return;
         end
 
-        % Build categorical mask using normalized comparison
+        % build categorical mask using normalized comparison
         catMask = true(height(T),1);
 
-        % Sex categorical filter (normalized)
+        % sex categorical filter (normalized)
         if chkUse(1).Value
-            if isempty(colIdx.sex), uialert(fig,'Sex selected but Sex column missing.','Error'); return; end
+            if isempty(colIdx.sex)
+                uialert(fig, ...
+                    'Sex selected but Sex column missing.','Error');
+                return;
+            end
             val = string(targetSex.Value);
-            if strlength(strtrim(val))==0, uialert(fig,'Please enter target Sex or uncheck Sex.','Missing'); return; end
+            if strlength(strtrim(val)) == 0
+                uialert(fig, ...
+                    'Please enter target Sex or uncheck Sex.','Missing');
+                return;
+            end
             colname = varNames{colIdx.sex};
             col = T.(colname);
             if isnumeric(col)
                 vnum = str2double(val);
-                if ~isnan(vnum), catMask = catMask & (col == vnum); else catMask = catMask & false; end
+                if ~isnan(vnum)
+                    catMask = catMask & (col == vnum);
+                else
+                    catMask = catMask & false;
+                end
             else
-                colNorm = normalizeCategorical(col, colname);
-                targNorm = normalizeCategorical(val, colname);
+                colNorm = normalizeCategorical(col,colname);
+                targNorm = normalizeCategorical(val,colname);
                 catMask = catMask & (colNorm == targNorm);
             end
         end
 
-        % Race
+        % race
         if chkUse(6).Value
-            if isempty(colIdx.race), uialert(fig,'Race selected but Race column missing.','Error'); return; end
-            val = strtrim(targetRace.Value); if isempty(val), uialert(fig,'Please enter target Race or uncheck Race.','Missing'); return; end
+            if isempty(colIdx.race)
+                uialert(fig,'Race selected but Race column missing.','Error');
+                return;
+            end
+            val = strtrim(targetRace.Value);
+            if isempty(val)
+                uialert(fig,'Please enter target Race or uncheck Race.','Missing');
+                return;
+            end
             colname = varNames{colIdx.race}; col = T.(colname);
             if isnumeric(col)
-                vnum = str2double(val); if ~isnan(vnum), catMask = catMask & (col == vnum); else catMask = catMask & false; end
+                vnum = str2double(val);
+                if ~isnan(vnum)
+                    catMask = catMask & (col == vnum);
+                else
+                    catMask = catMask & false;
+                end
             else
-                colNorm = normalizeCategorical(col, colname);
-                targNorm = normalizeCategorical(val, colname);
+                colNorm = normalizeCategorical(col,colname);
+                targNorm = normalizeCategorical(val,colname);
                 catMask = catMask & (colNorm == targNorm);
             end
         end
 
-        % Ethnicity
+        % ethnicity
         if chkUse(7).Value
-            if isempty(colIdx.ethnicity), uialert(fig,'Ethnicity selected but Ethnicity column missing.','Error'); return; end
-            val = strtrim(targetEthnicity.Value); if isempty(val), uialert(fig,'Please enter target Ethnicity or uncheck Ethnicity.','Missing'); return; end
+            if isempty(colIdx.ethnicity)
+                uialert(fig,'Ethnicity selected but Ethnicity column missing.','Error');
+                return;
+            end
+            val = strtrim(targetEthnicity.Value);
+            if isempty(val)
+                uialert(fig,'Please enter target Ethnicity or uncheck Ethnicity.','Missing');
+                return;
+            end
             colname = varNames{colIdx.ethnicity}; col = T.(colname);
             if isnumeric(col)
-                vnum = str2double(val); if ~isnan(vnum), catMask = catMask & (col == vnum); else catMask = catMask & false; end
+                vnum = str2double(val);
+                if ~isnan(vnum)
+                    catMask = catMask & (col == vnum);
+                else
+                    catMask = catMask & false;
+                end
             else
-                colNorm = normalizeCategorical(col, colname);
-                targNorm = normalizeCategorical(val, colname);
+                colNorm = normalizeCategorical(col,colname);
+                targNorm = normalizeCategorical(val,colname);
                 catMask = catMask & (colNorm == targNorm);
             end
         end
 
-        % Candidate count after categorical filters
-        nCandidates = sum(catMask);
-        if nCandidates==0
-            statusLabel.Text = 'Status: no candidates remain after categorical filtering.';
-            tblMatches.Data = {}; tblWithin.Data = {}; return;
+        % already matched participants
+        if ~isempty(colIdx.matched)
+            val = "";
+            colname = varNames{colIdx.matched}; col = T.(colname);
+            colNorm = normalizeCategorical(col,colname);
+            targNorm = normalizeCategorical(val,colname);
+            catMask = catMask & (colNorm == targNorm);
         end
 
-        % Which numeric variables selected? [age,height,weight,education]
+        % candidate count after categorical filters
+        nCandidates = sum(catMask);
+        if nCandidates == 0
+            statusLabel.Text = ['Status: no candidates remain after ' ...
+                'categorical filtering.'];
+            tblMatches.Data = {}; tblWithin.Data = {};
+            return;
+        end
+
+        % which numeric variables selected? [age,height,weight,education]
         numericSelected = false(1,4);
         mapping = [2,3,4,5]; % positions in chkUse corresponding to numericVars
-        for k=1:4
+        for k = 1:4
             if any(useIdx==mapping(k)) && (~isempty(colIdx.(numericVars{k})) || (k==1 && ~isempty(colIdx.dob)))
                 numericSelected(k) = true;
             end
         end
 
-        % If no numeric variables selected, return top-2 rows in filtered table
+        % If no numeric variables selected, return top-5 rows in filtered table
         if ~any(numericSelected)
             candidates = T(catMask,:);
-            nReturn = min(2,height(candidates));
+            nReturn = min(5,height(candidates));
             tblMatches.Data = candidates(1:nReturn,:);
             tblWithin.Data = {};
             statusLabel.Text = sprintf('Status: %d candidates after categorical filtering; no numeric variables selected.', nCandidates);
@@ -665,8 +798,11 @@ end
                 for r=1:m
                     try
                         val = dobCol(r);
-                        if isdatetime(val), dt = val;
-                        else dt = datetime(val); end
+                        if isdatetime(val)
+                            dt = val;
+                        else
+                            dt = datetime(val);
+                        end
                         candAges(r) = days(targetAssessDate.Value - dt)/365.2425;
                     catch
                         candAges(r) = NaN;
@@ -678,14 +814,18 @@ end
             w = edWeight(2).Value; tol = edTol(2).Value; if tol<=0, tol = defaultTol.age; end
             tval = targetVals.age;
             diffsq = ((tval - candAges)./tol).^2;
-            if any(~isnan(diffsq)), mx = max(diffsq(~isnan(diffsq))); else mx = 1; end
+            if any(~isnan(diffsq))
+                mx = max(diffsq(~isnan(diffsq)));
+            else
+                mx = 1;
+            end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf('Age within tol (tol=%g yrs)', tol);
             withinMat(:,end+1) = abs(tval - candAges) <= tol;
         end
 
-        % =============== Height contribution (convert candidates to canonical) =================
+        % =============== Height Contribution =================
         if numericSelected(2)
             % candidate raw values as stored in dataset (user indicates their unit with dataUnitDd(3))
             cvals_raw = double(candidates.(varNames{colIdx.height}));
@@ -698,7 +838,11 @@ end
             tol_canonical = targetVals.heightTol;
             % compute normalized squared difference
             diffsq = ((tval - cvals_canonical)./tol_canonical).^2;
-            if any(~isnan(diffsq)), mx = max(diffsq(~isnan(diffsq))); else mx = 1; end
+            if any(~isnan(diffsq))
+                mx = max(diffsq(~isnan(diffsq)));
+            else
+                mx = 1;
+            end
             diffsq(isnan(diffsq)) = (mx + 1e6); % penalize missing candidate values strongly
             w = edWeight(3).Value;
             dist2 = dist2 + w .* diffsq;
@@ -706,56 +850,72 @@ end
             withinMat(:,end+1) = abs(tval - cvals_canonical) <= tol_canonical;
         end
 
-        % =============== Weight contribution (convert candidates to canonical) =================
+        % =============== Weight Contribution =================
         if numericSelected(3)
             cvals_raw = double(candidates.(varNames{colIdx.weight}));
-            dataUnit = dataUnitDd(4).Value; % dataset unit selection (weight)
-            cvals_canonical = double(convertUnits('weight', dataUnit, canonicalUnits.weight, cvals_raw));
+            dataUnit = dataUnitDd(4).Value; % dataset unit selection
+            cvals_canonical = double(convertUnits('weight',dataUnit, ...
+                canonicalUnits.weight,cvals_raw));
             tval = targetVals.weight;
             tol_canonical = targetVals.weightTol;
             diffsq = ((tval - cvals_canonical)./tol_canonical).^2;
-            if any(~isnan(diffsq)), mx = max(diffsq(~isnan(diffsq))); else mx = 1; end
+            if any(~isnan(diffsq))
+                mx = max(diffsq(~isnan(diffsq)));
+            else
+                mx = 1;
+            end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             w = edWeight(4).Value;
             dist2 = dist2 + w .* diffsq;
-            withinColNames{end+1} = sprintf('Weight within tol (%g %s)', edTol(4).Value, dataUnit);
-            withinMat(:,end+1) = abs(tval - cvals_canonical) <= tol_canonical;
+            withinColNames{end+1} = sprintf( ...
+                'Weight within tol (%g %s)',edTol(4).Value,dataUnit);
+            withinMat(:,end+1) = ...
+                abs(tval - cvals_canonical) <= tol_canonical;
         end
 
         % =============== Education contribution =================
         if numericSelected(4)
             cvals = double(candidates.(varNames{colIdx.education}));
-            w = edWeight(5).Value; tol = edTol(5).Value; if tol<=0, tol = defaultTol.education; end
+            w = edWeight(5).Value; tol = edTol(5).Value;
+            if tol <= 0
+                tol = defaultTol.education;
+            end
             tval = targetVals.education;
             diffsq = ((tval - cvals)./tol).^2;
-            if any(~isnan(diffsq)), mx = max(diffsq(~isnan(diffsq))); else mx = 1; end
+            if any(~isnan(diffsq))
+                mx = max(diffsq(~isnan(diffsq)));
+            else
+                mx = 1;
+            end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             dist2 = dist2 + w .* diffsq;
-            withinColNames{end+1} = sprintf('Education within tol (tol=%g)', tol);
+            withinColNames{end+1} = sprintf( ...
+                'Education within tol (tol=%g)',tol);
             withinMat(:,end+1) = abs(tval - cvals) <= tol;
         end
 
         % finalize: compute Euclidean distance (sqrt of weighted sum)
         dist = sqrt(dist2);
         [sortedDist, sidx] = sort(dist,'ascend','ComparisonMethod','real');
-        nReturn = min(2,numel(sortedDist));
-        if nReturn==0
+        nReturn = min(5,numel(sortedDist));
+        if nReturn == 0
             statusLabel.Text = 'No numeric comparisons available.';
-            tblMatches.Data = {}; tblWithin.Data = {}; return;
+            tblMatches.Data = {}; tblWithin.Data = {};
+            return;
         end
         pickIdx = sidx(1:nReturn);
         matched = candidates(pickIdx,:);
 
         % prepare within-tolerance output table
         withinReturn = withinMat(pickIdx,:);
-        outCell = cell(nReturn, size(withinReturn,2)+1);
-        for r=1:nReturn
+        outCell = cell(nReturn,size(withinReturn,2)+1);
+        for r = 1:nReturn
             outCell{r,1} = sortedDist(r);
-            for c=1:size(withinReturn,2)
+            for c = 1:size(withinReturn,2)
                 outCell{r,c+1} = logical(withinReturn(r,c));
             end
         end
-        headers = ['Distance', withinColNames];
+        headers = ['Distance' withinColNames];
 
         % display results
         tblMatches.Data = matched;
@@ -763,7 +923,10 @@ end
         tblWithin.Data = outCell;
         tblWithin.ColumnName = headers;
 
-        statusLabel.Text = sprintf('Status: %d candidates after categorical filtering; returning %d match(es)', nCandidates, nReturn);
+        statusLabel.Text = sprintf(['Status: %d candidates after ' ...
+            'categorical filtering; returning %d match(es)'], ...
+            nCandidates,nReturn);
     end
 
 end
+
