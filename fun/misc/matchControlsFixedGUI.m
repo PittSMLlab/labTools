@@ -306,13 +306,16 @@ targetEducation = uieditfield(pt,'numeric','Value',100,'Limits',[0 100]);
 targetEducation.Layout.Row = 10; targetEducation.Layout.Column = 2;
 
 % Race
-lblRace = uilabel(pt); lblRace.Text = 'Race'; lblRace.Layout.Row = 11; lblRace.Layout.Column = 1;
-targetRace = uieditfield(pt,'text','Value','','Placeholder','enter race');
+lblRace = uilabel(pt); lblRace.Text = 'Race';
+lblRace.Layout.Row = 11; lblRace.Layout.Column = 1;
+targetRace = uidropdown(pt,'Items',{'White','Black'},'Value','White');
 targetRace.Layout.Row = 11; targetRace.Layout.Column = 2;
 
 % Ethnicity
-lblEth = uilabel(pt); lblEth.Text = 'Ethnicity'; lblEth.Layout.Row = 12; lblEth.Layout.Column = 1;
-targetEthnicity = uieditfield(pt,'text','Value','','Placeholder','enter ethnicity');
+lblEth = uilabel(pt); lblEth.Text = 'Ethnicity';
+lblEth.Layout.Row = 12; lblEth.Layout.Column = 1;
+targetEthnicity = uidropdown(pt,'Items',{'Not Hispanic or Latino', ...
+    'Hispanic or Latino'},'Value','Not Hispanic or Latino');
 targetEthnicity.Layout.Row = 12; targetEthnicity.Layout.Column = 2;
 
 % update computed age when dob or assessment date changes
@@ -511,7 +514,7 @@ end
             selCats.(varNames{colIdx.sex}) = val;
         end
         if chkUse(6).Value && ~isempty(colIdx.race)
-            val = strtrim(targetRace.Value);
+            val = strtrim(string(targetRace.Value));
             if isempty(val)
                 uialert(fig, ...
                     'Please enter target Race (or uncheck Race).', ...
@@ -521,7 +524,7 @@ end
             selCats.(varNames{colIdx.race}) = val;
         end
         if chkUse(7).Value && ~isempty(colIdx.ethnicity)
-            val = strtrim(targetEthnicity.Value);
+            val = strtrim(string(targetEthnicity.Value));
             if isempty(val)
                 uialert(fig, ...
                     ['Please enter target Ethnicity (or uncheck ' ...
@@ -638,12 +641,14 @@ end
         % race
         if chkUse(6).Value
             if isempty(colIdx.race)
-                uialert(fig,'Race selected but Race column missing.','Error');
+                uialert(fig, ...
+                    'Race selected but Race column missing.','Error');
                 return;
             end
             val = strtrim(targetRace.Value);
             if isempty(val)
-                uialert(fig,'Please enter target Race or uncheck Race.','Missing');
+                uialert(fig, ...
+                    'Please enter target Race or uncheck Race.','Missing');
                 return;
             end
             colname = varNames{colIdx.race}; col = T.(colname);
@@ -664,12 +669,14 @@ end
         % ethnicity
         if chkUse(7).Value
             if isempty(colIdx.ethnicity)
-                uialert(fig,'Ethnicity selected but Ethnicity column missing.','Error');
+                uialert(fig,['Ethnicity selected but Ethnicity column ' ...
+                    'missing.'],'Error');
                 return;
             end
             val = strtrim(targetEthnicity.Value);
             if isempty(val)
-                uialert(fig,'Please enter target Ethnicity or uncheck Ethnicity.','Missing');
+                uialert(fig,['Please enter target Ethnicity or uncheck' ...
+                    ' Ethnicity.'],'Missing');
                 return;
             end
             colname = varNames{colIdx.ethnicity}; col = T.(colname);
@@ -707,95 +714,125 @@ end
 
         % which numeric variables selected? [age,height,weight,education]
         numericSelected = false(1,4);
-        mapping = [2,3,4,5]; % positions in chkUse corresponding to numericVars
+        % positions in chkUse corresponding to numericVars
+        mapping = [2,3,4,5];
         for k = 1:4
-            if any(useIdx==mapping(k)) && (~isempty(colIdx.(numericVars{k})) || (k==1 && ~isempty(colIdx.dob)))
+            if any(useIdx==mapping(k)) && ...
+                    (~isempty(colIdx.(numericVars{k})) || ...
+                    (k == 1 && ~isempty(colIdx.dob)))
                 numericSelected(k) = true;
             end
         end
 
-        % If no numeric variables selected, return top-5 rows in filtered table
+        % if no numeric variables, return top 5 rows in filtered table
         if ~any(numericSelected)
             candidates = T(catMask,:);
             nReturn = min(5,height(candidates));
             tblMatches.Data = candidates(1:nReturn,:);
             tblWithin.Data = {};
-            statusLabel.Text = sprintf('Status: %d candidates after categorical filtering; no numeric variables selected.', nCandidates);
+            statusLabel.Text = sprintf(['Status: %d candidates after ' ...
+                'categorical filtering; no numeric variables ' ...
+                'selected.'],nCandidates);
             return;
         end
 
-        % Build target numeric values (convert target inputs into canonical units)
+        % build target numeric values (convert into canonical units)
         targetVals = struct();
 
-        % Age (decimal years)
+        % age (decimal years)
         if numericSelected(1)
             dob = targetDOB.Value; ref = targetAssessDate.Value;
-            if isempty(dob) || isempty(ref) || ref < dob, uialert(fig,'Invalid DOB or assessment date for age calculation.','Error'); return; end
+            if isempty(dob) || isempty(ref) || ref < dob
+                uialert(fig,['Invalid DOB or assessment date for age ' ...
+                    'calculation.'],'Error');
+                return;
+            end
             targetVals.age = days(ref - dob)/365.2425;
         end
 
-        % Height: convert target to canonical unit (meters)
+        % height: convert target to canonical unit (meters)
         if numericSelected(2)
             ht = targetHeight.Value;
-            if isempty(ht) || isnan(ht), uialert(fig,'Height selected but target height not entered.','Missing'); return; end
-            tUnit = targetHeightUnit.Value;                            % unit user entered target in
+            if isempty(ht) || isnan(ht)
+                uialert(fig,['Height selected but target height not ' ...
+                    'entered.'],'Missing');
+                return;
+            end
+            tUnit = targetHeightUnit.Value; % unit user entered target in
             % dataset unit (user-specified interpretation of stored values)
             dataUnit = dataUnitDd(3).Value;
-            % Convert target from targetUnit -> canonical (meters)
-            targetVals.height = double(convertUnits('height', tUnit, canonicalUnits.height, ht));
-            % Also convert tolerance (entered in edTol(3)) -> canonical
+            % convert target from targetUnit -> canonical (meters)
+            targetVals.height = double(convertUnits('height',tUnit, ...
+                canonicalUnits.height,ht));
+            % also convert tolerance (entered in edTol(3)) -> canonical
             tol_raw = edTol(3).Value;
             if isempty(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
                 tol_raw = defaultTol.height;
             end
-            % **Interpret the tol_raw as being in the dataset unit** (dataUnit),
-            % because the left-panel "Data units" dropdown describes the dataset.
-            tol_canonical = double(convertUnits('height', dataUnit, canonicalUnits.height, tol_raw));
-            if tol_canonical <= 0, tol_canonical = defaultTol.height; end
+            % **interpret the tol_raw as being in the dataset unit**
+            % (dataUnit), because the left-panel "Data units" dropdown
+            % describes the dataset.
+            tol_canonical = double(convertUnits('height',dataUnit, ...
+                canonicalUnits.height,tol_raw));
+            if tol_canonical <= 0
+                tol_canonical = defaultTol.height;
+            end
             targetVals.heightTol = tol_canonical;
-            % We'll convert candidate heights (stored in dataset) to canonical later
+            % convert candidate heights (from dataset) to canonical later
         end
 
-        % Weight: convert target to canonical unit (kilograms)
+        % weight: convert target to canonical unit (kilograms)
         if numericSelected(3)
             wt = targetWeight.Value;
-            if isempty(wt) || isnan(wt), uialert(fig,'Weight selected but target weight not entered.','Missing'); return; end
+            if isempty(wt) || isnan(wt)
+                uialert(fig,['Weight selected but target weight not ' ...
+                    'entered.'],'Missing');
+                return;
+            end
             tUnit = targetWeightUnit.Value;
             dataUnit = dataUnitDd(4).Value;
-            targetVals.weight = double(convertUnits('weight', tUnit, canonicalUnits.weight, wt));
+            targetVals.weight = double(convertUnits('weight',tUnit, ...
+                canonicalUnits.weight,wt));
             tol_raw = edTol(4).Value;
             if isempty(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
                 tol_raw = defaultTol.weight;
             end
-            tol_canonical = double(convertUnits('weight', dataUnit, canonicalUnits.weight, tol_raw));
-            if tol_canonical <= 0, tol_canonical = defaultTol.weight; end
+            tol_canonical = double(convertUnits('weight',dataUnit, ...
+                canonicalUnits.weight,tol_raw));
+            if tol_canonical <= 0
+                tol_canonical = defaultTol.weight;
+            end
             targetVals.weightTol = tol_canonical;
         end
 
-        % Education (no units)
+        % education (no units)
         if numericSelected(4)
             ed = targetEducation.Value;
-            if isempty(ed) || isnan(ed), uialert(fig,'Education selected but target education not entered.','Missing'); return; end
+            if isempty(ed) || isnan(ed)
+                uialert(fig,['Education selected but target education ' ...
+                    'not entered.'],'Missing');
+                return;
+            end
             targetVals.education = double(ed);
-            % tolerance already stored in edTol(5) (no unit conversion needed)
+            % tolerance stored in edTol(5) (no unit conversion needed)
         end
 
-        % Compute weighted normalized squared distances for each candidate
+        % compute weighted normalized squared distances for each candidate
         candidates = T(catMask,:);
         m = height(candidates);
         dist2 = zeros(m,1);
         withinMat = [];
         withinColNames = {};
 
-        % =============== Age contribution =================
+        % =============== Age Contribution =================
         if numericSelected(1)
-            % get candidate ages either from numeric age column or from dob column
+            % get candidate ages from numeric age column or from dob column
             if ~isempty(colIdx.age) && isnumeric(T.(varNames{colIdx.age}))
                 candAges = double(candidates.(varNames{colIdx.age}));
             elseif ~isempty(colIdx.dob)
                 dobCol = candidates.(varNames{colIdx.dob});
                 candAges = nan(m,1);
-                for r=1:m
+                for r = 1:m
                     try
                         val = dobCol(r);
                         if isdatetime(val)
@@ -803,7 +840,8 @@ end
                         else
                             dt = datetime(val);
                         end
-                        candAges(r) = days(targetAssessDate.Value - dt)/365.2425;
+                        candAges(r) = ...
+                            days(targetAssessDate.Value - dt) / 365.2425;
                     catch
                         candAges(r) = NaN;
                     end
@@ -811,7 +849,10 @@ end
             else
                 candAges = nan(m,1);
             end
-            w = edWeight(2).Value; tol = edTol(2).Value; if tol<=0, tol = defaultTol.age; end
+            w = edWeight(2).Value; tol = edTol(2).Value;
+            if tol<=0
+                tol = defaultTol.age;
+            end
             tval = targetVals.age;
             diffsq = ((tval - candAges)./tol).^2;
             if any(~isnan(diffsq))
@@ -821,18 +862,21 @@ end
             end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             dist2 = dist2 + w .* diffsq;
-            withinColNames{end+1} = sprintf('Age within tol (tol=%g yrs)', tol);
+            withinColNames{end+1} = sprintf( ...
+                'Age within tol (tol=%g yrs)',tol);
             withinMat(:,end+1) = abs(tval - candAges) <= tol;
         end
 
         % =============== Height Contribution =================
         if numericSelected(2)
-            % candidate raw values as stored in dataset (user indicates their unit with dataUnitDd(3))
+            % candidate raw values as stored in dataset (user indicates
+            % their unit with dataUnitDd(3))
             cvals_raw = double(candidates.(varNames{colIdx.height}));
             % dataUnit = dataUnitDd(3).Value; % dataset unit selection (height)
             % convert candidates from 'dataUnit' -> canonical (meters)
-            cvals_canonical = double(convertUnits('height', 'meters', canonicalUnits.height, cvals_raw));
-            % target already converted to canonical earlier: targetVals.height
+            cvals_canonical = double(convertUnits('height','meters', ...
+                canonicalUnits.height,cvals_raw));
+            % target converted to canonical earlier: targetVals.height
             tval = targetVals.height;
             % tolerance converted to canonical as targetVals.heightTol
             tol_canonical = targetVals.heightTol;
@@ -843,18 +887,21 @@ end
             else
                 mx = 1;
             end
-            diffsq(isnan(diffsq)) = (mx + 1e6); % penalize missing candidate values strongly
+            % penalize missing candidate values strongly
+            diffsq(isnan(diffsq)) = (mx + 1e6);
             w = edWeight(3).Value;
             dist2 = dist2 + w .* diffsq;
-            withinColNames{end+1} = sprintf('Height within tol (%g %s)', edTol(3).Value, dataUnit);
-            withinMat(:,end+1) = abs(tval - cvals_canonical) <= tol_canonical;
+            withinColNames{end+1} = sprintf( ...
+                'Height within tol (%g %s)',edTol(3).Value,dataUnit);
+            withinMat(:,end+1) = ...
+                abs(tval - cvals_canonical) <= tol_canonical;
         end
 
         % =============== Weight Contribution =================
         if numericSelected(3)
             cvals_raw = double(candidates.(varNames{colIdx.weight}));
-            dataUnit = dataUnitDd(4).Value; % dataset unit selection
-            cvals_canonical = double(convertUnits('weight',dataUnit, ...
+            % dataUnit = dataUnitDd(4).Value; % dataset unit selection
+            cvals_canonical = double(convertUnits('weight','kilograms', ...
                 canonicalUnits.weight,cvals_raw));
             tval = targetVals.weight;
             tol_canonical = targetVals.weightTol;
@@ -873,7 +920,7 @@ end
                 abs(tval - cvals_canonical) <= tol_canonical;
         end
 
-        % =============== Education contribution =================
+        % =============== Education Contribution =================
         if numericSelected(4)
             cvals = double(candidates.(varNames{colIdx.education}));
             w = edWeight(5).Value; tol = edTol(5).Value;
