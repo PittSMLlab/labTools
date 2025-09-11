@@ -117,11 +117,11 @@ end
 
 % default dataset unit guesses (used as initial values in dropdowns)
 defaultDataUnits.height = 'meters';
-defaultDataUnits.weight = 'kilograms';
+defaultDataUnits.weight = 'pounds';
 
 % canonical units used for internal comparisons
 canonicalUnits.height = 'meters';
-canonicalUnits.weight = 'kilograms';
+canonicalUnits.weight = 'pounds';
 
 %% -----------------------------
 % 3. Build GUI (fixed layout) - R2024a: set Layout.* AFTER creation
@@ -154,14 +154,17 @@ instr.Layout.Column = [1 6];
 % left block: checkboxes + weight/tol + units
 varsPanel = uipanel(g);
 varsPanel.Title = 'Matching Factors & Numeric Settings';
-varsPanel.Layout.Row = [3 9];
-varsPanel.Layout.Column = [1 3];
+varsPanel.Layout.Row = [3 9];      % <-- Match targetPanel row span
+varsPanel.Layout.Column = [1 3];   % <-- Use left 3 columns
+varsPanel.Scrollable = true;
+% varsPanel.RowHeight = {50, '1x', '2x'};
+
 
 % grid inside panel: columns:
 %   Use | Variable | Weight | Tolerance | DataUnit (if applicable)
 numVars = 7;
 pv = uigridlayout(varsPanel,[numVars+1 6]);
-
+pv.Scrollable = true;
 % --- narrow these internal columns so 'Variable' column has more room:
 % use 'fit' for checkbox column, '1x' wide for variable label, numeric
 % columns narrower in px
@@ -193,7 +196,7 @@ for i = 1:numVars
     row = i + 1;
     % checkbox: include this variable in the matching
     chkUse(i) = uicheckbox(pv);
-    chkUse(i).Text = ''; chkUse(i).Value = false;
+    chkUse(i).Text = ''; chkUse(i).Value = true;
     chkUse(i).Layout.Row = row; chkUse(i).Layout.Column = 1;
 
     % variable name label
@@ -204,15 +207,24 @@ for i = 1:numVars
     if isNumericArr(i)
         % numeric: weight & tolerance numeric fields
         edWeight(i) = uieditfield(pv,'numeric');
-        edWeight(i).Value = 1; edWeight(i).Limits = [0 Inf];
         edTol(i) = uieditfield(pv,'numeric');
-        switch i
-            case 2, edTol(i).Value = defaultTol.age;
-            case 3, edTol(i).Value = defaultTol.height;
-            case 4, edTol(i).Value = defaultTol.weight;
-            case 5, edTol(i).Value = defaultTol.education;
-            otherwise, edTol(i).Value = 1;
+        if i == 2
+            edWeight(i).Value = 3;           % Age weight preset
+            edTol(i).Value = 2;              % Age tolerance preset
+        elseif i == 3
+            edWeight(i).Value = 1;
+            edTol(i).Value = 3; % height in inches
+        elseif i == 4
+            edWeight(i).Value = 1;
+            edTol(i).Value = 22.0462; % weight in pounds
+        elseif i == 5
+            edWeight(i).Value = 2;
+            edTol(i).Value = 2; % years education
+        else
+            edWeight(i).Value = 1;
+            edTol(i).Value = 1;
         end
+        edWeight(i).Limits = [0 Inf];
         edWeight(i).Layout.Row = row; edWeight(i).Layout.Column = 3;
         edTol(i).Layout.Row = row; edTol(i).Layout.Column = 4;
     else
@@ -230,7 +242,7 @@ for i = 1:numVars
         % dataset unit for height (user should pick units from table)
         dataUnitDd(i) = uidropdown(pv);
         dataUnitDd(i).Items = {'meters','centimeters','inches'};
-        dataUnitDd(i).Value = defaultDataUnits.height;
+        dataUnitDd(i).Value = 'inches';
         dataUnitDd(i).Layout.Row = row; dataUnitDd(i).Layout.Column = 5;
     elseif i == 4
         % dataset unit for weight
@@ -254,6 +266,7 @@ targetPanel.Layout.Column = [4 6];
 pt = uigridlayout(targetPanel,[12 2]);
 pt.RowHeight = repmat({'fit'},1,12);
 pt.ColumnWidth = {'1x','1x'};
+pt.Scrollable = true;
 
 % header labels for target panel
 lblVarHeader = uilabel(pt);
@@ -282,27 +295,56 @@ lblAgeDisp = uilabel(pt); lblAgeDisp.Text = 'Computed age (years)'; lblAgeDisp.L
 targetAgeDisp = uieditfield(pt,'numeric','Value',-Inf,'Editable','off');
 targetAgeDisp.Layout.Row = 5; targetAgeDisp.Layout.Column = 2;
 
-% Height input (target)
-lblHt = uilabel(pt); lblHt.Text = 'Height (target)'; lblHt.Layout.Row = 6; lblHt.Layout.Column = 1;
-targetHeight = uieditfield(pt,'numeric','Value',Inf,'Limits',[0 Inf]);
-targetHeight.Layout.Row = 6; targetHeight.Layout.Column = 2;
+% Height input (target) - feet/inches or single field
+lblHt = uilabel(pt); lblHt.Text = 'Height'; lblHt.Layout.Row = 8; lblHt.Layout.Column = 1;
 
-lblHtUnit = uilabel(pt); lblHtUnit.Text = 'Height unit (target)'; lblHtUnit.Layout.Row = 7; lblHtUnit.Layout.Column = 1;
-targetHeightUnit = uidropdown(pt,'Items',{'meters','centimeters','inches'},'Value',defaultDataUnits.height);
-targetHeightUnit.Layout.Row = 7; targetHeightUnit.Layout.Column = 2;
+htFeet = uieditfield(pt,'numeric','Value',0,'Limits',[0 Inf]);
+htFeet.Layout.Row = 9; htFeet.Layout.Column = 2;
+htFeet.Placeholder = 'Feet';
+
+htInches = uieditfield(pt,'numeric','Value',0,'Limits',[0 11]);
+htInches.Layout.Row = 9; htInches.Layout.Column = 3;
+htInches.Placeholder = 'Inches';
+
+htSingle = uieditfield(pt,'numeric','Value',0,'Limits',[0 Inf]);
+htSingle.Layout.Row = 9; htSingle.Layout.Column = 2;
+htSingle.Placeholder = 'Height';
+htSingle.Visible = false; % Start hidden
+
+lblHtUnit = uilabel(pt); lblHtUnit.Text = 'Height unit (target)'; lblHtUnit.Layout.Row = 9; lblHtUnit.Layout.Column = 1;
+targetHeightUnit = uidropdown(pt,'Items',{'meters','centimeters','inches','Feet and Inches'},'Value','Feet and Inches');
+targetHeightUnit.Layout.Row = 8; targetHeightUnit.Layout.Column = 2;
+
+% Callback to update visibility
+targetHeightUnit.ValueChangedFcn = @(src,evt) updateHeightFields();
+
+function updateHeightFields()
+    if strcmp(targetHeightUnit.Value, 'Feet and Inches')
+        htFeet.Visible = true;
+        htInches.Visible = true;
+        htSingle.Visible = false;
+    else
+        htFeet.Visible = false;
+        htInches.Visible = false;
+        htSingle.Visible = true;
+    end
+end
+
+% Call once to set initial visibility
+updateHeightFields();
 
 % Weight input
-lblWt = uilabel(pt); lblWt.Text = 'Weight (target)'; lblWt.Layout.Row = 8; lblWt.Layout.Column = 1;
+lblWt = uilabel(pt); lblWt.Text = 'Weight (target)'; lblWt.Layout.Row = 6; lblWt.Layout.Column = 1;
 targetWeight = uieditfield(pt,'numeric','Value',Inf,'Limits',[0 Inf]);
-targetWeight.Layout.Row = 8; targetWeight.Layout.Column = 2;
+targetWeight.Layout.Row = 7; targetWeight.Layout.Column = 2;
 
-lblWtUnit = uilabel(pt); lblWtUnit.Text = 'Weight unit (target)'; lblWtUnit.Layout.Row = 9; lblWtUnit.Layout.Column = 1;
+lblWtUnit = uilabel(pt); lblWtUnit.Text = 'Weight unit (target)'; lblWtUnit.Layout.Row = 7; lblWtUnit.Layout.Column = 1;
 targetWeightUnit = uidropdown(pt,'Items',{'kilograms','pounds'},'Value',defaultDataUnits.weight);
-targetWeightUnit.Layout.Row = 9; targetWeightUnit.Layout.Column = 2;
+targetWeightUnit.Layout.Row = 6; targetWeightUnit.Layout.Column = 2;
 
 % Education
 lblEd = uilabel(pt); lblEd.Text = 'Years formal education'; lblEd.Layout.Row = 10; lblEd.Layout.Column = 1;
-targetEducation = uieditfield(pt,'numeric','Value',100,'Limits',[0 100]);
+targetEducation = uieditfield(pt,'numeric','Value',16,'Limits',[0 100]);
 targetEducation.Layout.Row = 10; targetEducation.Layout.Column = 2;
 
 % Race
@@ -456,16 +498,40 @@ end
         if contains(lname,'height')
             % normalize: convert 'fromUnit' values into meters, then to 'toUnit'
             switch lower(fromUnit)
-                case 'meters', meters = vals;
-                case 'centimeters', meters = vals/100;
-                case 'inches', meters = vals*0.0254;
-                otherwise, meters = vals; % assume already meters if unknown
+                case 'meters'
+                    meters = vals;
+                case 'centimeters'
+                    meters = vals/100;
+                case 'inches'
+                    meters = vals*0.0254;
+                case {'feet', 'ft'}
+                    meters = vals*0.3048;
+                case {'feet and inches', 'ftin', 'ft/in'}
+                    % Expect vals as Nx2: [feet, inches] or a single value (total inches)
+                    if ismatrix(vals) && size(vals,2) == 2
+                        meters = vals(:,1)*0.3048 + vals(:,2)*0.0254;
+                    else
+                        meters = vals*0.0254; % fallback: treat as total inches
+                    end
+                otherwise
+                    meters = vals; % assume already meters if unknown
             end
             switch lower(toUnit)
-                case 'meters', out = meters;
-                case 'centimeters', out = meters*100;
-                case 'inches', out = meters/0.0254; % meters -> inches
-                otherwise, out = meters;
+                case 'meters'
+                    out = meters;
+                case 'centimeters'
+                    out = meters*100;
+                case 'inches'
+                    out = meters/0.0254; % meters -> inches
+                case {'feet', 'ft'}
+                    out = meters/0.3048;
+                case {'feet and inches', 'ftin', 'ft/in'}
+                    % Return Nx2: [feet, inches]
+                    feet = floor(meters/0.3048);
+                    inches = (meters - feet*0.3048)/0.0254;
+                    out = [feet, inches];
+                otherwise
+                    out = meters;
             end
         elseif contains(lname,'weight')
             % convert 'fromUnit' values into kilograms, then to 'toUnit'
@@ -752,28 +818,30 @@ end
 
         % height: convert target to canonical unit (meters)
         if numericSelected(2)
-            ht = targetHeight.Value;
-            if isempty(ht) || isnan(ht)
+            tUnit = targetHeightUnit.Value;
+            if strcmpi(tUnit, 'Feet and Inches')
+                feet = htFeet.Value;
+                inches = htInches.Value;
+                if isempty(feet), feet = 0; end
+                if isempty(inches), inches = 0; end
+                ht = [feet, inches];
+            else
+                ht = htSingle.Value;
+            end
+            if isempty(ht) || any(isnan(ht))
                 uialert(fig,['Height selected but target height not ' ...
                     'entered.'],'Missing');
                 return;
             end
-            tUnit = targetHeightUnit.Value; % unit user entered target in
-            % dataset unit (user-specified interpretation of stored values)
-            dataUnit = dataUnitDd(3).Value;
-            % convert target from targetUnit -> canonical (meters)
-            targetVals.height = double(convertUnits('height',tUnit, ...
-                canonicalUnits.height,ht));
+            % Convert target height to canonical unit (meters)
+            targetVals.height = double(convertUnits('height', tUnit, canonicalUnits.height, ht));
             % also convert tolerance (entered in edTol(3)) -> canonical
             tol_raw = edTol(3).Value;
             if isempty(tol_raw) || ~isnumeric(tol_raw) || isnan(tol_raw)
                 tol_raw = defaultTol.height;
             end
-            % **interpret the tol_raw as being in the dataset unit**
-            % (dataUnit), because the left-panel "Data units" dropdown
-            % describes the dataset.
-            tol_canonical = double(convertUnits('height',dataUnit, ...
-                canonicalUnits.height,tol_raw));
+            dataUnit = dataUnitDd(3).Value;
+            tol_canonical = double(convertUnits('height', dataUnit, canonicalUnits.height, tol_raw));
             if tol_canonical <= 0
                 tol_canonical = defaultTol.height;
             end
@@ -975,5 +1043,8 @@ end
             nCandidates,nReturn);
     end
 
+% Combine feet and inches to total inches
+feet = htFeet.Value;
+inches = htInches.Value;
+totalInches = feet * 12 + inches;
 end
-
