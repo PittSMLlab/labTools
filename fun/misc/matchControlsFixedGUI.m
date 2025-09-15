@@ -209,17 +209,17 @@ for i = 1:numVars
         edWeight(i) = uieditfield(pv,'numeric');
         edTol(i) = uieditfield(pv,'numeric');
         if i == 2
-            edWeight(i).Value = 3;           % Age weight preset
-            edTol(i).Value = 2;              % Age tolerance preset
+            edWeight(i).Value = 4;          % Age weight preset
+            edTol(i).Value = 2;             % Age tolerance preset
         elseif i == 3
-            edWeight(i).Value = 1;
-            edTol(i).Value = 3; % height in inches
+            edWeight(i).Value = 2;
+            edTol(i).Value = 3;             % height in inches
         elseif i == 4
             edWeight(i).Value = 1;
-            edTol(i).Value = 22.0462; % weight in pounds
+            edTol(i).Value = 25;            % weight in pounds
         elseif i == 5
-            edWeight(i).Value = 2;
-            edTol(i).Value = 2; % years education
+            edWeight(i).Value = 3;
+            edTol(i).Value = 2;             % years education
         else
             edWeight(i).Value = 1;
             edTol(i).Value = 1;
@@ -931,7 +931,7 @@ end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
-                'Age within tol (tol=%g yrs)',tol);
+                'Age (\x00B1%g yrs)',tol);
             withinMat(:,end+1) = abs(tval - candAges) <= tol;
         end
 
@@ -959,8 +959,9 @@ end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             w = edWeight(3).Value;
             dist2 = dist2 + w .* diffsq;
+            % TODO: fix hardcoding
             withinColNames{end+1} = sprintf( ...
-                'Height within tol (%g %s)',edTol(3).Value,dataUnit);
+                'Height (\x00B1%g %s)',edTol(3).Value,'inches');
             withinMat(:,end+1) = ...
                 abs(tval - cvals_canonical) <= tol_canonical;
         end
@@ -983,7 +984,7 @@ end
             w = edWeight(4).Value;
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
-                'Weight within tol (%g %s)',edTol(4).Value,dataUnit);
+                'Weight (\x00B1%g %s)',edTol(4).Value,dataUnit);
             withinMat(:,end+1) = ...
                 abs(tval - cvals_canonical) <= tol_canonical;
         end
@@ -1005,7 +1006,7 @@ end
             diffsq(isnan(diffsq)) = (mx + 1e6);
             dist2 = dist2 + w .* diffsq;
             withinColNames{end+1} = sprintf( ...
-                'Education within tol (tol=%g)',tol);
+                'Education (\x00B1%g yrs)',tol);
             withinMat(:,end+1) = abs(tval - cvals) <= tol;
         end
 
