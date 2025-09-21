@@ -209,17 +209,17 @@ for i = 1:numVars
         edWeight(i) = uieditfield(pv,'numeric');
         edTol(i) = uieditfield(pv,'numeric');
         if i == 2
-            edWeight(i).Value = 4;          % Age weight preset
-            edTol(i).Value = 2;             % Age tolerance preset
+            edWeight(i).Value = 3;          % Age weight preset
+            edTol(i).Value = 2.5;             % Age tolerance preset
         elseif i == 3
-            edWeight(i).Value = 2;
-            edTol(i).Value = 3;             % height in inches
+            edWeight(i).Value = 1;
+            edTol(i).Value = 4;             % height in inches
         elseif i == 4
             edWeight(i).Value = 1;
-            edTol(i).Value = 25;            % weight in pounds
+            edTol(i).Value = 30;            % weight in pounds
         elseif i == 5
-            edWeight(i).Value = 3;
-            edTol(i).Value = 2;             % years education
+            edWeight(i).Value = 2;
+            edTol(i).Value = 3;             % years education
         else
             edWeight(i).Value = 1;
             edTol(i).Value = 1;
