@@ -279,12 +279,13 @@ for i = 1:numel(markers)
         hold(ax,'on');
         plot(ax, frames, traj(:,dim), 'b-', 'LineWidth',1.2);
         ylabel(ax, [componentLabels{dim} ' (mm)']);
-        if dim == 3, xlabel(ax,'Frame'); end
-        title(ax, componentLabels{dim});
+        if dim == 3
+            xlabel(ax,'Frame');
+        end
         grid(ax,'on');
 
-        dataMin = min(traj(:,dim),[], 'omitnan');
-        dataMax = max(traj(:,dim),[], 'omitnan');
+        dataMin = min(traj(:,dim),[],'omitnan');
+        dataMax = max(traj(:,dim),[],'omitnan');
         padding = 0.1 * (dataMax - dataMin);
         ylim(ax, [dataMin - padding, dataMax + padding]);
         
