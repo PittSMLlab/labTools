@@ -229,7 +229,7 @@ end
 
 function saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)
 
-if nargin < 5
+if nargin < 4
     highlightTurningPoints = false;
 end
 
