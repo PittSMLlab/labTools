@@ -26,10 +26,8 @@ if ~isempty(info)               % if experimental information provided, ...
         answer = 1; % set to 'default'
     end
 
-    %Do the actual loading
-    if ~isempty(info)
-        [expData,rawExpData,adaptData]=loadSubject(info,eventClass{answer});
-    end
+    % main processing call for participant's experimental data
+    [expData,rawExpData,adaptData] = loadSubject(info,eventClass{answer});
 
     clear answer eventClass;    % clear workspace variables
 else                            % otherwise, ...
