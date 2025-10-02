@@ -34,6 +34,15 @@ end
 trials = cell2mat(rawExpData.metaData.trialsInCondition);
 
 for trialIdx = trials
+    %FIXME: Close all figures and remove intermediate variables to free up some memory in matlab. 
+    %There seems to be a memory issue since summer 2025. During c3d2mat, the PC will run out of memory 
+    %which is shown as OutOfMemory, OutOfHeapSpace, or png file failed to write rrors.
+    %A better solution is needed to identify why we are running out of memory or do we have a memory leak
+    %Since we don't know the cause now, will try close the figures and
+    %remove variables to make the code run for now.
+    close all; clc;
+    clearvars -except rawExpData syncImgSavePath trialIdx trials
+    
     if ~strcmpi(rawExpData.data{trialIdx}.metaData.type,'TM')
         continue; %skip non TM trials, no force data
     end
