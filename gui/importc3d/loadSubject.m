@@ -1,32 +1,39 @@
-function [expData,rawExpData,adaptData]=loadSubject(info,eventClass)
-%loadSubject  Load, organize, process, and save data from .c3d files as a 
+function [expData,rawExpData,adaptData] = loadSubject(info,eventClass)
+%loadSubject  Load, organize, process, and save data from .c3d files as a
 %             subject's .mat file
 %
-%INPUT:
-%'info' is the structured array output from GetInfoGUI
+%INPUTS:
+%'info' is the structured array output from 'GetInfoGUI'
 %'eventClass' can be a string value: '' or 'kin' or 'force'   it
-%specifies the method to determine gait events. When in doubt use ''
+%specifies the method to determine gait events. When in doubt, use ''.
 %
 %OUTPUTS:
-%expData: a processed instance of the experimentData class
-%rawExpData: an unprocessed instance of the experimentData class
+%expData: a processed instance of the 'experimentData' class
+%rawExpData: an unprocessed instance of the 'experimentData' class
 %
 %See also: getTrialMetaData, experimentData, experimentData.process
-if nargin<2 || isempty(eventClass)
-    eventClass='';%default, will choose based on trial type TM or OG
+
+if nargin < 2 || isempty(eventClass)    % if no gait event method input,...
+    % use default method (choose 'force' - TM trials, 'kin' - OG trials)
+    eventClass = '';
 end
 
-%% Initialize diary to save all information displayed during loading
-diaryFileName=[info.save_folder filesep info.ID 'loading.log'];
-diary(diaryFileName)
-%% Determine Experiment Date
-expDate = labDate(info.day,info.month,info.year);%labDate is a labTools class
+%% Initialize Diary to Save All Information Displayed during Loading
+diaryFileName = [info.save_folder filesep info.ID 'loading.log'];
+diary(diaryFileName);
 
-% %% Experiment info
-% 
-% expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-%     info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
-% %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+%% Determine Experiment Date
+% 'labDate' is a 'labTools' repository class
+expDate = labDate(info.day,info.month,info.year);
+
+%% Experiment Information
+% creates 'experimentMetaData' object, which houses information about the
+% number of trials, their descriptions, notes, and trial #'s
+% expMD = experimentMetaData(info.ExpDescription,expDate, ...
+%     info.experimenter,info.exp_obs,strtrim(info.conditionNames), ...
+%     info.conditionDescriptions,info.trialnums,info.numoftrials, ...
+%     info.schenleyLab,info.perceptualTasks);
+% Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials);
 
 %% Subject info
 
@@ -151,3 +158,4 @@ end
 
 %%
 diary off
+
