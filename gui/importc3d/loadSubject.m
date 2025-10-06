@@ -95,57 +95,62 @@ else                                                % otherwise, stroke
         info.affectedSide);
 end
 
-%% Trial Data
+%% Process Trial Data
+% generate meta data for each trial in experimental session
+[trialMD,fileList,secFileList,datlogExist] = getTrialMetaData(info);
+rawTrialData = loadTrials(trialMD,fileList,secFileList,info);
 
-% Generate meta data for each trial
-[trialMD,fileList,secFileList, datlogExist]=getTrialMetaData(info);
-
-% Load trials
-rawTrialData=loadTrials(trialMD,fileList,secFileList,info);
-
-if datlogExist || info.perceptualTasks == 1 %this most likely redundant, but keep for now, the way the code is used will always have datlog = true when perceptual task = 1
+% the below code block is most likely redundant, but keep for now
+% the code will always have datlog = true when perceptual task = 1
+if datlogExist || info.perceptualTasks == 1
     datlog = {{}};
-    for trial=1:length(rawTrialData)
-        if ~isempty(rawTrialData{trial})
-            datlog{trial}=rawTrialData{trial}.metaData.datlog;
-        else
-            datlog{trial}={};
+    for trial = 1:length(rawTrialData)      % for each trial, ...
+        if ~isempty(rawTrialData{trial})    % if trial data available, ...
+            % extract trial data logs from meta data
+            datlog{trial} = rawTrialData{trial}.metaData.datlog;
+        else                                % otherwise, ...
+            datlog{trial} = {};             % set as empty cell
         end
     end
-    expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-        info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks, datlog);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+    % creates 'experimentMetaData' object, which contains information about
+    % the number of trials, their descriptions, notes, and trial #'s
+    expMD = experimentMetaData(info.ExpDescription,expDate, ...
+        info.experimenter,info.exp_obs,strtrim(info.conditionNames), ...
+        info.conditionDescriptions,info.trialnums,info.numoftrials, ...
+        info.schenleyLab,info.perceptualTasks,datlog);
 else
-    % Experiment info
-    expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-        info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
-    %Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials)
+    expMD = experimentMetaData(info.ExpDescription,expDate, ...
+        info.experimenter,info.exp_obs,strtrim(info.conditionNames), ...
+        info.conditionDescriptions,info.trialnums,info.numoftrials, ...
+        info.schenleyLab,info.perceptualTasks);
+    % Constructor(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials);
 end
+rawExpData = experimentData(expMD,subData,rawTrialData);
 
-rawExpData=experimentData(expMD,subData,rawTrialData);
-
-% FIXME: Close all figures and remove intermediate variables to free up some memory in matlab.
-% There seems to be a memory issue since summer 2025. During c3d2mat, the PC will run out of memory
-% which is shown as OutOfMemory, OutOfHeapSpace, or png file failed to write rrors.
-% A better solution is needed to identify why we are running out of memory or do we have a memory leak
-% Since we don't know the cause now, will try close the figures and
+% FIXME: close all figures and remove intermediate variables to free up
+% some memory in matlab.
+% There seems to be a memory issue since summer 2025. During c3d2mat, the
+% PC will run out of memory which is shown as OutOfMemory, OutOfHeapSpace,
+% or png file failed to write errors. A better solution is needed to
+% identify why we are running out of memory or do we have a memory leak.
+% Since we do not know the cause now, will try close the figures and
 % remove variables to make the code run for now.
 close all; clc;
-clearvars -except info eventClass rawExpData datlogExist
+clearvars -except info eventClass rawExpData datlogExist;
 
-%Sync the datlog. if datlog for all trials exist and the forces
-%exist in the datlog.
-if datlogExist
-    rawExpData = SyncDatalog(rawExpData, [info.save_folder filesep 'DatlogSyncRes' filesep]);
+% synch data logs if the 'datlog' files exist for all trials and the forces
+% exist within those files
+if datlogExist          % if there are data log files, ...
+    rawExpData = SyncDatalog(rawExpData, ...
+        [info.save_folder filesep 'DatlogSyncRes' filesep]);
 end
-
-%save raw
-save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3')
+save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3');
 
 %% Process Data
 expData = rawExpData.process(eventClass);
 % save processed data object
 save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3');
-% create 'adaptationData' object ('params' file)
+% create 'adaptationData' object, and save 'params' file
 adaptData = expData.makeDataObj([info.save_folder filesep info.ID]);
 
 %% Handle Experiments that Require Special Trial Splitting from Data Logs
