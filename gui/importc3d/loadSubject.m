@@ -110,10 +110,10 @@ if datlogExist || info.perceptualTasks == 1 %this most likely redundant, but kee
             datlog{trial}=rawTrialData{trial}.metaData.datlog;
         else
             datlog{trial}={};
-        end    
+        end
     end
     expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
-    info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks, datlog);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
+        info.exp_obs,strtrim(info.conditionNames),info.conditionDescriptions,info.trialnums,info.numoftrials, info.schenleyLab, info.perceptualTasks, datlog);%creates instance of experimentMetaData class, which houses information about the number of trials, their descriptions, and notes and trial #'s
 else
     % Experiment info
     expMD=experimentMetaData(info.ExpDescription,expDate,info.experimenter,...
@@ -123,8 +123,8 @@ end
 
 rawExpData=experimentData(expMD,subData,rawTrialData);
 
-% FIXME: Close all figures and remove intermediate variables to free up some memory in matlab. 
-% There seems to be a memory issue since summer 2025. During c3d2mat, the PC will run out of memory 
+% FIXME: Close all figures and remove intermediate variables to free up some memory in matlab.
+% There seems to be a memory issue since summer 2025. During c3d2mat, the PC will run out of memory
 % which is shown as OutOfMemory, OutOfHeapSpace, or png file failed to write rrors.
 % A better solution is needed to identify why we are running out of memory or do we have a memory leak
 % Since we don't know the cause now, will try close the figures and
@@ -141,20 +141,20 @@ end
 %save raw
 save([info.save_folder filesep info.ID 'RAW.mat'],'rawExpData','-v7.3')
 
-%% Process data
-expData=rawExpData.process(eventClass);
+%% Process Data
+expData = rawExpData.process(eventClass);
+% save processed data object
+save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3');
+% create 'adaptationData' object ('params' file)
+adaptData = expData.makeDataObj([info.save_folder filesep info.ID]);
 
-%Save processed
-save([info.save_folder filesep info.ID '.mat'],'expData','-v7.3')
-
-%create adaptationData object
-adaptData=expData.makeDataObj([info.save_folder filesep info.ID]);
-
-%% Add additional handling for experiments that needs trial splited
+%% Handle Experiments that Require Special Trial Splitting from Data Logs
 if contains(erase(info.ExpDescription,' '),'SpinalAdaptation')
-    [expData, adaptData] = SepCondsInExpByAudioCue(expData, info.save_folder, info.ID, eventClass, info.ExpDescription);
+    [expData,adaptData] = SepCondsInExpByAudioCue(expData, ...
+        info.save_folder,info.ID,eventClass,info.ExpDescription);
 end
 
-%%
-diary off
+diary off;
+
+end
 
