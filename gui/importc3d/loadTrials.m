@@ -1,51 +1,58 @@
-function trials=loadTrials(trialMD,fileList,secFileList,info)
-%loadTrials  generates rawTrialData instances for each trial
+function trials = loadTrials(trialMD,fileList,secFileList,info)
+%loadTrials generates 'rawTrialData' instances for each trial
 %
 %INPUTS:
-%trialMD: cell array of trailMetaData objects where the cell index corresponds
-%to the trial number
-%fileList: list of .c3d files containing kinematic and force data for a given experiment
+%trialMD: cell array of 'trialMetaData' objects where the cell index
+%corresponds to the trial number
+%fileList: list of .c3d files containing kinematic and force data for a
+%given experiment
 %secFileList: list of files containing EMG data for a given experiment
-%info: structured array output from GetInfoGUI
+%info: structured array output from 'GetInfoGUI'
 %
 %OUTPUT:
-%trials: cell array of rawTrialData objects where the cell index corresponds
-%to the trial number
+%trials: cell array of 'rawTrialData' objects where the cell index
+%corresponds to the trial number
 %
 %See also: rawTrialData
 
-%orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign,updownSign)
-orientation=orientationInfo([0,0,0],'y','x','z',1,1,1); %check signs! For use in biomechanics calculations
+% orientationInfo(offset,foreaftAx,sideAx,updownAx,foreaftSign,sideSign, ...
+%     updownSign);
+% check signs! this is used in biomechanics calculations
+orientation = orientationInfo([0 0 0],'y','x','z',1,1,1);
 
-%Create list of expected/accepted muscles:
-orderedMuscleList={'PER','TA','TAP','TAD','SOL','MG','LG','RF','VM','VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'}; %This is the desired order
-orderedEMGList={};
-for j=1:length(orderedMuscleList)
-    orderedEMGList{end+1}=['R' orderedMuscleList{j}];
-    orderedEMGList{end+1}=['L' orderedMuscleList{j}];
+% define list of expected / accepted muscles in the desired order:
+orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG','RF','VM', ...
+    'VL','BF','SEMB','SEMT','ADM','GLU','TFL','ILP','SAR','HIP'};
+orderedEMGList = {};
+for j = 1:length(orderedMuscleList)
+    orderedEMGList{end+1} = ['R' orderedMuscleList{j}];
+    orderedEMGList{end+1} = ['L' orderedMuscleList{j}];
 end
 
-for t=cell2mat(info.trialnums) %loop through each trial
-    %FIXME: Close all figures and remove intermediate variables to free up some memory in matlab. 
-    %There seems to be a memory issue since summer 2025. During c3d2mat, the PC will run out of memory 
-    %which is shown as OutOfMemory, OutOfHeapSpace, or png file failed to write rrors.
-    %A better solution is needed to identify why we are running out of memory or do we have a memory leak
-    %Since we don't know the cause now, will try close the figures and
-    %remove variables to make the code run for now.
-    close all; clc
-    clearvars -except trialMD fileList secFileList info t orderedEMGList orientation trials
+for tr = cell2mat(info.trialnums)       % for each trial, ...
+    % FIXME: close all figures and remove intermediate variables to free up
+    % some memory in matlab.
+    % There seems to be a memory issue since summer 2025. During c3d2mat,
+    % the PC will run out of memory which is shown as OutOfMemory,
+    % OutOfHeapSpace, or png file failed to write errors. A better solution
+    % is needed to identify why we are running out of memory or do we have
+    % a memory leak. Since we do not know the cause now, will try close the
+    % figures and remove variables to make the code run for now.
+    close all; clc;
+    clearvars -except trialMD fileList secFileList info tr ...
+        orderedEMGList orientation trials;
 
-    %Import data from c3d, uses external toolbox BTK
-    H=btkReadAcquisition([fileList{t} '.c3d']);
-    [analogs,analogsInfo]=btkGetAnalogs(H);
-    secondFile=false;
-    if ~isempty(secFileList{t})
-        H2=btkReadAcquisition([secFileList{t} '.c3d']);
-        [analogs2,analogsInfo2]=btkGetAnalogs(H2);
-        secondFile=true;
+    % import C3D data using external software, BTK (Biomechanics Toolkit)
+    H = btkReadAcquisition([fileList{tr} '.c3d']);
+    [analogs,analogsInfo] = btkGetAnalogs(H);
+    secondFile = false;
+    if ~isempty(secFileList{tr})        % if C3D files (EMG) on PC2, ...
+        H2 = btkReadAcquisition([secFileList{tr} '.c3d']);
+        [analogs2,analogsInfo2] = btkGetAnalogs(H2);    % load EMG data
+        secondFile = true;              % indicate two PCs of EMG data
     end
 
-    %% GRFData
+    %% Process Ground Reaction Force (GRF) Data
     if info.forces %check to see if there are GRF forces in the trial
         showWarning = false;%must define or else error is thrown when otherwise case is skipped
         relData=[];
@@ -112,7 +119,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
         end
         if showWarning
-            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(t) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
+            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(tr) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
         end
 
         %Sanity check: offset calibration, make sure that force values from
@@ -186,7 +193,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
 
         %Create labTimeSeries (data,t0,Ts,labels,orientation)
         if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
-            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(t)])
+            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(tr)])
         end
         GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
         GRFData.DataInfo.Units=units;
@@ -236,7 +243,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             end
         elseif info.EMGworks==1
 
-            [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t});
+            [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{tr});
         end
         %Check if names match with expectation, otherwise query user
         for k=1:length(EMGList)
@@ -374,11 +381,11 @@ for t=cell2mat(info.trialnums) %loop through each trial
             disp(['Sync parameters between PCs were: gain= ' num2str(gain1/gain2,4) '; delay= ' num2str((lagInSamples)/EMGfrequency,3) 's; sampling mismatch (ppm)= ' num2str(1e6*(1-timeScaleFactor),3)]);
             disp(['Typical sync parameters are: gain= 1; delay= 0.040s; sampling= 35 ppm'])
             if isnan(E1) || isnan(E2) || E1>.01 || E2>.01 %Signal difference has at least 1% of original signal energy
-                warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(t) '.'])
+                warning(['Time alignment doesnt seem to have worked: signal mismatch is too high in trial ' num2str(tr) '.'])
                 h=figure;
                 subplot(2,2,[1:2])
                 hold on
-                title(['Trial ' num2str(t) ' Synchronization'])
+                title(['Trial ' num2str(tr) ' Synchronization'])
                 time=[0:length(refSync)-1]*1/EMGfrequency;
                 plot(time,refSync)
                 plot(time,sync(:,1)*gain1,'r')
@@ -422,7 +429,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
             h=figure;
             subplot(2,2,[1:2])
             hold on
-            title(['Trial ' num2str(t) ' Synchronization'])
+            title(['Trial ' num2str(tr) ' Synchronization'])
             time=[0:length(refSync)-1]*1/EMGfrequency;
             plot(time,refSync)
             plot(time,sync(:,1)*gain1,'r')
@@ -456,7 +463,7 @@ for t=cell2mat(info.trialnums) %loop through each trial
                 %legend('refSync',['sync1, delay=' num2str(lagInSamplesA/analogsInfo.frequency,3) 's'],['sync2, delay=' num2str((lagInSamplesA+lagInSamples)/analogsInfo.frequency,3)  's'])
                 hold off
             end
-            saveFig(h,[info.save_folder filesep 'EMGSyncFile' filesep],['Trial ' num2str(t) ' Synchronization'])
+            saveFig(h,[info.save_folder filesep 'EMGSyncFile' filesep],['Trial ' num2str(tr) ' Synchronization'])
             %         uiwait(h)
         else
             warning('No sync signals were present, using data as-is.')
@@ -684,6 +691,9 @@ for t=cell2mat(info.trialnums) %loop through each trial
     %% Construct trialData
 
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{t}=rawTrialData(trialMD{t},markerData,EMGData,GRFData,[],[],accData,[],[],HreflexStimPinData);%organize trial data into organized object of class rawTrialData
+    trials{tr}=rawTrialData(trialMD{tr},markerData,EMGData,GRFData,[],[],accData,[],[],HreflexStimPinData);%organize trial data into organized object of class rawTrialData
 
 end
+
+end
+
