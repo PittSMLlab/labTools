@@ -53,34 +53,44 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     end
 
     %% Process Ground Reaction Force (GRF) Data
-    if info.forces %check to see if there are GRF forces in the trial
-        showWarning = false;%must define or else error is thrown when otherwise case is skipped
-        relData=[];
-        forceLabels ={};
-        units={};
-        fieldList=fields(analogs);
-        fL=cellfun(@(x) ~isempty(x),regexp(fieldList,'^Raw'));
-        ttt=fieldList(fL);
-        raws=[];
-        for i=1:length(ttt)
-            raws=[raws analogs.(ttt{i})];
+    if info.forces              % if there is force data in the trial, ...
+        % must be defined to prevent error when 'otherwise' skipped
+        showWarning = false;
+        relData = [];
+        forceLabels = {};
+        units = {};
+        fieldList = fields(analogs);
+        fL = cellfun(@(x) ~isempty(x),regexp(fieldList,'^Raw'));
+        ttt = fieldList(fL);
+        raws = [];
+        for ii = 1:length(ttt)
+            raws = [raws analogs.(ttt{ii})];    % extract raw analog data
         end
-        raws=zscore(raws);
-        for j=1:length(fieldList);%parse analog channels by force, moment, cop
-            %if strcmp(fieldList{j}(end-2),'F') || strcmp(fieldList{j}(end-2),'M') %Getting fields that end in F.. or M.. only
-            if strcmp(fieldList{j}(1),'F') || strcmp(fieldList{j}(1),'M') || ~isempty(strfind(fieldList{j},'Force')) || ~isempty(strfind(fieldList{j},'Moment'))
-                if ~strcmpi('x',fieldList{j}(end-1)) && ~strcmpi('y',fieldList{j}(end-1)) && ~strcmpi('z',fieldList{j}(end-1))
-                    warning(['loadTrials:GRFs','Found force/moment data that does not correspond to any of the expected directions (x,y or z). Discarding channel ' fieldList{j}])
+        raws = zscore(raws);
+        % for each force, moment, center of pressure (COP) channel, ...
+        for j = 1:length(fieldList)
+            % if field starts with 'F', 'M', or has 'Force', 'Moment', ...
+            if strcmp(fieldList{j}(1),'F') || ...
+                    strcmp(fieldList{j}(1),'M') || ...
+                    ~isempty(strfind(fieldList{j},'Force')) || ...
+                    ~isempty(strfind(fieldList{j},'Moment'))
+                if ~strcmpi('x',fieldList{j}(end-1)) && ...
+                        ~strcmpi('y',fieldList{j}(end-1)) && ...
+                        ~strcmpi('z',fieldList{j}(end-1))
+                    warning(['loadTrials:GRFs' 'Found force/moment ' ...
+                        'data that does not correspond to any of the ' ...
+                        'expected directions (x,y, or z). Discarding ' ...
+                        'channel ' fieldList{j}]);
                 else
-                    switch fieldList{j}(end)%parse devices
+                    switch fieldList{j}(end)    % parse force channels
                         case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt for the forward configuration and right for the backward configuration
                             if info.backwardCheck == 1
-                                forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
+                                forceLabels{end+1} = ['R' fieldList{j}(end-2:end-1)];
                             else
-                                forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
+                                forceLabels{end+1} = ['L' fieldList{j}(end-2:end-1)];
                             end
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt for the forward configuration and left for the backward configuration
                             if info.backwardCheck == 1
                                 forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
@@ -202,74 +212,73 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     end
     clear relData* raws
 
-    %% EMGData (from 2 files!) & Acceleration data
+    %% Process EMG & Acceleration Data (from Two Files Across Two PCs)
     if info.EMGs
         %Primary file (PC)
-        if  info.Nexus==1
-            relData=[];
-            relDataTemp=[];
-            fieldList=fields(analogs);
-            idxList=[];
-            for j=1:length(fieldList);
-                if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
+        if info.Nexus == 1
+            relData = [];
+            relDataTemp = [];
+            fieldList = fields(analogs);
+            idxList = [];
+            for j = 1:length(fieldList)
+                if ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
                     relDataTemp=[relDataTemp,analogs.(fieldList{j})];
                     idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
                     analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
                 end
             end
-            emptyChannels1=cellfun(@(x) isempty(x),info.EMGList1);
-            EMGList1=info.EMGList1(~emptyChannels1);
-            relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-            relData=relData(:,~emptyChannels1);
-            EMGList=EMGList1;
+            emptyChannels1 = cellfun(@(x) isempty(x),info.EMGList1);
+            EMGList1 = info.EMGList1(~emptyChannels1);
+            relData(:,idxList) = relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+            relData = relData(:,~emptyChannels1);
+            EMGList = EMGList1;
 
             %Secondary file (PC)
-            relDataTemp2=[];
-            idxList2=[];
+            relDataTemp2 = [];
+            idxList2 = [];
             if secondFile
-                fieldList=fields(analogs2);
-                for j=1:length(fieldList);
+                fieldList = fields(analogs2);
+                for j=1:length(fieldList)
                     if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-                        relDataTemp2=[relDataTemp2,analogs2.(fieldList{j})];
-                        idxList2(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
-                        analogs2=rmfield(analogs2,fieldList{j}); %Just to save memory space
+                        relDataTemp2 = [relDataTemp2,analogs2.(fieldList{j})];
+                        idxList2(end+1) = str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
+                        analogs2 = rmfield(analogs2,fieldList{j}); %Just to save memory space
                     end
                 end
-                emptyChannels2=cellfun(@(x) isempty(x),info.EMGList2);
-                EMGList2=info.EMGList2(~emptyChannels2); %Just using the names for the channels that were actually in the file
-                relData2(:,idxList2)=relDataTemp2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-                relData2=relData2(:,~emptyChannels2);
-                EMGList=[EMGList1,EMGList2];
+                emptyChannels2 = cellfun(@(x) isempty(x),info.EMGList2);
+                EMGList2 = info.EMGList2(~emptyChannels2); %Just using the names for the channels that were actually in the file
+                relData2(:,idxList2) = relDataTemp2; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+                relData2 = relData2(:,~emptyChannels2);
+                EMGList = [EMGList1,EMGList2];
             end
-        elseif info.EMGworks==1
-
-            [analogs, EMGList, relData, relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2]=getEMGworksdata(info.EMGList1 ,info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{tr});
+        elseif info.EMGworks == 1
+            [analogs,EMGList,relData,relData2,secondFile,analogsInfo2,emptyChannels1,emptyChannels2,EMGList1,EMGList2] = getEMGworksdata(info.EMGList1,info.EMGList2,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{tr});
         end
         %Check if names match with expectation, otherwise query user
-        for k=1:length(EMGList)
+        for k = 1:length(EMGList)
             while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
                 aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
-                if k<=length(EMGList1)
-                    info.EMGList1{idxList(k)}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
+                if k <= length(EMGList1)
+                    info.EMGList1{idxList(k)} = aux{1}; %This is to keep the same message from being prompeted for each trial processed.
                 else
-                    info.EMGList2{idxList2(k-length(EMGList1))}=aux{1};
+                    info.EMGList2{idxList2(k-length(EMGList1))} = aux{1};
                 end
-                EMGList{k}=aux{1};
+                EMGList{k} = aux{1};
             end
         end
 
         %For some reasing the naming convention for analog pins is not kept
         %across Nexus versions:
-        fieldNames=fields(analogs);
+        fieldNames = fields(analogs);
 
-        refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
+        refSync = analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
 
         %Check for frequencies between the two PCs
         if secondFile
-            if abs(analogsInfo.frequency-analogsInfo2.frequency)>eps
+            if abs(analogsInfo.frequency-analogsInfo2.frequency) > eps
                 warning('Sampling rates from the two computers are different, down-sampling one under the assumption that sampling rates are multiple of each other.')
                 %Assuming that the sampling rates are multiples of one another
-                if analogsInfo.frequency>analogsInfo2.frequency
+                if analogsInfo.frequency > analogsInfo2.frequency
                     %First set is the up-sampled one, reducing
                     P=analogsInfo.frequency/analogsInfo2.frequency;
                     R=round(P);
@@ -329,7 +338,6 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
 %                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
 %                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
-% %
             end
 
             %Only keeping matrices of same size to one another:
@@ -469,7 +477,6 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             warning('No sync signals were present, using data as-is.')
         end
 
-
         %Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
         orderedIndexes=zeros(length(orderedEMGList),1);
         for j=1:length(orderedEMGList)
@@ -488,12 +495,11 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         end
         allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
         EMGData=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
-        clear allData* relData* auxData*
+        clear allData* relData* auxData*;
 
         %% AccData (from 2 files too!)
         %Primary file
         if info.Nexus==1
-
             relData=[];
             idxList=[];
             fieldList=fields(analogs);
@@ -523,7 +529,6 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             if ~isempty(sync)
                 relData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
             end
-
 
             %Secondary file
             relData2=[];
@@ -585,43 +590,47 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
 %             Samplingfrequency=analogsInfo.frequency;
             accData=[];%orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
         end
-        clear allData* relData* auxData*
+        clear allData* relData* auxData*;
     else
         EMGData=[];
         accData=[];
     end
-   
-    %% Add H-Reflex Stimulator Pin if exists (new expeirmental feature introduced in April 2024)
-    relData=[];
-    stimLabels ={};
-    units={};
-    fieldList=fields(analogs);
-    stimLabelIdx=cellfun(@(x) ~isempty(x),regexp(fieldList,'^Stimulator_Trigger_Sync_'));
-    stimLabelIdx = find(stimLabelIdx);
-    if ~isempty(stimLabelIdx)
-        for j=1:length(stimLabelIdx) %this will only run if the index exists
-            stimLabels{end+1} = fieldList{stimLabelIdx(j)}; %add the label
-            units{end+1}=eval(['analogsInfo.units.',fieldList{stimLabelIdx(j)}]);
-            relData=[relData,analogs.(fieldList{stimLabelIdx(j)})];
-        end
-        HreflexStimPinData = labTimeSeries(relData,0,1/analogsInfo.frequency,stimLabels);
-        %arg: data, t0 (offset in starting of the data, should be 0 like the force plates, as it's analog wired stream into Vicon?),
-        %Ts (1/sampling frequency), labels
 
-        %sanity check, the # of frames should match GRF data
-        if ~isempty(GRFData)
+    %% Add H-Reflex Stimulator Pin If It Exists
+    relData = [];
+    stimLabels = {};
+    units = {};
+    fieldList = fields(analogs);
+    stimLabelIdx = cellfun(@(x) ~isempty(x), ...
+        regexp(fieldList,'^Stimulator_Trigger_Sync_'));
+    stimLabelIdx = find(stimLabelIdx);
+    if ~isempty(stimLabelIdx)           % if there is a stimulator pin, ...
+        for j = 1:length(stimLabelIdx)
+            stimLabels{end+1} = fieldList{stimLabelIdx(j)}; % add the label
+            units{end+1} = ...
+                eval(['analogsInfo.units.' fieldList{stimLabelIdx(j)}]);
+            relData = [relData analogs.(fieldList{stimLabelIdx(j)})];
+        end
+        % NOTE: second input argument is time offset, which should be zero
+        % like the force data, third argument is sampling period (1/freq.)
+        HreflexStimPinData = ...
+            labTimeSeries(relData,0,1/analogsInfo.frequency,stimLabels);
+
+        if ~isempty(GRFData)            % if there is GRF data, ...
+            % verify there is the same amount of data as GRF data
             if (GRFData.Length ~= HreflexStimPinData.Length)
-                error('Hreflex stimulator pin have different length than GRF data. This should never happen. Data is compromised.')
+                error(['Hreflex stimulator pin have different length ' ...
+                    'than GRF data. This should never happen. Data is ' ...
+                    'compromised.']);
             end
         end
-    else
-        %This is needed to work with expeirments that doesn't have this pin.
+    else                                % otherwise, ...
+        % set to empty array for experiments without the stimulator pin
         HreflexStimPinData = [];
     end
-    
-    
-    %% MarkerData
-    clear analogs* %Save memory space, no longer need analog data, it was already loaded
+
+    %% Process Motion Capture Marker Data
+    clear analogs*; %Save memory space, no longer need analog data, it was already loaded
     if info.kinematics %check to see if there is kinematic data
         [markers,markerInfo]=btkGetMarkers(H);
         relData=[];
@@ -687,11 +696,11 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         markerData=[];
     end
 
-    
-    %% Construct trialData
-
+    %% Construct 'rawTrialData' Object
     %rawTrialData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches)
-    trials{tr}=rawTrialData(trialMD{tr},markerData,EMGData,GRFData,[],[],accData,[],[],HreflexStimPinData);%organize trial data into organized object of class rawTrialData
+    % organize raw trial data extracted above into 'rawTrialData' object
+    trials{tr} = rawTrialData(trialMD{tr},markerData,EMGData,GRFData, ...
+        [],[],accData,[],[],HreflexStimPinData);
 
 end
 
