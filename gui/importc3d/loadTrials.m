@@ -83,7 +83,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                         'channel ' fieldList{j}]);
                 else
                     switch fieldList{j}(end)    % parse force channels
-                        case '1' %Forces/moments ending in '1' area assumed to be of left treadmill belt for the forward configuration and right for the backward configuration
+                        case '1'    % left (forward) right (backward) TM FP
                             if info.backwardCheck == 1
                                 forceLabels{end+1} = ['R' fieldList{j}(end-2:end-1)];
                             else
@@ -91,45 +91,47 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                             end
                             units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
                             relData = [relData analogs.(fieldList{j})];
-                        case '2' %Forces/moments ending in '2' area assumed to be of right treadmill belt for the forward configuration and left for the backward configuration
+                        case '2'    % right (forward) left (backward) TM FP
                             if info.backwardCheck == 1
-                                forceLabels{end+1} = ['L',fieldList{j}(end-2:end-1)];
+                                forceLabels{end+1} = ['L' fieldList{j}(end-2:end-1)];
                             else
-                                forceLabels{end+1} = ['R',fieldList{j}(end-2:end-1)];
+                                forceLabels{end+1} = ['R' fieldList{j}(end-2:end-1)];
                             end
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
-                        case '3' %Forces/moments ending in '4' area assumed to be of handrail %NIV
-                            forceLabels{end+1} = ['H',fieldList{j}(end-2:end-1)];
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
-
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
+                        case '3'    % handrail forces / moments
+                            forceLabels{end+1} = ['H' fieldList{j}(end-2:end-1)];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         case '4' %Other forceplate, loading just in case
-                            forceLabels{end+1} = ['FP4',fieldList{j}(end-2:end-1)];
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
+                            forceLabels{end+1} = ['FP4' fieldList{j}(end-2:end-1)];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         case '5' %Other forceplate, loading just in case
-                            forceLabels{end+1} = ['FP5',fieldList{j}(end-2:end-1)];
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
+                            forceLabels{end+1} = ['FP5' fieldList{j}(end-2:end-1)];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         case '6' %Other forceplate, loading just in case
-                            forceLabels{end+1} = ['FP6',fieldList{j}(end-2:end-1)];
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
+                            forceLabels{end+1} = ['FP6' fieldList{j}(end-2:end-1)];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         case '7' %Other forceplate, loading just in case
-                            forceLabels{end+1} = ['FP7',fieldList{j}(end-2:end-1)];
-                            units{end+1}=eval(['analogsInfo.units.',fieldList{j}]);
-                            relData=[relData,analogs.(fieldList{j})];
-
+                            forceLabels{end+1} = ['FP7' fieldList{j}(end-2:end-1)];
+                            units{end+1} = eval(['analogsInfo.units.' fieldList{j}]);
+                            relData = [relData analogs.(fieldList{j})];
                         otherwise
-                            showWarning=true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output
+                            showWarning = true;%%HH moved warning outside loop on 6/3/2015 to reduce command window output
                     end
-                    analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+                    % remove processed analog channels to save memory space
+                    analogs = rmfield(analogs,fieldList{j});
                 end
             end
         end
         if showWarning
-            warning(['loadTrials:GRFs','Found force/moment data in trial ' num2str(tr) ' that does not correspond to any of the expected channels (L=1, R=2, H=4). Data discarded.'])
+            warning(['loadTrials:GRFs' 'Found force/moment data in ' ...
+                'trial ' num2str(tr) ' that does not correspond to ' ...
+                'any of the expected channels (L=1, R=2, H=4). Data ' ...
+                discarded.']);
         end
 
         %Sanity check: offset calibration, make sure that force values from
@@ -201,16 +203,19 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             warning('loadTrials:GRFs','Could not perform offset check. Proceeding with data as is.')
         end
 
-        %Create labTimeSeries (data,t0,Ts,labels,orientation)
-        if size(relData,2)<12 %we don't have at least 3 forces and 3 moments per belt
-            warning('loadTrials:GRFs',['Did not find all GRFs for the two belts in trial ' num2str(tr)])
+        % create 'labTimeSeries' object (data,t0,Ts,labels,orientation)
+        % if there are not three forces and moments per TM FP at least, ...
+        if size(relData,2) < 12
+            warning('loadTrials:GRFs',['Did not find all GRFs for the ' ...
+                'two belts in trial ' num2str(tr)]);
         end
-        GRFData=orientedLabTimeSeries(relData,0,1/analogsInfo.frequency,forceLabels,orientation);
-        GRFData.DataInfo.Units=units;
+        GRFData = orientedLabTimeSeries(relData,0, ...
+            1/analogsInfo.frequency,forceLabels,orientation);
+        GRFData.DataInfo.Units = units;
     else
-        GRFData=[];
+        GRFData = [];
     end
-    clear relData* raws
+    clear relData* raws;
 
     %% Process EMG & Acceleration Data (from Two Files Across Two PCs)
     if info.EMGs
@@ -329,15 +334,15 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             aux=medfilt1(diff(aux),10,[],1);
             if secondFile
                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(aux(:,1),aux(:,2));
-%                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2));
+                % [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2));
                 newRelData2 = resampleShiftAndScale(relData2,timeScaleFactor,lagInSamples,1); %Aligning relData2 to relData1. There is still the need to find the overall delay of the EMG system with respect to forceplate data.
             end
             [~,timeScaleFactorA,lagInSamplesA,~] = matchSignals(refAux,aux(:,1));
             newRelData = resampleShiftAndScale(relData,1,lagInSamplesA,1);
             if secondFile
                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamplesA,1);
-%                 [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
-%                 newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
+                % [~,timeScaleFactor,lagInSamples,~] = matchSignals(refAux,aux(:,2)); %DMMO and ARL change to deal w aligment
+                % newRelData2 = resampleShiftAndScale(newRelData2,1,lagInSamples,1);  %DMMO and ARL change to deal w aligment
             end
 
             %Only keeping matrices of same size to one another:
@@ -368,7 +373,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 gain2=refSync'/sync(:,2)';
                 indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
                 reducedRefSync2=refSync(indStart:end);
-%                 indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
+                % indStart=round(max([lagInSamplesA+1+lagInSamples,1]));
                 reducedSync2=sync(indStart:end,2)*gain2;
                 E2=sum((reducedRefSync2-reducedSync2).^2)/sum(refSync.^2);
                 %Comparing the two bases' synchrony mechanism (not to ref signal):
@@ -586,8 +591,8 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             % orientation is fake: orientation is local and unique to each sensor, which is affixed to a body segment.
         elseif info.EMGworks==1
 
-%             [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
-%             Samplingfrequency=analogsInfo.frequency;
+            % [ACCList, allData,analogsInfo]=getEMGworksdataAcc(info.EMGList2 ,info.secEMGworksdir_location,info.EMGworksdir_location,fileList{t},emptyChannels1,emptyChannels2,EMGList);
+            % Samplingfrequency=analogsInfo.frequency;
             accData=[];%orientedLabTimeSeries(allData(1:13:end,:),0,Samplingfrequency,ACCList,orientation);
         end
         clear allData* relData* auxData*;
