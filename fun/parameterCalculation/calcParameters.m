@@ -1,36 +1,45 @@
-function out = calcParameters(trialData,subData,eventClass,initEventSide,parameterClasses)
-%out = calcParameters(trialData,subData,eventClass,initEventSide)
-%INPUT:
-%trialData: processedTrialData object
-%subData: subjectData object
-%eventClass: string containing the prefix to an existing event class: {'force','kin',''} (Optional, defaults to '')
-%initEventSide: 'L' or 'R'. Optional, defaults to trialData.metaData.refLeg
+function out = calcParameters(trialData,subData,eventClass, ...
+    initEventSide,parameterClasses)
+%CALCPARAMETERS calculate stride-by-stride parameters for later analysis
 %
-%To add a new parameter, it must be added to the paramLabels cell and the
-%label must be the same as the variable name the data is saved to within
-%the code. (ex: in paramlabels: 'swingTimeSlow', in code: swingTimeSlow(t)=timeSHS2-timeSTO;)
-%note: if adding a slow and fast version of one parameter, make sure 'Fast'
+%INPUTS:
+%trialData: 'processedTrialData' object
+%subData: 'subjectData' object
+%eventClass (optional): string containing the event class prefix:
+%   {'force','kin',''} (default: '', OG: kinematics, TM: forces)
+%initEventSide (optional): 'L' or 'R' (default: trialData.metaData.refLeg)
+%
+%To add a new parameter, update the 'paramLabels' cell and ensure the label
+%is the same as the variable name where the data assigned in the code.
+%(e.g., in 'paramlabels': 'swingTimeSlow',
+%in code: swingTimeSlow(t) = timeSHS2 - timeSTO;)
+%
+%NOTE: if adding a slow and fast version of a parameter, make sure 'Fast'
 %and 'Slow' appear at the end of the respective parameter names. See
 %existing parameter names as an example.
-[file]= getSimpleFileName(trialData.metaData.rawDataFilename);
 
-if nargin<3 || isempty(eventClass)
-    eventClass='';
+file = getSimpleFileName(trialData.metaData.rawDataFilename);
+
+% if fewer than three input arguments or no 'eventClass' input, ...
+if nargin < 3 || isempty(eventClass)
+    eventClass = '';                        % set to default value
 end
-if nargin<5 || isempty(parameterClasses)
-    parameterClasses={'basic','temporal','spatial','rawEMG','procEMG','force'};
-elseif ischar(parameterClasses)
-    parameterClasses={parameterClasses};
+% if fewer than four input arguments or no 'initEventSide' input, ...
+if nargin < 4 || isempty(initEventSide)
+    refLeg = trialData.metaData.refLeg;     % retrieve from trial meta data
+else                                        % otherwise, ...
+    refLeg = initEventSide;                 % use provided input argument
+end
+% if fewer than five input arguments or no 'parameterClasses' input, ...
+if nargin < 5 || isempty(parameterClasses)
+    parameterClasses = {'basic','temporal','spatial','rawEMG', ...
+        'procEMG','force'};                 % compute default parameters
+elseif ischar(parameterClasses)             % otherwise, ...
+    parameterClasses = {parameterClasses};  % compute requested parameters
 end
 
 %% Separate into strides & identify events on each
 % one "stride" contains the events: SHS,FTO,FHS,STO,SHS2,FTO2
-if nargin<4 || isempty(initEventSide)
-    refLeg=trialData.metaData.refLeg;
-else
-    refLeg=initEventSide;
-end
-
 if refLeg == 'R'
     s = 'R';    f = 'L'; %TODO: substitute with getOtherLeg()
 elseif refLeg == 'L'
