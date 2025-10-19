@@ -190,22 +190,23 @@ if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     out = cat(out,EMG_alt); % concatentate EMG parameters to existing
 end
 
-%% Angles
-if ~isempty(trialData.angleData)
-%     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s);
-    [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s,eventTypes);
-    out=cat(out,angles);
+%% Extract Angles Parameters
+if ~isempty(trialData.angleData)            % if angle data is present, ...
+    angles = computeAngleParameters(trialData.angleData, ...
+        trialData.gaitEvents,s,eventTypes);
+    out = cat(out,angles);  % concatentate angle parameters to existing
 end
-%% Force
-if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
-    [force] = computeForceParameters(strideEvents,trialData.GRFData,s, f, subData.weight, trialData.metaData, trialData.markerData, subData);
 
-    if ~isempty(force.Data)
-        out=cat(out,force);
+%% Extract (Treadmill) Force Parameters
+if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
+    force = computeForceParameters(strideEvents,trialData.GRFData,s,f, ...
+        subData.weight,trialData.metaData,trialData.markerData,subData);
+    if ~isempty(force.Data)         % if output force data not empty, ...
+        out = cat(out,force);   % concatentate force parameters to existing
     end
 end
-    
-%% Overground Force parameters
+
+%% Extract (Overground) Force Parameters
 % If you encounter a bug with a line of code in this section (e.g.,
 % indexing array out of bounds), comment it out, which will prevent the
 % overground forces from being processed and output.
@@ -226,23 +227,25 @@ if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - mi
     end   
 end
 
-%% H-Reflex:
-fields = fieldnames(trialData); % retrieve all trialData object field names
+%% Extract H-Reflex Parameters
+fields = fieldnames(trialData); % retrieve all 'trialData' obj. field names
 if any(contains(fields,'HreflexPin'))   % if 'HreflexPin' field exists, ...
     % if there is data in the 'HreflexPin' and 'EMGData' fields, ...
     if ~isempty(trialData.HreflexPin) && ~isempty(trialData.EMGData)
         % compute parameters associated with H-reflex stimulation
         Hreflex = computeHreflexParameters(strideEvents, ...
             trialData.HreflexPin,trialData.EMGData,s);
-        out = cat(out,Hreflex);
+        out = cat(out,Hreflex); % concatentate H-reflex parameters
     end
 end
 
-%% Perceptual task:
-slaIdx = strcmpi(spat.labels,'netContributionNorm2');
-if any(contains(trialData.gaitEvents.labels, 'perc')) %there are gait events indicating the start and stop of the perceptual trial
-    PerceptualTasks = computePercParameters(trialData,initTime,endTime,spat.Data(:,slaIdx));
-    out = cat(out,PerceptualTasks);
+%% Extract Perceptual Task Parameters
+slaIdx = strcmpi(spat.labels,'netContributionNorm2');   % SLA param. index
+% if there are gait events indicating start / stop of perceptual trial, ...
+if any(contains(trialData.gaitEvents.labels,'perc'))
+    PerceptualTasks = computePercParameters(trialData,initTime, ...
+        endTime,spat.Data(:,slaIdx));
+    out = cat(out,PerceptualTasks); % concatenate perceptual parameters
 end
 
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
@@ -310,3 +313,6 @@ end
 
 %% Use 'bad' as mask (necessary?)
 %out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime
+
+end
+
