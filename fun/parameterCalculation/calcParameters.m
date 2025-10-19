@@ -104,67 +104,93 @@ for ev = 1:length(eventTypes)               % for each gait event type, ...
 end
 
 %% Compute Parameters
-extendedEventTimes=[eventTimes, eventTimes2(:,1:2)]; %times of SHS, FTO, FHS, FTO, SHS2, FTO2
-times=nanmean(extendedEventTimes,2); %This is an average of the times of SHS, FTO, FHS, FTO, SHS2, FTO2 (same as old code), IF available.
-out=parameterSeries(zeros(length(times),0),{},times,{});
-%initialize the bad/good flag
-strideDuration=diff(extendedEventTimes(:,[1,5]),1,2);
-bad=any(isnan(extendedEventTimes),2) | any(diff(extendedEventTimes,1,2)<0,2) | (strideDuration >1.5*nanmedian(strideDuration)) | (strideDuration<.4) | (strideDuration>2.5); %Checking for missing events, negative duration phases (wrong event order), too long or too short strides
+% time of the SHS, FTO, FHS, FTO, SHS2, and FTO2 events (in that order)
+extendedEventTimes = [eventTimes eventTimes2(:,1:2)];
+% average all gait event times if available
+times = mean(extendedEventTimes,2,'omitnan');
+% initialize output 'parameterSeries' object
+out = parameterSeries(zeros(length(times),0),{},times,{});
+% compute duration (seconds) of stride as time difference between SHS2, SHS
+strideDuration = diff(extendedEventTimes(:,[1 5]),1,2);
+% five criteria to determine whether a stride is 'bad':
+%   1. any event times are 'NaN' (i.e., missing gait event)
+%   2. difference between any two consecutive gait event times is negative
+%   3. stride duration > 1.5 * median stride duration of the trial
+%   4. stride duration < 0.4 seconds (i.e., stride too short)
+%   5. stride duration > 2.5 seconds (i.e., stride too long)
+% TODO: NWB found that 2.5 seconds may be too stringent for slower older
+% adult walkers and 1.5 * median may be a sufficient threshold to exclude
+% outliers (especially in overground trials); consider removing criterion
+bad = any(isnan(extendedEventTimes),2) | ...
+    any(diff(extendedEventTimes,1,2) < 0,2) | ...
+    (strideDuration > 1.5*median(strideDuration,'omitnan')) | ...
+    (strideDuration < 0.4) | (strideDuration > 2.5);
 
-%% basic parameters to save & initialize parameterSeries
-if any(strcmpi(parameterClasses,'basic'))
-
-%initialize trial number
-try
-    trial=str2double(trialData.metaData.rawDataFilename(end-1:end)); %Need to FIX, but this data is not currently available on trialMetaData
-catch
-    warning('calcParametersNew:gettingTrialNumber','Could not determine trial number from metaData, setting to NaN.');
-    trial=nan;
-end
-trial=repmat(trial,length(bad),1);
-
-%Initialize initTime
-initTime=extendedEventTimes(:,1); %SHS
-finalTime=extendedEventTimes(:,6); %FTO2
-
-if strcmp(eventClass, '') % to store that type of event detection used for the trial
-    Event=full(trialData.gaitEvents.Data); 
-    if isequal(Event(:,1),Event(:,5))
-      eventType=2*ones(length(finalTime),1);
-    elseif isequal(Event(:,1),Event(:,9))
-       eventType=1*ones(length(finalTime),1); 
+%% Extract Basic Parameters & Save to Output 'parameterSeries' Object
+if any(strcmpi(parameterClasses,'basic'))   % if adding 'basic' params, ...
+    try                                     % try initializing trial number
+        % need to FIX, but data is currently unavailable on 'trialMetaData'
+        trial = str2double(trialData.metaData.rawDataFilename(end-1:end));
+    catch
+        warning('calcParametersNew:gettingTrialNumber',['Could not ' ...
+            'determine trial number from metaData, setting to NaN.']);
+        trial = nan;                        % set trial to 'NaN'
     end
-elseif strcmp(eventClass, 'kin')
-    eventType=1*ones(length(finalTime),1);
-elseif strcmp(eventClass, 'force')
-    eventType=2*ones(length(finalTime),1);
-end
-    
-%Initialize parameterSeries
-data=[eventType,bad,~bad,trial,initTime,finalTime];
-labels={'eventType','bad','good','trial','initTime','finalTime'};
-description={'1 kinematics, 2 forces','True if events are missing, disordered or if stride time is too long or too short.', 'Opposite of bad.','Original trial number for stride','Time of initial event (SHS), with respect to trial beginning.','Time of final event (FTO2), with respect to trial beginning.'};
-basic=parameterSeries(data,labels,times,description);
-out=cat(out,basic);
+    trial = repmat(trial,length(bad),1);    % repeat number for each stride
+
+    initTime = extendedEventTimes(:,1);     % initial times (all SHS times)
+    finalTime = extendedEventTimes(:,6);    % finale times (all FTO2 times)
+
+    if strcmp(eventClass,'')                % if default event method, ...
+        % determine type of event detection used for this trial
+        Event = full(trialData.gaitEvents.Data);
+        if isequal(Event(:,1),Event(:,5))
+            eventType = 2 * ones(length(finalTime),1);  % use forces
+        elseif isequal(Event(:,1),Event(:,9))
+            eventType = 1 * ones(length(finalTime),1);  % use kinematics
+        end
+    elseif strcmp(eventClass,'kin')         % if using kinematics, ...
+        eventType = 1 * ones(length(finalTime),1);      % set to '1'
+    elseif strcmp(eventClass,'force')       % if using forces, ...
+        eventType = 2 * ones(length(finalTime),1);      % set to '2'
+    end
+
+    % add 'basic' parameters to output 'parameterSeries' object
+    data = [eventType bad ~bad trial initTime finalTime];
+    labels = {'eventType','bad','good','trial','initTime','finalTime'};
+    description = {'1 kinematics, 2 forces', ...
+        'True if events are missing, disordered or if stride time is too long or too short.', ...
+        'Opposite of bad.', ...
+        'Original trial number for stride', ...
+        'Time of initial event (SHS), with respect to trial beginning.', ...
+        'Time of final event (FTO2), with respect to trial beginning.'};
+    basic = parameterSeries(data,labels,times,description);
+    out = cat(out,basic);
 end
 
-%% Temporal:
+%% Extract Temporal Parameters
 if any(strcmpi(parameterClasses,'temporal'))
-    [temp] = computeTemporalParameters(strideEvents);
-    out=cat(out,temp);
+    temp = computeTemporalParameters(strideEvents);
+    out = cat(out,temp);    % concatentate temporal parameters to existing
 end
-%% Spatial:
-if any(strcmpi(parameterClasses,'spatial')) && ~isempty(trialData.markerData) && (numel(trialData.markerData.labels)~=0)
-    [spat] = computeSpatialParameters(strideEvents,trialData.markerData,trialData.angleData,s);
-    out=cat(out,spat);
+
+%% Extract Spatial Parameters
+if any(strcmpi(parameterClasses,'spatial')) && ...
+        ~isempty(trialData.markerData) && ...
+        (numel(trialData.markerData.labels) ~= 0)
+    spat = computeSpatialParameters(strideEvents,trialData.markerData, ...
+        trialData.angleData,s);
+    out = cat(out,spat);    % concatentate spatial parameters to existing
 end
-%% EMG:
-if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData) 
-    %Classic way:
-    [EMG_alt] = computeEMGParameters(trialData.EMGData,trialData.gaitEvents,s,eventTypes);
-    out=cat(out,EMG_alt);
+
+%% Extract Muscle Activity (EMG) Parameters
+if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
+    EMG_alt = computeEMGParameters(trialData.EMGData, ...
+        trialData.gaitEvents,s,eventTypes); % classic way
+    out = cat(out,EMG_alt); % concatentate EMG parameters to existing
 end
-%% Angles  
+
+%% Angles
 if ~isempty(trialData.angleData)
 %     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s);
     [angles] = computeAngleParameters(trialData.angleData,trialData.gaitEvents,s,eventTypes);
