@@ -38,59 +38,72 @@ elseif ischar(parameterClasses)             % otherwise, ...
     parameterClasses = {parameterClasses};  % compute requested parameters
 end
 
-%% Separate into strides & identify events on each
-% one "stride" contains the events: SHS,FTO,FHS,STO,SHS2,FTO2
-if refLeg == 'R'
-    s = 'R';    f = 'L'; %TODO: substitute with getOtherLeg()
-elseif refLeg == 'L'
-    s = 'L';    f = 'R'; %TODO: substitute with getOtherLeg()
-else
-    ME=MException('MakeParameters:refLegError','the refLeg/initEventSide property of metaData must be either ''L'' or ''R''.');
+%% Separate Data by Stride & Identify Gait Events for Each Stride
+% one 'stride' contains the events: SHS, FTO, FHS, STO, SHS2, FTO2
+if refLeg == 'R'            % if reference leg is right, ...
+    s = 'R';                % set slow leg to right
+    f = 'L';                % TODO: substitute with 'getOtherLeg()'
+elseif refLeg == 'L'        % if reference leg is left, ...
+    s = 'L';                % set slow leg to left
+    f = 'R';                % TODO: substitute with 'getOtherLeg()'
+else                        % otherwise, ...
+    ME = MException('MakeParameters:refLegError', ...
+        ['the refLeg/initEventSide property of metaData must be ' ...
+        'either ''L'' or ''R''.']);
     throw(ME);
 end
 
-%Define the events that will be used for all further computations
-eventTypes={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
-eventTypes=strcat(eventClass,eventTypes);
+% define the events that will be used for all further computations
+eventTypes = {[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
+eventTypes = strcat(eventClass,eventTypes);
+eventLabels = {'SHS','FTO','FHS','STO'};
+triggerEvent = eventTypes{1};
 
-eventLabels={'SHS','FTO','FHS','STO'};
-triggerEvent=eventTypes{1};
-
-%Initialize:
-[numStrides,initTime,endTime]=getStrideInfo(trialData,triggerEvent);
-%arrayedEvents=trialData.getArrayedEvents(eventTypes);
-if numStrides==0
-    disp(['Warning: No strides detected in ',file])
-    out=parameterSeries([],{},[],{}); %TODO: Perhaps the reasonable thing is to initializate the parameterSeries with all params and 0 strides instead of empty
-    return
+% initialize stride information variables
+[numStrides,initTime,endTime] = getStrideInfo(trialData,triggerEvent);
+% arrayedEvents = trialData.getArrayedEvents(eventTypes);
+if numStrides == 0          % if there are no strides in the trial, ...
+    % TODO: consider initializing 'parameterSeries' object with all
+    % parameters and zero strides instead of as empty
+    disp(['Warning: No strides detected in ' file]);    % display warning
+    out = parameterSeries([],{},[],{}); % output empty 'parameterSeries'
+    return;
 end
-stridedEventData=cell(numStrides,1);
-stridedAngleData=cell(numStrides,1);
+stridedEventData = cell(numStrides,1);
+stridedAngleData = cell(numStrides,1);
 
-%Stride:
-eventTimes=nan(numStrides,length(eventTypes));
-for i=1:numStrides
-    if ~isempty(trialData.angleData) %this if loop is added by Digna in order to bin the angle data
-        stridedAngleData{i}=trialData.angleData.split(initTime(i),endTime(i));
+% extract binned angle data and stride-by-stride gait event times
+eventTimes = nan(numStrides,length(eventTypes));
+for st = 1:numStrides                       % for each stride in trial, ...
+    % below conditional added by Digna de Kam to bin angle data
+    if ~isempty(trialData.angleData)        % if angle data present, ...
+        stridedAngleData{st} = ...            retrieve binned data
+            trialData.angleData.split(initTime(st),endTime(st));
     end
 
-    %stridedMarkerData{i}=in.('markerData').split(initTime(i),endTime(i));
-    stridedEventData{i}=trialData.gaitEvents.split(initTime(i),endTime(i));
-    for j=1:length(eventTypes)
-        aux=stridedEventData{i}.getDataAsVector(eventTypes{j});
-        aux=find(aux,2,'first'); %Finding next two events of the type %HH: it is pointless to find the next two events, since find will still return a value even if it only finds one.
-        if ~isempty(aux) %HH: maybe instead we should check if aux is has a length of 2
-            eventTimes(i,j)=stridedEventData{i}.Time(aux(1));
+    % stridedMarkerData{i} = in.('markerData').split(initTime(i),endTime(i));
+    stridedEventData{st} = trialData.gaitEvents.split(initTime(st),endTime(st));
+    for ev = 1:length(eventTypes)           % for each gait event type, ...
+        aux = stridedEventData{st}.getDataAsVector(eventTypes{ev});
+        % find next two events of the type
+        % HH: it is pointless to find the next two events, since find will
+        % still return a value even if it only finds one.
+        aux = find(aux,2,'first');
+        % HH: maybe instead we should check if aux has a length of two
+        if ~isempty(aux)                    % if data present, ...
+            eventTimes(st,ev) = stridedEventData{st}.Time(aux(1));
         end
     end
 end
-eventTimes2=[eventTimes(2:end,:);nan(1,size(eventTimes,2))]; %This could be improved by trying to find if there exist any other events after the end of the last stride.
-for j=1:length(eventTypes)
-    strideEvents.(['t' upper(eventLabels{j})])=eventTimes(:,j); %generates a structure of tSHS, tFTO, etc
-    strideEvents.(['t' upper(eventLabels{j}) '2'])=eventTimes2(:,j);
+% TODO: improve by searching for any remaining events after the last stride
+eventTimes2 = [eventTimes(2:end,:); nan(1,size(eventTimes,2))];
+for ev = 1:length(eventTypes)               % for each gait event type, ...
+    % generate a structure of 'tSHS', 'tFTO', etc.
+    strideEvents.(['t' upper(eventLabels{ev})]) = eventTimes(:,ev);
+    strideEvents.(['t' upper(eventLabels{ev}) '2']) = eventTimes2(:,ev);
 end
 
-%% Compute params
+%% Compute Parameters
 extendedEventTimes=[eventTimes, eventTimes2(:,1:2)]; %times of SHS, FTO, FHS, FTO, SHS2, FTO2
 times=nanmean(extendedEventTimes,2); %This is an average of the times of SHS, FTO, FHS, FTO, SHS2, FTO2 (same as old code), IF available.
 out=parameterSeries(zeros(length(times),0),{},times,{});
