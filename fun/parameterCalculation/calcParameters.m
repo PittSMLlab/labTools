@@ -211,20 +211,26 @@ end
 % indexing array out of bounds), comment it out, which will prevent the
 % overground forces from being processed and output.
 
-OG_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'}; % Added to only compute the parameter if you have overground force recordings. 
-OG_idx = contains(trialData.GRFData.labels, OG_names);
+% only compute these parameters if there are overground force recordings
+OG_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
+OG_idx = contains(trialData.GRFData.labels,OG_names);
 
-if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - min(trialData.GRFData.Data(:,OG_idx))) > 100 % This makes sure that it will only compute when the OG force plates are recording or    
-    % there is some differences in forces through the experiment and not a
+if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - min(trialData.GRFData.Data(:,OG_idx))) > 100
+    % there are differences in forces throughout the experiment and not a
     % constant value or NaNs
-    [force_OGFP.Data] = computeForceParameters_OGFP(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
+    force_OGFP.Data = computeForceParameters_OGFP( ...
+        strideEvents,trialData.GRFData,s,f,subData.weight,trialData, ...
+        trialData.markerData);
     if ~isempty(force_OGFP.Data)
-        out=cat(out,force_OGFP);
+        out = cat(out,force_OGFP);  % concatenate OG force parameters
     end
-    [force_OGFP_aligned.Data] = computeForceParameters_OGFP_aligned(strideEvents,trialData.GRFData,s, f, subData.weight, trialData, trialData.markerData);
+
+    force_OGFP_aligned.Data = computeForceParameters_OGFP_aligned( ...
+        strideEvents,trialData.GRFData,s,f,subData.weight,trialData, ...
+        trialData.markerData);
     if ~isempty(force_OGFP_aligned.Data)
-        out=cat(out,force_OGFP_aligned);
-    end   
+        out = cat(out,force_OGFP_aligned);  % concatenate force parameters
+    end
 end
 
 %% Extract H-Reflex Parameters
@@ -250,65 +256,64 @@ end
 
 %% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
 if any(strcmpi(parameterClasses,'basic'))
-%badStart=bad; %make a copy to compare at the end
-%TODO: make this process generalized so that it can filter any parameter
-%TODO: make this into a method of parameterSeries or labTimeSeries
-%should also consider a different method of filtering...
-%paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
-%Pablo block-commented on MAr 13th 2017, because this part of code was
-%doing nothing anyway (only defined the variable named 'aux', which wasn't
-%used downstream
-% for i=1:length(paramsToFilter)
-%     aux=out.getDataAsVector(paramsToFilter{i});
-%     if ~isempty(aux) %In case any of these parameters does not exist
-%     aux=aux-runAvg(aux,50); % remove effects of adaptation
-%     % mark strides bad if values for SL or alpha are larger than 3x the
-%     % interquartile range away from the median.
-%     %Criteria 1: anything outside +-3.5 interquartile ranges
-%     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
-%
-%     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
-%     %5 strides of any trial.
-%     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-%     %    inds=inds(inds>5);
-%     %    bad(inds)=true;
-%     end
-%
-% end
-%Remove outliers according to new values of 'bad':
-%[~,idxs]=out.isaParameter({'bad','good'});
-%out.Data(:,idxs)=[bad,~bad];
-%outlierStrides=find(bad & ~badStart);
-%disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
+    %badStart=bad; %make a copy to compare at the end
+    %TODO: make this process generalized so that it can filter any parameter
+    %TODO: make this into a method of parameterSeries or labTimeSeries
+    %should also consider a different method of filtering...
+    %paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
+    %Pablo block-commented on MAr 13th 2017, because this part of code was
+    %doing nothing anyway (only defined the variable named 'aux', which wasn't
+    %used downstream
+    % for i=1:length(paramsToFilter)
+    %     aux=out.getDataAsVector(paramsToFilter{i});
+    %     if ~isempty(aux) %In case any of these parameters does not exist
+    %     aux=aux-runAvg(aux,50); % remove effects of adaptation
+    %     % mark strides bad if values for SL or alpha are larger than 3x the
+    %     % interquartile range away from the median.
+    %     %Criteria 1: anything outside +-3.5 interquartile ranges
+    %     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+    %
+    %     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
+    %     %5 strides of any trial.
+    %     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
+    %     %    inds=inds(inds>5);
+    %     %    bad(inds)=true;
+    %     end
+    %
+    % end
+    %Remove outliers according to new values of 'bad':
+    %[~,idxs]=out.isaParameter({'bad','good'});
+    %out.Data(:,idxs)=[bad,~bad];
+    %outlierStrides=find(bad & ~badStart);
+    %disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
 
-%----------REMOVE STOP/START STRIDES-------------
-badStart=bad; %make a copy to compare at the end
-%Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
-%(stopping/starting trials)
-if strcmp(trialData.metaData.type,'TM')
-    aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
-    if ~isempty(aux)
-        bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
+    %----------REMOVE STOP/START STRIDES-------------
+    badStart=bad; %make a copy to compare at the end
+    %Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
+    %(stopping/starting trials)
+    if strcmp(trialData.metaData.type,'TM')
+        aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
+        if ~isempty(aux)
+            bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
+        end
     end
-end
 
-%Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
-%on kids!
-if strcmp(trialData.metaData.type,'OG')
-    %To be implemented
-end
+    %Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
+    %on kids!
+    if strcmp(trialData.metaData.type,'OG')
+        %To be implemented
+    end
 
-%Remove outliers according to new values of 'bad':
-[~,idxs]=out.isaParameter({'bad','good'});
-out.Data(:,idxs)=[bad,~bad];
-outlierStrides=find(bad & ~badStart);
-disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
+    %Remove outliers according to new values of 'bad':
+    [~,idxs]=out.isaParameter({'bad','good'});
+    out.Data(:,idxs)=[bad,~bad];
+    outlierStrides=find(bad & ~badStart);
+    disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
 
-% Issue bad strides warning
-if any(bad)
-    disp(['Warning: ' num2str(sum(bad)) ' strides of ',file, ' were labeled as bad'])
-end
-
+    if any(bad)             % if there are any 'bad' strides in trial, ...
+        disp(['Warning: ' num2str(sum(bad)) ' strides of ' file ...
+            ' were labeled as bad']);   % display command window warning
+    end
 end
 
 %% Use 'bad' as mask (necessary?)
