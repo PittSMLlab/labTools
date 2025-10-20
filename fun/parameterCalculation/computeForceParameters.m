@@ -99,7 +99,7 @@ for i=1:length(strideEvents.tSHS)-1
     STO = strideEvents.tSTO(i);
     FTO2 = strideEvents.tFTO2(i);
     SHS2 = strideEvents.tSHS2(i);
-    
+
     if isnan(FTO) || isnan(FHS) ||FTO>FHS
         %keyboard
         FastLegOffSetData(i) = NaN;
@@ -122,80 +122,80 @@ Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getD
 %figure; plot(Filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-LevelofInterest=0.5.*flipIT.*cosd(90-abs(ang)); %The actual angle of the incline
+LevelofInterest = 0.5 .* flipIT .* cosd(90 - abs(ang)); %The actual angle of the incline
 
 %Initalize data objects
-lenny=length(strideEvents.tSHS);
-TMAngle=repmat(ang, 1, lenny);
-WalkingDirection=repmat(flipIT, 1,  lenny);
-FyBS=NaN.*ones(1, lenny);
-FyPS=NaN.*ones(1, lenny);
-FzS=NaN.*ones(1, lenny);
-FxS=NaN.*ones(1, lenny);
-FyBF=NaN.*ones(1, lenny);
-FyPF=NaN.*ones(1, lenny);
-FzF=NaN.*ones(1, lenny);
-FxF=NaN.*ones(1, lenny);
-HandrailHolding=NaN.*ones(1, lenny);
-FyBSmax=NaN.*ones(1, lenny);
-FyPSmax=NaN.*ones(1, lenny);
-FzSmax=NaN.*ones(1, lenny);
-FxSmax=NaN.*ones(1, lenny);
-FyBFmax=NaN.*ones(1, lenny);
-FyPFmax=NaN.*ones(1, lenny);
-FzFmax=NaN.*ones(1, lenny);
-FxFmax=NaN.*ones(1, lenny);
-FxFmax=NaN.*ones(1, lenny);
-FyPSsum=NaN.*ones(1, lenny);
-FyPFsum=NaN.*ones(1, lenny);
-FyBSsum=NaN.*ones(1, lenny);
-FyBFsum=NaN.*ones(1, lenny);
-FyBSmax_ABS=NaN.*ones(1, lenny);
-FyBFmax_ABS=NaN.*ones(1, lenny);
-ImpactMagS=NaN.*ones(1, lenny);
-ImpactMagF=NaN.*ones(1, lenny);
+lenny = length(strideEvents.tSHS);
+TMAngle = repmat(ang,1,lenny);
+WalkingDirection = repmat(flipIT,1,lenny);
+FyBS = NaN .* ones(1,lenny);
+FyPS = NaN .* ones(1,lenny);
+FzS = NaN .* ones(1,lenny);
+FxS = NaN .* ones(1,lenny);
+FyBF = NaN .* ones(1,lenny);
+FyPF = NaN .* ones(1,lenny);
+FzF = NaN .* ones(1,lenny);
+FxF = NaN .* ones(1,lenny);
+HandrailHolding = NaN .* ones(1,lenny);
+FyBSmax = NaN .* ones(1,lenny);
+FyPSmax = NaN .* ones(1,lenny);
+FzSmax = NaN .* ones(1,lenny);
+FxSmax = NaN .* ones(1,lenny);
+FyBFmax = NaN .* ones(1,lenny);
+FyPFmax = NaN .* ones(1,lenny);
+FzFmax = NaN .* ones(1,lenny);
+FxFmax = NaN .* ones(1,lenny);
+FxFmax = NaN .* ones(1,lenny);
+FyPSsum = NaN .* ones(1,lenny);
+FyPFsum = NaN .* ones(1,lenny);
+FyBSsum = NaN .* ones(1,lenny);
+FyBFsum = NaN .* ones(1,lenny);
+FyBSmax_ABS = NaN .* ones(1,lenny);
+FyBFmax_ABS = NaN .* ones(1,lenny);
+ImpactMagS = NaN .* ones(1,lenny);
+ImpactMagF = NaN .* ones(1,lenny);
 
-if ~isempty(regexp(trialData.type, 'TM')) %If overground (i.e., OG) then there will not be any forces to analyze
+if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there will not be any forces to analyze
     for i=1:length(strideEvents.tSHS)-1
         %Get the entire stride of interest on BOTH sides (SHS-->SHS2, and
         %FHS--> FHS2)  Also flip it if decline people
-        timeGRF=round(GRFData.Time,6);
-        SHS=strideEvents.tSHS(i);
-        FTO=strideEvents.tFTO(i);
-        FHS=strideEvents.tFHS(i);
-        STO=strideEvents.tSTO(i);
-        FTO2=strideEvents.tFTO2(i);
-        SHS2=strideEvents.tSHS2(i);
-        
+        timeGRF = round(GRFData.Time,6);
+        SHS = strideEvents.tSHS(i);
+        FTO = strideEvents.tFTO(i);
+        FHS = strideEvents.tFHS(i);
+        STO = strideEvents.tSTO(i);
+        FTO2 = strideEvents.tFTO2(i);
+        SHS2 = strideEvents.tSHS2(i);
+
         % Get the slow step for this stride
         if isnan(SHS) || isnan(STO)
             striderS=[];
-        else 
+        else
             striderS=flipIT.*Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;
         end
-        
+
         % Get the fast step for this strides
         if isnan(FHS) || isnan(FTO2)
             striderF=[];
         else
             striderF=flipIT.*Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
         end
-        
+
         % Get the handrail data
         %Currently not defining handrail data because data integrity is
         %poor unless experimenter explictly collected this data.
         %HandrailHolding(i)= NaN;
-        
+
         %% Slow Leg --  Compute some measures of anterior-posterior forces
         %Previously the following was part of a funciton called SeperateBP
         if ~isempty(striderS) && ~all(striderS==striderS(1)) && ~isempty(FTO) && ~isempty(STO) % Make sure there are no problems with the GRF
-           if std(striderS,'omitnan') > 0.01 && mean(striderS,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
+            if std(striderS,'omitnan') > 0.01 && mean(striderS,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
 
                 [FyBS(i), FyBSsum(i), FyPS(i), FyPSsum(i), FyBSmax(i), FyBSmax_ABS(i),...
                     FyBSmaxQS(i), FyPSmax(i), FyPSmaxQS(i), ImpactMagS(i)] ...
                     = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, ['Epoch: ' trialData.name, '; Stide#:' num2str(i) '; SlowLeg']);
-           end
-            
+            end
+
             % Compute some measures of the vertical and medial-lateral forces
             FzS(i) = -1 * mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
             FxS(i) = mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
