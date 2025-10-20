@@ -81,8 +81,9 @@ for st = 1:numStrides                       % for each stride in trial, ...
             trialData.angleData.split(initTime(st),endTime(st));
     end
 
-    % stridedMarkerData{i} = in.('markerData').split(initTime(i),endTime(i));
-    stridedEventData{st} = trialData.gaitEvents.split(initTime(st),endTime(st));
+    % stridedMarkerData{st} = in.('markerData').split(initTime(st),endTime(st));
+    stridedEventData{st} = ...
+        trialData.gaitEvents.split(initTime(st),endTime(st));
     for ev = 1:length(eventTypes)           % for each gait event type, ...
         aux = stridedEventData{st}.getDataAsVector(eventTypes{ev});
         % find next two events of the type
@@ -187,21 +188,21 @@ end
 if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
     EMG_alt = computeEMGParameters(trialData.EMGData, ...
         trialData.gaitEvents,s,eventTypes); % classic way
-    out = cat(out,EMG_alt); % concatentate EMG parameters to existing
+    out = cat(out,EMG_alt);     % concatentate EMG parameters to existing
 end
 
 %% Extract Angles Parameters
 if ~isempty(trialData.angleData)            % if angle data is present, ...
     angles = computeAngleParameters(trialData.angleData, ...
         trialData.gaitEvents,s,eventTypes);
-    out = cat(out,angles);  % concatentate angle parameters to existing
+    out = cat(out,angles);      % concatentate angle parameters to existing
 end
 
 %% Extract (Treadmill) Force Parameters
 if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     force = computeForceParameters(strideEvents,trialData.GRFData,s,f, ...
         subData.weight,trialData.metaData,trialData.markerData,subData);
-    if ~isempty(force.Data)         % if output force data not empty, ...
+    if ~isempty(force.Data)     % if output force data not empty, ...
         out = cat(out,force);   % concatentate force parameters to existing
     end
 end
@@ -222,7 +223,7 @@ if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - mi
         strideEvents,trialData.GRFData,s,f,subData.weight,trialData, ...
         trialData.markerData);
     if ~isempty(force_OGFP.Data)
-        out = cat(out,force_OGFP);  % concatenate OG force parameters
+        out = cat(out,force_OGFP);      % concatenate OG force parameters
     end
 
     force_OGFP_aligned.Data = computeForceParameters_OGFP_aligned( ...
