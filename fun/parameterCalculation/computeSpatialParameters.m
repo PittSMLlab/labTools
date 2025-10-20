@@ -1,25 +1,26 @@
-function out = computeSpatialParameters(strideEvents,markerData,angleData,s)
+function out = computeSpatialParameters(strideEvents,markerData, ...
+    angleData,s)
 %This function computes summary spatial parameters per stride
 %   This function outputs a 'parameterSeries' object, which can be
 % concatenated with other 'parameterSeries' objects, for example, with
 % those from 'computeTemporalParameters'. While this function is used for
 % spatial parameters exclusively, it should work for any 'labTS' object.
-% This function computes summary spatial parameters.
+% This function computes summary spatial parameters per stride.
 %
 % See also computeHreflexParameters, computeTemporalParameters,
 % computeForceParameters, parameterSeries
 
 %% Gait Stride Event Times
-timeSHS  = strideEvents.tSHS;
-timeFTO  = strideEvents.tFTO;
-timeFHS  = strideEvents.tFHS;
-timeSTO  = strideEvents.tSTO;
-timeSHS2 = strideEvents.tSHS2;
-timeFTO2 = strideEvents.tFTO2;
-timeFHS2 = strideEvents.tFHS2;
-timeSTO2 = strideEvents.tSTO2;
-eventTimes = [timeSHS timeFTO timeFHS timeSTO timeSHS2 timeFTO2 ...
-    timeFHS2 timeSTO2];
+timeSHS  = strideEvents.tSHS;   % slow heel strike event times
+timeFTO  = strideEvents.tFTO;   % fast toe off event times
+timeFHS  = strideEvents.tFHS;   % fast heel strike event times
+timeSTO  = strideEvents.tSTO;   % slow toe off event times
+timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
+timeFTO2 = strideEvents.tFTO2;  % 2nd fast toe off event times
+timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
+timeSTO2 = strideEvents.tSTO2;  % 2nd slow toe off event times
+eventTimes = [timeSHS timeFTO timeFHS timeSTO ...
+    timeSHS2 timeFTO2 timeFHS2 timeSTO2];
 % numbers correspond to the column of the 'eventTimes' matrix
 SHS = 1; FTO = 2; FHS = 3; STO = 4; SHS2 = 5; FTO2 = 6; FHS2 = 7; STO2 = 8;
 
@@ -146,7 +147,7 @@ paramLabels = aux(:,1);
 description = aux(:,2);
 
 %% Sanity check & correction: look for markers at (0,0,0) and set data to NaN
-[dd,ll] = markerData.getOrientedData;
+[dd,ll] = markerData.getOrientedData();
 dd = permute(dd,[1 3 2]);
 ee = all(dd == 0,2);
 if any(ee(:))
@@ -428,8 +429,6 @@ stepTimeIdealS=(-velocityContributionNorm2)-spatialIdealS;
 spatialErrorS=spatialIdealS-spatialContributionNorm2;
 stepTimeErrorS=stepTimeIdealS-stepTimeContributionNorm2;
 
-
-
 %% Speed calculations
 equivalentSpeed=(dispSlow+dispFast)./(ts+tf); %= (ts./tf+ts)*dispSlow./ts + (tf./tf+ts)*dispFast./tf = (ts./tf+ts)*vs + (tf./tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average
 
@@ -489,21 +488,23 @@ stepSpeedAvg = nanmean([stepSpeedSlow stepSpeedFast],2);
 % sHip(indSHS:indFTO2,:) = (rotationMatrix*sHip(indSHS:indFTO2,:)')';
 % fHip(indSHS:indFTO2,:) = (rotationMatrix*fHip(indSHS:indFTO2,:)')';
 
-%% Other contributions
-velocityAltContribution=velocityContribution -(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*avgStepTime;
-velocityAltContributionAlt=velocityAltContribution./strideTimeSlow;
-velocityAltContributionNorm2=velocityAltContribution./Dist;
-velocityAltContributionP=velocityContributionP -(singleStanceSpeedSlowAbs-singleStanceSpeedFastAbs).*(tf+ts)/2;
-velocityAltContributionPNorm=velocityAltContributionP./Dist;
+%% Compute Other Contributions
+velocityAltContribution = velocityContribution - ...
+    (singleStanceSpeedSlowAbs - singleStanceSpeedFastAbs) .* avgStepTime;
+velocityAltContributionAlt = velocityAltContribution ./ strideTimeSlow;
+velocityAltContributionNorm2 = velocityAltContribution ./ Dist;
+velocityAltContributionP = velocityContributionP - ...
+    (singleStanceSpeedSlowAbs - singleStanceSpeedFastAbs) .* (tf + ts) / 2;
+velocityAltContributionPNorm = velocityAltContributionP ./ Dist;
 
-%% Assign parameters to data matrix
-data=nan(length(timeSHS),length(paramLabels));
-for i=1:length(paramLabels)
-    eval(['data(:,i)=' paramLabels{i} ';'])
+%% Assign Parameters to the Data Matrix
+data = nan(length(timeSHS),length(paramLabels));
+for ii = 1:length(paramLabels)
+    eval(['data(:,ii) = ' paramLabels{ii} ';']);
 end
 
-%% Create parameterSeries
-out=parameterSeries(data,paramLabels,[],description);
+%% Output the Computed Parameters
+out = parameterSeries(data,paramLabels,[],description);
 
 end
 

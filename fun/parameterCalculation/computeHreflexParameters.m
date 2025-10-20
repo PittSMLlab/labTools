@@ -1,6 +1,6 @@
 function out = computeHreflexParameters(strideEvents,HreflexData, ...
     EMGData,slowLeg)
-%This function computes summary parameters per stride for the H-reflex data
+%This function computes summary H-reflex parameters per stride
 %   This function outputs a 'parameterSeries' object, which can be
 % concatenated with other 'parameterSeries' objects, for example, with
 % those from 'computeTemporalParameters'. While this function is used for
