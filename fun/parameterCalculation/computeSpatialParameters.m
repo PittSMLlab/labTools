@@ -146,7 +146,7 @@ aux = { ...
 paramLabels = aux(:,1);
 description = aux(:,2);
 
-%% Sanity check & correction: look for markers at (0,0,0) and set data to NaN
+%% Detect Any Markers at Origin (0,0,0) & Set Data to 'NaN'
 [dd,ll] = markerData.getOrientedData();
 dd = permute(dd,[1 3 2]);
 ee = all(dd == 0,2);
@@ -155,8 +155,8 @@ if any(ee(:))
         'for spatial parameter computation.'];
     for ii = 1:size(ee,3)
         if any(ee(:,1,ii)) && sum(ee(:,1,ii)) * markerData.sampPeriod > 1
-            msg = [msg ' ' ll{i} ' was at origin for ' ...
-                num2str(sum(ee(:,1,i)) * markerData.sampPeriod) 's.'];
+            msg = [msg ' ' ll{ii} ' was at origin for ' ...
+                num2str(sum(ee(:,1,ii)) * markerData.sampPeriod) 's.'];
         end
     end
     warning(msg);
@@ -189,29 +189,27 @@ else                    % otherwise, invalid leg ID
     error('Invalid slow leg input argument, must be ''R'' or ''L''');
 end
 
-%step lengths (1D)
-stepLengthSlow=sAnkFwd(:,SHS2)-fAnkFwd(:,SHS2); %If sAnkFwd and fAnkFwd are measured with respect to the same reference, this is the same as just subtracting the marker positions
-stepLengthFast=fAnkFwd(:,FHS)-sAnkFwd(:,FHS);
-takeOffLengthSlow=sAnkFwd(:,STO)-fAnkFwd(:,STO);
-takeOffLengthFast=fAnkFwd(:,FTO)-sAnkFwd(:,FTO);
+% step lengths (1D)
+stepLengthSlow = sAnkFwd(:,SHS2) - fAnkFwd(:,SHS2); %If sAnkFwd and fAnkFwd are measured with respect to the same reference, this is the same as just subtracting the marker positions
+stepLengthFast = fAnkFwd(:,FHS) - sAnkFwd(:,FHS);
+takeOffLengthSlow = sAnkFwd(:,STO) - fAnkFwd(:,STO);
+takeOffLengthFast = fAnkFwd(:,FTO) - sAnkFwd(:,FTO);
 
 %ALTERNATIVE COMPUTATION WAY: doesn't use HIP, so HIP loss is not an issue
 %(HIP value doesn't affect tis computation, but since it is used as
 %reference, it generates NaN downstream if absent:
 %Because we are not using HIP, walking direction is determined through Left
 %to Right ankle vector.
-stepLengthSlow=sAnkFwdAbs(:,SHS2)-fAnkFwdAbs(:,SHS2);
-stepLengthFast=fAnkFwdAbs(:,FHS)-sAnkFwdAbs(:,FHS);
-takeOffLengthSlow=sAnkFwdAbs(:,STO)-fAnkFwdAbs(:,STO);
-takeOffLengthFast=fAnkFwdAbs(:,FTO)-sAnkFwdAbs(:,FTO);
-
+stepLengthSlow = sAnkFwdAbs(:,SHS2) - fAnkFwdAbs(:,SHS2);
+stepLengthFast = fAnkFwdAbs(:,FHS) - sAnkFwdAbs(:,FHS);
+takeOffLengthSlow = sAnkFwdAbs(:,STO) - fAnkFwdAbs(:,STO);
+takeOffLengthFast = fAnkFwdAbs(:,FTO) - sAnkFwdAbs(:,FTO);
 
 %step length (2D) Express w.r.t the hip -- don't save, for now.
 stepLengthSlow2D=sqrt(sum((sAnk2D(:,SHS2,:)-fAnk2D(:,SHS2,:)).^2,3));
 stepLengthFast2D=sqrt(sum((fAnk2D(:,FHS,:)-sAnk2D(:,FHS,:)).^2,3));
 
 %Spatial parameters - in millimeters
-
 %alpha (positive portion of interlimb angle at HS)
 alphaSlow=sAnkFwd(:,SHS2);
 alphaTemp=sAnkFwd(:,SHS);
@@ -241,9 +239,7 @@ RSloWPos=abs(betaSlow./alphaTemp);
 RFastPosSHS=abs(XFast./alphaFast);
 RSlowPosFHS=abs(XSlow./alphaTemp);
 
-
 %Spatial parameters - in degrees
-
 %alpha (positive portion of interlimb angle at HS)
 alphaAngSlow=sAngle(:,SHS2);
 alphaAngTemp=sAngle(:,SHS);
@@ -275,21 +271,23 @@ xSlow_fromAvgHip = -1 * sAnk_fromAvgHip(:,FHS);
 xFast_fromAvgHip = -1 * fAnk_fromAvgHip(:,SHS2);
 
 %% Compute Interlimb Spatial Parameters
-stepLengthDiff=stepLengthFast-stepLengthSlow;
-stepLengthAsym=stepLengthDiff./(stepLengthFast+stepLengthSlow);
-stepLengthDiff2D=stepLengthFast2D-stepLengthSlow2D;
-stepLengthAsym2D=stepLengthDiff2D./(stepLengthFast2D+stepLengthSlow2D);
-angularSpreadDiff=omegaFast-omegaSlow;
-angularSpreadAsym=angularSpreadDiff./(omegaFast+omegaSlow);
-Sout=(alphaFast-alphaSlow)./(alphaFast+alphaSlow);
-Serror=alphaRatioSlow-alphaRatioFast;
-SerrorOld=alphaRatioFast./alphaRatioSlow;
-Sgoal=(stanceRangeFast-stanceRangeSlow)./(stanceRangeFast+stanceRangeSlow);
-centerSlow=(alphaAngSlow+betaAngSlow)./2;
-centerFast=(alphaAngFast+betaAngFast)./2;
-angleOfOscillationAsym=(centerFast-centerSlow);
-Xasym=Xdiff./(stepLengthFast+stepLengthSlow);
-alphaAsym=alphaDiff./(stepLengthFast+stepLengthSlow);
+stepLengthDiff = stepLengthFast - stepLengthSlow;
+stepLengthAsym = stepLengthDiff ./ (stepLengthFast + stepLengthSlow);
+stepLengthDiff2D = stepLengthFast2D - stepLengthSlow2D;
+stepLengthAsym2D = ...
+    stepLengthDiff2D ./ (stepLengthFast2D + stepLengthSlow2D);
+angularSpreadDiff = omegaFast - omegaSlow;
+angularSpreadAsym = angularSpreadDiff ./ (omegaFast + omegaSlow);
+Sout = (alphaFast - alphaSlow) ./ (alphaFast + alphaSlow);
+Serror = alphaRatioSlow - alphaRatioFast;
+SerrorOld = alphaRatioFast ./ alphaRatioSlow;
+Sgoal = (stanceRangeFast - stanceRangeSlow) ./ ...
+    (stanceRangeFast + stanceRangeSlow);
+centerSlow = (alphaAngSlow + betaAngSlow) ./ 2;
+centerFast = (alphaAngFast + betaAngFast) ./ 2;
+angleOfOscillationAsym = centerFast - centerSlow;
+Xasym = Xdiff ./ (stepLengthFast + stepLengthSlow);
+alphaAsym = alphaDiff ./ (stepLengthFast + stepLengthSlow);
 %phase shift (using angles)
 % slowlimb=sAngle(indSHS:indSHS2);
 % fastlimb=fAngle(indSHS:indSHS2);
@@ -305,21 +303,22 @@ alphaAsym=alphaDiff./(stepLengthFast+stepLengthSlow);
 % fastlimb=fastlimb-mean(fastlimb);
 % % Circular correlation
 % phaseShiftPos=circCorr(slowlimb,fastlimb);
-T=length(timeSHS);
-phaseShift=nan(T,1);
-phaseShiftPos=nan(T,1);
-for i=1:T
-    if ~isnan(timeSHS(i)) && ~isnan(timeSHS2(i))
+T = length(timeSHS);
+phaseShift = nan(T,1);
+phaseShiftPos = nan(T,1);
+for ii = 1:T
+    if ~isnan(timeSHS(ii)) && ~isnan(timeSHS2(ii))
         if ~isempty(angleData)
-            sLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[s,'Limb']});
-            fLimb=angleData.split(timeSHS(i),timeSHS2(i)).getDataAsVector({[f,'Limb']});
+            sLimb = angleData.split(timeSHS(ii),timeSHS2(ii)).getDataAsVector({[s 'Limb']});
+            fLimb = angleData.split(timeSHS(ii),timeSHS2(ii)).getDataAsVector({[f 'Limb']});
             if ~isempty(sLimb) && ~isempty(fLimb)
-                phaseShift(i)=circCorr(sLimb,fLimb);
+                phaseShift(ii) = circCorr(sLimb,fLimb);
             end
         end
-        Pos=rotatedMarkerData.split(timeSHS(i),timeSHS2(i)).getOrientedData({[s,'ANK'],[f,'ANK']});
+        Pos = rotatedMarkerData.split(timeSHS(ii),timeSHS2(ii)).getOrientedData({[s 'ANK'],[f 'ANK']});
         if ~isempty(Pos)
-            phaseShiftPos(i)=circCorr(Pos(:,1,2),Pos(:,2,2)); %Using y components only, which is equivalent to sAnkFwd
+            % using only y-axis components, which is equivalent to sAnkFwd
+            phaseShiftPos(ii) = circCorr(Pos(:,1,2),Pos(:,2,2));
         end
     end
 end
