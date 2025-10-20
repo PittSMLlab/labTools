@@ -49,50 +49,52 @@ aux = { ...
 paramLabels = aux(:,1);
 description = aux(:,2);
 
-%% Compute:
+%% Compute Temporal Parameters
+% intraleg parameters (i.e., within each leg)
+% swing phase durations per stride
+swingTimeSlow = timeSHS2 - timeSTO;
+swingTimeFast = timeFHS - timeFTO;
+% stance phase durations (includes double support)
+stanceTimeSlow = timeSTO - timeSHS;
+stanceTimeFast = timeFTO2 - timeFHS;
+% double support phase durations
+doubleSupportSlow = timeSTO - timeFHS;
+doubleSupportTemp = timeFTO - timeSHS;
+% Pablo I. modified (11/11/2014) below parameter to use the second step
+% rather than the first one, so that
+% stance time = step time + double support time with the given indexing.
+doubleSupportFast = timeFTO2 - timeSHS2;
+% step durations (time between heel strike events)
+stepTimeSlow = timeSHS2 - timeFHS;
+stepTimeFast = timeFHS - timeSHS;
+% time between toe off events
+toeOffSlow = timeFTO2 - timeSTO;
+toeOffFast = timeSTO - timeFTO;
+% stride durations
+strideTimeSlow = timeSHS2 - timeSHS;
+strideTimeFast = timeFTO2 - timeFTO;
+% cadence (stride cycles per second)
+cadenceSlow = 1 ./ strideTimeSlow;
+cadenceFast = 1 ./ strideTimeFast;
+% step cadence (steps per second)
+stepCadenceSlow = 1 ./ stepTimeSlow;
+stepCadenceFast = 1 ./ stepTimeFast;
+% percentage of gait cycle that is double support phase
+doubleSupportPctSlow = (doubleSupportSlow ./ strideTimeSlow) * 100;
+doubleSupportPctFast = (doubleSupportFast ./ strideTimeFast) * 100;
 
-%%% intralimb
-
-%swing times
-swingTimeSlow=timeSHS2-timeSTO;
-swingTimeFast=timeFHS-timeFTO;
-%stance times (includes double supports)
-stanceTimeSlow=timeSTO-timeSHS;
-stanceTimeFast=timeFTO2-timeFHS;
-%double support times
-doubleSupportSlow=timeSTO-timeFHS;
-doubleSupportTemp=timeFTO-timeSHS;
-doubleSupportFast=timeFTO2-timeSHS2; %PAblo: changed on 11/11/2014 to use the second step instead of the first one, so stance time= step time + double support time with the given indexing.
-%step times (time between heel strikes)
-stepTimeSlow=timeSHS2-timeFHS;
-stepTimeFast=timeFHS-timeSHS;
-%time betwenn toe offs
-toeOffSlow=timeFTO2-timeSTO;
-toeOffFast=timeSTO-timeFTO;
-%stride times
-strideTimeSlow=timeSHS2-timeSHS;
-strideTimeFast=timeFTO2-timeFTO;
-%cadence (stride cycles per s)
-cadenceSlow=1./strideTimeSlow;
-cadenceFast=1./strideTimeFast;
-%step cadence (steps per s)
-stepCadenceSlow=1./stepTimeSlow;
-stepCadenceFast=1./stepTimeFast;
-%double support percent
-doubleSupportPctSlow=doubleSupportSlow./strideTimeSlow*100;
-doubleSupportPctFast=doubleSupportFast./strideTimeFast*100;
-
-%%% interlimb
-%note: the decision on Fast-Slow vs Slow-Fast was made based on how
-%the parameter looks when plotted.
-doubleSupportDiff=doubleSupportSlow-doubleSupportFast;
-stepTimeDiff=stepTimeFast-stepTimeSlow;
-stanceTimeDiff=stanceTimeSlow-stanceTimeFast;
-swingTimeDiff=swingTimeFast-swingTimeSlow;
-doubleSupportAsym=(doubleSupportPctFast-doubleSupportPctSlow)./(doubleSupportPctFast+doubleSupportPctSlow);
-Tout=(stepTimeDiff)./strideTimeSlow;
-Tgoal=(stanceTimeDiff)./strideTimeSlow;
-TgoalSW=(swingTimeDiff)./strideTimeSlow;
+% interleg parameters (i.e., across the legs)
+% NOTE: the decision as to whether to use fast - slow or slow - fast was
+% made pragmatically based on how the parameter timecourse appeared
+doubleSupportDiff = doubleSupportSlow - doubleSupportFast;
+stepTimeDiff = stepTimeFast - stepTimeSlow;
+stanceTimeDiff = stanceTimeSlow - stanceTimeFast;
+swingTimeDiff = swingTimeFast - swingTimeSlow;
+doubleSupportAsym = (doubleSupportPctFast - doubleSupportPctSlow) ./ ...
+    (doubleSupportPctFast + doubleSupportPctSlow);
+Tout = stepTimeDiff ./ strideTimeSlow;
+Tgoal = stanceTimeDiff ./ strideTimeSlow;
+TgoalSW = swingTimeDiff ./ strideTimeSlow;
 
 %% Assign Parameters to the Data Matrix
 data = nan(length(timeSHS),length(paramLabels));
