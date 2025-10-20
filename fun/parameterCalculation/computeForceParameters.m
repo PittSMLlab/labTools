@@ -201,16 +201,16 @@ if ~isempty(regexp(trialData.type, 'TM')) %If overground (i.e., OG) then there w
             FzSmax(i)=-1*nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fz']).Data)/Normalizer;
             FxSmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Normalizer;
         end
-        
+
 
         %% Fast Leg -- Compute some measures of anterior-posterior forces
         if ~isempty(striderF) && ~all(striderF==striderF(1)) && ~isempty(FTO) && ~isempty(STO)
-             if nanstd(striderF)>0.01 || nanmean(striderF)>0.01 %This is to get rid of places where there is only noise and no data
+            if nanstd(striderF)>0.01 || nanmean(striderF)>0.01 %This is to get rid of places where there is only noise and no data
                 [FyBF(i), FyBFsum(i), FyPF(i), FyPFsum(i), FyBFmax(i), FyBFmax_ABS(i),...
                     FyBFmaxQS(i), FyPFmax(i),  FyPFmaxQS(i), ImpactMagF(i)] ...
                     = ComputeLegForceParameters(striderF,  LevelofInterest, FlipB, ['Epoch: ' trialData.name, '; Stide#:' num2str(i) '; FastLeg']);
-             end
-            
+            end
+
             % Compute some measures of the vertical and medial-lateral forces
             FzF(i)=-1*nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
             FxF(i)=nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
@@ -221,51 +221,52 @@ if ~isempty(regexp(trialData.type, 'TM')) %If overground (i.e., OG) then there w
 end
 
 %% Kinetic Symmetry Measures
-FyBSym=FyBF-FyBS;
-FyPSym=FyPF-FyPS;
-FyBmaxSym=FyBFmax-FyBSmax;
-FyPmaxSym=FyPFmax-FyPSmax;
-FyBmaxRatio= FyBSmax./FyBFmax;
-FyPmaxRatio=FyPSmax./FyPFmax;
-FyBmaxSymNorm=(abs(FyBFmax)-abs(FyBSmax))./(abs(FyBFmax)+abs(FyBSmax));
-FyPmaxSymNorm=(abs(FyPFmax)-abs(FyPSmax))./(abs(FyPFmax)+abs(FyPSmax));
-FyBFmaxPer=(abs(FyBFmax))./(abs(FyBFmax)+abs(FyBSmax));
-FyBSmaxPer=(abs(FyBSmax))./(abs(FyBFmax)+abs(FyBSmax));
-FyPFmaxPer=(abs(FyPFmax))./(abs(FyPFmax)+abs(FyPSmax));
-FyPSmaxPer=(abs(FyPSmax))./(abs(FyPFmax)+abs(FyPSmax));
-Slow_Ipsi_FySym=FyBSmax+FyPSmax;
-Fast_Ipsi_FySym=FyBFmax+FyPFmax;
-SlowB_Contra_FySym=FyBSmax+FyPFmax;
-FastB_Contra_FySym= FyBFmax+FyPSmax;
+FyBSym = FyBF - FyBS;
+FyPSym = FyPF - FyPS;
+FyBmaxSym = FyBFmax - FyBSmax;
+FyPmaxSym = FyPFmax - FyPSmax;
+FyBmaxRatio = FyBSmax ./ FyBFmax;
+FyPmaxRatio = FyPSmax ./ FyPFmax;
+FyBmaxSymNorm = (abs(FyBFmax)-abs(FyBSmax)) ./ (abs(FyBFmax)+abs(FyBSmax));
+FyPmaxSymNorm = (abs(FyPFmax)-abs(FyPSmax)) ./ (abs(FyPFmax)+abs(FyPSmax));
+FyBFmaxPer = abs(FyBFmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+FyBSmaxPer = abs(FyBSmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+FyPFmaxPer = abs(FyPFmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+FyPSmaxPer = abs(FyPSmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+Slow_Ipsi_FySym = FyBSmax + FyPSmax;
+Fast_Ipsi_FySym = FyBFmax + FyPFmax;
+SlowB_Contra_FySym = FyBSmax + FyPFmax;
+FastB_Contra_FySym = FyBFmax + FyPSmax;
 
-%% COM and COP -- Not robust enough for general code
-%%COM:
-%if ~isempty(markerData.getLabelsThatMatch('HAT'))
-%    [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT, FyPSat );
+%% Center of Mass (COM): Not Robust Enough for General Code
+% if ~isempty(markerData.getLabelsThatMatch('HAT'))
+%    outCOM = computeCOM(strideEvents,markerData,BW,slowleg,fastleg, ...
+%        impactS,expData,gaitEvents,flipIT,FyPSat);
 % else
-outCOM.Data=[];
-outCOM.labels=[];
-outCOM.description=[];
+outCOM.Data = [];
+outCOM.labels = [];
+outCOM.description = [];
 % end
 
-%%COP: not ready for real life
+%% Center of Pressure (COP): Not Ready to Be Used
 % if ~isempty(markerData.getLabelsThatMatch('LCOP'))
-%     [outCOP] = computeCOPParams( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents );
+%     outCOP = computeCOPParams(strideEvents,markerData,BW,slowleg, ...
+%         fastleg,impactS,expData,gaitEvents);
 % else
-outCOP.Data=[];
-outCOP.labels=[];
-outCOP.description=[];
+outCOP.Data = [];
+outCOP.labels = [];
+outCOP.description = [];
 % end
 
 % if isempty(markerData.getLabelsThatMatch('Hat'))
-%     labels=[labels outCOM.labels outCOP.labels];
-%     description=[description outCOM.description outCOP.description];
+%     labels = [labels outCOM.labels outCOP.labels];
+%     description = [description outCOM.description outCOP.description];
 % end
 
-%% Assign parameters to data matrix
-data=nan(lenny,length(paramLabels));
-for i=1:length(paramLabels)
-    eval(['data(:,i)=' paramLabels{i} ';'])
+%% Assign Parameters to the Data Matrix
+data = nan(lenny,length(paramLabels));
+for ii = 1:length(paramLabels)
+    eval(['data(:,ii) = ' paramLabels{ii} ';']);
 end
 
 %% Output the Computed Parameters
