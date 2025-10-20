@@ -254,7 +254,7 @@ if any(contains(trialData.gaitEvents.labels,'perc'))
     out = cat(out,PerceptualTasks); % concatenate perceptual parameters
 end
 
-%% Compute an updated bad/good flag based on computed parameters & finding outliers (only if basic parameters are being computed)
+%% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
 if any(strcmpi(parameterClasses,'basic'))
     %badStart=bad; %make a copy to compare at the end
     %TODO: make this process generalized so that it can filter any parameter
@@ -287,28 +287,35 @@ if any(strcmpi(parameterClasses,'basic'))
     %outlierStrides=find(bad & ~badStart);
     %disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
 
-    %----------REMOVE STOP/START STRIDES-------------
-    badStart=bad; %make a copy to compare at the end
-    %Criteria 3: if on TM trials singleStanceSpeed on BOTH legs is less than .05m/s
-    %(stopping/starting trials)
+    % -------------------- REMOVE START / STOP STRIDES --------------------
+    badStart = bad;         % copy 'bad' strides array for later comparison
+    % criterion 3: if 'singleStanceSpeed' of BOTH legs is less than
+    % 0.05 m/s (i.e., 50 mm/s) (starting / stopping strides, TM trials)
     if strcmp(trialData.metaData.type,'TM')
-        aux=out.getDataAsVector({'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
-        if ~isempty(aux)
-            bad(abs(aux(:,1))<50 & abs(aux(:,2))<50)=true; %Moving too slow
+        aux = out.getDataAsVector( ...
+            {'singleStanceSpeedFastAbs','singleStanceSpeedSlowAbs'});
+        if ~isempty(aux)    % if parameters not empty arrays, ...
+            % label as 'bad' TM strides where moving too slowly
+            bad(abs(aux(:,1)) < 50 & abs(aux(:,2)) < 50) = true;
         end
     end
 
-    %Criteria 4: if on OG trials any swingRange< 50mm or if equivalent speed is too small %This may be problematic
-    %on kids!
+    % criterion 4: if any 'swingRange' < 50mm or if equivalent speed is too
+    % small (OG trials only, NOTE: may be problematic for children)
     if strcmp(trialData.metaData.type,'OG')
-        %To be implemented
+        % TODO: implement this handling
     end
 
-    %Remove outliers according to new values of 'bad':
-    [~,idxs]=out.isaParameter({'bad','good'});
-    out.Data(:,idxs)=[bad,~bad];
-    outlierStrides=find(bad & ~badStart);
-    disp(['Removed ' num2str(numel(outlierStrides)) ' stopping/starting strides from ' file ' at stride(s) ' num2str(outlierStrides')])
+    % remove outlier strides based on new 'bad' labeling
+    [~,idxs] = out.isaParameter({'bad','good'});% parameter column indices
+    out.Data(:,idxs) = [bad ~bad];              % update parameters
+    % identify strides that are currently marked 'bad' but not previously
+    outlierStrides = find(bad & ~badStart);
+    % TODO: confusing NWB sees no code removing 'bad' strides from data and
+    % why are not all 'bad' strides displayed in below warning?
+    disp(['Removed ' num2str(numel(outlierStrides)) ...
+        ' stopping/starting strides from ' file ' at stride(s) ' ...
+        num2str(outlierStrides')]);
 
     if any(bad)             % if there are any 'bad' strides in trial, ...
         disp(['Warning: ' num2str(sum(bad)) ' strides of ' file ...
@@ -316,8 +323,11 @@ if any(strcmpi(parameterClasses,'basic'))
     end
 end
 
-%% Use 'bad' as mask (necessary?)
-%out.Data(bad==1,6:end)=NaN; %First 5 parameters are kept for ID purposes: bad, good, trial, initTime, finalTime
+%% Mask Strides Labeled 'bad' as 'NaN'
+% NOTE: this line has been commented out for a while and is unnecessary
+% TODO: remove line permanently so users have option of keeping all strides
+% only mask parameters in columns 6 to end, leave first five untouched
+% out.Data(bad == 1,6:end) = NaN;
 
 end
 
