@@ -56,7 +56,7 @@ paramLabels = aux(:,1);
 description = aux(:,2);
 
 %% Retrieve Trial Information & Preliminarily Filter the Data
-%Get the trial description because this has info on inclination
+% retrieve trial description, which contains TM inclination information
 trial = trialData.description;
 
 if strcmpi(trialData.type,'NIM')    % if Nimbus shoe trial, ...
@@ -65,23 +65,23 @@ if strcmpi(trialData.type,'NIM')    % if Nimbus shoe trial, ...
 else                                % otherwise, ...
     Normalizer = 9.81 * BW;
 end
+% NOTE: may want to change if desire braking magnitudes
+FlipB = 1;
 
-FlipB=1; %7/21/2016, nevermind, making 1 8/1/2016 -- May want to change if you want braking magnitudes
-
-if iscell(trial)
-    trial=trial{1};
+if iscell(trial)        % if 'trial' is a cell array, ...
+    trial = trial{1};   % retrieve only first element
 end
 
-% If we identify that subjects are walking decline and thus backwards.
-[ ang ] = DetermineTMAngle( trialData );
-if strfind(lower(subData.ID), 'decline')% Decline are walking backwards on the treadmill
-    flipIT=-1;
+% if participants are walking declined (i.e., backwards on TM), ...
+ang = DetermineTMAngle(trialData);
+if contains(lower(subData.ID),'decline')
+    flipIT = -1;
 else
-    flipIT=1;
+    flipIT = 1;
 end
 
-%Filter forces a bit before we get started
-Filtered=GRFData.lowPassFilter(20);
+% filter forces before further processing
+Filtered = GRFData.lowPassFilter(20);   % cutoff frequency: 20 Hz
 
 %~~~~~~~~~~~~~~~~ REMOVE ANY OFFSETS IN THE DATA~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %New 8/5/2016 CJS: It came to my attenion that one of the decline subjects
@@ -92,29 +92,30 @@ Filtered=GRFData.lowPassFilter(20);
 
 %figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');
 for i=1:length(strideEvents.tSHS)-1
-    timeGRF=round(Filtered.Time,6);
-    SHS=strideEvents.tSHS(i);
-    FTO=strideEvents.tFTO(i);
-    FHS=strideEvents.tFHS(i);
-    STO=strideEvents.tSTO(i);
-    FTO2=strideEvents.tFTO2(i);
-    SHS2=strideEvents.tSHS2(i);
+    timeGRF = round(Filtered.Time,6);
+    SHS = strideEvents.tSHS(i);
+    FTO = strideEvents.tFTO(i);
+    FHS = strideEvents.tFHS(i);
+    STO = strideEvents.tSTO(i);
+    FTO2 = strideEvents.tFTO2(i);
+    SHS2 = strideEvents.tSHS2(i);
     
     if isnan(FTO) || isnan(FHS) ||FTO>FHS
         %keyboard
-        FastLegOffSetData(i)=NaN;
+        FastLegOffSetData(i) = NaN;
     else
-        FastLegOffSetData(i)=nanmedian(Filtered.split(FTO, FHS).getDataAsTS([fastleg 'Fy']).Data);
+        FastLegOffSetData(i) = median(Filtered.split(FTO,FHS).getDataAsTS([fastleg 'Fy']).Data,'omitnan');
     end
     if isnan(STO) || isnan(SHS2)
-        SlowLegOffSetData(i)=NaN;
+        SlowLegOffSetData(i) = NaN;
     else
-        SlowLegOffSetData(i)=nanmedian(Filtered.split(STO, SHS2).getDataAsTS([slowleg 'Fy']).Data);
+        SlowLegOffSetData(i) = median(Filtered.split(STO,SHS2).getDataAsTS([slowleg 'Fy']).Data,'omitnan');
     end
 end
-FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
-SlowLegOffSet=round(nanmedian(SlowLegOffSetData), 3);
-display(['Fast Leg Off Set: ' num2str(FastLegOffSet) ', Slow Leg OffSet: ' num2str(SlowLegOffSet)]);
+FastLegOffSet = round(median(FastLegOffSetData,'omitnan'),3);
+SlowLegOffSet = round(median(SlowLegOffSetData,'omitnan'),3);
+display(['Fast Leg Off Set: ' num2str(FastLegOffSet) ...
+    ', Slow Leg OffSet: ' num2str(SlowLegOffSet)]);
 
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy'])))=Filtered.getDataAsVector([fastleg 'Fy'])-FastLegOffSet;
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getDataAsVector([slowleg 'Fy'])-SlowLegOffSet;
@@ -188,7 +189,7 @@ if ~isempty(regexp(trialData.type, 'TM')) %If overground (i.e., OG) then there w
         %% Slow Leg --  Compute some measures of anterior-posterior forces
         %Previously the following was part of a funciton called SeperateBP
         if ~isempty(striderS) && ~all(striderS==striderS(1)) && ~isempty(FTO) && ~isempty(STO) % Make sure there are no problems with the GRF
-           if nanstd(striderS)>0.01 && nanmean(striderS)>0.01 %This is to get rid of places where there is only noise and no data
+           if std(striderS,'omitnan') > 0.01 && mean(striderS,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
 
                 [FyBS(i), FyBSsum(i), FyPS(i), FyPSsum(i), FyBSmax(i), FyBSmax_ABS(i),...
                     FyBSmaxQS(i), FyPSmax(i), FyPSmaxQS(i), ImpactMagS(i)] ...
@@ -196,26 +197,26 @@ if ~isempty(regexp(trialData.type, 'TM')) %If overground (i.e., OG) then there w
            end
             
             % Compute some measures of the vertical and medial-lateral forces
-            FzS(i)=-1*nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fz']).Data)/Normalizer;
-            FxS(i)=nanmean(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Normalizer;
-            FzSmax(i)=-1*nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fz']).Data)/Normalizer;
-            FxSmax(i)=nanmin(Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fx']).Data)/Normalizer;
+            FzS(i) = -1 * mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
+            FxS(i) = mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
+            FzSmax(i) = -1 * min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
+            FxSmax(i) = min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
         end
-
 
         %% Fast Leg -- Compute some measures of anterior-posterior forces
         if ~isempty(striderF) && ~all(striderF==striderF(1)) && ~isempty(FTO) && ~isempty(STO)
-            if nanstd(striderF)>0.01 || nanmean(striderF)>0.01 %This is to get rid of places where there is only noise and no data
+            if std(striderF,'omitnan') > 0.01 || mean(striderF,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
                 [FyBF(i), FyBFsum(i), FyPF(i), FyPFsum(i), FyBFmax(i), FyBFmax_ABS(i),...
                     FyBFmaxQS(i), FyPFmax(i),  FyPFmaxQS(i), ImpactMagF(i)] ...
                     = ComputeLegForceParameters(striderF,  LevelofInterest, FlipB, ['Epoch: ' trialData.name, '; Stide#:' num2str(i) '; FastLeg']);
             end
 
             % Compute some measures of the vertical and medial-lateral forces
-            FzF(i)=-1*nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
-            FxF(i)=nanmean(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
-            FzFmax(i)=-1*nanmin(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fz']).Data)/Normalizer;
-            FxFmax(i)=nanmax(Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fx']).Data)/Normalizer;
+            FzF(i) = -1 * mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,'omitnan') / Normalizer;
+            FxF(i) = mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,'omitnan') / Normalizer;
+            % TODO: why min & max here compared to min & min above?
+            FzFmax(i) = -1 * min(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,'omitnan') / Normalizer;
+            FxFmax(i) = max(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,'omitnan') / Normalizer;
         end
     end
 end
