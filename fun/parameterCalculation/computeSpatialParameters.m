@@ -179,13 +179,13 @@ end
     sAnk_fromAvgHipAbs,fAnk_fromAvgHipAbs] = ...
     getKinematicDataAbs(eventTimes,markerData,angleData,s);
 
-%% Intralimb
+%% Compute Intralimb Spatial Parameters
 if strcmp(s,'L')        % if slow leg is left, ...
     f = 'R';            % fast is right
 elseif strcmp(s,'R')    % if slow leg is right, ...
     f = 'L';
 else                    % otherwise, invalid leg ID
-    error();
+    error('Invalid slow leg input argument, must be ''R'' or ''L''');
 end
 
 %step lengths (1D)
@@ -264,16 +264,16 @@ alphaDeltaSlow=sAngle(:,SHS2)-fAngle(:,FHS); %same as alphaAngSlow-alphaAngFast
 alphaDeltaFast=fAngle(:,FHS)-sAngle(:,SHS);
 
 %%
-alphaTemp_fromAvgHip = (-1)*sAnk_fromAvgHip(:,SHS); % Multiply by -1 to correct for direction alpha has to be positive
-alphaFast_fromAvgHip = (-1)*fAnk_fromAvgHip(:,FHS);
-alphaSlow_fromAvgHip = (-1)*sAnk_fromAvgHip(:,SHS2);
+% multiply by -1 to correct for direction since alpha must be positive
+alphaTemp_fromAvgHip = -1 * sAnk_fromAvgHip(:,SHS);
+alphaFast_fromAvgHip = -1 * fAnk_fromAvgHip(:,FHS);
+alphaSlow_fromAvgHip = -1 * sAnk_fromAvgHip(:,SHS2);
 
-xTemp_fromAvgHip = (-1)*fAnk_fromAvgHip(:,SHS);
-xSlow_fromAvgHip = (-1)*sAnk_fromAvgHip(:,FHS);
-xFast_fromAvgHip = (-1)*fAnk_fromAvgHip(:,SHS2);
+xTemp_fromAvgHip = -1 * fAnk_fromAvgHip(:,SHS);
+xSlow_fromAvgHip = -1 * sAnk_fromAvgHip(:,FHS);
+xFast_fromAvgHip = -1 * fAnk_fromAvgHip(:,SHS2);
 
-%% Interlimb
-
+%% Compute Interlimb Spatial Parameters
 stepLengthDiff=stepLengthFast-stepLengthSlow;
 stepLengthAsym=stepLengthDiff./(stepLengthFast+stepLengthSlow);
 stepLengthDiff2D=stepLengthFast2D-stepLengthSlow2D;
@@ -322,7 +322,6 @@ for i=1:T
         end
     end
 end
-
 
 %% Contribution Calculations
 
