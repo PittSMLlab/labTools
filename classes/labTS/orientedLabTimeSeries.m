@@ -45,7 +45,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
             [newTS,auxLabel]=getDataAsTS@labTimeSeries(this,label);
         end
 
-        function [data,label]=getOrientedData(this,label)
+        function [data,label] = getOrientedData(this,label)
             %Returns data as a 3D tensor, where the last dim contains the componentes x,y,z
             %[data,label]=getOrientedData(this,label)
             %INPUT:
@@ -61,21 +61,22 @@ classdef orientedLabTimeSeries  < labTimeSeries
             %i at all time samples.
             %label=Currently returns the same label given as input.
 
-            T=size(this.Data,1);
-            if nargin<2 || isempty(label)
-                label=this.getLabelPrefix; %All of them
+            T = size(this.Data,1);
+            if nargin < 2 || isempty(label)
+                label = this.getLabelPrefix;    % retrieve all mrkr labels
             elseif isa(label,'char')
-                label={label};
+                label = {label};
             end
 
-            data=nan(T,length(label)*3);
-            extendedLabels=this.addLabelSuffix(label);
+            data = nan(T,length(label)*3);
+            extendedLabels = this.addLabelSuffix(label);
             if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
-               error('Labels in this object do not pass the sanity check.')
+               error('Labels in this object do not pass sanity check.');
             end
-            [bool,~]=this.isaLabel(extendedLabels);
-            [data(:,bool),~]=this.getDataAsVector(extendedLabels(bool));
-            data=permute(reshape(data,T,3,round(length(extendedLabels)/3)),[1,3,2]);
+            bool = this.isaLabel(extendedLabels);
+            data(:,bool) = this.getDataAsVector(extendedLabels(bool));
+            data = permute( ...
+                reshape(data,T,3,round(numel(extendedLabels)/3)),[1 3 2]);
         end
 
         function newThis=getDataAsOTS(this,label)
@@ -726,19 +727,21 @@ classdef orientedLabTimeSeries  < labTimeSeries
            newThis=orientedLabTimeSeries(auxThis.Data,t0,auxThis.sampPeriod,auxThis.labels,this.orientation);
         end
 
-        function newThis=translate(this,vector)
+        function newThis = translate(this,vector)
             %translate OTS data by input vector (vector addition)
 
-
             %Check: vector is 1x3 or Tx3
-            [M,N]=size(vector);
-            if N~=3 || (M~=1 && M~=length(this.Time))
-                error('orientedLabTS:translate','Translation vector has to be size 3 on second dim, and singleton or of length(time) in the first.')
+            [M,N] = size(vector);
+            if N ~= 3 || (M ~= 1 && M ~= numel(this.Time))
+                error('orientedLabTS:translate',['Translation vector ' ...
+                    'has to be size 3 on second dim, and singleton or ' ...
+                    'of length(time) in the first.']);
             end
-            [data,~]=getOrientedData(this);
-            vector=reshape(vector,M,1,3);
-            newData=permute(bsxfun(@plus,data,vector),[1,3,2]);
-            newThis=orientedLabTimeSeries(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
+            data = getOrientedData(this);
+            vector = reshape(vector,M,1,3);
+            newData = permute(bsxfun(@plus,data,vector),[1 3 2]);
+            newThis = orientedLabTimeSeries(newData(:,:),this.Time(1), ...
+                this.sampPeriod,this.labels,this.orientation);
             %newThis.UserData.translation=; %ToDo: store the translation
             %info in some structure so that it can be backtracked
         end
