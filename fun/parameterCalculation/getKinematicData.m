@@ -158,8 +158,8 @@ hipPos3DRel = 0.5 * (sHipRel + fHipRel);    % just for check, should be all zero
 % hipPos = mean([sHip(indSHS,2) fHip(indSHS,2)]);
 hipPosSHS = hipPosFwd(:,1);     % hip position at SHS
 % compute average hip position over gait cycle
-hipPosAvg_forFast = mean(nanmean(hipPosFwd(:,1:6))); % average hip position from SHS to STO2
-hipPosAvg_forSlow = mean(nanmean(hipPosFwd(:,3:8))); % average hip position from SHS to STO2
+hipPosAvg_forFast = mean(mean(hipPosFwd(:,1:6),'omitnan')); % average hip position from SHS to STO2
+hipPosAvg_forSlow = mean(mean(hipPosFwd(:,3:8),'omitnan')); % average hip position from SHS to STO2
 
 %rotate coordinates to be aligned wiht walking dierection
 %sRotation = calcangle(sAnk(indSHS2,1:2),sAnk(indSTO,1:2),[sAnk(indSTO,1)-100*direction sAnk(indSTO,2)])-90;
