@@ -405,28 +405,30 @@ stepTimeContributionP2= .5*(vf2 + vs2).*(ts-tf);
 velocityContributionP2= .5*(vs2-vf2).*(tf+ts);
 netContributionP2=spatialContributionP2+stepTimeContributionP2+velocityContributionP2;
 
-spatialContributionPNorm2=spatialContributionP2./Dist;
-stepTimeContributionPNorm2=stepTimeContributionP2./Dist;
-velocityContributionPNorm2=velocityContributionP2./Dist;
-netContributionPNorm2=netContributionP2./Dist;
+spatialContributionPNorm2 = spatialContributionP2 ./ Dist;
+stepTimeContributionPNorm2 = stepTimeContributionP2 ./ Dist;
+velocityContributionPNorm2 = velocityContributionP2 ./ Dist;
+netContributionPNorm2 = netContributionP2 ./ Dist;
 
 % Contribution error values
 
-%from T goal
-stanceTimeSlow=timeSTO-timeSHS;
-stanceTimeFast=timeFTO2-timeFHS;
-stepTimeIdealT=((velocitySlow+velocityFast)./2).*(stanceTimeSlow-stanceTimeFast)./Dist;
-spatialIdealT=-(velocityContributionNorm2+stepTimeIdealT);
-stepTimeErrorT=stepTimeIdealT-stepTimeContributionNorm2;
-spatialErrorT=spatialIdealT-spatialContributionNorm2;
+% from T goal
+stanceTimeSlow = timeSTO - timeSHS;
+stanceTimeFast = timeFTO2 - timeFHS;
+stepTimeIdealT = ((velocitySlow + velocityFast) ./ 2) .* ...
+    (stanceTimeSlow - stanceTimeFast) ./ Dist;
+spatialIdealT = -(velocityContributionNorm2 + stepTimeIdealT);
+stepTimeErrorT = stepTimeIdealT - stepTimeContributionNorm2;
+spatialErrorT = spatialIdealT - spatialContributionNorm2;
 
-%From S goal
-rangeSlow=alphaSlow-betaSlow;
-rangeFast=alphaFast-betaFast;
-spatialIdealS=(2*(alphaFast+alphaSlow)./Dist).*((rangeFast-rangeSlow)./(rangeFast+rangeSlow));
-stepTimeIdealS=(-velocityContributionNorm2)-spatialIdealS;
-spatialErrorS=spatialIdealS-spatialContributionNorm2;
-stepTimeErrorS=stepTimeIdealS-stepTimeContributionNorm2;
+% from S goal
+rangeSlow = alphaSlow - betaSlow;
+rangeFast = alphaFast - betaFast;
+spatialIdealS = (2 * (alphaFast + alphaSlow) ./ Dist) .* ...
+    ((rangeFast - rangeSlow) ./ (rangeFast + rangeSlow));
+stepTimeIdealS = -velocityContributionNorm2 - spatialIdealS;
+spatialErrorS = spatialIdealS - spatialContributionNorm2;
+stepTimeErrorS = stepTimeIdealS - stepTimeContributionNorm2;
 
 %% Speed calculations
 equivalentSpeed=(dispSlow+dispFast)./(ts+tf); %= (ts./tf+ts)*dispSlow./ts + (tf./tf+ts)*dispFast./tf = (ts./tf+ts)*vs + (tf./tf+ts)*vf = weighted average of ipsilateral speeds: if subjects spend much more time over one foot than the other, this might not be close to the arithmetic average
@@ -450,7 +452,6 @@ for i=1:T
         singleStanceSpeedFastAbs(i)=prctile(fToePartial(:,1,2),70);
     end
 end
-
 
 singleStanceSpeedSlowAbsANK=nan(T,1);
 singleStanceSpeedFastAbsANK=nan(T,1);
@@ -476,8 +477,7 @@ stanceSpeedFast=abs(fAnkFwd(:,FTO2)-fAnkFwd(:,FHS))./(timeFTO2-timeFHS); %Ankle 
 %above.
 stepSpeedSlow=dispSlow./ts; %Ankle relative to hip, from iHS to cHS
 stepSpeedFast=dispFast./tf; %Ankle relative to hip, from iHS to cHS
-
-stepSpeedAvg = nanmean([stepSpeedSlow stepSpeedFast],2);
+stepSpeedAvg = mean([stepSpeedSlow stepSpeedFast],2,'omitnan');
 
 %Rotate coordinates back to original so there are not
 %disconinuities within next stride
