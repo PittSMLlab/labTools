@@ -257,39 +257,41 @@ end
 
 %% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
 if any(strcmpi(parameterClasses,'basic'))
-    %badStart=bad; %make a copy to compare at the end
-    %TODO: make this process generalized so that it can filter any parameter
-    %TODO: make this into a method of parameterSeries or labTimeSeries
-    %should also consider a different method of filtering...
-    %paramsToFilter={'stepLengthSlow','stepLengthFast','alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
-    %Pablo block-commented on MAr 13th 2017, because this part of code was
-    %doing nothing anyway (only defined the variable named 'aux', which wasn't
-    %used downstream
-    % for i=1:length(paramsToFilter)
-    %     aux=out.getDataAsVector(paramsToFilter{i});
-    %     if ~isempty(aux) %In case any of these parameters does not exist
-    %     aux=aux-runAvg(aux,50); % remove effects of adaptation
-    %     % mark strides bad if values for SL or alpha are larger than 3x the
-    %     % interquartile range away from the median.
-    %     %Criteria 1: anything outside +-3.5 interquartile ranges
-    %     %     bad(abs(aux-nanmedian(aux))>3.5*iqr(aux))=true;
+    badStart = bad;         % copy 'bad' strides array for later comparison
+    % -------------------- REMOVE OUTLIER STRIDES --------------------
+    % NOTE: Pablo I. commented this outlier strides block (13 Mar. 2017)
+    % with rationale listed of the code block not doing anything (i.e.,
+    % defining 'aux' variable, which is not used elsewhere).
+    % NOTE: NWB is confused because it appears that this block was doing
+    % something, namely updating strides labeled 'bad' based on outliers.
+    % TODO: generalize below process to potentially filter any parameter
+    % TODO: make this into a method of 'parameterSeries' or 'labTimeSeries'
+    % TODO: consider a different method of filtering the parameters
+    % cell array of the parameters to use for labeling outlier strides
+    % paramsToFilter = {'stepLengthSlow','stepLengthFast', ...
+    %     'alphaSlow','alphaFast','alphaTemp','betaSlow','betaFast'};
+    % for ii = 1:length(paramsToFilter)       % for specified parameters, ...
+    %     aux = out.getDataAsVector(paramsToFilter{ii});  % get param. data
+    %     if ~isempty(aux)                    % if no parameter data, ...
+    %         aux = aux - runAvg(aux,50);     % remove 50 stride running avg
+    %         % criterion 1: if step length, alpha, or beta are larger than
+    %         % +/- 3.5x the interquartile range from the median
+    %         bad(abs(aux - median(aux,'omitnan')) > 3.5*iqr(aux)) = true;
     %
-    %     %Criteria 2: anything outside +-3.5 interquartile ranges, except the first
-    %     %5 strides of any trial.
-    %     % inds=find(abs(aux-nanmedian(aux))>3.5*iqr(aux));
-    %     %    inds=inds(inds>5);
-    %     %    bad(inds)=true;
+    %         % criterion 2: ignore the first five strides of any trial
+    %         % NOTE: NWB how does this add anything from criterion 1?
+    %         inds = find(abs(aux - median(aux,'omitnan')) > 3.5*iqr(aux));
+    %         inds = inds(inds > 5);
+    %         bad(inds) = true;
     %     end
     %
     % end
-    %Remove outliers according to new values of 'bad':
-    %[~,idxs]=out.isaParameter({'bad','good'});
-    %out.Data(:,idxs)=[bad,~bad];
-    %outlierStrides=find(bad & ~badStart);
-    %disp(['Removed ' num2str(numel(outlierStrides)) ' outlier(s) from ' file ' at stride(s) ' num2str(outlierStrides')])
+    % outlierStrides = find(bad & ~badStart);
+    % disp(['Removed ' num2str(numel(outlierStrides)) ...
+    %     ' outlier(s) from ' file ' at stride(s) ' ...
+    %     num2str(outlierStrides')]);
 
     % -------------------- REMOVE START / STOP STRIDES --------------------
-    badStart = bad;         % copy 'bad' strides array for later comparison
     % criterion 3: if 'singleStanceSpeed' of BOTH legs is less than
     % 0.05 m/s (i.e., 50 mm/s) (starting / stopping strides, TM trials)
     if strcmp(trialData.metaData.type,'TM')
