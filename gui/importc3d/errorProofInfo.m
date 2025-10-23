@@ -1,27 +1,27 @@
 function out = errorProofInfo(handles,ignoreErrors)
-%Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.
-%If entry is invalid, issues warning about which field is incorrect.
+%Checks fields of 'GetInfoGUI' to ensure entries are valid and reasonable.
+%If entry is invalid, issues a warning about which field is incorrect.
 %
-%Input:
-% hadles - handle structure from GetInfoGUI
-% ignoreErrors - enter true to ignore errors
+%Inputs:
+% handles - handle structure from 'GetInfoGUI'
+% ignoreErrors - enter true to ignore any errors
 
-out.bad=false;
+out.bad = false;
 
-%% Get info from GUI fields
-
-% -- Experiment Info
-descriptionContents=cellstr(get(handles.description_edit,'string'));
+%% Get Information from GUI Fields
+% -- Experiment Information
+descriptionContents = cellstr(get(handles.description_edit,'string'));
 if ~isempty(get(handles.description_edit,'Value'))
-out.ExpFile=descriptionContents{get(handles.description_edit,'Value')};
+    out.ExpFile = ...
+        descriptionContents{get(handles.description_edit,'Value')};
 else
-    out.ExpFile=descriptionContents{1}; %Empty string
+    out.ExpFile = descriptionContents{1};   % set to empty string
 end
-    
+
 if isfield(handles,'group')
-    out.ExpDescription=handles.group;
+    out.ExpDescription = handles.group;
 else
-    out.ExpDescription=out.ExpFile;
+    out.ExpDescription = out.ExpFile;
 end
 out.experimenter = get(handles.name_edit,'string');
 MonthContents = cellstr(get(handles.month_list,'String'));
@@ -30,7 +30,7 @@ out.day = str2double(get(handles.day_edit,'string'));
 out.year = str2double(get(handles.year_edit,'string'));
 out.exp_obs = get(handles.note_edit,'string');
 
-% -- Subject Info
+% -- Subject Information
 out.ID = get(handles.subID_edit,'string');
 DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
 out.DOBmonth = DOBmonthContents{get(handles.DOBmonth_list,'Value')};
@@ -48,7 +48,7 @@ out.height = str2double(get(handles.height_edit,'string'));
 out.weight = str2double(get(handles.weight_edit,'string'));
 out.isStroke = get(handles.strokeCheck,'Value');
 
-% -- Data Info
+% -- Data Information
 if isfield(handles,'folder_location')
     out.dir_location = handles.folder_location;
 else
@@ -61,30 +61,38 @@ out.forces = get(handles.force_check,'Value');
 out.EMGs = get(handles.emg_check,'Value');
 out.Nexus = get(handles.Nexus,'Value');
 out.EMGworks = get(handles.EMGworks,'Value');
-out.schenleyLab =  get(handles.schenleyLab,'Value');
-out.perceptualTasks =  get(handles.perceptualTasks,'Value');
-out.backwardCheck =  get(handles.backwardCheck,'Value');
+out.schenleyLab = get(handles.schenleyLab,'Value');
+out.perceptualTasks = get(handles.perceptualTasks,'Value');
+out.backwardCheck = get(handles.backwardCheck,'Value');
 
-if isfield(handles,'secfolder_location') && out.Nexus==1
+if isfield(handles,'secfolder_location') && out.Nexus == 1
     out.secdir_location = handles.secfolder_location;
 else
-    out.secdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.secdir_location = '';
 end
-
 
 if isfield(handles,'EMGworksFile_Loc')
     out.EMGworksdir_location = handles.EMGworksFile_Loc;
 else
-    out.EMGworksdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.EMGworksdir_location = '';
 end
 
 if isfield(handles,'EMGworksFile2Loc')
     out.secEMGworksdir_location = handles.EMGworksFile2Loc;
 else
-    out.secEMGworksdir_location= ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.secEMGworksdir_location = '';
 end
 
-% -- Trial Info
+% -- Trial Information
 Nconds=str2double(get(handles.numofconds,'string'));
 if ~isnan(Nconds) && Nconds>0
     for c = 1:Nconds
@@ -333,12 +341,6 @@ end
         uicontrol(handles.saveloc_edit)
         out.bad=true; 
     end       
+
 end
-
-
-
-
-
-
-
 

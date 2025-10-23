@@ -32,4 +32,5 @@ else
     set(handles.numofconds,'string',num2str(c)) 
 end
 
+end
 
