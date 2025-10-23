@@ -74,6 +74,7 @@ for cond = sort(info.cond)              % for each exp. condition, ...
             info.trialObs = cell(info.numoftrials,1);
         end
 
+        % if this is a perceptual task and the data log files exist, ...
         if info.perceptualTasks == 1 || datlogExist
             % constructor: (name,desc,obs,refLeg,cond,filename,type)
             trialMD{t} = trialMetaData(info.conditionNames{cond}, ...
@@ -88,7 +89,6 @@ for cond = sort(info.cond)              % for each exp. condition, ...
                 info.schenleyLab,info.perceptualTasks,info.ExpDescription);
         end
     end
-
 end
 
 end

@@ -678,7 +678,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                     warning('loadTrials:missingRequiredMarker',['A required marker (' mustHaveLabels{j} ') was missing from the marker list. This will be problematic when computing parameters.'])
                 else
                     %set the label corresponding to choice as one of the must-have labels
-                    addMarkerPair(mustHaveLabels{j},potentialMatches{choice})
+                    addMarkerPair(mustHaveLabels{j},potentialMatches{choice});
                 end
             end
         end

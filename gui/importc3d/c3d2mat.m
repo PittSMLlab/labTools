@@ -9,7 +9,7 @@
 
 % Begin by running the GetInfoGUI, which collects participant data,
 % experiment data, and notes, as well as trial conditions.
-info = GetInfoGUI;
+info = GetInfoGUI();
 
 % Ask which event class to use
 %   (either default, kinematics only, or forces only)
