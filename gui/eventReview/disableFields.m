@@ -1,5 +1,8 @@
 function handles = disableFields(handles,varargin)
 
-for i=1:length(varargin)
-    set(handles.(varargin{i}),'Enable','off');
+for ii = 1:length(varargin)
+    set(handles.(varargin{ii}),'Enable','off');
 end
+
+end
+

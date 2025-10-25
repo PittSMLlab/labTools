@@ -1,7 +1,7 @@
-function [stance] = deleteShortPhases(stance,fsample,minDuration)
+function stance = deleteShortPhases(stance,fsample,minDuration)
 
-N=ceil(minDuration*fsample);
-stance1=stance;
+N = ceil(minDuration * fsample);
+% stance1 = stance;
 %%Dilate stance, and erode
 %dilStance=conv(double(stance),ones(N,1),'same')>0;
 %eroStance=conv(double(dilStance),ones(N,1),'same')>=N;
@@ -12,7 +12,6 @@ stance1=stance;
 
 %stance=~eroSwing;
 
-
 %Idea: first get rid of isolated stance/swing samples, then get rid of
 %groups of two, so on and so forth until we got rid of all groups of N-1 or
 %smaller size
@@ -21,10 +20,14 @@ stance1=stance;
 % Commented out by Pablo on 25/II/2015 because of more efficient
 % implementation
 %tic
-if ~isempty(stance)
-   for i=1:N %Slowly dilating/eroding stance phases, until there is no possiblity for
-       stance=conv(double(stance),ones(2*i+1,1),'same')>i; %At least half+1 of the samples in the window are stance
-   end
+if ~isempty(stance)                     % if there is data in 'stance', ...
+    for ii = 1:N                         % for each sample, ...
+        % NOTE (NWB): previous comments say "slowly dilating/eroding stance
+        % phases, until there is no possiblity for" and "at least half + 1
+        % of the samples in the window are stance", although it is unclear
+        % how this code is working or its broader purpose.
+        stance = conv(double(stance),ones(2*ii+1,1),'same') > ii;
+    end
 end
 % toc
 % tic
@@ -38,19 +41,18 @@ end
 % stance2=gather(stance);
 % toc
 
-
 %Equivalent efficient implementation: (it is actually NOT efficient, for
 %some reason the conv is much faster, I guess it has to do with the fact
 %that one of the vectors is much smaller than the other)
 % stance2=stance1;
 % if ~isempty(stance2)
 %     for i=1:N
-%         
+%
 %         %stance2=ifft(fft(double(stance2)).*(fft(ones(2*i+1,1),length(stance))),'symmetric')>(i+.5); %FIXME: need to consider border-effects
 %         aaa=double(stance2);
 %         aux=effconvn(aaa,ones(2*i+1,1),'same');
 %         stance2=real(aux)>(i+.5); %The +.5 is needed to cover for rounding errors that come from the fft-implemented convolution
-%         
+%
 %     end
 %         aaa=double(stance1);
 %         aux=effconvn(aaa,ones(2*N+1,1),'same');
