@@ -7,11 +7,11 @@
 %
 % See also: GetInfoGUI, loadSubject
 
-% Begin by running the GetInfoGUI, which collects participant data,
-% experiment data, and notes, as well as trial conditions.
+% begin by running the 'GetInfoGUI', which collects participant data,
+% experiment data, and notes, as well as trial conditions
 info = GetInfoGUI();
 
-% Ask which event class to use
+% ask which event class to use
 %   (either default, kinematics only, or forces only)
 if ~isempty(info)               % if experimental information provided, ...
     % available methods to determine gait events:
@@ -20,10 +20,10 @@ if ~isempty(info)               % if experimental information provided, ...
     %   'force' for treadmill trials (consistent/reliable force plate data)
     eventClass = {'','kin','force'};
     answer = menu('Which events should be used to compute parameters?', ...
-        'default (use force for TM trials, kinematics otherwise)', ...
+        'default (use forces for TM trials, kinematics otherwise)', ...
         'strictly from kinematics','strictly from forces');
-    if answer == 0  % if GUI menu window exited ('X'), ...
-        answer = 1; % set to 'default'
+    if answer == 0              % if GUI menu window exited ('X'), ...
+        answer = 1;             % set to 'default'
     end
 
     % main processing call for participant's experimental data

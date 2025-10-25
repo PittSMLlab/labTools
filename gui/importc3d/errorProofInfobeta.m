@@ -7,23 +7,21 @@ function out = errorProofInfobeta(handles,ignoreErrors)
 % ignoreErrors - enter true to ignore errors
 
 disp('Checking Inputs for errors...');
+out.bad = false;
 
-out.bad=false;
-
-%% Get info from GUI fields
-
-% -- Experiment Info
-descriptionContents=cellstr(get(handles.description_edit,'string'));
+%% Get Information from GUI Fields
+% -- Experiment Information
+descriptionContents = cellstr(get(handles.description_edit,'string'));
 if ~isempty(get(handles.description_edit,'Value'))
-out.ExpFile=descriptionContents{get(handles.description_edit,'Value')};
+    out.ExpFile = descriptionContents{get(handles.description_edit,'Value')};
 else
     out.ExpFile=descriptionContents{1}; %Empty string
 end
-    
+
 if isfield(handles,'group')
-    out.ExpDescription=handles.group;
+    out.ExpDescription = handles.group;
 else
-    out.ExpDescription=out.ExpFile;
+    out.ExpDescription = out.ExpFile;
 end
 out.experimenter = get(handles.name_edit,'string');
 MonthContents = cellstr(get(handles.month_list,'String'));
@@ -71,17 +69,17 @@ Nconds = length(data);
 if ~isnan(Nconds) && Nconds>0
     for c = 1:Nconds
         out.cond(c) = c;
-%         out.conditionNames{condNum}=get(handles.(['condName',num2str(c)]),'string');
+        %         out.conditionNames{condNum}=get(handles.(['condName',num2str(c)]),'string');
         out.conditionNames{c}=data{c,2};
-%         out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
+        %         out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
         out.conditionDescriptions{c}=data{c,3};
-%         trialnums = get(handles.(['trialnum',num2str(c)]),'string');
+        %         trialnums = get(handles.(['trialnum',num2str(c)]),'string');
         trialnums = data(c,4);
         out.trialnums{c} = str2double(trialnums);
-%         out.trialnums{c} = eval(['[',trialnums,']']);
-        
+        %         out.trialnums{c} = eval(['[',trialnums,']']);
+
         %need to eval for entry of numbers like '1:6' or '7 8 9'
-%         out.type{condNum} = get(handles.(['type',num2str(c)]),'string');
+        %         out.type{condNum} = get(handles.(['type',num2str(c)]),'string');
         out.type{c} = data{c,5};
     end
 else
@@ -116,14 +114,14 @@ end
 %% Check for errors
 
 if ~(nargin>1 && ignoreErrors)
-        
+
     % -- Experiment Info
-%     if strcmp(out.ExpFile,' ')
-%         h_error=errordlg('Please choose an experiment description','Description Error');
-%         waitfor(h_error)
-%         uicontrol(handles.description_edit)
-%         out.bad=true; close(h); return
-%     end
+    %     if strcmp(out.ExpFile,' ')
+    %         h_error=errordlg('Please choose an experiment description','Description Error');
+    %         waitfor(h_error)
+    %         uicontrol(handles.description_edit)
+    %         out.bad=true; close(h); return
+    %     end
     if strcmp(out.experimenter,' (Enter name/initials)')
         h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');
         waitfor(h_error)
@@ -142,7 +140,7 @@ if ~(nargin>1 && ignoreErrors)
         uicontrol(handles.year_edit)
         out.bad=true; return
     end
-    
+
     % -- Subject Info
     if strcmp(out.ID,'Sub#')
         h_error=errordlg('Please enter the subject ID','ID Error');
@@ -191,7 +189,7 @@ if ~(nargin>1 && ignoreErrors)
         out.affectedValue=get(handles.popupAffected,'Value');
         out.affectedSide=aux{out.affectedValue};
     end
-    
+
     % -- Data Info
     if ~exist(out.dir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
@@ -206,7 +204,7 @@ if ~(nargin>1 && ignoreErrors)
         out.bad=1;
         return
     end
-    
+
     % -- Trial Info
     for t=trials
         if t<10
@@ -220,26 +218,26 @@ if ~(nargin>1 && ignoreErrors)
             uicontrol(handles.basefile)
             out.bad=true; return
         end
-%         %Check marker labels are good in .c3d files
-%         H=btkReadAcquisition(filename);
-%         markerLabels=fieldnames(btkGetMarkers(H));
-%         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
-%         labelPresent=false(1,length(mustHaveLabels));
-%         for i=1:length(markerLabels)
-%             label=findLabel(markerLabels{i});
-%             labelPresent=labelPresent+ismember(mustHaveLabels,label);
-%         end
-%         if any(~labelPresent)
-%             missingLabels=find(~labelPresent);
-%             str='';
-%             for j=missingLabels
-%                 str=[str ', ' mustHaveLabels{j}];
-%             end
-%             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
-%             waitfor(h_error)
-%             uicontrol(handles.basefile)
-%             out.bad=true; return
-%         end
+        %         %Check marker labels are good in .c3d files
+        %         H=btkReadAcquisition(filename);
+        %         markerLabels=fieldnames(btkGetMarkers(H));
+        %         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
+        %         labelPresent=false(1,length(mustHaveLabels));
+        %         for i=1:length(markerLabels)
+        %             label=findLabel(markerLabels{i});
+        %             labelPresent=labelPresent+ismember(mustHaveLabels,label);
+        %         end
+        %         if any(~labelPresent)
+        %             missingLabels=find(~labelPresent);
+        %             str='';
+        %             for j=missingLabels
+        %                 str=[str ', ' mustHaveLabels{j}];
+        %             end
+        %             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
+        %             waitfor(h_error)
+        %             uicontrol(handles.basefile)
+        %             out.bad=true; return
+        %         end
         if ~isempty(out.secdir_location)
             if t<10
                 filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
@@ -253,31 +251,26 @@ if ~(nargin>1 && ignoreErrors)
                 out.bad=true; return
             end
         end
-   end
-%     
-%     % -- EMG data
-%     if isfield(handles,'emg1_1')
-%         allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};
-%         %Check that all muscles are allowed
-%         
-%         %Check for sync signals
-%     end
-    
+    end
+    %
+    %     % -- EMG data
+    %     if isfield(handles,'emg1_1')
+    %         allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};
+    %         %Check that all muscles are allowed
+    %
+    %         %Check for sync signals
+    %     end
+
     % --  save location
     if ~exist(out.save_folder,'dir')
         h_error=errordlg('Please enter a save folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.saveloc_edit)
-        out.bad=true; 
-    end   
-    
+        out.bad=true;
+    end
+
     disp('Finished checking for input errors...');
 end
 
-
-
-
-
-
-
+end
 
