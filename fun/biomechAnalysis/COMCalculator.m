@@ -1,32 +1,34 @@
-function [COMTS] = COMCalculator(markerData)
+function COMTS = COMCalculator(markerData)
+%COMCALCULATOR Calculate the center of mass time series from marker data
 
-%% Step 1: Get relevant marker data
-
-%get orientation
-if isempty(markerData.orientation)
+%% Step 1: Get Relevant Marker Data
+if isempty(markerData.orientation)          % if no orientation data, ...
     warning('Assuming default orientation of axes for marker data.');
-    orientation=orientationInfo([0,0,0],'x','y','z',1,1,1);
-else
-    orientation=markerData.orientation;
+    orientation = orientationInfo([0 0 0],'x','y','z',1,1,1);   % default
+else                                        % otherwise, ...
+    orientation = markerData.orientation;   % use specified orientation
 end
 
-% Define the marker data
-%get hip position
-u=[orientation.sideSign, orientation.foreaftSign, orientation.updownSign];
-markerList={'RHip','LHip','RAnk','LAnk','RKne','LKne','RToe','LToe'};
-for i=1:length(markerList)
-    name=markerData.getLabelsThatMatch(['^' upper(markerList{i}) '*x$']); %To allow variations of the type: RKNEx and RKNEEx
-    if ~isempty(name)
-        name=name{1}(1:end-1);
-        aux=markerData.getDataAsVector({[name orientation.sideAxis],[name orientation.foreaftAxis],[name orientation.updownAxis]});
-        aux=aux.*u;
-    else %Marker is missing from full trial (it happens)
-        aux=nan(length(markerData.Time),3);
-        warning(['Marker ' markerList{i} ' was missing from markerData.'])
+% get hip position
+u = [orientation.sideSign orientation.foreaftSign orientation.updownSign];
+markerList = {'RHip','LHip','RAnk','LAnk','RKne','LKne','RToe','LToe'};
+for mrkr = 1:length(markerList)                 % for each marker, ...
+    % get marker name allowing for variations of type RKNEx and RKNEEx
+    name = ...
+        markerData.getLabelsThatMatch(['^' upper(markerList{mrkr}) '*x$']);
+    if ~isempty(name)                           % if a match was found, ...
+        name = name{1}(1:end-1);                % retrieve marker name
+        aux = markerData.getDataAsVector({[name orientation.sideAxis], ...
+            [name orientation.foreaftAxis],[name orientation.updownAxis]});
+        aux = aux .* u;                         % reorienting marker data??
+    else                                        % otherwise, ...
+        aux = nan(length(markerData.Time),3);   % marker missing from trial
+        warning(['Marker ' markerList{mrkr} ...   (it happens)
+            ' was missing from markerData.']);
     end
-    eval([markerList{i} '=aux;']); 
-    %assignin('base',markerList{i},aux) %This is more elegant than eval (and
-    %recommended, but it doesnt seem to work)
+    eval([markerList{mrkr} ' = aux;']);
+    % below is more elegant (and recommended) than 'eval' but does not work
+    % assignin('base',markerList{i},aux);
 end
 
 % RHip=markerData.getDataAsVector({['RHIP' orientation.sideAxis],['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
@@ -44,7 +46,7 @@ end
 % RkneeName=RkneeName{1}(1:end-1); %Removing axis suffix
 % RKnee=markerData.getDataAsVector({[RkneeName orientation.sideAxis],[RkneeName orientation.foreaftAxis],[RkneeName orientation.updownAxis]});
 % RKnee=[orientation.sideSign*RKnee(:,1),orientation.foreaftSign*RKnee(:,2),orientation.updownSign*RKnee(:,3)];
-% 
+%
 % LkneeName=markerData.getLabelsThatMatch('^LKNE');
 % LkneeName=LkneeName{1}(1:end-1); %Removing axis suffix
 % LKnee=markerData.getDataAsVector({[LkneeName orientation.sideAxis],[LkneeName orientation.foreaftAxis],[LkneeName orientation.updownAxis]});
@@ -67,7 +69,7 @@ fcomL=(LAnk+LToe)/2;
 % fcomzR=(RAnk(:,3)-RToe(:,3)).*.5+RToe(:,3); %m
 % fcomyL=(LAnk(:,2)-LToe(:,2)).*.5+LToe(:,2); %m
 % fcomzL=(LAnk(:,3)-LToe(:,3)).*.5+LToe(:,3); %m
-% 
+%
 % fcomR=[fcomxR,fcomyR,fcomzR]; %foot
 % fcomL=[fcomxL,fcomyL,fcomzL];
 
@@ -81,7 +83,7 @@ scomL=(LKne-LAnk)+.394*LAnk;
 % scomzR=(RKnee(:,3)-RAnk(:,3)).*.394+RAnk(:,3);
 % scomyL=(LKnee(:,2)-LAnk(:,2)).*.394+LAnk(:,2);
 % scomzL=(LKnee(:,3)-LAnk(:,3)).*.394+LAnk(:,3);
-% 
+%
 % scomR=[scomxR,scomyR,scomzR]; %Shank
 % scomL=[scomxL,scomyL,scomzL];
 
@@ -94,7 +96,7 @@ tcomL=(LHip-LKne)+.567*LKne;
 % tcomzR=(RHip(:,3)-RKnee(:,3)).*.567+RKnee(:,3);
 % tcomyL=(LHip(:,2)-LKnee(:,2)).*.567+LKnee(:,2);
 % tcomzL=(LHip(:,3)-LKnee(:,3)).*.567+LKnee(:,3);
-% 
+%
 % tcomR=[tcomxR,tcomyR,tcomzR]; %Thigh
 % tcomL=[tcomxL,tcomyL,tcomzL];
 
