@@ -25,37 +25,40 @@ if nargin < 6 || isempty(summaryMethod)
 end
 
 if isa(summaryMethod,'char') %To allow for summaryMethod to be given as string directly
-    summaryMethod={summaryMethod};
+    summaryMethod = {summaryMethod};
 end
 
 if numel(condition) == 1
-    condition=repmat(condition,N,1);
+    condition = repmat(condition,N,1);
 end
 
 if numel(strideNo) == 1
-    strideNo=repmat(strideNo,N,1);
+    strideNo = repmat(strideNo,N,1);
 end
 
 if numel(exemptFirst) == 1
-    exemptFirst=repmat(exemptFirst,N,1);
+    exemptFirst = repmat(exemptFirst,N,1);
 end
 
 if numel(exemptLast) == 1
-    exemptLast=repmat(exemptLast,N,1);
+    exemptLast = repmat(exemptLast,N,1);
 end
 
 if numel(summaryMethod) == 1
-    summaryMethod=repmat(summaryMethod,N,1);
+    summaryMethod = repmat(summaryMethod,N,1);
 end
 
-earlyOrLate=sign(strideNo)==1;
-if nargin<7 || isempty(shortName)
-    shortName=cell(size(epochNames));
+earlyOrLate = sign(strideNo) == 1;
+if nargin < 7 || isempty(shortName)
+    shortName = cell(size(epochNames));
 elseif numel(shortName) == 1
-    shortName=repmat(shortName,N,1);
+    shortName = repmat(shortName,N,1);
 end
 
-epochs = dataset(condition(:),abs(strideNo(:)),exemptFirst(:),exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast','EarlyOrLate','summaryMethod','shortName'},'ObsNames',epochNames);
+epochs = dataset(condition(:),abs(strideNo(:)),exemptFirst(:), ...
+    exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:), ...
+    'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast', ...
+    'EarlyOrLate','summaryMethod','shortName'},'ObsNames',epochNames);
 
 end
 
