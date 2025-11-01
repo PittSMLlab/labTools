@@ -199,8 +199,8 @@ if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there wi
             % Compute some measures of the vertical and medial-lateral forces
             FzS(i) = -1 * mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
             FxS(i) = mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
-            FzSmax(i) = -1 * min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
-            FxSmax(i) = min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
+            FzSmax(i) = -1 * min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,[],'omitnan') / Normalizer;
+            FxSmax(i) = min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,[],'omitnan') / Normalizer;
         end
 
         %% Fast Leg -- Compute some measures of anterior-posterior forces
@@ -215,8 +215,8 @@ if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there wi
             FzF(i) = -1 * mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,'omitnan') / Normalizer;
             FxF(i) = mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,'omitnan') / Normalizer;
             % TODO: why min & max here compared to min & min above?
-            FzFmax(i) = -1 * min(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,'omitnan') / Normalizer;
-            FxFmax(i) = max(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,'omitnan') / Normalizer;
+            FzFmax(i) = -1 * min(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,[],'omitnan') / Normalizer;
+            FxFmax(i) = max(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,[],'omitnan') / Normalizer;
         end
     end
 end
