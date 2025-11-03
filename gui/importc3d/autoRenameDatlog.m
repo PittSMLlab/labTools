@@ -122,7 +122,7 @@ function autoRenameDatlog(datlogFolder, viconDataFolder)
     if ~isfolder(datlogBackupFolder)
         mkdir(datlogBackupFolder)
     end
-    copyfile(datlogFolder, datlogBackupFolder)
+    copyfile(fullfile(datlogFolder, '*'), datlogBackupFolder) %copy all content into a subfolder
 
     for i = 1:numel(srcFileName)
         if ~isempty(srcFileName{i}) %no empty means a valid file exist to be renamed
