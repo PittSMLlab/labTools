@@ -283,33 +283,58 @@ classdef PlotHelper
             end
         end
         
-        function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs, xlabelString, ylabelString,partialVar, pointColor, groupName, textLocRatio, rmOutlier, plotRegDiagnostics)
+        function plotSingleCorrelation(xToPlot, yToPlot, subjectIDs, xlabelString, ylabelString,partialVar, pointColor, groupName, textLocRatio, rmOutlier, plotRegDiagnostics, spearmanOnly)
         %Plot on the current figure (a subplot should have 
         %been opened and configured before calling this function) correlations
         %between x and yToPlot
         %
-        % [Example]: plotSingleCorrelation(xRow, yRow, {'S01','S02',...})
-        % 
+        % [Example]: 
+        % PlotHelper.plotSingleCorrelation(xRow, yRow,OAIds,'AGI W2',['(Pre-Post)/Pre earlyAda'],[],...
+        %    'b;,'OA',0.7,false,false,true)
+        %   See Automaticity/Step5_AnalysisMain_CompreYAvsOA.m
+        %       PlotHelper.plotSingleCorrelation(index_pfc_deltaPerfData{taskIdx,1,2}',improvementsNorm{'OA post-pre/abs(pre)',epochKeywords},OAIds,index_pfc_deltaPerfData{taskIdx,1,1},['(Pre-Post)/Pre ' epochKeywords],[],...
+        %           colors{1},'OA',textLoc(1),rmOutliers,shoudPlotDiagnostics,spearmanOnly)
+        %
         % [OUTPUTARGS]: none, this function simply draws on existing
-        % figure.
-        % with subplots.
-        % InputArgs:    -xToPlot: a row vector of data to plot on x-axis
-        %               -yToPlot: a row vector of double to plot on y-axis
-        %               -subjectIDs: cell array of string of subjectIDs
-        %               for legend.
-        %               -xlabel: OPTIONAL. A string for x axis label.
-        %               -ylabel: OPTIONAL. A string for y axis label.
-        %               -partialVar: OPTIONAL. a row vector of data to be
-        %               controlled for as a partial correlation.
-        %               -pointColor:
-        %               -groupName:
-        %               -textLocRatio:
-        %               -rmOutlier: OPTIONAL. default false, boolean  true
-        %                   to remove outliers in x or y before running
-        %                   correlations
-        %               -plotDiagnostics: OPTIONAL. plot diagnostic from
-        %               the linear mdl fit. Default false.
+        %   figure on the current plot handle (e.g., if before fcn call
+        %   started a subplot, will plot on the subplot)
+        %
+        % [InputArgs]:    
+        %   -xToPlot: a row vector of data to plot on x-axis
+        %   -yToPlot: a row vector of double to plot on y-axis
+        %   -subjectIDs: cell array of string of subjectIDs
+        %        for legend.
+        %   -xlabelString: OPTIONAL. A string for x axis label. Default ''
+        %   -ylabelString: OPTIONAL. A string for y axis label. Default ''
+        %   -partialVar: OPTIONAL. a row vector of data to be
+        %        controlled for as a partial correlation.
+        %   -pointColor: OPTIONAL. any matlab accepted color format (either 1 single character like 'k'
+        %       or 1 row vector of color decimals, e.g., [0.15 0.15 0.15] to
+        %           indicate what colors to plot the scatter points. If not
+        %           provided will rotate through colorOrder to plot each
+        %           point with a different color
+        %   -groupName: OPTIONAL. string of the name of the current data group, will
+        %       be used for legend and normality/outlier check printout and
+        %       figure title. Default ''
+        %   -textLocRatio: OPTIONAL. A doulble representing where to show
+        %       the correlation text result text. Will show it around 
+        %       (ymax - textLocRatio * yRange), will use 3 lines: 
+        %       1 for normality results, 1 for pearson, 1 for spearmsn.
+        %       Default 0.7
+        %   -rmOutlier: OPTIONAL. default false, boolean  true
+        %       to remove outliers in x or y before running
+        %       correlations.
+        %   -plotDiagnostics: OPTIONAL. plot diagnostic from
+        %       the linear mdl fit. Default false.
+        %
             hold on;
+            if nargin <4 || any(isnan(xlabelString)) || (isempty(xlabelString))
+                xlabelString= '';
+            end
+            
+            if nargin <5 || any(isnan(ylabelString)) || (isempty(ylabelString))
+                ylabelString = '';
+            end
             
             if nargin < 11 || isempty(plotRegDiagnostics)
                 plotRegDiagnostics = false; %default to false, don't remove data.
@@ -326,8 +351,14 @@ classdef PlotHelper
             if rmOutlier
                 outliersFound = isoutlier(xToPlot) | isoutlier(yToPlot);
                 fprintf('Outliers found: %s. They will be removed from the scatter plot and correlations\n',strjoin(subjectIDs(outliersFound),' '))
-                %over lay these points to mark them as removed in grey
-                scatter(xToPlot(outliersFound),yToPlot(outliersFound),55,'Marker','x','MarkerEdgeColor',pointColor,'LineWidth',0.5,'MarkerFaceColor',[0.5 0.5 0.5],'DisplayName','excluded')
+                %over lay these points to mark them with X, color in grey is no color provided, or use the provided color if there is any.
+                if nargin >= 7 && (~isnan(pointColor)) && (~isempty(pointColor))
+                    %the X symbol the markerfacecolor doesn't make a
+                    %difference
+                    scatter(xToPlot(outliersFound),yToPlot(outliersFound),55,'Marker','x','LineWidth',0.5,'MarkerEdgeColor',pointColor,'DisplayName','excluded')
+                else
+                    scatter(xToPlot(outliersFound),yToPlot(outliersFound),55,'Marker','x','LineWidth',0.5,'MarkerEdgeColor',[0.5 0.5 0.5],'DisplayName','excluded')
+                end
                 xToPlot = xToPlot(~outliersFound);                
                 yToPlot = yToPlot(~outliersFound);
                 if all(~isnan(partialVar)) && (~isempty(partialVar)) %remove corresponding rows in the partial control var to for size consistency
@@ -360,17 +391,19 @@ classdef PlotHelper
                                   
             %check assumptions for pearson's corr: no outlier, and data is
             %bivariate normal (harder to test, so test individual normal)
-            [hx, px] = kstest(normalize(xToPlot)); %0 = normal)
-            [hy, py] = kstest(normalize(yToPlot)); 
-            if hx
-                warning('\nX data failed normality test (0=normal): p=%.3f. Should NOT use Pearson Correlation.',px) %pearson is not robust against violation of normality
+            
+            if plotRegDiagnostics
+                axesOriginal = gca; %save a handle to the current axes (could be the whole figure or one subplot)
+                figure(); %start a new figure
+                [hx, px] = utils.normalityTestWithFig(xToPlot, [groupName ' ' xlabelString], subplot(2,2,1), subplot(2,2,2), [], plotRegDiagnostics);
+                [hy, py] = utils.normalityTestWithFig(yToPlot, [groupName ' ' ylabelString], subplot(2,2,3), subplot(2,2,4), [], plotRegDiagnostics);
+                %when done bring focus  to the original canvas and axes again
+                axes(axesOriginal);
             else
-                fprintf('\nX data normality test pass (0=normal): p=%.3f.',px)
-            end
-            if hy
-                warning('\nY data failed normality test (0=normal): p=%.3f. Should NOT use Pearson Correlation.',py)
-            else
-                fprintf('\nY data normality test pass (0=normal): p=%.3f.',py)
+                %when not plotting, provide [] for subplot axes bc
+                %otherwise will create new subplot on the current canvas
+                [hx, px] = utils.normalityTestWithFig(xToPlot, [groupName ' ' xlabelString], [], [], [], plotRegDiagnostics);
+                [hy, py] = utils.normalityTestWithFig(yToPlot, [groupName ' ' ylabelString], [], [], [], plotRegDiagnostics);
             end
             
             %put the correlation result on the figure.
@@ -393,9 +426,13 @@ classdef PlotHelper
 
             linFit = fitlm(xToPlot,yToPlot);
             plotFitX = xlim;
-            if ((hx || hy) && pSpearman < 0.1) || ((~hx) && (~hy) && p < 0.1) %plot reg line only if corr for pearson is significant with normal data, or corr of spearson is significant with non-normal data.
+            if ((hx || hy || spearmanOnly) && pSpearman < 0.1) || ((~hx) && (~hy) && p < 0.1 && (~spearmanOnly)) 
+                %if specified spearmanOnly will plot corr if pSearman < 0.1
+                %regardless of normality check, and regardless of if
+                %peaerson is < 0.1. Otherwise plot when pearson  is significant with normal data, 
+                %or when spearman is significant with non-normal datam
                 plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
-                if ((hx || hy) && pSpearman < 0.05) || ((~hx) && (~hy) && p < 0.05)  %solid line for significant
+                if ((hx || hy || spearmanOnly) && pSpearman < 0.05) || ((~hx) && (~hy) && p < 0.05 && (~spearmanOnly))  %solid line for significant
                     plot(xlim,plotFitY,'LineWidth',2.5,'handleVisibility','off','Color',pointColor);
                 else %dashed line for trending.
                     plot(xlim,plotFitY,'--','LineWidth',2.5,'handleVisibility','off','Color',pointColor);
@@ -423,30 +460,25 @@ classdef PlotHelper
 %             xlim(plotFitX)
             axis square
             
-            if nargin >= 4 && all(~isnan(xlabelString)) && (~isempty(xlabelString))
-                xlabel(xlabelString)
-            end
+            xlabel(xlabelString)
+            ylabel(ylabelString)
             
-            if nargin >= 5 && all(~isnan(ylabelString)) && (~isempty(ylabelString))
-                ylabel(ylabelString)
-            end
-            
-            if plotRegDiagnostics
-                %plot these in the end in new figures bc this function
-                %doesn't create a canvas and plot on existing canvas
-                %instead so don't want to lose focus to original canvas
-                %untill we are donw drawing there.
-%                 figure(); 
-%                 plotDiagnostics(linFit);
-%                 sgtitle([groupName ' ' xlabelString ' vs ' ylabelString]);
-%                 PlotHelper.plotRegressionDiagnostics(linFit, yToPlot, false,'') %no info at this level to save, so don't save it for now.
-                %plot the histrogram of the data to visualize normality
-                figure(); subplot(2,2,1)
-                qqplot(xToPlot); title([groupName ' ' xlabelString]);
-                subplot(2,2,2); histogram(xToPlot);title([groupName ' ' xlabelString]);
-                subplot(2,2,3); qqplot(yToPlot); title([groupName ' ' ylabelString]);
-                subplot(2,2,4); histogram(yToPlot);title([groupName ' ' ylabelString]);
-            end
+%             if plotRegDiagnostics
+%                 %plot these in the end in new figures bc this function
+%                 %doesn't create a canvas and plot on existing canvas
+%                 %instead so don't want to lose focus to original canvas
+%                 %untill we are donw drawing there.
+% %                 figure(); 
+% %                 plotDiagnostics(linFit);
+% %                 sgtitle([groupName ' ' xlabelString ' vs ' ylabelString]);
+% %                 PlotHelper.plotRegressionDiagnostics(linFit, yToPlot, false,'') %no info at this level to save, so don't save it for now.
+%                 %plot the histrogram of the data to visualize normality
+%                 figure(); subplot(2,2,1)
+%                 qqplot(xToPlot); title([groupName ' ' xlabelString]);
+%                 subplot(2,2,2); histogram(xToPlot);title([groupName ' ' xlabelString]);
+%                 subplot(2,2,3); qqplot(yToPlot); title([groupName ' ' ylabelString]);
+%                 subplot(2,2,4); histogram(yToPlot);title([groupName ' ' ylabelString]);
+%             end
         end
         
         function barPlotWithIndiv(dataToPlot, subjectIDs, xlabelStrings, ylabelString, titleString, saveResAndFigure, savePath, f, addJitter, MarkerColor,connectLine,performTtest)
@@ -718,6 +750,7 @@ classdef PlotHelper
         %               figure (absolute path recommended)
         %
             f = figure('units','normalized','outerposition',[0 0 1 1]);%('Position', get(0, 'Screensize'));
+            %TODO: refactor here to call the normality helper
             subplot(3,2,1); histogram(mdl.Residuals.Raw); %histogram(mdl.Residuals.Studentized); 
             title('Residual Histogram'); xlabel('Residuals (y-yhat)');
     %         xRange = xlim;
@@ -936,6 +969,7 @@ classdef PlotHelper
             sigCoef = mdl.CoefficientNames(coefPVal<= alpha);
             sigCoef = strjoin(sigCoef);
             try
+                %TODO: refactor here to call the normality helper
                 [h,~] = kstest(mdl.Residuals.Studentized);
             catch
                 warning('\nCannot compute normality test on residual, reporting NaN.')
