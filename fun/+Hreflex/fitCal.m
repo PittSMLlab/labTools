@@ -1,12 +1,11 @@
-function [fit,amplitudesWavesNorm] = fitCalAndNormalize(intensitiesStim,amplitudesWaves)
-%FITCALANDNORMALIZE Fit M- & H-wave recruitment curves & normalize data
+function fit = fitCal(intensitiesStim,amplitudesWaves)
+%FITCAL Fit M- & H-wave recruitment curves
 %   This function accepts the stimulation intensities and H- and M-wave
 % amplitudes for the right and left legs as input and fits a modified
 % hyperbolic function to the M-wave data (equation 1) and an asymmetric
 % Gaussian to the H-wave data (modified from equation 2) based on the
 % Brinkworth et al. (J. Neurosci. Methods, 2007) paper (Section 2.4 Curve
-% Fitting) and outputs normalized data for convenience (by the fitted Mmax
-% value).
+% Fitting).
 %
 % input(s):
 %   intensitiesStim: 2 x 1 cell array of number of stimuli x 1 arrays for
@@ -18,10 +17,6 @@ function [fit,amplitudesWavesNorm] = fitCalAndNormalize(intensitiesStim,amplitud
 % output(s):
 %   fit: structure of M-wave and H-wave fit function, optimized parameters,
 %       and maximum fit M value for normalization
-%   amplitudesWavesNorm: 2 x 2 cell array of number of stimuli x 1 arrays
-%       for right (row 1) and left (row 2) leg H-reflex amplitudes
-%       normalized to the maximum M-wave fit value: M-wave (column 1),
-%       H-wave (column 2)
 
 % TODO:
 %   1. compare fits using only the averages at each intensity with all data
@@ -48,8 +43,6 @@ asymGaussian = @(p,I) ...
 fit = struct;                       % initialize output cal. fit structure
 fit.M.modHyperbolic = modHyperbolic;
 fit.H.asymGaussian = asymGaussian;
-% TODO: delete data normalization if just compute later anyway
-amplitudesWavesNorm = cell(2,2);    % initialized normalized data output
 
 for leg = 1:2                       % for each leg, ...
     % if no data for one leg, ...
@@ -83,9 +76,6 @@ for leg = 1:2                       % for each leg, ...
     fit.M.(idLeg).Mmax = MmaxFit;
     [fit.M.(idLeg).R2,fit.M.(idLeg).AIC,fit.M.(idLeg).BIC] = ...
         computeFitQuality(I,M,modHyperbolic,paramsM);
-
-    amplitudesWavesNorm{leg,1} = M ./ MmaxFit;  % normalize M-wave data
-    amplitudesWavesNorm{leg,2} = H ./ MmaxFit;  % normalize H-wave data
 
     % ========== fit H-wave data using non-linear least squares ==========
     try

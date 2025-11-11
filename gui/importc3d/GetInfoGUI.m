@@ -20,12 +20,11 @@ if nargin && ischar(varargin{1})
 end
 
 if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+    varargout{1:nargout} = gui_mainfcn(gui_State,varargin{:});
 else
-    gui_mainfcn(gui_State, varargin{:});
+    gui_mainfcn(gui_State,varargin{:});
 end
 % End initialization code - DO NOT EDIT
-
 
 % --- Executes just before GetInfoGUI is made visible.
 function GetInfoGUI_OpeningFcn(hObject, eventdata, handles, varargin)

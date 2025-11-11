@@ -1,5 +1,4 @@
-function markerGapsUpdated = fillSmallMarkerGapsSpline( ...
-    markerGaps,pathTrial,vicon,shouldSave,maxGapSize)
+function markerGapsUpdated = fillSmallMarkerGaps(markerGaps, pathTrial, vicon, shouldSave, maxGapSize, interpMethod)
 %FILLSMALLMARKERGAPSSPLINE Fills small marker trajectory gaps via spline
 %   This function fills gaps in all marker trajectories identified in
 % markerGaps using spline interpolation for gaps smaller than the specified
@@ -17,9 +16,13 @@ function markerGapsUpdated = fillSmallMarkerGapsSpline( ...
 %   updatedMarkerGaps: struct with only remaining gaps after processing
 
 % TODO: add a GUI input option if helpful
-narginchk(2,5);         % verify correct number of input arguments
+narginchk(2,6);         % verify correct number of input arguments
 
 % set default value for maxGapSize if not provided
+if nargin < 6 || isempty(interpMethod)
+    interpMethod = 'spline';
+end
+
 if nargin < 5 || isempty(maxGapSize)
     maxGapSize = 10;
 end
@@ -58,7 +61,7 @@ end
 subject = subject{1};
 
 % process each marker gap in the 'markerGaps' struct
-fprintf('Filling small marker gaps with spline interpolation...\n');
+fprintf('Filling small marker gaps with %s interpolation...\n', interpMethod);
 wasChanged = false;                     % track whether changes were made
 
 for mrkr = 1:numel(markers)
@@ -87,7 +90,7 @@ for mrkr = 1:numel(markers)
         % fill gap if it is within the allowed 'maxGapSize'
         if gapLength <= maxGapSize && any(existsTraj)
             [trajX,trajY,trajZ,existsTraj] = ...
-                fillGap(trajX,trajY,trajZ,existsTraj,gaps(indGap,:));
+                fillGap(trajX,trajY,trajZ,existsTraj,gaps(indGap,:), interpMethod);
             wasChanged = true;              % mark changes made
         else
             % retain the gap in 'gapsRemaining' if it exceeds 'maxGapSize'
@@ -132,7 +135,7 @@ markerGapsUpdated = markerGaps;
 end
 
 function [trajX,trajY,trajZ,existsTraj] = fillGap( ...
-    trajX,trajY,trajZ,existsTraj,gapRange)
+    trajX,trajY,trajZ,existsTraj,gapRange, interpMethod)
 % FILLGAP Interpolates a gap in a marker trajectory using spline
 % input:
 %   trajX, trajY, trajZ: trajectories for x, y, and z coordinates
@@ -143,20 +146,9 @@ function [trajX,trajY,trajZ,existsTraj] = fillGap( ...
 framesToFill = gapRange(1):gapRange(2);
 existingFrames = find(existsTraj);      % get frames with data
 
-% interpolate missing frames
-% TODO: consider switching to 'spline' with 'ppval' or 'griddedInterpolant'
-% instead of 'interp1' to reduce computation time if duration becomes an
-% issue (although results should be identical)
-% TODO: consider other interpolation methods ('pchip','cubic','v5cubic',
-% 'makima') to see if they have better trajectories (especially for longer
-% gaps) in addition to possibly reducing computation time.
-trajX(framesToFill) = interp1(existingFrames,trajX(existingFrames), ...
-    framesToFill,'spline');
-trajY(framesToFill) = interp1(existingFrames,trajY(existingFrames), ...
-    framesToFill,'spline');
-trajZ(framesToFill) = interp1(existingFrames,trajZ(existingFrames), ...
-    framesToFill,'spline');
+trajX(framesToFill) = interp1(existingFrames, trajX(existingFrames), framesToFill, interpMethod);
+trajY(framesToFill) = interp1(existingFrames, trajY(existingFrames), framesToFill, interpMethod);
+trajZ(framesToFill) = interp1(existingFrames, trajZ(existingFrames), framesToFill, interpMethod);
 existsTraj(framesToFill) = true;        % update existence array
 
 end
-

@@ -216,7 +216,7 @@ classdef parameterSeries < labTimeSeries
             if nargin<3 || isempty(strides)
                strides=1:size(this.Data,1);
             end
-            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx));
+            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx),this.trialTypes);
         end
 
         function newThis=appendData(this,newData,newLabels,newDesc) %For back compat

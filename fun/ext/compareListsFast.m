@@ -5,27 +5,30 @@ function [bool,idxs] = compareListsFast(list1,list2)
 %See also: compareLists
 
 if isa(list2,'char')
-    bool=strcmp(list1,list2);
-    if nargout>1
-        idxs=find(bool);
+    bool = strcmp(list1,list2);
+    if nargout > 1
+        idxs = find(bool);
     end
 else
-     N1=numel(list1);
-     N2=numel(list2);  
-    bool=false(1,N2);
-    idxs=nan(1,N2);
-    idxList=1:N1;
-    for j=1:N2
-        aux=strcmpi(list2{j},list1);
+    N1 = numel(list1);
+    N2 = numel(list2);
+    bool = false(1,N2);
+    idxs = nan(1,N2);
+    idxList = 1:N1;
+    for jj = 1:N2
+        aux = strcmpi(list2{jj},list1);
         if any(aux)
-            bool(j)=true;
+            bool(jj) = true;
             try
-                idxs(j)=idxList(aux); %This will fail if there are repeated elements in list
+                % NOTE: will fail if there are repeated elements in list
+                idxs(jj) = idxList(aux);
             catch
-                idxs(j)=find(aux,1,'last'); %Returning 1 match
-                warning(['Multiple matches found for ' list2{j}])
+                idxs(jj) = find(aux,1,'last');  % return one match
+                warning(['Multiple matches found for ' list2{jj}]);
             end
         end
     end
+end
+
 end
 

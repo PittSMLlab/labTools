@@ -108,10 +108,7 @@ function groupNameEdit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of groupNameEdit as text
 %        str2double(get(hObject,'String')) returns contents of groupNameEdit as a double
 
-
-
-% -------------------- Add/Remove Subject Buttons ----------------------- % 
-
+% -------------------- Add/Remove Subject Buttons ----------------------- %
 function addButton_Callback(hObject, eventdata, handles)
 % hObject    handle to addButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -133,6 +130,7 @@ set(handles.allSubList,'String',contents)
 set(handles.allSubList,'Value',[])
 
 guidata(hObject, handles);
+end
 
 % --- Executes on button press in removeButton.
 function removeButton_Callback(hObject, eventdata, handles)
@@ -153,8 +151,7 @@ set(handles.selectSubList,'String',contents)
 set(handles.selectSubList,'Value',[])
 
 guidata(hObject, handles);
-
-
+end
 
 % --- Executes on button press in addGroupButton.
 function addGroupButton_Callback(hObject, eventdata, handles)
@@ -188,7 +185,7 @@ newGroupContents=[groupContents; {group}];
 set(handles.groupList,'String',newGroupContents)
 
 guidata(hObject, handles);
-
+end
 
 function saveButton_Callback(hObject, eventdata, handles)
 
@@ -196,30 +193,30 @@ function saveButton_Callback(hObject, eventdata, handles)
 studyData=handles.studyData;
 save([path file],'studyData','-v7.3')
 
-close(handles.figure1)
-
-
-
-
-
-
+close(handles.figure1);
+end
 
 function allSubList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
 end
 
 function groupNameEdit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+end
 
 function groupList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
 end
 
 function selectSubList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+end
+

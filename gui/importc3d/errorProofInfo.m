@@ -1,27 +1,27 @@
 function out = errorProofInfo(handles,ignoreErrors)
-%Checks feilds of GetInfoGUI to ensure entry is valid and reasonable.
-%If entry is invalid, issues warning about which field is incorrect.
+%Checks fields of 'GetInfoGUI' to ensure entries are valid and reasonable.
+%If entry is invalid, issues a warning about which field is incorrect.
 %
-%Input:
-% hadles - handle structure from GetInfoGUI
-% ignoreErrors - enter true to ignore errors
+%Inputs:
+% handles - handle structure from 'GetInfoGUI'
+% ignoreErrors - enter true to ignore any errors
 
-out.bad=false;
+out.bad = false;
 
-%% Get info from GUI fields
-
-% -- Experiment Info
-descriptionContents=cellstr(get(handles.description_edit,'string'));
+%% Get Information from GUI Fields
+% -- Experiment Information
+descriptionContents = cellstr(get(handles.description_edit,'string'));
 if ~isempty(get(handles.description_edit,'Value'))
-out.ExpFile=descriptionContents{get(handles.description_edit,'Value')};
+    out.ExpFile = ...
+        descriptionContents{get(handles.description_edit,'Value')};
 else
-    out.ExpFile=descriptionContents{1}; %Empty string
+    out.ExpFile = descriptionContents{1};   % set to empty string
 end
-    
+
 if isfield(handles,'group')
-    out.ExpDescription=handles.group;
+    out.ExpDescription = handles.group;
 else
-    out.ExpDescription=out.ExpFile;
+    out.ExpDescription = out.ExpFile;
 end
 out.experimenter = get(handles.name_edit,'string');
 MonthContents = cellstr(get(handles.month_list,'String'));
@@ -30,7 +30,7 @@ out.day = str2double(get(handles.day_edit,'string'));
 out.year = str2double(get(handles.year_edit,'string'));
 out.exp_obs = get(handles.note_edit,'string');
 
-% -- Subject Info
+% -- Subject Information
 out.ID = get(handles.subID_edit,'string');
 DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
 out.DOBmonth = DOBmonthContents{get(handles.DOBmonth_list,'Value')};
@@ -48,7 +48,7 @@ out.height = str2double(get(handles.height_edit,'string'));
 out.weight = str2double(get(handles.weight_edit,'string'));
 out.isStroke = get(handles.strokeCheck,'Value');
 
-% -- Data Info
+% -- Data Information
 if isfield(handles,'folder_location')
     out.dir_location = handles.folder_location;
 else
@@ -61,60 +61,71 @@ out.forces = get(handles.force_check,'Value');
 out.EMGs = get(handles.emg_check,'Value');
 out.Nexus = get(handles.Nexus,'Value');
 out.EMGworks = get(handles.EMGworks,'Value');
-out.schenleyLab =  get(handles.schenleyLab,'Value');
-out.perceptualTasks =  get(handles.perceptualTasks,'Value');
-out.backwardCheck =  get(handles.backwardCheck,'Value');
+out.schenleyLab = get(handles.schenleyLab,'Value');
+out.perceptualTasks = get(handles.perceptualTasks,'Value');
+out.backwardCheck = get(handles.backwardCheck,'Value');
 
-if isfield(handles,'secfolder_location') && out.Nexus==1
+if isfield(handles,'secfolder_location') && out.Nexus == 1
     out.secdir_location = handles.secfolder_location;
 else
-    out.secdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.secdir_location = '';
 end
-
 
 if isfield(handles,'EMGworksFile_Loc')
     out.EMGworksdir_location = handles.EMGworksFile_Loc;
 else
-    out.EMGworksdir_location = ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.EMGworksdir_location = '';
 end
 
 if isfield(handles,'EMGworksFile2Loc')
     out.secEMGworksdir_location = handles.EMGworksFile2Loc;
 else
-    out.secEMGworksdir_location= ''; %Pablo changed on 7/16/2015: previously this was populated with the same directory as the primary files, which made no sense (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated with
+    % the same directory as the primary files, which made no sense
+    % (probably was just done to avoid errors downstream).
+    out.secEMGworksdir_location = '';
 end
 
-% -- Trial Info
-Nconds=str2double(get(handles.numofconds,'string'));
-if ~isnan(Nconds) && Nconds>0
-    for c = 1:Nconds
-        condNum = str2double(get(handles.(['condition',num2str(c)]),'string'));
+% -- Trial Information
+Nconds = str2double(get(handles.numofconds,'string'));  % # of conditions
+if ~isnan(Nconds) && Nconds > 0
+    for c = 1:Nconds                            % for each condition, ...
+        condNum = ...
+            str2double(get(handles.(['condition',num2str(c)]),'string'));
         out.cond(c) = condNum;
-        out.conditionNames{condNum}=strtrim(get(handles.(['condName',num2str(c)]),'string'));
-        out.conditionDescriptions{condNum}=get(handles.(['description',num2str(c)]),'string');
+        out.conditionNames{condNum} = ...
+            strtrim(get(handles.(['condName',num2str(c)]),'string'));
+        out.conditionDescriptions{condNum} = ...
+            get(handles.(['description',num2str(c)]),'string');
         trialnums = get(handles.(['trialnum',num2str(c)]),'string');
         out.trialnums{condNum} = eval(['[',trialnums,']']);
-        %need to eval for entry of numbers like '1:6' or '7 8 9'
+        % need to evaluate for entry of numbers like '1:6' or '7 8 9'
         out.type{condNum} = get(handles.(['type',num2str(c)]),'string');
     end
 else
-    out.trialnums={0};
+    out.trialnums = {0};
 end
 
-trials=cell2mat(out.trialnums);
+trials = cell2mat(out.trialnums);
 out.numoftrials = max(trials);
 
 % -- EMG data
 if isfield(handles,'emg1_1')
-    for i=1:16
-        aux1=['emg1_' num2str(i)];
-        out.EMGList1(i)={get(handles.(aux1),'string')};
-        aux2=['emg2_' num2str(i)];
-        out.EMGList2(i)={get(handles.(aux2),'string')};
+    for ii = 1:16
+        aux1 = ['emg1_' num2str(ii)];
+        out.EMGList1(ii) = {get(handles.(aux1),'string')};
+        aux2 = ['emg2_' num2str(ii)];
+        out.EMGList2(ii) = {get(handles.(aux2),'string')};
     end
 end
 
-% --  save location
+% -- Save Location
 if isfield(handles,'save_folder')
     out.save_folder = handles.save_folder;
 else
@@ -123,27 +134,26 @@ end
 
 % -- Trial Observations
 if isfield(handles,'trialObs')
-    out.trialObs=handles.trialObs;
+    out.trialObs = handles.trialObs;
 end
 
-%% Check for errors
+%% Check for Errors
+if ~(nargin > 1 && ignoreErrors)
 
-if ~(nargin>1 && ignoreErrors)
-        
     % -- Experiment Info
-%     if strcmp(out.ExpFile,' ')
-%         h_error=errordlg('Please choose an experiment description','Description Error');
-%         waitfor(h_error)
-%         uicontrol(handles.description_edit)
-%         out.bad=true; close(h); return
-%     end
+    %     if strcmp(out.ExpFile,' ')
+    %         h_error=errordlg('Please choose an experiment description','Description Error');
+    %         waitfor(h_error)
+    %         uicontrol(handles.description_edit)
+    %         out.bad=true; close(h); return
+    %     end
     if strcmp(out.experimenter,' (Enter name/initials)')
         h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');
         waitfor(h_error)
         uicontrol(handles.name_edit)
         out.bad=true; return
     end
-    if isnan(out.day) || out.day<0 || out.day>31
+    if isnan(out.day) || out.day < 0 || out.day > 31
         h_error=errordlg('Please enter a day between 1 and 31','Day Error');
         waitfor(h_error)
         uicontrol(handles.day_edit)
@@ -155,8 +165,8 @@ if ~(nargin>1 && ignoreErrors)
         uicontrol(handles.year_edit)
         out.bad=true; return
     end
-    
-    % -- Subject Info
+
+    % -- Subject Information
     if strcmp(out.ID,'Sub#')
         h_error=errordlg('Please enter the subject ID','ID Error');
         waitfor(h_error)
@@ -204,33 +214,32 @@ if ~(nargin>1 && ignoreErrors)
         out.affectedValue=get(handles.popupAffected,'Value');
         out.affectedSide=aux{out.affectedValue};
     end
-    
-    % -- Data Info
+
+    % -- Data Information
     if ~exist(out.dir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.c3dlocation)
-        out.bad=true; 
+        out.bad=true;
         return
     end
     if ~isempty(out.secdir_location) && ~exist(out.secdir_location,'dir')
-   % if ~isempty(out.secdir_location)
+        % if ~isempty(out.secdir_location)
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.secfileloc)
         out.bad=1;
         return
     end
-    
+
     if ~isempty(out.EMGworksdir_location) && ~exist(out.EMGworksdir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
         uicontrol(handles.EMGworksLocation)
         out.bad=1;
         return
-    end   
-    
-    
+    end
+
     if ~isempty(out.secEMGworksdir_location) && out.secEMGworksdir_location~=0 && ~exist(out.secEMGworksdir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
@@ -238,9 +247,8 @@ if ~(nargin>1 && ignoreErrors)
         out.bad=1;
         return
     end
-    
-       
-    % -- Trial Info
+
+    % -- Trial Information
     for t=trials
         if t<10
             filename = [out.dir_location filesep out.basename  '0' num2str(t) '.c3d'];
@@ -253,26 +261,26 @@ if ~(nargin>1 && ignoreErrors)
             uicontrol(handles.basefile)
             out.bad=true; return
         end
-%         %Check marker labels are good in .c3d files
-%         H=btkReadAcquisition(filename);
-%         markerLabels=fieldnames(btkGetMarkers(H));
-%         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
-%         labelPresent=false(1,length(mustHaveLabels));
-%         for i=1:length(markerLabels)
-%             label=findLabel(markerLabels{i});
-%             labelPresent=labelPresent+ismember(mustHaveLabels,label);
-%         end
-%         if any(~labelPresent)
-%             missingLabels=find(~labelPresent);
-%             str='';
-%             for j=missingLabels
-%                 str=[str ', ' mustHaveLabels{j}];
-%             end
-%             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
-%             waitfor(h_error)
-%             uicontrol(handles.basefile)
-%             out.bad=true; return
-%         end
+        %         %Check marker labels are good in .c3d files
+        %         H=btkReadAcquisition(filename);
+        %         markerLabels=fieldnames(btkGetMarkers(H));
+        %         mustHaveLabels={'LHIP','RHIP','LANK','RANK','RHEE','LHEE','LTOE','RTOE','RKNE','LKNE'};
+        %         labelPresent=false(1,length(mustHaveLabels));
+        %         for i=1:length(markerLabels)
+        %             label=findLabel(markerLabels{i});
+        %             labelPresent=labelPresent+ismember(mustHaveLabels,label);
+        %         end
+        %         if any(~labelPresent)
+        %             missingLabels=find(~labelPresent);
+        %             str='';
+        %             for j=missingLabels
+        %                 str=[str ', ' mustHaveLabels{j}];
+        %             end
+        %             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
+        %             waitfor(h_error)
+        %             uicontrol(handles.basefile)
+        %             out.bad=true; return
+        %         end
         if ~isempty(out.secdir_location)
             if t<10
                 filename2 = [out.secdir_location filesep out.basename  '0' num2str(t) '.c3d'];
@@ -287,7 +295,7 @@ if ~(nargin>1 && ignoreErrors)
             end
         end
     end
-   %%%%%%%%%%%%%% DMMO for EMGworks 
+    %%%%%%%%%%%%%% DMMO for EMGworks
     if ~isempty(out.EMGworksdir_location)
         if t<10
             filename3 = [out.EMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
@@ -301,8 +309,8 @@ if ~(nargin>1 && ignoreErrors)
             out.bad=true; return
         end
     end
-    
-        if ~isempty(out.secEMGworksdir_location)
+
+    if ~isempty(out.secEMGworksdir_location)
         if t<10
             filename4 = [out.secEMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
         else
@@ -314,31 +322,26 @@ if ~(nargin>1 && ignoreErrors)
             uicontrol(handles.basefile)
             out.bad=true; return
         end
-        end
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
-%     
+%
 %     % -- EMG data
 %     if isfield(handles,'emg1_1')
 %         allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};
 %         %Check that all muscles are allowed
-%         
+%
 %         %Check for sync signals
 %     end
-    
-    % --  save location
-    if ~exist(out.save_folder,'dir')
-        h_error=errordlg('Please enter a save folder that exists','Directory Error');
-        waitfor(h_error)
-        uicontrol(handles.saveloc_edit)
-        out.bad=true; 
-    end       
+
+% --  Save Location
+if ~exist(out.save_folder,'dir')
+    h_error =errordlg( ...
+        'Please enter a save folder that exists','Directory Error');
+    waitfor(h_error);
+    uicontrol(handles.saveloc_edit);
+    out.bad = true;
 end
 
-
-
-
-
-
-
+end
 

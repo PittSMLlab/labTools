@@ -1,37 +1,38 @@
-function [AllMomentsTS] = TorqueCalculatorNew(COMTS, COPTS, markerData, GRFData, weight)
+function AllMomentsTS = ...
+    TorqueCalculatorNew(COMTS,COPTS,markerData,GRFData,weight)
 
-%% Get data from COMTS
-fcomR=squeeze(COMTS.getOrientedData({'RfCOM'}));
-fcomxR=fcomR(:,1);
-fcomyR=fcomR(:,2);
-fcomzR=fcomR(:,3);
+%% Get Center of Mass Time Series (COMTS) data
+fcomR = squeeze(COMTS.getOrientedData({'RfCOM'}));  % right foot COM
+fcomxR = fcomR(:,1);
+fcomyR = fcomR(:,2);
+fcomzR = fcomR(:,3);
 
-fcomL=squeeze(COMTS.getOrientedData({'LfCOM'}));
-fcomxL=fcomL(:,1);
-fcomyL=fcomL(:,2);
-fcomzL=fcomL(:,3);
+fcomL = squeeze(COMTS.getOrientedData({'LfCOM'}));  % left foot COM
+fcomxL = fcomL(:,1);
+fcomyL = fcomL(:,2);
+fcomzL = fcomL(:,3);
 
-scomR=squeeze(COMTS.getOrientedData({'RsCOM'}));
-scomxR=scomR(:,1);
-scomyR=scomR(:,2);
-scomzR=scomR(:,3);
+scomR = squeeze(COMTS.getOrientedData({'RsCOM'}));  % right shank COM
+scomxR = scomR(:,1);
+scomyR = scomR(:,2);
+scomzR = scomR(:,3);
 
-scomL=squeeze(COMTS.getOrientedData({'LsCOM'}));
-scomxL=scomL(:,1);
-scomyL=scomL(:,2);
-scomzL=scomL(:,3);
+scomL = squeeze(COMTS.getOrientedData({'LsCOM'}));  % left shank COM
+scomxL = scomL(:,1);
+scomyL = scomL(:,2);
+scomzL = scomL(:,3);
 
-tcomR=squeeze(COMTS.getOrientedData({'RtCOM'}));
-tcomxR=tcomR(:,1);
-tcomyR=tcomR(:,2);
-tcomzR=tcomR(:,3);
+tcomR = squeeze(COMTS.getOrientedData({'RtCOM'}));  % right thigh COM
+tcomxR = tcomR(:,1);
+tcomyR = tcomR(:,2);
+tcomzR = tcomR(:,3);
 
-tcomL=squeeze(COMTS.getOrientedData({'LtCOM'}));
-tcomxL=tcomL(:,1);
-tcomyL=tcomL(:,2);
-tcomzL=tcomL(:,3);
+tcomL = squeeze(COMTS.getOrientedData({'LtCOM'}));  % left thigh COM
+tcomxL = tcomL(:,1);
+tcomyL = tcomL(:,2);
+tcomzL = tcomL(:,3);
 
-%% Get data from COPTS
+%% Get Center of Pressure Time Series (COPTS) data
 NewGRFs=COPTS.getDataAsTS({'RGRFx','RGRFy','RGRFz','LGRFx','LGRFy','LGRFz'}).getSample(markerData.Time);
 NewGRFzR=NewGRFs(:,3);
 NewGRFyR=NewGRFs(:,2);
@@ -44,7 +45,6 @@ NewCOPyR=NewCOPs(:,4);
 NewCOPxR=NewCOPs(:,3);
 NewCOPyL=NewCOPs(:,2);
 NewCOPxL=NewCOPs(:,1);
-
 
 %% Get relevant markerData
 %get orientation
@@ -77,7 +77,7 @@ for i=1:length(markerList)
         aux=nan(length(markerData.Time),3);
         warning(['Marker ' markerList{i} ' was missing from markerData.'])
     end
-    eval([markerList{i} '=aux;']); 
+    eval([markerList{i} '=aux;']);
     %assignin('base',markerList{i},aux) %This is more elegant than eval (and
     %recommended, but it doesnt seem to work)
 end
@@ -87,13 +87,13 @@ fcomRangle=[]; fcomLangle=[]; scomRangle=[]; scomLangle=[]; tcomRangle=[]; tcomL
 VerticalVector=[0,0,1];
 
 for i=1:size(fcomL,1)
-        RFootCOMLength=RAnk(i,:)-fcomR(i,:);
-        LFootCOMLength=LAnk(i,:)-fcomL(i,:);
-        RShankCOMLength=RKne(i,:)-scomR(i,:);
-        LShankCOMLength=LKne(i,:)-scomL(i,:);
-        RThighCOMLength=RHip(i,:)-tcomR(i,:);
-        LThighCOMLength=LHip(i,:)-tcomL(i,:);
-    
+    RFootCOMLength=RAnk(i,:)-fcomR(i,:);
+    LFootCOMLength=LAnk(i,:)-fcomL(i,:);
+    RShankCOMLength=RKne(i,:)-scomR(i,:);
+    LShankCOMLength=LKne(i,:)-scomL(i,:);
+    RThighCOMLength=RHip(i,:)-tcomR(i,:);
+    LThighCOMLength=LHip(i,:)-tcomL(i,:);
+
     fcomRangle(i)=atan2(RFootCOMLength(1,2)-VerticalVector(1,2),RFootCOMLength(1,3)-VerticalVector(1,3));
     fcomLangle(i)=atan2(LFootCOMLength(1,2)-VerticalVector(1,2),LFootCOMLength(1,3)-VerticalVector(1,3));
     scomRangle(i)=atan2(RShankCOMLength(1,2)-VerticalVector(1,2),RShankCOMLength(1,3)-VerticalVector(1,3));
@@ -188,9 +188,9 @@ for i=1:(length(RAnk)-lengthdiff-2)
     RFootI0=FootWeight*(RFootLength*0.690)^2;
     % Define the reaction forces at the ankle based on a freebody
     % diagram of the foot.
-        RzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzR(i)+NewGRFzR(i);
-        RyAnkleForce(i)=NewGRFyR(i)-FootWeight*AfcomyR(i);
-        RxAnkleForce(i)=NewGRFxR(i)-FootWeight*AfcomxR(i);
+    RzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzR(i)+NewGRFzR(i);
+    RyAnkleForce(i)=NewGRFyR(i)-FootWeight*AfcomyR(i);
+    RxAnkleForce(i)=NewGRFxR(i)-FootWeight*AfcomxR(i);
 
     % Place the ground reaciton forces and the reaction forces into
     % their own matrices.
@@ -199,13 +199,13 @@ for i=1:(length(RAnk)-lengthdiff-2)
     RAnkF=[RxAnkleForce(i),RyAnkleForce(i),RzAnkleForce(i)];
     % Place the center of masses and the center of pressures into their
     % own matrices.
-        fcomR=[fcomxR(i),fcomyR(i),fcomzR(i)];
+    fcomR=[fcomxR(i),fcomyR(i),fcomzR(i)];
     % Ensure that when the foot is not on the ground that the distance
     % between the center of mass and center of pressure is zero.
     r1=(fcomR-COPfR)/1000;
-        if isnan(NewCOPxR(COPcount))==1
-            r1=[0,0,0];
-        end
+    if isnan(NewCOPxR(COPcount))==1
+        r1=[0,0,0];
+    end
     r2=(RAnk(i,:)-fcomR)/1000;
     % Perform a cross product between the distances and forces to get
     % the overall moments occuring at the right ankle joint.
@@ -214,8 +214,8 @@ for i=1:(length(RAnk)-lengthdiff-2)
     RAnkleCross=Cross1(i,:)+Cross2(i,:);
     % Subtract away the moment of intertia multiplied by the angular
     % accleration to get the total ankle moment.
-        RAnkleMoment(i)=RAnkleCross(1,1)-RFootI0*alphaRfoot(i);
-        RAnklePower(i)=RAnkleMoment(i)*wfcomyR(i);
+    RAnkleMoment(i)=RAnkleCross(1,1)-RFootI0*alphaRfoot(i);
+    RAnklePower(i)=RAnkleMoment(i)*wfcomyR(i);
     COPcount=COPcount+1;
 end
 COPcount=1;
@@ -226,23 +226,23 @@ for i=1:(length(LAnk)-lengthdiff-2)
     LFootI0=FootWeight*(LFootLength*0.690)^2;
     % Define the reaction forces at the ankle based on a freebody
     % diagram of the foot.
-        LzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzL(i)+NewGRFzL(i);
-        LyAnkleForce(i)=NewGRFyL(i)-FootWeight*AfcomyL(i);
-        LxAnkleForce(i)=NewGRFxL(i)-FootWeight*AfcomxL(i);
+    LzAnkleForce(i)=-1*FootWeight*9.8-FootWeight*AfcomzL(i)+NewGRFzL(i);
+    LyAnkleForce(i)=NewGRFyL(i)-FootWeight*AfcomyL(i);
+    LxAnkleForce(i)=NewGRFxL(i)-FootWeight*AfcomxL(i);
     % Place the ground reaciton forces and the reaction forces into
     % their own matrices.
     GRFL=[NewGRFxL(i),NewGRFyL(i),NewGRFzL(i)];
-        COPfL=[NewCOPxL(COPcount),NewCOPyL(COPcount),0];
+    COPfL=[NewCOPxL(COPcount),NewCOPyL(COPcount),0];
     LAnkF=[LxAnkleForce(i),LyAnkleForce(i),LzAnkleForce(i)];
     % Place the center of masses and the center of pressures into their
     % own matrices.
-        fcomL=[fcomxL(i),fcomyL(i),fcomzL(i)];
+    fcomL=[fcomxL(i),fcomyL(i),fcomzL(i)];
     % Ensure that when the foot is not on the ground that the distance
     % between the center of mass and center of pressure is zero.
     r1=(fcomL-COPfL)/1000;
-        if isnan(NewCOPxL(COPcount))==1
-            r1=[0,0,0];
-        end
+    if isnan(NewCOPxL(COPcount))==1
+        r1=[0,0,0];
+    end
     r2=(LAnk(i,:)-fcomL)/1000;
     % Perform a cross product between the distances and forces to get
     % the overall moments occuring at the right ankle joint.
@@ -251,8 +251,8 @@ for i=1:(length(LAnk)-lengthdiff-2)
     LAnkleCross=Cross1(i,:)+Cross2(i,:);
     % Subtract away the moment of intertia multiplied by the angular
     % accleration to get the total ankle moment.
-        LAnkleMoment(i)=LAnkleCross(1,1)-LFootI0*alphaLfoot(i);
-        LAnklePower(i)=LAnkleMoment(i)*wfcomyL(i);
+    LAnkleMoment(i)=LAnkleCross(1,1)-LFootI0*alphaLfoot(i);
+    LAnklePower(i)=LAnkleMoment(i)*wfcomyL(i);
     COPcount=COPcount+1;
 end
 
@@ -260,64 +260,64 @@ end
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     RShankLength=norm(RKne(i,:)-RAnk(i,:))/1000;
     RShankI0=ShankWeight*(RShankLength*0.645)^2;
-        RyKneeForce(i)=RyAnkleForce(i)-ShankWeight*AscomyR(i);
-        RzKneeForce(i)=RzAnkleForce(i)-ShankWeight*AscomzR(i)-ShankWeight*9.8;
-        RxKneeForce(i)=RxAnkleForce(i)-ShankWeight*AscomxR(i);
-        
+    RyKneeForce(i)=RyAnkleForce(i)-ShankWeight*AscomyR(i);
+    RzKneeForce(i)=RzAnkleForce(i)-ShankWeight*AscomzR(i)-ShankWeight*9.8;
+    RxKneeForce(i)=RxAnkleForce(i)-ShankWeight*AscomxR(i);
+
     RAnkF=[RxAnkleForce(i),RyAnkleForce(i),RzAnkleForce(i)];
     RKneeF=[RxKneeForce(i),RyKneeForce(i),RzKneeForce(i)];
-        scomR(i,:)=[scomxR(i),scomyR(i),scomzR(i)];
+    scomR(i,:)=[scomxR(i),scomyR(i),scomzR(i)];
     r1=(scomR(i,:)-RAnk(i,:))/1000;
     r2=(RKne(i,:)-scomR(i,:))/1000;
     RKneeCross=cross(r1,RAnkF)+cross(r2,RKneeF);
-        RKneeMoment(i)=-1*((RKneeCross(1,1))-RShankI0*alphaRshank(i)+RAnkleMoment(i));
-        RKneePower(i)=RKneeMoment(i)*wscomyR(i);
+    RKneeMoment(i)=-1*((RKneeCross(1,1))-RShankI0*alphaRshank(i)+RAnkleMoment(i));
+    RKneePower(i)=RKneeMoment(i)*wscomyR(i);
 end
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     LShankLength=norm(LKne(i,:)-LAnk(i,:))/1000;
     LShankI0=ShankWeight*(LShankLength*0.645)^2;
-        LyKneeForce(i)=LyAnkleForce(i)-ShankWeight*AscomyL(i);
-        LzKneeForce(i)=LzAnkleForce(i)-ShankWeight*AscomzL(i)-ShankWeight*9.8;
-        LxKneeForce(i)=LxAnkleForce(i)-ShankWeight*AscomxL(i);
+    LyKneeForce(i)=LyAnkleForce(i)-ShankWeight*AscomyL(i);
+    LzKneeForce(i)=LzAnkleForce(i)-ShankWeight*AscomzL(i)-ShankWeight*9.8;
+    LxKneeForce(i)=LxAnkleForce(i)-ShankWeight*AscomxL(i);
     LAnkF=[LxAnkleForce(i),LyAnkleForce(i),LzAnkleForce(i)];
     LKneeF=[LxKneeForce(i),LyKneeForce(i),LzKneeForce(i)];
-        scomL(i,:)=[scomxL(i),scomyL(i),scomzL(i)];
+    scomL(i,:)=[scomxL(i),scomyL(i),scomzL(i)];
     r1=(scomL(i,:)-LAnk(i,:))/1000;
     r2=(LKne(i,:)-scomL(i,:))/1000;
     LKneeCross=cross(r1,LAnkF)+cross(r2,LKneeF);
-        LKneeMoment(i)=-1*((LKneeCross(1,1))-LShankI0*alphaLshank(i)+LAnkleMoment(i));
-        LKneePower(i)=LKneeMoment(i)*wscomyL(i);
+    LKneeMoment(i)=-1*((LKneeCross(1,1))-LShankI0*alphaLshank(i)+LAnkleMoment(i));
+    LKneePower(i)=LKneeMoment(i)*wscomyL(i);
 end
 
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     RThighLength=norm(RHip(i,:)-RKne(i,:))/1000;
     RThighI0=ThighWeight*(RThighLength*0.54)^2;
-        RxHipForce(i)=RxKneeForce(i)-ThighWeight*AtcomxR(i);
-        RyHipForce(i)=RyKneeForce(i)-ThighWeight*AtcomyR(i);
-        RzHipForce(i)=RzKneeForce(i)-ThighWeight*AtcomzR(i)-ThighWeight*9.8;
+    RxHipForce(i)=RxKneeForce(i)-ThighWeight*AtcomxR(i);
+    RyHipForce(i)=RyKneeForce(i)-ThighWeight*AtcomyR(i);
+    RzHipForce(i)=RzKneeForce(i)-ThighWeight*AtcomzR(i)-ThighWeight*9.8;
     RHipF=[RxHipForce(i), RyHipForce(i), RzHipForce(i)];
     RKneeF=[RxKneeForce(i), RyKneeForce(i), RzKneeForce(i)];
-        tcomF=[tcomxR(i), tcomyR(i), tcomzR(i)];
+    tcomF=[tcomxR(i), tcomyR(i), tcomzR(i)];
     r1=(tcomF-RKne(i,:))/1000;
     r2=(RHip(i,:)-tcomF)/1000;
     RHipCross=cross(r1,RKneeF)+cross(r2,RHipF);
-        RHipMoment(i)=RHipCross(1,1)-RThighI0*alphaRthigh(i)+RKneeMoment(i);
-        RHipPower(i)=RHipMoment(i)*wtcomyR(i);
+    RHipMoment(i)=RHipCross(1,1)-RThighI0*alphaRthigh(i)+RKneeMoment(i);
+    RHipPower(i)=RHipMoment(i)*wtcomyR(i);
 end
 for i=1:abs(length(NewGRFzL)-lengthdiff-2)
     LThighLength=norm(LHip(i,:)-LKne(i,:))/1000;
     LThighI0=ThighWeight*(LThighLength*0.54)^2;
-        LxHipForce(i)=LxKneeForce(i)-ThighWeight*AtcomxL(i);
-        LyHipForce(i)=LyKneeForce(i)-ThighWeight*AtcomyL(i);
-        LzHipForce(i)=LzKneeForce(i)-ThighWeight*AtcomzL(i)-ThighWeight*9.8;
+    LxHipForce(i)=LxKneeForce(i)-ThighWeight*AtcomxL(i);
+    LyHipForce(i)=LyKneeForce(i)-ThighWeight*AtcomyL(i);
+    LzHipForce(i)=LzKneeForce(i)-ThighWeight*AtcomzL(i)-ThighWeight*9.8;
     LHipF=[LxHipForce(i), LyHipForce(i), LzHipForce(i)];
     LKneeF=[LxKneeForce(i), LyKneeForce(i), LzKneeForce(i)];
-        tcomS=[tcomxL(i), tcomyL(i), tcomzL(i)];
+    tcomS=[tcomxL(i), tcomyL(i), tcomzL(i)];
     r1=(tcomS-LKne(i,:))/1000;
     r2=(LHip(i,:)-tcomS)/1000;
     LHipCross=cross(r1,LKneeF)+cross(r2,LHipF);
-        LHipMoment(i)=LHipCross(1,1)-LThighI0*alphaLthigh(i)+LKneeMoment(i);
-        LHipPower(i)=LHipMoment(i)*wtcomyL(i);
+    LHipMoment(i)=LHipCross(1,1)-LThighI0*alphaLthigh(i)+LKneeMoment(i);
+    LHipPower(i)=LHipMoment(i)*wtcomyL(i);
 end
 
 

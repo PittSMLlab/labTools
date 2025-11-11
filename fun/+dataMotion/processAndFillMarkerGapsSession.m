@@ -61,32 +61,96 @@ for tr = indsTrials     % for each trial specified, ...
     pathTrial = fullfile(pathSess,sprintf('Trial%02d',tr));
     fprintf('Processing trial %d: %s\n',tr,pathTrial);
 
+    % open the trial if needed
+    if ~dataMotion.openTrialIfNeeded(pathTrial,vicon)
+        return;     % exit if the trial could not be opened
+    end
+
     % run reconstruct and label pipeline on the trial
-    dataMotion.reconstructAndLabelTrial(pathTrial,vicon,false);
+    disp('Running RLPrePatternFill1...');
+    try
+        vicon.RunPipeline('RLPrePatternFill1','',1200);
+    catch ME
+        warning('Failed to run RLPrePatternFill1 for trial %d: %s', tr, ME.message);
+        fprintf('Skipping to next trial...\n');
+        continue;
+    end
+
+    % run woltring gap filling pipeline on the trial
+    disp('Running RLPrePatternFill2...');
+    try
+        vicon.RunPipeline('RLPrePatternFill2','',1200);
+    catch ME
+        warning('Failed to run RLPrePatternFill2 for trial %d: %s', tr, ME.message);
+        fprintf('Skipping to next trial...\n');
+        continue;
+    end
 
     % extract marker gaps to be filled
-    markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
-
-    % fill small marker gaps using spline interpolation
-    markerGaps = dataMotion.fillSmallMarkerGapsSpline(markerGaps, ...
-        pathTrial,vicon,false);
+    try
+        markerGaps = dataMotion.extractMarkerGapsTrial(pathTrial,vicon);
+    catch ME
+        warning('Failed to extract marker gaps for trial %d: %s', tr, ME.message);
+        markerGaps = struct();
+    end
 
     % fill gaps using pattern fill for each reference marker
+    disp('Running Pattern Fill...');
     for ref = 1:numel(markersRef)       % for each reference marker, ...
         refMarker = markersRef{ref};    % retrieve reference marker name
         targetMarkers = markersTarg{ref};
 
-        % Process gaps for the current reference marker
-        markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
-            markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+        try
+            % Process gaps for the current reference marker
+            markerGaps = fillMarkerGapsPatternSpecifiedTargets( ...
+                markerGaps,targetMarkers,refMarker,pathTrial,vicon);
+        catch ME
+            warning('Failed to fill gaps for reference marker %s for trial %d: %s', refMarker, tr, ME.message)
+        end
+    end
+
+    % fill remaining small gaps with makima
+    if ~isempty(fieldnames(markerGaps))
+        disp('Filling remaining small marker gaps with makima...');
+        try
+            dataMotion.fillSmallMarkerGapsSpline(markerGaps, pathTrial, vicon, false, 250, 'makima');
+        catch ME
+            warning('Failed to fill small marker gaps for trial %d: %s', tr, ME.message);
+        end
+    end
+
+
+    % smooth trajectories using Butterworth filter
+    disp('Running RLPostPatternFill...');
+    try
+        vicon.RunPipeline('RLPostPatternFill','',1200);
+    catch ME
+        warning('Failed to run RLPostPatternFill for trial %d: %s', tr, ME.message);
     end
 
     fprintf('Saving trial %d: %s\n',tr,pathTrial);
     try
-        vicon.SaveTrial(200);
-        fprintf('Trial saved successfully.\n');
+        vicon.SaveTrial(900);
+        fprintf('Vicon trial saved. Now creating trajectory figures...\n');
+
+        % Save trajectory figures
+        try
+            % saveTrajectoryFigures(pathSess, pathTrial, tr, vicon);
+            if contains(pathSess, 'C3', 'IgnoreCase', true)
+                saveTrajectoryFigures(pathSess, tr, vicon, true); % pass flag
+            else
+                saveTrajectoryFigures(pathSess, tr, vicon, false);
+            end
+            fprintf('Trajectory figures saved successfully for trial %d.\n', tr);
+        catch ME
+            warning('Failed to save trajectory figures for trial %d: %s', tr, ME.message);
+            fprintf('Error details: %s\n', getReport(ME));
+        end
+
+        fprintf('Trial %d processing completed.\n', tr);
+
     catch ME
-        warning(ME.identifier,'%s',ME.message);
+        warning(ME.identifier,'Failed to save trial %d: %s', tr, ME.message);
     end
 end
 
@@ -126,6 +190,140 @@ for side = sides
     for mrkr = 1:numel(markerNames)
         markerGaps.(markerNames{mrkr}) = remainingGaps.(markerNames{mrkr});
     end
+end
+
+end
+
+function mrkrTrajs = getRelevantMrkrTrajs(newVicon)
+
+mrkrsRelevant = {'RGT','LGT','RANK','LANK'};
+mrkrTrajs = struct();
+
+subjects = newVicon.GetSubjectNames();
+if isempty(subjects)
+    warning('No subject found in trial.');
+    mrkrTrajs = struct();
+    return;
+end
+subject = subjects{1};
+fprintf('Getting trajectories for subject: %s\n', subject);
+
+for i = 1:numel(mrkrsRelevant)
+    marker = mrkrsRelevant{i};
+    try
+        [trajX, trajY, trajZ, existsTraj] = newVicon.GetTrajectory(subject, marker);
+
+        trajX(~existsTraj) = NaN;
+        trajY(~existsTraj) = NaN;
+        trajZ(~existsTraj) = NaN;
+
+        mrkrTrajs.(marker) = [trajX(:), trajY(:), trajZ(:)];%, double(exists(:))];
+        fprintf('Successfully retrieved trajectory for marker: %s\n', marker);
+    catch ME
+        warning('Failed to get trajectory for marker %s: %s', marker, ME.message);
+        mrkrTrajs.(marker) = [];  % Empty array for failed markers
+    end
+end
+
+end
+
+function saveTrajectoryFigures(pathSess, trialNum, vicon, highlightTurningPoints)
+
+if nargin < 4
+    highlightTurningPoints = false;
+end
+
+markers = {'RGT','LGT','RANK','LANK'};
+mrkrTrajs = getRelevantMrkrTrajs(vicon);
+
+outParent = fileparts(pathSess);
+outDir = fullfile(outParent, 'TrajectoryFigures');
+figDir = fullfile(outDir, 'fig');
+pngDir = fullfile(outDir, 'png');
+
+if ~exist(figDir, 'dir')
+    mkdir(figDir);
+end
+
+if ~exist(pngDir, 'dir')
+    mkdir(pngDir);
+end
+
+lowerBound = -2500;
+upperBound = 4500;
+
+for i = 1:numel(markers)
+    markerName = markers{i};
+
+    if ~isfield(mrkrTrajs, markerName)
+        warning('Marker %s not found in trial.', markerName);
+        continue;
+    end
+
+    traj = mrkrTrajs.(markerName);
+    if isempty(traj) || all(isnan(traj(:)))
+        warning('No valid data for marker %s in trial %d.', markerName, trialNum);
+        continue;
+    end
+
+    frames = 1:size(traj, 1);
+    yValues = traj(:,2);
+
+    if highlightTurningPoints % only for C3 trajectories
+        outOfBounds = (yValues < lowerBound) | (yValues > upperBound) | isnan(yValues);
+        outOfBounds = [false; outOfBounds(:); false];
+        d = diff(outOfBounds);
+        startIdxs = find(d == 1);
+        endIdxs   = find(d == -1) - 1;
+    end
+
+    % Create stacked plot
+    fig = figure('Visible','on', 'Name', ['Trajectories for ' markerName], 'NumberTitle', 'off'); % changed this to "on" so that fig will automatically open
+    tl = tiledlayout(3,1, 'TileSpacing', 'Compact');
+    title(tl, sprintf('%s Trajectory - Trial %02d', markerName, trialNum), 'Interpreter', 'none');
+
+    componentLabels = {'X','Y','Z'};
+    for dim = 1:3
+        ax = nexttile;
+        hold(ax,'on');
+        plot(ax, frames, traj(:,dim), 'b-', 'LineWidth',1.2);
+        ylabel(ax, [componentLabels{dim} ' (mm)']);
+        if dim == 3
+            xlabel(ax,'Frame');
+        end
+        grid(ax,'on');
+
+        dataMin = min(traj(:,dim),[],'omitnan');
+        dataMax = max(traj(:,dim),[],'omitnan');
+        padding = 0.1 * (dataMax - dataMin);
+        ylim(ax, [dataMin - padding, dataMax + padding]);
+
+        if highlightTurningPoints
+            % vertical shading based on Y out-of-bounds, drawn on all subplots
+            dataMin = min(traj(:,dim),[],'omitnan');
+            dataMax = max(traj(:,dim),[],'omitnan');
+            yMin = dataMin - 100;
+            yMax = dataMax + 100;
+
+            for j = 1:numel(startIdxs)
+                fill(ax, [startIdxs(j) endIdxs(j) endIdxs(j) startIdxs(j)], ...
+                    [yMin yMin yMax yMax], ...
+                    [1 0 0], 'FaceAlpha',0.2, 'EdgeColor','none');
+            end
+
+            % only add Y threshold lines on Y subplot
+            if dim == 2
+                yline(ax, lowerBound, 'r--','LineWidth',1);
+                yline(ax, upperBound, 'r--','LineWidth',1);
+            end
+        end
+    end
+
+    % Save .fig and .png
+    baseName = sprintf('%s_Trial%02d', markerName, trialNum);
+    savefig(fig, fullfile(figDir, [baseName '.fig']));
+    saveas(fig, fullfile(pngDir, [baseName '.png']));
+    close(fig);
 end
 
 end
