@@ -31,7 +31,7 @@ if mode(forces)~=0
 end
 
 % forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
-forceSign=sign(nanmean(Fz));
+forceSign=sign(nanmean(forces)); % Before it had Fz, however sometimes Fz is shifted if the platforms were not zeroed correctly
 forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
 
 stance=forces>threshold;

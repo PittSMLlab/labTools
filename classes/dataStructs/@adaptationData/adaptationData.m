@@ -107,9 +107,9 @@ classdef adaptationData
 
         [newThis,baseValues,typeList]=removeBiasV2(this,conditions,normalizeFlag) %Going to deprecate in favor of removeBiasV3's simpler code
         [newThis,baseValues,typeList]=removeBiasV3(this,conditions,normalizeFlag)
-        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag,padWithNaNFlag,numStrides)
+        [newThis,baseValues,typeList]=removeBiasV4(this,conditions,normalizeFlag,padWithNaNFlag,numStrides,medianFlag)
 
-        function [newThis,baseValues,typeList]=removeBias(this,conditions, padWithNaNFlag)
+        function [newThis,baseValues,typeList]=removeBias(this,conditions,padWithNaNFlag,numStrides,medianFlag)
         % Removes baseline value for all parameters.
         % removeBias('condition') or removeBias({'Condition1','Condition2',...})
         % removes the median value of every parameter from each trial of the
@@ -136,9 +136,15 @@ classdef adaptationData
             if nargin<3
                 padWithNaNFlag=false;
             end
+            if nargin<4
+                numStrides=[];
+            end
+            if nargin<5
+                medianFlag=[];
+            end
             %             [newThis,baseValues,typeList]=removeBiasV3(this,conditions);
-            %             %Marcela Commented this for the R01
-            [newThis,baseValues,typeList]=removeBiasV4(this,conditions,[],padWithNaNFlag);
+            %             %Marcela Commented this for the R01 
+            [newThis,baseValues,typeList]=removeBiasV4(this,conditions,[],padWithNaNFlag,numStrides,medianFlag);
             newThis.TMbias_=baseValues(strcmp(typeList,'TM'),:);
             newThis.OGbias_=baseValues(strcmp(typeList,'OG'),:);
             newThis.INbias_=baseValues(strcmp(typeList,'IN'),:);
@@ -374,7 +380,7 @@ classdef adaptationData
               if any(b)
               newL=this.data.labels;
               newL(ii(b))=newLabels(b);
-              newParam=parameterSeries(this.data.Data,newL,this.data.hiddenTime,this.data.description,this.data.trialTypes)     ;
+              newParam=parameterSeries(this.data.Data,newL,this.data.hiddenTime,this.data.description,this.data.trialTypes);
               newThis=this;
               newThis.data=newParam;
               %unique(this.data.stridesTrial)

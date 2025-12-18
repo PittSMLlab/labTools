@@ -83,6 +83,7 @@ function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, n
     idxslow=compareListsNested({'singleStanceSpeedSlowAbsANK'},adaptDataToSep.data.labels)==1;
     
     trialNum = adaptDataToSep.metaData.trialsInCondition{strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};
+    % trialNum=trialNum(1);
     columnIdxForTrialNum=find(compareListsNested({'Trial'},adaptDataToSep.data.labels));
 
     fast=adaptDataToSep.data.Data(:,idxfast);

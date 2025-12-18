@@ -42,7 +42,7 @@ for trialIdx = trials
     %remove variables to make the code run for now.
     close all; clc;
     clearvars -except rawExpData syncImgSavePath trialIdx trials
-    
+
     if ~strcmpi(rawExpData.data{trialIdx}.metaData.type,'TM')
         continue; %skip non TM trials, no force data
     end
