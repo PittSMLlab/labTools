@@ -86,9 +86,9 @@ if nargin>6
 end
 
 % if nargin<9
-    maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
-    %                      otherwise, the subject with the fewest strides in a particular trial/condition
-    %                      determines the number of strides plotted.
+maxNumPts=false; %set to true to plot the maximum number of strides per trial/condition
+%                      otherwise, the subject with the fewest strides in a particular trial/condition
+%                      determines the number of strides plotted.
 %     if ~isempty(alignEnd)
 %         maxNumPts=true;
 %     end
@@ -161,23 +161,28 @@ lineOrder={'-','--','-.',':'};
 %% determine length of trials or conditions
 s=1; %subject counter
 values=struct([]);
+
 for group=1:Ngroups
     for subject=1:length(adaptDataList{group})
         %Load subject
-        adaptData = adaptDataList{group}{subject};
+        adaptData=adaptDataList{group}{subject};
         if legacyVersion
             load(adaptData)
         end
-        adaptData = adaptData.removeBadStrides;
+        adaptData=adaptData.removeBadStrides;
         if removeBiasFlag==1
-            adaptData = adaptData.removeBias;
+            adaptData=adaptData.removeBias;
         elseif removeBiasFlag==2
             if any(contains(params,'hreflex','IgnoreCase',true))
-                numStrides = -100;  % last 100 strides for 10 stimuli
-                adaptData = removeBiasV4(adaptData,[],1,[],numStrides);
+                numStrides=-100;  % last 100 strides for 10 stimuli
+                adaptData=removeBiasV4(adaptData,[],1,[],numStrides);
             else
-                adaptData = adaptData.normalizeBias;
+                adaptData=adaptData.normalizeBias;
             end
+        elseif removeBiasFlag==3
+            numStrides=-140;  % last 140 strides for 10 stimuli
+            % removeBias(this,conditions,padWithNaNFlag,numStrides,medianFlag)
+            adaptData=adaptData.removeBias([],[],numStrides,1);
         end
 
         for c=1:nConds
@@ -201,17 +206,26 @@ for group=1:Ngroups
                     for j=1:length(trials{1})
                         origData=adaptData.getParamInTrial(params,trials{1}(j));
                         aux=monoLS(origData,[],monoNder,monoNreg);
-                        dataPts=[dataPts; aux];
+                        dataPts=[dataPts;aux];
                     end
                 else
                     try % It is an experiment with perceptual tasks
-                        dataPts=adaptData.getParamInTrial({params,'percTaskInitStride','percTaskEndStride'},trials{t});
+                        dataPts=adaptData.getParamInTrial([params,'percTaskInitStride','percTaskEndStride'],trials{t});
+                        % % Maybe I will need it later MGR
+                        % dataPts=adaptData.getParamInTrial([params,'percTaskInitStride','percTaskEndStride','pertSizePercTask'],trials{t});
+                        % is_non_nan=~isnan(dataPts(:,end)); % Identify non-NaN values
+                        % transition=diff(is_non_nan); % Detect the transition from NaN (0) to non-NaN (1)
+                        % start_indices=find(transition==1)+1; % Find the indices where the transition is 1, and add 1 to correct for the diff operation
+                        % if is_non_nan(1)
+                        %     start_indices=[1,start_indices];
+                        % end
                     catch
                         dataPts=adaptData.getParamInTrial(params,trials{t});
                     end
-%                     dataPts=dataPts(2:end-5);
+                    %                     dataPts=dataPts(2:end-5);
                 end
                 nPoints=size(dataPts,1);
+
                 M=5000; %this assumes that the max number of data points that could exist in a single conition or trial is M
                 if nPoints == 0
                     numPts.(cond{c}).(['trial' num2str(t)])(s)=NaN;
@@ -230,7 +244,11 @@ for group=1:Ngroups
                     for p=1:length(paramsTemp) % It is an experiment with perceptual tasks
                         %initialize so there are no inconsistant dimensions or out of bounds errors
                         values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
+                        % if strcmp(paramsTemp{p},'pertSizePercTask')
+                        %     values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        % else
                         values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,1:nPoints)=dataPts(:,p);
+                        % end
                         if ~isempty(alignEnd) %Aligning data to the end too, by creating a fake condition
                             if strcmpi(cond{c},'catch')
                                 values(group).(paramsTemp{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
@@ -259,6 +277,20 @@ for group=1:Ngroups
         end
         s=s+1;
     end
+
+    % For the perceptual tasks align the data
+    if sum(contains(fields(values(group)),'perc'))>0
+        % Add as a new row (row 3 in your case)
+        fieldNames=fieldnames(values);
+        tempValues=alignPercTasks(values(group));
+
+        for i=1:length(fieldNames)
+            fieldName=fieldNames{i};
+            values(group).(fieldName)=tempValues.(fieldName);
+        end
+
+    end
+
 end
 
 %% Do the actual plotting
@@ -267,17 +299,17 @@ avg=struct([]);
 se=struct([]);
 indiv=struct([]);
 if ~isempty(alignEnd)
-   newCond=cell(2*length(cond),1);
-   newCond(1:2:end)=cond;
-   newCond(2:2:end)=strcat(cond,'End');
-   catchindx=find(strcmpi(newCond,'catchEnd'));
-   if ~isempty(catchindx);
-   newCond{catchindx}=[];
-   end
-   newCond=newCond(~cellfun('isempty',newCond));
-   cond=newCond;
-   cond=newCond;
-   nConds=length(cond);
+    newCond=cell(2*length(cond),1);
+    newCond(1:2:end)=cond;
+    newCond(2:2:end)=strcat(cond,'End');
+    catchindx=find(strcmpi(newCond,'catchEnd'));
+    if ~isempty(catchindx);
+        newCond{catchindx}=[];
+    end
+    newCond=newCond(~cellfun('isempty',newCond));
+    cond=newCond;
+    cond=newCond;
+    nConds=length(cond);
 end
 
 p=length(params);
@@ -292,17 +324,19 @@ for group=1:Ngroups
                 %to plot the MAX number of pts in each trial:
                 [maxPts,loc]=nanmax(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts>1.25*nanmax(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
-                        numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
+                    numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
                     [maxPts,loc]=nanmax(numPts.(cond{c}).(['trial' num2str(t)]));
                 end
                 if maxPts==0
                     continue
                 end
+            elseif sum(contains(fields(values(group)),'perc'))>0
+                maxPts=size(values(group).(params{p}).(cond{c}).(['trial' num2str(t)]),2);
             else
                 %to plot the MIN number of pts in each trial:
                 [maxPts,loc]=nanmin(numPts.(cond{c}).(['trial' num2str(t)]));
                 while maxPts<0.75*nanmin(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end]))
-                        numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
+                    numPts.(cond{c}).(['trial' num2str(t)])(loc)=nanmean(numPts.(cond{c}).(['trial' num2str(t)])([1:loc-1 loc+1:end])); %do not include min in mean (?)
                     [maxPts,loc]=nanmin(numPts.(cond{c}).(['trial' num2str(t)]));
                 end
                 if maxPts==0
@@ -331,9 +365,9 @@ for group=1:Ngroups
                 end
                 start=1:numVals-(binwidthNew-1);
                 stop = start + (binwidthNew-1);
-%                 %Find (simple) averages and standard deviations for bin data
-%                 start = 1:binwidth:(size(allValues,2)-binwidth+1);
-%                 stop = start+(binwidth-1);
+                %                 %Find (simple) averages and standard deviations for bin data
+                %                 start = 1:binwidth:(size(allValues,2)-binwidth+1);
+                %                 stop = start+(binwidth-1);
 
                 for i = 1:length(start)
                     t1 = start(i);
@@ -349,12 +383,12 @@ for group=1:Ngroups
                         end
                         if medianFlag==0
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmean(subBin); %Mean across subjects
-                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));  
+                            se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanstd(subBin)/sqrt(length(subBin));
                         else %Using median and 15.87-84.13 percentiles
                             avg(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=nanmedian(subBin);
                             se(group).(params{p}).(cond{c}).(['trial' num2str(t)])(i)=.5*diff(prctile(subBin,[16,84]))/sqrt(length(subBin));
                         end
-                         indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
+                        indiv(group).(params{p}).(cond{c}).(['trial' num2str(t)])(:,i)=subBin;
                     else %Single subject
                         %errors calculated as standard error of all data
                         %points within a bin
@@ -387,8 +421,6 @@ for group=1:Ngroups
                         else
                             if length(adaptDataList{group})>1
                                 legStr={[params{p} ' ' adaptDataList{group}{1}]};
-                            else
-                                legStr={[params{p} ' ' adaptDataList{group}{1}]};
                             end
 
                         end
@@ -399,14 +431,14 @@ for group=1:Ngroups
                     g=group;
                     Cdiv=1;
                 end
-                hold on                
+                hold on
                 afterTrialPad=5; %adds empty space to end of trial/condition (in strides)
                 y=[avg(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
                 E=[se(group).(params{p}).(cond{c}).(['trial' num2str(t)]), NaN(1,afterTrialPad)];
 
 
-               %                 condLength=length(y);
-%                 x=Xstart:Xstart+condLength-1;
+                %                 condLength=length(y);
+                %                 x=Xstart:Xstart+condLength-1;
 
                 if isempty(alignIni) %DULCE
                     condLength=length(y);
@@ -420,7 +452,7 @@ for group=1:Ngroups
                     E=E(1:length(x));
                     condLength=length(y);
                 end
-          
+
                 %Biofeedback
                 if nargin>8 && ~isempty(biofeedback)
                     if biofeedback==1 && strcmp(params{p},'alphaFast')
@@ -476,20 +508,21 @@ for group=1:Ngroups
                         legendStr{group}(length(subsToPlot)+1)={['Average ' adaptDataList{group}{1}.metaData.ID]};
                     end
                 else %only plot group averages
-                     if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
+                    if Ngroups==1 && ~(size(params,1)>1) && isempty(biofeedback)  %one group (each condition colored different)
                         if isempty(biofeedback)
                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity);
                         else
                             [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
                         end
                         %set(Li{c},'Clipping','off')
-                        H=get(Li{c},'Parent');                        
-                        try    
-                            if length(adaptDataList{group}) == 1
-                                initIdx=find(values.percTaskInitStride.(cond{c}).(['trial' num2str(t)])==1);
-                                finalIdx=find(values.percTaskEndStride.(cond{c}).(['trial' num2str(t)])==1);
+                        H=get(Li{c},'Parent');
+                        try
+                            if length(adaptDataList) == 1
+                                initIdx=find(mean(values(group).percTaskInitStride.(cond{c}).(['trial' num2str(t)]))==1);
+                                finalIdx=find(mean(values(group).percTaskEndStride.(cond{c}).(['trial' num2str(t)]))==1);
                                 for i=1:length(initIdx)
-                                    pp=patch(x(1)+[initIdx(i) finalIdx(i) finalIdx(i) initIdx(i)],[-0.25 -0.25 0.25 0.25],.85*ones(1,3),'FaceAlpha',.9,'EdgeColor','none','DisplayName','task');
+                                    yaxis=get(gca,'YLim');
+                                    pp=patch(x(1)+[initIdx(i) finalIdx(i) finalIdx(i) initIdx(i)],[yaxis(1) yaxis(1) yaxis(2) yaxis(2)],.85*ones(1,3),'FaceAlpha',.9,'EdgeColor','none','DisplayName','task');
                                     uistack(pp,'bottom');
                                 end
                                 legendStr={[adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions)), {'task'}]};
@@ -499,14 +532,14 @@ for group=1:Ngroups
                             % trials on this trial or experiment
                             legendStr={adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions))};
                         end
-                   elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
+                    elseif size(params,1)>1 && isempty(biofeedback)%Each parameter colored differently (and shaded differently for different groups)
                         ind=(group-1)*size(params,1)+p;
                         color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{ind}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{ind},'Clipping','off')
                         H=get(Li{ind},'Parent');
                         legendStr{ind}=legStr;
-                elseif  isempty(biofeedback) %Each group colored differently
+                    elseif  isempty(biofeedback) %Each group colored differently
                         color=colorOrder(colorIdxBounded(g),:)./Cdiv;
                         [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity);
                         %set(Li{g},'Clipping','off')
@@ -520,8 +553,6 @@ for group=1:Ngroups
                         else
                             if length(adaptDataList{g})>1
                                 legendStr{g}={adaptDataList{g}{1}};
-                            else
-                                legendStr{g}={adaptDataList{g}{1}};
                             end
 
                         end
@@ -533,26 +564,26 @@ for group=1:Ngroups
                         group=adaptData{g}{1}.subData.ID;
                         abrevGroup=[group];
                         legendStr{g}={[ abrevGroup]};
-                        elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
-                        [Pa, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
+                    elseif Ngroups==1 && ~(size(params,1)>1) && ~isempty(biofeedback)
+                        [~, Li{c}]=nanJackKnife(x,y,E,colorOrder(colorIdxBounded(c),:),colorOrder(colorIdxBounded(c),:)+0.5.*abs(colorOrder(colorIdxBounded(c),:)-1),Opacity,w);
                         %set(Li{c},'Clipping','off')
                         H=get(Li{c},'Parent');
                         legendStr={conditions};
-                    elseif ~(size(params,1)>1) && ~isempty(biofeedback)
-                        color=colorOrder(colorIdxBounded(g),:)./Cdiv;
-                        [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
-                        %set(Li{g},'Clipping','off')
-                        H=get(Li{g},'Parent');
-                        load([adaptDataList{g}{1,1}])
-                        group=adaptData.subData.ID;
-                        abrevGroup=[group];
-                        legendStr{g}={[ abrevGroup]};
+                        % elseif ~(size(params,1)>1) && ~isempty(biofeedback)
+                        %     color=colorOrder(colorIdxBounded(g),:)./Cdiv;
+                        %     [Pa, Li{g}]=nanJackKnife(x,y,E,color,color+0.5.*abs(color-1),Opacity,w);
+                        %     %set(Li{g},'Clipping','off')
+                        %     H=get(Li{g},'Parent');
+                        %     load([adaptDataList{g}{1,1}])
+                        %     group=adaptData.subData.ID;
+                        %     abrevGroup=[group];
+                        %     legendStr{g}={[ abrevGroup]};
                     end
                     %set(Pa,'Clipping','off')
                     set(H,'Layer','top')
                 end
             end
-          Xstart=Xstart+condLength;
+            Xstart=Xstart+condLength;
         end
 
         if c==nConds && group==Ngroups
@@ -589,7 +620,7 @@ for group=1:Ngroups
                 else
                     xtl=adaptData.metaData.conditionName(adaptData.getConditionIdxsFromName(conditions));
                 end
-%                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
+                %                 set(gca,'fontsize',axesFontSize,'Xlim',[0 Xstart],'Xtick', xticks, 'Xticklabel', xtl)
                 %h=refline(0,0);
                 %set(h,'color','k')
             end
@@ -641,7 +672,7 @@ end
 p=findobj(gcf,'Type','Patch');
 if ~isempty(p)
     for i=1:length(p)
-    uistack(p(i),'bottom')
+        uistack(p(i),'bottom')
     end
 end
 

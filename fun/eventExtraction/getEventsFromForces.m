@@ -2,6 +2,14 @@ function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
 
 %% Get stance phases
 th=10; %Detection threshold in Newtons
+
+% % Temporary filter the force data (4th order butterworth Low pass filter with cutoff frequency of 10)
+% Wn=2*10/fsample;
+% filterList=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wn+.2*(1-Wn),1.5,20); %Ast=10dB (/octave) results in a 4th order Butterworth filter (-80dB/dec fall).
+% lowPassFilter=design(filterList,'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.
+% FzL=filtfilthd(lowPassFilter,FzL);  %Ext function
+% FzR=filtfilthd(lowPassFilter,FzR);  %Ext function
+
 [stanceL] = getStanceFromForces(FzL, th, fsample);
 [stanceR] = getStanceFromForces(FzR, th, fsample);
 %[stanceL] = getStanceFromForcesAlt(FzL, [], fsample); %New method

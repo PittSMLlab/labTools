@@ -13,16 +13,21 @@ function [out] = computePercParameters(trialData,initTime,endTime,slaParam)
 
 %% Gait perceptual task gait event times
 idxPstart = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percStartCue'))));
-timePercInit = trialData.gaitEvents.Time(idxPstart);
 
 if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation
-    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndRamp'))));
-    timePercEnd = trialData.gaitEvents.Time(idxPend);
+    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndRamp'))));    
 else
-    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndCue'))));
-    timePercEnd = trialData.gaitEvents.Time(idxPend);
+    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndCue'))));    
 end
 
+if length(idxPstart)~= length(idxPend)
+    mask=min(length(idxPstart),length(idxPend));
+    idxPstart=idxPstart(1:mask);
+    idxPend=idxPend(1:mask);    
+end
+
+timePercInit = trialData.gaitEvents.Time(idxPstart);
+timePercEnd = trialData.gaitEvents.Time(idxPend);
 %% Perturbation sizes
 % Grab the perturbation sizes tested from the speed profiles in the
 % datlogs
@@ -82,9 +87,9 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
         %     pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
         % end
 
-        percTask(indsInitStride(i):indsEndStride(i)+3) = 1;
+        percTask(indsInitStride(i):indsEndStride(i)+3) = 1; 
         SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i)); % This one I do not consider the back to tied strides, since I want the true end of perceptual task
-        SLAnotPercTask(indsInitStride(i):indsEndStride(i)+3) = nan;
+        SLAnotPercTask(indsInitStride(i):indsEndStride(i)+3) = nan; 
         if length(speedDiffPercTask) >= i
             pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
         end

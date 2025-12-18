@@ -1,4 +1,4 @@
-function [flippedEMGData] =flipEMGdata(EMGdata, phaseDim,muscleDim)
+function [flippedEMGData] =flipEMGdata(EMGdata,phaseDim,muscleDim)
 %This function swaps the first and second half of EMGdata along phaseDim, 
 %but only for the SECOND half of the array EMGdata along dimension muscleDim
 N=size(EMGdata,muscleDim);

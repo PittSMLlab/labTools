@@ -1,4 +1,4 @@
-function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly)
+function [data]=getDataEMGtraces(expData,muscle,cond,leg,late,strides,IgnoreStridesEarly,IgnoreStridesLate)
 %% get time series EMG data 
 % This function returns the EMG as a time series
 %
@@ -31,12 +31,17 @@ else
     error('leg input is either L or R')
 end
 
-if late==1
-    data=data.getPartialStridesAsATS(size(data.Data,3)-strides:size(data.Data,3));
-    
+
+if late==1 & ~isempty(IgnoreStridesLate)
+    if size(data.Data,3)>(strides+IgnoreStridesLate)
+        data=data.getPartialStridesAsATS(size(data.Data,3)-IgnoreStridesLate-strides:size(data.Data,3)-IgnoreStridesLate-1);
+    else
+        error('The are less strides than expected. Check why this might be the case.');
+    end
+elseif late==1 & isempty(IgnoreStridesLate)
+    data=data.getPartialStridesAsATS(size(data.Data,3)-strides:size(data.Data,3));    
 elseif late==0
-    if size(data.Data,3)>strides
-        
+    if size(data.Data,3)>strides        
         data=data.getPartialStridesAsATS(IgnoreStridesEarly:strides+IgnoreStridesEarly);
     else
         data=data.getPartialStridesAsATS(IgnoreStridesEarly:size(data.Data,3)+IgnoreStridesEarly);
@@ -45,7 +50,6 @@ elseif late==0
 else
     error('Input the type of data that you want late=1')
 end
-    
 
 
 
