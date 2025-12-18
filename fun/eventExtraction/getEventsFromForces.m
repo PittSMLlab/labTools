@@ -1,7 +1,7 @@
 function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
 
 %% Get stance phases
-th=30; %Detection threshold in Newtons
+th=10; %Detection threshold in Newtons
 
 % % Temporary filter the force data (4th order butterworth Low pass filter with cutoff frequency of 10)
 % Wn=2*10/fsample;
