@@ -158,7 +158,7 @@ classdef PlotHelper
                         if colorIdx == 0 %avoid 0
                             colorIdx = size(colorOrder,1);
                         end
-                        plot(xToPlot(subIdx),yToPlot(subIdx),'o','Color',colorOrder(colorIdx,:),'LineWidth',2,'MarkerSize',7,'DisplayName',subjectIDs{subIdx});
+                        plot(xToPlot(subIdx),yToPlot(subIdx),'o','MarkerFaceColor',colorOrder(colorIdx,:),'LineWidth',2,'MarkerSize',7,'DisplayName',subjectIDs{subIdx},'MarkerEdgeColor','none');
                     end
                     % Do the regression with an intercept of 0 and plot the line
                     linFit = fitlm(xToPlot,yToPlot,'RobustOpts','on');
@@ -328,11 +328,11 @@ classdef PlotHelper
         %       the linear mdl fit. Default false.
         %
             hold on;
-            if nargin <4 || any(isnan(xlabelString)) || (isempty(xlabelString))
+            if nargin <4 || (isnumeric(ylabelString) && any(isnan(xlabelString))) || (isempty(xlabelString))
                 xlabelString= '';
             end
             
-            if nargin <5 || any(isnan(ylabelString)) || (isempty(ylabelString))
+            if nargin <5 || (isnumeric(ylabelString) && any(isnan(ylabelString))) || (isempty(ylabelString))
                 ylabelString = '';
             end
             
@@ -366,14 +366,16 @@ classdef PlotHelper
                 end
             end
             
-            if nargin >= 7 && (~isnan(pointColor)) && (~isempty(pointColor))
+            if nargin >= 7 && (isnumeric(pointColor) && ~any(isnan(pointColor))) && (~isempty(pointColor))
                 scatter(xToPlot,yToPlot,35,'MarkerEdgeColor','k','LineWidth',0.5,'MarkerFaceColor',pointColor,'DisplayName',groupName)
+                lineColor = pointColor;
             else
                 colorOrder = PlotHelper.colorOrder;
                 colorLength = size(colorOrder, 1);
                 for dIdx = 1:length(xToPlot)
-                    scatter(xToPlot(dIdx),yToPlot(dIdx),35,'MarkerFaceColor',colorOrder(mod(dIdx-1, colorLength)+1,:),'MarkerEdgeColor','k','DisplayName',subjectIDs{dIdx},'LineWidth',0);
+                    scatter(xToPlot(dIdx),yToPlot(dIdx),35,'MarkerFaceColor',colorOrder(mod(dIdx-1, colorLength)+1,:),'MarkerEdgeColor','k','DisplayName',subjectIDs{dIdx},'LineWidth',0.5);
                 end
+                lineColor = [0.5 0.5 0.5];
             end
 
             numNans = sum(isnan(xToPlot),'all') + sum(isnan(yToPlot),'all');
@@ -433,15 +435,15 @@ classdef PlotHelper
                 %or when spearman is significant with non-normal datam
                 plotFitY = linFit.Coefficients.Estimate(2) * plotFitX + linFit.Coefficients.Estimate(1);
                 if ((hx || hy || spearmanOnly) && pSpearman < 0.05) || ((~hx) && (~hy) && p < 0.05 && (~spearmanOnly))  %solid line for significant
-                    plot(xlim,plotFitY,'LineWidth',2.5,'handleVisibility','off','Color',pointColor);
+                    plot(xlim,plotFitY,'LineWidth',2.5,'handleVisibility','off','Color',lineColor);
                 else %dashed line for trending.
-                    plot(xlim,plotFitY,'--','LineWidth',2.5,'handleVisibility','off','Color',pointColor);
+                    plot(xlim,plotFitY,'--','LineWidth',2.5,'handleVisibility','off','Color',lineColor);
                 end
             end
 
             if nargin >= 9 && all(~isnan(textLocRatio)) && (~isempty(textLocRatio))
                 text(plotFitX(1),txtY(2)-range(txtY)*(textLocRatio-0.1),sprintf('%s DataNormal:%d',groupName,(~hx) && (~hy)),'FontSize',12,'Color','k')
-                if hx || hy %show spearman only, normality failed, 
+                if hx || hy || spearmanOnly %show spearman only, normality failed, 
                 %this is right thing to do, show 1 result only but in exploration phase will keep both texts on
                     text(plotFitX(1),txtY(2)-range(txtY)*(textLocRatio+0.1),sprintf('%s S:\\rho=%.3f,p=%.3f',groupName,rhoSpearman,pSpearman),'FontSize',12,'Color',textColorSpearman)
                 else %show pearson when normality satisfied
@@ -450,7 +452,7 @@ classdef PlotHelper
             else
                 %0.15, 25 for top; 7 and .8 for btm
                 text(plotFitX(1),txtY(2)-range(txtY)*0.6,sprintf('%s DataNormal:%d',groupName,(~hx) && (~hy)),'FontSize',12,'Color','k')
-                if hx || hy %show spearman only, normality failed
+                if hx || hy || spearmanOnly %show spearman only, normality failed
                     text(plotFitX(1),txtY(2)-range(txtY)*0.8,sprintf('%s S:\\rho=%.3f,p=%.3f',groupName,rhoSpearman,pSpearman),'FontSize',12,'Color',textColorSpearman)
                 else%show pearson when normality satisfied
                     text(plotFitX(1),txtY(2)-range(txtY)*0.7,sprintf('%s P:r=%.3f,p=%.3f',groupName,rho,p),'FontSize',12,'Color',textColorPearson)
