@@ -125,15 +125,15 @@ direction = sign(diff(sAnk(:,4:5,2),1,2));
 % handle missing values in direction vector
 indsDirNans = find(isnan(direction));   % identify any NaN values
 numNans = length(indsDirNans);          % number of NaN values
-for miss = 1:numNans                    % for each missing value, ...
-    % check only y-axis values for current stride (i.e., none of gait
-    % events with '2' in the name since could be at or approaching a turn)
-    hasVal = ~isnan(sAnk(indsDirNans(miss),1:4,2));
-    % use two most disparate gait events in time to try to account for
-    % noise in the ankle marker y-axis position during stance phase
-    direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), ...
-        [find(hasVal,1) find(hasVal,1,'last')],2),1,2));
-end
+% for miss = 1:numNans                    % for each missing value, ...
+%     % check only y-axis values for current stride (i.e., none of gait
+%     % events with '2' in the name since could be at or approaching a turn)
+%     hasVal = ~isnan(sAnk(indsDirNans(miss),1:4,2));
+%     % use two most disparate gait events in time to try to account for
+%     % noise in the ankle marker y-axis position during stance phase
+%     direction(indsDirNans(miss)) = sign(diff(sAnk(indsDirNans(miss), ...
+%         [find(hasVal,1) find(hasVal,1,'last')],2),1,2));
+% end
 
 % TODO: would it be best to simply leave the zeros since unclear?
 % handle invalid direction values (where only one valid y-value exists)

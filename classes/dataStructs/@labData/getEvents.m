@@ -158,15 +158,13 @@ else %Treadmill trial
                     idxFrameStart = framesRTO(idxStrideScue); percStartCue(idxFrameStart) = true;
                     idxFrameEnd = framesRTO(idxStrideEcue); percEndCue(idxFrameEnd) = true;
 
+                    idxFrameEndRamp = framesRTO(idxStrideEcue); percEndRamp(idxFrameEndRamp) = true;
                     % Currently for Weber Perception I have a ramp down of 3
                     % strides which might change in the future. TODO: make it
                     % more robust such that this is only computed for Weber
                     % Study
-                    idxFrameEndRamp = framesRTO(idxStrideEcue); percEndRamp(idxFrameEndRamp) = true;
                     % idxFrameEndRamp = framesRTO(idxStrideEcue+3);
-                    % percEndRamp(idxFrameEndRamp) = true; % This was
-                    % before when I had a 3 stride ramp down after each
-                    % perceptual task
+                    % percEndRamp(idxFrameEndRamp) = true; 
 
                 end
             else %proceed with caution because the relative times in matlab is not synchronized with nexus

@@ -239,7 +239,7 @@ for group=1:Ngroups
                         end
                     end
                 end
-                try
+                if sum(contains(adaptData.data.labels,'perc'))>0
                     paramsTemp=[params,'percTaskInitStride','percTaskEndStride'];
                     for p=1:length(paramsTemp) % It is an experiment with perceptual tasks
                         %initialize so there are no inconsistant dimensions or out of bounds errors
@@ -258,7 +258,7 @@ for group=1:Ngroups
                             end
                         end
                     end
-                catch
+                else
                     for p=1:length(params)
                         %initialize so there are no inconsistant dimensions or out of bounds errors
                         values(group).(params{p}).(cond{c}).(['trial' num2str(t)])(subject,:)=NaN(1,M);
@@ -282,7 +282,7 @@ for group=1:Ngroups
     if sum(contains(fields(values(group)),'perc'))>0
         % Add as a new row (row 3 in your case)
         fieldNames=fieldnames(values);
-        tempValues=alignPercTasks(values(group));
+        tempValues=alignPercTasks(values(group)); % Currently not working for the paddedPercetual tasks, need to fix MGR will do it
 
         for i=1:length(fieldNames)
             fieldName=fieldNames{i};
