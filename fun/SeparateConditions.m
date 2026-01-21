@@ -83,7 +83,6 @@ function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, n
     idxslow=compareListsNested({'singleStanceSpeedSlowAbsANK'},adaptDataToSep.data.labels)==1;
     
     trialNum = adaptDataToSep.metaData.trialsInCondition{strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};
-    % trialNum=trialNum(1);
     columnIdxForTrialNum=find(compareListsNested({'Trial'},adaptDataToSep.data.labels));
 
     fast=adaptDataToSep.data.Data(:,idxfast);
@@ -130,6 +129,9 @@ function adaptDataToSep = SeparateConditions(adaptDataToSep, oldConditionName, n
     if containsPercTask
         idxSplit = nonpercepStrides(idxSplit);
     end
+
+    % trialNum = adaptDataToSep.metaData.trialsInCondition{strcmp(adaptDataToSep.metaData.conditionName,oldConditionName)};
+    
     
     if newCondExist
         %if the new condition name given already exist, add this separated
