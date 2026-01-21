@@ -37,7 +37,7 @@ for cond=1:length(conditions) % I think trial is always one so will use this as 
     taskInitMatrix=data.percTaskInitStride.(conditions{cond}).trial1;
     taskEndMatrix=data.percTaskEndStride.(conditions{cond}).trial1;
     % pertSize=data.pertSizePercTask.(conditions{cond}).trial1;
-    [nParticipants,currentNStrides]=size(taskInitMatrix);
+    [nParticipants,~]=size(taskInitMatrix);
 
     % Check if this condition has any perceptual tasks
     noPercTasks=true;
@@ -50,7 +50,7 @@ for cond=1:length(conditions) % I think trial is always one so will use this as 
     if noPercTasks
         % Get all field names to process
         fieldsToAlign=fieldnames(data);
-        fieldsToAlign=fieldsToAlign(~contains(fieldnames(data),{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
+        fieldsToAlign=fieldsToAlign(~contains(fieldsToAlign,{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
 
         % Calculate minimum stride length across participants
         for i=1:nParticipants
@@ -123,7 +123,7 @@ for cond=1:length(conditions) % I think trial is always one so will use this as 
 
     %Get all data fields to align (exclude marker fields)
     fieldsToAlign=fieldnames(data);
-    fieldsToAlign=fieldsToAlign(~contains(fieldnames(data),{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
+    fieldsToAlign=fieldsToAlign(~contains(fieldsToAlign,{'percTaskInitStride','percTaskEndStride','pertSizePercTask'}));
 
     % Initialize cells to store new marker positions
     newInitIndices=cell(nParticipants,1);
