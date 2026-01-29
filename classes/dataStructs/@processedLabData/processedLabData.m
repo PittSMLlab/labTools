@@ -1,5 +1,5 @@
 classdef processedLabData < labData
-    %processedLabData  Extends labData to include proccessed data derived
+    %processedLabData Extends labData to include proccessed data derived
     %from the raw data.
     %
     %processedLabData properties:
@@ -9,7 +9,7 @@ classdef processedLabData < labData
     %   adaptParams - parameterSeries adaptation values on a strid-by-stide basis
     %   isSingleStride - boolean flag to check length of data
     %   experimentalParams - parameterSeries for testing new adaptation
-    %   parameters
+    %                           parameters
     %
     %processedLabData methods:
     %
@@ -22,14 +22,17 @@ classdef processedLabData < labData
     %   getExpParam - accessor for experimental adaptation parameters
     %   calcAdaptParams - re-computes adaptation parameters
     %
-    %   separateIntoStrides - ?
-    %   separateIntoSuperStrides - ?
-    %   separateIntoDoubleStrides - ?
-    %   getStrideInfo - ?
-    %   getStridedField - ?
-    %   getAlignedField - ?
+    %   separateIntoStrides - splits data into individual stride segments
+    %   separateIntoSuperStrides - splits data into 1.5-stride segments for
+    %                               parameter calculation
+    %   separateIntoDoubleStrides - splits data into 2-stride segments for
+    %                               parameter calculation
+    %   getStrideInfo - returns stride count and timing information
+    %   getStridedField - extracts field data organized by stride
+    %   getAlignedField - time-aligns field data to gait events
     %
-    %See also: labData, labTimeSeries, processedEMGTimeSeries, parameterSeries
+    %See also: labData, labTimeSeries, processedEMGTimeSeries,
+    %   parameterSeries
 
     %% Properties
     properties  % (SetAccess = private)
