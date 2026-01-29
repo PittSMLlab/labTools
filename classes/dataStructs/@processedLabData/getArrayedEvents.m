@@ -12,7 +12,6 @@ function [arrayedEvents]=getArrayedEvents(this,eventList)
 %
 %   See also: labTimeSeries/getArrayedEvents
 
-arrayedEvents=labTimeSeries.getArrayedEvents(...
-    this.gaitEvents,eventList);
+arrayedEvents=labTimeSeries.getArrayedEvents(this.gaitEvents,eventList);
 end
 

@@ -28,15 +28,13 @@ else
     contraLeg='L';
 end
 contraLateralTriggerEvent=[contraLeg triggerEvent(2:end)];
-[strideIdxs,initTime,endTime]=getStrideInfo(this,...
-    triggerEvent);
+[strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
 [CstrideIdxs,CinitTime,CendTime]=getStrideInfo(this,...
     contraLateralTriggerEvent);
 steppedDataArray={};
 for i=strideIdxs-1
-    steppedDataArray{i}=this.split(initTime(i),...
-        CendTime(find(CendTime>initTime(i),1,'first')),...
-        'strideData');
+    steppedDataArray{i}=this.split(initTime(i), ...
+        CendTime(find(CendTime>initTime(i),1,'first')),'strideData');
 end
 end
 

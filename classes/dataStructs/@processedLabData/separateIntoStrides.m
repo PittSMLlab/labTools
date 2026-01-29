@@ -1,7 +1,6 @@
 function [steppedDataArray,initTime,endTime]=...
     separateIntoStrides(this,triggerEvent)
-%separateIntoStrides  Splits data into individual stride
-%segments
+%separateIntoStrides  Splits data into individual strides
 %
 %   [steppedDataArray,initTime,endTime] =
 %   separateIntoStrides(this,triggerEvent) splits the data into
@@ -20,12 +19,10 @@ function [steppedDataArray,initTime,endTime]=...
 
 %triggerEvent needs to be one of the valid gaitEvent labels
 
-[numStrides,initTime,endTime]=getStrideInfo(this,...
-    triggerEvent);
+[numStrides,initTime,endTime]=getStrideInfo(this,triggerEvent);
 steppedDataArray={};
 for i=1:numStrides
-    steppedDataArray{i}=this.split(initTime(i),endTime(i),...
-        'strideData');
+    steppedDataArray{i}=this.split(initTime(i),endTime(i),'strideData');
 end
 end
 

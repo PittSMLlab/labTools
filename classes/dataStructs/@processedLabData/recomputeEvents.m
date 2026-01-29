@@ -9,8 +9,7 @@ function newThis=recomputeEvents(this)
 
 events = getEvents(this,this.angleData);
 this.gaitEvents=events;
-this.adaptParams=calcParameters(processedData,subData,...
-    eventClass);
+this.adaptParams=calcParameters(processedData,subData,eventClass);
 newThis=this;
 end
 

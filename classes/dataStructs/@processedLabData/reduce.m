@@ -1,5 +1,5 @@
 function reducedThis=reduce(this,eventLabels,N)
-%reduce  Aligns and resamples all timeseries to the same
+%REDUCE Aligns and resamples all timeseries to the same
 %indexes and puts them all together in a single timeseries
 %
 %   reducedThis = reduce(this) reduces the processedLabData
@@ -21,12 +21,12 @@ function reducedThis=reduce(this,eventLabels,N)
 %
 %   See also: reducedLabData, labTimeSeries/align
 
-%Define the events that will be used for all further
-%computations
+%Define the events that will be used for all further computations
 if nargin<2 || isempty(eventLabels)
     refLeg=this.metaData.refLeg;
     if refLeg == 'R'
-        s = 'R';    f = 'L';
+        s = 'R';
+        f = 'L';
     elseif refLeg == 'L'
         s = 'L';    f = 'R';
     else
@@ -36,12 +36,14 @@ if nargin<2 || isempty(eventLabels)
     end
     eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
 end
+
 if nargin<3 || isempty(N)
     N=[18 57 18 57]; %12/38% split for DS single stance,
     %150 samples per gait cycle, to keep it
     %above 100Hz in general
 end
-warning('off','labTS:renameLabels:dont')
+
+warning('off','labTS:renameLabels:dont');
 
 %Synchronize all relevant TSs
 allTS=this.markerData.getDataAsTS([]);
@@ -50,12 +52,13 @@ fieldPrefixes{1}='mrk';
 fieldLabels{1}=allTS.labels;
 
 %Exhaustive list of fields to be preserved
+%ff=fields(this);
 ff={'markerData','GRFData','accData','procEMGData',...
     'angleData','COPData','COMData','jointMomentsData'};
 ffShort={'mrk','GRF','acc','EMG','ang','COP','COM','mom'};
 
 for i=1:length(ff)
-    field= this.(ff{i});
+    field = this.(ff{i});
     if ~isempty(field) && isa(field,'labTimeSeries') && ...
             ~strcmp(ff{i},'gaitEvents') && ...
             ~strcmp(ff{i},'markerData') && ...
@@ -77,6 +80,7 @@ end
 reducedThis=reducedLabData(this.metaData,this.gaitEvents,...
     alignTS,bad,reducedFields,fieldPrefixes,...
     this.adaptParams); %Constructor
-warning('on','labTS:renameLabels:dont')
+warning('on','labTS:renameLabels:dont');
+
 end
 

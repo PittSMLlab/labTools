@@ -39,8 +39,7 @@ if nargin<3 || isempty(endEvent)
     initTime=arrayedEvents(1:end-1,1);
     endTime=arrayedEvents(2:end,1);
 else
-    [arrayedEvents]=getArrayedEvents(this,...
-        {triggerEvent,endEvent});
+    [arrayedEvents]=getArrayedEvents(this,{triggerEvent,endEvent});
     if ~isnan(arrayedEvents(end,2)) %Last stride is incomplete
         arrayedEvents=arrayedEvents(1:end-1,:);
     end

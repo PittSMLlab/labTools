@@ -54,13 +54,11 @@ if ~isempty(firstIdx)
     while noEnd %This is an infinite loop...
         i=i+1;
         if lastSideRight
-            aux=find(auxTime(lIdxLst)>initTime(i),...
-                1,'first');
+            aux=find(auxTime(lIdxLst)>initTime(i),1,'first');
             t=auxTime(lIdxLst(aux));
             initEventSide{i}='R';
         else
-            aux=find(auxTime(rIdxLst)>initTime(i),...
-                1,'first');
+            aux=find(auxTime(rIdxLst)>initTime(i),1,'first');
             t=auxTime(rIdxLst(aux));
             initEventSide{i}='L';
         end

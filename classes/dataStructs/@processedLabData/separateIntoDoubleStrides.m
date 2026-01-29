@@ -23,12 +23,10 @@ function [steppedDataArray,initTime,endTime]=...
 
 %Version deprecated on Apr 2nd 2015
 %triggerEvent needs to be one of the valid gaitEvent labels
-[strideIdxs,initTime,endTime]=getStrideInfo(this,...
-    triggerEvent);
+[strideIdxs,initTime,endTime]=getStrideInfo(this,triggerEvent);
 steppedDataArray={};
 for i=strideIdxs(1:end-1)
-    steppedDataArray{i}=this.split(initTime(i),...
-        endTime(i+1),'strideData');
+    steppedDataArray{i}=this.split(initTime(i),endTime(i+1),'strideData');
 end
 end
 
