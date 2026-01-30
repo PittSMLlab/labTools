@@ -1,30 +1,44 @@
 classdef trialMetaData
-    %trialMetaData  Information that is specifc to an individual trial
+    %trialMetaData  Information that is specific to an individual trial
     %
     %trialMetaData properties:
-    %   name - short description of condition (ex. 'slow base')
-    %   description - long description of condition (ex. '300 strides at 0.5 m/s')
-    %   observations - any trial-specific observations (ex: 'L heel marker fell off')
-    %   refLeg - the reference leg for parameter calculations (either 'L' or 'R')
+    %   name - short description of condition (e.g., 'slow base')
+    %   description - long description of condition (e.g., '300
+    %                 strides at 0.5 m/s')
+    %   observations - any trial-specific observations (e.g., 'L heel
+    %                  marker fell off')
+    %   refLeg - the reference leg for parameter calculations (either
+    %            'L' or 'R')
     %   condition - condition number
-    %   rawDataFilename - path of file where vicon (.c3d) file was stored at time of creation
-    %   type - string describing broader conditions than given in the name (ex:'OG' for overground trials)
+    %   rawDataFilename - path of file where Vicon (.c3d) file was
+    %                     stored at time of creation
+    %   type - string describing broader conditions than given in the
+    %          name (e.g., 'OG' for overground trials, 'TM' for
+    %          treadmill, 'NIM' for Nimbus, 'IN' for instrumented)
+    %   schenleyLab - flag indicating if data collected in Schenley lab
+    %   perceptualTasks - flag indicating presence of perceptual tasks
+    %                     (2AFC)
+    %   ID - trial identifier string
+    %   datlog - data log structure
     %
+    %trialMetaData methods:
+    %   trialMetaData - constructor for trial metadata
 
+    %% Properties
     properties
-        name='';
-        description=''; %describes condition
-        observations='';
-        refLeg='';
-        condition=[];
-        rawDataFilename=''; %string or cell array of strings, if there are many files
-        type='';
-        schenleyLab='';
-        perceptualTasks='';
-        ID='';
-        datlog='';
+        name = '';
+        description = ''; % describes condition
+        observations = '';
+        refLeg = '';
+        condition = [];
+        % string or cell array of strings, if there are many files
+        rawDataFilename = '';
+        type = '';
+        schenleyLab = '';
+        perceptualTasks = '';
+        ID = '';
+        datlog = '';
     end
-
 
     methods
         %Constructor
@@ -92,7 +106,7 @@ classdef trialMetaData
             end
 
         end
-
     end
 
 end
+
