@@ -25,9 +25,10 @@ function [momentData, COP, COM] = computeTorques(this, ...
 if nargin < 2 || isempty(subjectWeight)
     warning(['Subject weight not given, estimating from ' ...
         'GRFs. This will fail miserably if z-axis force is ' ...
-        'not representative of weight.'])
+        'not representative of weight.']);
     subjectWeight = estimateSubjectBodyWeight(this);
 end
+
 [momentData, COP, COM] = TorqueCalculator(this, subjectWeight);
 end
 

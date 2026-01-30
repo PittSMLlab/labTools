@@ -13,6 +13,6 @@ function COMData = computeCOM(this)
 %
 %   See also: COMCalculator
 
-[COMData] = COMCalculator(this.markerData);
+COMData = COMCalculator(this.markerData);
 end
 

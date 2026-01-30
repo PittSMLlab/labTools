@@ -237,39 +237,15 @@ classdef labData
 
     %% Kinetic Computation Methods
     methods
-        function COPData=computeCOP(this)
-            COPData=COPCalculator(this.GRFData);
-        end
+        COPData = computeCOP(this)
 
-        function COMData=computeCOM(this)
-            [COMData] = COMCalculator(this.markerData);
-        end
+        COMData = computeCOM(this)
 
-        function [COPData,COPL,COPR]=computeCOPAlt(this,noFilterFlag)
-            if nargin<2 || isempty(noFilterFlag)
-                noFilterFlag=1;
-            end
-            %warning('orientedLabTimeSeries:computeCOP','This only works for GRFData that was obtained from the Bertec instrumented treadmill');
-            [COPL,FL,~]=computeHemiCOP(this,'L',noFilterFlag);
-            warning('off','orientedLabTimeSeries:computeCOP') %To avoid repeat warnings, which are annoying
-            [COPR,FR,~]=computeHemiCOP(this,'R',noFilterFlag);
-            warning('on','orientedLabTimeSeries:computeCOP')
-            COPL.Data(any(isinf(COPL.Data)|isnan(COPL.Data),2),:)=0;
-            COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
-            [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
-        end
+        [COPData, COPL, COPR] = computeCOPAlt(this, noFilterFlag)
 
-        function [momentData,COP,COM]=computeTorques(this,subjectWeight)
-            if nargin<2 || isempty(subjectWeight)
-                warning('Subject weight not given, estimating from GRFs. This will fail miserably if z-axis force is not representative of weight.')
-                subjectWeight=estimateSubjectBodyWeight(this);
-            end
-            [ momentData,COP,COM ] = TorqueCalculator(this, subjectWeight);
-        end
+        [momentData, COP, COM] = computeTorques(this, subjectWeight)
 
-        function bodyWeight=estimateSubjectBodyWeight(this)
-            bodyWeight=-nanmean(sum(this.GRFData.getDataAsVector({'LFz','RFz'}),2))/9.8; %Taking forces in z-axis and averaging to estimate subject weight
-        end
+        bodyWeight = estimateSubjectBodyWeight(this)
     end
 
     %% Data Processing Methods
