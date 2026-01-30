@@ -1,41 +1,41 @@
 classdef labData
-%labData    contains data collected in the lab, including kinematics,
-%           kinetics, and EMG signals.
-%
-%labData properties:
-%   metaData - labMetaData objetct
-%   markerData - orientedLabTS with kinematic data
-%   EMGData - labTS with EMG recordings
-%   EEGData  - labTS with EEG recordings
-%   GRFData - orientedLabTS with kinetic data
-%   accData - orientedLabTS with acceleration data
-%   beltSpeedSetData - labTS with commands sent to treadmill
-%   beltSpeedReadData - labTS with speed read from treadmill
-%   footSwitchData - labTS with data from foot switches
-%   HreflexPin - labTS with a analog signal with a spike once in a while representing time when an
-%               H-reflex stimulation is being delivered.
-%
-%labData methods:
-%   getMarkerData - accessor method for marker data
-%   getMarkerList - returns a list of marker labels
-%   getEMGData - accessor for EMG data
-%   getEMGList - returns a list of EMG labels
-%   getEEGData - accessor
-%   getEEGList - reutrns list of labels   
-%   getGRFList - returns list of force labels
-%   getForce - accessor for forces (from GRFData)
-%   getMoment - accessor for moments (from GRFData)
-%   getBeltSpeed - accessor for beltSpeedReadData
-%   PROCESS - processes raw data to find angles, events, and adaptation
-%   parameters and to clean up EMG and marker data. Returns a
-%   processedTrialData object
-%   split - returns ?
-%
-%See also: labMetaData, orientedLabTimeSeries, labTimeSeries   
-    
-    
-    %%
-    properties %(SetAccess=private)
+    %labData    contains data collected in the lab, including kinematics,
+    %           kinetics, and EMG signals.
+    %
+    %labData properties:
+    %   metaData - labMetaData objetct
+    %   markerData - orientedLabTS with kinematic data
+    %   EMGData - labTS with EMG recordings
+    %   EEGData  - labTS with EEG recordings
+    %   GRFData - orientedLabTS with kinetic data
+    %   accData - orientedLabTS with acceleration data
+    %   beltSpeedSetData - labTS with commands sent to treadmill
+    %   beltSpeedReadData - labTS with speed read from treadmill
+    %   footSwitchData - labTS with data from foot switches
+    %   HreflexPin - labTS with a analog signal with a spike once in a while representing time when an
+    %               H-reflex stimulation is being delivered.
+    %
+    %labData methods:
+    %   getMarkerData - accessor method for marker data
+    %   getMarkerList - returns a list of marker labels
+    %   getEMGData - accessor for EMG data
+    %   getEMGList - returns a list of EMG labels
+    %   getEEGData - accessor
+    %   getEEGList - reutrns list of labels
+    %   getGRFList - returns list of force labels
+    %   getForce - accessor for forces (from GRFData)
+    %   getMoment - accessor for moments (from GRFData)
+    %   getBeltSpeed - accessor for beltSpeedReadData
+    %   PROCESS - processes raw data to find angles, events, and adaptation
+    %   parameters and to clean up EMG and marker data. Returns a
+    %   processedTrialData object
+    %   split - returns ?
+    %
+    %See also: labMetaData, orientedLabTimeSeries, labTimeSeries
+
+
+    %% Properties
+    properties % (SetAccess = private)
         metaData %labMetaData object
         markerData %orientedLabTS
         EMGData %labTS
@@ -47,14 +47,12 @@ classdef labData
         footSwitchData %labTS
         HreflexPin %labTS, this should contain pin readings for left and right leg, it's a sync signal that shows a spike once in a while when an H reflex stimulus is being delivered.
     end
-    
-    %%
+
+    %% Constructor
     methods
-        
-        %Constructor:
         function this=labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)
             %----------------
-            
+
             %if nargin<1 || isempty(metaData)
             %    this.metaData=labMetaData(); %I think this should be mandatory and fail instead of putting an empty metaData.
             %end
@@ -141,67 +139,70 @@ classdef labData
             %---------------
             %Check that all data is from the same time interval: To Do!
             %---------------
-            
-            
+
         end
-        
-        
-        
+    end
+
+    %% Data Access Methods
+    methods
         %Other I/O:
-%         function partialMarkerData= getMarkerData(this,markerName)
-%             %returns marker data for input markername
-%             partialMarkerData=this.getPartialData('markerData',markerName);
-%         end
-%         
-%         function list=getMarkerList(this)
-%             %returns list of available marker names
-%             list=this.getLabelList('markerData');
-%         end
-%         
-%         function partialEMGData=getEMGData(this,muscleName)
-%             partialEMGData=this.getPartialData('EMGData',muscleName);
-%         end
-%         
-%         function list=getEMGList(this)
-%             list=this.getLabelList('EMGData');
-%         end
-%         
-%         function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
-%             partialEEGData=this.getPartialData('EEGData',positionName);
-%         end
-%         
-%         function list=getEEGList(this)
-%             list=this.getLabelList('EEGData');
-%         end
-%         
-%         function partialGRFData=getGRFData(this,label)
-%             partialGRFData=this.getPartialData('GRFData',label);
-%         end
-%         
-%         function list=getGRFList(this)
-%             list=this.getLabelList('GRFData');
-%         end
-%         
-%         function specificForce=getForce(this,side,axis)
-%             specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
-%         end
-%         
-%         function specificMoment=getMoment(this,side,axis)
-%             specificMoment=this.getGRFData([side 'M' axis]);
-%         end
-%         
-%         function beltSp=getBeltSpeed(this,side)
-%             beltSp=this.getPartialData('beltSpeedReadData',side);
-%         end
-        
+        %         function partialMarkerData= getMarkerData(this,markerName)
+        %             %returns marker data for input markername
+        %             partialMarkerData=this.getPartialData('markerData',markerName);
+        %         end
+        %
+        %         function list=getMarkerList(this)
+        %             %returns list of available marker names
+        %             list=this.getLabelList('markerData');
+        %         end
+        %
+        %         function partialEMGData=getEMGData(this,muscleName)
+        %             partialEMGData=this.getPartialData('EMGData',muscleName);
+        %         end
+        %
+        %         function list=getEMGList(this)
+        %             list=this.getLabelList('EMGData');
+        %         end
+        %
+        %         function partialEEGData=getEEGData(this,positionName) %Standard 10-20 nomenclature
+        %             partialEEGData=this.getPartialData('EEGData',positionName);
+        %         end
+        %
+        %         function list=getEEGList(this)
+        %             list=this.getLabelList('EEGData');
+        %         end
+        %
+        %         function partialGRFData=getGRFData(this,label)
+        %             partialGRFData=this.getPartialData('GRFData',label);
+        %         end
+        %
+        %         function list=getGRFList(this)
+        %             list=this.getLabelList('GRFData');
+        %         end
+        %
+        %         function specificForce=getForce(this,side,axis)
+        %             specificForce=this.getGRFData([side 'F' axis]); %Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
+        %         end
+        %
+        %         function specificMoment=getMoment(this,side,axis)
+        %             specificMoment=this.getGRFData([side 'M' axis]);
+        %         end
+        %
+        %         function beltSp=getBeltSpeed(this,side)
+        %             beltSp=this.getPartialData('beltSpeedReadData',side);
+        %         end
+    end
+
+    %% Kinetic Computation Methods
+    methods
         function COPData=computeCOP(this)
             COPData=COPCalculator(this.GRFData);
         end
-        
+
         function COMData=computeCOM(this)
             [COMData] = COMCalculator(this.markerData);
         end
-        
+
         function [COPData,COPL,COPR]=computeCOPAlt(this,noFilterFlag)
             if nargin<2 || isempty(noFilterFlag)
                 noFilterFlag=1;
@@ -215,22 +216,24 @@ classdef labData
             COPR.Data(any(isinf(COPR.Data)|isnan(COPR.Data),2),:)=0;
             [COPData]=labData.mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag);
         end
-        
+
         function [momentData,COP,COM]=computeTorques(this,subjectWeight)
             if nargin<2 || isempty(subjectWeight)
                 warning('Subject weight not given, estimating from GRFs. This will fail miserably if z-axis force is not representative of weight.')
                 subjectWeight=estimateSubjectBodyWeight(this);
             end
-           [ momentData,COP,COM ] = TorqueCalculator(this, subjectWeight); 
+            [ momentData,COP,COM ] = TorqueCalculator(this, subjectWeight);
         end
-        
+
         function bodyWeight=estimateSubjectBodyWeight(this)
             bodyWeight=-nanmean(sum(this.GRFData.getDataAsVector({'LFz','RFz'}),2))/9.8; %Taking forces in z-axis and averaging to estimate subject weight
         end
-        
-        % Process data method
+    end
+
+    %% Data Processing Methods
+    methods
         function processedData=process(this,subData,eventClass)
-            
+
             %To all coders: this function HAS TO BE idempotent, ie:
             %labData.process.process = labData.process
             %Otherwise re-processing data may lead to double or triple
@@ -238,56 +241,56 @@ classdef labData
             if nargin<3 || isempty(eventClass)
                 eventClass=[];
             end
-            
-            
+
+
             % 1) Extract amplitude from emg data if present
             spikeRemovalFlag=0;
             [procEMGData,filteredEMGData] = processEMG(this,spikeRemovalFlag);
-            
+
             % 2) Attempt to interpolate marker data if there is missing data
             % (make into function once we have a method to do this)
             markers=this.markerData;
             if ~isempty(markers)
                 %function goes here: check marker data health
             end
-            
+
             % 3) Calculate limb angles
             angleData = calcLimbAngles(this);
-            
+
             % 4) Calculate events from kinematics or force if available
             events = getEvents(this,angleData,this.metaData.perceptualTasks); % Last argument is the perceptual task flag
-            
+
             % 5) If 'beltSpeedReadData' is empty, try to generate it
             % from foot markers, if existent
             if isempty(this.beltSpeedReadData)
                 this.beltSpeedReadData = getBeltSpeedsFromFootMarkers(this,events);
             end
-            
+
             %6) Get COP, COM and joint torque data.
             [jointMomentsData,~,COMData] = this.computeTorques(subData.weight);
             COPData=this.computeCOPAlt; %Replacing COPData with alternative computation
             %COMDATA=this.CarlysCOMData; %CJS: you should do this!
-            
+
             % 7) Generate processedTrial object
             processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData,this.HreflexPin);
-            
+
             % 8) Calculate adaptation parameters - to be
             % recalculated later!!
             processedData.adaptParams=calcParameters(processedData,subData,eventClass);
-            
-            
-            
+
+
+
         end
-        
+
         function newThis=recomputeEvents(this)
             events = getEvents(this,this.angleData);
             this.gaitEvents=events;
             newThis=this;
         end
-        
+
         function checkMarkerDataHealth(this)
             ts=this.markerData;
-            
+
             %First: diagnose missing markers
             ll=ts.getLabelPrefix;
             dd=ts.getOrientedData;
@@ -309,17 +312,17 @@ classdef labData
             bar(c)
             set(gca,'XTick',1:numel(ll),'XTickLabel',ll,'XTickLabelRotation',90)
             ylabel('Missing frames (%)')
-            
+
             subplot(2,2,2) %Distribution of gap lengths
             hold on
             h=[];
             s={};
             for i=1:length(ll)
                 if c(i)>.01
-                 w= [ 0; aux(:,i); 0 ]; % auxiliary vector
-                 runs_ones = find(diff(w)==-1)-find(diff(w)==1); 
-                 h(end+1)=histogram(runs_ones,[.5:1:50],'DisplayName',ll{i});
-                 s{end+1}=ll{i};
+                    w= [ 0; aux(:,i); 0 ]; % auxiliary vector
+                    runs_ones = find(diff(w)==-1)-find(diff(w)==1);
+                    h(end+1)=histogram(runs_ones,[.5:1:50],'DisplayName',ll{i});
+                    s{end+1}=ll{i};
                 end
             end
             legend(h,s)
@@ -327,7 +330,7 @@ classdef labData
             ylabel('Gap count')
             xlabel('Gap length')
             axis tight
-            
+
             subplot(2,2,3)
             hold on
             d=sum(aux,2);
@@ -336,8 +339,8 @@ classdef labData
             ylabel('% of frames with missing markers')
             xlabel('# missing markers')
             axis tight
-            
-            
+
+
             %Two: create a model to determine if outliers are present
             dd=permute(dd,[2,3,1]);
             [D,sD] = createZeroModel(dd);
@@ -351,52 +354,55 @@ classdef labData
             legend(ll)
             ii=find(medLike<-1);
             for j=1:length(ii)
-               figure
-               plot3(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),'o')
-               text(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),ll)
-               hold on
-               [~,zz]=min(lp(:,ii(j)));
-               plot3(dd(zz,1,ii(j)),dd(zz,2,ii(j)),dd(zz,3,ii(j)),'ro')
-               title(['median likeli=' num2str(medLike(ii(j))) ', frame ' num2str(ii(j))])
-               pause
+                figure
+                plot3(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),'o')
+                text(dd(:,1,ii(j)),dd(:,2,ii(j)),dd(:,3,ii(j)),ll)
+                hold on
+                [~,zz]=min(lp(:,ii(j)));
+                plot3(dd(zz,1,ii(j)),dd(zz,2,ii(j)),dd(zz,3,ii(j)),'ro')
+                title(['median likeli=' num2str(medLike(ii(j))) ', frame ' num2str(ii(j))])
+                pause
             end
-            
-%             %Check for outliers:
-%             %Do a data translation:
-%             %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist
-%             %Do a label-agnostic data translation:
-%             refMarker=squeeze(nanmean(dd,2));
-%             newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis
-%             %Not agnostic rotation:
-%             %relData=squeeze(markerData.getOrientedData('RHIP'));
-%             %Label agnostic data rotation:
-%             newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
-%             medianTS=newTS.median; %Gets the median skeleton of the markers
-%             
-%             %With this median skeleton, a minimization can be done to find
-%             %another label agnostic data rotation that does not depend on
-%             %estimating the translation velocity:
-%             
-%             %Another attempt at label agnostic rotation (not using
-%             %velocity, but actually some info about the skeleton having
-%             %Left and Right)
-%             %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);
-%             %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);
-%             %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));
-%             %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this
-%             
-%             
-%                       
-%             %Try to fit a 2-cluster model, to see if some marker labels are
-%             %switched at some point during experiment
-%             
-%             %Assuming single mode/cluster, find outliers by getting stats
-%             %on distribution of positions/distance and velocities.
+
+            %             %Check for outliers:
+            %             %Do a data translation:
+            %             %refMarker=squeeze(mean(ts.getOrientedData({'LHIP','RHIP'}),2)); %Assuming these markers exist
+            %             %Do a label-agnostic data translation:
+            %             refMarker=squeeze(nanmean(dd,2));
+            %             newTS=ts.translate([-refMarker(:,1:2),zeros(size(refMarker,1),1)]); %Assuming z is a known fixed axis
+            %             %Not agnostic rotation:
+            %             %relData=squeeze(markerData.getOrientedData('RHIP'));
+            %             %Label agnostic data rotation:
+            %             newTS=newTS.alignRotate([refMarker(:,2),-refMarker(:,1),zeros(size(refMarker,1),1)],[0,0,1]);
+            %             medianTS=newTS.median; %Gets the median skeleton of the markers
+            %
+            %             %With this median skeleton, a minimization can be done to find
+            %             %another label agnostic data rotation that does not depend on
+            %             %estimating the translation velocity:
+            %
+            %             %Another attempt at label agnostic rotation (not using
+            %             %velocity, but actually some info about the skeleton having
+            %             %Left and Right)
+            %             %l1=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^L'),'UniformOutput',false);
+            %             %l2=cellfun(@(x) x(1:end-1),ts.getLabelsThatMatch('^R'),'UniformOutput',false);
+            %             %relDataOTS=newTS.computeDifferenceOTS([],[],l1(1:3:end),l2(1:3:end));
+            %             %relData=squeeze(nanmedian(relDataOTS.getOrientedData,2)); %Need to work on this
+            %
+            %
+            %
+            %             %Try to fit a 2-cluster model, to see if some marker labels are
+            %             %switched at some point during experiment
+            %
+            %             %Assuming single mode/cluster, find outliers by getting stats
+            %             %on distribution of positions/distance and velocities.
         end
-        
+    end
+
+    %% Data Transformation Methods
+    methods
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
-            %Split the data into [t0, t1). 
-            %Args: 
+            %Split the data into [t0, t1).
+            %Args:
             %   -t0: time in seconds (relative to trial start) of where to start the split (inclusive)
             %           when given NaN, default to start of the trial.
             %   -t1: time in seconds (relative to trial start) of where to stop (exclusive).
@@ -420,7 +426,7 @@ classdef labData
                     if nargin < 3 || isnan(t1) %no end time point provided, assume spliting from t0 to end of the trial
                         tEnd = oldVal.Time(end) + oldVal.sampPeriod;
                     else %end point provided use it
-                        tEnd = t1; 
+                        tEnd = t1;
                     end
                     if isnan(t0) %a flag/fake initial time provided, assuming split from beginning to to t1
                         tStart = oldVal.Time(1); %start is inclusive, no need to pad
@@ -434,23 +440,21 @@ classdef labData
                 try
                     eval(['newThis.' auxLst{i} '=newVal;']) %If this fails is because the property is not settable
                 catch
-                    
+
                 end
             end
             newThis.metaData=metaData;
-            
+
         end
-        
+
         function newThis=alignAllTS(this, alignmentVector)
             error('Unimplemented')
             newThis=[];
         end
-        
     end
-    
-    %% Protected methods:
-    methods (Access=protected)
-        
+
+    %% Protected Methods
+    methods (Access = protected)
         function partialData=getPartialData(this,fieldName,labels)
             %returns requested data
             %
@@ -458,19 +462,19 @@ classdef labData
             %fieldName -- looks for property of the instance (see top of
             %file for list of properties)
             %
-            %labels -- 
-            
+            %labels --
+
             if nargin<3 || isempty(labels)
                 partialData=this.(fieldName);
             else
                 partialData=this.(fieldName).getDataAsVector(labels);
             end
         end
-        
+
         function list=getLabelList(this,fieldName)
             list=this.(fieldName).labels;
         end
-        
+
         %COP calculation as used by the ALTERNATIVE version
         function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
             this=this.GRFData;
@@ -481,13 +485,13 @@ classdef labData
                 F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
                 M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
             else
-            F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-            F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side 'Fz'],1);
-            F=squeeze(F.getOrientedData);
-            M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
-            M=M.lowPassFilter(fcut);
-            M=squeeze(M.getOrientedData);
-            F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
+                F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
+                F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side 'Fz'],1);
+                F=squeeze(F.getOrientedData);
+                M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
+                M=M.lowPassFilter(fcut);
+                M=squeeze(M.getOrientedData);
+                F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
             end
             %I believe this should work for all forceplates in the world:
             %aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));
@@ -503,22 +507,23 @@ classdef labData
             aux(:,2)=-aux(:,2)+1619.25; %Flipping & adding offset to match lab's reference axis sign
             aux(:,1)=aux(:,1)+25.4; %Adding offset to lab's reference origin
             COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
-           
+
         end
     end
-    
+
+    %% Static Methods
     methods (Static)
-       function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
-           if noFilterFlag==1
-            COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
-            COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
-           end
+        function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
+            if noFilterFlag==1
+                COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
+                COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
+            end
             newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
             COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),COPL.orientation);
             COP=COP.cat(COPL).cat(COPR);
-       end
+        end
     end
-    
-    
+
+
 end
 
