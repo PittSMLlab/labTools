@@ -35,111 +35,112 @@ classdef processedLabData < labData
     %   parameterSeries
 
     %% Properties
-    properties  % (SetAccess = private)
-        % can not set to private, because 'labData' will try to set it
-        % when using the 'split()' method
-        gaitEvents      % labTS
-        procEMGData     % processedEMGTS
-        angleData       % labTS (angles based off kinematics)
-        adaptParams     % parameterSeries
-        % parameters which characterize adaptation process) --> must be
-        % calculated, therefore not a part of the constructor.
-        % EMGData
-        % which is inherited from 'labData', saved the FILTERED EMG data
-        % used for processing afterwards (not the RAW, which is saved in
-        % the not-processed 'labData')
+    properties % (SetAccess = private)  Cannot set to private, 
+               % because labData will try to set it when using 
+               % split()
+        gaitEvents % labTS
+        procEMGData % processedEMGTS
+        angleData % labTS (angles based off kinematics)
+        adaptParams % paramterSeries (parameters which characterize 
+                    % adaptation process) --> must be calculated, 
+                    % therefore not part of constructor.
+        % EMGData, which is inherited from labData, saves the 
+        % FILTERED EMG data used for processing afterwards (not the 
+        % RAW, which is saved in the not-procesed labData)
         COPData
         COMData
         jointMomentsData
     end
 
     properties (Dependent)
-        isSingleStride      % ever used?
+        isSingleStride % ever used?
         experimentalParams
     end
 
     %% Constructor
     methods
-
-        function this=processedLabData(metaData,markerData, ...
-                EMGData,GRFData,beltSpeedSetData,beltSpeedReadData, ...
-                accData,EEGData,footSwitches,events,procEMG, ...
-                angleData,COPData,COMData,jointMomentsData, ...
-                HreflexPin) % all input parameters are mandatory
-            if nargin < 16  % 'metaData' does not get replaced!
-                markerData=[];
-                EMGData=[];
-                GRFData=[];
-                beltSpeedSetData=[];
-                beltSpeedReadData=[];
-                accData=[];
-                EEGData=[];
-                footSwitches=[];
-                events=[];
-                procEMG=[];
-                angleData = [];
-                COPData=[];
-                COMData=[];
-                jointMomentsData=[];
-                HreflexPin=[];
+        function this = processedLabData(metaData, markerData, ...
+                EMGData, GRFData, beltSpeedSetData, ...
+                beltSpeedReadData, accData, EEGData, footSwitches, ...
+                events, procEMG, angleData, COPData, COMData, ...
+                jointMomentsData, HreflexPin)
+            % processedLabData  Constructor for processedLabData class
+            %
+            %   All arguments are mandatory
+            
+            if nargin < 16 % metaData does not get replaced!
+               markerData = [];
+               EMGData = [];
+               GRFData = [];
+               beltSpeedSetData = [];
+               beltSpeedReadData = [];
+               accData = [];
+               EEGData = [];
+               footSwitches = [];
+               events = [];
+               procEMG = [];
+               angleData = [];
+               COPData = [];
+               COMData = [];
+               jointMomentsData = [];
+               HreflexPin = [];
             end
-            this@labData(metaData,markerData,EMGData,GRFData, ...
-                beltSpeedSetData,beltSpeedReadData,accData,EEGData, ...
-                footSwitches,HreflexPin);
-            this.gaitEvents=events;
-            this.procEMGData=procEMG;
-            this.angleData=angleData;
-            this.COPData=COPData;
-            this.COMData=COMData;
-            this.jointMomentsData=jointMomentsData;
+            this@labData(metaData, markerData, EMGData, GRFData, ...
+                beltSpeedSetData, beltSpeedReadData, accData, ...
+                EEGData, footSwitches, HreflexPin);
+            this.gaitEvents = events;
+            this.procEMGData = procEMG;
+            this.angleData = angleData;
+            this.COPData = COPData;
+            this.COMData = COMData;
+            this.jointMomentsData = jointMomentsData;
         end
     end
 
     %% Property Setters
     methods
-
-        function this=set.gaitEvents(this,events)
-            if isa(events,'labTimeSeries') || isempty(events)
-                this.gaitEvents=events;
+        function this = set.gaitEvents(this, events)
+            if isa(events, 'labTimeSeries') || isempty(events)
+                this.gaitEvents = events;
             else
-                ME=MException('processedLabData:Constructor',...
+                ME = MException('processedLabData:Constructor', ...
                     'events parameter is not a labTimeSeries object.');
                 throw(ME);
             end
         end
-
-        function this=set.procEMGData(this,procEMG)
-            if isa(procEMG,'processedEMGTimeSeries') || ...
+        
+        function this = set.procEMGData(this, procEMG)
+            if isa(procEMG, 'processedEMGTimeSeries') || ...
                     isempty(procEMG)
-                this.procEMGData=procEMG;
+                this.procEMGData = procEMG;
             else
-                ME=MException('processedLabData:Constructor',...
+                ME = MException('processedLabData:Constructor', ...
                     'procEMG parameter is not a processedEMGTimeSeries object.');
                 throw(ME);
             end
         end
-
-        function this=set.angleData(this,angleData)
-            if isa(angleData,'labTimeSeries') || isempty(angleData)
-                this.angleData=angleData;
+        
+        function this = set.angleData(this, angleData)
+            if isa(angleData, 'labTimeSeries') || ...
+                    isempty(angleData)
+                this.angleData = angleData;
             else
-                ME=MException('processedLabData:Constructor',...
+                ME = MException('processedLabData:Constructor', ...
                     'angleData parameter is not a labTimeSeries object.');
                 throw(ME);
             end
         end
-
-        function this=set.adaptParams(this,adaptData)
-            if isa(adaptData,'parameterSeries') || ...
-                    isa(adaptData,'labTimeSeries')
-                this.adaptParams=adaptData;
+        
+        function this = set.adaptParams(this, adaptData)
+            if isa(adaptData, 'parameterSeries') || ...
+                    isa(adaptData, 'labTimeSeries')
+                this.adaptParams = adaptData;
             else
-                ME=MException('processedLabData:Constructor',...
+                ME = MException('processedLabData:Constructor', ...
                     'adaptParams parameter is not a parameterSeries object.');
                 throw(ME);
             end
         end
-
     end
 
     %% Data Access Methods
