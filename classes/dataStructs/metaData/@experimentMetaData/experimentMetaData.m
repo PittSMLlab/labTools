@@ -217,20 +217,6 @@ classdef experimentMetaData
                     end
                 end
             end
-            function newThis=splitConditionIntoTrials(this,condList)
-                %This function gets a condition list condList, and for each condition on said list
-                %it splits it, assigning a unique condition name to each trial
-                newThis=this;
-                for i=1:length(condList)
-                    id=this.getConditionIdxsFromName(condList{i});
-                    Nt=newThis.trialsInCondition{id};
-                    newCondNames=mat2cell(strcat(newThis.conditionName{id},num2str([1:numel(Nt)]')),ones(size(Nt')),length(newThis.conditionName{id})+1)';
-                    newDesc=mat2cell(strcat(newThis.conditionDescription{id},', trial #',num2str([1:numel(Nt)]')),ones(size(Nt')),length(newThis.conditionDescription{id})+10)';
-                    newThis.conditionName=[newThis.conditionName(1:id-1) newCondNames newThis.conditionName(id+1:end)];
-                    newThis.conditionDescription=[newThis.conditionDescription(1:id-1) newDesc newThis.conditionDescription(id+1:end)];
-                    newThis.trialsInCondition=[newThis.trialsInCondition(1:id-1) mat2cell(newThis.trialsInCondition{id},1,ones(size(Nt))) newThis.trialsInCondition(id+1:end)];
-                end
-            end
 
             function conditionIdxs=getConditionIdxsFromName(this,conditionNames,exactMatchesOnlyFlag,ignoreMissingNamesFlag)
                 %Looks for condition names that are similar to the ones given
@@ -309,54 +295,6 @@ classdef experimentMetaData
                 trialNums=cell2mat(this.trialsInCondition(conditionIdx));
             end
 
-            function [this,change]=replaceConditionNames(this,currentName,newName)
-                %Looks for conditions whose name match the options in
-                %currentName & changes them to newName
-                change=false;
-                %Check currentName and newName are cell arrays of same length
-                conditionIdxs=this.getConditionIdxsFromName(currentName,1,1); %Exact matches only, but allows not finding matches (does not accept partial matches)
-                %this.conditionName(conditionIdxs)=newName;
-                for i=1:length(currentName)
-                    if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})
-                        this.conditionName{conditionIdxs(i)}=newName{i};
-                        change=true;
-                    end
-                end
-            end
-
-            function [newThis,change]=numerateRepeatedConditionNames(this)
-                %This function should (almost) never be used. metaData no longer allows repeated condition names, so this is unnecessary.
-                %However, for files created before the prohibition, it may
-                %happen.
-                aaa=unique(this.conditionName);
-                change=false;
-                if length(aaa)<length(this.conditionName) %There are repetitions
-                    change=true;
-                    for i=1:length(aaa)
-                        aux=find(strcmpi(aaa{i},this.conditionName));
-                        if length(aux)>1
-                            disp(['Found a repeated condition name ' aaa{i} ])
-                            for j=1:length(aux)
-                                aaux=this.trialsInCondition{aux(j)} ;
-                                %This queries the user for a new name:
-
-                                %disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) '.'])
-                                %ss=input(['Please input a new name for this condition: ']);
-
-                                %This assigns a new name by adding a number:
-                                ss=[aaa{i} ' ' num2str(j)];
-
-
-                                this.conditionName{aux(j)}=ss;
-                                disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) ', was replaced by ' ss '.'])
-                            end
-
-                        end
-                    end
-                end
-                newThis=this;
-            end
-
             function [condNames]=getConditionsThatMatch(this,name,type)
                 %Returns condition names that match certain patterns
 
@@ -428,6 +366,16 @@ classdef experimentMetaData
 
                 end
             end
+        end
+
+        %% Condition Manipulation Methods
+        methods
+            newThis = splitConditionIntoTrials(this, condList)
+
+            [newThis, change] = replaceConditionNames(this, currentName, ...
+                newName)
+
+            [newThis, change] = numerateRepeatedConditionNames(this)
         end
 
         %% Validation Methods
