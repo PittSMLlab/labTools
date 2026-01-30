@@ -21,11 +21,10 @@ N = 0;
 for i = 1:length(auxLst)
     % Should try to do this only if the property is not dependent,
     % otherwise, I'm computing things I don't need
-    eval(['oldVal = this.' auxLst{i} ';'])
+    eval(['oldVal = this.' auxLst{i} ';']);
     if isa(oldVal, 'labTimeSeries')
         if oldVal.Nsamples ~= N % Discrepancy
-            if N == 0 % First discrepancy: does not really say
-                % anything
+            if N == 0 % First discrepancy: does not really say anything
                 N = oldVal.Nsamples;
             else % New discrepancy, it is not time normalized
                 N = 0;

@@ -29,31 +29,26 @@ if nargin < 3
         'normalizedInterval', ...
         ['Normalized ' this.metaData.description], ...
         'Auto-generated', this.metaData);
-    eval(['newThis = ' cname '(metaData);']); % Call empty
-    % constructor of
-    % same class
+    % Call empty constructor of same class
+    eval(['newThis = ' cname '(metaData);']);
 else
-    % Should I call a different metaData constructor depending on
-    % newClass?
+    % Should I call a different metaData constructor depending on newClass?
     metaData = strideMetaData(labDate.genIDFromClock, ...
         labDate.getCurrent, 'strideData.timeNormalize', ...
         'normalizedInterval', ...
         ['Normalized  ' this.metaData.description], ...
         'Auto-generated', this.metaData);
-    eval(['newThis = ' newClass '(metaData);']); % Call empty
-    % constructor of
-    % same class
+    % Call empty constructor of same class
+    eval(['newThis = ' newClass '(metaData);']);
 end
 auxLst = properties(cname);
 for i = 1:length(auxLst)
     % Should try to do this only if the property is not dependent,
     % otherwise, I'm computing things I don't need
     eval(['oldVal = this.' auxLst{i} ';'])
-    if isa(oldVal, 'labTimeSeries') && ...
-            ~strcmp(auxLst{i}, 'EMGData')
-        % Calling labTS.resample (or one of the subclass'
-        % implementation), it should keep the time interval, which
-        % for strided data should
+    if isa(oldVal, 'labTimeSeries') && ~strcmp(auxLst{i}, 'EMGData')
+        % Calling labTS.resample (or one of the subclass' implementation),
+        % it should keep the time interval, which for strided data should
         newVal = oldVal.resampleN(N);
     elseif strcmp(auxLst{i}, 'EMGData')
         k = this.EMGData.Nsamples / this.markerData.Nsamples;
@@ -63,7 +58,7 @@ for i = 1:length(auxLst)
         newVal = oldVal; % Not a labTS object, not splitting
     end
     try
-        % If this fails is because the property is not settable
+        % If this fails it is because the property is not settable
         eval(['newThis.' auxLst{i} ' = newVal;'])
     catch
         if isa(oldVal, 'labTimeSeries')

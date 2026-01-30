@@ -31,7 +31,7 @@ if t1 <= t0
     ME = MException('strideData:GetInterval', ...
         ['The requested interval does not exist as such on ' ...
         'this stride.']);
-    throw(ME)
+    throw(ME);
 end
 interval = this.split(t0, t1);
 end
