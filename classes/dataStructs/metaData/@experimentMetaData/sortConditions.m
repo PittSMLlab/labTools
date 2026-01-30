@@ -13,13 +13,13 @@ function newThis = sortConditions(this)
 %   See also: validateTrialsInCondition, checkConditionOrder
 
 % Get order:
-[conditionOrder] = this.validateTrialsInCondition;
+conditionOrder = this.validateTrialsInCondition;
 % Sort:
 this.conditionName(conditionOrder) = this.conditionName;
 this.conditionDescription(conditionOrder) = this.conditionDescription;
 this.trialsInCondition(conditionOrder) = this.trialsInCondition;
 % Check ordering:
-this.checkConditionOrder;
+this.checkConditionOrder();
 newThis = this;
 end
 

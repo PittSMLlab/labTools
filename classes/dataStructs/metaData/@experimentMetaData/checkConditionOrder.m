@@ -27,8 +27,9 @@ function conditionOrder = checkConditionOrder(this, ...
 if nargin < 2 || isempty(conditionNamesInOrder)
     conditionNamesInOrder = this.conditionName;
 end
+
 % Doing validation of trials, and getting conditionOrder
-[conditionOrder] = validateTrialsInCondition(this);
+conditionOrder = validateTrialsInCondition(this);
 conditionIdxsInOrder = ...
     this.getConditionIdxsFromName(conditionNamesInOrder);
 % Keeping order of requested conditions only
@@ -39,7 +40,7 @@ if nargin > 2 && ~isempty(silentFlag) && ~silentFlag
         for i = 1:length(badOrder)
             display(['Conditions provided are not in order: ' ...
                 conditionNamesInOrder{badOrder(i)} ' precedes ' ...
-                conditionNamesInOrder{badOrder(i) + 1}])
+                conditionNamesInOrder{badOrder(i) + 1}]);
         end
     end
 end

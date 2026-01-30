@@ -28,7 +28,7 @@ allTrials = cell2mat(trialNo);
 uniqueTrials = unique(allTrials);
 if numel(uniqueTrials) ~= numel(allTrials)
     error(['Some trials are repeated, in the same or different ' ...
-        'conditions. This is not allowed. Please review.'])
+        'conditions. This is not allowed. Please review.']);
 end
 mx = cellfun(@(x) min(x), trialNo);
 Mx = cellfun(@(x) max(x), trialNo);
@@ -39,9 +39,9 @@ Mx = cellfun(@(x) max(x), trialNo);
 if all(order1 == order2) && all(Mx1(1:end - 1) < mx1(2:end))
     conditionOrder = order1;
 else % Condition order cannot be established
-    disp(this)
+    disp(this);
     error(['Trials in conditions appear to be interleaved. This is ' ...
-        'not allowed. Please rename conditions.'])
+        'not allowed. Please rename conditions.']);
 end
 end
 
