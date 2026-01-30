@@ -1,25 +1,25 @@
 classdef experimentMetaData
-%experimentMetaData   Information describing the experiment as a whole.
-%
-%experimentMetaData Properties:
-%   ID - string containing the subject ID e.g. 'OG90' or 'CGN05'
-%   date - labDate object containing the date of the experiment
-%   experimenter - string, initials/name of person(s) who ran the experiment
-%   observations - string with overall study observations (observations for individual
-%   trials are stored in trailMetaData class objects)
-%   conditionName - cell array of strings containing labels given to each condition of the experiment
-%   conditionDescription - cell array of strings containing a detailed description of each condition.
-%   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
-%   trailsInCondition - cell array of numbers (type double?) matching condition number to
-%   trial numbers -- trial numbers must match up with c3d file names
-%   Ntrials - total number of trials
-%
-%experimentMetaData Methods:
-%   getCondLstPerTrial - returns list of condition numbers for each trial
-%   getConditionIdxsFromName - returns the condition number for conditions with a
-%   similar name to the string(s) entered.
-%
-%See also: labDate
+    %experimentMetaData   Information describing the experiment as a whole.
+    %
+    %experimentMetaData Properties:
+    %   ID - string containing the subject ID e.g. 'OG90' or 'CGN05'
+    %   date - labDate object containing the date of the experiment
+    %   experimenter - string, initials/name of person(s) who ran the experiment
+    %   observations - string with overall study observations (observations for individual
+    %   trials are stored in trailMetaData class objects)
+    %   conditionName - cell array of strings containing labels given to each condition of the experiment
+    %   conditionDescription - cell array of strings containing a detailed description of each condition.
+    %   (Contains information such as belt speeds, number of steps, belt ratio, etc.)
+    %   trailsInCondition - cell array of numbers (type double?) matching condition number to
+    %   trial numbers -- trial numbers must match up with c3d file names
+    %   Ntrials - total number of trials
+    %
+    %experimentMetaData Methods:
+    %   getCondLstPerTrial - returns list of condition numbers for each trial
+    %   getConditionIdxsFromName - returns the condition number for conditions with a
+    %   similar name to the string(s) entered.
+    %
+    %See also: labDate
 
     properties
         ID;
@@ -31,7 +31,7 @@ classdef experimentMetaData
         trialsInCondition={};
         Ntrials=[];
         SchenleyPlace = [];
-        PerceptualTasks = []; 
+        PerceptualTasks = [];
         datlog;
     end
 
@@ -74,12 +74,12 @@ classdef experimentMetaData
 
             if nargin>9
                 this.PerceptualTasks = PerceptualTasks;
-            end   
+            end
 
             if nargin>10
                 this.datlog = datlog;
-            end     
-         
+            end
+
             %Check that conditions do not include interleaved or repeated trials:
             [conditionOrder]=this.validateTrialsInCondition;
             %Sort conditions according to trial numbers:
@@ -124,26 +124,26 @@ classdef experimentMetaData
         end
         function this=set.conditionName(this,conds)
             if ~isempty(conds) && isa(conds,'cell')
-               this.conditionName=conds;
+                this.conditionName=conds;
             end
         end
         function this=set.conditionDescription(this,desc)
             if ~isempty(desc) && isa(desc,'cell')
-               this.conditionDescription=desc;
+                this.conditionDescription=desc;
             end
         end
         function this=set.trialsInCondition(this,trialLst)
             %Must be cell of doubles
             if ~isempty(trialLst) && isa(trialLst,'cell')
-            %Check that no trial is repeated
+                %Check that no trial is repeated
                 aux=cell2mat(trialLst);
                 aux2=unique(aux);
                 for i=1:length(aux2)
-                   a=find(aux==aux2(i));
-                   if numel(a)>1
-                       ME=MException('experimentMetaData:Constructor',['Trial ' num2str(aux2(i)) ' is listed as part of more than one condition.']);
-                       throw(ME)
-                   end
+                    a=find(aux==aux2(i));
+                    if numel(a)>1
+                        ME=MException('experimentMetaData:Constructor',['Trial ' num2str(aux2(i)) ' is listed as part of more than one condition.']);
+                        throw(ME)
+                    end
                 end
                 this.trialsInCondition=trialLst;
             end
@@ -174,22 +174,22 @@ classdef experimentMetaData
 
         %% Other methods
         function condLst=getCondLstPerTrial(this)
-           %Returns a vector with length equal to the
-           %number of trials in the experiment and with values equal to the
-           %condition number for each trial.
-           for i=1:this.Ntrials
-               for cond=1:length(this.trialsInCondition)
+            %Returns a vector with length equal to the
+            %number of trials in the experiment and with values equal to the
+            %condition number for each trial.
+            for i=1:this.Ntrials
+                for cond=1:length(this.trialsInCondition)
                     k=find(i==this.trialsInCondition{cond},1);
                     if ~isempty(k)
                         break;
                     end
-               end
-               if isempty(k)
-                   condLst(i)=NaN;
-               else
-                   condLst(i)=cond;
-               end
-           end
+                end
+                if isempty(k)
+                    condLst(i)=NaN;
+                else
+                    condLst(i)=cond;
+                end
+            end
         end
         function newThis=splitConditionIntoTrials(this,condList)
             %This function gets a condition list condList, and for each condition on said list
@@ -287,61 +287,61 @@ classdef experimentMetaData
             %Looks for conditions whose name match the options in
             %currentName & changes them to newName
             change=false;
-           %Check currentName and newName are cell arrays of same length
-           conditionIdxs=this.getConditionIdxsFromName(currentName,1,1); %Exact matches only, but allows not finding matches (does not accept partial matches)
-           %this.conditionName(conditionIdxs)=newName;
-           for i=1:length(currentName)
-               if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})
+            %Check currentName and newName are cell arrays of same length
+            conditionIdxs=this.getConditionIdxsFromName(currentName,1,1); %Exact matches only, but allows not finding matches (does not accept partial matches)
+            %this.conditionName(conditionIdxs)=newName;
+            for i=1:length(currentName)
+                if ~isnan(conditionIdxs(i)) && ~strcmp(this.conditionName{conditionIdxs(i)},newName{i})
                     this.conditionName{conditionIdxs(i)}=newName{i};
                     change=true;
-               end
-           end
+                end
+            end
         end
 
-         function conditionOrder=checkConditionOrder(this,conditionNamesInOrder,silentFlag)
-           %Checks that the given conditions appear in order for the subject, according to trial numbering
-           if nargin<2 || isempty(conditionNamesInOrder)
-               conditionNamesInOrder=this.conditionName;
-           end
-           [conditionOrder]=validateTrialsInCondition(this); %Doing validation of trials, and getting conditionOrder
-           conditionIdxsInOrder=this.getConditionIdxsFromName(conditionNamesInOrder);
-           conditionOrder=conditionOrder(conditionIdxsInOrder); %Keeping order of requested conditions only
-           if nargin>2 && ~isempty(silentFlag) && ~silentFlag
-           if any(diff(conditionOrder)<1)
-               badOrder=find(diff(conditionOrder)<1);
-               for i=1:length(badOrder)
-               display(['Conditions provided are not in order: ' conditionNamesInOrder{badOrder(i)} ' precedes ' conditionNamesInOrder{badOrder(i)+1}])
-               end
-           end
+        function conditionOrder=checkConditionOrder(this,conditionNamesInOrder,silentFlag)
+            %Checks that the given conditions appear in order for the subject, according to trial numbering
+            if nargin<2 || isempty(conditionNamesInOrder)
+                conditionNamesInOrder=this.conditionName;
             end
-         end
+            [conditionOrder]=validateTrialsInCondition(this); %Doing validation of trials, and getting conditionOrder
+            conditionIdxsInOrder=this.getConditionIdxsFromName(conditionNamesInOrder);
+            conditionOrder=conditionOrder(conditionIdxsInOrder); %Keeping order of requested conditions only
+            if nargin>2 && ~isempty(silentFlag) && ~silentFlag
+                if any(diff(conditionOrder)<1)
+                    badOrder=find(diff(conditionOrder)<1);
+                    for i=1:length(badOrder)
+                        display(['Conditions provided are not in order: ' conditionNamesInOrder{badOrder(i)} ' precedes ' conditionNamesInOrder{badOrder(i)+1}])
+                    end
+                end
+            end
+        end
 
-         function [conditionOrder]=validateTrialsInCondition(this)
+        function [conditionOrder]=validateTrialsInCondition(this)
             %Checks that there are no repeated trials, and that conditions do not interleave trials
             %e.g. that condition 'A' has trials 1 and 3, and condition 'B' has trial 2
-             conditionNamesInOrder=this.conditionName;
-             for i=1:length(conditionNamesInOrder)
+            conditionNamesInOrder=this.conditionName;
+            for i=1:length(conditionNamesInOrder)
                 trialNo{i}=this.getTrialsInCondition(conditionNamesInOrder{i});
-             end
-             allTrials=cell2mat(trialNo);
-             uniqueTrials=unique(allTrials);
-             if numel(uniqueTrials)~=numel(allTrials)
-                 error('Some trials are repeated, in the same or different conditions. This is not allowed. Please review.')
-             end
-             mx=cellfun(@(x) min(x),trialNo);
-             Mx=cellfun(@(x) max(x),trialNo);
-           [mx1,order1]=sort(mx); %Sorting according to first trial in each condition
-           [Mx1,order2]=sort(Mx); %Sorting according to last trial in each condition
-           if all(order1==order2) && all(Mx1(1:end-1)<mx1(2:end))
-               conditionOrder=order1;
-           else %Condition order cannot be established
-               disp(this)
-               error('Trials in conditions appear to be interleaved. This is not allowed. Please rename conditions.')
-           end
-         end
+            end
+            allTrials=cell2mat(trialNo);
+            uniqueTrials=unique(allTrials);
+            if numel(uniqueTrials)~=numel(allTrials)
+                error('Some trials are repeated, in the same or different conditions. This is not allowed. Please review.')
+            end
+            mx=cellfun(@(x) min(x),trialNo);
+            Mx=cellfun(@(x) max(x),trialNo);
+            [mx1,order1]=sort(mx); %Sorting according to first trial in each condition
+            [Mx1,order2]=sort(Mx); %Sorting according to last trial in each condition
+            if all(order1==order2) && all(Mx1(1:end-1)<mx1(2:end))
+                conditionOrder=order1;
+            else %Condition order cannot be established
+                disp(this)
+                error('Trials in conditions appear to be interleaved. This is not allowed. Please rename conditions.')
+            end
+        end
 
-         function newThis=sortConditions(this)
-             %Get order:
+        function newThis=sortConditions(this)
+            %Get order:
             [conditionOrder]=this.validateTrialsInCondition;
             %Sort:
             this.conditionName(conditionOrder)=this.conditionName;
@@ -350,13 +350,13 @@ classdef experimentMetaData
             %Check ordering:
             this.checkConditionOrder;
             newThis=this;
-         end
+        end
 
         function [newThis,change]=numerateRepeatedConditionNames(this)
-           %This function should (almost) never be used. metaData no longer allows repeated condition names, so this is unnecessary.
-           %However, for files created before the prohibition, it may
-           %happen.
-           aaa=unique(this.conditionName);
+            %This function should (almost) never be used. metaData no longer allows repeated condition names, so this is unnecessary.
+            %However, for files created before the prohibition, it may
+            %happen.
+            aaa=unique(this.conditionName);
             change=false;
             if length(aaa)<length(this.conditionName) %There are repetitions
                 change=true;
@@ -364,20 +364,20 @@ classdef experimentMetaData
                     aux=find(strcmpi(aaa{i},this.conditionName));
                     if length(aux)>1
                         disp(['Found a repeated condition name ' aaa{i} ])
-                       for j=1:length(aux)
-                          aaux=this.trialsInCondition{aux(j)} ;
-                          %This queries the user for a new name:
+                        for j=1:length(aux)
+                            aaux=this.trialsInCondition{aux(j)} ;
+                            %This queries the user for a new name:
 
-                          %disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) '.'])
-                          %ss=input(['Please input a new name for this condition: ']);
+                            %disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) '.'])
+                            %ss=input(['Please input a new name for this condition: ']);
 
-                          %This assigns a new name by adding a number:
-                          ss=[aaa{i} ' ' num2str(j)];
+                            %This assigns a new name by adding a number:
+                            ss=[aaa{i} ' ' num2str(j)];
 
 
-                          this.conditionName{aux(j)}=ss;
-                          disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) ', was replaced by ' ss '.'])
-                       end
+                            this.conditionName{aux(j)}=ss;
+                            disp(['Occurrence ' num2str(j) ' contains trials ' num2str(aaux) ', was replaced by ' ss '.'])
+                        end
 
                     end
                 end
@@ -386,68 +386,68 @@ classdef experimentMetaData
         end
 
         function [condNames]=getConditionsThatMatch(this,name,type)
-           %Returns condition names that match certain patterns
+            %Returns condition names that match certain patterns
 
-           if nargin<2 || isempty(name) || ~isa(name,'char')
-               error('Pattern name to search for needs to be a string')
-           end
+            if nargin<2 || isempty(name) || ~isa(name,'char')
+                error('Pattern name to search for needs to be a string')
+            end
 
-           ccNames=this.conditionName;
-           idx=cellfun(@(x) isempty(x),ccNames);
-           if sum(idx)>=1
-               r=find(idx==1);
-               for q=1:length(r)
-                   ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
-               end
-           end
-           patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
-           if nargin>2 && ~isempty(type) && isa(type,'char')
-               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
-           else
-               typeMatches=true(size(patternMatches));
-           end
+            ccNames=this.conditionName;
+            idx=cellfun(@(x) isempty(x),ccNames);
+            if sum(idx)>=1
+                r=find(idx==1);
+                for q=1:length(r)
+                    ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
+                end
+            end
+            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
+            if nargin>2 && ~isempty(type) && isa(type,'char')
+                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
+            else
+                typeMatches=true(size(patternMatches));
+            end
 
-%            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
-%            if nargin>2 && ~isempty(type) && isa(type,'char')
-%                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
-%            else
-%                typeMatches=true(size(patternMatches));
-%            end
-           condNames=this.conditionName(patternMatches & typeMatches);
+            %            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
+            %            if nargin>2 && ~isempty(type) && isa(type,'char')
+            %                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
+            %            else
+            %                typeMatches=true(size(patternMatches));
+            %            end
+            condNames=this.conditionName(patternMatches & typeMatches);
         end
 
         function [condNames]=getConditionsThatMatchV2(this,name,type)
-           %Returns condition names that match certain patterns, but when
-           %its empty it will look for a "training" or "TR" base condition
+            %Returns condition names that match certain patterns, but when
+            %its empty it will look for a "training" or "TR" base condition
 
-           if nargin<2 || isempty(name) || ~isa(name,'char')
-               error('Pattern name to search for needs to be a string')
-           end
+            if nargin<2 || isempty(name) || ~isa(name,'char')
+                error('Pattern name to search for needs to be a string')
+            end
 
-           ccNames=this.conditionName;
-           idx=cellfun(@(x) isempty(x),ccNames);
-           if sum(idx)>=1
-               r=find(idx==1);
-               for q=1:length(r)
-                   ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
-               end
-           end
-           patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
-           if nargin>2 && ~isempty(type) && isa(type,'char')
-               typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
-%                if sum(typeMatches)==0 || strcmp(type,'TM') %Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
-%                    typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
-%                end
-           else
-               typeMatches=true(size(patternMatches));
-           end
+            ccNames=this.conditionName;
+            idx=cellfun(@(x) isempty(x),ccNames);
+            if sum(idx)>=1
+                r=find(idx==1);
+                for q=1:length(r)
+                    ccNames{r(q)}=['awsdfasdas' num2str(q)]; %Need a more elegant solution for empty condition names
+                end
+            end
+            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(name))));
+            if nargin>2 && ~isempty(type) && isa(type,'char')
+                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower(type))));
+                %                if sum(typeMatches)==0 || strcmp(type,'TM') %Marcela: I am not sure if this is the best way to do this but its a temporal fix for R01
+                %                    typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(ccNames),lower('TR'))));
+                %                end
+            else
+                typeMatches=true(size(patternMatches));
+            end
 
-%            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
-%            if nargin>2 && ~isempty(type) && isa(type,'char')
-%                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
-%            else
-%                typeMatches=true(size(patternMatches));
-%            end
+            %            patternMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(name))));
+            %            if nargin>2 && ~isempty(type) && isa(type,'char')
+            %                typeMatches=cellfun(@(x) ~isempty(x),(strfind(lower(this.conditionName),lower(type))));
+            %            else
+            %                typeMatches=true(size(patternMatches));
+            %            end
             condNames=this.conditionName(patternMatches & typeMatches);
 
             if isempty(condNames) &&  strcmp(type,'NIM') ||  isempty(condNames) && strcmp(type,'TM') %Marcela & DMMO: I am not sure if this is the best way to do this but its a temporal fix for R01
@@ -464,9 +464,9 @@ classdef experimentMetaData
     methods(Static)
         %% Loading
         function this=loadobj(this)
-          %This function was created to retroactively validate trials everytime this is loaded
-          [conditionOrder]=this.validateTrialsInCondition;
-          this=this.sortConditions;
+            %This function was created to retroactively validate trials everytime this is loaded
+            [conditionOrder]=this.validateTrialsInCondition;
+            this=this.sortConditions;
         end
     end
 end
