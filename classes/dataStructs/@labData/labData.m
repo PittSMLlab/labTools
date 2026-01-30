@@ -45,16 +45,16 @@ classdef labData
 
     %% Properties
     properties % (SetAccess = private)
-        metaData %labMetaData object
-        markerData %orientedLabTS
-        EMGData %labTS
-        EEGData %labTS
-        GRFData %orientedLabTS
-        accData %orientedLabTS
-        beltSpeedSetData %labTS, sent commands to treadmill
-        beltSpeedReadData %labTS, speed read from treadmill
-        footSwitchData %labTS
-        HreflexPin %labTS, this should contain pin readings for left and right leg, it's a sync signal that shows a spike once in a while when an H reflex stimulus is being delivered.
+        metaData % labMetaData object
+        markerData % orientedLabTS
+        EMGData % labTS
+        EEGData % labTS
+        GRFData % orientedLabTS
+        accData % orientedLabTS
+        beltSpeedSetData % labTS, sent commands to treadmill
+        beltSpeedReadData % labTS, speed read from treadmill
+        footSwitchData % labTS
+        HreflexPin % labTS, sync signal for H-reflex stimulus delivery
     end
 
     %% Constructor
