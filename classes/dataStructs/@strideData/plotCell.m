@@ -1,13 +1,36 @@
-function [plotHandles]=plotCell(strides,field,ampNorm,plotHandles,reqElements,color,plotEvents) %Plot cellarray of stride data
-%CHANGES FROM PREVIOUS VERSION:
-%Different subplots for every element of the field (e.g. each muscle)
-%No longer supports sync_norm in here. sync_norm needs to be implemented as
-%a class function, that returns strided & synchronized data from strided &
-%non-sync'd data.
-%offset parameter no longer plays a role
-%Length parameter is now calculated to be automatically the smaller power
-%of two that is still larger than all strides (N is no longer needed.)
-%No longer outputting ampCoefs or offset.
+function plotHandles = plotCell(strides, field, ampNorm, ...
+    plotHandles, reqElements, color, plotEvents)
+%plotCell  Plots cell array of stride data
+%
+%   plotHandles = plotCell(strides, field, ampNorm,
+%   plotHandles, reqElements, color, plotEvents) plots data from
+%   multiple strides with various normalization and display
+%   options
+%
+%   Inputs:
+%       strides - cell array of strideData objects
+%       field - name of field to plot
+%       ampNorm - amplitude normalization flag or coefficients
+%       plotHandles - handles to plot axes
+%       reqElements - elements to plot
+%       color - plot color specification
+%       plotEvents - flag to overlay gait events
+%
+%   Outputs:
+%       plotHandles - updated plot handles
+%
+%   See also: plotCellAvg, cell2mat
+
+% CHANGES FROM PREVIOUS VERSION:
+%   - Different subplots for every element of the field (e.g. each muscle)
+%   - No longer supports sync_norm in here. sync_norm needs to be
+%       implemented as a class function, that returns strided &
+%       synchronized data from strided & non-sync'd data.
+%   - Offset parameter no longer plays a role
+%   - Length parameter is now calculated to be automatically the smaller
+%       power of two that is still larger than all strides (N is no longer
+%       needed.)
+%   - No longer outputting ampCoefs or offset.
 
 %Get a sample field:
 eval(['justTheField{1}=strides{1}.' field ';']);
@@ -48,17 +71,17 @@ Nplots=length(relIdx);
 %Find length of all strides, and get data corresponding to the relevant
 %labels.
 for stride=1:length(strides)
-   eval(['relData{stride}=strides{stride}.' field '.getDataAsTS(relLabels);']);
-   if plotEvents
+    eval(['relData{stride}=strides{stride}.' field '.getDataAsTS(relLabels);']);
+    if plotEvents
         events{stride}=strides{stride}.gaitEvents.getDataAsTS({'RHS','LHS','RTO','LTO'});
-   end
-   strideLength(stride)=size(relData{stride}.Data,1);
+    end
+    strideLength(stride)=size(relData{stride}.Data,1);
 end
 N=2^ceil(log2(max(strideLength)));
 
 %Time normalize and put everything in a matrix
 for stride=1:length(strides)
-   allDataAsMatrix(:,:,stride)=relData{stride}.resampleN(N).getDataAsVector(relLabels);
+    allDataAsMatrix(:,:,stride)=relData{stride}.resampleN(N).getDataAsVector(relLabels);
 end
 
 %% Second, check if the plotHandles given (if any) are enough for those plots, otherwise get adequate plotHandles
@@ -77,20 +100,20 @@ end
 
 %% Third, do the plots & link axes in x. Also plot avg.
 for i=1:Nplots
-   subplot(plotHandles(i))
-   hold on
-   plot(repmat([0:N-1]'/N,1,length(strides)),squeeze(allDataAsMatrix(:,i,:)),'Color',color);
-   if plotEvents
-       %To Do
-   end
-   plot([0:N-1]'/N,mean(allDataAsMatrix(:,i,:),3),'k--');
-   ylabel(relLabels{i})
-   xlabel('Stride (%)')
-   hold off
-   if ampNorm
-       axis tight
-   else
-       axis([0 1 min(allDataAsMatrix(:)) max(allDataAsMatrix(:))])
-   end
+    subplot(plotHandles(i))
+    hold on
+    plot(repmat([0:N-1]'/N,1,length(strides)),squeeze(allDataAsMatrix(:,i,:)),'Color',color);
+    if plotEvents
+        %To Do
+    end
+    plot([0:N-1]'/N,mean(allDataAsMatrix(:,i,:),3),'k--');
+    ylabel(relLabels{i})
+    xlabel('Stride (%)')
+    hold off
+    if ampNorm
+        axis tight
+    else
+        axis([0 1 min(allDataAsMatrix(:)) max(allDataAsMatrix(:))])
+    end
 end
 linkaxes(plotHandles,'x')
