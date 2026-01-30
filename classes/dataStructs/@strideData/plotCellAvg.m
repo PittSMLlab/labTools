@@ -1,6 +1,5 @@
 function [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
-    field, N, sync_norm, ampNorm, plotHandle, side, color, ...
-    offset, plotEv)
+    field, N, sync_norm, ampNorm, plotHandle, side, color, offset, plotEv)
 %plotCellAvg  Plots average and std of stride cell array
 %
 %   [plotHandle, offset, ampCoefs] = plotCellAvg(strides, field,
@@ -33,10 +32,12 @@ function [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
 if nargin < 10
     plotEv = 0;
 end
+
 if nargin > 5 && ~isempty(plotHandle)
-    subplot(plotHandle)
+    subplot(plotHandle);
 end
-eval(['testField = strides{1}.' field ';'])
+
+eval(['testField = strides{1}.' field ';']);
 data = strideData.cell2mat(strides, field, N);
 if numel(ampNorm) > 1
     ampCoefs = ampNorm; % Should check that numel == size(data, 2)
@@ -44,6 +45,7 @@ if numel(ampNorm) > 1
 else
     ampCoefs = [];
 end
+
 if isa(testField, 'labTimeSeries')
     eval(['labels = strides{1}.' field '.getLabels;']);
     if strcmp(field, 'procEMGData')
@@ -71,13 +73,16 @@ if isa(testField, 'labTimeSeries')
     else
         indLabels = true(size(labels)); % All labels
     end
+
     if nargin < 7
-        color = [.5, .5, .5];
+        color = [0.5, 0.5, 0.5];
     end
+
     % Do the plot:
     raw = data(:, indLabels == 1, :); % Just one side muscles
     % auxMax = auxMax(:, indLabels == 1, :);
-    hold on
+    hold on;
+
     switch sync_norm
         case 0 % Do nothing
 
@@ -86,6 +91,7 @@ if isa(testField, 'labTimeSeries')
         case 2 % Renormalize to 4 phases
             % To Do
     end
+
     switch ampNorm
         case 0 % Do nothing
             if nargin > 8 && ~isempty(offset)
@@ -99,37 +105,34 @@ if isa(testField, 'labTimeSeries')
             if isempty(ampCoefs)
                 ampCoefs = mean(max(abs(raw), [], 1), 3);
             end
-            raw = .9 * raw ./ repmat(ampCoefs, size(raw, 1), 1, ...
+            raw = 0.9 * raw ./ repmat(ampCoefs, size(raw, 1), 1, ...
                 size(raw, 3));
             mOffset = 2;
     end
+
     % Plot
-    auxMusc = mOffset * repmat([0:size(raw, 2) - 1], ...
-        size(raw, 1), 1);
+    auxMusc = mOffset * repmat([0:size(raw, 2) - 1], size(raw, 1), 1);
     plot([0:N - 1] / N, auxMusc + mean(raw, 3), 'Color', ...
-        [.5, .5, .8] .* color, 'LineWidth', 2);
+        [0.5, 0.5, 0.8] .* color, 'LineWidth', 2);
     haa = plot([0:N - 1] / N, auxMusc + mean(raw, 3) + ...
         std(raw, [], 3), 'Color', color, 'LineWidth', 1);
     uistack(haa, 'bottom');
     haa = plot([0:N - 1] / N, auxMusc + mean(raw, 3) - ...
         std(raw, [], 3), 'Color', color, 'LineWidth', 1);
     uistack(haa, 'bottom');
+
     if plotEv == 1
         % Add events
         events = strideData.cell2mat(strides, 'gaitEvents', N);
         eventLabels = strides{1}.gaitEvents.getLabels;
         idx = strcmp(eventLabels, 'LHS');
-        LHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), ...
-            3)));
+        LHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
         idx = strcmp(eventLabels, 'RHS');
-        RHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), ...
-            3)));
+        RHSev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
         idx = strcmp(eventLabels, 'LTO');
-        LTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), ...
-            3)));
+        LTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
         idx = strcmp(eventLabels, 'RTO');
-        RTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), ...
-            3)));
+        RTOev = round(sum([1:N]' .* mean(events(:, idx == 1, :), 3)));
         plot((LHSev - 1) / N, auxMusc(LHSev, :) + ...
             mean(raw(LHSev, :, :), 3), 's', 'Color', color);
         plot((RHSev - 1) / N, auxMusc(RHSev, :) + ...
@@ -139,19 +142,18 @@ if isa(testField, 'labTimeSeries')
         plot((RTOev - 1) / N, auxMusc(RTOev, :) + ...
             mean(raw(RTOev, :, :), 3), 's', 'Color', color);
     end
+
     set(gca, 'YTick', mOffset * [0:size(raw, 2) - 1], ...
         'YTickLabel', labels(indLabels == 1));
-    axis([0 1 -mOffset / 2 mOffset * size(raw, 2) - mOffset / 2])
-    xlabel('% stride')
+    axis([0 1 -mOffset / 2 mOffset * size(raw, 2) - mOffset / 2]);
+    xlabel('% stride');
     ax1 = gca;
     % Add secondary axes for scale: (fancy, matters only if amp is
     % not normalized)
     ax2 = axes('Position', get(ax1, 'Position'), ...
-        'XAxisLocation', 'top', ...
-        'YAxisLocation', 'right', ...
-        'Color', 'none', ...
-        'XColor', 'r', 'YColor', 'r');
-    linkaxes([ax1, ax2], 'xy')
+        'XAxisLocation', 'top', 'YAxisLocation', 'right', ...
+        'Color', 'none', 'XColor', 'r', 'YColor', 'r');
+    linkaxes([ax1, ax2], 'xy');
     auxTick = [-mOffset / 2:mOffset / 4:...
         (mOffset * size(raw, 2) - mOffset / 2)];
     % auxTick(1:4:end) = [];
@@ -164,7 +166,7 @@ if isa(testField, 'labTimeSeries')
     end
     set(ax2, 'YTick', auxTick, 'YTickLabel', auxTickLabel);
     set(ax2, 'XTick', []);
-    hold off
+    hold off;
     offset = mOffset;
 end
 end

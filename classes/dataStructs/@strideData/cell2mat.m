@@ -21,17 +21,17 @@ strideMat = [];
 if isa(strides, 'cell') && all(cellisa(strides, 'strideData'))
     auxLst = properties('strideData');
     if any(strcmp(auxLst, field))
-        eval(['testField = strides{1}.' field ';'])
+        eval(['testField = strides{1}.' field ';']);
         if isa(testField, 'labTimeSeries')
             M = length(strides);
             for i = 1:M
-                eval(['testField = strides{i}.' field ';'])
+                eval(['testField = strides{i}.' field ';']);
                 strideMat(:, :, i) = testField.resampleN(N)...
                     .getDataAsVector(testField.getLabels);
             end
         elseif ~isa(testField, 'double')
             for i = 1:length(strides)
-                eval(['testField = strides{i}.' field ';'])
+                eval(['testField = strides{i}.' field ';']);
                 strideMat(:, :, i) = testField;
             end
         end
@@ -44,8 +44,7 @@ if isa(strides, 'cell') && all(cellisa(strides, 'strideData'))
     end
 else
     ME = MException('strideDataCell2mat:wrongInput', ...
-        ['Input needs to be a cell array of strideData ' ...
-        'objects.']);
+        'Input needs to be a cell array of strideData objects.');
     throw(ME);
 end
 end
