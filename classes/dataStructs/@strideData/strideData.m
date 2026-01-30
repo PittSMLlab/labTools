@@ -36,14 +36,15 @@ classdef strideData < processedLabData
     %
     %See also: processedLabData, labData, strideMetaData
 
+    %% Properties
     properties (Dependent)
         isBad
         initialEvent
-        originalTrial %returns string
+        originalTrial % returns string
     end
 
+    %% Constructor
     methods
-        %Constructor
         function this=strideData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG)
             if nargin<11
                 markerData=[];
@@ -69,29 +70,21 @@ classdef strideData < processedLabData
             end
         end
 
-        %Modifiers and partial access:
-        fakeStride(this,initEvent) %Generates a fake stride, with data from this stride, buy cutting and pasting phases in different order
-        function [dsLR,duration]=getDoubleSupportLR(this)
-            dsLR=getIntervalBtwEvents(this,'LHS','RTO');
-            duration=dsLR.gaitEvents.timeRange;
-        end
-        function [dsRL,duration]=getDoubleSupportRL(this)
-            dsRL=getIntervalBtwEvents(this,'RHS','LTO');
-            duration=dsRL.gaitEvents.timeRange;
-        end
-        function [int,dur]=getSingleStanceL(this)
-            int=getIntervalBtwEvents(this,'RTO','RHS');
-            dur=int.gaitEvents.timeRange;
-        end
-        function [int,dur]=getSingleStanceR(this)
-            int=getIntervalBtwEvents(this,'LTO','LHS');
-            dur=int.gaitEvents.timeRange;
-        end
-        function [int,dur]=getSwingL(this)
-            [int,dur]=getSingleStanceR(this);
-        end
-        function [int,dur]=getSwingR(this)
-            [int,dur]=getSingleStanceL(this);
+        %% Phase Extraction Methods
+        methods
+            fakeStride(this, initEvent)
+
+            [dsLR, duration] = getDoubleSupportLR(this)
+
+            [dsRL, duration] = getDoubleSupportRL(this)
+
+            [int, dur] = getSingleStanceL(this)
+
+            [int, dur] = getSingleStanceR(this)
+
+            [int, dur] = getSwingL(this)
+
+            [int, dur] = getSwingR(this)
         end
 
         %Getters for dependent
