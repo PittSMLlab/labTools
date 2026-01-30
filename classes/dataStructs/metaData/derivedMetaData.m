@@ -1,14 +1,28 @@
 classdef derivedMetaData < trialMetaData
-    %UNTITLED2 Summary of this class goes here
-    %   Detailed explanation goes here
+    %derivedMetaData  Metadata for data derived from a parent trial
+    %
+    %   derivedMetaData extends trialMetaData to represent metadata
+    %   for data segments or processed data derived from a parent
+    %   trial. It maintains a reference to the parent trial's
+    %   metadata and can inherit properties from it.
+    %
+    %derivedMetaData properties:
+    %   parentMetaData - reference to the parent trial's metadata
+    %                    object
+    %   (inherits all properties from trialMetaData)
+    %
+    %derivedMetaData methods:
+    %   derivedMetaData - constructor for derived metadata
+    %
+    %See also: trialMetaData, strideMetaData
 
-    properties (SetAccess=private)
+    %% Properties
+    properties (SetAccess = private)
         parentMetaData
     end
 
-
+    %% Constructor
     methods
-        %Constructor
         function this=derivedMetaData(ID,date,experimenter,desc,obs,refLeg,parentMeta,condition,rawDataFilename,type,schenleyLab,perceptualTasks,datlog,fastLeg)
             if nargin == 7 %parentMeta is give, but no other args are given, set it to the parent
                 condition = parentMeta.condition;
