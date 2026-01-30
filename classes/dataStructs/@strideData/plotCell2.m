@@ -1,5 +1,25 @@
-
-
+function plotHandles = plotCell(strides, field, ampNorm, ...
+    plotHandles, reqElements, color, plotEvents)
+%plotCell  Plots cell array of stride data
+%
+%   plotHandles = plotCell(strides, field, ampNorm,
+%   plotHandles, reqElements, color, plotEvents) plots data from
+%   multiple strides with various normalization and display
+%   options
+%
+%   Inputs:
+%       strides - cell array of strideData objects
+%       field - name of field to plot
+%       ampNorm - amplitude normalization flag or coefficients
+%       plotHandles - handles to plot axes
+%       reqElements - elements to plot
+%       color - plot color specification
+%       plotEvents - flag to overlay gait events
+%
+%   Outputs:
+%       plotHandles - updated plot handles
+%
+%   See also: plotCellAvg, cell2mat
 
 % Method signature only - implementation needed
 plotHandles = [];
