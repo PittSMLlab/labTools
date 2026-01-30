@@ -97,66 +97,23 @@ classdef studyData % < dynamicprops
 
     %% Data Access Methods
     methods
-        function out = getCommonConditions(this)
-            out = []; %Doxy
-        end
+        out = getCommonConditions(this)
 
-        function out = getCommonParameters(this)
-            out = []; %Doxy
-        end
+        out = getCommonParameters(this)
 
-        function data=getEpochData(this,epochs,labels,summaryFlag)
-            %getEpochData returns data from all subjects in all groups for each epoch
-            %See also: adaptationData.getEpochData
-
-            %Manage inputs:
-            if nargin<4
-                summaryFlag=[]; %Respect default in adaptationData.getEpochData
-            end
-            if isa(labels,'char')
-                labels={labels};
-            end
-
-            data=cell(size(this.groupData));
-            allSameSize=true;
-            N=length(this.groupData{1}.ID);
-            for i=1:length(this.groupData)
-                data{i}=this.groupData{i}.getEpochData(epochs,labels,summaryFlag);
-                allSameSize=allSameSize && N==size(data{i},3);
-            end
-
-            if allSameSize %If all groups are same size, catting into a matrix for easier manipulation (this is probably a bad idea)
-                data=reshape(cell2mat(data),length(labels),length(epochs),length(this.groupData),N); %Cats along dim 2 by default
-            end
-        end
+        data = getEpochData(this, epochs, labels, summaryFlag)
     end
 
     %% Visualization and Analysis Methods
     methods
-        function out = barPlot(this,epochs)
-            out = []; %Doxy
-        end
+        out = barPlot(this, epochs)
 
-        function out = anova(this,epochs,contrasts)
-            out = []; %Doxy
-        end
+        out = anova(this, epochs, contrasts)
     end
 
     %% Static Methods
     methods (Static)
-        function this = createStudyData(groupAdaptationDataList)
-            %This function creates a studyData object  from a list of
-            %filenames, each containing a groupAdaptation object
-
-            %Check: groupAdaptationDataList is a cell of strings
-            %Doxy
-
-            aux=cell(size(groupAdaptationDataList));
-            for i=1:length(groupAdaptationDataList)
-                aux{i}=load(groupAdaptationDataList{i});
-            end
-            this = studyData(aux);
-        end
+        this = createStudyData(groupAdaptationDataList)
     end
 
 end

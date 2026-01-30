@@ -29,15 +29,16 @@ if nargin < 4
     % Respect default in adaptationData.getEpochData
     summaryFlag = [];
 end
+
 if isa(labels, 'char')
     labels = {labels};
 end
+
 data = cell(size(this.groupData));
 allSameSize = true;
 N = length(this.groupData{1}.ID);
 for i = 1:length(this.groupData)
-    data{i} = this.groupData{i}.getEpochData(epochs, labels, ...
-        summaryFlag);
+    data{i} = this.groupData{i}.getEpochData(epochs, labels, summaryFlag);
     allSameSize = allSameSize && N == size(data{i}, 3);
 end
 % If all groups are same size, catting into a matrix for easier
