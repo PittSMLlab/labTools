@@ -45,28 +45,40 @@ classdef strideData < processedLabData
 
     %% Constructor
     methods
-        function this=strideData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG)
-            if nargin<11
-                markerData=[];
-                EMGData=[];
-                GRFData=[];
-                beltSpeedSetData=[];
-                beltSpeedReadData=[];
-                accData=[];
-                EEGData=[];
-                footSwitches=[];
-                events=[];
-                procEMG=[];
+        function this = strideData(metaData, markerData, EMGData, ...
+                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+                EEGData, footSwitches, events, procEMG)
+            %strideData  Constructor for strideData class
+            %
+            %   All arguments validated for proper type. metaData must
+            %   be strideMetaData or derivedMetaData.
+
+            if nargin < 11
+                markerData = [];
+                EMGData = [];
+                GRFData = [];
+                beltSpeedSetData = [];
+                beltSpeedReadData = [];
+                accData = [];
+                EEGData = [];
+                footSwitches = [];
+                events = [];
+                procEMG = [];
             end
-            %Check that metaData is a srideMetaData
-            if ~isa(metaData,'strideMetaData') && ~isa(metaData,'derivedMetaData')
-                ME=MException('strideData:Constructor','metaData is not of a strideMetaData object.');
-                throw(ME)
+            % Check that metaData is a srideMetaData
+            if ~isa(metaData, 'strideMetaData') && ...
+                    ~isa(metaData, 'derivedMetaData')
+                ME = MException('strideData:Constructor', ...
+                    'metaData is not of a strideMetaData object.');
+                throw(ME);
             end
-            this@processedLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,events,procEMG);
-            %Check that events are consistent or label the stride as 'bad'
+            this@processedLabData(metaData, markerData, EMGData, ...
+                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+                EEGData, footSwitches, events, procEMG);
+            % Check that events are consistent or label the stride as 'bad'
             if ~isempty(events) && this.isBad
-                warning('strideData:Constructor','Events are not consistent with a single stride.')
+                warning('strideData:Constructor', ...
+                    'Events are not consistent with a single stride.');
             end
         end
 
