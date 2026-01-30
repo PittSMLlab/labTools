@@ -28,20 +28,17 @@ function processedData = process(this, subData, eventClass)
 
 % To all coders: this function HAS TO BE idempotent, ie:
 % labData.process.process = labData.process
-% Otherwise re-processing data may lead to double or triple
-% filtering.
+% Otherwise, re-processing data may lead to double or triple filtering.
 if nargin < 3 || isempty(eventClass)
     eventClass = [];
 end
 
-
-% 1) Extract amplitude from emg data if present
+% 1) Extract amplitude from EMG data if present
 spikeRemovalFlag = 0;
-[procEMGData, filteredEMGData] = processEMG(this, ...
-    spikeRemovalFlag);
+[procEMGData, filteredEMGData] = processEMG(this, spikeRemovalFlag);
 
-% 2) Attempt to interpolate marker data if there is missing
-% data (make into function once we have a method to do this)
+% 2) Attempt to interpolate marker data if there is missing data (make into
+% function once we have a method to do this)
 markers = this.markerData;
 if ~isempty(markers)
     % function goes here: check marker data health
@@ -52,35 +49,30 @@ angleData = calcLimbAngles(this);
 
 % 4) Calculate events from kinematics or force if available
 % Last argument is the perceptual task flag
-events = getEvents(this, angleData, ...
-    this.metaData.perceptualTasks);
+events = getEvents(this, angleData, this.metaData.perceptualTasks);
 
-% 5) If 'beltSpeedReadData' is empty, try to generate it
-% from foot markers, if existent
+% 5) If 'beltSpeedReadData' is empty, try to generate it from foot markers,
+% if existent
 if isempty(this.beltSpeedReadData)
     this.beltSpeedReadData = ...
         getBeltSpeedsFromFootMarkers(this, events);
 end
 
 % 6) Get COP, COM and joint torque data.
-[jointMomentsData, ~, COMData] = ...
-    this.computeTorques(subData.weight);
+[jointMomentsData, ~, COMData] = this.computeTorques(subData.weight);
 % Replacing COPData with alternative computation
 COPData = this.computeCOPAlt;
 % COMDATA = this.CarlysCOMData; % CJS: you should do this!
 
 % 7) Generate processedTrial object
-processedData = processedTrialData(this.metaData, ...
-    this.markerData, filteredEMGData, this.GRFData, ...
-    this.beltSpeedSetData, this.beltSpeedReadData, ...
-    this.accData, this.EEGData, this.footSwitchData, events, ...
-    procEMGData, angleData, COPData, COMData, ...
-    jointMomentsData, this.HreflexPin);
+processedData = processedTrialData(this.metaData, this.markerData, ...
+    filteredEMGData, this.GRFData, this.beltSpeedSetData, ...
+    this.beltSpeedReadData, this.accData, this.EEGData, ...
+    this.footSwitchData, events, procEMGData, angleData, COPData, ...
+    COMData, jointMomentsData, this.HreflexPin);
 
-% 8) Calculate adaptation parameters - to be
-% recalculated later!!
-processedData.adaptParams = calcParameters(processedData, ...
-    subData, eventClass);
-
+% 8) Calculate adaptation parameters - to be recalculated later!!
+processedData.adaptParams = ...
+    calcParameters(processedData, subData, eventClass);
 end
 

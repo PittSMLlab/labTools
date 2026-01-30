@@ -1,4 +1,4 @@
-function [COP] = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
+function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
 %mergeHemiCOPs  Merges left and right center of pressure data
 %
 %   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
@@ -23,13 +23,11 @@ if noFilterFlag == 1
     COPL = COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
     COPR = COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
 end
-newData = bsxfun(@rdivide, (bsxfun(@times, COPL.Data, ...
-    FL(:, 3)) + bsxfun(@times, COPR.Data, FR(:, 3))), ...
-    FL(:, 3) + FR(:, 3));
-COP = orientedLabTimeSeries(newData, COPL.Time(1), ...
-    COPL.sampPeriod, ...
-    orientedLabTimeSeries.addLabelSuffix(['COP']), ...
-    COPL.orientation);
+
+newData = bsxfun(@rdivide, (bsxfun(@times, COPL.Data, FL(:, 3)) + ...
+    bsxfun(@times, COPR.Data, FR(:, 3))), FL(:, 3) + FR(:, 3));
+COP = orientedLabTimeSeries(newData, COPL.Time(1), COPL.sampPeriod, ...
+    orientedLabTimeSeries.addLabelSuffix(['COP']), COPL.orientation);
 COP = COP.cat(COPL).cat(COPR);
 end
 

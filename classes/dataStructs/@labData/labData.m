@@ -250,62 +250,11 @@ classdef labData
 
     %% Data Processing Methods
     methods
-        function processedData=process(this,subData,eventClass)
+        processedData = process(this, subData, eventClass)
 
-            %To all coders: this function HAS TO BE idempotent, ie:
-            %labData.process.process = labData.process
-            %Otherwise re-processing data may lead to double or triple
-            %filtering.
-            if nargin<3 || isempty(eventClass)
-                eventClass=[];
-            end
+        newThis = recomputeEvents(this)
 
-
-            % 1) Extract amplitude from emg data if present
-            spikeRemovalFlag=0;
-            [procEMGData,filteredEMGData] = processEMG(this,spikeRemovalFlag);
-
-            % 2) Attempt to interpolate marker data if there is missing data
-            % (make into function once we have a method to do this)
-            markers=this.markerData;
-            if ~isempty(markers)
-                %function goes here: check marker data health
-            end
-
-            % 3) Calculate limb angles
-            angleData = calcLimbAngles(this);
-
-            % 4) Calculate events from kinematics or force if available
-            events = getEvents(this,angleData,this.metaData.perceptualTasks); % Last argument is the perceptual task flag
-
-            % 5) If 'beltSpeedReadData' is empty, try to generate it
-            % from foot markers, if existent
-            if isempty(this.beltSpeedReadData)
-                this.beltSpeedReadData = getBeltSpeedsFromFootMarkers(this,events);
-            end
-
-            %6) Get COP, COM and joint torque data.
-            [jointMomentsData,~,COMData] = this.computeTorques(subData.weight);
-            COPData=this.computeCOPAlt; %Replacing COPData with alternative computation
-            %COMDATA=this.CarlysCOMData; %CJS: you should do this!
-
-            % 7) Generate processedTrial object
-            processedData=processedTrialData(this.metaData,this.markerData,filteredEMGData,this.GRFData,this.beltSpeedSetData,this.beltSpeedReadData,this.accData,this.EEGData,this.footSwitchData,events,procEMGData,angleData,COPData,COMData,jointMomentsData,this.HreflexPin);
-
-            % 8) Calculate adaptation parameters - to be
-            % recalculated later!!
-            processedData.adaptParams=calcParameters(processedData,subData,eventClass);
-
-
-
-        end
-
-        function newThis=recomputeEvents(this)
-            events = getEvents(this,this.angleData);
-            this.gaitEvents=events;
-            newThis=this;
-        end
-
+        checkMarkerDataHealth(this)
         function checkMarkerDataHealth(this)
             ts=this.markerData;
 
@@ -418,6 +367,7 @@ classdef labData
 
     %% Data Transformation Methods
     methods
+        newThis = split(this, t0, t1, newClass)
         function newThis=split(this,t0,t1,newClass) %Returns an object of the same type, unless newClass is specified (it needs to be a subclass)
             %Split the data into [t0, t1).
             %Args:
@@ -465,83 +415,22 @@ classdef labData
 
         end
 
-        function newThis=alignAllTS(this, alignmentVector)
-            error('Unimplemented')
-            newThis=[];
-        end
+        newThis = alignAllTS(this, alignmentVector)
     end
 
     %% Protected Methods
     methods (Access = protected)
-        function partialData=getPartialData(this,fieldName,labels)
-            %returns requested data
-            %
-            %inputs:
-            %fieldName -- looks for property of the instance (see top of
-            %file for list of properties)
-            %
-            %labels --
+        partialData = getPartialData(this, fieldName, labels)
 
-            if nargin<3 || isempty(labels)
-                partialData=this.(fieldName);
-            else
-                partialData=this.(fieldName).getDataAsVector(labels);
-            end
-        end
+        list = getLabelList(this, fieldName)
 
-        function list=getLabelList(this,fieldName)
-            list=this.(fieldName).labels;
-        end
-
-        %COP calculation as used by the ALTERNATIVE version
-        function [COP,F,M]=computeHemiCOP(this,side,noFilterFlag)
-            this=this.GRFData;
-            fcut=50;
-            %Warning: this only works if GRF data is stored here
-            warning('orientedLabTimeSeries:computeCOP','COP computation is calibrated only for GRFData obtained from the Bertec instrumented treadmill');
-            if nargin>2 && ~isempty(noFilterFlag) && noFilterFlag==1
-                F=squeeze(this.getDataAsOTS([side 'F']).getOrientedData);
-                M=squeeze(this.getDataAsOTS([side 'M']).getOrientedData);
-            else
-                F=this.getDataAsOTS([side 'F']).medianFilter(5).substituteNaNs;
-                F=F.lowPassFilter(fcut).thresholdByChannel(-100,[side 'Fz'],1);
-                F=squeeze(F.getOrientedData);
-                M=this.getDataAsOTS([side 'M']).medianFilter(5).substituteNaNs;
-                M=M.lowPassFilter(fcut);
-                M=squeeze(M.getOrientedData);
-                F(abs(F(:,3))<100,:)=0; %Thresholding to avoid artifacts
-            end
-            %I believe this should work for all forceplates in the world:
-            %aux=bsxfun(@rdivide,cross(F,M),(sum(F.^2,2)));
-            %t=-aux(:,3)./F(:,3);
-            %COP=orientedLabTimeSeries(aux+t.*F,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
-            %This is Bertec Treadmill specific:
-            aux(:,1)=(-15*F(:,1)-M(:,2))./F(:,3);
-            aux(:,2)=(15*F(:,2)+M(:,1))./F(:,3);
-            aux(:,3)=0;
-            if strcmp(side,'R')
-                aux(:,1)=aux(:,1)-977.9; %Flipping and offsetting to match reference axis of L-forceplate
-            end
-            aux(:,2)=-aux(:,2)+1619.25; %Flipping & adding offset to match lab's reference axis sign
-            aux(:,1)=aux(:,1)+25.4; %Adding offset to lab's reference origin
-            COP=orientedLabTimeSeries(aux,this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix([side 'COP']),this.orientation);
-
-        end
+        [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)
     end
 
     %% Static Methods
     methods (Static)
-        function [COP]=mergeHemiCOPs(COPL,COPR,FL,FR,noFilterFlag)
-            if noFilterFlag==1
-                COPL=COPL.medianFilter(5).substituteNaNs.lowPassFilter(30);
-                COPR=COPR.medianFilter(5).substituteNaNs.lowPassFilter(30);
-            end
-            newData=bsxfun(@rdivide,(bsxfun(@times,COPL.Data,FL(:,3))+bsxfun(@times,COPR.Data,FR(:,3))),FL(:,3)+FR(:,3));
-            COP=orientedLabTimeSeries(newData,COPL.Time(1),COPL.sampPeriod,orientedLabTimeSeries.addLabelSuffix(['COP']),COPL.orientation);
-            COP=COP.cat(COPL).cat(COPR);
-        end
+        COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
     end
-
 
 end
 

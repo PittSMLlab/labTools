@@ -13,7 +13,7 @@ function newThis = alignAllTS(this, alignmentVector)
 %
 %   Note: This method is not yet implemented
 
-error('Unimplemented')
+error('Unimplemented');
 newThis = [];
 end
 
