@@ -1,38 +1,47 @@
 classdef labData
-    %labData    contains data collected in the lab, including kinematics,
-    %           kinetics, and EMG signals.
+    %labData  Contains data collected in the lab, including kinematics,
+    %kinetics, and EMG signals.
     %
     %labData properties:
     %   metaData - labMetaData objetct
     %   markerData - orientedLabTS with kinematic data
     %   EMGData - labTS with EMG recordings
-    %   EEGData  - labTS with EEG recordings
+    %   EEGData - labTS with EEG recordings
     %   GRFData - orientedLabTS with kinetic data
     %   accData - orientedLabTS with acceleration data
     %   beltSpeedSetData - labTS with commands sent to treadmill
     %   beltSpeedReadData - labTS with speed read from treadmill
     %   footSwitchData - labTS with data from foot switches
-    %   HreflexPin - labTS with a analog signal with a spike once in a while representing time when an
-    %               H-reflex stimulation is being delivered.
+    %   HreflexPin - labTS with analog signal with spike once in a while
+    %                representing time when H-reflex stimulation is being
+    %                delivered
     %
     %labData methods:
+    %
     %   getMarkerData - accessor method for marker data
     %   getMarkerList - returns a list of marker labels
     %   getEMGData - accessor for EMG data
     %   getEMGList - returns a list of EMG labels
-    %   getEEGData - accessor
-    %   getEEGList - reutrns list of labels
+    %   getEEGData - accessor for EEG data
+    %   getEEGList - returns list of EEG labels
     %   getGRFList - returns list of force labels
     %   getForce - accessor for forces (from GRFData)
     %   getMoment - accessor for moments (from GRFData)
     %   getBeltSpeed - accessor for beltSpeedReadData
-    %   PROCESS - processes raw data to find angles, events, and adaptation
-    %   parameters and to clean up EMG and marker data. Returns a
-    %   processedTrialData object
-    %   split - returns ?
+    %   computeCOP - computes center of pressure from GRF data
+    %   computeCOM - computes center of mass from marker data
+    %   computeCOPAlt - alternative COP computation method
+    %   computeTorques - computes joint torques from kinematics and
+    %                    kinetics
+    %   estimateSubjectBodyWeight - estimates subject weight from GRF data
+    %   process - processes raw data to find angles, events, and adaptation
+    %             parameters. Returns processedTrialData object
+    %   recomputeEvents - re-calculates gait events from angle data
+    %   checkMarkerDataHealth - diagnoses issues with marker data
+    %   split - splits data into time-delimited segments
+    %   alignAllTS - aligns all time series data (unimplemented)
     %
     %See also: labMetaData, orientedLabTimeSeries, labTimeSeries
-
 
     %% Properties
     properties % (SetAccess = private)
