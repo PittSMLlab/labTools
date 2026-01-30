@@ -63,52 +63,93 @@ classdef experimentMetaData
 
     %% Constructor
     methods
-        function this=experimentMetaData(ID,date,experimenter,obs,conds,desc,trialLst,Ntrials,SchenleyPlace,PerceptualTasks,datlog)
-            this.ID=ID;
-            if nargin>1
-                this.date=date;
+        function this = experimentMetaData(ID, date, experimenter, obs, ...
+                conds, desc, trialLst, Ntrials, SchenleyPlace, ...
+                PerceptualTasks, datlog)
+            %experimentMetaData  Constructor for experimentMetaData class
+            %
+            %   this = experimentMetaData(ID) creates an experiment metadata
+            %   object with the specified subject ID
+            %
+            %   this = experimentMetaData(ID, date, experimenter, obs,
+            %   conds, desc, trialLst, Ntrials, SchenleyPlace,
+            %   PerceptualTasks, datlog) creates an experiment metadata
+            %   object with all specified parameters
+            %
+            %   Inputs:
+            %       ID - subject identifier string
+            %       date - labDate object (optional)
+            %       experimenter - experimenter name/initials (optional)
+            %       obs - general observations (optional)
+            %       conds - cell array of condition names (optional)
+            %       desc - cell array of condition descriptions (optional)
+            %       trialLst - cell array of trial numbers per condition
+            %                  (optional)
+            %       Ntrials - total number of trials (optional)
+            %       SchenleyPlace - Schenley Place lab flag (optional)
+            %       PerceptualTasks - perceptual tasks flag (optional)
+            %       datlog - data log structure (optional)
+            %
+            %   Outputs:
+            %       this - experimentMetaData object
+            %
+            %   Note: Constructor validates that condition names are unique
+            %         and that trials are not interleaved between
+            %         conditions
+            %
+            %   See also: trialMetaData, labDate
+
+            this.ID = ID;
+            if nargin > 1
+                this.date = date;
             end
-            if nargin>2
-                this.experimenter=experimenter;
+            if nargin > 2
+                this.experimenter = experimenter;
             end
-            if nargin>3
-                this.observations=obs;
+            if nargin > 3
+                this.observations = obs;
             end
-            if nargin>4
-                if length(unique(conds))<length(conds)
-                    error('ExperimentMetaData:Constructor','There are repeated condition names, which is not allowed')
-                elseif sum(cellfun(@(x) ~isempty(strfind(x,'TM base')),conds))>1 || sum(cellfun(@(x) ~isempty(strfind(x,'OG base')),conds))>1
-                    error('ExperimentMetaData:Constructor','More than one condition name contains the string ''TM base'' or ''OG base'' which is not allowed.')
+            if nargin > 4
+                if length(unique(conds)) < length(conds)
+                    error('ExperimentMetaData:Constructor', ...
+                        ['There are repeated condition names, which is '...
+                        'not allowed']);
+                elseif sum(cellfun(@(x) ~isempty(strfind(x, ...
+                        'TM base')), conds)) > 1 || ...
+                        sum(cellfun(@(x) ~isempty(strfind(x, ...
+                        'OG base')), conds)) > 1
+                    error('ExperimentMetaData:Constructor', ...
+                        ['More than one condition name contains the ' ...
+                        'string ''TM base'' or ''OG base'' which is ' ...
+                        'not allowed.']);
                 else
-                    this.conditionName=conds;
+                    this.conditionName = conds;
                 end
             end
-            if nargin>5
-                this.conditionDescription=desc;
+            if nargin > 5
+                this.conditionDescription = desc;
             end
-            if nargin>6
-                this.trialsInCondition=trialLst;
+            if nargin > 6
+                this.trialsInCondition = trialLst;
             end
-            if nargin>7
-                this.Ntrials=Ntrials;
+            if nargin > 7
+                this.Ntrials = Ntrials;
             end
-
-            if nargin>8
+            if nargin > 8
                 this.SchenleyPlace = SchenleyPlace;
             end
-
-            if nargin>9
+            if nargin > 9
                 this.PerceptualTasks = PerceptualTasks;
             end
-
-            if nargin>10
+            if nargin > 10
                 this.datlog = datlog;
             end
 
-            %Check that conditions do not include interleaved or repeated trials:
-            [conditionOrder]=this.validateTrialsInCondition;
-            %Sort conditions according to trial numbers:
-            this=this.sortConditions;
+            % Check that conditions do not include interleaved or
+            % repeated trials:
+            conditionOrder = this.validateTrialsInCondition;
+            % Sort conditions according to trial numbers:
+            this = this.sortConditions;
         end
     end
 
