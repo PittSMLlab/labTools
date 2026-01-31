@@ -48,21 +48,22 @@ classdef experimentData
     %See also: experimentMetaData, subjectData, labData,
     %          adaptationData
 
+    %% Properties
     properties
-        metaData % field that contains information from the experiment. Has to be an experimentMetaData object
-        subData %subjectData type
-        data %cell array of labData type (or its subclasses: rawLabData, processedLabData, strideData), containing data from each trial/ experiment block
+        metaData % experimentMetaData object with experiment info
+        subData % subjectData object
+        data % cell array of labData or subclass objects
     end
 
     properties (Dependent)
-        isRaw %true if data is an object of the rawLabData class
-        isProcessed %true if data is an object of the processedLabData class
-        isStepped %or strided
+        isRaw % true if data is rawLabData class
+        isProcessed % true if data is processedLabData class
+        isStepped % true if data is strideData class (or strided)
         fastLeg
     end
 
+    %% Constructor
     methods
-        %% Constructor
         function this=experimentData(meta,sub,data)
             %inputs are metaData, subData, and rawTrialData
 
@@ -76,8 +77,10 @@ classdef experimentData
                 this.data=data;
             end
         end
+    end
 
-        %% Setters for class properties
+    %% Property Setters
+    methods
         function this=set.metaData(this,meta)
             %define or re-define metaData for this experiment
             %
@@ -118,8 +121,10 @@ classdef experimentData
                 throw(ME);
             end
         end
+    end
 
-        %% Getters for Dependent properties
+    %% Dependent Property Getters
+    methods
         function a=get.isProcessed(this)
             %Returns true if the trials have been processed (i.e. parameters have been calculated through ladData.process()), and false if
             %they contain only rawData.
@@ -195,7 +200,10 @@ classdef experimentData
                 error('experimentData:fastLeg','No data to compute fastest leg, try using expData.getRefLeg which reads from each trial''s metaData.');
             end
         end
+    end
 
+    %% Subject Information Methods
+    methods
         function ageInMonths=getSubjectAgeAtExperimentDate(this)
             if ~isempty(this.subData.age)
                 ageInMonths=this.subData.age*12; %In months
@@ -208,7 +216,10 @@ classdef experimentData
                 error('expData:subjectDOB','Could not establish subject age at experiment time.')
             end
         end
+    end
 
+    %% Leg Identification Methods
+    methods
         function slowLeg=getSlowLeg(this)
             %determine which leg is the slow leg, simply the opposite of
             %the fast leg, be sure to call get.fastLeg() first
@@ -254,8 +265,10 @@ classdef experimentData
                 fL='R';
             end
         end
+    end
 
-        %% processing
+    %% Data Processing Methods
+    methods
         function processedThis=process(this,eventClass)
 
             if nargin<2 || isempty(eventClass)
@@ -362,7 +375,10 @@ classdef experimentData
                 end
             end
         end
+    end
 
+    %% Data Reduction and Object Creation
+    methods
         function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
             %MAKEDATAOBJ  creates an object of the adaptationData class.
             %   adaptData=expData.makeDataObj(filename,experimentalFlag)
@@ -418,8 +434,10 @@ classdef experimentData
             end
             reducedThis=experimentData(this.metaData,this.subData,redData);
         end
+    end
 
-
+    %% Visualization Methods
+    methods
         %% Display
         %HH: I don't like either of these functions. They take way too long
         %to run, and at the time being they assume that if a field isn't a
@@ -464,8 +482,10 @@ classdef experimentData
                 h=adaptDataObject.plotParamTimeCourse(field);
             end
         end
+    end
 
-        %% Update/modify
+    %% Parameter and Event Methods
+    methods
         function this=recomputeParameters(this,eventClass,initEventSide,parameterClasses)
             %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
             %objects in experimentData.data.
@@ -526,7 +546,10 @@ classdef experimentData
                 this.data{t}=recomputeEvents(this.data{t}); %This recomputes events AND recomputes parameters (otherwise parameters will not correspond to the new events)
             end
         end
+    end
 
+    %% Stride Analysis Methods
+    methods
         function stridedExp=splitIntoStrides(this,refEvent)
             %This might not be used?
             if ~this.isStepped && this.isProcessed
@@ -609,8 +632,10 @@ classdef experimentData
                 %originalDurations=[originalDurations; originalDurations1];
             end
         end
+    end
 
-        %% Auxiliar
+    %% Auxiliary Methods
+    methods
         function conditionIdxs=getConditionIdxsFromName(this,conditionNames)
             %Looks for condition names that are similar to the ones given
             %in conditionNames and returns the corresponding condition idx
@@ -636,7 +661,9 @@ classdef experimentData
             end
         end
     end
-    methods (Hidden=true, Access=private)
+
+    %% Private Methods
+    methods (Hidden = true, Access = private)
         function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
             %This function may not be compatible with certain methods of the
             %adaptationData class
@@ -682,6 +709,8 @@ classdef experimentData
             end
         end
     end
+
+    %% Static Methods
     methods (Static)
         function this=loadobj(this)
             if ~isempty(this.subData.dateOfBirth)
@@ -693,4 +722,6 @@ classdef experimentData
             end
         end
     end
+
 end
+
