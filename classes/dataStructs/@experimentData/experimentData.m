@@ -1,31 +1,52 @@
 classdef experimentData
     %experimentData  Contains all information for a single experiment
     %
+    %   experimentData organizes all data, metadata, and subject
+    %   information for a complete experimental session. It provides
+    %   methods for data processing, analysis, visualization, and
+    %   parameter extraction.
+    %
     %experimentData properties:
-    %   metaData - experimentMetaData object
-    %   subData - subjectData object
-    %   data - cell array of labData objects or any objects which extend
-    %          labData
-    %   isRaw - returns true if data is an object of the rawLabData class
-    %   isProcessed - returns true if data is an object of the processedLabData class
-    %   isStepped - returns true if data is an object of the strideData class
-    %   fastLeg - computes which blet ('L' or 'R') was the fast belt
+    %   metaData - experimentMetaData object containing experimental
+    %              conditions and trial organization
+    %   subData - subjectData object containing subject demographics
+    %             and anthropometrics
+    %   data - cell array of labData objects or any objects which
+    %          extend labData
+    %   isRaw - returns true if data is rawLabData class (dependent)
+    %   isProcessed - returns true if data is processedLabData class
+    %                 (dependent)
+    %   isStepped - returns true if data is strideData class
+    %               (dependent)
+    %   fastLeg - computes which belt ('L' or 'R') was the fast belt
+    %             (dependent)
     %
-    %experimentData Methods:
+    %experimentData methods:
+    %   getSubjectAgeAtExperimentDate - computes subject age at
+    %                                   experiment time
     %   getSlowLeg - returns leg that was on the slow belt
-    %   getRefLeg - returns refrence leg for parameter computations
-    %   process - creates a new experimentData object with data property
-    %   being a cell of processedLabData objects
+    %   getRefLeg - returns reference leg for parameter computations
+    %   getNonRefLeg - returns non-reference leg
+    %   process - processes raw data for all trials
+    %   extractMarkerModels - builds marker position models from data
+    %   checkMarkerHealth - validates marker data quality
+    %   computeAngles - calculates joint angles for all trials
     %   makeDataObj - creates an adaptationData object
-    %   parameterEvolutionPlot -
-    %   parameterTimeCourse -
-    %   recomputeParameters -
-    %   splitIntoStrides -
-    %   getStridedField -
-    %   getAlignedField -
-    %   getConditionIdxsFromName -
+    %   reduce - creates reducedLabData for all trials
+    %   parameterEvolutionPlot - plots parameter evolution
+    %   parameterTimeCourse - plots parameter time course
+    %   recomputeParameters - recalculates adaptation parameters
+    %   flushAndRecomputeParameters - completely recalculates
+    %                                 parameters
+    %   recomputeEvents - recalculates gait events and parameters
+    %   splitIntoStrides - separates trials into individual strides
+    %   getStridedField - extracts strided field data
+    %   getAlignedField - extracts time-aligned field data
+    %   getConditionIdxsFromName - gets condition indices from names
+    %   getStrideInfo - returns stride timing information
     %
-    %See also: experimentMetaData, subjectData, labData
+    %See also: experimentMetaData, subjectData, labData,
+    %          adaptationData
 
     properties
         metaData % field that contains information from the experiment. Has to be an experimentMetaData object
@@ -45,15 +66,15 @@ classdef experimentData
         function this=experimentData(meta,sub,data)
             %inputs are metaData, subData, and rawTrialData
 
-           if nargin>0
-               this.metaData=meta;
-           end
-           if nargin>1
-               this.subData=sub;
-           end
-           if nargin>2
-               this.data=data;
-           end
+            if nargin>0
+                this.metaData=meta;
+            end
+            if nargin>1
+                this.subData=sub;
+            end
+            if nargin>2
+                this.data=data;
+            end
         end
 
         %% Setters for class properties
@@ -62,21 +83,21 @@ classdef experimentData
             %
             %INPUT: metaData object
             if isa(meta,'experimentMetaData')
-               this.metaData=meta;
-           else
-               ME=MException('experimentData:Constructor','Experiment metaData is not an experimentMetaData type object.');
-               throw(ME);
-           end
+                this.metaData=meta;
+            else
+                ME=MException('experimentData:Constructor','Experiment metaData is not an experimentMetaData type object.');
+                throw(ME);
+            end
         end
         function this=set.subData(this,sub)
             %define or re-define subjectData
             %
             %INPUT: subjectData object
             if isa(sub,'subjectData')
-               this.subData=sub;
-           else
-               ME=MException('experimentData:Constructor','Subject data is not a subjectData type object.');
-               throw(ME);
+                this.subData=sub;
+            else
+                ME=MException('experimentData:Constructor','Subject data is not a subjectData type object.');
+                throw(ME);
             end
         end
         function this=set.data(this,data)
@@ -84,17 +105,17 @@ classdef experimentData
             %
             %INPUT: labData object or one of its subclasses
             if isa(data,'cell')  % Has to be array of labData type cells.
-               aux=find(cellfun('isempty',data)~=1);
-               for i=1:length(aux)
-                   if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
-                       ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
-                       throw(ME);
-                   end
-               end
-               this.data=data;
-           else
-               ME=MException('experimentData:Constructor','Data is not a cell array.');
-               throw(ME);
+                aux=find(cellfun('isempty',data)~=1);
+                for i=1:length(aux)
+                    if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
+                        ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
+                        throw(ME);
+                    end
+                end
+                this.data=data;
+            else
+                ME=MException('experimentData:Constructor','Data is not a cell array.');
+                throw(ME);
             end
         end
 
@@ -110,9 +131,9 @@ classdef experimentData
             idx=find(aux~=1); %Not empty
             a=true;
             for i=idx
-               if ~isa(this.data{i},'processedLabData')
-                   a=false;
-               end
+                if ~isa(this.data{i},'processedLabData')
+                    a=false;
+                end
             end
         end
 
@@ -208,20 +229,20 @@ classdef experimentData
             %
             %returns 'R' or 'L'
             refLeg={};
-           for i=1:length(this.data)%Going over trials
-               if ~isempty(this.data{i})
-               refLeg{i}=this.data{i}.metaData.refLeg;
-               end
-           end
-           Rvotes=sum(strcmp(refLeg,'R'));
-           Lvotes=sum(strcmp(refLeg,'L'));
-           if Rvotes>Lvotes
-               refLeg='R';
-           elseif Rvotes<Lvotes
-               refLeg='L';
-           else
-               error('experimentData:getRefLeg','Could not determine unique reference leg');
-           end
+            for i=1:length(this.data)%Going over trials
+                if ~isempty(this.data{i})
+                    refLeg{i}=this.data{i}.metaData.refLeg;
+                end
+            end
+            Rvotes=sum(strcmp(refLeg,'R'));
+            Lvotes=sum(strcmp(refLeg,'L'));
+            if Rvotes>Lvotes
+                refLeg='R';
+            elseif Rvotes<Lvotes
+                refLeg='L';
+            else
+                error('experimentData:getRefLeg','Could not determine unique reference leg');
+            end
         end
 
         function fL=getNonRefLeg(this)
@@ -237,30 +258,30 @@ classdef experimentData
         %% processing
         function processedThis=process(this,eventClass)
 
-        if nargin<2 || isempty(eventClass)
-            eventClass=[];
-        end
-        %process  process full experiment
-        %
-        %Returns a new experimentData object with same metaData, subData and processed (trial) data.
-        %This is done by iterating through data (trials) and
-        %processing each by using labData.process
-        %ex: expData=rawExpData.process
-        %
-        %INPUTS:
-        %this: experimentData object
-        %
-        %OUTPUTS:
-        %processedThis: experimentData object with processed data
-        %
-        %See also: labData
+            if nargin<2 || isempty(eventClass)
+                eventClass=[];
+            end
+            %process  process full experiment
+            %
+            %Returns a new experimentData object with same metaData, subData and processed (trial) data.
+            %This is done by iterating through data (trials) and
+            %processing each by using labData.process
+            %ex: expData=rawExpData.process
+            %
+            %INPUTS:
+            %this: experimentData object
+            %
+            %OUTPUTS:
+            %processedThis: experimentData object with processed data
+            %
+            %See also: labData
 
             for trial=1:length(this.data)
                 disp(['Processing trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
                     procData{trial}=this.data{trial}.process(this.subData,eventClass);
                 else
-                   procData{trial}=[];
+                    procData{trial}=[];
                 end
             end
             %this=checkMarkerHealth(this);
@@ -297,8 +318,8 @@ classdef experimentData
                 modelScore(badFlag)=Inf;
                 [~,refTrial]=nanmin(modelScore);
             elseif all(badFlag) %Undefined refTrial but all trials are bad
-                 warning('Could not find suitable data for model training. Not testing for outliers.')
-                 noOutlierTest=true; %This flag prevents the testing for outliers later on.
+                warning('Could not find suitable data for model training. Not testing for outliers.')
+                noOutlierTest=true; %This flag prevents the testing for outliers later on.
             end
             try %If there is a model
                 mm=allTrialModels{refTrial};
@@ -331,7 +352,7 @@ classdef experimentData
         end
 
 
-         function this=computeAngles(this)%added by Digna
+        function this=computeAngles(this)%added by Digna
             for trial=1:length(this.data)
                 disp(['Computing angles for trial ' num2str(trial) '...'])
                 if ~isempty(this.data{trial})
@@ -340,31 +361,31 @@ classdef experimentData
 
                 end
             end
-       end
+        end
 
-		function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
-        %MAKEDATAOBJ  creates an object of the adaptationData class.
-        %   adaptData=expData.makeDataObj(filename,experimentalFlag)
-        %
-        %INPUTS:
-        %this: experimentData object
-        %filename: string (typically subject identifier)
-        %experimentalFlag: boolean - false (or 0) prevents experimental
-        %parameter calculation and inclusion
-        %
-        %OUTPUTS:
-        %adptData: object if the adaptationData class, which is
-        %saved to present working directory if a filename is specified.
-        %
-        %   Examples:
-        %
-        %   adaptData=expData.makeDataObj('Sub01') saves adaptationData
-        %   object to Sub01params.mat
-        %
-        %   adaptData=expData.makeDataObj('',false) does not include
-        %   experimentalParams in adaptData object and does not save to file
-        %
-        %See also: adaptationData, paramData
+        function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
+            %MAKEDATAOBJ  creates an object of the adaptationData class.
+            %   adaptData=expData.makeDataObj(filename,experimentalFlag)
+            %
+            %INPUTS:
+            %this: experimentData object
+            %filename: string (typically subject identifier)
+            %experimentalFlag: boolean - false (or 0) prevents experimental
+            %parameter calculation and inclusion
+            %
+            %OUTPUTS:
+            %adptData: object if the adaptationData class, which is
+            %saved to present working directory if a filename is specified.
+            %
+            %   Examples:
+            %
+            %   adaptData=expData.makeDataObj('Sub01') saves adaptationData
+            %   object to Sub01params.mat
+            %
+            %   adaptData=expData.makeDataObj('',false) does not include
+            %   experimentalParams in adaptData object and does not save to file
+            %
+            %See also: adaptationData, paramData
             if ~(this.isProcessed)
                 ME=MException('experimentData:makeDataObj','Cannot create an adaptationData object from unprocessed data!');
                 throw(ME);
@@ -446,15 +467,15 @@ classdef experimentData
 
         %% Update/modify
         function this=recomputeParameters(this,eventClass,initEventSide,parameterClasses)
-        %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
-        %objects in experimentData.data.
-        %
-        %   Example: if expData is an object of the experimentalData class,
-        %       expData=expData.recomputeParameters
-        %   will recompute expData.data{i}.adaptParams for all i where
-        %   i is a trial of the experiment
-        %
-        %   See also: parameterSeries
+            %RECOMPUTEPARAMETERS recomputes adaptParams for all labData
+            %objects in experimentData.data.
+            %
+            %   Example: if expData is an object of the experimentalData class,
+            %       expData=expData.recomputeParameters
+            %   will recompute expData.data{i}.adaptParams for all i where
+            %   i is a trial of the experiment
+            %
+            %   See also: parameterSeries
             if nargin<2 || isempty(eventClass)
                 eventClass=[];
             end
@@ -466,24 +487,24 @@ classdef experimentData
             end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses);
-                  this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
+                newParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,parameterClasses);
+                this.data{t}.adaptParams=this.data{t}.adaptParams.replaceParams(newParams);
             end
         end
 
         function this=flushAndRecomputeParameters(this,eventClass,initEventSide)
-        %FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
-        %objects in experimentData.data
-        %Different from recomputeParameters() it throws away the previously
-        %existing parameters [recompute only substitutes IF there are name
-        %collisions, so it allows for recomputing only force or EMG params]
-        %
-        %   Example: if expData is an object of the experimentalData class,
-        %       expData=expData.recomputeParameters
-        %   will recompute expData.data{i}.adaptParams for all i where
-        %   i is a trial of the experiment
-        %
-        %   See also: parameterSeries
+            %FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
+            %objects in experimentData.data
+            %Different from recomputeParameters() it throws away the previously
+            %existing parameters [recompute only substitutes IF there are name
+            %collisions, so it allows for recomputing only force or EMG params]
+            %
+            %   Example: if expData is an object of the experimentalData class,
+            %       expData=expData.recomputeParameters
+            %   will recompute expData.data{i}.adaptParams for all i where
+            %   i is a trial of the experiment
+            %
+            %   See also: parameterSeries
             if nargin<2 || isempty(eventClass)
                 eventClass=[];
             end
@@ -492,22 +513,22 @@ classdef experimentData
             end
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,[]);
+                this.data{t}.adaptParams=calcParameters(this.data{t},this.subData,eventClass,initEventSide,[]);
             end
         end
 
         function this=recomputeEvents(this,eventClass,initEventSide)
-        %RECOMPUTEEVENTS recomputes events AND parameters for all trials,
-        %with default options.
-        %See also: processedLabData.recomputeEvents
+            %RECOMPUTEEVENTS recomputes events AND parameters for all trials,
+            %with default options.
+            %See also: processedLabData.recomputeEvents
             trials=cell2mat(this.metaData.trialsInCondition);
             for t=trials
-                  this.data{t}=recomputeEvents(this.data{t}); %This recomputes events AND recomputes parameters (otherwise parameters will not correspond to the new events)
+                this.data{t}=recomputeEvents(this.data{t}); %This recomputes events AND recomputes parameters (otherwise parameters will not correspond to the new events)
             end
         end
 
         function stridedExp=splitIntoStrides(this,refEvent)
-        %This might not be used?
+            %This might not be used?
             if ~this.isStepped && this.isProcessed
                 for trial=1:length(this.data)
                     disp(['Splitting trial ' num2str(trial) '...'])
@@ -535,58 +556,58 @@ classdef experimentData
             if nargin<4 || isempty(events)
                 events=[this.getSlowLeg 'HS'];
             end
-           if nargin<3 || isempty(conditions)
-               trials=cell2mat(this.metaData.trialsInCondition);
-           else
-               if ~isa(conditions,'double') %If conditions are given by name, and not by index
-                   conditions=getConditionIdxsFromName(this,conditions);
-               end
-               trials=cell2mat(this.metaData.trialsInCondition(conditions));
-           end
-           stridedField={};
-           bad=[];
-           originalInitTime=[];
-           originalTrial=[];
-           for i=trials
-              %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
-              [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
-              stridedField=[stridedField; aux];
-              bad=[bad; bad1];
-              originalTrial=[originalTrial; i*ones(size(bad1))];
-              originalInitTime=[originalInitTime; initTime1];
-           end
+            if nargin<3 || isempty(conditions)
+                trials=cell2mat(this.metaData.trialsInCondition);
+            else
+                if ~isa(conditions,'double') %If conditions are given by name, and not by index
+                    conditions=getConditionIdxsFromName(this,conditions);
+                end
+                trials=cell2mat(this.metaData.trialsInCondition(conditions));
+            end
+            stridedField={};
+            bad=[];
+            originalInitTime=[];
+            originalTrial=[];
+            for i=trials
+                %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+                [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
+                stridedField=[stridedField; aux];
+                bad=[bad; bad1];
+                originalTrial=[originalTrial; i*ones(size(bad1))];
+                originalInitTime=[originalInitTime; initTime1];
+            end
         end
 
         function [alignedField,originalTrial,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
-           if nargin<4 || isempty(events)
-               events=[this.getSlowLeg 'HS'];
-           end
-           if nargin<3 || isempty(conditions)
-               trials=cell2mat(this.metaData.trialsInCondition);
-           else
-               if ~isa(conditions,'double') %If conditions are given by name, and not by index
-                   conditions=getConditionIdxsFromName(this,conditions);
-               end
-               trials=cell2mat(this.metaData.trialsInCondition(conditions));
-           end
-           bad=[];
-           originalInitTime=[];
-           originalTrial=[];
-           originalDurations=[];
-           for i=trials %Trials in condition
-              %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
-              [alignedField1,bad1]=this.data{i}.getAlignedField(field,events,alignmentLengths);
-              if i==trials(1)
-                  alignedField=alignedField1;
-              else
-                  force=false;
-                  alignedField=alignedField.cat(alignedField1,[],force);
-              end
-              bad=[bad; bad1];
-              originalTrial=[originalTrial; i*ones(size(bad1))];
-              %originalInitTime=[originalInitTime; initTime1];
-              %originalDurations=[originalDurations; originalDurations1];
-           end
+            if nargin<4 || isempty(events)
+                events=[this.getSlowLeg 'HS'];
+            end
+            if nargin<3 || isempty(conditions)
+                trials=cell2mat(this.metaData.trialsInCondition);
+            else
+                if ~isa(conditions,'double') %If conditions are given by name, and not by index
+                    conditions=getConditionIdxsFromName(this,conditions);
+                end
+                trials=cell2mat(this.metaData.trialsInCondition(conditions));
+            end
+            bad=[];
+            originalInitTime=[];
+            originalTrial=[];
+            originalDurations=[];
+            for i=trials %Trials in condition
+                %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
+                [alignedField1,bad1]=this.data{i}.getAlignedField(field,events,alignmentLengths);
+                if i==trials(1)
+                    alignedField=alignedField1;
+                else
+                    force=false;
+                    alignedField=alignedField.cat(alignedField1,[],force);
+                end
+                bad=[bad; bad1];
+                originalTrial=[originalTrial; i*ones(size(bad1))];
+                %originalInitTime=[originalInitTime; initTime1];
+                %originalDurations=[originalDurations; originalDurations1];
+            end
         end
 
         %% Auxiliar
@@ -606,17 +627,17 @@ classdef experimentData
             trials=[];
             for t=1:length(this.data)
                 if ~isempty(this.data{t})
-                [numStrides_,initTimes_,endTimes_]=getStrideInfo(this.data{t},eventClass);
-                numStrides=numStrides+numStrides_;
-                initTimes=[initTimes;initTimes_];
-                endTimes=[endTimes;endTimes_];
-                trials=[trials;t*ones(numStrides_,1)];
+                    [numStrides_,initTimes_,endTimes_]=getStrideInfo(this.data{t},eventClass);
+                    numStrides=numStrides+numStrides_;
+                    initTimes=[initTimes;initTimes_];
+                    endTimes=[endTimes;endTimes_];
+                    trials=[trials;t*ones(numStrides_,1)];
                 end
             end
         end
     end
-	methods (Hidden=true, Access=private)
-		function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
+    methods (Hidden=true, Access=private)
+        function adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag)
             %This function may not be compatible with certain methods of the
             %adaptationData class
 
