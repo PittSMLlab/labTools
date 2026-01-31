@@ -21,10 +21,8 @@ function condNames = getConditionsThatMatch(this, name, type)
 %
 %   See also: getConditionsThatMatchV2, getConditionIdxsFromName
 
-% Returns condition names that match certain patterns
-
 if nargin < 2 || isempty(name) || ~isa(name, 'char')
-    error('Pattern name to search for needs to be a string')
+    error('Pattern name to search for needs to be a string');
 end
 
 ccNames = this.conditionName;

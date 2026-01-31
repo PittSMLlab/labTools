@@ -21,11 +21,8 @@ function condNames = getConditionsThatMatchV2(this, name, type)
 %
 %   See also: getConditionsThatMatch, getConditionIdxsFromName
 
-% Returns condition names that match certain patterns, but when its
-% empty it will look for a "training" or "TR" base condition
-
 if nargin < 2 || isempty(name) || ~isa(name, 'char')
-    error('Pattern name to search for needs to be a string')
+    error('Pattern name to search for needs to be a string');
 end
 
 ccNames = this.conditionName;
@@ -48,7 +45,6 @@ if nargin > 2 && ~isempty(type) && isa(type, 'char')
 else
     typeMatches = true(size(patternMatches));
 end
-
 % patternMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(name))));
 % if nargin > 2 && ~isempty(type) && isa(type, 'char')
 %     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(this.conditionName), lower(type))));
@@ -64,7 +60,6 @@ if isempty(condNames) && strcmp(type, 'NIM') || ...
     typeMatches = cellfun(@(x) ~isempty(x), (strfind(lower(ccNames), ...
         lower('TR'))));
     condNames = this.conditionName(patternMatches & typeMatches);
-
 end
 end
 

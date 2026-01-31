@@ -27,29 +27,24 @@ function conditionIdxs = getConditionIdxsFromName(this, ...
 %
 %   See also: getTrialsInCondition, getConditionsThatMatch
 
-% Looks for condition names that are similar to the ones given in
-% conditionNames and returns the corresponding condition idx
-%
-% Inputs:
-% ConditionNames -- cell array containing a string or another cell
-% array of strings in each of its cells.
-% E.g. conditionNames = {'Base', 'Adap', {'Post', 'wash'}}
 if nargin < 3 || isempty(exactMatchesOnlyFlag)
     % Default behavior accepts partial matches
     exactMatchesOnlyFlag = 0;
 end
+
 if nargin < 4 || isempty(ignoreMissingNamesFlag)
     ignoreMissingNamesFlag = 0;
 end
+
 if isa(conditionNames, 'char')
     conditionNames = {conditionNames};
 end
+
 nConds = length(conditionNames);
 conditionIdxs = NaN(nConds, 1);
 for i = 1:nConds
-    % First: find if there is a condition with a similar name to the
-    % one given
-    clear condName
+    % First: find if there is condition with similar name to the one given
+    clear condName;
     if iscell(conditionNames{i})
         for j = 1:length(conditionNames{i})
             condName{j} = lower(conditionNames{i}{j});
@@ -68,7 +63,7 @@ for i = 1:nConds
         if isempty(matches) && exactMatchesOnlyFlag == 0
             warning(['Looking for conditions named ''' condName{j} ...
                 ''' but found no exact matches. Looking for partial ' ...
-                'matches.'])
+                'matches.']);
             matches = find(~cellfun(@isempty, strfind(allConds, ...
                 condName{j})));
         end
@@ -86,11 +81,11 @@ for i = 1:nConds
         if ~ignoreMissingNamesFlag
             error(['Looking for conditions named ''' ...
                 cell2mat(strcat(condName, ',')) ...
-                '''but found no matches, stopping.'])
+                '''but found no matches, stopping.']);
         else
             warning(['Looking for conditions named ''' ...
                 cell2mat(strcat(condName, ',')) ...
-                '''but found no matches, ignoring.'])
+                '''but found no matches, ignoring.']);
         end
     end
 end
