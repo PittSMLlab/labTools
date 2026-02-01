@@ -44,30 +44,57 @@ classdef stridedExperimentData
 
     %% Constructor
     methods
-        function this=stridedExperimentData(meta,sub,strides)
-            if isa(meta,'experimentMetaData')
-                this.metaData=meta;
+        function this = stridedExperimentData(meta, sub, strides)
+            %stridedExperimentData  Constructor for
+            %stridedExperimentData class
+            %
+            %   this = stridedExperimentData(meta, sub, strides) creates
+            %   a strided experiment data object with specified metadata,
+            %   subject data, and strided trials
+            %
+            %   Inputs:
+            %       meta - experimentMetaData object
+            %       sub - subjectData object
+            %       strides - cell array of cell arrays of strideData
+            %                 objects
+            %
+            %   Outputs:
+            %       this - stridedExperimentData object
+            %
+            %   See also: experimentData/splitIntoStrides, strideData
+
+            if isa(meta, 'experimentMetaData')
+                this.metaData = meta;
             else
-                ME=MException();
-                throw(ME)
+                ME = MException('stridedExperimentData:Constructor', ...
+                    'meta is not an experimentMetaData object.');
+                throw(ME);
             end
-            if isa(sub,'subjectData')
-                this.subData=sub;
+            if isa(sub, 'subjectData')
+                this.subData = sub;
             else
-                ME=MException();
-                throw(ME)
+                ME = MException('stridedExperimentData:Constructor', ...
+                    'sub is not a subjectData object.');
+                throw(ME);
             end
-            if isa(strides,'cell') && all( cellfun('isempty',strides) | cellisa(strides,'cell'))
-                aux=cellisa(strides,'cell');
-                idx=find(aux==1,1);
-                if all(cellisa(strides{idx},'strideData')) %Just checking whether the first non-empty cell is made of strideData objects, but should actually check them all
-                    this.stridedTrials=strides;
+            if isa(strides, 'cell') && all(cellfun('isempty', strides) |...
+                    cellisa(strides, 'cell'))
+                aux = cellisa(strides, 'cell');
+                idx = find(aux == 1, 1);
+                % Just checking whether the first non-empty cell is
+                % made of strideData objects, but should actually
+                % check them all
+                if all(cellisa(strides{idx}, 'strideData'))
+                    this.stridedTrials = strides;
                 else
-                    ME=MException();
+                    ME = MException(...
+                        'stridedExperimentData:Constructor', ...
+                        'strides must contain strideData objects.');
                     throw(ME);
                 end
             else
-                ME=MException();
+                ME = MException('stridedExperimentData:Constructor', ...
+                    'strides must be a cell array.');
                 throw(ME);
             end
         end
@@ -76,58 +103,20 @@ classdef stridedExperimentData
     %% Dependent Property Getters
     methods
         % function a = get.isTimeNormalized(this)
-        %     a = 'Who knows?'; % ToDo!
+        %     a = 'Who knows?'; % TODO!
         % end
     end
 
     %% Data Transformation Methods
     methods
-        function newThis=timeNormalize(this,N)
-            %Lstrides
-            newStrides=cell(1,length(this.stridedTrials));
-            for trial=1:length(this.stridedTrials)
-                thisTrial=this.stridedTrials{trial};
-                newTrial=cell(1,length(thisTrial));
-                for stride=1:length(thisTrial)
-                    thisStride=thisTrial{stride};
-                    newTrial{stride}=timeNormalize(thisStride,N);
-                end
-                newStrides{trial}=newTrial;
-            end
-
-            %Construct newTrial
-            newThis=stridedExperimentData(this.metaData,this.subData,newStrides);
-            newThis.isTimeNormalized=true;
-        end
+        newThis = timeNormalize(this, N)
     end
 
     %% Data Query Methods
     methods
-        function [strides]=getStridesFromCondition(this,condition)
-            strides={};
-            for trial=this.metaData.trialsInCondition{condition}
-                trialData=this.stridedTrials{trial};
-                Nsteps=length(trialData);
-                strides(end+1:end+Nsteps)=trialData;
-            end
-        end
+        strides = getStridesFromCondition(this, condition)
 
-        function structure=getDataAsMatrices(this,fields,conditions,N)
-            for cond=conditions
-                strides=this.getStridesFromCondition(cond);
-                if isa(fields,'cell')
-                    for f=1:length(fields)
-                        for s=1:length(strides)
-                            aux=strideData.cell2mat(strides,fields{f},N);
-                        end
-                        eval(['structure{cond}.' fields{f} '=aux;']);
-                    end
-                else
-                    aux=strideData.cell2mat(strides,fields,N);
-                    structure{cond}=aux;
-                end
-            end
-        end
+        structure = getDataAsMatrices(this, fields, conditions, N)
     end
 
     %% Visualization Methods
@@ -223,38 +212,13 @@ classdef stridedExperimentData
 
     %% Data Alignment Methods
     methods
-        function alignedData=alignEvents(this,spacing,trial,fieldName,labelList)
-            alignedData=[];
-        end %This function will be deprecated, use getAlignedData instead.
+        alignedData = alignEvents(this, spacing, trial, fieldName, ...
+            labelList)
 
-        function newThis=discardBadStrides(this) %No need, the discarding happens when this structure is created from a processed experiment.
-            newThis=[];
-        end
+        newThis = discardBadStrides(this)
 
-        function alignedData=getAlignedData(this,spacing,trial,fieldName,labelList)
-            data=this;
-            M=spacing;
-            aux=[0 cumsum(M)];
-            strides=data.stridedTrials{trial};
-            alignedData=zeros(sum(M),length(labelList),length(strides));
-            Nphases=4;
-            for phase=1:Nphases
-                samples=zeros(length(strides),length(labelList));
-                for stride=1:length(strides)
-                    switch phase
-                        case 1
-                            thisPhase=strides{stride}.getDoubleSupportLR;
-                        case 2
-                            thisPhase=strides{stride}.getSingleStanceL;
-                        case 3
-                            thisPhase=strides{stride}.getDoubleSupportRL;
-                        case 4
-                            thisPhase=strides{stride}.getSingleStanceR;
-                    end
-                    alignedData(aux(phase)+1:aux(phase)+M(phase),:,stride)=thisPhase.(fieldName).resampleN(M(phase)).getDataAsVector(labelList);
-                end
-            end
-        end
+        alignedData = getAlignedData(this, spacing, trial, fieldName, ...
+            labelList)
     end
 
 end

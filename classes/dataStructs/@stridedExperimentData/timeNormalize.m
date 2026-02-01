@@ -27,8 +27,7 @@ for trial = 1:length(this.stridedTrials)
 end
 
 % Construct newTrial
-newThis = stridedExperimentData(this.metaData, this.subData, ...
-    newStrides);
+newThis = stridedExperimentData(this.metaData, this.subData, newStrides);
 newThis.isTimeNormalized = true;
 end
 
