@@ -19,13 +19,13 @@ if ~isempty(this.subData.age)
     ageInMonths = this.subData.age * 12; % In months
 elseif ~isempty(this.subData.dateOfBirth)
     warning('expData:subjectDOB', ...
-        'subject metadata contains DOB, this may be a privacy issue.')
+        'subject metadata contains DOB, this may be a privacy issue.');
     dob = this.subData.dateOfBirth;
     testData = this.metaData.date;
-    [ageInMonths] = testData.timeSince(dob);
+    ageInMonths = testData.timeSince(dob);
 else
     error('expData:subjectDOB', ...
-        'Could not establish subject age at experiment time.')
+        'Could not establish subject age at experiment time.');
 end
 end
 

@@ -81,43 +81,61 @@ classdef experimentData
 
     %% Property Setters
     methods
-        function this=set.metaData(this,meta)
-            %define or re-define metaData for this experiment
+        function this = set.metaData(this, meta)
+            %set.metaData  Validates and sets experiment metadata
             %
-            %INPUT: metaData object
-            if isa(meta,'experimentMetaData')
-                this.metaData=meta;
+            %   Inputs:
+            %       this - experimentData object
+            %       meta - experimentMetaData object
+
+            if isa(meta, 'experimentMetaData')
+                this.metaData = meta;
             else
-                ME=MException('experimentData:Constructor','Experiment metaData is not an experimentMetaData type object.');
+                ME = MException('experimentData:Constructor', ...
+                    ['Experiment metaData is not an ' ...
+                    'experimentMetaData type object.']);
                 throw(ME);
             end
         end
-        function this=set.subData(this,sub)
-            %define or re-define subjectData
+
+        function this = set.subData(this, sub)
+            %set.subData  Validates and sets subject data
             %
-            %INPUT: subjectData object
-            if isa(sub,'subjectData')
-                this.subData=sub;
+            %   Inputs:
+            %       this - experimentData object
+            %       sub - subjectData object
+
+            if isa(sub, 'subjectData')
+                this.subData = sub;
             else
-                ME=MException('experimentData:Constructor','Subject data is not a subjectData type object.');
+                ME = MException('experimentData:Constructor', ...
+                    'Subject data is not a subjectData type object.');
                 throw(ME);
             end
         end
-        function this=set.data(this,data)
-            %define or redefine experiment data
+
+        function this = set.data(this, data)
+            %set.data  Validates and sets experimental trial data
             %
-            %INPUT: labData object or one of its subclasses
-            if isa(data,'cell')  % Has to be array of labData type cells.
-                aux=find(cellfun('isempty',data)~=1);
-                for i=1:length(aux)
-                    if ~isa(data{aux(i)},'labData') && ~isa(data{aux(i)},'reducedLabData')
-                        ME=MException('experimentData:Constructor','Data is not a cell array of labData (or one of its subclasses) objects.');
+            %   Inputs:
+            %       this - experimentData object
+            %       data - cell array of labData objects
+
+            if isa(data, 'cell')  % Has to be array of labData cells
+                aux = find(cellfun('isempty', data) ~= 1);
+                for i = 1:length(aux)
+                    if ~isa(data{aux(i)}, 'labData') && ...
+                            ~isa(data{aux(i)}, 'reducedLabData')
+                        ME = MException('experimentData:Constructor', ...
+                            ['Data is not a cell array of labData (or ' ...
+                            'one of its subclasses) objects.']);
                         throw(ME);
                     end
                 end
-                this.data=data;
+                this.data = data;
             else
-                ME=MException('experimentData:Constructor','Data is not a cell array.');
+                ME = MException('experimentData:Constructor', ...
+                    'Data is not a cell array.');
                 throw(ME);
             end
         end
@@ -125,97 +143,130 @@ classdef experimentData
 
     %% Dependent Property Getters
     methods
-        function a=get.isProcessed(this)
-            %Returns true if the trials have been processed (i.e. parameters have been calculated through ladData.process()), and false if
-            %they contain only rawData.
-            %   INPUTS:
-            %       this: experimentData object
-            %   OUTPUTS:
-            %       a: boolean
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1); %Not empty
-            a=true;
-            for i=idx
-                if ~isa(this.data{i},'processedLabData')
-                    a=false;
+        function a = get.isProcessed(this)
+            %get.isProcessed  Checks if trials have been processed
+            %
+            %   Returns true if the trials have been processed (i.e.
+            %   parameters have been calculated through
+            %   ladData.process()), and false if they contain only
+            %   rawData.
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %
+            %   Outputs:
+            %       a - boolean indicating if data is processed
+
+            aux = cellfun('isempty', this.data);
+            idx = find(aux ~= 1); % Not empty
+            a = true;
+            for i = idx
+                if ~isa(this.data{i}, 'processedLabData')
+                    a = false;
                 end
             end
         end
 
-        function a=get.isStepped(this)
-            %returns true if data is an object of the strideData class
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1,1);
-            a=isa(this.data{idx},'strideData');
-        end
-
-        function a=get.isRaw(this)
-            %returns true if data is an object of the rawLabData class
-            aux=cellfun('isempty',this.data);
-            idx=find(aux~=1,1);
-            a=isa(this.data{idx},'rawLabData');
-        end
-
-        function fastLeg=get.fastLeg(this)
-            error('Unimplemented. Try getRefLeg, which reads slow/fast leg labels from trial metaData.')
-            %based on each trial, determine from the data (not metadata which could be wrong) which leg is the fast leg, even
-            %if there is no belt data
+        function a = get.isStepped(this)
+            %get.isStepped  Checks if data is strided
             %
-            %returns 'R' or 'L'
-            vR=[];
-            vL=[];
-            trials=cell2mat(this.metaData.trialsInCondition);
-            for i=1:length(trials)
-                trial=trials(i);
+            %   Returns true if data is an object of the strideData
+            %   class
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %
+            %   Outputs:
+            %       a - boolean indicating if data is strided
+
+            aux = cellfun('isempty', this.data);
+            idx = find(aux ~= 1, 1);
+            a = isa(this.data{idx}, 'strideData');
+        end
+
+        function a = get.isRaw(this)
+            %get.isRaw  Checks if data is raw
+            %
+            %   Returns true if data is an object of the rawLabData
+            %   class
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %
+            %   Outputs:
+            %       a - boolean indicating if data is raw
+
+            aux = cellfun('isempty', this.data);
+            idx = find(aux ~= 1, 1);
+            a = isa(this.data{idx}, 'rawLabData');
+        end
+
+        function fastLeg = get.fastLeg(this)
+            %get.fastLeg  Determines which leg was on fast belt
+            %
+            %   Based on each trial, determines from the data (not
+            %   metadata which could be wrong) which leg is the fast
+            %   leg, even if there is no belt data
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %
+            %   Outputs:
+            %       fastLeg - 'R' or 'L'
+            %
+            %   Note: Currently unimplemented. Try getRefLeg, which
+            %         reads slow/fast leg labels from trial metaData.
+
+            error(['Unimplemented. Try getRefLeg, which reads ' ...
+                'slow/fast leg labels from trial metaData.']);
+            vR = [];
+            vL = [];
+            trials = cell2mat(this.metaData.trialsInCondition);
+            for i = 1:length(trials)
+                trial = trials(i);
                 if ~this.isStepped
                     if ~isempty(this.data{trial}.beltSpeedReadData)
-                        %Old version: Need to fix, as
-                        %we are not really populating the beltSpeedReadData
-                        %field.
-                        %vR(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
-                        %vL(end+1)=nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
-                        %New version:
-                        %TODO: Need to come up with an appropriate velocity
-                        %measurement if we want this function to work
-                        %properly.
+                        % Old version: Need to fix, as we are not
+                        % really populating the beltSpeedReadData
+                        % field.
+                        % vR(end + 1) = nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
+                        % vL(end + 1) = nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
+                        % New version:
+                        % TODO: Need to come up with an appropriate
+                        % velocity measurement if we want this
+                        % function to work properly.
                     end
-                else %Stepped trial
-                    for step=1:length(this.data{trial})
+                else % Stepped trial
+                    for step = 1:length(this.data{trial})
                         if ~isempty(this.data{trial}{step}.beltSpeedReadData)
-                            %vR(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
-                            %vL(end+1)=nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
+                            % vR(end + 1) = nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
+                            % vL(end + 1) = nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
                         end
                     end
                 end
             end
             if ~isempty(vR) && ~isempty(vL)
-                if nanmean(vR)<nanmean(vL)
-                    fastLeg='L';
-                elseif nanmean(vR)>nanmean(vL)
-                    fastLeg='R'; %Defaults to this, even if there is no beltSpeedData
+                if nanmean(vR) < nanmean(vL)
+                    fastLeg = 'L';
+                elseif nanmean(vR) > nanmean(vL)
+                    % Defaults to this, even if there is no beltSpeedData
+                    fastLeg = 'R';
                 else
-                    error('experimentData:fastLeg','Both legs are moving at the same speed');
+                    error('experimentData:fastLeg', ...
+                        'Both legs are moving at the same speed');
                 end
             else
-                error('experimentData:fastLeg','No data to compute fastest leg, try using expData.getRefLeg which reads from each trial''s metaData.');
+                error('experimentData:fastLeg', ...
+                    ['No data to compute fastest leg, try using ' ...
+                    'expData.getRefLeg which reads from each ' ...
+                    'trial''s metaData.']);
             end
         end
     end
 
     %% Subject Information Methods
     methods
-        function ageInMonths=getSubjectAgeAtExperimentDate(this)
-            if ~isempty(this.subData.age)
-                ageInMonths=this.subData.age*12; %In months
-            elseif ~isempty(this.subData.dateOfBirth)
-                warning('expData:subjectDOB','subject metadata contains DOB, this may be a privacy issue.')
-                dob=this.subData.dateOfBirth;
-                testData=this.metaData.date;
-                [ageInMonths]=testData.timeSince(dob);
-            else
-                error('expData:subjectDOB','Could not establish subject age at experiment time.')
-            end
-        end
+        ageInMonths = getSubjectAgeAtExperimentDate(this)
     end
 
     %% Leg Identification Methods
@@ -511,13 +562,37 @@ classdef experimentData
 
     %% Static Methods
     methods (Static)
-        function this=loadobj(this)
+        function this = loadobj(this)
+            %loadobj  Object loading method for backward compatibility
+            %
+            %   this = loadobj(this) scrubs date of birth information
+            %   when loading saved experimentData objects for privacy
+            %
+            %   Inputs:
+            %       this - experimentData object being loaded
+            %
+            %   Outputs:
+            %       this - experimentData object with DOB removed
+            %
+            %   See also: saveobj, subjectData
+
             if ~isempty(this.subData.dateOfBirth)
-                warning('expData:subjectDOB',['Subject data contains DOB information for subject ' this.subData.ID '. Data will be hidden. You should overwrite (save) your file with this new version to prevent this warning in the future. Please check that all other information is intact before overwriting.'])
-                %Determine age (in months):
-                age=round(this.metaData.date.timeSince(this.subData.dateOfBirth));
-                %Scrub DOB from subject meta data, save age at experiment time (in years):
-                this.subData=subjectData([],this.subData.sex,this.subData.dominantLeg,this.subData.dominantArm,this.subData.height,this.subData.weight,age/12,this.subData.ID);
+                warning('expData:subjectDOB', ...
+                    ['Subject data contains DOB information for ' ...
+                    'subject ' this.subData.ID '. Data will be ' ...
+                    'hidden. You should overwrite (save) your file ' ...
+                    'with this new version to prevent this warning ' ...
+                    'in the future. Please check that all other ' ...
+                    'information is intact before overwriting.']);
+                % Determine age (in months):
+                age = round(this.metaData.date.timeSince(...
+                    this.subData.dateOfBirth));
+                % Scrub DOB from subject meta data, save age at
+                % experiment time (in years):
+                this.subData = subjectData([], this.subData.sex, ...
+                    this.subData.dominantLeg, ...
+                    this.subData.dominantArm, this.subData.height, ...
+                    this.subData.weight, age / 12, this.subData.ID);
             end
         end
     end
