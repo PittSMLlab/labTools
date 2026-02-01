@@ -64,17 +64,31 @@ classdef experimentData
 
     %% Constructor
     methods
-        function this=experimentData(meta,sub,data)
-            %inputs are metaData, subData, and rawTrialData
+        function this = experimentData(meta, sub, data)
+            %experimentData  Constructor for experimentData class
+            %
+            %   this = experimentData(meta, sub, data) creates an
+            %   experiment data object with specified metadata, subject
+            %   data, and trial data
+            %
+            %   Inputs:
+            %       meta - experimentMetaData object
+            %       sub - subjectData object
+            %       data - cell array of labData objects
+            %
+            %   Outputs:
+            %       this - experimentData object
+            %
+            %   See also: experimentMetaData, subjectData, labData
 
-            if nargin>0
-                this.metaData=meta;
+            if nargin > 0
+                this.metaData = meta;
             end
-            if nargin>1
-                this.subData=sub;
+            if nargin > 1
+                this.subData = sub;
             end
-            if nargin>2
-                this.data=data;
+            if nargin > 2
+                this.data = data;
             end
         end
     end
@@ -280,171 +294,21 @@ classdef experimentData
 
     %% Data Processing Methods
     methods
-        function processedThis=process(this,eventClass)
+        processedThis = process(this, eventClass)
 
-            if nargin<2 || isempty(eventClass)
-                eventClass=[];
-            end
-            %process  process full experiment
-            %
-            %Returns a new experimentData object with same metaData, subData and processed (trial) data.
-            %This is done by iterating through data (trials) and
-            %processing each by using labData.process
-            %ex: expData=rawExpData.process
-            %
-            %INPUTS:
-            %this: experimentData object
-            %
-            %OUTPUTS:
-            %processedThis: experimentData object with processed data
-            %
-            %See also: labData
+        [allTrialModels, modelScore, badFlag] = extractMarkerModels(this)
 
-            for trial=1:length(this.data)
-                disp(['Processing trial ' num2str(trial) '...'])
-                if ~isempty(this.data{trial})
-                    procData{trial}=this.data{trial}.process(this.subData,eventClass);
-                else
-                    procData{trial}=[];
-                end
-            end
-            %this=checkMarkerHealth(this);
-            processedThis=experimentData(this.metaData,this.subData,procData);
-        end
+        this = checkMarkerHealth(this, refTrial)
 
-        function [allTrialModels,modelScore,badFlag]=extractMarkerModels(this)
-            noFixFlag=false; %This flag will prevent trying to find permutations to fix data, which can be slow.
-            %First: build models
-            m=cell(length(this.data),1);
-            badFlag=false(size(m));
-            modelScore=nan(size(m));
-            modelScore2=nan(size(m));
-            permuteList=[];
-            for trial=1:length(this.data)
-                if ~isempty(this.data{trial})
-                    aux=this.data{trial}.markerData;
-                    [aux,m{trial},permuteList,modelScore(trial),badFlag(trial),modelScore2(trial)]=aux.fixBadLabels(permuteList);
-                end
-            end
-            allTrialModels=m;
-        end
-
-        function this=checkMarkerHealth(this,refTrial)
-            disp(['Checking marker health...'])
-
-            %First: build models
-            [allTrialModels,modelScore,badFlag]=extractMarkerModels(this);
-
-            %Second: select best model
-            %TODO: move this chunk to its own function?
-            noOutlierTest=false;
-            if (nargin<2 || isempty(refTrial)) && ~all(badFlag)
-                modelScore(badFlag)=Inf;
-                [~,refTrial]=nanmin(modelScore);
-            elseif all(badFlag) %Undefined refTrial but all trials are bad
-                warning('Could not find suitable data for model training. Not testing for outliers.')
-                noOutlierTest=true; %This flag prevents the testing for outliers later on.
-            end
-            try %If there is a model
-                mm=allTrialModels{refTrial};
-                fprintf(['Using trial ' num2str(refTrial) ' to train outlier detection model...\n'])
-                mm.seeModel;
-            catch
-                %nop
-            end
-
-            %Third: for each trial, get  missing markers, analyze fitted model and  find outliers through best model
-            for trial=1:length(this.data)
-                disp(['Checking trial ' num2str(trial) '...'])
-                if ~isempty(this.data{trial})
-                    aux=this.data{trial}.markerData;
-
-                    %A: check missing data & fill gaps
-                    [~,~,missing]=aux.assessMissing([],-1);
-
-                    %B: analyze fitted models.
-                    [~]=validateMarkerModel(allTrialModels{trial},true);
-
-                    %C: find outliers
-                    if ~noOutlierTest
-                        aux=aux.findOutliers(mm,true);
-                        this.data{trial}.markerData=aux;
-                    end
-                end
-            end
-            disp(['Outlier data added in Quality field']);
-        end
-
-
-        function this=computeAngles(this)%added by Digna
-            for trial=1:length(this.data)
-                disp(['Computing angles for trial ' num2str(trial) '...'])
-                if ~isempty(this.data{trial})
-                    this.data{trial}.angleData=this.data{trial}.calcLimbAngles;
-                else
-
-                end
-            end
-        end
+        this = computeAngles(this)
     end
 
     %% Data Reduction and Object Creation
     methods
-        function adaptData=makeDataObj(this,filename,experimentalFlag,contraLateralFlag)
-            %MAKEDATAOBJ  creates an object of the adaptationData class.
-            %   adaptData=expData.makeDataObj(filename,experimentalFlag)
-            %
-            %INPUTS:
-            %this: experimentData object
-            %filename: string (typically subject identifier)
-            %experimentalFlag: boolean - false (or 0) prevents experimental
-            %parameter calculation and inclusion
-            %
-            %OUTPUTS:
-            %adptData: object if the adaptationData class, which is
-            %saved to present working directory if a filename is specified.
-            %
-            %   Examples:
-            %
-            %   adaptData=expData.makeDataObj('Sub01') saves adaptationData
-            %   object to Sub01params.mat
-            %
-            %   adaptData=expData.makeDataObj('',false) does not include
-            %   experimentalParams in adaptData object and does not save to file
-            %
-            %See also: adaptationData, paramData
-            if ~(this.isProcessed)
-                ME=MException('experimentData:makeDataObj','Cannot create an adaptationData object from unprocessed data!');
-                throw(ME);
-            end
+        adaptData = makeDataObj(this, filename, experimentalFlag, ...
+            contraLateralFlag)
 
-            if nargin<3
-                experimentalFlag=[];
-            end
-            if nargin<2
-                filename=[];
-            end
-            if nargin<4
-                contraLateralFlag=[];
-            end
-            adaptData=makeDataObjNew(this,filename,experimentalFlag,contraLateralFlag);
-        end
-
-        function reducedThis=reduce(this,eventLabels,N)
-            if nargin<2 || isempty(eventLabels)
-                s=this.getRefLeg;
-                f=this.getNonRefLeg;
-                eventLabels={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
-            end
-            if nargin<3
-                N=[];
-            end
-            redData=cell(size(this.data));
-            for i=1:length(this.data)
-                redData{i}=this.data{i}.reduce(eventLabels,N);
-            end
-            reducedThis=experimentData(this.metaData,this.subData,redData);
-        end
+        reducedThis = reduce(this, eventLabels, N)
     end
 
     %% Visualization Methods

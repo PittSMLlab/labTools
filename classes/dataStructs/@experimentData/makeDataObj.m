@@ -31,28 +31,6 @@ function adaptData = makeDataObj(this, filename, experimentalFlag, ...
 %
 %   See also: adaptationData, makeDataObjNew
 
-% MAKEDATAOBJ  creates an object of the adaptationData class.
-%   adaptData = expData.makeDataObj(filename, experimentalFlag)
-%
-% INPUTS:
-% this: experimentData object
-% filename: string (typically subject identifier)
-% experimentalFlag: boolean - false (or 0) prevents experimental
-% parameter calculation and inclusion
-%
-% OUTPUTS:
-% adptData: object if the adaptationData class, which is saved to
-% present working directory if a filename is specified.
-%
-%   Examples:
-%
-%   adaptData = expData.makeDataObj('Sub01') saves adaptationData
-%   object to Sub01params.mat
-%
-%   adaptData = expData.makeDataObj('', false) does not include
-%   experimentalParams in adaptData object and does not save to file
-%
-% See also: adaptationData, paramData
 if ~(this.isProcessed)
     ME = MException('experimentData:makeDataObj', ...
         ['Cannot create an adaptationData object from ' ...

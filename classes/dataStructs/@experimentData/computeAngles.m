@@ -16,12 +16,12 @@ function this = computeAngles(this)
 
 % added by Digna
 for trial = 1:length(this.data)
-    disp(['Computing angles for trial ' num2str(trial) '...'])
+    disp(['Computing angles for trial ' num2str(trial) '...']);
     if ~isempty(this.data{trial})
         this.data{trial}.angleData = ...
             this.data{trial}.calcLimbAngles;
     else
-
+        % not implemented
     end
 end
 end

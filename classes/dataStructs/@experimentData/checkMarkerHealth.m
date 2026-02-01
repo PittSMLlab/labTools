@@ -18,7 +18,7 @@ function this = checkMarkerHealth(this, refTrial)
 %
 %   See also: extractMarkerModels, orientedLabTimeSeries/findOutliers
 
-disp(['Checking marker health...'])
+disp('Checking marker health...');
 
 % First: build models
 [allTrialModels, modelScore, badFlag] = extractMarkerModels(this);
@@ -31,14 +31,14 @@ if (nargin < 2 || isempty(refTrial)) && ~all(badFlag)
     [~, refTrial] = nanmin(modelScore);
 elseif all(badFlag) % Undefined refTrial but all trials are bad
     warning(['Could not find suitable data for model training. ' ...
-        'Not testing for outliers.'])
+        'Not testing for outliers.']);
     % This flag prevents the testing for outliers later on.
     noOutlierTest = true;
 end
 try % If there is a model
     mm = allTrialModels{refTrial};
     fprintf(['Using trial ' num2str(refTrial) ' to train outlier ' ...
-        'detection model...\n'])
+        'detection model...\n']);
     mm.seeModel;
 catch
     % nop
@@ -47,15 +47,15 @@ end
 % Third: for each trial, get missing markers, analyze fitted model
 % and find outliers through best model
 for trial = 1:length(this.data)
-    disp(['Checking trial ' num2str(trial) '...'])
+    disp(['Checking trial ' num2str(trial) '...']);
     if ~isempty(this.data{trial})
         aux = this.data{trial}.markerData;
 
         % A: check missing data & fill gaps
         [~, ~, missing] = aux.assessMissing([], -1);
 
-        % B: analyze fitted models.
-        [~] = validateMarkerModel(allTrialModels{trial}, true);
+        % B: analyze fitted models
+        validateMarkerModel(allTrialModels{trial}, true);
 
         % C: find outliers
         if ~noOutlierTest
@@ -64,6 +64,6 @@ for trial = 1:length(this.data)
         end
     end
 end
-disp(['Outlier data added in Quality field']);
+disp('Outlier data added in Quality field');
 end
 
