@@ -30,8 +30,8 @@ ColorOrder = [p_red; p_orange; p_fade_green; p_fade_blue; p_plum; ...
 set(gcf, 'DefaultAxesColorOrder', ColorOrder);
 
 if nargin < 5 || isempty(figHandle)
-    figHandle = figure('Name', ['Subject ' ...
-        num2str(this.subData.ID) ' ' field]);
+    figHandle = figure('Name', ...
+        ['Subject ' num2str(this.subData.ID) ' ' field]);
 else
     figure(figHandle); % Only works for one condition!
 end
@@ -42,8 +42,8 @@ structure = this.getDataAsMatrices(field, conditions, N);
 if nargin < 4 || isempty(plotHandles)
     M = size(structure{1}, 2);
     [b, a] = getFigStruct(M);
-    plotHandles = tight_subplot(b, a, [.04 .02], [.05 .02], ...
-        [.04 .05]);
+    plotHandles = tight_subplot(b, a, [0.04 0.02], [0.05 0.02], ...
+        [0.04 0.05]);
 end
 for i = 1:M
     % subplot(b, a, i)

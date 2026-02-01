@@ -24,7 +24,7 @@ function [figHandle, plotHandles] = plotAllStridesBilateral(this, ...
 %
 %   See also: plotAllStrides, plotAvgStride
 
-% Forces 'L' and 'R' to be plotted on top of each other % To Do
+% Forces 'L' and 'R' to be plotted on top of each other TODO
 [figHandle, plotHandles] = plotAllStrides(this, field, conditions, ...
     plotHandles, figHandle);
 end

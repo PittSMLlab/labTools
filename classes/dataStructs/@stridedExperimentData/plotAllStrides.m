@@ -25,7 +25,7 @@ function [figHandle, plotHandles] = plotAllStrides(this, field, ...
 %
 %   See also: plotAvgStride, plotAllStridesBilateral
 
-% To Do: need to add gait Events markers.
+% TODO: need to add gait event markers
 
 % Set colors
 poster_colors;
@@ -36,14 +36,12 @@ set(gcf, 'DefaultAxesColorOrder', ColorOrder);
 
 for cond = conditions
     if nargin < 5 || isempty(figHandle)
-        figHandle = figure('Name', ['Subject ' ...
-            num2str(this.subData.ID) ' Condition ' num2str(cond) ...
-            ' ' field]);
+        figHandle = figure('Name', ['Subject ' num2str(this.subData.ID) ...
+            ' Condition ' num2str(cond) ' ' field]);
     else
         figure(figHandle); % Only works for one condition!
     end
-    set(figHandle, 'Units', 'normalized', 'OuterPosition', ...
-        [0 0 1 1]);
+    set(figHandle, 'Units', 'normalized', 'OuterPosition', [0 0 1 1]);
     aux = this.getStridesFromCondition(cond);
     N = 2^ceil(log2(1.5 / aux{1}.(field).sampPeriod));
     structure = this.getDataAsMatrices(field, cond, N);
@@ -51,8 +49,8 @@ for cond = conditions
     if nargin < 4 || isempty(plotHandles)
         [b, a] = getFigStruct(M);
         % External function
-        plotHandles = tight_subplot(b, a, [.02 .02], [.05 .02], ...
-            [.02 .05]);
+        plotHandles = tight_subplot(b, a, [0.02 0.02], [0.05 0.02], ...
+            [0.02 0.05]);
     end
     if (numel(structure{cond})) > 1e6
         P = floor(1e7 / numel(structure{cond}(:, :, 1)));
@@ -68,7 +66,7 @@ for cond = conditions
         hold on;
         % title(aux{1}.(field).labels{i})
         data = squeeze(structure{cond}(:, i, :));
-        plot([0:N - 1] / N, data, 'Color', [.7, .7, .7]);
+        plot([0:N - 1] / N, data, 'Color', [0.7, 0.7, 0.7]);
         plot([0:N - 1] / N, meanStr{cond}(:, i), 'LineWidth', 2, ...
             'Color', ColorOrder(mod(cond - 1, size(ColorOrder, 1)) + ...
             1, :));
