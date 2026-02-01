@@ -28,18 +28,22 @@ classdef stridedExperimentData
     %
     %See also: experimentData, strideData, experimentMetaData
 
+    %% Properties
     properties
-        metaData %experimentMetaData type
-        subData %subjectData type
-        stridedTrials %cell array of cell array of strideData objects
+        metaData % experimentMetaData type
+        subData % subjectData type
+        stridedTrials % cell array of cell array of strideData objects
     end
 
-    properties(SetAccess=private)
-        isTimeNormalized=false; %This should be dependent, and be returned by checking that the length of all timeSeries in all strides has the same length, it is rather boring to do.
+    properties (SetAccess = private)
+        % This should be dependent, and be returned by checking that
+        % the length of all timeSeries in all strides has the same
+        % length, it is rather boring to do.
+        isTimeNormalized = false;
     end
 
+    %% Constructor
     methods
-        %Constructor
         function this=stridedExperimentData(meta,sub,strides)
             if isa(meta,'experimentMetaData')
                 this.metaData=meta;
@@ -67,13 +71,17 @@ classdef stridedExperimentData
                 throw(ME);
             end
         end
+    end
 
-        %Getters for Dependent properties
-        %function a=get.isTimeNormalized(this)
-        %    a='Who knows?'; %ToDo!
-        %end
+    %% Dependent Property Getters
+    methods
+        % function a = get.isTimeNormalized(this)
+        %     a = 'Who knows?'; % ToDo!
+        % end
+    end
 
-        %Modifiers
+    %% Data Transformation Methods
+    methods
         function newThis=timeNormalize(this,N)
             %Lstrides
             newStrides=cell(1,length(this.stridedTrials));
@@ -91,7 +99,10 @@ classdef stridedExperimentData
             newThis=stridedExperimentData(this.metaData,this.subData,newStrides);
             newThis.isTimeNormalized=true;
         end
+    end
 
+    %% Data Query Methods
+    methods
         function [strides]=getStridesFromCondition(this,condition)
             strides={};
             for trial=this.metaData.trialsInCondition{condition}
@@ -101,7 +112,26 @@ classdef stridedExperimentData
             end
         end
 
-        %Assess results
+        function structure=getDataAsMatrices(this,fields,conditions,N)
+            for cond=conditions
+                strides=this.getStridesFromCondition(cond);
+                if isa(fields,'cell')
+                    for f=1:length(fields)
+                        for s=1:length(strides)
+                            aux=strideData.cell2mat(strides,fields{f},N);
+                        end
+                        eval(['structure{cond}.' fields{f} '=aux;']);
+                    end
+                else
+                    aux=strideData.cell2mat(strides,fields,N);
+                    structure{cond}=aux;
+                end
+            end
+        end
+    end
+
+    %% Visualization Methods
+    methods
         function [figHandle,plotHandles]=plotAllStrides(this,field,conditions,plotHandles,figHandle)
             %To Do: need to add gait Events markers.
 
@@ -189,7 +219,10 @@ classdef stridedExperimentData
                 hold off
             end
         end
+    end
 
+    %% Data Alignment Methods
+    methods
         function alignedData=alignEvents(this,spacing,trial,fieldName,labelList)
             alignedData=[];
         end %This function will be deprecated, use getAlignedData instead.
@@ -222,26 +255,6 @@ classdef stridedExperimentData
                 end
             end
         end
-
-
-        function structure=getDataAsMatrices(this,fields,conditions,N)
-            for cond=conditions
-                strides=this.getStridesFromCondition(cond);
-                if isa(fields,'cell')
-                    for f=1:length(fields)
-                        for s=1:length(strides)
-                            aux=strideData.cell2mat(strides,fields{f},N);
-                        end
-                        eval(['structure{cond}.' fields{f} '=aux;']);
-                    end
-                else
-                    aux=strideData.cell2mat(strides,fields,N);
-                    structure{cond}=aux;
-                end
-            end
-        end
-
-
     end
 
 end
