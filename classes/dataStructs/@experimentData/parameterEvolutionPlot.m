@@ -19,10 +19,6 @@ function [h, adaptDataObject] = parameterEvolutionPlot(this, field)
 %
 %   See also: parameterTimeCourse, adaptationData/plotParamByConditions
 
-% ???
-%
-% INPUTS:
-% field,
 if ~(this.isProcessed)
     ME = MException('experimentData:parameterEvolutionPlot', ...
         ['Cannot generate parameter evolution plot from ' ...

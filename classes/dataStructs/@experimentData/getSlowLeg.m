@@ -14,10 +14,6 @@ function slowLeg = getSlowLeg(this)
 %
 %   See also: getRefLeg, getNonRefLeg
 
-% determine which leg is the slow leg, simply the opposite of the fast
-% leg, be sure to call get.fastLeg() first
-%
-% returns 'R' or 'L'
 if strcmpi(this.fastLeg, 'L')
     slowLeg = 'R';
 elseif strcmpi(this.fastLeg, 'R')

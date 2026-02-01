@@ -1,8 +1,7 @@
 function fL = getNonRefLeg(this)
 %getNonRefLeg  Returns non-reference leg
 %
-%   fL = getNonRefLeg(this) returns the leg opposite to the reference
-%   leg
+%   fL = getNonRefLeg(this) returns the leg opposite to the reference leg
 %
 %   Inputs:
 %       this - experimentData object
@@ -12,7 +11,6 @@ function fL = getNonRefLeg(this)
 %
 %   See also: getRefLeg, getSlowLeg
 
-% returns the non-reference leg, 'R' or 'L'
 sL = this.getRefLeg;
 if strcmp(sL, 'R')
     fL = 'L';

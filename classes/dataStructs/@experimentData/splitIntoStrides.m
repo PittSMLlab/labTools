@@ -23,15 +23,14 @@ function stridedExp = splitIntoStrides(this, refEvent)
 % This might not be used?
 if ~this.isStepped && this.isProcessed
     for trial = 1:length(this.data)
-        disp(['Splitting trial ' num2str(trial) '...'])
+        disp(['Splitting trial ' num2str(trial) '...']);
         trialData = this.data{trial};
         if ~isempty(trialData)
             if nargin < 2 || isempty(refEvent)
                 refEvent = [trialData.metaData.refLeg, 'HS'];
-                % Assuming that the first event of each stride
-                % should be the heel strike of the refLeg! (check
-                % c3d2mat - refleg should be opposite the
-                % dominant/fast leg)
+                % Assuming that the first event of each stride should be
+                % the heel strike of the refLeg! (check c3d2mat - refleg
+                % should be opposite the dominant/fast leg)
             end
             aux = trialData.separateIntoStrides(refEvent);
             strides{trial} = aux;

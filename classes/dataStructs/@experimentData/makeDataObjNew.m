@@ -22,9 +22,6 @@ function adaptData = makeDataObjNew(this, filename, experimentalFlag, ...
 %
 %   See also: makeDataObj, adaptationData
 
-% This function may not be compatible with certain methods of the
-% adaptationData class
-
 if isempty(contraLateralFlag) || contraLateralFlag == 0
     % Normal parameters
     % nop

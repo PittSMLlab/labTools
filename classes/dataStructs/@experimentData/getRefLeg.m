@@ -12,10 +12,6 @@ function refLeg = getRefLeg(this)
 %
 %   See also: getNonRefLeg, getSlowLeg
 
-% By majority vote over trials, returns the reference leg for the
-% entire experiment
-%
-% returns 'R' or 'L'
 refLeg = {};
 for i = 1:length(this.data) % Going over trials
     if ~isempty(this.data{i})

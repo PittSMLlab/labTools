@@ -18,9 +18,6 @@ function this = recomputeEvents(this, eventClass, initEventSide)
 %
 %   See also: processedLabData/recomputeEvents, recomputeParameters
 
-% RECOMPUTEEVENTS recomputes events AND parameters for all trials,
-% with default options.
-% See also: processedLabData.recomputeEvents
 trials = cell2mat(this.metaData.trialsInCondition);
 for t = trials
     % This recomputes events AND recomputes parameters (otherwise

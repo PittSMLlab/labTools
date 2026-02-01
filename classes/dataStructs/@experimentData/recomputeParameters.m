@@ -19,20 +19,11 @@ function this = recomputeParameters(this, eventClass, initEventSide, ...
 %       this - experimentData object with updated parameters
 %
 %   Example:
-%       expData = expData.recomputeParameters
+%       expData = expData.recomputeParameters();
 %
 %   See also: flushAndRecomputeParameters, recomputeEvents,
 %             calcParameters
 
-% RECOMPUTEPARAMETERS recomputes adaptParams for all labData objects
-% in experimentData.data.
-%
-%   Example: if expData is an object of the experimentalData class,
-%       expData = expData.recomputeParameters
-%   will recompute expData.data{i}.adaptParams for all i where i is a
-%   trial of the experiment
-%
-%   See also: parameterSeries
 if nargin < 2 || isempty(eventClass)
     eventClass = [];
 end

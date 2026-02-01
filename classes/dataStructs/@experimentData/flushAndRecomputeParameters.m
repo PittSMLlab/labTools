@@ -22,28 +22,18 @@ function this = flushAndRecomputeParameters(this, eventClass, ...
 %         recomputing only force or EMG params.
 %
 %   Example:
-%       expData = expData.flushAndRecomputeParameters
+%       expData = expData.flushAndRecomputeParameters();
 %
 %   See also: recomputeParameters, calcParameters
 
-% FLUSHANDRECOMPUTEPARAMETERS recomputes adaptParams for all labData
-% objects in experimentData.data Different from recomputeParameters()
-% it throws away the previously existing parameters [recompute only
-% substitutes IF there are name collisions, so it allows for
-% recomputing only force or EMG params]
-%
-%   Example: if expData is an object of the experimentalData class,
-%       expData = expData.recomputeParameters
-%   will recompute expData.data{i}.adaptParams for all i where i is a
-%   trial of the experiment
-%
-%   See also: parameterSeries
 if nargin < 2 || isempty(eventClass)
     eventClass = [];
 end
+
 if nargin < 3 || isempty(initEventSide)
     initEventSide = [];
 end
+
 trials = cell2mat(this.metaData.trialsInCondition);
 for t = trials
     this.data{t}.adaptParams = calcParameters(this.data{t}, ...
