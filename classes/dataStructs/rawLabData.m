@@ -20,10 +20,42 @@ classdef rawLabData < labData
 
     %% Constructor
     methods
+        function this = rawLabData(metaData, markerData, EMGData, ...
+                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+                EEGData, footSwitches, HreflexPin)
+            %rawLabData  Constructor for rawLabData class
+            %
+            %   this = rawLabData(metaData, markerData, EMGData, GRFData,
+            %   beltSpeedSetData, beltSpeedReadData, accData, EEGData,
+            %   footSwitches, HreflexPin) creates a raw lab data object
+            %   with specified data and metadata
+            %
+            %   Inputs:
+            %       metaData - labMetaData or subclass object
+            %       markerData - orientedLabTimeSeries with marker
+            %                    trajectories
+            %       EMGData - labTimeSeries with raw EMG signals
+            %       GRFData - orientedLabTimeSeries with ground reaction
+            %                 forces
+            %       beltSpeedSetData - labTimeSeries with commanded belt
+            %                          speeds
+            %       beltSpeedReadData - labTimeSeries with actual belt
+            %                           speeds
+            %       accData - orientedLabTimeSeries with acceleration
+            %                 data
+            %       EEGData - labTimeSeries with EEG signals
+            %       footSwitches - labTimeSeries with foot switch data
+            %       HreflexPin - labTimeSeries with H-reflex stimulus
+            %                    timing
+            %
+            %   Outputs:
+            %       this - rawLabData object
+            %
+            %   See also: labData, processedLabData, rawTrialData
 
-        %Constructor:
-        function this=rawLabData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin)
-            this@labData(metaData,markerData,EMGData,GRFData,beltSpeedSetData,beltSpeedReadData,accData,EEGData,footSwitches,HreflexPin);
+            this@labData(metaData, markerData, EMGData, GRFData, ...
+                beltSpeedSetData, beltSpeedReadData, accData, EEGData, ...
+                footSwitches, HreflexPin);
         end
     end
 
