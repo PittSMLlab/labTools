@@ -1,5 +1,36 @@
 classdef reducedLabData %AKA alignedLabData
-    
+    %reducedLabData  Time-aligned and resampled data container
+    %
+    %   reducedLabData (also known as alignedLabData) contains data that
+    %   has been aligned to gait events and resampled to a standard time
+    %   base. All time series are organized into a single alignedTimeSeries
+    %   object with consistent sampling across strides.
+    %
+    %reducedLabData properties:
+    %   Data - alignedTimeSeries object containing all aligned data
+    %   bad - logical vector indicating strides with issues
+    %   gaitEvents - labTimeSeries with gait event markers
+    %   adaptParams - parameterSeries with adaptation parameters
+    %   metaData - labMetaData object
+    %   procEMGData - processed EMG data (dependent)
+    %   angleData - joint angle data (dependent)
+    %   COPData - center of pressure data (dependent)
+    %   COMData - center of mass data (dependent)
+    %   jointMomentsData - joint moment data (dependent)
+    %   markerData - marker trajectory data (dependent)
+    %   GRFData - ground reaction force data (dependent)
+    %   accData - acceleration data (dependent)
+    %   beltSpeedSetData - commanded belt speeds (dependent)
+    %   beltSpeedReadData - actual belt speeds (dependent)
+    %   footSwitchData - foot switch data (dependent)
+    %   strideNo - number of strides (dependent)
+    %   initTimes - initial time for each stride (dependent)
+    %
+    %reducedLabData methods:
+    %   reducedLabData - constructor for reduced lab data
+    %
+    %See also: processedLabData, alignedTimeSeries, labData
+
     properties
         Data=[];
         bad=[];
@@ -28,21 +59,21 @@ classdef reducedLabData %AKA alignedLabData
     end
     methods
         function this=reducedLabData(metaData,events,alignTS,bad,fields,fieldPrefixes,adaptParams) %Constructor
-           this.metaData=metaData;
-           this.Data=alignTS;
-           this.bad=bad;
-           this.fields_=fields;
-           this.fieldPrefixes_=fieldPrefixes;
-           this.adaptParams=adaptParams;
-           this.gaitEvents=events;
+            this.metaData=metaData;
+            this.Data=alignTS;
+            this.bad=bad;
+            this.fields_=fields;
+            this.fieldPrefixes_=fieldPrefixes;
+            this.adaptParams=adaptParams;
+            this.gaitEvents=events;
         end
-        
+
         %Getters:
         %Can we do a universal getter for dependent fields like this?
-%         function pED=get(fieldName)
-%             prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName));
-%             pED=this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
-%         end
+        %         function pED=get(fieldName)
+        %             prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName));
+        %             pED=this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
+        %         end
         function pED=get.procEMGData(this)
             [ST,~]=dbstack;
             pED=this.universalDependentFieldGetter(ST.name);
@@ -88,13 +119,13 @@ classdef reducedLabData %AKA alignedLabData
             sN=size(this.Data.Data,3);
         end
         function iT=get.initTimes(this)
-           iT=this.Data.eventTimes(1,1:end-1); 
+            iT=this.Data.eventTimes(1,1:end-1);
         end
-        
+
         %Setters
         function this=set.metaData(this,mD)
-           %Check something 
-           this.metaData=mD;
+            %Check something
+            this.metaData=mD;
         end
         function this=set.Data(this,dd)
             if ~isa(dd,'alignedTimeSeries')
@@ -104,29 +135,29 @@ classdef reducedLabData %AKA alignedLabData
             end
         end
         function this=set.bad(this,b)
-           if length(b)~=this.strideNo
-               error('Inconsistent sizes')
-           else
-               this.bad=b;
-           end
+            if length(b)~=this.strideNo
+                error('Inconsistent sizes')
+            else
+                this.bad=b;
+            end
         end
         function this=set.gaitEvents(this,e)
-           if ~isa(e,'labTimeSeries') || ~isa(e.Data,'logical')
-               error('Input argument needs to be a logical labTimeSeries')
-           else
-               this.gaitEvents=e;
-           end
+            if ~isa(e,'labTimeSeries') || ~isa(e.Data,'logical')
+                error('Input argument needs to be a logical labTimeSeries')
+            else
+                this.gaitEvents=e;
+            end
         end
         function this=set.adaptParams(this,aP)
-           if ~isa(aP,'parameterSeries') || size(aP.Data,1)~=this.strideNo
-               error('Input argument needs to be a parameterSeries object of length equal to stride number.')
-           elseif any(abs(aP.getDataAsVector('initTime')-this.initTimes')>1e-9) %Check that adaptParams is computed with the same initial event as alignTS was
-               error('AdaptParams seems to have been computed with different events than the provided data (alignTS)')
-           else
-               this.adaptParams=aP;
-           end
+            if ~isa(aP,'parameterSeries') || size(aP.Data,1)~=this.strideNo
+                error('Input argument needs to be a parameterSeries object of length equal to stride number.')
+            elseif any(abs(aP.getDataAsVector('initTime')-this.initTimes')>1e-9) %Check that adaptParams is computed with the same initial event as alignTS was
+                error('AdaptParams seems to have been computed with different events than the provided data (alignTS)')
+            else
+                this.adaptParams=aP;
+            end
         end
-        
+
     end
     methods(Hidden)
         function pED=universalDependentFieldGetter(this,funName)
