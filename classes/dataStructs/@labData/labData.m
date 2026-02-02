@@ -180,7 +180,7 @@ classdef labData
                 throw(ME);
             end
             % ---------------
-            % Check that all data is from the same time interval: To Do!
+            % Check that all data is from the same time interval: TODO!
             % ---------------
         end
     end

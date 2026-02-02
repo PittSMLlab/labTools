@@ -1,21 +1,20 @@
 function COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
 %mergeHemiCOPs  Merges left and right center of pressure data
 %
-%   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
-%   combines left and right COP data weighted by vertical
-%   forces
+%   COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag) combines left and
+%   right COP data weighted by vertical forces
 %
 %   Inputs:
 %       COPL - left leg center of pressure (orientedLabTS)
 %       COPR - right leg center of pressure (orientedLabTS)
 %       FL - left leg force data
 %       FR - right leg force data
-%       noFilterFlag - flag indicating if filtering should be
-%                      applied (1 = apply filtering)
+%       noFilterFlag - flag indicating if filtering should be applied
+%                      (1 = apply filtering)
 %
 %   Outputs:
-%       COP - merged center of pressure data containing both
-%             individual and combined COP
+%       COP - merged center of pressure data containing both individual and
+%             combined COP
 %
 %   See also: computeCOPAlt, computeHemiCOP
 

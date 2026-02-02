@@ -2,23 +2,22 @@ function reducedThis = reduce(this, eventLabels, N)
 %reduce  Aligns and resamples all timeseries to the same indexes and puts
 %them all together in a single timeseries
 %
-%   reducedThis = reduce(this) reduces the processedLabData
-%   object using default event labels and resampling parameters
+%   reducedThis = reduce(this) reduces the processedLabData object using
+%   default event labels and resampling parameters
 %
-%   reducedThis = reduce(this, eventLabels, N) reduces the
-%   processedLabData object using specified event labels and
-%   resampling parameters
+%   reducedThis = reduce(this, eventLabels, N) reduces the processedLabData
+%   object using specified event labels and resampling parameters
 %
 %   Inputs:
 %       this - processedLabData object
-%       eventLabels - cell array of event labels to use for
-%                     alignment (default: based on refLeg)
+%       eventLabels - cell array of event labels to use for alignment
+%                     (default: based on refLeg)
 %       N - vector of sample counts between events
 %           (default: [18 57 18 57])
 %
 %   Outputs:
-%       reducedThis - reducedLabData object containing aligned
-%                     and resampled data
+%       reducedThis - reducedLabData object containing aligned and
+%                     resampled data
 %
 %   See also: reducedLabData, labTimeSeries/align
 
@@ -40,8 +39,7 @@ if nargin < 2 || isempty(eventLabels)
 end
 if nargin < 3 || isempty(N)
     N = [18 57 18 57]; % 12/38% split for DS single stance,
-    % 150 samples per gait cycle, to keep it
-    % above 100Hz in general
+    % 150 samples per gait cycle, to keep it above 100Hz in general
 end
 warning('off', 'labTS:renameLabels:dont');
 
@@ -62,8 +60,7 @@ for i = 1:length(ff)
     if ~isempty(field) && isa(field, 'labTimeSeries') && ...
             ~strcmp(ff{i}, 'gaitEvents') && ...
             ~strcmp(ff{i}, 'markerData') && ...
-            ~strcmp(ff{i}, 'EMGData') && ...
-            ~strcmp(ff{i}, 'adaptParams')
+            ~strcmp(ff{i}, 'EMGData') && ~strcmp(ff{i}, 'adaptParams')
         reducedFields{end + 1} = ff{i};
         fieldLabels{end + 1} = strcat(ffShort{i}, field.labels);
         fieldPrefixes{end + 1} = ffShort{i};

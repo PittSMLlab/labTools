@@ -15,8 +15,6 @@ function newThis = discardBadStrides(this)
 %
 %   See also: strideData/isBad
 
-% No need, the discarding happens when this structure is created from
-% a processed experiment.
 newThis = [];
 end
 

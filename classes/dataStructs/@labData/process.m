@@ -1,28 +1,27 @@
 function processedData = process(this, subData, eventClass)
-%process  Processes raw data to find angles, events, and
-%adaptation parameters
+%process  Processes raw data to get angles, events, & adaptation parameters
 %
-%   processedData = process(this, subData) processes the raw
-%   data and returns a processedTrialData object with computed
-%   angles, events, EMG processing, COP, COM, and joint moments
+%   processedData = process(this, subData) processes the raw data and
+%   returns a processedTrialData object with computed angles, events, EMG
+%   processing, COP, COM, and joint moments
 %
-%   processedData = process(this, subData, eventClass)
-%   optionally specifies event class for parameter calculation
+%   processedData = process(this, subData, eventClass) optionally specifies
+%   event class for parameter calculation
 %
 %   Inputs:
 %       this - labData object
-%       subData - subject data structure containing weight and
-%                 other subject information
+%       subData - subject data structure containing weight and other
+%                 subject information
 %       eventClass - optional event classification parameter
 %
 %   Outputs:
-%       processedData - processedTrialData object containing
-%                       all processed data
+%       processedData - processedTrialData object containing all processed
+%                       data
 %
 %   Note: This function MUST BE idempotent, i.e.,
 %         labData.process.process = labData.process
-%         Otherwise re-processing data may lead to double or
-%         triple filtering.
+%         Otherwise re-processing data may lead to double or triple
+%         filtering.
 %
 %   See also: processedTrialData, calcParameters
 

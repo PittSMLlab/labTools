@@ -1,8 +1,8 @@
 function [arrayedEvents] = getArrayedEvents(this, eventList)
 %getArrayedEvents  Retrieves events organized as an array
 %
-%   arrayedEvents = getArrayedEvents(this, eventList) returns
-%   the specified events as a structured array
+%   arrayedEvents = getArrayedEvents(this, eventList) returns the specified
+%   events as a structured array
 %
 %   Inputs:
 %       this - processedLabData object

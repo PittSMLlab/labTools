@@ -1,11 +1,11 @@
 function this = checkMarkerHealth(this, refTrial)
 %checkMarkerHealth  Validates marker data quality
 %
-%   this = checkMarkerHealth(this) analyzes marker data across all
-%   trials for missing data, label errors, and outliers
+%   this = checkMarkerHealth(this) analyzes marker data across all trials
+%   for missing data, label errors, and outliers
 %
-%   this = checkMarkerHealth(this, refTrial) optionally specifies
-%   which trial to use for model training
+%   this = checkMarkerHealth(this, refTrial) optionally specifies which
+%   trial to use for model training
 %
 %   Inputs:
 %       this - experimentData object
@@ -13,8 +13,8 @@ function this = checkMarkerHealth(this, refTrial)
 %                  automatically selected if not provided)
 %
 %   Outputs:
-%       this - experimentData object with quality flags added to
-%              marker data
+%       this - experimentData object with quality flags added to marker
+%              data
 %
 %   See also: extractMarkerModels, orientedLabTimeSeries/findOutliers
 

@@ -19,8 +19,6 @@ function newThis = splitConditionIntoTrials(this, condList)
 %
 %   See also: getConditionIdxsFromName, numerateRepeatedConditionNames
 
-% This function gets a condition list condList, and for each condition on
-% said list it splits it, assigning a unique condition name to each trial
 newThis = this;
 for i = 1:length(condList)
     id = this.getConditionIdxsFromName(condList{i});

@@ -17,9 +17,6 @@ function conditionOrder = validateTrialsInCondition(this)
 %
 %   See also: checkConditionOrder, sortConditions
 
-% Checks that there are no repeated trials, and that conditions do not
-% interleave trials e.g. that condition 'A' has trials 1 and 3, and
-% condition 'B' has trial 2
 conditionNamesInOrder = this.conditionName;
 for i = 1:length(conditionNamesInOrder)
     trialNo{i} = this.getTrialsInCondition(conditionNamesInOrder{i});

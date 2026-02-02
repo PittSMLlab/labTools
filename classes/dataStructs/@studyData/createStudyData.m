@@ -17,8 +17,6 @@ function this = createStudyData(groupAdaptationDataList)
 %
 %   See also: studyData, groupAdaptationData
 
-% This function creates a studyData object from a list of filenames,
-% each containing a groupAdaptation object
 % Check: groupAdaptationDataList is a cell of strings
 % Doxy
 aux = cell(size(groupAdaptationDataList));

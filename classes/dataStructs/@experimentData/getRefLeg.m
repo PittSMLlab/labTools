@@ -1,8 +1,8 @@
 function refLeg = getRefLeg(this)
 %getRefLeg  Returns reference leg for parameter computations
 %
-%   refLeg = getRefLeg(this) determines the reference leg by majority
-%   vote over all trials in the experiment
+%   refLeg = getRefLeg(this) determines the reference leg by majority vote
+%   over all trials in the experiment
 %
 %   Inputs:
 %       this - experimentData object

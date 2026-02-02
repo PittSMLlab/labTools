@@ -11,8 +11,8 @@ function adaptData = makeDataObjNew(this, filename, experimentalFlag, ...
 %       filename - string for saving (optional)
 %       experimentalFlag - if false, excludes experimental parameters
 %                          (optional)
-%       contraLateralFlag - if true, uses non-reference leg for
-%                           computation (optional)
+%       contraLateralFlag - if true, uses non-reference leg for computation
+%                           (optional)
 %
 %   Outputs:
 %       adaptData - adaptationData object
@@ -26,9 +26,9 @@ if isempty(contraLateralFlag) || contraLateralFlag == 0
     % Normal parameters
     % nop
 else
-    % Computing all parameters on a contraLateral way (this is, we
-    % compute parameters using the NON reference leg as the 'slow'
-    % one, opposite to the default computation)
+    % Computing all parameters on a contraLateral way (this is, we compute
+    % parameters using the NON reference leg as the 'slow' one, opposite to
+    % the default computation)
     if strcmp(this.getRefLeg, 'R')
         initEventSide = 'L';
     elseif strcmp(this.getRefLeg, 'L')

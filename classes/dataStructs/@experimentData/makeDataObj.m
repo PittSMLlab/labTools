@@ -23,10 +23,10 @@ function adaptData = makeDataObj(this, filename, experimentalFlag, ...
 %                   directory if filename specified
 %
 %   Examples:
-%       adaptData = expData.makeDataObj('Sub01') saves
+%       adaptData = expData.makeDataObj('Sub01'); saves
 %       adaptationData object to Sub01params.mat
 %
-%       adaptData = expData.makeDataObj('', false) does not include
+%       adaptData = expData.makeDataObj('', false); does not include
 %       experimentalParams and does not save to file
 %
 %   See also: adaptationData, makeDataObjNew

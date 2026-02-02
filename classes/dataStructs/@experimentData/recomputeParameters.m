@@ -12,8 +12,7 @@ function this = recomputeParameters(this, eventClass, initEventSide, ...
 %       this - experimentData object
 %       eventClass - event classification parameter (optional)
 %       initEventSide - initial event side specification (optional)
-%       parameterClasses - specific parameter classes to compute
-%                          (optional)
+%       parameterClasses - specific parameter classes to compute (optional)
 %
 %   Outputs:
 %       this - experimentData object with updated parameters
@@ -21,8 +20,7 @@ function this = recomputeParameters(this, eventClass, initEventSide, ...
 %   Example:
 %       expData = expData.recomputeParameters();
 %
-%   See also: flushAndRecomputeParameters, recomputeEvents,
-%             calcParameters
+%   See also: flushAndRecomputeParameters, recomputeEvents, calcParameters
 
 if nargin < 2 || isempty(eventClass)
     eventClass = [];

@@ -1,10 +1,8 @@
 function bodyWeight = estimateSubjectBodyWeight(this)
-%estimateSubjectBodyWeight  Estimates subject weight from GRF
-%data
+%estimateSubjectBodyWeight  Estimates subject weight from GRF data
 %
-%   bodyWeight = estimateSubjectBodyWeight(this) estimates
-%   subject body weight by averaging vertical ground reaction
-%   forces
+%   bodyWeight = estimateSubjectBodyWeight(this) estimates subject body
+%   weight by averaging vertical ground reaction forces
 %
 %   Inputs:
 %       this - labData object
@@ -12,8 +10,7 @@ function bodyWeight = estimateSubjectBodyWeight(this)
 %   Outputs:
 %       bodyWeight - estimated body weight in kg
 %
-%   Note: Assumes z-axis forces are representative of body
-%         weight
+%   Note: Assumes z-axis forces are representative of body weight
 %
 %   See also: computeTorques
 

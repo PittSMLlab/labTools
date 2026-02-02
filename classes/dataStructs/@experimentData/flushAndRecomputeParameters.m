@@ -2,11 +2,11 @@ function this = flushAndRecomputeParameters(this, eventClass, ...
     initEventSide)
 %flushAndRecomputeParameters  Completely recalculates parameters
 %
-%   this = flushAndRecomputeParameters(this) discards existing
-%   parameters and recomputes all from scratch
+%   this = flushAndRecomputeParameters(this) discards existing parameters
+%   and recomputes all from scratch
 %
-%   this = flushAndRecomputeParameters(this, eventClass,
-%   initEventSide) recomputes with specified options
+%   this = flushAndRecomputeParameters(this, eventClass, initEventSide)
+%   recomputes with specified options
 %
 %   Inputs:
 %       this - experimentData object
@@ -16,10 +16,10 @@ function this = flushAndRecomputeParameters(this, eventClass, ...
 %   Outputs:
 %       this - experimentData object with new parameters
 %
-%   Note: Different from recomputeParameters() as it throws away
-%         previously existing parameters. recomputeParameters only
-%         substitutes if there are name collisions, so it allows for
-%         recomputing only force or EMG params.
+%   Note: Different from recomputeParameters() as it throws away previously
+%         existing parameters. recomputeParameters only substitutes if
+%         there are name collisions, so it allows for recomputing only
+%         force or EMG params.
 %
 %   Example:
 %       expData = expData.flushAndRecomputeParameters();

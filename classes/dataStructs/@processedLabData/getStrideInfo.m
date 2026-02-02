@@ -2,17 +2,16 @@ function [numStrides, initTime, endTime] = getStrideInfo(this, ...
     triggerEvent, endEvent)
 %getStrideInfo  Returns stride count and timing information
 %
-%   [numStrides, initTime, endTime] = getStrideInfo(this)
-%   returns stride information using the reference leg heel
-%   strike as the default trigger event
+%   [numStrides, initTime, endTime] = getStrideInfo(this) returns stride
+%   information using the reference leg heel strike as the default trigger
+%   event
 %
-%   [numStrides, initTime, endTime] = getStrideInfo(this,
-%   triggerEvent) returns stride information using the
-%   specified trigger event
+%   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent)
+%   returns stride information using the specified trigger event
 %
-%   [numStrides, initTime, endTime] = getStrideInfo(this,
-%   triggerEvent, endEvent) returns stride information where
-%   each stride is defined from triggerEvent to endEvent
+%   [numStrides, initTime, endTime] = getStrideInfo(this, triggerEvent,
+%   endEvent) returns stride information where each stride is defined from
+%   triggerEvent to endEvent
 %
 %   Inputs:
 %       this - processedLabData object
@@ -49,27 +48,27 @@ else
 end
 numStrides = size(initTime, 1);
 
-%             refLegEventList = this.getPartialGaitEvents(triggerEvent);
-%             refIdxLst = find(refLegEventList == 1);
-%             auxTime = this.gaitEvents.Time;
-%             initTime = auxTime(refIdxLst(1:end - 1));
-%             numStrides = length(initTime);
-%             if nargin < 3 || isempty(endEvent) % using triggerEvent for endEvent
-%                 endTime = auxTime(refIdxLst(2:end));
-%             else % End of interval depends on another event
-%                 endEventList = this.getPartialGaitEvents(endEvent);
-%                 endIdxLst = find(endEventList == 1);
-%                 i = 0;
-%                 noEnd = true;
-%                 while i < numStrides && noEnd % This is an infinite loop...
-%                     i = i + 1;
-%                     aux = auxTime(find(endIdxLst > refIdxLst(i), 1, 'first'));
-%                     if ~isempty(aux)
-%                         endTime(i) = aux;
-%                     else
-%                         endTime(i) = NaN;
-%                     end
-%                 end
-%            end
+% refLegEventList = this.getPartialGaitEvents(triggerEvent);
+% refIdxLst = find(refLegEventList == 1);
+% auxTime = this.gaitEvents.Time;
+% initTime = auxTime(refIdxLst(1:end - 1));
+% numStrides = length(initTime);
+% if nargin < 3 || isempty(endEvent) % using triggerEvent for endEvent
+%     endTime = auxTime(refIdxLst(2:end));
+% else % End of interval depends on another event
+%     endEventList = this.getPartialGaitEvents(endEvent);
+%     endIdxLst = find(endEventList == 1);
+%     i = 0;
+%     noEnd = true;
+%     while i < numStrides && noEnd % This is an infinite loop...
+%         i = i + 1;
+%         aux = auxTime(find(endIdxLst > refIdxLst(i), 1, 'first'));
+%         if ~isempty(aux)
+%             endTime(i) = aux;
+%         else
+%             endTime(i) = NaN;
+%         end
+%     end
+% end
 end
 

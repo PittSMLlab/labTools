@@ -8,8 +8,7 @@ function conditionIdxs = getConditionIdxsFromName(this, ...
 %   Inputs:
 %       this - experimentData object
 %       conditionNames - cell array containing strings or nested cell
-%                        arrays (e.g., {'Base', 'Adap', {'Post',
-%                        'wash'}})
+%                        arrays (e.g., {'Base', 'Adap', {'Post', 'wash'}})
 %
 %   Outputs:
 %       conditionIdxs - vector of condition indices

@@ -1,9 +1,8 @@
 function checkMarkerDataHealth(this)
 %checkMarkerDataHealth  Diagnoses issues with marker data
 %
-%   checkMarkerDataHealth(this) analyzes marker data for
-%   missing frames, gap distributions, and potential outliers.
-%   Generates diagnostic plots.
+%   checkMarkerDataHealth(this) analyzes marker data for missing frames,
+%   gap distributions, and potential outliers. Generates diagnostic plots.
 %
 %   Inputs:
 %       this - labData object

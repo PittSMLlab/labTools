@@ -49,9 +49,9 @@ classdef trialMetaData
             %   this = trialMetaData(name) creates a trial metadata object
             %   with the specified trial name
             %
-            %   this = trialMetaData(name, desc, obs, refLeg, cond, filename,
-            %   type, schenleyLab, perceptualTasks, ID, datlog) creates a
-            %   trial metadata object with all specified parameters
+            %   this = trialMetaData(name, desc, obs, refLeg, cond,
+            %   filename, type, schenleyLab, perceptualTasks, ID, datlog)
+            %   creates trial metadata object with all specified parameters
             %
             %   Inputs:
             %       name - short name/label for the trial condition
@@ -62,8 +62,8 @@ classdef trialMetaData
             %       filename - raw data filename(s), string or cell array
             %                  (optional)
             %       type - trial type: 'TM' (treadmill), 'OG' (overground),
-            %              'NIM' (Nimbus), or 'IN' (instrumented) (optional,
-            %              default: 'TM')
+            %              'NIM' (Nimbus), or 'IN' (instrumented)
+            %              (optional, default: 'TM')
             %       schenleyLab - flag for Schenley lab data (optional,
             %                     default: 0)
             %       perceptualTasks - flag for perceptual tasks (optional,
@@ -83,7 +83,8 @@ classdef trialMetaData
             if nargin > 2 && isa(obs, 'char')
                 this.observations = obs;
             end
-            if nargin > 3 && (isa(refLeg, 'char')) % Must be either 'L' or 'R'
+            if nargin > 3 && (isa(refLeg, 'char'))
+                % Must be either 'L' or 'R'
                 if strcmpi(refLeg, 'R') || strcmpi(refLeg, 'L')
                     this.refLeg = refLeg;
                 else
@@ -105,8 +106,8 @@ classdef trialMetaData
                     this.type = type;
                 else
                     ME = MException('labMetaData:Constructor', ...
-                        ['type must be either ''OG'' or ''TM'', ''NIM'' ' ...
-                        'or ''IN''.']);
+                        ['type must be either ''OG'' or ''TM'', ' ...
+                        '''NIM'' or ''IN''.']);
                     throw(ME);
                 end
             else

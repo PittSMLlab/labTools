@@ -37,8 +37,7 @@ classdef processedLabData < labData
 
     %% Properties
     properties % (SetAccess = private)  Cannot set to private,
-        % because labData will try to set it when using
-        % split()
+        % because labData will try to set it when using split()
         gaitEvents % labTS
         procEMGData % processedEMGTS
         angleData % labTS (angles based off kinematics)
@@ -60,11 +59,10 @@ classdef processedLabData < labData
 
     %% Constructor
     methods
-        function this = processedLabData(metaData, markerData, ...
-                EMGData, GRFData, beltSpeedSetData, ...
-                beltSpeedReadData, accData, EEGData, footSwitches, ...
-                events, procEMG, angleData, COPData, COMData, ...
-                jointMomentsData, HreflexPin)
+        function this = processedLabData(metaData, markerData, EMGData, ...
+                GRFData, beltSpeedSetData, beltSpeedReadData, accData, ...
+                EEGData, footSwitches, events, procEMG, angleData, ...
+                COPData, COMData, jointMomentsData, HreflexPin)
             % processedLabData  Constructor for processedLabData class
             %
             %   All arguments are mandatory

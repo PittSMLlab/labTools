@@ -12,12 +12,11 @@ function [h, adaptDataObject] = parameterTimeCourse(this, field)
 %       h - figure handle
 %       adaptDataObject - adaptationData object used for plotting
 %
-%   Note: This function takes a long time to run. For efficiency,
-%         generate and save an adaptData object, then use its plotting
-%         functions directly.
+%   Note: This function takes a long time to run. For efficiency, generate
+%         and save an adaptData object, then use its plotting functions
+%         directly.
 %
-%   See also: parameterEvolutionPlot,
-%             adaptationData/plotParamTimeCourse
+%   See also: parameterEvolutionPlot, adaptationData/plotParamTimeCourse
 
 if ~(this.isProcessed)
     ME = MException('experimentData:parameterTimeCourse', ...

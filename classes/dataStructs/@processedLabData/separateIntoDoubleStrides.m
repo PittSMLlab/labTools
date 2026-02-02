@@ -2,10 +2,9 @@ function [steppedDataArray, initTime, endTime] = ...
     separateIntoDoubleStrides(this, triggerEvent)
 %separateIntoDoubleStrides  Splits data into 2-stride segments
 %
-%   [steppedDataArray, initTime, endTime] =
-%   separateIntoDoubleStrides(this, triggerEvent) splits the
-%   data into "double-stride" segments of 2 full strides. This
-%   is the minimum unit needed to get parameters consistently
+%   [steppedDataArray, initTime, endTime] = separateIntoDoubleStrides(this,
+%   triggerEvent) splits the data into "double-stride" segments of 2 full
+%   strides. This is the minimum unit needed to get parameters consistently
 %   for an individual stride cycle.
 %
 %   Inputs:
@@ -22,7 +21,6 @@ function [steppedDataArray, initTime, endTime] = ...
 %
 %   See also: separateIntoStrides, separateIntoSuperStrides
 
-% Version deprecated on Apr 2nd 2015
 % triggerEvent needs to be one of the valid gaitEvent labels
 [strideIdxs, initTime, endTime] = getStrideInfo(this, triggerEvent);
 steppedDataArray = {};

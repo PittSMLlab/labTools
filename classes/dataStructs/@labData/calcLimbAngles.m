@@ -15,7 +15,7 @@ function angleData = calcLimbAngles(trialData)
 %disp('TEST: computing limb angles')
 fs=1/trialData.markerData.sampPeriod;
 
-[file] = getSimpleFileName(trialData.metaData.rawDataFilename); %for error printout purposes
+file = getSimpleFileName(trialData.metaData.rawDataFilename); %for error printout purposes
 
 %get orientation
 if isempty(trialData.markerData.orientation)

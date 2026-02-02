@@ -20,9 +20,6 @@ function [newThis, change] = numerateRepeatedConditionNames(this)
 %
 %   See also: replaceConditionNames, validateTrialsInCondition
 
-% This function should (almost) never be used. metaData no longer
-% allows repeated condition names, so this is unnecessary. However, for
-% files created before the prohibition, it may happen.
 aaa = unique(this.conditionName);
 change = false;
 if length(aaa) < length(this.conditionName) % There are repetitions

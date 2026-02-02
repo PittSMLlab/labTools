@@ -22,8 +22,6 @@ function conditionOrder = checkConditionOrder(this, ...
 %
 %   See also: validateTrialsInCondition, sortConditions
 
-% Checks that the given conditions appear in order for the subject,
-% according to trial numbering
 if nargin < 2 || isempty(conditionNamesInOrder)
     conditionNamesInOrder = this.conditionName;
 end
@@ -38,7 +36,7 @@ if nargin > 2 && ~isempty(silentFlag) && ~silentFlag
     if any(diff(conditionOrder) < 1)
         badOrder = find(diff(conditionOrder) < 1);
         for i = 1:length(badOrder)
-            display(['Conditions provided are not in order: ' ...
+            disp(['Conditions provided are not in order: ' ...
                 conditionNamesInOrder{badOrder(i)} ' precedes ' ...
                 conditionNamesInOrder{badOrder(i) + 1}]);
         end

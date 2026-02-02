@@ -1,21 +1,19 @@
 function [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)
 %computeHemiCOP  Computes center of pressure for one leg
 %
-%   [COP, F, M] = computeHemiCOP(this, side) computes center of
-%   pressure for specified leg with default filtering
+%   [COP, F, M] = computeHemiCOP(this, side) computes center of pressure
+%   for specified leg with default filtering
 %
-%   [COP, F, M] = computeHemiCOP(this, side, noFilterFlag)
-%   optionally disables filtering when noFilterFlag is true
+%   [COP, F, M] = computeHemiCOP(this, side, noFilterFlag) optionally
+%   disables filtering when noFilterFlag is true
 %
 %   Inputs:
 %       this - labData object
 %       side - 'L' or 'R' for left or right leg
-%       noFilterFlag - flag to disable filtering (default:
-%                      filtered)
+%       noFilterFlag - flag to disable filtering (default: filtered)
 %
 %   Outputs:
-%       COP - orientedLabTimeSeries containing center of
-%             pressure
+%       COP - orientedLabTimeSeries containing center of pressure
 %       F - force data matrix
 %       M - moment data matrix
 %

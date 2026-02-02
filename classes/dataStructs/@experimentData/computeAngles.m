@@ -14,7 +14,6 @@ function this = computeAngles(this)
 %
 %   See also: labData/calcLimbAngles
 
-% added by Digna
 for trial = 1:length(this.data)
     disp(['Computing angles for trial ' num2str(trial) '...']);
     if ~isempty(this.data{trial})

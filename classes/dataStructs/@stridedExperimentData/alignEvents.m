@@ -19,7 +19,6 @@ function alignedData = alignEvents(this, spacing, trial, fieldName, ...
 %
 %   See also: getAlignedData
 
-% This function will be deprecated, use getAlignedData instead.
 alignedData = [];
 end
 

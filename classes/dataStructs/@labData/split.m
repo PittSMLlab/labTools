@@ -1,39 +1,27 @@
 function newThis = split(this, t0, t1, newClass)
 %split  Splits data into time-delimited segments
 %
-%   newThis = split(this, t0) splits data from time t0 to end
-%   of trial
+%   newThis = split(this, t0) splits data from time t0 to end of trial
 %
-%   newThis = split(this, t0, t1) splits data into interval
-%   [t0, t1)
+%   newThis = split(this, t0, t1) splits data into interval [t0, t1)
 %
-%   newThis = split(this, t0, t1, newClass) splits data and
-%   returns object of type specified by newClass string
+%   newThis = split(this, t0, t1, newClass) splits data and returns object
+%   of type specified by newClass string
 %
 %   Inputs:
 %       this - labData object
-%       t0 - time in seconds of split start (inclusive). Use
-%            NaN for trial start
-%       t1 - time in seconds of split end (exclusive). Use NaN
-%            or omit for trial end
-%       newClass - string representing class/object type to
-%                  return (optional, default: same as this)
+%       t0 - time in seconds of split start (inclusive). Use NaN for trial
+%            start
+%       t1 - time in seconds of split end (exclusive). Use NaN or omit for
+%            trial end
+%       newClass - string representing class/object type to return
+%                  (optional, default: same as this)
 %
 %   Outputs:
-%       newThis - new object containing split data, of type
-%                 specified by newClass or same as input (must be subclass)
+%       newThis - new object containing split data, of type specified by
+%                 newClass or same as input (must be subclass)
 %
 %   See also: labTimeSeries/split
-
-% Split the data into [t0, t1).
-% Args:
-%   -t0: time in seconds (relative to trial start) of where to start the
-%        split (inclusive) when given NaN, default to start of the trial.
-%   -t1: time in seconds (relative to trial start) of where to stop
-%        (exclusive). OPTIONAL, when not provided or got NaN, default to
-%        end of the trial
-%   -newClass: string representing class/object type to return.
-%        OPTIONAL, default return the same type
 
 newThis = []; % Just to avoid Matlab saying this is not defined
 cname = class(this);

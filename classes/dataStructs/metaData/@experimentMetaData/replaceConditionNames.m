@@ -21,8 +21,6 @@ function [newThis, change] = replaceConditionNames(this, currentName, ...
 %   See also: numerateRepeatedConditionNames,
 %             getConditionIdxsFromName
 
-% Looks for conditions whose name match the options in currentName &
-% changes them to newName
 change = false;
 % Check currentName and newName are cell arrays of same length
 % Exact matches only, but allows not finding matches (does not accept

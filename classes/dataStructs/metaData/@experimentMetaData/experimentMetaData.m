@@ -68,8 +68,8 @@ classdef experimentMetaData
                 PerceptualTasks, datlog)
             %experimentMetaData  Constructor for experimentMetaData class
             %
-            %   this = experimentMetaData(ID) creates an experiment metadata
-            %   object with the specified subject ID
+            %   this = experimentMetaData(ID) creates an experiment
+            %   metadata object with the specified subject ID
             %
             %   this = experimentMetaData(ID, date, experimenter, obs,
             %   conds, desc, trialLst, Ntrials, SchenleyPlace,
@@ -308,8 +308,6 @@ classdef experimentMetaData
             %   See also: saveobj, validateTrialsInCondition,
             %             sortConditions
 
-            % This function was created to retroactively validate trials
-            % every time this is loaded
             conditionOrder = this.validateTrialsInCondition();
             this = this.sortConditions();
         end

@@ -28,7 +28,6 @@ function [plotHandle, offset, ampCoefs] = plotCellAvg(strides, ...
 %
 %   See also: plotCell, cell2mat
 
-% Plot cellarray of stride data
 if nargin < 10
     plotEv = 0;
 end

@@ -13,8 +13,7 @@ function this = recomputeEvents(this, eventClass, initEventSide)
 %       initEventSide - initial event side specification (optional)
 %
 %   Outputs:
-%       this - experimentData object with recomputed events and
-%              parameters
+%       this - experimentData object with recomputed events and parameters
 %
 %   See also: processedLabData/recomputeEvents, recomputeParameters
 

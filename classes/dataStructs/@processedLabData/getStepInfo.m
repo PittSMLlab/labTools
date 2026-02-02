@@ -2,26 +2,23 @@ function [numSteps, initTime, endTime, initEventSide] = ...
     getStepInfo(this, triggerEvent)
 %getStepInfo  Returns step count and timing information
 %
-%   [numSteps, initTime, endTime, initEventSide] =
-%   getStepInfo(this) returns step information using heel
-%   strike as the default trigger event
+%   [numSteps, initTime, endTime, initEventSide] = getStepInfo(this)
+%   returns step information using heel strike as the default trigger event
 %
-%   [numSteps, initTime, endTime, initEventSide] =
-%   getStepInfo(this, triggerEvent) returns step information
-%   using the specified trigger event
+%   [numSteps, initTime, endTime, initEventSide] = getStepInfo(this,
+%   triggerEvent) returns step information using specified trigger event
 %
 %   Inputs:
 %       this - processedLabData object
-%       triggerEvent - event type for step boundaries
-%                      (default: 'HS')
+%       triggerEvent - event type for step boundaries (default: 'HS')
 %                      Note: Do not include leg identifier
 %
 %   Outputs:
 %       numSteps - number of complete steps
 %       initTime - vector of step start times
 %       endTime - vector of step end times
-%       initEventSide - cell array indicating which leg ('R' or
-%                       'L') initiated each step
+%       initEventSide - cell array indicating which leg ('R' or 'L')
+%                       initiated each step
 %
 %   See also: getStrideInfo
 

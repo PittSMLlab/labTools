@@ -13,8 +13,7 @@ function [stridedField, bad, originalTrial, originalInitTime, ...
 %   Inputs:
 %       this - experimentData object
 %       field - name of field to extract
-%       conditions - condition indices or names (optional, default:
-%                    all)
+%       conditions - condition indices or names (optional, default: all)
 %       events - event labels for stride boundaries (optional,
 %                default: slowLeg HS)
 %

@@ -1,15 +1,15 @@
 function newThis = recomputeEvents(this)
 %recomputeEvents  Re-computes gait events and adaptation parameters
 %
-%   newThis = recomputeEvents(this) re-computes gait events
-%   from angle data and recalculates adaptation parameters
+%   newThis = recomputeEvents(this) re-computes gait events from angle data
+%   and recalculates adaptation parameters
 %
 %   Inputs:
 %       this - processedLabData object
 %
 %   Outputs:
-%       newThis - updated processedLabData object with
-%                 recomputed events and parameters
+%       newThis - updated processedLabData object with recomputed events
+%                 and parameters
 %
 %   See also: getEvents, calcParameters
 

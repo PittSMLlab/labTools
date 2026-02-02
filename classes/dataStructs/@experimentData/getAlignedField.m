@@ -3,8 +3,8 @@ function [alignedField, originalTrial, bad] = getAlignedField(this, ...
 %getAlignedField  Extracts time-aligned field data
 %
 %   [alignedField, originalTrial, bad] = getAlignedField(this, field)
-%   extracts the specified field time-normalized to standard gait
-%   cycle for all trials
+%   extracts the specified field time-normalized to standard gait cycle for
+%   all trials
 %
 %   [alignedField, originalTrial, bad] = getAlignedField(this, field,
 %   conditions, events, alignmentLengths) extracts for specified
@@ -13,10 +13,8 @@ function [alignedField, originalTrial, bad] = getAlignedField(this, ...
 %   Inputs:
 %       this - experimentData object
 %       field - name of field to extract
-%       conditions - condition indices or names (optional, default:
-%                    all)
-%       events - event labels for alignment (optional, default:
-%                slowLeg HS)
+%       conditions - condition indices or names (optional, default: all)
+%       events - event labels for alignment (optional, default: slowLeg HS)
 %       alignmentLengths - vector of sample counts between events
 %                          (optional)
 %

@@ -14,7 +14,6 @@ function N = getMasterSampleLength(this)
 %
 %   See also: timeNormalize
 
-% 0 if not time normalized, length of ALL time series otherwise.
 cname = class(this);
 auxLst = properties(cname);
 N = 0;

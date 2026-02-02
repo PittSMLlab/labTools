@@ -13,14 +13,12 @@ function stridedExp = splitIntoStrides(this, refEvent)
 %                  default: refLeg HS)
 %
 %   Outputs:
-%       stridedExp - stridedExperimentData object containing strided
-%                    trials
+%       stridedExp - stridedExperimentData object containing strided trials
 %
 %   Note: This might not be used?
 %
 %   See also: stridedExperimentData, processedLabData/separateIntoStrides
 
-% This might not be used?
 if ~this.isStepped && this.isProcessed
     for trial = 1:length(this.data)
         disp(['Splitting trial ' num2str(trial) '...']);

@@ -16,8 +16,7 @@ classdef experimentData
     %   isRaw - returns true if data is rawLabData class (dependent)
     %   isProcessed - returns true if data is processedLabData class
     %                 (dependent)
-    %   isStepped - returns true if data is strideData class
-    %               (dependent)
+    %   isStepped - returns true if data is strideData class (dependent)
     %   fastLeg - computes which belt ('L' or 'R') was the fast belt
     %             (dependent)
     %
@@ -36,8 +35,7 @@ classdef experimentData
     %   parameterEvolutionPlot - plots parameter evolution
     %   parameterTimeCourse - plots parameter time course
     %   recomputeParameters - recalculates adaptation parameters
-    %   flushAndRecomputeParameters - completely recalculates
-    %                                 parameters
+    %   flushAndRecomputeParameters - completely recalculates parameters
     %   recomputeEvents - recalculates gait events and parameters
     %   splitIntoStrides - separates trials into individual strides
     %   getStridedField - extracts strided field data
@@ -161,9 +159,8 @@ classdef experimentData
             %get.isProcessed  Checks if trials have been processed
             %
             %   Returns true if the trials have been processed (i.e.
-            %   parameters have been calculated through
-            %   ladData.process()), and false if they contain only
-            %   rawData.
+            %   parameters have been calculated through ladData.process()),
+            %   and false if they contain only rawData.
             %
             %   Inputs:
             %       this - experimentData object
@@ -184,8 +181,7 @@ classdef experimentData
         function a = get.isStepped(this)
             %get.isStepped  Checks if data is strided
             %
-            %   Returns true if data is an object of the strideData
-            %   class
+            %   Returns true if data is an object of the strideData class
             %
             %   Inputs:
             %       this - experimentData object
@@ -201,8 +197,7 @@ classdef experimentData
         function a = get.isRaw(this)
             %get.isRaw  Checks if data is raw
             %
-            %   Returns true if data is an object of the rawLabData
-            %   class
+            %   Returns true if data is an object of the rawLabData class
             %
             %   Inputs:
             %       this - experimentData object

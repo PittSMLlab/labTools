@@ -2,21 +2,20 @@ function [stridedField, bad, initTime, events] = ...
     getStridedField(this, field, events)
 %getStridedField  Extracts field data organized by stride
 %
-%   [stridedField, bad, initTime, events] = getStridedField(
-%   this, field, events) extracts the specified field data and
-%   organizes it by stride based on the provided events
+%   [stridedField, bad, initTime, events] = getStridedField(this, field,
+%   events) extracts the specified field data and organizes it by stride
+%   based on the provided events
 %
 %   Inputs:
 %       this - processedLabData object
 %       field - name of the data field to extract
-%       events - event label or cell array of event labels
-%                defining stride boundaries
+%       events - event label or cell array of event labels defining stride
+%                boundaries
 %
 %   Outputs:
-%       stridedField - cell array of time series data organized
-%                      by stride
-%       bad - logical vector indicating strides with incomplete
-%             or missing events
+%       stridedField - cell array of time series data organized by stride
+%       bad - logical vector indicating strides with incomplete or missing
+%             events
 %       initTime - vector of stride start times
 %       events - cell array of event labels used
 %
@@ -54,8 +53,7 @@ end
 
 % Step 3: slice timeseries
 timeBreakpoints = [initTime, intermediateTimes]';
-[slicedTS, ~, ~] = sliceTS(this.(field), ...
-    [timeBreakpoints(:); endTime(end)], 0);
+slicedTS = sliceTS(this.(field), [timeBreakpoints(:); endTime(end)], 0);
 
 % Step 4: reshape & set to [] the slices which didn't have proper events
 stridedField = reshape(slicedTS, N, M)';

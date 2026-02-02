@@ -39,13 +39,13 @@ classdef studyData % < dynamicprops
             %   this = studyData(group1, group2, ...) creates a study data
             %   object from multiple groupAdaptationData objects
             %
-            %   this = studyData(groupCell) creates a study data object from
-            %   a cell array of groupAdaptationData objects
+            %   this = studyData(groupCell) creates a study data object
+            %   from a cell array of groupAdaptationData objects
             %
             %   Inputs:
-            %       varargin - variable number of groupAdaptationData objects
-            %                  or single cell array of groupAdaptationData
-            %                  objects
+            %       varargin - variable number of groupAdaptationData
+            %                  objects or single cell array of
+            %                  groupAdaptationData objects
             %
             %   Outputs:
             %       this - studyData object

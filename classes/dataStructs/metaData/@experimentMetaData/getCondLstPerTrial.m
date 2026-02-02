@@ -14,8 +14,6 @@ function condLst = getCondLstPerTrial(this)
 %
 %   See also: getTrialsInCondition, getConditionIdxsFromName
 
-% Returns a vector with length equal to the number of trials in the
-% experiment and with values equal to the condition number for each trial.
 for i = 1:this.Ntrials
     for cond = 1:length(this.trialsInCondition)
         k = find(i == this.trialsInCondition{cond}, 1);

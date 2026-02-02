@@ -1,8 +1,8 @@
 function newThis = alignAllTS(this, alignmentVector)
 %alignAllTS  Aligns all time series data (unimplemented)
 %
-%   newThis = alignAllTS(this, alignmentVector) would align all
-%   time series data according to the alignment vector
+%   newThis = alignAllTS(this, alignmentVector) would align all time series
+%   data according to the alignment vector
 %
 %   Inputs:
 %       this - labData object
