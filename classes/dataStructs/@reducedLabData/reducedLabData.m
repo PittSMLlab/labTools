@@ -1,4 +1,4 @@
-classdef reducedLabData %AKA alignedLabData
+classdef reducedLabData % AKA alignedLabData
     %reducedLabData  Time-aligned and resampled data container
     %
     %   reducedLabData (also known as alignedLabData) contains data that
@@ -159,52 +159,122 @@ classdef reducedLabData %AKA alignedLabData
 
     %% Property Setters
     methods
-        function this=set.metaData(this,mD)
-            %Check something
-            this.metaData=mD;
+        function this = set.metaData(this, mD)
+            %set.metaData  Validates and sets metadata
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       mD - labMetaData or subclass object
+
+            % TODO: Check something
+            this.metaData = mD;
         end
-        function this=set.Data(this,dd)
-            if ~isa(dd,'alignedTimeSeries')
-                error('reducedLabData:setData','Data needs to be an ATS')
+
+        function this = set.Data(this, dd)
+            %set.Data  Validates and sets aligned data
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       dd - alignedTimeSeries object
+
+            if ~isa(dd, 'alignedTimeSeries')
+                error('reducedLabData:setData', ...
+                    'Data needs to be an ATS');
             else
-                this.Data=dd;
-            end
-        end
-        function this=set.bad(this,b)
-            if length(b)~=this.strideNo
-                error('Inconsistent sizes')
-            else
-                this.bad=b;
-            end
-        end
-        function this=set.gaitEvents(this,e)
-            if ~isa(e,'labTimeSeries') || ~isa(e.Data,'logical')
-                error('Input argument needs to be a logical labTimeSeries')
-            else
-                this.gaitEvents=e;
-            end
-        end
-        function this=set.adaptParams(this,aP)
-            if ~isa(aP,'parameterSeries') || size(aP.Data,1)~=this.strideNo
-                error('Input argument needs to be a parameterSeries object of length equal to stride number.')
-            elseif any(abs(aP.getDataAsVector('initTime')-this.initTimes')>1e-9) %Check that adaptParams is computed with the same initial event as alignTS was
-                error('AdaptParams seems to have been computed with different events than the provided data (alignTS)')
-            else
-                this.adaptParams=aP;
+                this.Data = dd;
             end
         end
 
+        function this = set.bad(this, b)
+            %set.bad  Validates and sets bad stride flags
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       b - logical vector of length equal to number of
+            %           strides
+
+            if length(b) ~= this.strideNo
+                error('reducedLabData:setBad', ...
+                    'Inconsistent sizes');
+            else
+                this.bad = b;
+            end
+        end
+
+        function this = set.gaitEvents(this, e)
+            %set.gaitEvents  Validates and sets gait events
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       e - logical labTimeSeries with event markers
+
+            if ~isa(e, 'labTimeSeries') || ~isa(e.Data, 'logical')
+                error('reducedLabData:setGaitEvents', ...
+                    'Input argument needs to be a logical labTimeSeries');
+            else
+                this.gaitEvents = e;
+            end
+        end
+
+        function this = set.adaptParams(this, aP)
+            %set.adaptParams  Validates and sets adaptation parameters
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       aP - parameterSeries object with parameters for each
+            %            stride
+            %
+            %   Note: Validates that parameter count matches stride count
+            %         and that initial times are consistent
+
+            if ~isa(aP, 'parameterSeries') || ...
+                    size(aP.Data, 1) ~= this.strideNo
+                error('reducedLabData:setAdaptParams', ...
+                    ['Input argument needs to be a parameterSeries ' ...
+                    'object of length equal to stride number.']);
+                % Check that adaptParams is computed with the same initial
+                % event as alignTS was
+            elseif any(abs(aP.getDataAsVector('initTime') - ...
+                    this.initTimes') > 1e-9)
+                error('reducedLabData:setAdaptParams', ...
+                    ['AdaptParams seems to have been computed with ' ...
+                    'different events than the provided data (alignTS)']);
+            else
+                this.adaptParams = aP;
+            end
+        end
     end
 
     %% Hidden Methods
     methods (Hidden)
-        function pED=universalDependentFieldGetter(this,funName)
-            fieldName=regexp(funName,'\.get\.','split');
-            prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName{2}));
-            pED=this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
-            warning('off','labTS:renameLabels:dont')
-            pED=pED.renameLabels([],cellfun(@(x) x(4:end),pED.labels,'UniformOutput',false));
-            warning('on','labTS:renameLabels:dont')
+        function pED = universalDependentFieldGetter(this, funName)
+            %universalDependentFieldGetter  Universal getter for dependent
+            %fields
+            %
+            %   pED = universalDependentFieldGetter(this, funName)
+            %   extracts data for a dependent field by matching the field
+            %   prefix and removing the prefix from labels
+            %
+            %   Inputs:
+            %       this - reducedLabData object
+            %       funName - full function name from stack trace
+            %
+            %   Outputs:
+            %       pED - alignedTimeSeries with extracted field data
+            %
+            %   Note: This method is called by all dependent property
+            %         getters to extract field-specific data from the
+            %         unified Data property
+
+            fieldName = regexp(funName, '\.get\.', 'split');
+            prefix = this.fieldPrefixes_(strcmp(this.fields_, ...
+                fieldName{2}));
+            pED = this.Data.getPartialDataAsATS(...
+                this.Data.getLabelsThatMatch(prefix));
+            warning('off', 'labTS:renameLabels:dont');
+            pED = pED.renameLabels([], cellfun(@(x) x(4:end), ...
+                pED.labels, 'UniformOutput', false));
+            warning('on', 'labTS:renameLabels:dont');
         end
     end
 
