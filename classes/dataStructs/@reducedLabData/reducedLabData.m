@@ -112,48 +112,113 @@ classdef reducedLabData % AKA alignedLabData
             pED = this.universalDependentFieldGetter(ST.name);
         end
 
-        function pED=get.angleData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+        function pED = get.angleData(this)
+            %get.angleData  Returns joint angle data
+            %
+            %   Uses universal getter to extract angle-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.COPData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.COPData(this)
+            %get.COPData  Returns center of pressure data
+            %
+            %   Uses universal getter to extract COP-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.COMData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.COMData(this)
+            %get.COMData  Returns center of mass data
+            %
+            %   Uses universal getter to extract COM-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.jointMomentsData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.jointMomentsData(this)
+            %get.jointMomentsData  Returns joint moment data
+            %
+            %   Uses universal getter to extract moment-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.markerData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.markerData(this)
+            %get.markerData  Returns marker trajectory data
+            %
+            %   Uses universal getter to extract marker-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.accData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.accData(this)
+            %get.accData  Returns acceleration data
+            %
+            %   Uses universal getter to extract acceleration-prefixed
+            %   data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.GRFData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
+
+        function pED = get.GRFData(this)
+            %get.GRFData  Returns ground reaction force data
+            %
+            %   Uses universal getter to extract GRF-prefixed data
+
+            [ST, ~] = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
-        function pED=get.beltSpeedSetData(this)
-            pED=[];
+
+        function pED = get.beltSpeedSetData(this)
+            %get.beltSpeedSetData  Returns commanded belt speed data
+            %
+            %   Currently returns empty as belt speed data is not
+            %   included in reduced format
+
+            pED = [];
         end
-        function pED=get.beltSpeedReadData(this)
-            pED=[];
+
+        function pED = get.beltSpeedReadData(this)
+            %get.beltSpeedReadData  Returns actual belt speed data
+            %
+            %   Currently returns empty as belt speed data is not
+            %   included in reduced format
+
+            pED = [];
         end
-        function pED=get.footSwitchData(this)
-            pED=[];
+
+        function pED = get.footSwitchData(this)
+            %get.footSwitchData  Returns foot switch data
+            %
+            %   Currently returns empty as foot switch data is not
+            %   included in reduced format
+
+            pED = [];
         end
-        function sN=get.strideNo(this)
-            sN=size(this.Data.Data,3);
+
+        function sN = get.strideNo(this)
+            %get.strideNo  Returns number of strides in data
+            %
+            %   Outputs:
+            %       sN - number of strides (third dimension of Data)
+
+            sN = size(this.Data.Data, 3);
         end
-        function iT=get.initTimes(this)
-            iT=this.Data.eventTimes(1,1:end-1);
+
+        function iT = get.initTimes(this)
+            %get.initTimes  Returns initial time for each stride
+            %
+            %   Outputs:
+            %       iT - vector of initial times for each stride
+
+            iT = this.Data.eventTimes(1, 1:end - 1);
         end
     end
 
