@@ -31,53 +31,87 @@ classdef reducedLabData %AKA alignedLabData
     %
     %See also: processedLabData, alignedTimeSeries, labData
 
+    %% Properties
     properties
-        Data=[];
-        bad=[];
-        gaitEvents %labTS
+        Data = [];
+        bad = [];
+        gaitEvents % labTS
         adaptParams
-        metaData %labMetaData object
+        metaData % labMetaData object
     end
+
     properties (Dependent)
-        procEMGData %processedEMGTS
-        angleData %labTS (angles based off kinematics)
+        procEMGData % processedEMGTS
+        angleData % labTS (angles based off kinematics)
         COPData
         COMData
         jointMomentsData
-        markerData %orientedLabTS
-        GRFData %orientedLabTS
-        accData %orientedLabTS
-        beltSpeedSetData %labTS, sent commands to treadmill
-        beltSpeedReadData %labTS, speed read from treadmill
-        footSwitchData %labTS
+        markerData % orientedLabTS
+        GRFData % orientedLabTS
+        accData % orientedLabTS
+        beltSpeedSetData % labTS, sent commands to treadmill
+        beltSpeedReadData % labTS, speed read from treadmill
+        footSwitchData % labTS
         strideNo
         initTimes
     end
-    properties(SetAccess=private)
+
+    properties (SetAccess = private)
         fields_
         fieldPrefixes_
     end
+
+    %% Constructor
     methods
-        function this=reducedLabData(metaData,events,alignTS,bad,fields,fieldPrefixes,adaptParams) %Constructor
-            this.metaData=metaData;
-            this.Data=alignTS;
-            this.bad=bad;
-            this.fields_=fields;
-            this.fieldPrefixes_=fieldPrefixes;
-            this.adaptParams=adaptParams;
-            this.gaitEvents=events;
+        function this = reducedLabData(metaData, events, alignTS, bad, ...
+                fields, fieldPrefixes, adaptParams)
+            %reducedLabData  Constructor for reducedLabData class
+            %
+            %   this = reducedLabData(metaData, events, alignTS, bad,
+            %   fields, fieldPrefixes, adaptParams) creates a reduced lab
+            %   data object with time-aligned data organized by stride
+            %
+            %   Inputs:
+            %       metaData - labMetaData or subclass object
+            %       events - labTimeSeries with gait events
+            %       alignTS - alignedTimeSeries with resampled data
+            %       bad - logical vector indicating bad strides
+            %       fields - cell array of field names included in data
+            %       fieldPrefixes - cell array of prefixes for each field
+            %       adaptParams - parameterSeries with parameters
+            %
+            %   Outputs:
+            %       this - reducedLabData object
+            %
+            %   See also: processedLabData/reduce, alignedTimeSeries
+
+            this.metaData = metaData;
+            this.Data = alignTS;
+            this.bad = bad;
+            this.fields_ = fields;
+            this.fieldPrefixes_ = fieldPrefixes;
+            this.adaptParams = adaptParams;
+            this.gaitEvents = events;
+        end
+    end
+
+    %% Dependent Property Getters
+    methods
+        % Can we do a universal getter for dependent fields like this?
+        % function pED = get(fieldName)
+        %     prefix = this.fieldPrefixes_(strcmp(this.fields_, fieldName));
+        %     pED = this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
+        % end
+
+        function pED = get.procEMGData(this)
+            %get.procEMGData  Returns processed EMG data
+            %
+            %   Uses universal getter to extract EMG-prefixed data
+
+            ST = dbstack;
+            pED = this.universalDependentFieldGetter(ST.name);
         end
 
-        %Getters:
-        %Can we do a universal getter for dependent fields like this?
-        %         function pED=get(fieldName)
-        %             prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName));
-        %             pED=this.Data.getPartialDataAsATS(this.Data.getLabelsThatMatch(prefix));
-        %         end
-        function pED=get.procEMGData(this)
-            [ST,~]=dbstack;
-            pED=this.universalDependentFieldGetter(ST.name);
-        end
         function pED=get.angleData(this)
             [ST,~]=dbstack;
             pED=this.universalDependentFieldGetter(ST.name);
@@ -121,8 +155,10 @@ classdef reducedLabData %AKA alignedLabData
         function iT=get.initTimes(this)
             iT=this.Data.eventTimes(1,1:end-1);
         end
+    end
 
-        %Setters
+    %% Property Setters
+    methods
         function this=set.metaData(this,mD)
             %Check something
             this.metaData=mD;
@@ -159,7 +195,9 @@ classdef reducedLabData %AKA alignedLabData
         end
 
     end
-    methods(Hidden)
+
+    %% Hidden Methods
+    methods (Hidden)
         function pED=universalDependentFieldGetter(this,funName)
             fieldName=regexp(funName,'\.get\.','split');
             prefix=this.fieldPrefixes_(strcmp(this.fields_,fieldName{2}));
@@ -169,5 +207,6 @@ classdef reducedLabData %AKA alignedLabData
             warning('on','labTS:renameLabels:dont')
         end
     end
+
 end
 
