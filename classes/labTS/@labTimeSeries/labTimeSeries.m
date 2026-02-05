@@ -69,21 +69,20 @@ classdef labTimeSeries  < timeseries
     %
     %See also: timeseries, orientedLabTimeSeries, alignedTimeSeries
 
-    %%
-    properties(SetAccess=private)
-        labels={''};
+    %% Properties
+    properties (SetAccess = private)
+        labels = {''};
         sampPeriod;
     end
-    properties(Dependent)
+
+    properties (Dependent)
         sampFreq
         timeRange
         Nsamples
     end
 
-    %%
+    %% Constructor
     methods
-
-        %Constructor:
         function this=labTimeSeries(data,t0,Ts,labels) %Necessarily uniformly sampled
             if nargin==0
                 data=[];
@@ -112,10 +111,26 @@ classdef labTimeSeries  < timeseries
                 throw(ME)
             end
         end
+    end
 
-        %-------------------
+    %% Dependent Property Getters
+    methods
+        %Getters for dependent properties
+        function fs=get.sampFreq(this)
+            fs=1/this.sampPeriod;
+        end
 
-        %Other I/O functions:
+        function tr=get.timeRange(this)
+            tr=(this.Nsamples)*this.sampPeriod;
+        end
+
+        function Nsamp=get.Nsamples(this)
+            Nsamp=this.TimeInfo.Length;
+        end
+    end
+
+    %% Data Access Methods
+    methods
         function [data,time,auxLabel]=getDataAsVector(this,label)
             if nargin<2 || isempty(label)
                 label=this.labels;
@@ -158,6 +173,14 @@ classdef labTimeSeries  < timeseries
             labelList=this.labels;
         end
 
+        function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
+            newThis=split(this.getDataAsTS(label),t0,t1);
+            [data,time,auxLabel]=getDataAsVector(newThis,label);
+        end
+    end
+
+    %% Label Query Methods
+    methods
         function this=renameLabels(this,originalLabels,newLabels)
             warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
             if isempty(originalLabels)
@@ -204,7 +227,10 @@ classdef labTimeSeries  < timeseries
                 [boolFlag,labelIdx] = compareListsFast(this.labels,auxLabel);
             end
         end
+    end
 
+    %% Sampling and Synchronization Methods
+    methods
         function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method.
             if nargin<3 || isempty(method)
                 if isa(this.Data,'logical')
@@ -294,9 +320,10 @@ classdef labTimeSeries  < timeseries
             %    error('Non consistent indexes found')
             %end
         end
-        %-------------------
+    end
 
-        %Modifier functions:
+    %% Resampling Methods
+    methods
         function newThis=resample(this,newTs,newT0,hiddenFlag)
             this.Quality=[]; %So that Quality is not resample if it exists.
             if nargin<3 || isempty(newT0)
@@ -376,7 +403,10 @@ classdef labTimeSeries  < timeseries
                 error('labTimeSeries:resampleN','Interpolating empty labTimeSeries,impossible.')
             end
         end
+    end
 
+    %% Data Segmentation Methods
+    methods
         function newThis=split(this,t0,t1)
 
             %Need to test this chunk of code before enabling:
@@ -438,96 +468,6 @@ classdef labTimeSeries  < timeseries
                 k=find(strcmp(this.QualityInfo.Description,'missing'));
                 newThis.Quality=[k*ones(ia,size(this.Quality,2)) ; this.Quality(i1:i2,:); k*ones(ib,size(this.Quality,2))];
             end
-        end
-
-        function newThis=appendData(this,newData,newLabels) %For back compat
-            other=labTimeSeries(newData,newLabels,this.Time(1),this.sampPeriod);
-            newThis=cat(this,other);
-        end
-
-        function [newThis,newData]=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
-            %This function allows to compute new parameters from other existing parameters and have them added to the data.
-            %This is useful when trying out new parameters without having to
-            %recompute all existing parameters.
-            %INPUT:
-            %newPAramLAbel: string with the name of the new parameter
-            %funHandle: a function handle with N input variables, whose
-            %result will be used to compute the new parameter
-            %inputParameterLabels: the parameters that will replace each of
-            %the variables in the funHandle
-            %EXAMPLE:
-            %See example in parameterSeries
-
-            [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels);
-            newThis=appendData(this,newData,{newParamLabel}) ;
-        end
-
-        function [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
-            %This function allows to compute new parameters from other existing parameters and have them added to the data.
-            %This is useful when trying out new parameters without having to
-            %recompute all existing parameters.
-            %INPUT:
-            %newPAramLAbel: string with the name of the new parameter
-            %funHandle: a function handle with N input variables, whose
-            %result will be used to compute the new parameter
-            %inputParameterLabels: the parameters that will replace each of
-            %the variables in the funHandle
-            %EXAMPLE:
-            %See example in parameterSeries
-            %See also: addNewParameter
-
-            %TO DO: support many new parameters together, as long as they
-            %use the same funHandle, with inputParameterLabels an NxM array,
-            %where N is the size of newParamLabel (# parameters to be
-            %computed). Use this change in
-            %linearStretch(this,labels,rangeValues) for efficiency
-
-            %Check input sanity:
-            if length(inputParameterLabels)~=nargin(funHandle)
-                error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
-            end
-            if compareListsFast(this.labels,newParamLabel)
-                error('labTS:addNewParameter','Cannot add parameter because it already exists')
-            end
-            oldData=this.getDataAsVector(inputParameterLabels);
-            str='(';
-            for i=1:size(oldData,2)
-                str=[str 'oldData(:,' num2str(i) '),'];
-            end
-            str(end)=')'; %Replacing last comma with parenthesis
-            eval(['newData=funHandle' str ';']); %Isn't there a way to do this without eval?
-        end
-
-        function newThis=removeParameter(labels)
-            [bool,idxs] = compareLists(this.labels,labels);
-            if any(~bool)
-                warning([{'Could not remove some parameters because they are not present: '} labels(~bool)])
-            end
-            newThis=this;
-            newThis.labels(idxs(bool))=[];
-            newThis.Data(:,idxs(bool))=[];
-        end
-
-        function newThis=castAsOTS(this,orientation)
-            if nargin<2 || isempty(orientation)
-                orientation=orientationInfo;
-            end
-            newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,orientation);
-        end
-
-        function newThis=castAsSTS(this,F,tWin,tOverlap)
-            %1) Check if it satisfies STS requirements
-            dataF=this.Data;
-            labelsF=this.labels;
-            t0=this.Time(1);
-            Ts=this.sampPeriod;
-            spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
-            newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
-        end
-
-        function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
-            newThis=split(this.getDataAsTS(label),t0,t1);
-            [data,time,auxLabel]=getDataAsVector(newThis,label);
         end
 
         function [steppedDataArray,bad,initTime,eventTimes]=splitByEvents(this,eventTS,eventLabel,timeMargin)
@@ -602,7 +542,101 @@ classdef labTimeSeries  < timeseries
             initTime=timeBreakpoints(1:end-1)-timeMargin;
             duration=diff(timeBreakpoints)+2*timeMargin;
         end
+    end
 
+    %% Data Modification Methods
+    methods
+        function newThis=appendData(this,newData,newLabels) %For back compat
+            other=labTimeSeries(newData,newLabels,this.Time(1),this.sampPeriod);
+            newThis=cat(this,other);
+        end
+
+        function [newThis,newData]=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
+            %This function allows to compute new parameters from other existing parameters and have them added to the data.
+            %This is useful when trying out new parameters without having to
+            %recompute all existing parameters.
+            %INPUT:
+            %newPAramLAbel: string with the name of the new parameter
+            %funHandle: a function handle with N input variables, whose
+            %result will be used to compute the new parameter
+            %inputParameterLabels: the parameters that will replace each of
+            %the variables in the funHandle
+            %EXAMPLE:
+            %See example in parameterSeries
+
+            [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels);
+            newThis=appendData(this,newData,{newParamLabel}) ;
+        end
+
+        function [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
+            %This function allows to compute new parameters from other existing parameters and have them added to the data.
+            %This is useful when trying out new parameters without having to
+            %recompute all existing parameters.
+            %INPUT:
+            %newPAramLAbel: string with the name of the new parameter
+            %funHandle: a function handle with N input variables, whose
+            %result will be used to compute the new parameter
+            %inputParameterLabels: the parameters that will replace each of
+            %the variables in the funHandle
+            %EXAMPLE:
+            %See example in parameterSeries
+            %See also: addNewParameter
+
+            %TO DO: support many new parameters together, as long as they
+            %use the same funHandle, with inputParameterLabels an NxM array,
+            %where N is the size of newParamLabel (# parameters to be
+            %computed). Use this change in
+            %linearStretch(this,labels,rangeValues) for efficiency
+
+            %Check input sanity:
+            if length(inputParameterLabels)~=nargin(funHandle)
+                error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
+            end
+            if compareListsFast(this.labels,newParamLabel)
+                error('labTS:addNewParameter','Cannot add parameter because it already exists')
+            end
+            oldData=this.getDataAsVector(inputParameterLabels);
+            str='(';
+            for i=1:size(oldData,2)
+                str=[str 'oldData(:,' num2str(i) '),'];
+            end
+            str(end)=')'; %Replacing last comma with parenthesis
+            eval(['newData=funHandle' str ';']); %Isn't there a way to do this without eval?
+        end
+
+        function newThis=removeParameter(labels)
+            [bool,idxs] = compareLists(this.labels,labels);
+            if any(~bool)
+                warning([{'Could not remove some parameters because they are not present: '} labels(~bool)])
+            end
+            newThis=this;
+            newThis.labels(idxs(bool))=[];
+            newThis.Data(:,idxs(bool))=[];
+        end
+    end
+
+    %% Type Conversion Methods
+    methods
+        function newThis=castAsOTS(this,orientation)
+            if nargin<2 || isempty(orientation)
+                orientation=orientationInfo;
+            end
+            newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,orientation);
+        end
+
+        function newThis=castAsSTS(this,F,tWin,tOverlap)
+            %1) Check if it satisfies STS requirements
+            dataF=this.Data;
+            labelsF=this.labels;
+            t0=this.Time(1);
+            Ts=this.sampPeriod;
+            spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
+            newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
+        end
+    end
+
+    %% Arithmetic Operations
+    methods
         function this=times(this,constant)
             this.Data=this.Data .* constant;
             if numel(constant)==1
@@ -645,7 +679,10 @@ classdef labTimeSeries  < timeseries
                 newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,newLabels);
             end
         end
+    end
 
+    %% Differentiation and Integration
+    methods
         function newThis=derivate(this)
             %This is kept for legacy compatibility purposes only
             partialThis=this.derivative;
@@ -710,7 +747,10 @@ classdef labTimeSeries  < timeseries
             newT0=this.Time(1)+lag*this.sampPeriod;
             newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
         end
+    end
 
+    %% Normalization Methods
+    methods
         function newthis=equalizeEnergyPerChannel(this)
             %Equalizes each channel such that the second moment of each
             %channel equals 1, E(x^2)=1
@@ -729,22 +769,13 @@ classdef labTimeSeries  < timeseries
             newthis=this;
             newthis.Data=bsxfun(@minus,this.Data,nanmean(this.Data));
         end
+    end
 
+    %% Data Cleaning Methods
+    methods
         function this=fillts(this) %TODO: Deprecate
             warning('labTS.fillts is being deprecated. Use substituteNaNs instead.')
             this=substituteNaNs(this,'linear');
-        end
-
-        function newThis=concatenate(this,other)
-            %Check if time vectors are the same
-            if all(this.Time==other.Time)
-                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels(:)', other.labels(:)']);
-            else
-                error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
-            end
-        end
-        function newThis=cat(this,other)
-            newThis=concatenate(this,other);
         end
 
         function this=substituteNaNs(this,method)
@@ -779,23 +810,147 @@ classdef labTimeSeries  < timeseries
                 newThis.Data(newThis.getDataAsVector(label)>th,:)=0;
             end
         end
+    end
 
-        %------------------
-
-        %Getters for dependent properties
-        function fs=get.sampFreq(this)
-            fs=1/this.sampPeriod;
+    %% Concatenation Methods
+    methods
+        function newThis=concatenate(this,other)
+            %Check if time vectors are the same
+            if all(this.Time==other.Time)
+                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels(:)', other.labels(:)']);
+            else
+                error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
+            end
         end
 
-        function tr=get.timeRange(this)
-            tr=(this.Nsamples)*this.sampPeriod;
+        function newThis=cat(this,other)
+            newThis=concatenate(this,other);
+        end
+    end
+
+    %% Filtering Methods
+    methods
+        function newThis=lowPassFilter(this,fcut)
+            Wn=fcut*2/this.sampFreq;
+            Wst=min([2*Wn,Wn+.2*(1-Wn)]);
+            filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
+            lowPassFilter=design(filterList{1},'butter');
+            newData=filtfilthd_short(lowPassFilter,this.Data,'reflect',this.sampFreq);  %Ext function
+            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+            if ~isfield(this.UserData,'processingInfo')
+                this.UserData.processingInfo={};
+            end
+            newThis.UserData=this.UserData;
+            newThis.UserData.processingInfo{end+1}=filterList{1};
         end
 
-        function Nsamp=get.Nsamples(this)
-            Nsamp=this.TimeInfo.Length;
+        function newThis=highPassFilter(this,fcut)
+            Wn=fcut*2/this.sampFreq;
+            filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
+            highPassFilter=design(filterList{1},'butter');
+            newData=filtfilthd_short(highPassFilter,this.Data,'reflect',this.sampFreq);
+            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
+            if ~isfield(this.UserData,'processingInfo')
+                this.UserData.processingInfo={};
+            end
+            newThis.UserData=this.UserData;
+            newThis.UserData.processingInfo{end+1}=filterList{1};
         end
 
-        %Display
+        function newThis=monotonicFilter(this,Nderiv,Nreg)
+            if nargin<2 || isempty(Nderiv)
+                Nderiv=2;
+            end
+            if nargin<3 || isempty(Nreg)
+                Nreg=2;
+            end
+            for i=1:size(this.Data,2)
+                this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg);
+            end
+            newThis=this;
+        end
+
+        function this=medianFilter(this,N)
+            if mod(N,2)==0
+                error('Only odd filter orders are allowed')
+                %This actually works with even orders, but then the data
+                %gets shifted by half a sample, which is undesirable.
+            end
+
+            %this.Data=medfilt1(this.Data,N,1,'omitnan'); %altered 12/4/2015 "omitnan" is not a valid input to medfilt1 in 2015a, 'omitnan' allowed for the median to be taken among the non-NaN elemets
+            this.Data=medfilt1(double(this.Data),double(N),double(1)); %This back-compatible alternative works as if the last argument were 'includenan' (i.e. whenever there is a NaN in the window, the result is NaN)
+            %Setting the samples outside the filter to NaN:
+            this.Data(1:floor(N/2),:)=NaN;
+            this.Data(end-floor(N/2)+1:end,:)=NaN;
+        end
+    end
+
+    %% Spectral Analysis Methods
+    methods
+        function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
+            if nargin>1
+                warning('labTimeSeries:fourierTransform','Ignoring second argument')
+            end
+            [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
+            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',this.labels),')'));
+            Fthis.TimeInfo.Units='Hz';
+        end
+
+        function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)
+            if nargin<2
+                labels=[];
+            end
+            if nargin<3
+                nFFT=[];
+            end
+            if nargin<4
+                tWin=[];
+            end
+            if nargin<5
+                tOverlap=[];
+            end
+            Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
+        end
+    end
+
+    %% Alignment Methods
+    methods
+        function [ATS,bad]=align(this,eventTS,eventLabel,N,~)
+            if nargin<3 || isempty(eventLabel)
+                eventLabel=eventTS.labels(1);
+            end
+            if nargin<4 || isempty(N)
+                N=256*ones(size(eventLabel));
+            end
+            [ATS,bad]=this.align_v2(eventTS.split(this.Time(1)-this.sampPeriod,this.Time(end)+this.sampPeriod),eventLabel,N);
+        end
+
+        function [DTS,bad]=discretize(this,eventTS,eventLabel,N,summaryFunction)
+            %Discretizes a time-series by averaging data across different
+            %phases of gait. The phases are defined by intervals between
+            %given events, and in turn these can be divided into sub-phases
+            if nargin<3 || isempty(eventLabel)
+                eventLabel=eventTS.labels(1);
+            end
+            %NEw attempt, no alignment:
+            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
+            bad=any(isnan(eventTimes(1:end-1,:)),2);
+            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
+            ee=[expEventTimes(:); eventTimes(end,1)];
+            [slicedTS]=this.sliceTS(ee,0);
+            if nargin<5 || isempty(summaryFunction)
+                summaryFunction='nanmean';%nanmean, only along the columns, so that if we have NAN data, and to account for the odd instance when we only have one row or data in our slicedTS
+            end
+            eval(['myfun=@(x) ' summaryFunction '(x,1);']);
+            d=cell2mat(cellfun(@(x) myfun(x.Data),slicedTS,'UniformOutput',false)');
+            [M,N1]=size(expEventTimes);        M2=size(d,2);
+            d=permute(reshape(d,sum(N),N1,M2),[1,3,2]);
+            DTS=alignedTimeSeries(0,1,d,this.labels,N,eventLabel,eventTimes');
+        end
+    end
+
+    %% Visualization Methods
+    methods
         function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;
@@ -986,123 +1141,10 @@ classdef labTimeSeries  < timeseries
             %             end
             newThis=this;
         end
-
-        %Other
-        function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
-            if nargin>1
-                warning('labTimeSeries:fourierTransform','Ignoring second argument')
-            end
-            [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
-            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',this.labels),')'));
-            Fthis.TimeInfo.Units='Hz';
-        end
-
-        function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)
-            if nargin<2
-                labels=[];
-            end
-            if nargin<3
-                nFFT=[];
-            end
-            if nargin<4
-                tWin=[];
-            end
-            if nargin<5
-                tOverlap=[];
-            end
-            Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
-        end
-
-        function [ATS,bad]=align(this,eventTS,eventLabel,N,~)
-            if nargin<3 || isempty(eventLabel)
-                eventLabel=eventTS.labels(1);
-            end
-            if nargin<4 || isempty(N)
-                N=256*ones(size(eventLabel));
-            end
-            [ATS,bad]=this.align_v2(eventTS.split(this.Time(1)-this.sampPeriod,this.Time(end)+this.sampPeriod),eventLabel,N);
-        end
-
-        function [DTS,bad]=discretize(this,eventTS,eventLabel,N,summaryFunction)
-            %Discretizes a time-series by averaging data across different
-            %phases of gait. The phases are defined by intervals between
-            %given events, and in turn these can be divided into sub-phases
-            if nargin<3 || isempty(eventLabel)
-                eventLabel=eventTS.labels(1);
-            end
-            %NEw attempt, no alignment:
-            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-            bad=any(isnan(eventTimes(1:end-1,:)),2);
-            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
-            ee=[expEventTimes(:); eventTimes(end,1)];
-            [slicedTS]=this.sliceTS(ee,0);
-            if nargin<5 || isempty(summaryFunction)
-                summaryFunction='nanmean';%nanmean, only along the columns, so that if we have NAN data, and to account for the odd instance when we only have one row or data in our slicedTS
-            end
-            eval(['myfun=@(x) ' summaryFunction '(x,1);']);
-            d=cell2mat(cellfun(@(x) myfun(x.Data),slicedTS,'UniformOutput',false)');
-            [M,N1]=size(expEventTimes);        M2=size(d,2);
-            d=permute(reshape(d,sum(N),N1,M2),[1,3,2]);
-            DTS=alignedTimeSeries(0,1,d,this.labels,N,eventLabel,eventTimes');
-        end
-
-        function newThis=lowPassFilter(this,fcut)
-            Wn=fcut*2/this.sampFreq;
-            Wst=min([2*Wn,Wn+.2*(1-Wn)]);
-            filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
-            lowPassFilter=design(filterList{1},'butter');
-            newData=filtfilthd_short(lowPassFilter,this.Data,'reflect',this.sampFreq);  %Ext function
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-            if ~isfield(this.UserData,'processingInfo')
-                this.UserData.processingInfo={};
-            end
-            newThis.UserData=this.UserData;
-            newThis.UserData.processingInfo{end+1}=filterList{1};
-        end
-
-        function newThis=highPassFilter(this,fcut)
-            Wn=fcut*2/this.sampFreq;
-            filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
-            highPassFilter=design(filterList{1},'butter');
-            newData=filtfilthd_short(highPassFilter,this.Data,'reflect',this.sampFreq);
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-            if ~isfield(this.UserData,'processingInfo')
-                this.UserData.processingInfo={};
-            end
-            newThis.UserData=this.UserData;
-            newThis.UserData.processingInfo{end+1}=filterList{1};
-        end
-
-        function newThis=monotonicFilter(this,Nderiv,Nreg)
-            if nargin<2 || isempty(Nderiv)
-                Nderiv=2;
-            end
-            if nargin<3 || isempty(Nreg)
-                Nreg=2;
-            end
-            for i=1:size(this.Data,2)
-                this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg);
-            end
-            newThis=this;
-        end
-
-        function this=medianFilter(this,N)
-            if mod(N,2)==0
-                error('Only odd filter orders are allowed')
-                %This actually works with even orders, but then the data
-                %gets shifted by half a sample, which is undesirable.
-            end
-
-            %this.Data=medfilt1(this.Data,N,1,'omitnan'); %altered 12/4/2015 "omitnan" is not a valid input to medfilt1 in 2015a, 'omitnan' allowed for the median to be taken among the non-NaN elemets
-            this.Data=medfilt1(double(this.Data),double(N),double(1)); %This back-compatible alternative works as if the last argument were 'includenan' (i.e. whenever there is a NaN in the window, the result is NaN)
-            %Setting the samples outside the filter to NaN:
-            this.Data(1:floor(N/2),:)=NaN;
-            this.Data(end-floor(N/2)+1:end,:)=NaN;
-        end
-
     end
 
-    methods(Hidden)
+    %% Hidden Methods
+    methods (Hidden)
         function newThis=resampleLogical(this,newTs, newT0,newN)
             %newN=floor((this.Time(end)-newT0)/newTs +1);
             %Can this be deprecated in favor of resample with 'logical'
@@ -1139,7 +1181,8 @@ classdef labTimeSeries  < timeseries
         end
     end
 
-    methods(Static)
+    %% Static Methods
+    methods (Static)
         this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
 
         function eventTimes=getArrayedEvents(eventTS,eventLabel)
@@ -1245,5 +1288,5 @@ classdef labTimeSeries  < timeseries
         end
     end
 
-
 end
+
