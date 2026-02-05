@@ -1,16 +1,16 @@
 classdef processedEMGTimeSeries  < labTimeSeries
     %UNTITLED Summary of this class goes here
     %   Detailed explanation goes here
-    
+
     %%
     properties(SetAccess=private)
         processingInfo %processingInfo object
     end
 
-    
+
     %%
     methods
-        
+
         %Constructor:
         function this=processedEMGTimeSeries(data,t0,Ts,labels,processingInfo,Quality,QualInfo) %Necessarily uniformly sampled
             this@labTimeSeries(data,t0,Ts,labels);
@@ -25,9 +25,9 @@ classdef processedEMGTimeSeries  < labTimeSeries
                 this.QualityInfo=QualInfo;
             end
         end
-        
+
         %-------------------
-        
+
         %Other I/O functions:
         function newTS=getDataAsTS(this,label)
             [data,time,auxLabel]=getDataAsVector(this,label);
@@ -35,23 +35,23 @@ classdef processedEMGTimeSeries  < labTimeSeries
         end
 
         %-------------------
-        
-        %Modifier functions:        
+
+        %Modifier functions:
         function newThis=resampleN(this,newN) %Same as resample function, but directly fixing the number of samples instead of TS
             auxThis=this.resampleN@labTimeSeries(newN);
             newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo);
         end
-        
+
         function newThis=split(this,t0,t1)
-           auxThis=this.split@labTimeSeries(t0,t1);
-               if auxThis.Nsamples>0 %Empty series was returned
-                   newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
-               else
-                   newThis=processedEMGTimeSeries(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
-               end
-               
+            auxThis=this.split@labTimeSeries(t0,t1);
+            if auxThis.Nsamples>0 %Empty series was returned
+                newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
+            else
+                newThis=processedEMGTimeSeries(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
+            end
+
         end
-        
+
     end
 
 end
