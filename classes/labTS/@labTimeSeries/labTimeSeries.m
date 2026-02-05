@@ -198,52 +198,11 @@ classdef labTimeSeries  < timeseries
 
     %% Label Query Methods
     methods
-        function this=renameLabels(this,originalLabels,newLabels)
-            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
-            if isempty(originalLabels)
-                originalLabels=this.labels;
-            end
-            if size(newLabels)~=size(originalLabels)
-                error('Inconsistent label sizes')
-            end
-            [boo,idx]=this.isaLabel(originalLabels);
-            this.labels(idx(boo))=newLabels(boo);
-        end
+        this = renameLabels(this, originalLabels, newLabels)
 
-        function labelList=getLabelsThatMatch(this,exp)
-            %Returns labels on this labTS that match the regular expression exp.
-            %labelList=getLabelsThatMatch(this,exp)
-            %INPUT:
-            %this: labTS object
-            %exp: any regular expression (as string).
-            %OUTPUT:
-            %labelList: cell array containing labels of this labTS that match
-            %See also regexp
-            labelList=this.labels;
-            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
-            labelList=labelList(flags);
-        end
+        labelList = getLabelsThatMatch(this, exp)
 
-        function [boolFlag,labelIdx]=isaLabel(this,label)
-            if isa(label,'char')
-                auxLabel{1}=label;
-            elseif isa(label,'cell')
-                auxLabel=label;
-            else
-                error('labTimeSeries:isaLabel','label input argument has to be a string or a cell array containing strings.')
-            end
-            auxLabel=auxLabel(:);
-            N=length(auxLabel);
-            M=length(this.labels);
-            if N==M && all(strcmpi(auxLabel,this.labels(:))) %Case in which the list is identical to the label list, save time by not calling find() recursively.
-                %If this is true, it saves about 50ms per call, or 5 secs every 100 calls
-                %If false, it adds a small overhead of less than .1ms per call, which is negligible compared to the loop that needs to be performed.
-                boolFlag=true(N,1);
-                labelIdx=1:M;
-            else
-                [boolFlag,labelIdx] = compareListsFast(this.labels,auxLabel);
-            end
-        end
+        [boolFlag, labelIdx] = isaLabel(this, label)
     end
 
     %% Sampling and Synchronization Methods
