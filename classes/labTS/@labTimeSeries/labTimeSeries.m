@@ -142,17 +142,31 @@ classdef labTimeSeries  < timeseries
 
     %% Dependent Property Getters
     methods
-        %Getters for dependent properties
-        function fs=get.sampFreq(this)
-            fs=1/this.sampPeriod;
+        function fs = get.sampFreq(this)
+            %get.sampFreq  Returns sampling frequency
+            %
+            %   Outputs:
+            %       fs - sampling frequency in Hz
+
+            fs = 1 / this.sampPeriod;
         end
 
-        function tr=get.timeRange(this)
-            tr=(this.Nsamples)*this.sampPeriod;
+        function tr = get.timeRange(this)
+            %get.timeRange  Returns total time duration
+            %
+            %   Outputs:
+            %       tr - time range in seconds
+
+            tr = (this.Nsamples) * this.sampPeriod;
         end
 
-        function Nsamp=get.Nsamples(this)
-            Nsamp=this.TimeInfo.Length;
+        function Nsamp = get.Nsamples(this)
+            %get.Nsamples  Returns number of samples
+            %
+            %   Outputs:
+            %       Nsamp - total number of samples
+
+            Nsamp = this.TimeInfo.Length;
         end
     end
 
@@ -196,8 +210,20 @@ classdef labTimeSeries  < timeseries
             newTS=labTimeSeries(data,time(1),this.sampPeriod,auxLabel);
         end
 
-        function labelList=getLabels(this)
-            labelList=this.labels;
+        function labelList = getLabels(this)
+            %getLabels  Returns list of labels
+            %
+            %   labelList = getLabels(this) returns all data labels
+            %
+            %   Inputs:
+            %       this - labTimeSeries object
+            %
+            %   Outputs:
+            %       labelList - cell array of label strings
+            %
+            %   See also: getLabelsThatMatch, isaLabel
+
+            labelList = this.labels;
         end
 
         function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
