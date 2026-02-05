@@ -22,24 +22,25 @@ classdef subjectData
     %
     %See also: labDate, strokeSubjectData, cognitiveData
 
-    properties (SetAccess=private)
-        dateOfBirth=labDate.default;
-        sex='';
-        fastLeg='';
-        dominantLeg='';
-        dominantArm='';
-        height=[]; %centimeters
-        weight=[]; %kgs
-        age=[]; %in years, at time of experiment
+    %% Properties
+    properties (SetAccess = private)
+        dateOfBirth = labDate.default;
+        sex = '';
+        fastLeg = '';
+        dominantLeg = '';
+        dominantArm = '';
+        height = []; % centimeters
+        weight = []; % kgs
+        age = []; % in years, at time of experiment
     end
 
-    properties %other
+    properties % other
         cognitiveScores
-        ID=[]; %experimental ID assigned
+        ID = []; % experimental ID assigned
     end
 
+    %% Constructor
     methods
-        %constructor
         function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg)
             if nargin>0 && ~isempty(DOB)
                 warning('subjectData:DOB','Date of birth was provided but will be ignored for privacy.')
@@ -69,7 +70,10 @@ classdef subjectData
                 this.fastLeg=fLeg;
             end
         end
+    end
 
+    %% Property Setters
+    methods
         function this=set.cognitiveScores(this,scores)
             if isa(scores,'cognitiveData') || isempty(scores)
                 this.cognitiveScores=scores;
@@ -80,8 +84,8 @@ classdef subjectData
         end
     end
 
-    methods(Static)
-        %% Loading
+    %% Static Methods
+    methods (Static)
         function this=loadobj(this)
             %This function was created to warn about DOB being present at load time
             %DOB is not automatically scrubbed to prevent loss of information
