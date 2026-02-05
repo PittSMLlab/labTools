@@ -1,18 +1,27 @@
 classdef subjectData
-%subjectData  stores information about study participants
-%   
-%subjectData properties:
-%   dateOfBirth - labDate object
-%   sex - string, either 'male' or 'female'
-%   dominantLeg - string, either 'L' or 'R'
-%   dominantArm - string, either 'L' or 'R'
-%   height - double (cm)
-%   weight - double (kg)
-%   age - labDate object e.g. age = expDate.year - DOB.year;
-%   ID - string containing experimental identifier e.g. 'OG90'
-%
-%See also: labDate, strokeSubjectData
-    
+    %subjectData  Stores information about study participants
+    %
+    %   subjectData contains demographic and anthropometric information
+    %   about research participants, with privacy protections for date of
+    %   birth information.
+    %
+    %subjectData properties:
+    %   dateOfBirth - labDate object (private, discouraged for privacy)
+    %   sex - string, either 'male' or 'female'
+    %   fastLeg - string, either 'L' or 'R'
+    %   dominantLeg - string, either 'L' or 'R'
+    %   dominantArm - string, either 'L' or 'R'
+    %   height - height in centimeters
+    %   weight - weight in kilograms
+    %   age - age in years at time of experiment
+    %   cognitiveScores - cognitiveData object with test results
+    %   ID - string containing experimental identifier (e.g., 'OG90')
+    %
+    %subjectData methods:
+    %   subjectData - constructor for subject data
+    %
+    %See also: labDate, strokeSubjectData, cognitiveData
+
     properties (SetAccess=private)
         dateOfBirth=labDate.default;
         sex='';
@@ -21,14 +30,14 @@ classdef subjectData
         dominantArm='';
         height=[]; %centimeters
         weight=[]; %kgs
-        age=[]; %in years, at time of experiment     
+        age=[]; %in years, at time of experiment
     end
-    
+
     properties %other
         cognitiveScores
         ID=[]; %experimental ID assigned
     end
-    
+
     methods
         %constructor
         function this=subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg)
@@ -37,7 +46,7 @@ classdef subjectData
             end
             if nargin>1 && ~isempty(sex)
                 this.sex=sex;
-            end            
+            end
             if nargin>2 && ~isempty(dLeg)
                 this.dominantLeg=dLeg;
             end
@@ -49,7 +58,7 @@ classdef subjectData
             end
             if nargin>5 && ~isempty(wgt)
                 this.weight=wgt;
-            end 
+            end
             if nargin>6 && ~isempty(age)
                 this.age=age;
             end
@@ -60,7 +69,7 @@ classdef subjectData
                 this.fastLeg=fLeg;
             end
         end
-        
+
         function this=set.cognitiveScores(this,scores)
             if isa(scores,'cognitiveData') || isempty(scores)
                 this.cognitiveScores=scores;
@@ -68,19 +77,19 @@ classdef subjectData
                 ME=MException('subjectData:Setter','cognitiveScores parameter is not object of the cognitiveData class');
                 throw(ME);
             end
-        end  
+        end
     end
-    
+
     methods(Static)
         %% Loading
         function this=loadobj(this)
-            %This function was created to warn about DOB being present at load time 
+            %This function was created to warn about DOB being present at load time
             %DOB is not automatically scrubbed to prevent loss of information
             if ~isempty(this.dateOfBirth)
                 warning('subjectData:DOB',['Subject data contains DOB for subject ' this.ID ' , which is in violation of HIPAA requirements for sharing data. Do not share until DOB has been scrubbed.'])
             end
         end
     end
-         
+
 end
 
