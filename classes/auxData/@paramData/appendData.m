@@ -15,7 +15,6 @@ function newThis = appendData(this, newData, newLabels)
 %
 %   See also: paramData
 
-% Modifiers:
 newThis = paramData([this.Data newData], [this.labels newLabels], ...
     this.indsInTrial, this.trialTypes);
 end
