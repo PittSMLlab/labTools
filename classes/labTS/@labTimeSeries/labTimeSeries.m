@@ -438,73 +438,15 @@ classdef labTimeSeries  < timeseries
 
     %% Data Modification Methods
     methods
-        function newThis=appendData(this,newData,newLabels) %For back compat
-            other=labTimeSeries(newData,newLabels,this.Time(1),this.sampPeriod);
-            newThis=cat(this,other);
-        end
+        newThis = appendData(this, newData, newLabels)
 
-        function [newThis,newData]=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
-            %This function allows to compute new parameters from other existing parameters and have them added to the data.
-            %This is useful when trying out new parameters without having to
-            %recompute all existing parameters.
-            %INPUT:
-            %newPAramLAbel: string with the name of the new parameter
-            %funHandle: a function handle with N input variables, whose
-            %result will be used to compute the new parameter
-            %inputParameterLabels: the parameters that will replace each of
-            %the variables in the funHandle
-            %EXAMPLE:
-            %See example in parameterSeries
+        [newThis, newData] = addNewParameter( ...
+            this, newParamLabel, funHandle, inputParameterLabels)
 
-            [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels);
-            newThis=appendData(this,newData,{newParamLabel}) ;
-        end
+        newData = computeNewParameter( ...
+            this, newParamLabel, funHandle, inputParameterLabels)
 
-        function [newData]=computeNewParameter(this,newParamLabel,funHandle,inputParameterLabels)
-            %This function allows to compute new parameters from other existing parameters and have them added to the data.
-            %This is useful when trying out new parameters without having to
-            %recompute all existing parameters.
-            %INPUT:
-            %newPAramLAbel: string with the name of the new parameter
-            %funHandle: a function handle with N input variables, whose
-            %result will be used to compute the new parameter
-            %inputParameterLabels: the parameters that will replace each of
-            %the variables in the funHandle
-            %EXAMPLE:
-            %See example in parameterSeries
-            %See also: addNewParameter
-
-            %TO DO: support many new parameters together, as long as they
-            %use the same funHandle, with inputParameterLabels an NxM array,
-            %where N is the size of newParamLabel (# parameters to be
-            %computed). Use this change in
-            %linearStretch(this,labels,rangeValues) for efficiency
-
-            %Check input sanity:
-            if length(inputParameterLabels)~=nargin(funHandle)
-                error('labTS:addNewParameter','Number of input arguments in function handle and number of labels in inputParameterLabels should be the same')
-            end
-            if compareListsFast(this.labels,newParamLabel)
-                error('labTS:addNewParameter','Cannot add parameter because it already exists')
-            end
-            oldData=this.getDataAsVector(inputParameterLabels);
-            str='(';
-            for i=1:size(oldData,2)
-                str=[str 'oldData(:,' num2str(i) '),'];
-            end
-            str(end)=')'; %Replacing last comma with parenthesis
-            eval(['newData=funHandle' str ';']); %Isn't there a way to do this without eval?
-        end
-
-        function newThis=removeParameter(labels)
-            [bool,idxs] = compareLists(this.labels,labels);
-            if any(~bool)
-                warning([{'Could not remove some parameters because they are not present: '} labels(~bool)])
-            end
-            newThis=this;
-            newThis.labels(idxs(bool))=[];
-            newThis.Data(:,idxs(bool))=[];
-        end
+        newThis = removeParameter(labels)
     end
 
     %% Type Conversion Methods
