@@ -458,48 +458,13 @@ classdef labTimeSeries  < timeseries
 
     %% Arithmetic Operations
     methods
-        function this=times(this,constant)
-            this.Data=this.Data .* constant;
-            if numel(constant)==1
-                s=num2str(constant);
-            else
-                s='k'; %Generic constant string
-            end
-            this.labels=strcat([s '*'],this.labels);
-        end
+        this = times(this, constant)
 
-        function this=rectify(this)
-            this.Data=abs(this.Data);
-            this.labels=strcat(strcat(this.labels),'abs');
-        end
+        this = rectify(this)
 
-        function newThis=plus(this,other)
-            M=size(this.Data,2);
-            if size(other.Data,2)~=M
-                error('Inconsistent sizes for sum')
-            end
-            newLabels=cell(size(this.labels));
-            for i=1:M
-                newLabels{i}=['(' this.labels{i} ' + ' other.labels{i} ')'];
-            end
-            if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
-                newThis=labTimeSeries(this.Data+other.Data,this.Time(1),this.sampPeriod,newLabels);
-            else
-                error('')
-            end
-        end
+        newThis = plus(this, other)
 
-        function newThis=minus(this,other)
-            %Subtracts two labTSs
-            %Could be deprecated in favor of: newThis=this + -1*other;
-            M=size(this.Data,2);
-            for i=1:M
-                newLabels{i}=['(' this.labels{i} ' - ' other.labels{i} ')'];
-            end
-            if abs(this.Time(1)-other.Time(1))<eps && abs(this.sampPeriod-other.sampPeriod)<eps && length(this.labels)==length(other.labels)
-                newThis=labTimeSeries(this.Data-other.Data,this.Time(1),this.sampPeriod,newLabels);
-            end
-        end
+        newThis = minus(this, other)
     end
 
     %% Differentiation and Integration
