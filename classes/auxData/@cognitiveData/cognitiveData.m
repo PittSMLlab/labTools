@@ -23,19 +23,38 @@ classdef cognitiveData
         scores = [];
     end
 
+    %% Constructor
     methods
-        %constructor
-        function this=cognitiveData(labels,scores)
-            if (length(labels)==size(scores,2)) && isa(labels,'cell')
-                this.labels=labels;
-                this.scores=scores;
+        function this = cognitiveData(labels, scores)
+            %cognitiveData  Constructor for cognitiveData class
+            %
+            %   this = cognitiveData(labels, scores) creates a cognitive
+            %   data object with specified test labels and scores
+            %
+            %   Inputs:
+            %       labels - cell array of test name strings
+            %       scores - matrix of scores (subjects x tests), where
+            %                number of columns matches length of labels
+            %
+            %   Outputs:
+            %       this - cognitiveData object
+            %
+            %   See also: subjectData
+
+            if (length(labels) == size(scores, 2)) && isa(labels, 'cell')
+                this.labels = labels;
+                this.scores = scores;
             else
-                ME=MException('cognitiveData:Constructor','The size of the labels array is inconsistent with the data being provided.');
-                throw(ME)
+                ME = MException('cognitiveData:Constructor', ...
+                    ['The size of the labels array is inconsistent ' ...
+                    'with the data being provided.']);
+                throw(ME);
             end
         end
+    end
 
-        %Other I/O functions:
+    %% Data Access Methods
+    methods
         function [score,auxLabel]=getScore(this,label)
             if nargin<2 || isempty(label)
                 label=this.labels;
@@ -73,7 +92,6 @@ classdef cognitiveData
                 labelIdx(j)=find(aux);
             end
         end
-
     end
 
 end
