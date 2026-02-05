@@ -1,20 +1,30 @@
 classdef cognitiveData
-%cognitiveData  stores information about cognitive tests performed by study
-%participants
-%   
-%cognitiveData properties:
-%   labels - Name of cognitive test
-%   score - value indicating performance on cognitive test
-%   
-%See also: subjectData
-    
-    properties 
-        labels={''};
-        scores=[];
+    %cognitiveData  Stores information about cognitive tests performed
+    %by study participants
+    %
+    %   cognitiveData contains results from cognitive assessments
+    %   administered to study participants, including test names and
+    %   scores.
+    %
+    %cognitiveData properties:
+    %   labels - cell array of cognitive test names
+    %   scores - matrix of test scores (subjects x tests)
+    %
+    %cognitiveData methods:
+    %   cognitiveData - constructor for cognitive data
+    %   getScore - retrieves scores for specified test(s)
+    %   isaLabel - checks if label(s) exist in dataset
+    %
+    %See also: subjectData
+
+    %% Properties
+    properties
+        labels = {''};
+        scores = [];
     end
-    
+
     methods
-        %constructor        
+        %constructor
         function this=cognitiveData(labels,scores)
             if (length(labels)==size(scores,2)) && isa(labels,'cell')
                 this.labels=labels;
@@ -23,8 +33,8 @@ classdef cognitiveData
                 ME=MException('cognitiveData:Constructor','The size of the labels array is inconsistent with the data being provided.');
                 throw(ME)
             end
-        end     
-        
+        end
+
         %Other I/O functions:
         function [score,auxLabel]=getScore(this,label)
             if nargin<2 || isempty(label)
@@ -34,14 +44,14 @@ classdef cognitiveData
                 auxLabel={label};
             else
                 auxLabel=label;
-            end            
+            end
             [boolFlag,labelIdx]=this.isaLabel(auxLabel);
             for i=1:length(boolFlag)
                 if boolFlag(i)==0
                     warning(['Label ' auxLabel{i} ' is not a labeled value in this data set.'])
                 end
             end
-            
+
             score=this.scores(:,labelIdx(boolFlag==1));
             auxLabel=this.labels(labelIdx(boolFlag==1));
         end
@@ -60,11 +70,11 @@ classdef cognitiveData
             for j=1:N
                 aux=strcmp(auxLabel{j},this.labels);
                 boolFlag(j)=any(aux);
-                labelIdx(j)=find(aux);                
+                labelIdx(j)=find(aux);
             end
         end
-        
-    end   
-         
+
+    end
+
 end
 
