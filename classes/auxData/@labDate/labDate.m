@@ -23,14 +23,15 @@ classdef labDate
     %
     %See also: datetime
 
+    %% Properties
     properties
-        day; %a day (ex: 27)
-        month; %a month (ex: 4)
-        year;% a year (ex: 2015)
+        day; % a day (ex: 27)
+        month; % a month (ex: 4)
+        year; % a year (ex: 2015)
     end
 
+    %% Constructor
     methods
-
         function this=labDate(dd,mm,year)
             %Constructor
             %
@@ -82,30 +83,49 @@ classdef labDate
             end
             this.year=year;
         end
+    end
 
-        %Setters
-        function this=set.day(this,dd)
-            if dd<32 && dd>0 && rem(dd,1)==0
-                this.day=dd;
+    %% Property Setters
+    methods
+        function this = set.day(this, dd)
+            %set.day  Validates and sets day property
+            %
+            %   Inputs:
+            %       this - labDate object
+            %       dd - day value, must be integer in [1, 31]
+
+            if dd < 32 && dd > 0 && rem(dd, 1) == 0
+                this.day = dd;
             else
-                ME=MException('labDate:Constructor','Day parameter is not an integer in the [1,31] range.');
+                ME = MException('labDate:Constructor', ...
+                    'Day parameter is not an integer in the [1,31] range.');
                 throw(ME);
             end
         end
 
         % HH: no setter for month because it was mis-behaving
-        %         function this=set.month(this,mm)
-        %
-        %         end
-        function this=set.year(this,year)
-            if rem(year,1)==0
-                this.year=year;
+        % function this = set.month(this, mm)
+        % end
+
+        function this = set.year(this, year)
+            %set.year  Validates and sets year property
+            %
+            %   Inputs:
+            %       this - labDate object
+            %       year - year value, must be integer
+
+            if rem(year, 1) == 0
+                this.year = year;
             else
-                ME=MException('labDate:Constructor','Year parameter is not an integer.');
+                ME = MException('labDate:Constructor', ...
+                    'Year parameter is not an integer.');
                 throw(ME);
             end
         end
+    end
 
+    %% Date Calculation Methods
+    methods
         %Suggested method: find number of years/months/days that separate two
         %dates. The method could be called like
         function [timeInMonths]=timeSince(this,other)
@@ -123,11 +143,8 @@ classdef labDate
 
     end
 
-
-
-
-    methods(Static)
-
+    %% Static Methods
+    methods (Static)
         function str=monthString(a)
             % monthString  turns numeric month value into a string
             %   str=monthString(a) outputs a three-character string for an
@@ -195,3 +212,4 @@ classdef labDate
     end
 
 end
+
