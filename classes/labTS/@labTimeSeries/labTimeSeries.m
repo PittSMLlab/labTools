@@ -537,24 +537,11 @@ classdef labTimeSeries  < timeseries
 
     %% Normalization Methods
     methods
-        function newthis=equalizeEnergyPerChannel(this)
-            %Equalizes each channel such that the second moment of each
-            %channel equals 1, E(x^2)=1
-            newthis=this;
-            newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanmean(this.Data.^2,1)));
-        end
+        newthis = equalizeEnergyPerChannel(this)
 
-        function newthis=equalizeVarPerChannel(this)
-            %Equalizes each channel such that the second moment  about the mean of each
-            %channel equals 1, E((x-E(x))^2)=1
-            newthis=this;
-            newthis.Data=bsxfun(@rdivide,this.Data,sqrt(nanvar(this.Data,[],1)));
-        end
+        newthis = equalizeVarPerChannel(this)
 
-        function newthis=demean(this)
-            newthis=this;
-            newthis.Data=bsxfun(@minus,this.Data,nanmean(this.Data));
-        end
+        newthis = demean(this)
     end
 
     %% Data Cleaning Methods
