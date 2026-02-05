@@ -1,21 +1,30 @@
 classdef strokeSubjectData<subjectData
-%strokeSubjectData is an extension of subjectData to support stroke
-%patients and keep data about their condition.
-%
-%strokeSubjectData properies:
-%   affectedSide - string, either 'L' or 'R'
-%   strokeDate - labDate object
-%
-%see also: subjectData, labDate
-    
-    properties (SetAccess=private)
-        affectedSide='';
-        strokeDate=labDate(01,'Jan',0000);
+    %strokeSubjectData  Extended subject data for stroke patients
+    %
+    %   strokeSubjectData is an extension of subjectData to support
+    %   stroke patients and maintain data about their condition,
+    %   including affected side and stroke date.
+    %
+    %strokeSubjectData properties:
+    %   affectedSide - string, either 'L' or 'R' indicating affected
+    %                  side
+    %   strokeDate - labDate object indicating date of stroke
+    %   (inherits all properties from subjectData)
+    %
+    %strokeSubjectData methods:
+    %   strokeSubjectData - constructor for stroke subject data
+    %
+    %See also: subjectData, labDate
+
+    %% Properties
+    properties (SetAccess = private)
+        affectedSide = '';
+        strokeDate = labDate(01, 'Jan', 0000);
     end
-    
+
     methods
         %constructor
-        function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg,affected,strokeDate)            
+        function this=strokeSubjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg,affected,strokeDate)
             this@subjectData(DOB,sex,dLeg,dArm,hgt,wgt,age,ID,fLeg); % fLeg is added given that newer protocols do not have dominance or affected side as Fast or slow leg (refLeg)
             if nargin>9
                 this.affectedSide=affected;
@@ -46,5 +55,5 @@ classdef strokeSubjectData<subjectData
             end
         end
     end
-    
+
 end
