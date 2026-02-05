@@ -83,32 +83,59 @@ classdef labTimeSeries  < timeseries
 
     %% Constructor
     methods
-        function this=labTimeSeries(data,t0,Ts,labels) %Necessarily uniformly sampled
-            if nargin==0
-                data=[];
-                time=[];
-                labels={};
-                Ts=[];
+        function this = labTimeSeries(data, t0, Ts, labels)
+            %labTimeSeries  Constructor for labTimeSeries class
+            %
+            %   this = labTimeSeries(data, t0, Ts, labels) creates a
+            %   uniformly sampled timeseries with specified data, initial
+            %   time, sampling period, and labels
+            %
+            %   Inputs:
+            %       data - matrix of data values (samples x channels)
+            %       t0 - initial time in seconds
+            %       Ts - sampling period in seconds
+            %       labels - cell array of label strings for each channel
+            %
+            %   Outputs:
+            %       this - labTimeSeries object
+            %
+            %   Note: Necessarily uniformly sampled
+            %
+            %   See also: timeseries
+
+            if nargin == 0
+                data = [];
+                time = [];
+                labels = {};
+                Ts = [];
             else
-                time=[0:size(data,1)-1]*Ts+t0';
+                time = [0:size(data, 1) - 1] * Ts + t0';
             end
-            this=this@timeseries(data,time);
-            this.sampPeriod=Ts;
-            if (length(labels)==size(data,2)) && isa(labels,'cell')
-                this.labels=labels;
+            this = this@timeseries(data, time);
+            this.sampPeriod = Ts;
+            if (length(labels) == size(data, 2)) && isa(labels, 'cell')
+                this.labels = labels;
             else
-                ME=MException('labTimeSeries:ConstructorInconsistentArguments','The size of the labels array is inconsistent with the data being provided.');
-                throw(ME)
+                ME = MException(...
+                    'labTimeSeries:ConstructorInconsistentArguments', ...
+                    ['The size of the labels array is inconsistent ' ...
+                    'with the data being provided.']);
+                throw(ME);
             end
-            %Check for repeat labels:
-            [~,i1,i2]=unique(lower(labels));
-            if length(i1)<length(labels)
-                repIdx=find((sort(i1)-[1:length(i1)]')~=0,1,'first');
+            % Check for repeat labels:
+            [~, i1, i2] = unique(lower(labels));
+            if length(i1) < length(labels)
+                repIdx = ...
+                    find((sort(i1) - [1:length(i1)]') ~= 0, 1, 'first');
                 if isempty(repIdx)
-                    repIdx=length(i1)+1;
+                    repIdx = length(i1) + 1;
                 end
-                ME=MException('labTimeSeries:ConstructorRepeatedLabels',['Found ' num2str(length(labels)-length(i1)) ' collisions of label names. First collision is: ' labels{repIdx}]);
-                throw(ME)
+                ME = MException(...
+                    'labTimeSeries:ConstructorRepeatedLabels', ...
+                    ['Found ' num2str(length(labels) - length(i1)) ...
+                    ' collisions of label names. First collision is: ' ...
+                    labels{repIdx}]);
+                throw(ME);
             end
         end
     end
