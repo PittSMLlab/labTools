@@ -138,21 +138,17 @@ classdef labDate
 
     %% Date Calculation Methods
     methods
-        %Suggested method: find number of years/months/days that separate two
-        %dates. The method could be called like
-        function [timeInMonths]=timeSince(this,other)
-            %Returns elapsed time in MONTHS
-            timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
-        end
+        % Suggested method: find number of years/months/days that separate
+        % two dates. The method could be called like
 
-        function flag=isempty(this)
-            flag=timeSince(this,labDate.default)==0; %If date equals default value, considering empty
-        end
+        timeInMonths = timeSince(this, other)
 
-        %function disp(this)
-        %   disp([num2str(this.day) ' ' labDate.monthString(this.month) ' ' num2str(this.year)])
-        %end
+        flag = isempty(this)
 
+        % function disp(this)
+        %     disp([num2str(this.day) ' ' labDate.monthString(this.month) ...
+        %         ' ' num2str(this.year)]);
+        % end
     end
 
     %% Static Methods

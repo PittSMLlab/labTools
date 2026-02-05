@@ -22,9 +22,6 @@ function timeInMonths = timeSince(this, other)
 %
 %   See also: isempty
 
-% Suggested method: find number of years/months/days that separate two
-% dates. The method could be called like
-% Returns elapsed time in MONTHS
 timeInMonths = 12 * (this.year - other.year) + ...
     (this.month - other.month) + (this.day - other.day) / 30;
 end
