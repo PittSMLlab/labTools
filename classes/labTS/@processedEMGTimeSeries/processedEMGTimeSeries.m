@@ -74,27 +74,14 @@ classdef processedEMGTimeSeries < labTimeSeries
 
     %% Data Access Methods (Overrides)
     methods
-        function newTS=getDataAsTS(this,label)
-            [data,time,auxLabel]=getDataAsVector(this,label);
-            newTS=processedEMGTimeSeries(data,time(1),this.sampPeriod,auxLabel,this.processingInfo);
-        end
+        newTS = getDataAsTS(this, label)
     end
 
     %% Data Transformation Methods (Overrides)
     methods
-        function newThis=resampleN(this,newN) %Same as resample function, but directly fixing the number of samples instead of TS
-            auxThis=this.resampleN@labTimeSeries(newN);
-            newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo);
-        end
+        newThis = resampleN(this, newN)
 
-        function newThis=split(this,t0,t1)
-            auxThis=this.split@labTimeSeries(t0,t1);
-            if auxThis.Nsamples>0 %Empty series was returned
-                newThis=processedEMGTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
-            else
-                newThis=processedEMGTimeSeries(auxThis.Data,0,auxThis.sampPeriod,auxThis.labels,this.processingInfo,auxThis.Quality,auxThis.QualityInfo);
-            end
-        end
+        newThis = split(this, t0, t1)
     end
 
 end
