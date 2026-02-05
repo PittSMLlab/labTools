@@ -1,16 +1,27 @@
 classdef labDate
-    %labDate   stores a single date as day, month, year
+    %labDate  Stores a single date as day, month, year
+    %
+    %   labDate provides a simple date representation and utilities for
+    %   date manipulation, comparison, and generation of date-based
+    %   identifiers.
     %
     %labDate properties:
-    %   day - number
-    %   month - number (1-12)
-    %   year - four digit number
+    %   day - day of month (1-31)
+    %   month - month number (1-12)
+    %   year - four digit year number
     %
-    %labDate Methods:
-    %   monthString - outputs month as a 3-letter string
-    %   genIDFromClock
-    %   getCurrent
+    %labDate methods:
+    %   labDate - constructor for date object
+    %   timeSince - calculates elapsed time from another date
+    %   isempty - checks if date equals default value
+    %
+    %labDate static methods:
+    %   monthString - converts month number to 3-letter string
+    %   genIDFromClock - generates timestamp ID from current time
+    %   getCurrent - creates labDate for current date
     %   default - generates default date (Jan 1, 1900)
+    %
+    %See also: datetime
 
     properties
         day; %a day (ex: 27)
@@ -63,12 +74,12 @@ classdef labDate
                         ME=MException('labDate:Constructor','Unrecognized month string.');
                         throw(ME);
                 end
-           elseif isa(mm,'double') && mm<=12
-               this.month=mm;
-           else
+            elseif isa(mm,'double') && mm<=12
+                this.month=mm;
+            else
                 ME=MException('labDate:Constructor','Month parameter is not a 3-letter string or a valid numerical value.');
                 throw(ME);
-           end
+            end
             this.year=year;
         end
 
@@ -83,31 +94,31 @@ classdef labDate
         end
 
         % HH: no setter for month because it was mis-behaving
-%         function this=set.month(this,mm)
-%
-%         end
+        %         function this=set.month(this,mm)
+        %
+        %         end
         function this=set.year(this,year)
             if rem(year,1)==0
                 this.year=year;
             else
                 ME=MException('labDate:Constructor','Year parameter is not an integer.');
                 throw(ME);
-           end
+            end
         end
-        
-            %Suggested method: find number of years/months/days that separate two
+
+        %Suggested method: find number of years/months/days that separate two
         %dates. The method could be called like
         function [timeInMonths]=timeSince(this,other)
-              %Returns elapsed time in MONTHS
-              timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
+            %Returns elapsed time in MONTHS
+            timeInMonths=12*(this.year-other.year)+(this.month-other.month)+(this.day-other.day)/30;
         end
-        
+
         function flag=isempty(this)
             flag=timeSince(this,labDate.default)==0; %If date equals default value, considering empty
         end
-        
+
         %function disp(this)
-        %   disp([num2str(this.day) ' ' labDate.monthString(this.month) ' ' num2str(this.year)]) 
+        %   disp([num2str(this.day) ' ' labDate.monthString(this.month) ' ' num2str(this.year)])
         %end
 
     end
@@ -118,11 +129,11 @@ classdef labDate
     methods(Static)
 
         function str=monthString(a)
-        % monthString  turns numeric month value into a string
-        %   str=monthString(a) outputs a three-character string for an
-        %   integer between 1 and 12 (inclusive).
-        %   example:
-        %       monthString(1) returns 'jan'.
+            % monthString  turns numeric month value into a string
+            %   str=monthString(a) outputs a three-character string for an
+            %   integer between 1 and 12 (inclusive).
+            %   example:
+            %       monthString(1) returns 'jan'.
             switch a
                 case 1
                     str='jan';
@@ -159,8 +170,8 @@ classdef labDate
             %example:
             %id = genIDFromClock()
             %id = 20150821111631
-           aux=clock;
-           id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
+            aux=clock;
+            id=num2str(aux(1)*10^10+aux(2)*10^8+aux(3)*10^6+aux(4)*10^4+aux(5)*10^2+round(aux(6)));
         end
 
         function d=getCurrent()
