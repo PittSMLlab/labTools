@@ -451,22 +451,9 @@ classdef labTimeSeries  < timeseries
 
     %% Type Conversion Methods
     methods
-        function newThis=castAsOTS(this,orientation)
-            if nargin<2 || isempty(orientation)
-                orientation=orientationInfo;
-            end
-            newThis=orientedLabTimeSeries(this.Data,this.Time(1),this.sampPeriod,this.labels,orientation);
-        end
+        newThis = castAsOTS(this, orientation)
 
-        function newThis=castAsSTS(this,F,tWin,tOverlap)
-            %1) Check if it satisfies STS requirements
-            dataF=this.Data;
-            labelsF=this.labels;
-            t0=this.Time(1);
-            Ts=this.sampPeriod;
-            spectroTimeSeries.inputArgsCheck(dataF,labelsF,t0,Ts,F,tWin,tOverlap)
-            newThis=spectroTimeSeries(dataF,labelsF,t0,Ts,F,tWin,tOverlap);
-        end
+        Sthis = castAsSTS(this, nFFT, tWin, tOverlap)
     end
 
     %% Arithmetic Operations
