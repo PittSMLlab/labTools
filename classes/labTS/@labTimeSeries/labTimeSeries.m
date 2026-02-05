@@ -207,95 +207,11 @@ classdef labTimeSeries  < timeseries
 
     %% Sampling and Synchronization Methods
     methods
-        function data=getSample(this,timePoints,method) %This does not seem efficient: we are creating a timeseries object (from native Matlab) and using its resample method.
-            if nargin<3 || isempty(method)
-                if isa(this.Data,'logical')
-                    method='closest';
-                else
-                    method='linear';
-                end
-            end
+        data = getSample(this, timePoints, method)
 
-            if ~isempty(timePoints)
-                M=length(this.labels);
-                switch method
-                    case 'linear'
-                        data=nan(numel(timePoints),M);
-                        notNaNIdxs=~isnan(timePoints) & ~isinf(timePoints) & timePoints<this.Time(end) & timePoints>this.Time(1); %Excluding NaNs, Infs and out-of-range times from interpolation.
-                        [notNaNTimes,sorting]=sort(timePoints(notNaNIdxs),'ascend');
-                        newTS=resample(this,notNaNTimes,this.Time(1),1); %Using timeseres.resample which does linear interp by default
+        newTS = synchTo(this, otherTS)
 
-                        newTS.Data(sorting,:)=newTS.Data;
-                        data(notNaNIdxs,:)=newTS.Data;
-                    case 'closest'
-                        data=nan(numel(timePoints),M);
-                        aux=this.getIndexClosestToTimePoint(timePoints(:));
-                        inds=~isnan(aux);
-                        aux=aux(inds); %Eliminating NaNs
-                        newData=this.Data(aux,:); %This would be the new data in the simplest case.
-                        initData=newData;
-                        %But, if two samples map to the same timePoint (sub-sampling) and that timePoint corresponds
-                        %to an event, just keep the closest one, to avoid repeating events.
-                        trueEventSamples=unique(aux(any(newData,2) & [diff(aux);1]==0)); %Unique samples that contain an event
-                        tt=this.Time(trueEventSamples);
-                        for i=1:length(trueEventSamples)
-                            mappedInds=find(aux==trueEventSamples(i));
-                            relevantTimePoints=timePoints(mappedInds);
-                            Dt=abs(tt(i)-relevantTimePoints);
-                            jj=find(Dt==min(Dt),1,'first'); %The find() is needed to resolve ties
-                            mappedInds(jj)=[];
-                            newData(mappedInds,:)=0;
-                        end
-
-                        data(inds,:)=newData;
-                        %                         %Sanity check, this can be deprecated if no errors
-                        %                         %found by Jan 1st 2018. [implemented Sept 11 2017]
-                        %                         %Check that #events did not change:
-                        %                         if any(sum(newData)~=sum(this.split(min(timePoints(:))-this.sampPeriod/2,max(timePoints(:))+this.sampPeriod).Data))
-                        %                             error('Something went wrong when resampling: number of events changed')
-                        %                         end
-                        %                         %Check that no event is present at a sample where
-                        %                         %it was previously not:
-                        %                         if any(any(newData & ~initData))
-                        %                             error('Something went wrong when resampling: event location changed')
-                        %                         end
-                        %TODO: add interpft1 interpolation as possible
-                        %method, provided that the timepoints are equally
-                        %spaced.
-                end
-                data=reshape(full(data),[size(timePoints),M]); %Can't have sparse ND matrices (WHY??)
-            else
-                data=[];
-            end
-        end
-
-        function newTS=synchTo(this,otherTS)
-            %Resamples the timeseries assuring that the new time vector coincides with that of otherTS. Pads with NaN if necessary.
-            if ~islogical(this.Data)
-                method=[];
-            else
-                method='closest';
-            end
-            data=squeeze(this.getSample(otherTS.Time,method));
-            newTS=labTimeSeries(data,otherTS.Time(1),otherTS.sampPeriod,this.labels);
-        end
-
-        function index=getIndexClosestToTimePoint(this,timePoints)
-            %NaN returns NaN
-
-            %aux=abs(bsxfun(@minus,this.Time(:),timePoints(:)'))<=(this.sampPeriod/2+eps);
-            %[ii,jj]=find(aux);
-            %index=nan(size(timePoints));
-            %index(jj)=ii;
-            index=round((timePoints(:)-this.Time(1))/this.sampPeriod)+1;
-            index(index<1)=1;
-            index(index>numel(this.Time))=numel(this.Time);
-            index=reshape(index,size(timePoints));
-            %Check
-            %if any(abs(this.Time(index(:))-timePoints(:))>(this.sampPeriod/2-eps))
-            %    error('Non consistent indexes found')
-            %end
-        end
+        index = getIndexClosestToTimePoint(this, timePoints)
     end
 
     %% Resampling Methods
