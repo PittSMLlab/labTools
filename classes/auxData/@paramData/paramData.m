@@ -23,43 +23,65 @@ classdef paramData
     %
     %See also: parameterSeries, adaptationData
 
-    %%
-    properties %(SetAccess=private)
-        labels={''};
+    %% Properties
+    properties % (SetAccess = private)
+        labels = {''};
         Data;
-        indsInTrial={};
-        trialTypes={};
-    end
-    properties(Dependent)
-        %could include things here like 'learning' or 'transfer'...
+        indsInTrial = {};
+        trialTypes = {};
     end
 
-    %%
+    properties (Dependent)
+        % could include things here like 'learning' or 'transfer'...
+    end
+
+    %% Constructor
     methods
+        function this = paramData(data, labels, inds, types)
+            %paramData  Constructor for paramData class
+            %
+            %   this = paramData(data, labels, inds, types) creates a
+            %   parameter data object with specified data, labels, trial
+            %   indices, and trial types
+            %
+            %   Inputs:
+            %       data - matrix of parameter values (samples x
+            %              parameters)
+            %       labels - cell array of parameter name strings
+            %       inds - cell array of trial indices
+            %       types - cell array of trial type identifiers
+            %               (optional)
+            %
+            %   Outputs:
+            %       this - paramData object
+            %
+            %   See also: appendData
 
-        %Constructor:
-        function this=paramData(data,labels,inds,types)
-            if (length(labels)==size(data,2)) && isa(labels,'cell')
-                this.labels=labels;
-                this.Data=data;
+            if (length(labels) == size(data, 2)) && isa(labels, 'cell')
+                this.labels = labels;
+                this.Data = data;
             else
-                ME=MException('paramData:ConstructorInconsistentArguments','The size of the labels array is inconsistent with the data being provided.');
-                throw(ME)
+                ME = MException(...
+                    'paramData:ConstructorInconsistentArguments', ...
+                    ['The size of the labels array is inconsistent ' ...
+                    'with the data being provided.']);
+                throw(ME);
             end
-            if nargin>2 && isa(inds,'cell')
-                this.indsInTrial=inds;
+            if nargin > 2 && isa(inds, 'cell')
+                this.indsInTrial = inds;
             else
-                ME=MException('paramData:Constructor','Check that trial indices are entered correctly.');
-                throw(ME)
+                ME = MException('paramData:Constructor', ...
+                    'Check that trial indices are entered correctly.');
+                throw(ME);
             end
-            if nargin>3 && isa(types,'cell')
-                this.trialTypes=types;
+            if nargin > 3 && isa(types, 'cell')
+                this.trialTypes = types;
             end
         end
+    end
 
-        %-------------------
-
-        %Other I/O functions:
+    %% Data Access Methods
+    methods
         function [data,auxLabel]=getParameter(this,label)
             if isa(label,'char')
                 auxLabel={label};
@@ -105,14 +127,14 @@ classdef paramData
                 end
             end
         end
+    end
 
-        % Modifiers:
+    %% Data Modification Methods
+    methods
         function newThis=appendData(this,newData,newLabels)
             newThis=paramData([this.Data newData],[this.labels newLabels],this.indsInTrial,this.trialTypes);
         end
     end
 
-
-
-
 end
+
