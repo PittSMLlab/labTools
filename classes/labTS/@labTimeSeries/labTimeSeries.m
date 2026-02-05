@@ -172,43 +172,9 @@ classdef labTimeSeries  < timeseries
 
     %% Data Access Methods
     methods
-        function [data,time,auxLabel]=getDataAsVector(this,label)
-            if nargin<2 || isempty(label)
-                label=this.labels;
-            end
-            if isa(label,'char')
-                auxLabel={label};
-            else
-                auxLabel=label;
-            end
-            time=this.Time;
-            [boolFlag,labelIdx]=this.isaLabel(auxLabel);
-            if ~any(boolFlag)
-                auxLabel2=[];
-                for i=1:length(auxLabel)
-                    auxLabel2=[auxLabel2 this.getLabelsThatMatch(auxLabel{i})];
-                end
-                [boolFlag,labelIdx]=this.isaLabel(auxLabel2);
-                NN=numel(auxLabel2);
-                warning(['None of the provided labels are a parameter in this timeSeries. Trying to return labels that match the provided label as a regular expression: found ' num2str(NN) ' matches.'])
-            else
-                for i=1:length(boolFlag)
-                    if ~boolFlag(i)
-                        warning(['Label ' auxLabel{i} ' is not a labeled dataset in this timeSeries.'])
-                    end
-                end
-            end
+        [data, time, auxLabel] = getDataAsVector(this, label)
 
-            data=this.Data(:,labelIdx(boolFlag));
-            if nargout>2
-                auxLabel=this.labels(labelIdx(boolFlag));
-            end
-        end
-
-        function [newTS,auxLabel]=getDataAsTS(this,label)
-            [data,time,auxLabel]=getDataAsVector(this,label);
-            newTS=labTimeSeries(data,time(1),this.sampPeriod,auxLabel);
-        end
+        [newTS, auxLabel] = getDataAsTS(this, label)
 
         function labelList = getLabels(this)
             %getLabels  Returns list of labels
@@ -226,10 +192,8 @@ classdef labTimeSeries  < timeseries
             labelList = this.labels;
         end
 
-        function [data,time,auxLabel]=getPartialDataAsVector(this,label,t0,t1)
-            newThis=split(this.getDataAsTS(label),t0,t1);
-            [data,time,auxLabel]=getDataAsVector(newThis,label);
-        end
+        [data, time, auxLabel] = ...
+            getPartialDataAsVector(this, label, t0, t1)
     end
 
     %% Label Query Methods
