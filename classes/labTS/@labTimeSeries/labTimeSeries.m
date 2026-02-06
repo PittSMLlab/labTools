@@ -577,59 +577,13 @@ classdef labTimeSeries  < timeseries
 
     %% Filtering Methods
     methods
-        function newThis=lowPassFilter(this,fcut)
-            Wn=fcut*2/this.sampFreq;
-            Wst=min([2*Wn,Wn+.2*(1-Wn)]);
-            filterList{1}=fdesign.lowpass('Fp,Fst,Ap,Ast',Wn,Wst,3,10); %
-            lowPassFilter=design(filterList{1},'butter');
-            newData=filtfilthd_short(lowPassFilter,this.Data,'reflect',this.sampFreq);  %Ext function
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-            if ~isfield(this.UserData,'processingInfo')
-                this.UserData.processingInfo={};
-            end
-            newThis.UserData=this.UserData;
-            newThis.UserData.processingInfo{end+1}=filterList{1};
-        end
+        newThis = lowPassFilter(this, fcut)
 
-        function newThis=highPassFilter(this,fcut)
-            Wn=fcut*2/this.sampFreq;
-            filterList{1}=fdesign.highpass('Fst,Fp,Ast,Ap',Wn/2,Wn,10,3);
-            highPassFilter=design(filterList{1},'butter');
-            newData=filtfilthd_short(highPassFilter,this.Data,'reflect',this.sampFreq);
-            newThis=labTimeSeries(newData,this.Time(1),this.sampPeriod,this.labels);
-            if ~isfield(this.UserData,'processingInfo')
-                this.UserData.processingInfo={};
-            end
-            newThis.UserData=this.UserData;
-            newThis.UserData.processingInfo{end+1}=filterList{1};
-        end
+        newThis = highPassFilter(this, fcut)
 
-        function newThis=monotonicFilter(this,Nderiv,Nreg)
-            if nargin<2 || isempty(Nderiv)
-                Nderiv=2;
-            end
-            if nargin<3 || isempty(Nreg)
-                Nreg=2;
-            end
-            for i=1:size(this.Data,2)
-                this.Data(:,i)=monoLS(this.Data(:,i),[],Nderiv,Nreg);
-            end
-            newThis=this;
-        end
+        newThis = monotonicFilter(this, Nderiv, Nreg)
 
-        function this=medianFilter(this,N)
-            if mod(N,2)==0
-                error('Only odd filter orders are allowed')
-                %This actually works with even orders, but then the data
-                %gets shifted by half a sample, which is undesirable.
-            end
-
-            %this.Data=medfilt1(this.Data,N,1,'omitnan'); %altered 12/4/2015 "omitnan" is not a valid input to medfilt1 in 2015a, 'omitnan' allowed for the median to be taken among the non-NaN elemets
-            this.Data=medfilt1(double(this.Data),double(N),double(1)); %This back-compatible alternative works as if the last argument were 'includenan' (i.e. whenever there is a NaN in the window, the result is NaN)
-            %Setting the samples outside the filter to NaN:
-            this.Data(1:floor(N/2),:)=NaN;
-            this.Data(end-floor(N/2)+1:end,:)=NaN;
-        end
+        this = medianFilter(this, N)
     end
 
     %% Spectral Analysis Methods
