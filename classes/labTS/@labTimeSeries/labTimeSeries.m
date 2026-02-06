@@ -595,38 +595,10 @@ classdef labTimeSeries  < timeseries
 
     %% Alignment Methods
     methods
-        function [ATS,bad]=align(this,eventTS,eventLabel,N,~)
-            if nargin<3 || isempty(eventLabel)
-                eventLabel=eventTS.labels(1);
-            end
-            if nargin<4 || isempty(N)
-                N=256*ones(size(eventLabel));
-            end
-            [ATS,bad]=this.align_v2(eventTS.split(this.Time(1)-this.sampPeriod,this.Time(end)+this.sampPeriod),eventLabel,N);
-        end
+        [ATS, bad] = align(this, eventTS, eventLabel, N, ~)
 
-        function [DTS,bad]=discretize(this,eventTS,eventLabel,N,summaryFunction)
-            %Discretizes a time-series by averaging data across different
-            %phases of gait. The phases are defined by intervals between
-            %given events, and in turn these can be divided into sub-phases
-            if nargin<3 || isempty(eventLabel)
-                eventLabel=eventTS.labels(1);
-            end
-            %NEw attempt, no alignment:
-            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-            bad=any(isnan(eventTimes(1:end-1,:)),2);
-            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
-            ee=[expEventTimes(:); eventTimes(end,1)];
-            [slicedTS]=this.sliceTS(ee,0);
-            if nargin<5 || isempty(summaryFunction)
-                summaryFunction='nanmean';%nanmean, only along the columns, so that if we have NAN data, and to account for the odd instance when we only have one row or data in our slicedTS
-            end
-            eval(['myfun=@(x) ' summaryFunction '(x,1);']);
-            d=cell2mat(cellfun(@(x) myfun(x.Data),slicedTS,'UniformOutput',false)');
-            [M,N1]=size(expEventTimes);        M2=size(d,2);
-            d=permute(reshape(d,sum(N),N1,M2),[1,3,2]);
-            DTS=alignedTimeSeries(0,1,d,this.labels,N,eventLabel,eventTimes');
-        end
+        [DTS, bad] = ...
+            discretize(this, eventTS, eventLabel, N, summaryFunction)
     end
 
     %% Visualization Methods
