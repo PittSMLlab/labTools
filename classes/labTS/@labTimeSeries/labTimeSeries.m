@@ -555,17 +555,23 @@ classdef labTimeSeries  < timeseries
 
     %% Concatenation Methods
     methods
-        function newThis=concatenate(this,other)
-            %Check if time vectors are the same
-            if all(this.Time==other.Time)
-                newThis=labTimeSeries([this.Data,other.Data],this.Time(1),this.sampPeriod,[this.labels(:)', other.labels(:)']);
-            else
-                error('labTimeSeries:concatenate','Cannot concatenate timeseries with different Time vectors.')
-            end
-        end
+        newThis = concatenate(this, other)
 
-        function newThis=cat(this,other)
-            newThis=concatenate(this,other);
+        function newThis = cat(this, other)
+            %cat  Alias for concatenate
+            %
+            %   newThis = cat(this, other) concatenates two labTimeSeries
+            %
+            %   Inputs:
+            %       this - labTimeSeries object
+            %       other - labTimeSeries object to concatenate
+            %
+            %   Outputs:
+            %       newThis - concatenated labTimeSeries
+            %
+            %   See also: concatenate
+
+            newThis = concatenate(this, other);
         end
     end
 
