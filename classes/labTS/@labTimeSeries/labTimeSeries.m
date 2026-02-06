@@ -546,43 +546,11 @@ classdef labTimeSeries  < timeseries
 
     %% Data Cleaning Methods
     methods
-        function this=fillts(this) %TODO: Deprecate
-            warning('labTS.fillts is being deprecated. Use substituteNaNs instead.')
-            this=substituteNaNs(this,'linear');
-        end
+        this = fillts(this)
 
-        function this=substituteNaNs(this,method)
-            if nargin<2 || isempty(method)
-                method='linear';
-            end
-            badColumns=sum(~isnan(this.Data))<2;
-            if any(badColumns) %Returns true if any TS contained in the data is all NaN
-                %FIXME: This throws an exception now, but it should just
-                %return all NaN labels as all NaN and substitute missing
-                %values in the others.
-                warning('labTimeSeries:substituteNaNs','timeseries contains at least one label that is all (or all but one sample) NaN. Can''t replace those values (no data to use as reference), setting to 0.')
-                this.Data(:,badColumns)=0;
-            end
-            %this.Quality=zeros(size(this.Data),'int8');
-            aux=isnan(this.Data);
-            for i=1:size(this.Data,2) %Going through labels
-                auxIdx=aux(:,i);
-                this.Data(auxIdx,i)=interp1(this.Time(~auxIdx),this.Data(~auxIdx,i),this.Time(auxIdx),method,0); %Extrapolation values are filled with 0,
-            end
-            %Saving quality data (to mark which samples were interpolated):
-            this.Quality=int8(aux); %Matlab's timeseries stores this as int8. I would have preferred a sparse array.
-            this.QualityInfo.Code=[0 1];
-            this.QualityInfo.Description={'good','missing'};
-        end
+        this = substituteNaNs(this, method)
 
-        function newThis=thresholdByChannel(this,th,label,moreThanFlag)
-            newThis=this;
-            if nargin<4 || isempty(moreThanFlag) || moreThanFlag==0
-                newThis.Data(newThis.getDataAsVector(label)<th,:)=0;
-            elseif moreThanFlag==1
-                newThis.Data(newThis.getDataAsVector(label)>th,:)=0;
-            end
-        end
+        newThis = thresholdByChannel(this, th, label, moreThanFlag)
     end
 
     %% Concatenation Methods
