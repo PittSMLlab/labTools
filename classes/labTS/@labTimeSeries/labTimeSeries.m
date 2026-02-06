@@ -588,30 +588,9 @@ classdef labTimeSeries  < timeseries
 
     %% Spectral Analysis Methods
     methods
-        function Fthis=fourierTransform(this,M) %Changed on Apr 1st 2015, to return a timeseries. Now ignores second argument
-            if nargin>1
-                warning('labTimeSeries:fourierTransform','Ignoring second argument')
-            end
-            [F,f] = DiscreteTimeFourierTransform(this.Data,this.sampFreq);
-            Fthis=labTimeSeries(F,f(1),f(2)-f(1),strcat(strcat('F(',this.labels),')'));
-            Fthis.TimeInfo.Units='Hz';
-        end
+        Fthis = fourierTransform(this, M)
 
-        function Sthis=spectrogram(this,labels,nFFT,tWin,tOverlap)
-            if nargin<2
-                labels=[];
-            end
-            if nargin<3
-                nFFT=[];
-            end
-            if nargin<4
-                tWin=[];
-            end
-            if nargin<5
-                tOverlap=[];
-            end
-            Sthis = spectroTimeSeries.getSTSfromTS(this,labels,nFFT,tWin,tOverlap);
-        end
+        Sthis = spectrogram(this, labels, nFFT, tWin, tOverlap)
     end
 
     %% Alignment Methods
