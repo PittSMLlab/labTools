@@ -797,40 +797,9 @@ classdef labTimeSeries  < timeseries
 
     %% Hidden Methods
     methods (Hidden)
-        function newThis=resampleLogical(this,newTs, newT0,newN)
-            %newN=floor((this.Time(end)-newT0)/newTs +1);
-            %Can this be deprecated in favor of resample with 'logical'
-            %method?
-            newTime=[0:newN-1]*newTs+newT0;
-            newN=length(newTime);
-            newData=sparse([],[],false,newN,size(this.Data,2),newN);% Sparse logical array of size newN x size(this.Data,2) and room for up to size(this.Data,2) true elements.
-            for i=1:size(this.Data,2) %Go over event labels
-                oldEventTimes=this.Time(this.Data(:,i)); %Find time of old events
-                closestNewEventIndexes=round((oldEventTimes-newT0)/newTs) + 1; %Find closest index in new event
-                if any(closestNewEventIndexes>newN) %It could happen in case of down-sampling that the closest new index falls outside the range
-                    %Option 1: set it to the last available sample (this
-                    %would no longer be 'rounding')
-                    closestNewEventIndexes(closestNewEventIndexes>newN)=newN;
-                    %Option 2: eliminate event, as it falls outside range.
-                    %This may cause failure of other functions that rely on
-                    %down-sampling of events not changing the number of
-                    %events
-                    closestNewEventIndexes(closestNewEventIndexes>newN)=[];
-                end
+        newThis = resampleLogical(this, newTs, newT0, newN)
 
-                newData(closestNewEventIndexes,i)=true;
-            end
-            newThis=labTimeSeries(newData,newT0,newTs,this.labels);
-        end
-
-        function [ATS,bad,Data]=align_v2(this,eventTS,eventLabel,N)
-            %Efficient & robust substitute for legacy align()
-            eventTimes=labTimeSeries.getArrayedEvents(eventTS,eventLabel);
-            expEventTimes=alignedTimeSeries.expandEventTimes(eventTimes',N);
-            Data=permute(this.getSample(expEventTimes),[1,3,2]);
-            bad=any(isnan(eventTimes(1:end-1,:)),2);
-            ATS=alignedTimeSeries(0,1,Data,this.labels,N,eventLabel,eventTimes');
-        end
+        [ATS, bad, Data] = align_v2(this, eventTS, eventLabel, N)
     end
 
     %% Static Methods
