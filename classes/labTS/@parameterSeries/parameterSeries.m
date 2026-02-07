@@ -64,61 +64,132 @@ classdef parameterSeries < labTimeSeries
 
     %% Constructor
     methods
-        function this=parameterSeries(data,labels,times,description,types)
-            this@labTimeSeries(data,1,1,labels);
-            this.hiddenTime=times;
-            if length(description)==length(labels)
-                this.description_=description; %Needs to be cell-array of same length as labels
+        function this = parameterSeries( ...
+                data, labels, times, description, types)
+            %parameterSeries  Constructor for parameterSeries class
+            %
+            %   this = parameterSeries(data, labels, times, description)
+            %   creates a parameter series with specified data, labels,
+            %   times, and descriptions
+            %
+            %   this = parameterSeries(data, labels, times, description,
+            %   types) includes trial type information
+            %
+            %   Inputs:
+            %       data - matrix of parameter values (strides x
+            %              parameters)
+            %       labels - cell array of parameter name strings
+            %       times - vector of stride initial times
+            %       description - cell array of parameter descriptions
+            %                     (same length as labels)
+            %       types - cell array of trial type identifiers
+            %               (optional)
+            %
+            %   Outputs:
+            %       this - parameterSeries object
+            %
+            %   See also: labTimeSeries, adaptationData
+
+            this@labTimeSeries(data, 1, 1, labels);
+            this.hiddenTime = times;
+            if length(description) == length(labels)
+                % Needs to be cell-array of same length as labels
+                this.description_ = description;
             else
-                error('paramtereSeries:constructor','Description input needs to be same length as labels')
+                error('paramtereSeries:constructor', ...
+                    'Description input needs to be same length as labels');
             end
-            if nargin>4
-                this.trialTypes_=types;
+            if nargin > 4
+                this.trialTypes_ = types;
             end
         end
 
-        function this=setTrialTypes(this,types)
-            this.trialTypes_=types;
+        function this = setTrialTypes(this, types)
+            %setTrialTypes  Sets trial type information
+            %
+            %   this = setTrialTypes(this, types) sets the trial types
+            %   for the parameter series
+            %
+            %   Inputs:
+            %       this - parameterSeries object
+            %       types - cell array of trial type identifiers
+            %
+            %   Outputs:
+            %       this - parameterSeries with updated trial types
+
+            this.trialTypes_ = types;
         end
     end
 
     %% Dependent Property Getters
     methods
-        function vals=get.bad(this)
+        % this could be made more efficient by fixing the indexes for these
+        % parameters (which is something that already happens in practice)
+        % and doing direct indexing to data
+        function vals = get.bad(this)
+            %get.bad  Returns bad stride flags
+            %
+            %   Outputs:
+            %       vals - logical vector indicating bad strides
+            %
+            %   Note: This could be made more efficient by fixing the
+            %         indexes for these parameters and doing direct
+            %         indexing to data
+
             if this.isaParameter('bad')
-                vals=this.getDataAsVector('bad');
+                vals = this.getDataAsVector('bad');
             elseif this.isaParameter('good')
-                vals=this.getDataAsVector('good');
-                vals=~vals;
+                vals = this.getDataAsVector('good');
+                vals = ~vals;
             else
-                %This should never be the case. Setting all values as good.
-                vals=false(size(this.Data,1),1);
+                % This should never be the case. Setting all values as good
+                vals = false(size(this.Data, 1), 1);
             end
         end
 
-        function vals=get.stridesTrial(this)
-            vals=this.getDataAsVector('trial');
+        function vals = get.stridesTrial(this)
+            %get.stridesTrial  Returns trial number for each stride
+            %
+            %   Outputs:
+            %       vals - vector of trial numbers
+
+            vals = this.getDataAsVector('trial');
         end
 
-        function vals=get.stridesInitTime(this)
-            vals=this.getDataAsVector('initTime');
+        function vals = get.stridesInitTime(this)
+            %get.stridesInitTime  Returns initial time for each stride
+            %
+            %   Outputs:
+            %       vals - vector of stride initial times
+
+            vals = this.getDataAsVector('initTime');
         end
 
-        function vals=get.description(this)
-            %            if isfield(this,'description_')
-            vals=this.description_;
-            %            else
-            %               vals=cell(size(this.labels));
-            %            end
+        function vals = get.description(this)
+            %get.description  Returns parameter descriptions
+            %
+            %   Outputs:
+            %       vals - cell array of description strings
+
+            % if isfield(this, 'description_')
+            vals = this.description_;
+            % else
+            %     vals = cell(size(this.labels));
+            % end
         end
 
-        function vals=get.trialTypes(this)
-            %             if isfield(this,'trialTypes_')
-            vals=this.trialTypes_;
-            %             else
-            %                 disp('trying to access trialTypes')
-            %                vals={};
-            %             end
+        function vals = get.trialTypes(this)
+            %get.trialTypes  Returns trial types
+            %
+            %   Outputs:
+            %       vals - cell array of trial type identifiers
+
+            % if isfield(this, 'trialTypes_')
+            vals = this.trialTypes_;
+            % else
+            %     disp('trying to access trialTypes');
+            %     vals = {};
+            % end
         end
     end
 
@@ -358,32 +429,31 @@ classdef parameterSeries < labTimeSeries
         end
     end
 
-    %         function newThis=EMGnormAllData(this,labels,rangeValues)
-    %             %This get the stride by stide norm
-    %             %It creates NEW parameters with the same name, and the 'Norm' prefix.
-    %             %This will generate collisions if run multiple times for the
-    %             %same parameters
-    %             %See also: adaptationData.normalizeToBaselineEpoch
-    %             if isempty(rangeValues)
-    % %                 error('rangeValues has to be a 2 element vector')
-    %                 rangeValues=0;
-    %             end
+    % function newThis=EMGnormAllData(this,labels,rangeValues)
+    %     %This get the stride by stide norm
+    %     %It creates NEW parameters with the same name, and the 'Norm' prefix.
+    %     %This will generate collisions if run multiple times for the
+    %     %same parameters
+    %     %See also: adaptationData.normalizeToBaselineEpoch
+    %     if isempty(rangeValues)
+    %         % error('rangeValues has to be a 2 element vector');
+    %         rangeValues=0;
+    %     end
     %
-    %             %More efficient:
-    %             N=length(labels);
-    %             newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
-    %             newL=cell(N,1);
-    %             nD=zeros(size(this.Data,1),N);
+    %     % More efficient:
+    %     N=length(labels);
+    %     newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
+    %     newL=cell(N,1);
+    %     nD=zeros(size(this.Data,1),N);
     %
-    % %             for i=1:N
-    %                 %                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-    %
-    % %                 funHandle=@(x) vecnorm(x'-rangeValues);
-    % %                 newL=strcat('NormEMG',labels);
-    % %                 nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
-    % %             end
-    %             newThis=appendData(this,nD,newL,newDesc);
-    %         end
+    %     % for i=1:N
+    %     %     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+    %     %     funHandle=@(x) vecnorm(x'-rangeValues);
+    %     %     newL=strcat('NormEMG',labels);
+    %     %     nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
+    %     % end
+    %     newThis=appendData(this,nD,newL,newDesc);
+    % end
 
     %% Overridden Methods
     methods
