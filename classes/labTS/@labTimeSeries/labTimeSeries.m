@@ -678,109 +678,17 @@ classdef labTimeSeries  < timeseries
 
     %% Static Methods
     methods (Static)
-        this=createLabTSFromTimeVector(data,time,labels); %Need to compute appropriate t0 and Ts constants and call the constructor. Tricky if time is not uniformly sampled.
+        this = createLabTSFromTimeVector(data, time, labels)
 
-        function eventTimes=getArrayedEvents(eventTS,eventLabel)
-            if nargin>1
-                eventList=eventTS.getDataAsVector(eventLabel);
-            else
-                eventList=eventTS.Data(:,1);
-            end
-            %Check needed: is eventList binary?
-            N=size(eventList,2); %Number of events & intervals to be found
-            %auxList=double(eventList)*2.^[0:N-1]'; %List all events in a single vector, by numbering them differently.
+        eventTimes = getArrayedEvents(eventTS, eventLabel)
 
-            %refIdxLst=find(auxList==1);
-            refIdxLst=find(eventList(:,1)); %Alt definition, to match what is returned if a single event was provided
-            M=length(refIdxLst)-1;
-            auxTime=eventTS.Time;
-            initTime=auxTime(refIdxLst); %Initial time of each interval identified
-            eventTimes=nan(M+1,N); %Duration of each interval
-            eventTimes(:,1)=initTime;
-            for i=1:M %Going over strides
-                t0=auxTime(refIdxLst(i));
-                lastEventIdx=refIdxLst(i);
-                for j=1:N-1 %Going over events
-                    %nextEventIdx=lastEventIdx+find(auxList(lastEventIdx+1:refIdxLst(i+1)-1)==2^mod(j,N),1,'first');
-                    nextEventIdx=lastEventIdx+find(eventList(lastEventIdx+1:refIdxLst(i+1)-1,j+1),1,'first');
-                    t1= auxTime(nextEventIdx); %Look for next event
-                    if ~isempty(t1) && ~isempty(t0)
-                        eventTimes(i,j+1)=t1;
-                        lastEventIdx=nextEventIdx;
-                    end
+        [alignedTS, originalDurations] = ...
+            stridedTSToAlignedTS(stridedTS, N)
 
-                end
-            end
-        end
+        [figHandle, plotHandles] = ...
+            plotStridedTimeSeries(stridedTS, figHandle, plotHandles)
 
-        function [alignedTS,originalDurations]=stridedTSToAlignedTS(stridedTS,N)
-            error('Deprecated. Use labTS.align()')
-            %To be used after splitByEvents
-            if numel(stridedTS)~=0
-                if ~islogical(stridedTS{1}.Data)
-                    aux=zeros(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
-                else
-                    aux=false(sum(N),size(stridedTS{1}.Data,2),size(stridedTS,1));
-                end
-                Nstrides=size(stridedTS,1);
-                Nphases=size(stridedTS,2);
-                originalDurations=nan(Nstrides,Nphases);
-                for i=1:Nstrides %Going over strides
-                    M=[0,cumsum(N)];
-                    for j=1:Nphases %Going over aligned phases
-                        if isa(stridedTS{i,j},'labTimeSeries')
-                            originalDurations(i,j)=stridedTS{i,j}.timeRange;
-                            if ~isempty(stridedTS{i,j}.Data) && sum(~isnan(stridedTS{i,j}.Data(:,1)))>1
-                                aa=resampleN(stridedTS{i,j},N(j));
-                                aux(M(j)+1:M(j+1),:,i)=aa.Data;
-                            else %Separating by strides returned empty labTimeSeries, possibly because of events in disorder
-                                if islogical(stridedTS{i,j}.Data)
-                                    aux(M(j)+1:M(j+1),:,i)=false;
-                                else
-                                    aux(M(j)+1:M(j+1),:,i)=NaN;
-                                end
-                            end
-                        else
-                            error('labTimeSeries:stridedTSToAlignedTS',['First argument is not a cell array of labTimeSeries. Element i=' num2str(i) ', j=' num2str(j)])
-                        end
-                    end
-                end
-                alignmentLabels=cell(size(N)); %Need to populate this field properly
-                alignedTS=alignedTimeSeries(0,1,aux,stridedTS{1}.labels,N,alignmentLabels); %On May 2nd 2017, Pablo changed to have sampling time =1 [time vector now counts samples]
-            else
-                alignmentLabels=cell(size(N));
-                alignedTS=alignedTimeSeries(0,1,zeros(0,0),[],N,alignmentLabels);
-                originalDurations=[];
-            end
-        end
-
-        function [figHandle,plotHandles]=plotStridedTimeSeries(stridedTS,figHandle,plotHandles)
-            if nargin<2
-                figHandle=[];
-            end
-            if nargin<3
-                plotHandles=[];
-            end
-            N=2^ceil(log2(1.5/stridedTS{1}.sampPeriod));
-            structure=labTimeSeries.stridedTSToAlignedTS(stridedTS,N);
-            [figHandle,plotHandles]=plot(structure,figHandle,plotHandles); %Using the alignedTimeSeries plot function
-        end
-
-        function this=join(labTSCellArray)
-            masterSampPeriod=labTSCellArray{1}.sampPeriod;
-            masterLabels=labTSCellArray{1}.labels;
-            newData=labTSCellArray{1}.Data;
-            for i=2:length(labTSCellArray(:))
-                %Check sampling rate & dimensions are consistent, and append
-                %at end of data
-                if all(cellfun(@strcmp,masterLabels,labTSCellArray{i}.labels)) && masterSampPeriod==labTSCellArray{i}.sampPeriod
-                    newData=[newData;labTSCellArray{i}.Data];
-                else
-                    warning([num2str(i) '-th element of input cell array does not have labels or sampling period consistent with other elements.']);
-                end
-                this=labTimeSeries(newData,labTSCellArray{1}.Time(1),masterSampPeriod,masterLabels);
-            end
-        end
+        this = join(labTSCellArray)
     end
 
 end
