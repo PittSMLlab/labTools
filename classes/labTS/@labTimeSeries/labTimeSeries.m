@@ -469,70 +469,11 @@ classdef labTimeSeries  < timeseries
 
     %% Differentiation and Integration
     methods
-        function newThis=derivate(this)
-            %This is kept for legacy compatibility purposes only
-            partialThis=this.derivative;
-            pad=nan(1,size(this.Data,2));
-            newThis=labTimeSeries([pad;partialThis.Data;pad],this.Time(1),this.sampPeriod,partialThis.labels);
-        end
+        newThis = derivate(this)
 
-        function [newThis,lag]=derivative(this,diffOrder)
-            %Numerical differentiation of labTS
-            %diffOrder establishes the order of the filter used for
-            %estimation, NOT higher order derivatives [we are approximating
-            %an IIR filter -the true derivative- through a FIR].
-            %Ref: https://en.wikipedia.org/wiki/Finite_difference_coefficient
-            if nargin<2 || isempty(diffOrder)
-                diffOrder=2; %Default
-            end
-            lag=diffOrder/2;
-            switch diffOrder
-                case 1
-                    w= [1 -1];
-                case 2
-                    w=.5*[1 0 -1];
-                case 4
-                    w=[-1 8 0 -8 1]/12;
-                case 6
-                    w=[1 -9 45 0 -45 9 -1]/60;
-                case 8
-                    w=[-1/56 4/21 -1 4 0 -4 1 -4/21 1/56]/5;
-                otherwise
-                    error('Order not supported')
-            end
+        [newThis, lag] = derivative(this, diffOrder)
 
-            M=size(this.Data,2);
-            newData=conv2(this.Data,w','valid')/this.sampPeriod;
-            %newData=[nan(order,M);.5*(this.Data(3:end,:)-this.Data(1:end-2,:));nan(order,M)]/this.sampPeriod; %Centered differential
-            if mod(diffOrder,2)==0 %For even order differences, we can preserve the sampling of the time series, padding with NaN on the edges
-                newT0=this.Time(1);
-                newData=cat(1,nan(lag,size(newData,2)),newData,nan(lag,size(newData,2)));
-            else
-                newT0=this.Time(1)+lag*this.sampPeriod;
-            end
-            newLabels=strcat('d/dt',{' '},this.labels);
-            newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
-        end
-
-        function newThis=integrate(this,initValues)
-            %This is the inverse operator of derivative when used with
-            %diffOrder=1;
-            M=size(this.Data,2);
-            if nargin<2 || isempty(initValues)
-                initValues=zeros(1,M);  %Default initial condition = 0
-                %Initial values represent the integrated data values HALF A
-                %SAMPLE before the first sample of this.
-                %
-            end
-            if numel(initValues)~=M
-                error('Initial values mismatch between Data and initValues')
-            end
-            newData=bsxfun(@plus,initValues(:)',cumsum([zeros(1,M); this.Data],1) * this.sampPeriod);
-            lag=-.5;
-            newLabels=strcat('\int',{' '},this.labels,{' '},'dt');
-            newT0=this.Time(1)+lag*this.sampPeriod;
-            newThis=labTimeSeries(newData,newT0,this.sampPeriod,newLabels);
-        end
+        newThis = integrate(this, initValues)
     end
 
     %% Normalization Methods
