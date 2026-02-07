@@ -476,54 +476,12 @@ classdef parameterSeries < labTimeSeries
 
     %% Visualization Methods
     methods
-        function [h,h1]=plotAlt(this,h,labels,plotHandles,color)
-            if nargin<5
-                color=[];
-            end
-            if nargin<4
-                plotHandles=[];
-            end
-            if nargin<3
-                labels=[];
-            end
-            if nargin<2
-                h=[];
-            end
-            [h,h1]=this.plot(h,labels,plotHandles,[],color,1);
-            ll=findobj(h,'Type','Line');
-            set(ll,'LineStyle','None','Marker','.')
-            linkaxes(h1,'x')
-        end
+        [h, h1] = plotAlt(this, h, labels, plotHandles, color)
     end
 
     %% Statistical Analysis Methods
     methods
-        function [p,postHocMatrix] = anova(this,params,groupIdxs,dispOpt)
-            %Function to perform one-way anova among several groups of
-            %strides, and a post-hoc analysis to
-            if nargin<4 || isempty(dispOpt)
-                dispOpt='off';
-            end
-            strides=cell2mat(groupIdxs);
-            Ngroups=length(groupIdxs);
-            for i=1:Ngroups
-                groupID{i}=i*ones(size(groupIdxs{i}));
-            end
-            groupID=cell2mat(groupID);
-            if isa(params,'char')
-                params={params};
-            end
-            Nparams=length(params);
-            aux=this.getDataAsPS([],strides);
-            postHocMatrix=cell(Nparams,1);
-            for i=1:Nparams
-                postHocMatrix{i}=nan(Ngroups);
-                relevantData=aux.getDataAsVector(params(i));
-                [p(i),ANOVATAB,STATS] = anova1(relevantData,groupID,dispOpt);
-                [c,MEANS,H,GNAMES] = multcompare(STATS); %Default post-hoc is tukey-kramer
-                postHocMatrix{i}(sub2ind(Ngroups*[1,1],c(:,1),c(:,2)))=c(:,6);
-            end
-        end
+        [p, postHocMatrix] = anova(this, params, groupIdxs, dispOpt)
     end
 
 end

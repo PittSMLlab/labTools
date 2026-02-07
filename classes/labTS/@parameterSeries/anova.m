@@ -42,8 +42,7 @@ for i = 1:Nparams
     [p(i), ANOVATAB, STATS] = anova1(relevantData, groupID, dispOpt);
     % Default post-hoc is tukey-kramer
     [c, MEANS, H, GNAMES] = multcompare(STATS);
-    postHocMatrix{i}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) = ...
-        c(:, 6);
+    postHocMatrix{i}(sub2ind(Ngroups * [1, 1], c(:, 1), c(:, 2))) =c(:, 6);
 end
 end
 
