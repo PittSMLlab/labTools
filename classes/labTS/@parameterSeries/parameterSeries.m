@@ -1,34 +1,68 @@
 classdef parameterSeries < labTimeSeries
     %parameterSeries  Extends labTimeSeries to hold adaptation parameters
     %
+    %   parameterSeries stores stride-by-stride adaptation parameters with
+    %   associated metadata including trial information, timing, and
+    %   parameter descriptions. It provides specialized methods for
+    %   parameter manipulation, normalization, and analysis.
+    %
     %parameterSeries properties:
-    %   hiddenTime
-    %   bad
-    %   stridesTrial
-    %   stridesInitTime
-    %   description
+    %   hiddenTime - actual time values for each stride
+    %   trialTypes - cell array of trial type identifiers
+    %   bad - logical vector indicating bad strides (dependent)
+    %   stridesTrial - vector of trial numbers for each stride (dependent)
+    %   stridesInitTime - vector of initial times for each stride
+    %                     (dependent)
+    %   description - cell array of parameter descriptions (dependent)
     %
     %parameterSeries methods:
-    %   idk
+    %   parameterSeries - constructor for parameter series
+    %   setTrialTypes - sets trial type information
+    %   isaParameter - checks if parameter exists (alias for isaLabel)
+    %   indsInTrial - returns indices for specified trial(s)
+    %   getParameter - retrieves parameter data (backward compatible)
+    %   incorporateDependentParameters - adds computed dependent parameters
+    %   cat - concatenates two parameterSeries
+    %   addStrides - adds strides from another parameterSeries
+    %   addNewParameter - computes and adds new parameter
+    %   getDataAsPS - extracts subset as new parameterSeries
+    %   appendData - appends new parameters
+    %   replaceParams - replaces existing parameters
+    %   markBadWhenMissingAny - marks strides bad if any param missing
+    %   markBadWhenMissingAll - marks strides bad if all params missing
+    %   substituteNaNs - fills NaN values, preserving fixed params
+    %   markBadStridesAsNan - sets bad strides to NaN
+    %   normalizeToBaseline - normalizes parameters (deprecated)
+    %   linearStretch - linearly transforms parameter values
+    %   fourierTransform - computes Fourier transform
+    %   resample - disabled for parameterSeries
+    %   resampleN - disabled for parameterSeries
+    %   plotAlt - plots parameters as scatter
+    %   anova - performs one-way ANOVA on parameters
     %
+    %See also: labTimeSeries, adaptationData
 
+    %% Properties
     properties
         hiddenTime
-        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
+        trialTypes % SL: to support split 1 condition into multiple
     end
-    properties(Dependent)
+
+    properties (Dependent)
         bad
         stridesTrial
         stridesInitTime
         description
-        %        trialTypes %Shuqi: 12/01/2021, to support split 1 condition into multiple
-    end
-    properties(Hidden)
-        description_={};
-        trialTypes_={};
-        fixedParams=5;
+        % trialTypes % to support split 1 condition into multiple
     end
 
+    properties (Hidden)
+        description_ = {};
+        trialTypes_ = {};
+        fixedParams = 5;
+    end
+
+    %% Constructor
     methods
         function this=parameterSeries(data,labels,times,description,types)
             this@labTimeSeries(data,1,1,labels);
@@ -46,9 +80,10 @@ classdef parameterSeries < labTimeSeries
         function this=setTrialTypes(this,types)
             this.trialTypes_=types;
         end
+    end
 
-
-        %% Getters for dependent variables (this could be made more efficient by fixing the indexes for these parameters ( which is something that already happens in practice) and doing direct indexing to data,
+    %% Dependent Property Getters
+    methods
         function vals=get.bad(this)
             if this.isaParameter('bad')
                 vals=this.getDataAsVector('bad');
@@ -60,12 +95,15 @@ classdef parameterSeries < labTimeSeries
                 vals=false(size(this.Data,1),1);
             end
         end
+
         function vals=get.stridesTrial(this)
             vals=this.getDataAsVector('trial');
         end
+
         function vals=get.stridesInitTime(this)
             vals=this.getDataAsVector('initTime');
         end
+
         function vals=get.description(this)
             %            if isfield(this,'description_')
             vals=this.description_;
@@ -73,6 +111,7 @@ classdef parameterSeries < labTimeSeries
             %               vals=cell(size(this.labels));
             %            end
         end
+
         function vals=get.trialTypes(this)
             %             if isfield(this,'trialTypes_')
             vals=this.trialTypes_;
@@ -81,8 +120,10 @@ classdef parameterSeries < labTimeSeries
             %                vals={};
             %             end
         end
+    end
 
-        %% I/O
+    %% Data Access Methods
+    methods
         function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib
             [bool,idx]=this.isaLabel(labels);
         end
@@ -122,8 +163,28 @@ classdef parameterSeries < labTimeSeries
             end
         end
 
+        function newThis=getDataAsPS(this,labels,strides,skipFixedParams)
+            if nargin<2 || isempty(labels)
+                labels=this.labels;
+            end
+            if nargin<4 || isempty(skipFixedParams) || skipFixedParams~=1
+                extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
+            else
+                extendedLabels=labels(:);
+            end
+            [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
+            extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
+            [bool,idx]=this.isaLabel(extendedLabels);
+            idx=idx(bool);
+            if nargin<3 || isempty(strides)
+                strides=1:size(this.Data,1);
+            end
+            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx),this.trialTypes);
+        end
+    end
 
-        %% Modifiers
+    %% Data Modification Methods
+    methods
         function newThis=cat(this,other)
             if size(this.Data,1)==size(other.Data,1)
                 if isempty(this.description)
@@ -199,25 +260,6 @@ classdef parameterSeries < labTimeSeries
             newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
         end
 
-        function newThis=getDataAsPS(this,labels,strides,skipFixedParams)
-            if nargin<2 || isempty(labels)
-                labels=this.labels;
-            end
-            if nargin<4 || isempty(skipFixedParams) || skipFixedParams~=1
-                extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
-            else
-                extendedLabels=labels(:);
-            end
-            [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
-            extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
-            [bool,idx]=this.isaLabel(extendedLabels);
-            idx=idx(bool);
-            if nargin<3 || isempty(strides)
-                strides=1:size(this.Data,1);
-            end
-            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx),this.trialTypes);
-        end
-
         function newThis=appendData(this,newData,newLabels,newDesc) %For back compat
             if nargin<4 || isempty(newDesc)
                 newDesc=cell(size(newLabels));
@@ -238,7 +280,10 @@ classdef parameterSeries < labTimeSeries
                 this=this.cat(other.getDataAsPS(other.labels(~bool),[],1));
             end
         end
+    end
 
+    %% Bad Stride Handling Methods
+    methods
         function newThis=markBadWhenMissingAny(this,labels)
             newThis=this;
             aux=this.getDataAsVector(labels);
@@ -270,7 +315,10 @@ classdef parameterSeries < labTimeSeries
             inds=this.bad;
             this.Data(inds==1,this.fixedParams+1:end)=NaN;
         end
+    end
 
+    %% Normalization Methods
+    methods
         function this=normalizeToBaseline(this,labels,rangeValues)
             warning('parameterSeries:normalizeToBaseline','Deprecated, use linearStretch')
             this=linearStretch(this,labels,rangeValues);
@@ -308,36 +356,37 @@ classdef parameterSeries < labTimeSeries
             end
             newThis=appendData(this,nD,newL,newDesc);
         end
+    end
 
-        %         function newThis=EMGnormAllData(this,labels,rangeValues)
-        %             %This get the stride by stide norm
-        %             %It creates NEW parameters with the same name, and the 'Norm' prefix.
-        %             %This will generate collisions if run multiple times for the
-        %             %same parameters
-        %             %See also: adaptationData.normalizeToBaselineEpoch
-        %             if isempty(rangeValues)
-        % %                 error('rangeValues has to be a 2 element vector')
-        %                 rangeValues=0;
-        %             end
-        %
-        %             %More efficient:
-        %             N=length(labels);
-        %             newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
-        %             newL=cell(N,1);
-        %             nD=zeros(size(this.Data,1),N);
-        %
-        % %             for i=1:N
-        %                 %                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-        %
-        % %                 funHandle=@(x) vecnorm(x'-rangeValues);
-        % %                 newL=strcat('NormEMG',labels);
-        % %                 nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
-        % %             end
-        %             newThis=appendData(this,nD,newL,newDesc);
-        %         end
+    %         function newThis=EMGnormAllData(this,labels,rangeValues)
+    %             %This get the stride by stide norm
+    %             %It creates NEW parameters with the same name, and the 'Norm' prefix.
+    %             %This will generate collisions if run multiple times for the
+    %             %same parameters
+    %             %See also: adaptationData.normalizeToBaselineEpoch
+    %             if isempty(rangeValues)
+    % %                 error('rangeValues has to be a 2 element vector')
+    %                 rangeValues=0;
+    %             end
+    %
+    %             %More efficient:
+    %             N=length(labels);
+    %             newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1))  ']']},N,1);
+    %             newL=cell(N,1);
+    %             nD=zeros(size(this.Data,1),N);
+    %
+    % %             for i=1:N
+    %                 %                 funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
+    %
+    % %                 funHandle=@(x) vecnorm(x'-rangeValues);
+    % %                 newL=strcat('NormEMG',labels);
+    % %                 nD(:,:)=this.computeNewParameter(newL{1},funHandle,labels(1));
+    % %             end
+    %             newThis=appendData(this,nD,newL,newDesc);
+    %         end
 
-
-        %% Other functions that need redefining:
+    %% Overridden Methods
+    methods
         function [F]=fourierTransform(this)
             %error('parameterSeries:fourierTransform','You cannot do that!')
             F=fourierTransform@labTimeSeries(this);
@@ -353,8 +402,10 @@ classdef parameterSeries < labTimeSeries
             error('parameterSeries:resampleN','You cannot do that!')
             newThis=[];
         end
+    end
 
-        %% Display
+    %% Visualization Methods
+    methods
         function [h,h1]=plotAlt(this,h,labels,plotHandles,color)
             if nargin<5
                 color=[];
@@ -373,8 +424,10 @@ classdef parameterSeries < labTimeSeries
             set(ll,'LineStyle','None','Marker','.')
             linkaxes(h1,'x')
         end
+    end
 
-        %% Stats
+    %% Statistical Analysis Methods
+    methods
         function [p,postHocMatrix] = anova(this,params,groupIdxs,dispOpt)
             %Function to perform one-way anova among several groups of
             %strides, and a post-hoc analysis to
@@ -404,3 +457,4 @@ classdef parameterSeries < labTimeSeries
     end
 
 end
+
