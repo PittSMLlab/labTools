@@ -23,8 +23,8 @@ function newThis = appendData(this, newData, newLabels, newDesc)
 if nargin < 4 || isempty(newDesc)
     newDesc = cell(size(newLabels));
 end
-other = parameterSeries(newData, newLabels, this.hiddenTime, newDesc, ...
-    this.trialTypes);
+other = parameterSeries( ...
+    newData, newLabels, this.hiddenTime, newDesc, this.trialTypes);
 newThis = cat(this, other);
 end
 

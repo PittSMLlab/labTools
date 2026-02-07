@@ -195,162 +195,48 @@ classdef parameterSeries < labTimeSeries
 
     %% Data Access Methods
     methods
-        function [bool,idx]=isaParameter(this,labels) %Another name for isaLabel, backwards compatib
-            [bool,idx]=this.isaLabel(labels);
+        function [bool, idx] = isaParameter(this, labels)
+            %isaParameter  Checks if parameter exists
+            %
+            %   [bool, idx] = isaParameter(this, labels) is an alias for
+            %   isaLabel for backward compatibility
+            %
+            %   Inputs:
+            %       this - parameterSeries object
+            %       labels - string or cell array of parameter name(s)
+            %
+            %   Outputs:
+            %       bool - logical vector indicating which parameters exist
+            %       idx - vector of parameter indices
+            %
+            %   Note: Another name for isaLabel, backwards compatibility
+            %
+            %   See also: isaLabel
+
+            [bool, idx] = this.isaLabel(labels);
         end
 
-        function inds=indsInTrial(this,t)
-            if nargin<2 || isempty(t)
-                inds=[];
-            else
-                inds=cell(length(t),1);
-                for ii=1:length(t)
-                    inds{ii,1}=find(this.stridesTrial==t(ii));
-                end
-            end
-        end
+        inds = indsInTrial(this, t)
 
-        function [data,auxLabel]=getParameter(this,label) %Backwards compat
-            [data,~,auxLabel]=this.getDataAsVector(label);
-        end
+        [data, auxLabel] = getParameter(this, label)
 
-        function newThis=incorporateDependentParameters(this,labels)
-            ff=load('DependParamRecipes.mat','fieldList');
-            fTable=ff.fieldList;
-            newThis=this;
-            if isa(labels,'char')
-                labels={labels};
-            end
-            [bool,idxs] = compareLists(fTable(:,1),labels);
-            acceptedLabels=labels(bool);
-            acceptedDesc=fTable(idxs(bool),4);
-            acceptedHandles=fTable(idxs(bool),2);
-            acceptedParams=fTable(idxs(bool),3);
-            if any(~bool)
-                warning(strcat('Did not find recipes for some of the labels provided: ', labels(~bool)))
-            end
-            for i=1:length(acceptedLabels)
-                newThis=addNewParameter(newThis,acceptedLabels{i},eval(acceptedHandles{i}),acceptedParams{i},acceptedDesc{i});
-            end
-        end
+        newThis = incorporateDependentParameters(this, labels)
 
-        function newThis=getDataAsPS(this,labels,strides,skipFixedParams)
-            if nargin<2 || isempty(labels)
-                labels=this.labels;
-            end
-            if nargin<4 || isempty(skipFixedParams) || skipFixedParams~=1
-                extendedLabels=[this.labels(1:this.fixedParams) ;labels(:)];
-            else
-                extendedLabels=labels(:);
-            end
-            [~,inds]=unique(extendedLabels); %To avoid repeating bad, trial, initTime
-            extendedLabels=extendedLabels(sort(inds)); %To avoid the re-sorting 'unique' does
-            [bool,idx]=this.isaLabel(extendedLabels);
-            idx=idx(bool);
-            if nargin<3 || isempty(strides)
-                strides=1:size(this.Data,1);
-            end
-            newThis=parameterSeries(this.Data(strides,idx),this.labels(idx),this.hiddenTime(strides),this.description(idx),this.trialTypes);
-        end
+        newThis = getDataAsPS(this, labels, strides, skipFixedParams)
     end
 
     %% Data Modification Methods
     methods
-        function newThis=cat(this,other)
-            if size(this.Data,1)==size(other.Data,1)
-                if isempty(this.description)
-                    thisDescription=cell(size(this.labels));
-                else
-                    thisDescription=this.description(:);
-                end
-                if isempty(other.description)
-                    otherDescription=cell(size(other.labels));
-                else
-                    otherDescription=other.description(:);
-                end
-                newThis=parameterSeries([this.Data other.Data],[this.labels(:); other.labels(:)],this.hiddenTime,[thisDescription; otherDescription],this.trialTypes);
-                %this.Data=[this.Data other.Data];
-                %this.labels=[this.labels; other.labels];
-                %this.description=[this.description; other.description];
-            else
-                error('parameterSeries:cat','Cannot concatenate series with different number of strides');
-            end
-        end
+        newThis = cat(this, other)
 
-        function newThis=addStrides(this,other)
-            %TODO: Check that the labels are actually the same
-            if ~isempty(other.Data)
-                aux=other.getDataAsVector(this.labels);
-                if size(this.Data,2)==size(other.Data,2)
-                    newThis=parameterSeries([this.Data; aux],this.labels(:),[this.hiddenTime; other.hiddenTime],this.description(:));
-                else
-                    warning('parameterSeries:addStrides','Concatenating parameterSeries with different number of parameters. Merging parameter lists & filling NaNs for missing parameters. You (yes, YOU, the current user) SHOULD FIX THIS. Ask Pablo for guidance.');
-                    [bool2,~] = compareLists(this.labels,other.labels); %Labels present in other but NOT in this
-                    [bool1,~] = compareLists(other.labels,this.labels); %Labels present in this but NOT in other
-                    if any(~bool2)
-                        newThis=this.appendData(nan(size(this.Data,1),sum(~bool2)),other.labels(~bool2),other.description(~bool2)); %Expanding this
-                    else newThis=this;%digna added this, review
-                    end
-                    if any(~bool1)
-                        newOther=other.appendData(nan(size(other.Data,1),sum(~bool1)),this.labels(~bool1),this.description(~bool1)); %Expanding other
-                    else newOther=other;%Digna added this, review
-                    end
-                    newThis=addStrides(newThis,newOther);
-                end
-            else
-                newThis=this; %Empty second arg., adding nothing.
-            end
-        end
+        newThis = addStrides(this, other)
 
-        function newThis=addNewParameter(this,newParamLabel,funHandle,inputParameterLabels,newParamDescription)
-            %This function allows to compute new parameters from other existing parameters and have them added to the data.
-            %This is useful when trying out new parameters without having to
-            %recompute all existing parameters.
-            %INPUT:
-            %newPAramLAbel: string with the name of the new parameter
-            %funHandle: a function handle with N input variables, whose
-            %result will be used to compute the new parameter
-            %inputParameterLabels: the parameters that will replace each of
-            %the variables in the funHandle
-            %EXAMPLE:
-            %I want to define a new normalized version of the contributions,
-            %that divides contributions by avg. step time and avg. step
-            %velocity, so that the velocity contribution is now a
-            %measure of belt-speed ratio. In order to do that, I will take
-            %the velocityContributionAlt (which already exists and is
-            %velocityContribution divided by strideTime, so it is just half
-            %the difference of velocities) and then divide it by velocity sum.
-            %Velocity sum can be computed by dividing stepTimeContribution
-            %by stepTimeDifference (there are other possibilities to compute
-            %the same thing. The final equation will look like this:
-            %newVelocityContribution = velocityContributionAlt./(2*stepTimeContribution/stepTimeDiff)
-            %This can be implemented as:
-            %newThis = this.addNewParameter('newVelocityContribution',@(x,y,z)x./(2*y./z),{'velocityContributionAlt','stepTimeContribution','stepTimeDiff'},'velocityContribution normalized to strideTime times average velocity');
+        newThis = addNewParameter(this, newParamLabel, funHandle, ...
+            inputParameterLabels, newParamDescription)
 
-            [newData]=this.computeNewParameter(newParamLabel,funHandle,inputParameterLabels);
-            newThis=appendData(this,newData,{newParamLabel},{newParamDescription}) ;
-        end
+        newThis = appendData(this, newData, newLabels, newDesc)
 
-        function newThis=appendData(this,newData,newLabels,newDesc) %For back compat
-            if nargin<4 || isempty(newDesc)
-                newDesc=cell(size(newLabels));
-            end
-            other=parameterSeries(newData,newLabels,this.hiddenTime,newDesc,this.trialTypes);
-            newThis=cat(this,other);
-        end
-
-        function this=replaceParams(this,other)
-            %Replaces existing parameters in this, with parameter data in other
-
-            [bool,idx]=this.isaLabel(other.labels); %Finding parameters that already existed
-            this.Data(:,idx(bool))=other.Data(:,bool); %Replacing data
-            this.description_(idx(bool))=other.description(bool); %Replacing descriptions (is this necessary?)
-            %catting data for parameters that DIDN'T exist
-            if any(~bool)
-                warning('Asked to replace parameters, but found parameters that didn''t exist. Appending.')
-                this=this.cat(other.getDataAsPS(other.labels(~bool),[],1));
-            end
-        end
+        this = replaceParams(this, other)
     end
 
     %% Bad Stride Handling Methods

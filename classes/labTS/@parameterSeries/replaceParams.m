@@ -16,8 +16,6 @@ function this = replaceParams(this, other)
 %
 %   See also: cat, appendData
 
-% Replaces existing parameters in this, with parameter data in other
-
 % Finding parameters that already existed
 [bool, idx] = this.isaLabel(other.labels);
 % Replacing data
