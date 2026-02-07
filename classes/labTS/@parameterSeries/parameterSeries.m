@@ -355,78 +355,20 @@ classdef parameterSeries < labTimeSeries
 
     %% Bad Stride Handling Methods
     methods
-        function newThis=markBadWhenMissingAny(this,labels)
-            newThis=this;
-            aux=this.getDataAsVector(labels);
-            [~,bi]=this.isaLabel('bad');
-            newThis.Data(:,bi)=this.bad | any(isnan(aux),2);
-            [~,bg]=this.isaLabel('good');
-            newThis.Data(:,bg)=~this.bad;
-        end
+        newThis = markBadWhenMissingAny(this, labels)
 
-        function newThis=markBadWhenMissingAll(this,labels)
-            newThis=this;
-            aux=this.getDataAsVector(labels);
-            [~,bi]=this.isaLabel('bad');
-            newThis.Data(:,bi)=this.bad | all(isnan(aux),2);
-            [~,bg]=this.isaLabel('good');
-            newThis.Data(:,bg)=~this.bad;
-        end
+        newThis = markBadWhenMissingAll(this, labels)
 
-        function newThis=substituteNaNs(this,method)
-            if nargin<2 || isempty(method)
-                method='linear';
-            end
-            newThis=this.substituteNaNs@labTimeSeries(method);
-            newThis.Data(:,1:this.fixedParams)=this.Data(:,1:this.fixedParams);
+        newThis = substituteNaNs(this, method)
 
-        end
-
-        function this=markBadStridesAsNan(this)
-            inds=this.bad;
-            this.Data(inds==1,this.fixedParams+1:end)=NaN;
-        end
+        this = markBadStridesAsNan(this)
     end
 
     %% Normalization Methods
     methods
-        function this=normalizeToBaseline(this,labels,rangeValues)
-            warning('parameterSeries:normalizeToBaseline','Deprecated, use linearStretch')
-            this=linearStretch(this,labels,rangeValues);
-        end
+        this = normalizeToBaseline(this, labels, rangeValues)
 
-        function newThis=linearStretch(this,labels,rangeValues)
-            %This normalization transforms the values of the parameters given in labels
-            %such that rangeValues(1) maps to 0 and rangeValues(2) maps to 1
-            %It creates NEW parameters with the same name, and the 'Norm' prefix.
-            %This will generate collisions if run multiple times for the
-            %same parameters
-            %See also: adaptationData.normalizeToBaselineEpoch
-            if numel(rangeValues)~=2
-                error('rangeValues has to be a 2 element vector')
-            end
-            %             [boolFlag,labelIdx]=isaLabel(this,labels);
-            %             for i=1:length(labels)
-            %                 if boolFlag(i)
-            %                     oldDesc=this.description(labelIdx(i));
-            %                     newDesc=['Normalized (range=' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ') ' oldDesc];
-            %                     funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-            %                     this=addNewParameter(this,strcat('Norm',labels{i}),funHandle,labels(i),newDesc);
-            %                 end
-            %
-            %             end
-            %More efficient:
-            N=length(labels);
-            newDesc=repmat({['Normalized to range=[' num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ']']},N,1);
-            newL=cell(N,1);
-            nD=zeros(size(this.Data,1),N);
-            for i=1:N
-                funHandle=@(x) (x-rangeValues(1))/diff(rangeValues);
-                newL{i}=strcat('Norm',labels{i});
-                nD(:,i)=this.computeNewParameter(newL{i},funHandle,labels(i));
-            end
-            newThis=appendData(this,nD,newL,newDesc);
-        end
+        newThis = linearStretch(this, labels, rangeValues)
     end
 
     % function newThis=EMGnormAllData(this,labels,rangeValues)
