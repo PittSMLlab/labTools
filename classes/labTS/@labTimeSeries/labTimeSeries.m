@@ -1,4 +1,4 @@
-classdef labTimeSeries  < timeseries
+classdef labTimeSeries < timeseries
     %labTimeSeries  Extends timeseries (built-in MATLAB class) to meet
     %our lab's needs for storing data
     %
@@ -192,8 +192,8 @@ classdef labTimeSeries  < timeseries
             labelList = this.labels;
         end
 
-        [data, time, auxLabel] = ...
-            getPartialDataAsVector(this, label, t0, t1)
+        [data, time, auxLabel] = getPartialDataAsVector( ...
+            this, label, t0, t1)
     end
 
     %% Label Query Methods
@@ -216,85 +216,9 @@ classdef labTimeSeries  < timeseries
 
     %% Resampling Methods
     methods
-        function newThis=resample(this,newTs,newT0,hiddenFlag)
-            this.Quality=[]; %So that Quality is not resample if it exists.
-            if nargin<3 || isempty(newT0)
-                error('labTS:resample','Resampling using only the new sampling period as argument is no longer supported. Use resampleN if you want to interpolate keeping the exact same time range.')
-            end
-            if nargin<4 || isempty(hiddenFlag) || hiddenFlag==0 %hiddenFlag allows to do non-uniform sampling
-                if newTs>this.sampPeriod %Under-sampling! be careful of aliasing
-                    warning('labTS:resample','Under-sampling data, be careful of aliasing!');
-                end
-                %Commented on 4/4/2015 by Pablo. No longer think this is a
-                %good idea. If we are explicitly trying to do uniform
-                %resampling on the same range, should use resampleN.
-                %Otherwise, if we try to synch two signals, and there is an
-                %offset in initial time, this returns something else.
+        newThis = resample(this, newTs, newT0, hiddenFlag)
 
-                newN=ceil(this.timeRange/newTs)+1;
-                %newThis=resampleN(this,newN);
-                newTime=newT0:newTs:this.Time(end);
-                if ~isa(this.Data(1,1),'logical')
-                    newThis=this.resample@timeseries(newTime);
-                    newThis=labTimeSeries(newThis.Data,newThis.Time(1),newTs,this.labels);
-                else %logical timeseries
-                    newThis=resampleLogical(this,newTs,newT0,newN);
-                    %Can be this deprecated in favor of just using
-                    %getSample() for a logical TS?
-                end
-
-            elseif hiddenFlag==1% this allows for non-uniform resampling, and returns a timeseries object.
-                newThis=this.resample@timeseries(newTs); %Warning: Treating newTs argument as a vector containing timepoints, not a sampling period. The super-class resampling returns a super-class object.
-            else
-                error('labTS:resample','HiddenFlag argument has to be 0 or 1');
-            end
-        end
-
-        function newThis=resampleN(this,newN,method)
-            %Uniform resampling of data, over the same time range. This
-            %keeps the initial time on the same value, and returns newN
-            %time-samples in the time interval of the original timeseries
-            if ~isempty(this.Data)
-                if nargin<3 || isempty(method)
-                    if ~isa(this.Data(1,1),'logical')
-                        method='interpft';
-                    else
-                        method='logical';
-                    end
-                end
-                modNewTs=this.timeRange/(newN);
-                newTimeVec=[0:newN-1]*modNewTs+this.Time(1);
-                switch method
-                    case 'interpft'
-                        allNaNIdxs=[];
-                        if any(isnan(this.Data(:)))
-                            if any(all(isnan(this.Data)))
-                                allNaNIdxs=all(isnan(this.Data));
-                                warning(['All data is NaNs for labels ' strcat(this.labels{allNaNIdxs},' ') ', not interpolating those: returning NaNs'])
-                            end
-                        end
-                        this.Data(:,allNaNIdxs)=0; %Substituting 0's to allow the next line to run without problems
-                        if any(isnan(this.Data(:))) %Only if there are still NaNs after the previous step, we will substitute the missing data with linearly interpolated values
-                            warning('Trying to interpolate data using Fourier Transform method (''interpft1''), but data contains NaNs (missing values) which will propagate to the full timeseries. Substituting NaNs with linearly interpolated data.')
-                            this=substituteNaNs(this,'linear'); %Interpolate time-series that are not all NaN (this is, there are just some values missing)
-                        end
-                        newData=interpft1(this.Data,newN,1); %Interpolation is done on a nice(r) way.
-                        newData(:,allNaNIdxs)=nan; %Replacing the previously filled data with NaNs
-                    case 'logical'
-                        newThis=resampleLogical(this,modNewTs,this.Time(1),newN);
-                        newData=newThis.Data;
-                    otherwise %Method is 'linear', 'cubic' or any of the accepted methods for interp1
-                        newData=zeros(length(newTimeVec),size(this.Data,2));
-                        for i=1:size(this.Data,2)
-                            newData(:,i)=interp1(this.Time,this.Data(:,i),newTimeVec,method,nan);
-                        end
-                end
-                t0=this.Time(1);
-                newThis=labTimeSeries(newData,t0,modNewTs,this.labels);
-            else %this.Data==[]
-                error('labTimeSeries:resampleN','Interpolating empty labTimeSeries,impossible.')
-            end
-        end
+        newThis = resampleN(this, newN, method)
     end
 
     %% Data Segmentation Methods
@@ -410,8 +334,8 @@ classdef labTimeSeries  < timeseries
     methods
         [ATS, bad] = align(this, eventTS, eventLabel, N, ~)
 
-        [DTS, bad] = ...
-            discretize(this, eventTS, eventLabel, N, summaryFunction)
+        [DTS, bad] = discretize( ...
+            this, eventTS, eventLabel, N, summaryFunction)
     end
 
     %% Visualization Methods
@@ -554,11 +478,10 @@ classdef labTimeSeries  < timeseries
 
         eventTimes = getArrayedEvents(eventTS, eventLabel)
 
-        [alignedTS, originalDurations] = ...
-            stridedTSToAlignedTS(stridedTS, N)
+        [alignedTS, originalDurations] = stridedTSToAlignedTS(stridedTS, N)
 
-        [figHandle, plotHandles] = ...
-            plotStridedTimeSeries(stridedTS, figHandle, plotHandles)
+        [figHandle, plotHandles] = plotStridedTimeSeries( ...
+            stridedTS, figHandle, plotHandles)
 
         this = join(labTSCellArray)
     end
