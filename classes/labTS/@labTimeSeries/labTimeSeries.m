@@ -544,6 +544,8 @@ classdef labTimeSeries  < timeseries
 
     %% Visualization Methods
     methods
+        % [h, plotHandles] = plot( ...
+        %     this, h, labels, plotHandles, events, color, lineWidth)
         function [h,plotHandles]=plot(this,h,labels,plotHandles,events,color,lineWidth) %Alternative plot: all the traces go in different axes
             if nargin<2 || isempty(h)
                 h=figure;
@@ -611,6 +613,8 @@ classdef labTimeSeries  < timeseries
             plotHandles=h1;
         end
 
+        % [h, plotHandles] = plotAligned( ...
+        %     this, h, labels, plotHandles, events, color, lineWidth)
         function [h,plotHandles]=plotAligned(this,h,labels,plotHandles,events,color,lineWidth)
             error('Unimplemented')
             %First attempt: align the data to the first column of events
@@ -620,6 +624,8 @@ classdef labTimeSeries  < timeseries
             end
         end
 
+        % [h, plotHandles] = bilateralPlot( ...
+        %     this, h, labels, plotHandles, events, color, lineWidth)
         function [h,plotHandles]=bilateralPlot(this,h,labels,plotHandles,events,color,lineWidth)
             %Ideally we would plot 'L' and 'R' timeseries on top of each
             %other, to do a bilateral comparison. Need to implement.
@@ -656,84 +662,11 @@ classdef labTimeSeries  < timeseries
             end
         end
 
-        function h=dispCov(this)
-            h=figure;
-            dd=cov(this.Data);
-            imagesc(dd)
-            set(gca,'XTick',1:length(this.labels),'XTickLabels',this.labels,'XTickLabelRotation',90,'YTick',1:length(this.labels),'YTickLabels',this.labels,'YTickLabelRotation',0)
-            colorbar
-            caxis([-1 1]*max(dd(:)));
-        end
+        h = dispCov(this)
 
-        function [fh,ph,missing]=assessMissing(this,labels,fh,ph)
-            noDisp=false;
-            if nargin<3 || isempty(fh)
-                fh=figure();
-            elseif fh==-1
-                noDisp=true;
-            else
-                figure(fh)
-                if nargin<4
-                    ph=gca;
-                else
-                    axes(ph)
-                end
-            end
+        [fh, ph, missing] = assessMissing(this, labels, fh, ph)
 
-            if nargin<2
-                labels=this.labels;
-            end
-            data=this.getDataAsVector(labels);
-            missing=isnan(data);
-            miss=missing(:,any(missing));
-
-            if ~noDisp
-                pp=plot(miss,'o');
-                aux=labels(any(missing));
-                for i=1:length(pp)
-                    set(pp(i),'DisplayName',[aux{i} ' (' num2str(sum(miss(:,i))) ' frames)'])
-                end
-                legend(pp)
-                title('Missing markers')
-                xlabel('Time (frames)')
-                set(gca,'YTick',[0 1],'YTickLabel',{'Present','Missing'})
-            else
-                fprintf(['Missing data in ' num2str(sum(any(missing,2))) '/' num2str(size(missing,1)) ' frames, avg. ' num2str(sum(missing(:))/sum(any(missing,2)),3) ' per frame.\n']);
-            end
-        end
-
-        function [newThis,logL]=findOutliers(this,model,verbose)
-            %Uses marker model data to assess outliers
-
-            d=this.getDataAsVector(model.markerLabels)';
-            l=this.labels;
-            [out,logL]=model.outlierDetect(d,-4);
-            [boolF,idx]=this.isaLabel(model.markerLabels);
-            aux(:,idx(boolF))=(out==1)';
-            this.Quality=aux;
-
-            if verbose
-                fprintf(['Outlier data in ' num2str(sum(any(out,1))) '/' num2str(size(out,2)) ' frames, avg. ' num2str(sum(out(:))/sum(any(out,1))) ' per frame.\n']);
-                for j=1:size(out,1)
-                    if sum(out(j,:)==1)>0
-                        disp([l{j} ': ' num2str(sum(out(j,:)==1)) ' frames'])
-                    end
-                end
-            end
-            %             s=naiveDistances.summaryStats(d);
-            %             s=s(model.activeStats,:)';
-            %             m=model.statMedian;
-            %             m=m(model.activeStats);
-            %             ss=model.getRobustStd(.94);
-            %             ss=3*ss(model.activeStats); %3 standard devs
-            %             aux=model.loglikelihood(d)<-4^2/2;
-            %             figure; pp=plot(s); axis tight; hold on;
-            %             for j=1:size(s,2)
-            %                 patch([1 size(s,1) size(s,1) 1],[m(j)-ss(j) m(j)-ss(j) m(j)+ss(j) m(j)+ss(j)],pp(j).Color,'FaceAlpha',.3,'EdgeColor','None')
-            %                 plot(find(aux(j,:)),s(aux(j,:),j),'x','Color',pp(j).Color,'MarkerSize',4);
-            %             end
-            newThis=this;
-        end
+        [newThis, logL] = findOutliers(this, model, verbose)
     end
 
     %% Hidden Methods
