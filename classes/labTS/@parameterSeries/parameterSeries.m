@@ -285,20 +285,48 @@ classdef parameterSeries < labTimeSeries
 
     %% Overridden Methods
     methods
-        function [F]=fourierTransform(this)
-            %error('parameterSeries:fourierTransform','You cannot do that!')
-            F=fourierTransform@labTimeSeries(this);
-            F.TimeInfo.Units='strides^{-1}';
+        function F = fourierTransform(this)
+            %fourierTransform  Computes Fourier transform
+            %
+            %   F = fourierTransform(this) computes Fourier transform with
+            %   appropriate units for stride data
+            %
+            %   Inputs:
+            %       this - parameterSeries object
+            %
+            %   Outputs:
+            %       F - labTimeSeries with Fourier transform
+            %
+            %   See also: labTimeSeries/fourierTransform
+
+            % error('parameterSeries:fourierTransform',
+            %     'You cannot do that!')
+            F = fourierTransform@labTimeSeries(this);
+            F.TimeInfo.Units = 'strides^{-1}';
         end
 
-        function newThis=resample(this) %the newTS is respected as much as possible, but forcing it to be a divisor of the total time range
-            error('parameterSeries:resample','You cannot do that!')
-            newThis=[];
+        function newThis = resample(this)
+            %resample  Disabled for parameterSeries
+            %
+            %   Note: Resampling is disabled for parameterSeries as time
+            %         is not meaningful (strides are discrete events)
+
+            % the newTS is respected as much as possible, but forcing it
+            % to be a divisor of the total time range
+            error('parameterSeries:resample', 'You cannot do that!');
+            newThis = [];
         end
 
-        function newThis=resampleN(this) %Same as resample function, but directly fixing the number of samples instead of TS
-            error('parameterSeries:resampleN','You cannot do that!')
-            newThis=[];
+        function newThis = resampleN(this)
+            %resampleN  Disabled for parameterSeries
+            %
+            %   Note: Resampling is disabled for parameterSeries as time
+            %         is not meaningful (strides are discrete events)
+
+            % Same as resample function, but directly fixing the number of
+            % samples instead of TS
+            error('parameterSeries:resampleN', 'You cannot do that!');
+            newThis = [];
         end
     end
 
