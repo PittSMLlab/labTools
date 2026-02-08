@@ -20,7 +20,7 @@ function [this, iC, iI] = flipLR(this)
 alignedSide = this.alignmentLabels{1}(1);
 nonAlignedSide = getOtherLeg(alignedSide);
 % Flip non-aligned side:
-lC = this.getLabelsThatMatch(['^' nonAlignedSide]); % Get non-aligned
+lC = this.getLabelsThatMatch(['^' nonAlignedSide]); % Get non-aligned side
 if ~isempty(lC)
     [~, iC] = this.isaLabel(lC); % Index for non-aligned
     % Getting aligned side labels

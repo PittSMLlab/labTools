@@ -20,10 +20,6 @@ function newThis = fftshift(this, labels)
 %
 %   See also: flipLR
 
-% Shifts the first and second halves of the alignment cycle Example,
-% if the first half starts at FHS and second half starts at SHS, the
-% shifted version will start at SHS and FHS will be the midpoint of
-% the cycle.
 if nargin > 1 && ~isempty(labels)
     [~, idxs] = this.isaLabel(labels);
 else

@@ -13,14 +13,6 @@ function labelList = getLabelsThatMatch(this, exp)
 %
 %   See also: regexp, isaLabel
 
-% Returns labels on this labTS that match the regular expression exp.
-% labelList = getLabelsThatMatch(this, exp)
-% INPUT:
-% this: labTS object
-% exp: any regular expression (as string).
-% OUTPUT:
-% labelList: cell array containing labels of this labTS that match
-% See also regexp
 labelList = this.labels;
 flags = cellfun(@(x) ~isempty(x), regexp(labelList, exp));
 labelList = labelList(flags);

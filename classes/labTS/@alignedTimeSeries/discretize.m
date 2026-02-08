@@ -15,17 +15,15 @@ function newThis = discretize(this, averagingVector)
 %   See also: mean, labTimeSeries/discretize
 
 if sum(averagingVector) ~= sum(this.alignmentVector)
-    error('alignedTS:discretize', ...
-        ['The averaging vector must sum to the number of samples of ' ...
-        'the alignedTS']);
+    error('alignedTS:discretize', ['The averaging vector must sum to ' ...
+        'the number of samples of the alignedTS']);
 end
 lastInd = 0;
 newData = nan(length(averagingVector), size(this.Data, 2), ...
     size(this.Data, 3));
 expEventTimes = alignedTimeSeries.expandEventTimes(this.eventTimes, ...
     this.alignmentVector);
-newEventTimes = nan(length(averagingVector), ...
-    size(expEventTimes, 2) + 1);
+newEventTimes = nan(length(averagingVector), size(expEventTimes, 2) + 1);
 auxSamp = 1 + [0 cumsum(this.alignmentVector)];
 for i = 1:length(averagingVector)
     inds = lastInd + [1:averagingVector(i)];
@@ -40,8 +38,7 @@ for i = 1:length(averagingVector)
     else
         aux2 = this.alignmentLabels{auxSamp == inds(end)};
     end
-    aux = this.alignmentLabels(auxSamp > inds(1) & ...
-        auxSamp < inds(end));
+    aux = this.alignmentLabels(auxSamp > inds(1) & auxSamp < inds(end));
     if ~isempty(aux)
         auxM = cell2mat(aux);
     else

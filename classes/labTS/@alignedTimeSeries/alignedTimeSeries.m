@@ -225,212 +225,28 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Label Methods
     methods
-        function [boolFlag,labelIdx]=isaLabel(this,label)
-            boolFlag=false(size(label));
-            labelIdx=zeros(size(label));
-            [bool,idx] = compareListsFast(label,this.labels);
-            for j=1:length(label)
-                if any(idx==j)
-                    boolFlag(j)=true;
-                    labelIdx(j)=find(idx==j);
-                end
-            end
-        end
+        [boolFlag, labelIdx] = isaLabel(this, label)
 
-        function labelList=getLabelsThatMatch(this,exp)
-            %Returns labels on this labTS that match the regular expression exp.
-            %labelList=getLabelsThatMatch(this,exp)
-            %INPUT:
-            %this: labTS object
-            %exp: any regular expression (as string).
-            %OUTPUT:
-            %labelList: cell array containing labels of this labTS that match
-            %See also regexp
-            labelList=this.labels;
-            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
-            labelList=labelList(flags);
-        end
+        labelList = getLabelsThatMatch(this, exp)
 
-        function this=renameLabels(this,originalLabels,newLabels)
-            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
-            if isempty(originalLabels)
-                originalLabels=this.labels;
-            end
-            if size(newLabels)~=size(originalLabels)
-                error('Inconsistent label sizes')
-            end
-            [boo,idx]=this.isaLabel(originalLabels);
-            this.labels(idx(boo))=newLabels;
-        end
+        this = renameLabels(this, originalLabels, newLabels)
     end
 
     %% Data Manipulation Methods
     methods
-        function newThis=cat(this,other,dim,forceFlag)
-            if nargin<4
-                forceFlag=false;
-            end
-            if nargin<3 || isempty(dim)
-                dim=3;%Cat-ting strides
-            end
+        newThis = cat(this, other, dim, forceFlag)
 
-            %Check alignment vectors coincide & alignment labels coincide
-            if any(this.alignmentVector~=other.alignmentVector)
-                ME=MException('ATS:cat','Alignment vector mismatch');
-                throw(ME);
-            end
-            if ~forceFlag && ~all(strcmp(this.alignmentLabels,other.alignmentLabels))
-                ME=MException('ATS:cat','Alignment labels mismatch, this check can be ignored by setting forceFlag=true');
-                throw(ME);
-            end
+        newThis = fftshift(this, labels)
 
-            if dim==3
-                %Check dimensions coincide
-                s1=size(this.Data);
-                s2=size(other.Data);
-                if any(s1(1:2)~=s2(1:2))
-                    ME=MException('ATS:cat','Data dimension mismatch.');
-                    throw(ME);
-                end
+        newThis = discretize(this, averagingVector)
 
-                %Check labels coincide (unless forced)
-                if ~forceFlag && ~all(strcmp(this.labels,other.labels))
-                    ME=MException('ATS:cat','Label mismatch, this check can be ignored by setting forceFlag=true');
-                    throw(ME);
-                end
+        [this, iC, iI] = flipLR(this)
 
-                %Do the cat:
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels,cat(2,this.eventTimes(:,1:end-1),other.eventTimes));
-                warning('ATS:catStridesLostEvents','Cat-ting strides of alignedTimeSeries, events are no longer consecutive.')
-            elseif dim==2 %Cat-ting labels
-                %Check dimensions coincide
-                s1=size(this.Data);
-                s2=size(other.Data);
-                if any(s1([1,3])~=s2([1,3]))
-                    ME=MException('ATS:cat','Data dimension mismatch.');
-                    throw(ME);
-                end
-                %Check no repeated labels
+        [this, iC, iI] = getSym(this)
 
-                %Check alignmentVector & Labels
+        [this, iC, iI] = getaSym(this)
 
-                %Check that all eventTimes match
-                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes(:)-other.eventTimes(:))>1e-9)
-                    ME=MException('ATS:cat','Trying to cat labels, but event times are different');
-                    throw(ME);
-                end
-
-                %Do the cat
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels,this.eventTimes);
-            else
-                ME=MException();
-                throw(ME);
-            end
-        end
-
-        function newThis=fftshift(this,labels)
-            %Shifts the first and second halves of the alignment cycle
-            %Example, if the first half starts at FHS and second half
-            %starts at SHS, the shifted version will start at SHS and FHS
-            %will be the midpoint of the cycle.
-            if nargin>1 && ~isempty(labels)
-                [~,idxs]=this.isaLabel(labels);
-            else
-                idxs=1:length(this.labels);
-            end
-            newThis=this;
-            M=round(length(this.alignmentVector)/2);
-            N=sum(this.alignmentVector(1:M));
-            newThis.Data(:,idxs,:)=this.Data([N+1:size(this.Data,1),1:N],idxs,:);
-        end
-
-        function newThis=discretize(this,averagingVector)
-            if sum(averagingVector)~=sum(this.alignmentVector)
-                error('The averaging vector must sum to the number of samples of the alignedTS')
-            end
-            lastInd=0;
-            newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
-            expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
-            newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
-            auxSamp=1+[0 cumsum(this.alignmentVector)];
-            for i=1:length(averagingVector)
-                inds=lastInd+[1:averagingVector(i)];
-                newData(i,:,:)=nanmean(this.Data(inds,:,:));
-                if ~any(auxSamp==inds(1))
-                    aux1='-';
-                else
-                    aux1=this.alignmentLabels{auxSamp==inds(1)};
-                end
-                if ~any(auxSamp==inds(end))
-                    aux2='-';
-                else
-                    aux2=this.alignmentLabels{auxSamp==inds(end)};
-                end
-                aux=this.alignmentLabels(auxSamp>inds(1) & auxSamp<inds(end));
-                if ~isempty(aux)
-                    auxM=cell2mat(aux);
-                else
-                    auxM='-';
-                end
-                alignLabel{i}=[aux1 aux2];
-                newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
-                lastInd=lastInd+averagingVector(i);
-            end
-            newEventTimes(1,end)=this.eventTimes(1,end);
-            newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
-        end
-
-        function [this,iC,iI]=flipLR(this)
-            %Find the side that has the starting event:
-            alignedSide=this.alignmentLabels{1}(1);
-            nonAlignedSide=getOtherLeg(alignedSide);
-            %Flip non-aligned side:
-            lC=this.getLabelsThatMatch(['^' nonAlignedSide]); %Get non-aligned side labels
-            if ~isempty(lC)
-                [~,iC]=this.isaLabel(lC); %Index for non-aligned
-                aux=regexprep(lC,['^' nonAlignedSide],alignedSide); %Getting aligned side labels
-                [bI,iI]=this.isaLabel(aux); %Index for aligned
-                if ~all(bI) %Labels are not symm, aborting
-                    warning('Asked to flipLR but labels are not symmetrically present.')
-                else
-                    this.Data(:,iC)=fftshift(this.Data(:,iC),1); %This just flips first and second halves of aligned data, no checks performed
-                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' alignedSide],'i');
-                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' nonAlignedSide],'c');
-                end
-            else
-                warning('Asked to flipLR but couldn''t find aligned side.')
-                iC=[];
-            end
-        end
-
-        function [this,iC,iI]=getSym(this)
-            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
-            %Then: compute sym/asym data and replace it.
-            this.Data=[this.Data(:,iI)-this.Data(:,iC) this.Data(:,iI)+this.Data(:,iC)];
-            %Update labels:
-            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a') regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'b')];
-        end
-
-        function [this,iC,iI]=getaSym(this)
-            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
-            %Then: compute asym data and replace it.
-            this.Data=[this.Data(:,iI)-this.Data(:,iC)]; %we do slow - fast here
-            %Update labels:
-            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a')];
-        end
-
-        function newThis=rescaleTime(this,newTs,newT0)
-            %Re-defines the Time vector to force a new sampling time
-            %Made for backwards compatibility of aligned series always
-            %being defined with time in [0 1]
-            if nargin<3 || isempty(newT0)
-                newT0=0;
-            end
-            if nargin<2 || isempty(newTs)
-                newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
-            end
-            newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
-        end
+        newThis = rescaleTime(this, newTs, newT0)
     end
 
     %% Visualization Methods

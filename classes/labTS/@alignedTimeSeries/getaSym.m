@@ -22,6 +22,5 @@ this.Data = [this.Data(:, iI) - this.Data(:, iC)]; % we do slow - fast
 % Update labels:
 this.labels = [regexprep(this.labels(iI), ...
     ['^' this.labels{iI(1)}(1)], 'a')];
-
 end
 
