@@ -185,43 +185,33 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Normalization Methods
     methods
-        function newThis=equalizeEnergyPerChannel(this)
-            newThis=this;
-            newThis.Data=bsxfun(@rdivide,newThis.Data,sqrt(mean(mean(this.Data.^2,3),1)));
-        end
+        newThis = equalizeEnergyPerChannel(this)
 
-        function newThis=demean(this)
-            newThis=this;
-            newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
-        end
+        newThis = demean(this)
     end
 
     %% Arithmetic Operations
     methods
-        function newThis=abs(this)
-            newThis=this;
-            newThis.Data=abs(this.Data);
+        function newThis = abs(this)
+            %abs  Takes absolute value
+            %
+            %   newThis = abs(this) computes absolute value of data
+            %
+            %   Inputs:
+            %       this - alignedTimeSeries object
+            %
+            %   Outputs:
+            %       newThis - alignedTimeSeries with absolute values
+
+            newThis = this;
+            newThis.Data = abs(this.Data);
         end
 
-        function newThis=minus(this,other)
-            newThis=this;
-            newThis.Data=this.Data-other.Data;
-        end
+        newThis = minus(this, other)
 
-        function newThis=plus(this,other)
-            newThis=this;
-            newThis.Data=this.Data+other.Data;
-        end
+        newThis = plus(this, other)
 
-        function this=times(this,constant)
-            this.Data=this.Data .* constant;
-            if numel(constant)==1
-                s=num2str(constant);
-            else
-                s='k'; %Generic constant string
-            end
-            this.labels=strcat([s '*'],this.labels);
-        end
+        this = times(this, constant)
     end
 
     %% Type Conversion Methods
