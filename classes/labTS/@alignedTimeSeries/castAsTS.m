@@ -10,14 +10,11 @@ function newThis = castAsTS(this)
 %   Outputs:
 %       newThis - labTimeSeries object
 %
-%   Note: Function to change class to labTS (instead of ATS). Temp
-%         function until alignedTS inherits from labTS. Requires single
-%         stride.
+%   Note: Temp function until alignedTS inherits from labTS. Requires
+%         single stride.
 %
 %   See also: concatenateAsTS, catStrides
 
-% Function to change the class to labTS (instead of ATS). This is a
-% temp function, until alignedTS is changed to inherit from labTS
 if size(this.Data, 3) > 1
     ME = MException('alignedTS:castAsTS', ...
         ['To cast as TS, there may be a single alignedTS (i.e. ' ...

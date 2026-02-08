@@ -216,25 +216,11 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Type Conversion Methods
     methods
-        function newThis=catStrides(this)
-            auxData=permute(this.Data,[2,1,3]);
-            newThis=labTimeSeries(auxData(:,:)',this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
+        newThis = catStrides(this)
 
-        function newThis=castAsTS(this)
-            %Function to change the class to labTS (instead of ATS). This is a temp function, until alignedTS is changed to inherit from labTS
-            if size(this.Data,3)>1
-                ME=MException('alignedTS:castAsTS','To cast as TS, there may be a single alignedTS (i.e. size(this.Data,3)==1)');
-                throw(ME)
-            end
-            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
+        newThis = castAsTS(this)
 
-        function newThis=concatenateAsTS(this)
-            %This concatenates the ATS by putting strides one after another
-            %in time, returning a single labTS
-            newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
+        newThis = concatenateAsTS(this)
     end
 
     %% Label Methods

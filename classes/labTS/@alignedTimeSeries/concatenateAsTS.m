@@ -12,8 +12,6 @@ function newThis = concatenateAsTS(this)
 %
 %   See also: catStrides, castAsTS
 
-% This concatenates the ATS by putting strides one after another in
-% time, returning a single labTS
 newThis = labTimeSeries(reshape(permute(this.Data, [1, 3, 2]), ...
     [size(this.Data, 1) * size(this.Data, 3), size(this.Data, 2)]), ...
     this.Time(1), this.Time(2) - this.Time(1), this.labels);
