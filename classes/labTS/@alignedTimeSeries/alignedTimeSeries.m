@@ -1,20 +1,71 @@
-classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTimeSeries, as it should
-    %alignedTimeSeries is a time-series-like object, but where it is
-    %assumed that Data stores several repetitions of some recorded set
+classdef alignedTimeSeries % < labTimeSeries
+    % TODO: make this inherit from labTimeSeries, as it should
+    %alignedTimeSeries  Time-series-like object for aligned/repeated data
+    %
+    %   alignedTimeSeries stores multiple repetitions of recorded data
+    %   aligned to common events (e.g., gait cycles aligned to heel
+    %   strikes). Data is organized as (samples x channels x repetitions).
+    %
+    %alignedTimeSeries properties:
+    %   Data - 3D matrix (samples x channels x strides)
+    %   Time - time vector for one stride cycle
+    %   labels - cell array of channel labels
+    %   alignmentVector - vector specifying samples per phase
+    %   alignmentLabels - cell array of phase/event labels
+    %   eventTimes - matrix of actual event times (events x strides+1)
+    %   expandedEventTimes - sample times for all events (dependent)
+    %
+    %alignedTimeSeries methods:
+    %   alignedTimeSeries - constructor
+    %   getPartialStridesAsATS - extracts subset of strides
+    %   removeStridesWithNaNs - removes strides with missing data
+    %   getPartialDataAsATS - extracts subset of channels
+    %   mean - computes mean across strides
+    %   std - computes standard deviation
+    %   iqr - computes interquartile range
+    %   stdRobust - computes robust standard deviation
+    %   prctile - computes percentile
+    %   median - computes median
+    %   energyDecomposition - decomposes variance
+    %   abs - takes absolute value
+    %   equalizeEnergyPerChannel - normalizes by RMS
+    %   demean - removes mean
+    %   minus - subtracts two alignedTimeSeries
+    %   plus - adds two alignedTimeSeries
+    %   times - multiplies by constant
+    %   catStrides - concatenates strides into labTimeSeries
+    %   castAsTS - converts to labTimeSeries
+    %   concatenateAsTS - concatenates strides sequentially
+    %   isaLabel - checks if labels exist
+    %   getLabelsThatMatch - finds labels matching pattern
+    %   renameLabels - renames labels
+    %   cat - concatenates alignedTimeSeries
+    %   fftshift - shifts alignment by half cycle
+    %   discretize - averages data across phases
+    %   flipLR - flips left/right alignment
+    %   getSym - computes symmetric components
+    %   getaSym - computes asymmetric components
+    %   rescaleTime - redefines time vector
+    %   plot - plots aligned data with mean
+    %   plotCheckerboard - displays data as heatmap
+    %
+    %See also: labTimeSeries, processedLabData
 
+    %% Properties
     properties
         Data
         Time
         labels
-        alignmentVector=[];
-        alignmentLabels={};
-        eventTimes=[];
+        alignmentVector = [];
+        alignmentLabels = {};
+        eventTimes = [];
     end
 
-    properties(Dependent)
+    properties (Dependent)
         expandedEventTimes
     end
 
+    %% Constructor
     methods
         function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels,eventTimes)
             %Check:
@@ -40,8 +91,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 this.eventTimes=eventTimes; %This actually calls on the set() method
             end
         end
+    end
 
-        %Getters & setters
+    %% Property Getters and Setters
+    methods
         function eET=get.expandedEventTimes(this)
             if ~isempty(this.eventTimes)
                 eET=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
@@ -57,8 +110,10 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
                 this.eventTimes=eventTimes;
             end
         end
+    end
 
-        %Other modifiers
+    %% Data Extraction Methods
+    methods
         function newThis=getPartialStridesAsATS(this,inds)
             if ~isempty(this.eventTimes)
                 %                newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
@@ -85,7 +140,383 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             newThis=this;
             %newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
         end
+    end
 
+    %% Statistical Methods
+    methods
+        function [meanTS,stds]=mean(this,strideIdxs)
+            %Computes mean and standard deviation across all the aligned timeSeries.
+            %For regular (double/complex) timeseries, mean and std are
+            %computed directly from this.Data and each is returned as a
+            %timeseries.
+            %For logical data (events), it is assumed that all the aligned
+            %timeSeries have the same number of true values and in the same order.
+            %A histogram is computed for the temporal ocurrences of this
+            %values, and a logical TS is returned with events only in the
+            %median values given by this histogram. The labels in this TS are
+            %as many as events occur in a single TS (this.Data(:,:,1)).
+            %The std is returned as a vector of size Nx1.
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            if ~islogical(this.Data(1))
+                %meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanmean(this.Data,3),this.labels,this.alignmentVector,this.alignmentLabels);
+                stds=[];
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,newLabels]=logicalHist(this);
+                %Compute mean/median:
+                newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
+                mH=nanmedian(histogram);
+                for i=1:size(histogram,2)
+                    if mod(mH(i),1)~=0
+                        mH(i)=floor(mH(i));
+                        warning(['Median event ' num2str(i) ' falls between two samples'])
+                    end
+                    newData(mH(i),i)=true;
+                end
+                %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
+                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),newData,newLabels,this.alignmentVector,this.alignmentLabels);
+                stds=nanstd(histogram);
+            end
+        end
+
+        function [stdTS]=std(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            if ~islogical(this.Data(1))
+                %stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                stdTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanstd(this.Data,[],3),this.labels,this.alignmentVector,this.alignmentLabels);
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,~]=logicalHist(this);
+                stdTS=std(histogram); %Not really a tS
+            end
+        end
+
+        function [iqrTS]=iqr(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            else
+                strideIdxs=[];
+            end
+            if ~islogical(this.Data(1))
+                iqrTS=this.prctile(75) - this.prctile(25);
+            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
+                [histogram,~]=logicalHist(this);
+                iqrTS=iqr(histogram); %Not really a tS
+            end
+        end
+
+        function [stdTS]=stdRobust(this,strideIdxs)
+            if nargin>1 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            %IQR-based std computation
+            stdTS=this.iqr .* (1/1.35);
+        end
+
+        function [prctileTS]=prctile(this,p,strideIdxs)
+            if nargin>2 && ~isempty(strideIdxs)
+                this.Data=this.Data(:,:,strideIdxs);
+            end
+            if ~islogical(this.Data(1))
+                %prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+                prctileTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),prctile(this.Data,p,3),this.labels,this.alignmentVector,this.alignmentLabels);
+            else %Logical timeseries.
+                error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
+            end
+        end
+
+        function medianTS=median(this,strideIdxs)
+            if nargin<2 || isempty(strideIdxs)
+                strideIdxs=[];
+            end
+            [medianTS]=prctile(this,50,strideIdxs);
+        end
+
+        function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
+            alignedData=this.Data;
+            [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
+        end
+    end
+
+    %% Normalization Methods
+    methods
+        function newThis=equalizeEnergyPerChannel(this)
+            newThis=this;
+            newThis.Data=bsxfun(@rdivide,newThis.Data,sqrt(mean(mean(this.Data.^2,3),1)));
+        end
+
+        function newThis=demean(this)
+            newThis=this;
+            newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
+        end
+    end
+
+    %% Arithmetic Operations
+    methods
+        function newThis=abs(this)
+            newThis=this;
+            newThis.Data=abs(this.Data);
+        end
+
+        function newThis=minus(this,other)
+            newThis=this;
+            newThis.Data=this.Data-other.Data;
+        end
+
+        function newThis=plus(this,other)
+            newThis=this;
+            newThis.Data=this.Data+other.Data;
+        end
+
+        function this=times(this,constant)
+            this.Data=this.Data .* constant;
+            if numel(constant)==1
+                s=num2str(constant);
+            else
+                s='k'; %Generic constant string
+            end
+            this.labels=strcat([s '*'],this.labels);
+        end
+    end
+
+    %% Type Conversion Methods
+    methods
+        function newThis=catStrides(this)
+            auxData=permute(this.Data,[2,1,3]);
+            newThis=labTimeSeries(auxData(:,:)',this.Time(1),this.Time(2)-this.Time(1),this.labels);
+        end
+
+        function newThis=castAsTS(this)
+            %Function to change the class to labTS (instead of ATS). This is a temp function, until alignedTS is changed to inherit from labTS
+            if size(this.Data,3)>1
+                ME=MException('alignedTS:castAsTS','To cast as TS, there may be a single alignedTS (i.e. size(this.Data,3)==1)');
+                throw(ME)
+            end
+            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
+        end
+
+        function newThis=concatenateAsTS(this)
+            %This concatenates the ATS by putting strides one after another
+            %in time, returning a single labTS
+            newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
+        end
+    end
+
+    %% Label Methods
+    methods
+        function [boolFlag,labelIdx]=isaLabel(this,label)
+            boolFlag=false(size(label));
+            labelIdx=zeros(size(label));
+            [bool,idx] = compareListsFast(label,this.labels);
+            for j=1:length(label)
+                if any(idx==j)
+                    boolFlag(j)=true;
+                    labelIdx(j)=find(idx==j);
+                end
+            end
+        end
+
+        function labelList=getLabelsThatMatch(this,exp)
+            %Returns labels on this labTS that match the regular expression exp.
+            %labelList=getLabelsThatMatch(this,exp)
+            %INPUT:
+            %this: labTS object
+            %exp: any regular expression (as string).
+            %OUTPUT:
+            %labelList: cell array containing labels of this labTS that match
+            %See also regexp
+            labelList=this.labels;
+            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
+            labelList=labelList(flags);
+        end
+
+        function this=renameLabels(this,originalLabels,newLabels)
+            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
+            if isempty(originalLabels)
+                originalLabels=this.labels;
+            end
+            if size(newLabels)~=size(originalLabels)
+                error('Inconsistent label sizes')
+            end
+            [boo,idx]=this.isaLabel(originalLabels);
+            this.labels(idx(boo))=newLabels;
+        end
+    end
+
+    %% Data Manipulation Methods
+    methods
+        function newThis=cat(this,other,dim,forceFlag)
+            if nargin<4
+                forceFlag=false;
+            end
+            if nargin<3 || isempty(dim)
+                dim=3;%Cat-ting strides
+            end
+
+            %Check alignment vectors coincide & alignment labels coincide
+            if any(this.alignmentVector~=other.alignmentVector)
+                ME=MException('ATS:cat','Alignment vector mismatch');
+                throw(ME);
+            end
+            if ~forceFlag && ~all(strcmp(this.alignmentLabels,other.alignmentLabels))
+                ME=MException('ATS:cat','Alignment labels mismatch, this check can be ignored by setting forceFlag=true');
+                throw(ME);
+            end
+
+            if dim==3
+                %Check dimensions coincide
+                s1=size(this.Data);
+                s2=size(other.Data);
+                if any(s1(1:2)~=s2(1:2))
+                    ME=MException('ATS:cat','Data dimension mismatch.');
+                    throw(ME);
+                end
+
+                %Check labels coincide (unless forced)
+                if ~forceFlag && ~all(strcmp(this.labels,other.labels))
+                    ME=MException('ATS:cat','Label mismatch, this check can be ignored by setting forceFlag=true');
+                    throw(ME);
+                end
+
+                %Do the cat:
+                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels,cat(2,this.eventTimes(:,1:end-1),other.eventTimes));
+                warning('ATS:catStridesLostEvents','Cat-ting strides of alignedTimeSeries, events are no longer consecutive.')
+            elseif dim==2 %Cat-ting labels
+                %Check dimensions coincide
+                s1=size(this.Data);
+                s2=size(other.Data);
+                if any(s1([1,3])~=s2([1,3]))
+                    ME=MException('ATS:cat','Data dimension mismatch.');
+                    throw(ME);
+                end
+                %Check no repeated labels
+
+                %Check alignmentVector & Labels
+
+                %Check that all eventTimes match
+                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes(:)-other.eventTimes(:))>1e-9)
+                    ME=MException('ATS:cat','Trying to cat labels, but event times are different');
+                    throw(ME);
+                end
+
+                %Do the cat
+                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels,this.eventTimes);
+            else
+                ME=MException();
+                throw(ME);
+            end
+        end
+
+        function newThis=fftshift(this,labels)
+            %Shifts the first and second halves of the alignment cycle
+            %Example, if the first half starts at FHS and second half
+            %starts at SHS, the shifted version will start at SHS and FHS
+            %will be the midpoint of the cycle.
+            if nargin>1 && ~isempty(labels)
+                [~,idxs]=this.isaLabel(labels);
+            else
+                idxs=1:length(this.labels);
+            end
+            newThis=this;
+            M=round(length(this.alignmentVector)/2);
+            N=sum(this.alignmentVector(1:M));
+            newThis.Data(:,idxs,:)=this.Data([N+1:size(this.Data,1),1:N],idxs,:);
+        end
+
+        function newThis=discretize(this,averagingVector)
+            if sum(averagingVector)~=sum(this.alignmentVector)
+                error('The averaging vector must sum to the number of samples of the alignedTS')
+            end
+            lastInd=0;
+            newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
+            expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
+            newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
+            auxSamp=1+[0 cumsum(this.alignmentVector)];
+            for i=1:length(averagingVector)
+                inds=lastInd+[1:averagingVector(i)];
+                newData(i,:,:)=nanmean(this.Data(inds,:,:));
+                if ~any(auxSamp==inds(1))
+                    aux1='-';
+                else
+                    aux1=this.alignmentLabels{auxSamp==inds(1)};
+                end
+                if ~any(auxSamp==inds(end))
+                    aux2='-';
+                else
+                    aux2=this.alignmentLabels{auxSamp==inds(end)};
+                end
+                aux=this.alignmentLabels(auxSamp>inds(1) & auxSamp<inds(end));
+                if ~isempty(aux)
+                    auxM=cell2mat(aux);
+                else
+                    auxM='-';
+                end
+                alignLabel{i}=[aux1 aux2];
+                newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
+                lastInd=lastInd+averagingVector(i);
+            end
+            newEventTimes(1,end)=this.eventTimes(1,end);
+            newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
+        end
+
+        function [this,iC,iI]=flipLR(this)
+            %Find the side that has the starting event:
+            alignedSide=this.alignmentLabels{1}(1);
+            nonAlignedSide=getOtherLeg(alignedSide);
+            %Flip non-aligned side:
+            lC=this.getLabelsThatMatch(['^' nonAlignedSide]); %Get non-aligned side labels
+            if ~isempty(lC)
+                [~,iC]=this.isaLabel(lC); %Index for non-aligned
+                aux=regexprep(lC,['^' nonAlignedSide],alignedSide); %Getting aligned side labels
+                [bI,iI]=this.isaLabel(aux); %Index for aligned
+                if ~all(bI) %Labels are not symm, aborting
+                    warning('Asked to flipLR but labels are not symmetrically present.')
+                else
+                    this.Data(:,iC)=fftshift(this.Data(:,iC),1); %This just flips first and second halves of aligned data, no checks performed
+                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' alignedSide],'i');
+                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' nonAlignedSide],'c');
+                end
+            else
+                warning('Asked to flipLR but couldn''t find aligned side.')
+                iC=[];
+            end
+        end
+
+        function [this,iC,iI]=getSym(this)
+            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
+            %Then: compute sym/asym data and replace it.
+            this.Data=[this.Data(:,iI)-this.Data(:,iC) this.Data(:,iI)+this.Data(:,iC)];
+            %Update labels:
+            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a') regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'b')];
+        end
+
+        function [this,iC,iI]=getaSym(this)
+            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
+            %Then: compute asym data and replace it.
+            this.Data=[this.Data(:,iI)-this.Data(:,iC)]; %we do slow - fast here
+            %Update labels:
+            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a')];
+        end
+
+        function newThis=rescaleTime(this,newTs,newT0)
+            %Re-defines the Time vector to force a new sampling time
+            %Made for backwards compatibility of aligned series always
+            %being defined with time in [0 1]
+            if nargin<3 || isempty(newT0)
+                newT0=0;
+            end
+            if nargin<2 || isempty(newTs)
+                newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
+            end
+            newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
+        end
+    end
+
+    %% Visualization Methods
+    methods
         function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
@@ -258,365 +689,6 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
         end
 
-        function [meanTS,stds]=mean(this,strideIdxs)
-            %Computes mean and standard deviation across all the aligned timeSeries.
-            %For regular (double/complex) timeseries, mean and std are
-            %computed directly from this.Data and each is returned as a
-            %timeseries.
-            %For logical data (events), it is assumed that all the aligned
-            %timeSeries have the same number of true values and in the same order.
-            %A histogram is computed for the temporal ocurrences of this
-            %values, and a logical TS is returned with events only in the
-            %median values given by this histogram. The labels in this TS are
-            %as many as events occur in a single TS (this.Data(:,:,1)).
-            %The std is returned as a vector of size Nx1.
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanmean(this.Data,3),this.labels,this.alignmentVector,this.alignmentLabels);
-                stds=[];
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,newLabels]=logicalHist(this);
-                %Compute mean/median:
-                newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
-                mH=nanmedian(histogram);
-                for i=1:size(histogram,2)
-                    if mod(mH(i),1)~=0
-                        mH(i)=floor(mH(i));
-                        warning(['Median event ' num2str(i) ' falls between two samples'])
-                    end
-                    newData(mH(i),i)=true;
-                end
-                %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
-                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),newData,newLabels,this.alignmentVector,this.alignmentLabels);
-                stds=nanstd(histogram);
-            end
-        end
-
-        function newThis=abs(this)
-            newThis=this;
-            newThis.Data=abs(this.Data);
-        end
-
-        function [stdTS]=std(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                stdTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanstd(this.Data,[],3),this.labels,this.alignmentVector,this.alignmentLabels);
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,~]=logicalHist(this);
-                stdTS=std(histogram); %Not really a tS
-            end
-        end
-
-        function [iqrTS]=iqr(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            else
-                strideIdxs=[];
-            end
-            if ~islogical(this.Data(1))
-                iqrTS=this.prctile(75) - this.prctile(25);
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,~]=logicalHist(this);
-                iqrTS=iqr(histogram); %Not really a tS
-            end
-        end
-
-        function [stdTS]=stdRobust(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            %IQR-based std computation
-            stdTS=this.iqr .* (1/1.35);
-        end
-
-        function [prctileTS]=prctile(this,p,strideIdxs)
-            if nargin>2 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                prctileTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),prctile(this.Data,p,3),this.labels,this.alignmentVector,this.alignmentLabels);
-            else %Logical timeseries.
-                error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
-            end
-        end
-
-        function medianTS=median(this,strideIdxs)
-            if nargin<2 || isempty(strideIdxs)
-                strideIdxs=[];
-            end
-            [medianTS]=prctile(this,50,strideIdxs);
-        end
-
-        function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
-            alignedData=this.Data;
-            [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
-        end
-
-        function newThis=equalizeEnergyPerChannel(this)
-            newThis=this;
-            newThis.Data=bsxfun(@rdivide,newThis.Data,sqrt(mean(mean(this.Data.^2,3),1)));
-        end
-
-        function newThis=minus(this,other)
-            newThis=this;
-            newThis.Data=this.Data-other.Data;
-        end
-
-        function newThis=plus(this,other)
-            newThis=this;
-            newThis.Data=this.Data+other.Data;
-        end
-
-        function this=times(this,constant)
-            this.Data=this.Data .* constant;
-            if numel(constant)==1
-                s=num2str(constant);
-            else
-                s='k'; %Generic constant string
-            end
-            this.labels=strcat([s '*'],this.labels);
-        end
-
-        function newThis=demean(this)
-            newThis=this;
-            newThis.Data=bsxfun(@minus,this.Data,this.mean.Data);
-        end
-
-        function newThis=catStrides(this)
-            auxData=permute(this.Data,[2,1,3]);
-            newThis=labTimeSeries(auxData(:,:)',this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
-
-        function [boolFlag,labelIdx]=isaLabel(this,label)
-            boolFlag=false(size(label));
-            labelIdx=zeros(size(label));
-            [bool,idx] = compareListsFast(label,this.labels);
-            for j=1:length(label)
-                if any(idx==j)
-                    boolFlag(j)=true;
-                    labelIdx(j)=find(idx==j);
-                end
-            end
-        end
-
-        function newThis=cat(this,other,dim,forceFlag)
-            if nargin<4
-                forceFlag=false;
-            end
-            if nargin<3 || isempty(dim)
-                dim=3;%Cat-ting strides
-            end
-
-            %Check alignment vectors coincide & alignment labels coincide
-            if any(this.alignmentVector~=other.alignmentVector)
-                ME=MException('ATS:cat','Alignment vector mismatch');
-                throw(ME);
-            end
-            if ~forceFlag && ~all(strcmp(this.alignmentLabels,other.alignmentLabels))
-                ME=MException('ATS:cat','Alignment labels mismatch, this check can be ignored by setting forceFlag=true');
-                throw(ME);
-            end
-
-            if dim==3
-                %Check dimensions coincide
-                s1=size(this.Data);
-                s2=size(other.Data);
-                if any(s1(1:2)~=s2(1:2))
-                    ME=MException('ATS:cat','Data dimension mismatch.');
-                    throw(ME);
-                end
-
-                %Check labels coincide (unless forced)
-                if ~forceFlag && ~all(strcmp(this.labels,other.labels))
-                    ME=MException('ATS:cat','Label mismatch, this check can be ignored by setting forceFlag=true');
-                    throw(ME);
-                end
-
-                %Do the cat:
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(3,this.Data,other.Data),this.labels,this.alignmentVector,this.alignmentLabels,cat(2,this.eventTimes(:,1:end-1),other.eventTimes));
-                warning('ATS:catStridesLostEvents','Cat-ting strides of alignedTimeSeries, events are no longer consecutive.')
-            elseif dim==2 %Cat-ting labels
-                %Check dimensions coincide
-                s1=size(this.Data);
-                s2=size(other.Data);
-                if any(s1([1,3])~=s2([1,3]))
-                    ME=MException('ATS:cat','Data dimension mismatch.');
-                    throw(ME);
-                end
-                %Check no repeated labels
-
-                %Check alignmentVector & Labels
-
-                %Check that all eventTimes match
-                if any(size(this.eventTimes)~=size(other.eventTimes)) || any(abs(this.eventTimes(:)-other.eventTimes(:))>1e-9)
-                    ME=MException('ATS:cat','Trying to cat labels, but event times are different');
-                    throw(ME);
-                end
-
-                %Do the cat
-                newThis=alignedTimeSeries(this.Time(1),diff(this.Time(1:2)),cat(2,this.Data,other.Data),[this.labels,other.labels],this.alignmentVector,this.alignmentLabels,this.eventTimes);
-            else
-                ME=MException();
-                throw(ME);
-            end
-        end
-
-        function newThis=castAsTS(this)
-            %Function to change the class to labTS (instead of ATS). This is a temp function, until alignedTS is changed to inherit from labTS
-            if size(this.Data,3)>1
-                ME=MException('alignedTS:castAsTS','To cast as TS, there may be a single alignedTS (i.e. size(this.Data,3)==1)');
-                throw(ME)
-            end
-            newThis=labTimeSeries(this.Data,this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
-
-        function newThis=concatenateAsTS(this)
-            %This concatenates the ATS by putting strides one after another
-            %in time, returning a single labTS
-            newThis=labTimeSeries(reshape(permute(this.Data,[1,3,2]),[size(this.Data,1)*size(this.Data,3),size(this.Data,2)]),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-        end
-
-        function newThis=fftshift(this,labels)
-            %Shifts the first and second halves of the alignment cycle
-            %Example, if the first half starts at FHS and second half
-            %starts at SHS, the shifted version will start at SHS and FHS
-            %will be the midpoint of the cycle.
-            if nargin>1 && ~isempty(labels)
-                [~,idxs]=this.isaLabel(labels);
-            else
-                idxs=1:length(this.labels);
-            end
-            newThis=this;
-            M=round(length(this.alignmentVector)/2);
-            N=sum(this.alignmentVector(1:M));
-            newThis.Data(:,idxs,:)=this.Data([N+1:size(this.Data,1),1:N],idxs,:);
-        end
-
-        function labelList=getLabelsThatMatch(this,exp)
-            %Returns labels on this labTS that match the regular expression exp.
-            %labelList=getLabelsThatMatch(this,exp)
-            %INPUT:
-            %this: labTS object
-            %exp: any regular expression (as string).
-            %OUTPUT:
-            %labelList: cell array containing labels of this labTS that match
-            %See also regexp
-            labelList=this.labels;
-            flags=cellfun(@(x) ~isempty(x),regexp(labelList,exp));
-            labelList=labelList(flags);
-        end
-
-        function newThis=rescaleTime(this,newTs,newT0)
-            %Re-defines the Time vector to force a new sampling time
-            %Made for backwards compatibility of aligned series always
-            %being defined with time in [0 1]
-            if nargin<3 || isempty(newT0)
-                newT0=0;
-            end
-            if nargin<2 || isempty(newTs)
-                newTs=1/length(this.Time); %Re-scales such that total duration is 1 [time can be thought of as % of some cycle]
-            end
-            newThis=alignedTimeSeries(newT0,newTs,this.Data,this.labels,this.alignmentVector,this.alignmentLabels);
-        end
-
-        function this=renameLabels(this,originalLabels,newLabels)
-            warning('labTS:renameLabels:dont','You should not be renaming the labels. You have been warned.')
-            if isempty(originalLabels)
-                originalLabels=this.labels;
-            end
-            if size(newLabels)~=size(originalLabels)
-                error('Inconsistent label sizes')
-            end
-            [boo,idx]=this.isaLabel(originalLabels);
-            this.labels(idx(boo))=newLabels;
-        end
-
-        function newThis=discretize(this,averagingVector)
-            if sum(averagingVector)~=sum(this.alignmentVector)
-                error('The averaging vector must sum to the number of samples of the alignedTS')
-            end
-            lastInd=0;
-            newData=nan(length(averagingVector),size(this.Data,2),size(this.Data,3));
-            expEventTimes=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
-            newEventTimes=nan(length(averagingVector),size(expEventTimes,2)+1);
-            auxSamp=1+[0 cumsum(this.alignmentVector)];
-            for i=1:length(averagingVector)
-                inds=lastInd+[1:averagingVector(i)];
-                newData(i,:,:)=nanmean(this.Data(inds,:,:));
-                if ~any(auxSamp==inds(1))
-                    aux1='-';
-                else
-                    aux1=this.alignmentLabels{auxSamp==inds(1)};
-                end
-                if ~any(auxSamp==inds(end))
-                    aux2='-';
-                else
-                    aux2=this.alignmentLabels{auxSamp==inds(end)};
-                end
-                aux=this.alignmentLabels(auxSamp>inds(1) & auxSamp<inds(end));
-                if ~isempty(aux)
-                    auxM=cell2mat(aux);
-                else
-                    auxM='-';
-                end
-                alignLabel{i}=[aux1 aux2];
-                newEventTimes(i,1:end-1)=expEventTimes(lastInd+1,:); %Beginning of averaged interval
-                lastInd=lastInd+averagingVector(i);
-            end
-            newEventTimes(1,end)=this.eventTimes(1,end);
-            newThis=alignedTimeSeries(0,1,newData,this.labels,ones(size(averagingVector)),alignLabel,newEventTimes);
-        end
-
-        function [this,iC,iI]=flipLR(this)
-            %Find the side that has the starting event:
-            alignedSide=this.alignmentLabels{1}(1);
-            nonAlignedSide=getOtherLeg(alignedSide);
-            %Flip non-aligned side:
-            lC=this.getLabelsThatMatch(['^' nonAlignedSide]); %Get non-aligned side labels
-            if ~isempty(lC)
-                [~,iC]=this.isaLabel(lC); %Index for non-aligned
-                aux=regexprep(lC,['^' nonAlignedSide],alignedSide); %Getting aligned side labels
-                [bI,iI]=this.isaLabel(aux); %Index for aligned
-                if ~all(bI) %Labels are not symm, aborting
-                    warning('Asked to flipLR but labels are not symmetrically present.')
-                else
-                    this.Data(:,iC)=fftshift(this.Data(:,iC),1); %This just flips first and second halves of aligned data, no checks performed
-                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' alignedSide],'i');
-                    this.alignmentLabels=regexprep(this.alignmentLabels,['^' nonAlignedSide],'c');
-                end
-            else
-                warning('Asked to flipLR but couldn''t find aligned side.')
-                iC=[];
-            end
-        end
-
-        function [this,iC,iI]=getSym(this)
-            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
-            %Then: compute sym/asym data and replace it.
-            this.Data=[this.Data(:,iI)-this.Data(:,iC) this.Data(:,iI)+this.Data(:,iC)];
-            %Update labels:
-            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a') regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'b')];
-
-        end
-
-
-        function [this,iC,iI]=getaSym(this)
-            [this,iC,iI]=this.flipLR; %First, flip the non-aligned side.
-            %Then: compute asym data and replace it.
-            this.Data=[this.Data(:,iI)-this.Data(:,iC)]; %we do slow - fast here
-            %Update labels:
-            this.labels=[regexprep(this.labels(iI),['^' this.labels{iI(1)}(1)],'a')];
-
-        end
-
-
         function [fh,ph]=plotCheckerboard(this,fh,ph)
             if nargin<2
                 fh=figure();
@@ -656,6 +728,7 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
         end
     end
 
+    %% Static Methods
     methods (Static)
         function expEventTimes=expandEventTimes(eventTimes,alignmentVector)
             %Given event times and an alignment vectors, this function
@@ -671,11 +744,11 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             refTime2=bsxfun(@plus,refTime(1:end-1),N*[0:M]);
             allExpEventTimes=interp1(refTime2(:),allEventTimes(:),[1:N*M]');
             expEventTimes=reshape(allExpEventTimes,N,M);
-
         end
     end
 
-    methods(Hidden)
+    %% Hidden Methods
+    methods (Hidden)
         function [histogram,newLabels]=logicalHist(this)
             %Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the same order.
 
@@ -728,5 +801,6 @@ classdef alignedTimeSeries %<labTimeSeries %TODO: make this inherit from labTime
             end
         end
     end
+
 end
 
