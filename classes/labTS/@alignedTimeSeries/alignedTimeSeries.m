@@ -67,47 +67,91 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Constructor
     methods
-        function this=alignedTimeSeries(t0,Ts,Data,labels,alignmentVector,alignmentLabels,eventTimes)
-            %Check:
-            if nargin<6
-                warning('alignedTimeSeries being created without specifying alignment criteria.')
-                alignmentVector=[1];
-                alignmentLabels={'Unknown'};
+        function this = alignedTimeSeries(t0, Ts, Data, labels, ...
+                alignmentVector, alignmentLabels, eventTimes)
+            %alignedTimeSeries  Constructor for alignedTimeSeries class
+            %
+            %   this = alignedTimeSeries(t0, Ts, Data, labels,
+            %   alignmentVector, alignmentLabels) creates aligned
+            %   timeseries without event times
+            %
+            %   this = alignedTimeSeries(t0, Ts, Data, labels,
+            %   alignmentVector, alignmentLabels, eventTimes) includes
+            %   event timing information
+            %
+            %   Inputs:
+            %       t0 - initial time
+            %       Ts - sampling period
+            %       Data - 3D matrix (samples x channels x strides)
+            %       labels - cell array of channel labels
+            %       alignmentVector - vector specifying number of samples
+            %                         per phase
+            %       alignmentLabels - cell array of phase/event labels
+            %       eventTimes - matrix of event times (optional)
+            %
+            %   Outputs:
+            %       this - alignedTimeSeries object
+            %
+            %   See also: labTimeSeries, processedLabData/reduce
+
+            if nargin < 6
+                warning(['alignedTimeSeries being created without ' ...
+                    'specifying alignment criteria.']);
+                alignmentVector = 1;
+                alignmentLabels = {'Unknown'};
             end
-            if size(Data,2)==length(labels)
-                this.Data=Data;
-                this.Time=t0+[0:size(Data,1)-1]*Ts;
-                this.labels=labels;
-                if length(alignmentVector)~=length(alignmentLabels)
-                    error('alignedTS:Constructor','Alignment vector and labels sizes do not match.')
+            if size(Data, 2) == length(labels)
+                this.Data = Data;
+                this.Time = t0 + [0:size(Data, 1) - 1] * Ts;
+                this.labels = labels;
+                if length(alignmentVector) ~= length(alignmentLabels)
+                    error('alignedTS:Constructor', ...
+                        'Alignment vector and labels sizes do not match.');
                 else
-                    this.alignmentVector=alignmentVector;
-                    this.alignmentLabels=alignmentLabels;
+                    this.alignmentVector = alignmentVector;
+                    this.alignmentLabels = alignmentLabels;
                 end
             else
-                error('alignedTS:Constructor','Data size and label number do not match.')
+                error('alignedTS:Constructor', ...
+                    'Data size and label number do not match.');
             end
-            if nargin>6
-                this.eventTimes=eventTimes; %This actually calls on the set() method
+            if nargin > 6
+                % This actually calls on the set() method
+                this.eventTimes = eventTimes;
             end
         end
     end
 
     %% Property Getters and Setters
     methods
-        function eET=get.expandedEventTimes(this)
+        function eET = get.expandedEventTimes(this)
+            %get.expandedEventTimes  Returns sample times for all events
+            %
+            %   Outputs:
+            %       eET - matrix of sample times for each event
+
             if ~isempty(this.eventTimes)
-                eET=alignedTimeSeries.expandEventTimes(this.eventTimes,this.alignmentVector);
-            else %legacy version
-                error('eventTimes are not determined')
+                eET = alignedTimeSeries.expandEventTimes(...
+                    this.eventTimes, this.alignmentVector);
+            else % legacy version
+                error('alignedTS:expandedEventTimes', ...
+                    'eventTimes are not determined');
             end
         end
 
-        function this=set.eventTimes(this,eventTimes)
-            if any(size(eventTimes)~=[length(this.alignmentVector) size(this.Data,3)+1])
-                error('alignedTS:SetEventTimes','Data and eventTimes sizes do not match.')
+        function this = set.eventTimes(this, eventTimes)
+            %set.eventTimes  Validates and sets event times
+            %
+            %   Inputs:
+            %       this - alignedTimeSeries object
+            %       eventTimes - matrix of event times
+
+            if any(size(eventTimes) ~= [length(this.alignmentVector) ...
+                    size(this.Data, 3) + 1])
+                error('alignedTS:SetEventTimes', ...
+                    'Data and eventTimes sizes do not match.');
             else
-                this.eventTimes=eventTimes;
+                this.eventTimes = eventTimes;
             end
         end
     end
