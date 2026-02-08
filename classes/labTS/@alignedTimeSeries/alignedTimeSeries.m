@@ -158,32 +158,11 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Data Extraction Methods
     methods
-        function newThis=getPartialStridesAsATS(this,inds)
-            if ~isempty(this.eventTimes)
-                %                newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
-                if size(inds,1)==1 %Changed by DMMO 10/4/2019 the dimmension were not consisten with previous code
-                    newTimes=this.eventTimes(:,[inds inds(end)+1]); %This can fail if eventTimes was not assigned (not mandatory)
-                else
-                    newTimes=this.eventTimes(:,[inds; inds(end)+1]);
-                end
-            else
-                newTimes=[];
-            end
-            newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,:,inds),this.labels,this.alignmentVector,this.alignmentLabels,newTimes);
-        end
+        newThis = getPartialStridesAsATS(this, inds)
 
-        function newThis=removeStridesWithNaNs(this)
-            inds=find(all(all(~isnan(this.Data),2),1));
-            newThis=getPartialStridesAsATS(this,inds);
-        end
+        newThis = removeStridesWithNaNs(this)
 
-        function newThis=getPartialDataAsATS(this,labels)
-            [boolIdx,relIdx]=this.isaLabel(labels);
-            this.Data=this.Data(:,relIdx(boolIdx),:);
-            this.labels=this.labels(relIdx(boolIdx));
-            newThis=this;
-            %newThis=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),this.Data(:,relIdx(boolIdx),:),this.labels(relIdx(boolIdx)),this.alignmentVector,this.alignmentLabels,this.eventTimes);
-        end
+        newThis = getPartialDataAsATS(this, labels)
     end
 
     %% Statistical Methods

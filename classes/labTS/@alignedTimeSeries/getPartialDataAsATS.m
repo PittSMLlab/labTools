@@ -17,9 +17,8 @@ function newThis = getPartialDataAsATS(this, labels)
 this.Data = this.Data(:, relIdx(boolIdx), :);
 this.labels = this.labels(relIdx(boolIdx));
 newThis = this;
-% newThis = alignedTimeSeries(this.Time(1), this.Time(2) -
-%     this.Time(1), this.Data(:, relIdx(boolIdx), :),
-%     this.labels(relIdx(boolIdx)), this.alignmentVector,
-%     this.alignmentLabels, this.eventTimes);
+% newThis = alignedTimeSeries(this.Time(1), this.Time(2) - this.Time(1),...
+%     this.Data(:, relIdx(boolIdx), :), this.labels(relIdx(boolIdx)), ...
+%     this.alignmentVector, this.alignmentLabels, this.eventTimes);
 end
 

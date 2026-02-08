@@ -13,9 +13,9 @@ function newThis = getPartialStridesAsATS(this, inds)
 %
 %   See also: getPartialDataAsATS, removeStridesWithNaNs
 
-% Other modifiers
 if ~isempty(this.eventTimes)
     % This can fail if eventTimes was not assigned (not mandatory)
+    % newTimes = this.eventTimes(:, [inds inds(end) + 1]);
     % Changed by DMMO 10/4/2019 the dimension were not consistent
     % with previous code
     if size(inds, 1) == 1
