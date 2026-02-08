@@ -21,16 +21,6 @@ function [meanTS, stds] = mean(this, strideIdxs)
 %
 %   See also: median, std, prctile
 
-% Computes mean and standard deviation across all the aligned
-% timeSeries. For regular (double/complex) timeseries, mean and std
-% are computed directly from this.Data and each is returned as a
-% timeseries. For logical data (events), it is assumed that all the
-% aligned timeSeries have the same number of true values and in the
-% same order. A histogram is computed for the temporal ocurrences of
-% this values, and a logical TS is returned with events only in the
-% median values given by this histogram. The labels in this TS are as
-% many as events occur in a single TS (this.Data(:, :, 1)). The std is
-% returned as a vector of size Nx1.
 if nargin > 1 && ~isempty(strideIdxs)
     this.Data = this.Data(:, :, strideIdxs);
 end

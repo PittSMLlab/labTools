@@ -28,7 +28,7 @@ else
     % Logical timeseries. Will find events and average appropriately.
     % Assuming the SAME number of events per stride, and in the same
     % ORDER. % FIXME: check event order.
-    [histogram, ~] = logicalHist(this);
+    histogram = logicalHist(this);
     stdTS = std(histogram); % Not really a tS
 end
 end

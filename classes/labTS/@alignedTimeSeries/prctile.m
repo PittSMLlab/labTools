@@ -4,8 +4,7 @@ function prctileTS = prctile(this, p, strideIdxs)
 %   prctileTS = prctile(this, p) computes specified percentile across
 %   all strides
 %
-%   prctileTS = prctile(this, p, strideIdxs) computes for specified
-%   strides
+%   prctileTS = prctile(this, p, strideIdxs) computes for specified strides
 %
 %   Inputs:
 %       this - alignedTimeSeries object

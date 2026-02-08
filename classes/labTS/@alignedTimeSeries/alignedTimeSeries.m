@@ -167,101 +167,20 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Statistical Methods
     methods
-        function [meanTS,stds]=mean(this,strideIdxs)
-            %Computes mean and standard deviation across all the aligned timeSeries.
-            %For regular (double/complex) timeseries, mean and std are
-            %computed directly from this.Data and each is returned as a
-            %timeseries.
-            %For logical data (events), it is assumed that all the aligned
-            %timeSeries have the same number of true values and in the same order.
-            %A histogram is computed for the temporal ocurrences of this
-            %values, and a logical TS is returned with events only in the
-            %median values given by this histogram. The labels in this TS are
-            %as many as events occur in a single TS (this.Data(:,:,1)).
-            %The std is returned as a vector of size Nx1.
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %meanTS=labTimeSeries(nanmean(this.Data,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanmean(this.Data,3),this.labels,this.alignmentVector,this.alignmentLabels);
-                stds=[];
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,newLabels]=logicalHist(this);
-                %Compute mean/median:
-                newData=sparse([],[],false,size(this.Data,1),length(newLabels),size(this.Data,1));
-                mH=nanmedian(histogram);
-                for i=1:size(histogram,2)
-                    if mod(mH(i),1)~=0
-                        mH(i)=floor(mH(i));
-                        warning(['Median event ' num2str(i) ' falls between two samples'])
-                    end
-                    newData(mH(i),i)=true;
-                end
-                %meanTS=labTimeSeries(newData,this.Time(1),this.Time(2)-this.Time(1),newLabels);
-                meanTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),newData,newLabels,this.alignmentVector,this.alignmentLabels);
-                stds=nanstd(histogram);
-            end
-        end
+        [meanTS, stds] = mean(this, strideIdxs)
 
-        function [stdTS]=std(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %stdTS=labTimeSeries(nanstd(this.Data,[],3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                stdTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),nanstd(this.Data,[],3),this.labels,this.alignmentVector,this.alignmentLabels);
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,~]=logicalHist(this);
-                stdTS=std(histogram); %Not really a tS
-            end
-        end
+        stdTS = std(this, strideIdxs)
 
-        function [iqrTS]=iqr(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            else
-                strideIdxs=[];
-            end
-            if ~islogical(this.Data(1))
-                iqrTS=this.prctile(75) - this.prctile(25);
-            else %Logical timeseries. Will find events and average appropriately. Assuming the SAME number of events per stride, and in the same ORDER. %FIXME: check event order.
-                [histogram,~]=logicalHist(this);
-                iqrTS=iqr(histogram); %Not really a tS
-            end
-        end
+        iqrTS = iqr(this, strideIdxs)
 
-        function [stdTS]=stdRobust(this,strideIdxs)
-            if nargin>1 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            %IQR-based std computation
-            stdTS=this.iqr .* (1/1.35);
-        end
+        stdTS = stdRobust(this, strideIdxs)
 
-        function [prctileTS]=prctile(this,p,strideIdxs)
-            if nargin>2 && ~isempty(strideIdxs)
-                this.Data=this.Data(:,:,strideIdxs);
-            end
-            if ~islogical(this.Data(1))
-                %prctileTS=labTimeSeries(prctile(this.Data,p,3),this.Time(1),this.Time(2)-this.Time(1),this.labels);
-                prctileTS=alignedTimeSeries(this.Time(1),this.Time(2)-this.Time(1),prctile(this.Data,p,3),this.labels,this.alignmentVector,this.alignmentLabels);
-            else %Logical timeseries.
-                error('alignedTimeSeries:prctile','Prctile not yet implemented for logical alignedTimeSeries.') %TODO
-            end
-        end
+        prctileTS = prctile(this, p, strideIdxs)
 
-        function medianTS=median(this,strideIdxs)
-            if nargin<2 || isempty(strideIdxs)
-                strideIdxs=[];
-            end
-            [medianTS]=prctile(this,50,strideIdxs);
-        end
+        medianTS = median(this, strideIdxs)
 
-        function [decomposition,meanValue,avgStride,trial2trialVariability] =energyDecomposition(this)
-            alignedData=this.Data;
-            [decomposition,meanValue,avgStride,trial2trialVariability] = getVarianceDecomposition(alignedData);
-        end
+        [decomposition, meanValue, avgStride, trial2trialVariability] = ...
+            energyDecomposition(this)
     end
 
     %% Normalization Methods
