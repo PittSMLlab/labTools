@@ -15,16 +15,9 @@ function [histogram, newLabels] = logicalHist(this)
 %
 %   See also: mean, std
 
-% Hidden
-% Generates a histogram from the logical data (true/false) contained
-% in this alignedTS. Assumes that all aligned TS contain the same
-% events, in the same order.
-
-% Check: this is a logical alignedTS
-% TODO
-% TODO: determine the number of expected events. Currently this is as
-% many events as stride 1 has. May be problematic if stride one is
-% invalid.
+% TODO: Check this is a logical alignedTS
+% TODO: determine number of expected events. Currently this is as many
+% events as stride 1 has. May be problematic if stride one is invalid.
 aaux = cellfun(@(x) isempty(x), strfind(this.labels, 'force')) & ...
     cellfun(@(x) isempty(x), strfind(this.labels, 'kin'));
 % Mode of the # of events per stride, assuming this is what should
@@ -36,11 +29,9 @@ for i = 1:eventNo
     aux = nan(nStrides, 1);
     for k = 1:nStrides % Going over strides
         % Time index of first i events in stride k
-        eventIdx = find(sum(this.Data(:, aaux, k), 2) == 1, i, ...
-            'first');
+        eventIdx = find(sum(this.Data(:, aaux, k), 2) == 1, i, 'first');
         if length(eventIdx) == i % Checking that I found i events
-            aux(k) = find(this.Data(eventIdx(i), aaux, k), 1, ...
-                'first');
+            aux(k) = find(this.Data(eventIdx(i), aaux, k), 1, 'first');
         end
     end
     % Rounding is to break possible ties (very unlikely)

@@ -251,6 +251,9 @@ classdef alignedTimeSeries % < labTimeSeries
 
     %% Visualization Methods
     methods
+        % [figHandle, plotHandles, plottedInds] = plot(this, figHandle, ...
+        %     plotHandles, meanColor, events, individualLineStyle, ...
+        %         plottedInds, bounds, medianFlag)
         function [figHandle,plotHandles,plottedInds]=plot(this,figHandle,plotHandles,meanColor,events,individualLineStyle,plottedInds,bounds,medianFlag)
             % Plot individual instances (strides) of the time-series, and overlays the mean of all of them
             % Uses one subplot for each label in the timeseries (same as
@@ -423,117 +426,17 @@ classdef alignedTimeSeries % < labTimeSeries
             end
         end
 
-        function [fh,ph]=plotCheckerboard(this,fh,ph)
-            if nargin<2
-                fh=figure();
-            else
-                figure(fh);
-            end
-            if nargin<3
-                ph=gca;
-            else
-                axes(ph);
-            end
-            m=this.mean;
-            %imagesc(m.Data')
-            surf([this.Time, 2*this.Time(end)-this.Time(end-1)],[0:size(m.Data,2)],[[m.Data';m.Data(:,end)'],[m.Data(end,:)';0]],'EdgeColor','none')
-            view(2)
-            ax=gca;
-            ax.YTick=[1:length(this.labels)]-.5;
-            ax.YTickLabels=this.labels;
-            ax.XTick=[.5 .5+cumsum(this.alignmentVector)]/sum(this.alignmentVector) *this.Time(end) ;
-            ax.XTickLabel=this.alignmentLabels;
-            axis([this.Time(1) 2*this.Time(end)-this.Time(end-1) 0 size(m.Data,2)])
-            %Colormap:
-            ex2=[0.2314    0.2980    0.7529];
-            ex1=[0.7255    0.0863    0.1608];
-            gamma=.5;
-            map=[bsxfun(@plus,ex1.^(1/gamma),bsxfun(@times,1-ex1.^(1/gamma),[0:.01:1]'));bsxfun(@plus,ex2.^(1/gamma),bsxfun(@times,1-ex2.^(1/gamma),[1:-.01:0]'))].^gamma;
-
-            colormap(flipud(map))
-            try
-                caxis([-1 1]*max(abs(m.Data(:)))) %Fails if plotted data is NaN
-                colorbar
-            catch
-
-            end
-
-            %To do: check if the events exist, and add DS/STANCE/DS/SWING labels
-        end
+        [fh, ph] = plotCheckerboard(this, fh, ph)
     end
 
     %% Static Methods
     methods (Static)
-        function expEventTimes=expandEventTimes(eventTimes,alignmentVector)
-            %Given event times and an alignment vectors, this function
-            %computes the corresponding time for each sample in an
-            %alignedTimeSeries, provided that the sampling is uniform
-            %between events.
-            %This method cannot be hiddent because it is used in labTS
-
-            refTime=1+[0 cumsum(alignmentVector)]'; %This should be 0+ for the old-style alignment
-            M=size(eventTimes,2)-1;
-            N=sum(alignmentVector);
-            allEventTimes=eventTimes(:);
-            refTime2=bsxfun(@plus,refTime(1:end-1),N*[0:M]);
-            allExpEventTimes=interp1(refTime2(:),allEventTimes(:),[1:N*M]');
-            expEventTimes=reshape(allExpEventTimes,N,M);
-        end
+        expEventTimes = expandEventTimes(eventTimes, alignmentVector)
     end
 
     %% Hidden Methods
     methods (Hidden)
-        function [histogram,newLabels]=logicalHist(this)
-            %Generates a histogram from the logical data (true/false) contained in this alignedTS. Assumes that all aligned TS contain the same events, in the same order.
-
-            %Check: this is a logical alignedTS
-            %TODO
-            %TODO: dtermine the number of expected events. Currently this
-            %is as many events as stride 1 has. May be problematic if
-            %stride one is invalid.
-            aaux=cellfun(@(x) isempty(x),strfind(this.labels,'force')) & cellfun(@(x) isempty(x),strfind(this.labels,'kin'));
-            eventNo=mode(sum(sum(this.Data(:,aaux),1),2)); %Mode of the # of events per stride, assuming this is what should happen on every stride.
-            nStrides=size(this.Data,3);
-            eventType=nan(eventNo,1);
-            for i=1:eventNo
-                aux=nan(nStrides,1);
-                for k=1:nStrides %Going over strides
-                    eventIdx=find(sum(this.Data(:,aaux,k),2)==1,i,'first'); %Time index of first i events in stride k
-                    if length(eventIdx)==i %Checking that I found i events
-                        aux(k)=find(this.Data(eventIdx(i),aaux,k),1,'first');
-                    end
-                end
-                eventType(i)=round(nanmedian(aux)); %Rounding is to break possible ties (very unlikely)
-            end
-            histogram=nan(nStrides,eventNo);
-            ii=eventType;
-            aux=zeros(eventNo,1);
-            newLabels=cell(size(ii));
-            for i=1:length(ii)
-                aux(ii(i))=aux(ii(i))+1;
-                if aux(ii(i))==1
-                    newLabels{i}=this.labels{ii(i)};
-                else
-                    newLabels{i}=[this.labels{ii(i)} num2str(aux(ii(i)))];
-                end
-            end
-
-            for i=1:nStrides
-                [eventTimeIndex,eventType]=find(this.Data(:,aaux,i));
-                if length(eventTimeIndex)~=length(newLabels)
-                    warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has more or less events than expected (expecting ' num2str(length(newLabels)) ', but got ' num2str(length(eventTimeIndex)) '). Discarding.']);
-                    histogram(i,:)=nan;
-                else
-                    %FIXME: check event order by using the labels.
-                    [eventTimeIndex,auxInds]=sort(eventTimeIndex);
-                    if all(ii==eventType(auxInds))
-                        histogram(i,:)=eventTimeIndex;
-                    else
-                        warning(['alignedTS:logicalHist: Stride ' num2str(i) ' has events in different order than expected (expecting ' num2str(ii') ', but got ' num2str(eventType(auxInds)') '). Discarding.']);
-                    end
-                end
-            end
-        end
+        [histogram, newLabels] = logicalHist(this)
     end
 
 end
