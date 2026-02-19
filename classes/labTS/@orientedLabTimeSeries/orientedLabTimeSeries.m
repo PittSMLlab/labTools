@@ -1,42 +1,120 @@
 classdef orientedLabTimeSeries  < labTimeSeries
+    %orientedLabTimeSeries  Time series for 3D oriented/vector data
     %
-    %%
-    properties(SetAccess=private)
-        orientation %orientationInfo object
+    %   orientedLabTimeSeries extends labTimeSeries for data with spatial
+    %   orientation (e.g., marker positions, forces). Each variable has
+    %   three components (x, y, z) and the class maintains orientation
+    %   information for coordinate transformations.
+    %
+    %orientedLabTimeSeries properties:
+    %   orientation - orientationInfo object defining coordinate system
+    %   (inherits all properties from labTimeSeries)
+    %
+    %orientedLabTimeSeries methods:
+    %   orientedLabTimeSeries - constructor
+    %   getDataAsTS - returns labTimeSeries (override)
+    %   getOrientedData - returns data as 3D tensor
+    %   getDataAsOTS - returns subset as orientedLabTimeSeries
+    %   getLabelPrefix - returns label prefixes without x/y/z
+    %   isaLabelPrefix - checks if prefix exists
+    %   computeDifferenceMatrix - computes inter-marker differences
+    %   computeDifferenceOTS - difference matrix as OTS
+    %   computeDistanceMatrix - computes inter-marker distances
+    %   vectorNorm - computes 2-norm of vectors
+    %   buildNaiveDistancesModel - builds statistical marker model
+    %   getVirtualOTS - computes virtual markers from model
+    %   findOutliers - detects outliers using model
+    %   fixBadLabels - detects and fixes label swaps
+    %   fillGaps - fills missing marker data
+    %   removeOutliers - removes outlier data points
+    %   assessMissing - assesses missing data
+    %   translate - translates data by vector
+    %   rotate - rotates data by matrix
+    %   flipAxis - flips specified axis
+    %   alignRotate - aligns to new coordinate system
+    %   referenceToMarker - references data to marker position
+    %   threshold - thresholds by vector magnitude
+    %   thresholdByChannel - thresholds by channel (override)
+    %   cat - concatenates (override)
+    %   resample - resamples (override)
+    %   resampleN - resamples to N samples (override)
+    %   split - splits timeseries (override)
+    %   derivate - differentiates (override)
+    %   derivative - numerical derivative (override)
+    %   lowPassFilter - applies low-pass filter (override)
+    %   highPassFilter - applies high-pass filter (override)
+    %   substituteNaNs - fills NaN values (override)
+    %   plus - adds two OTS (override)
+    %   times - multiplies by constant (override)
+    %   plot3 - plots 3D trajectories
+    %   animate2 - creates animation with balloon model
+    %   animate - creates animation (alternate version)
+    %
+    %See also: labTimeSeries, orientationInfo, naiveDistances
+
+    %% Properties
+    properties (SetAccess = private)
+        orientation % orientationInfo object
     end
-    %properties(Dependent)
-    %    labelPrefixes
-    %    labelSuffixes
-    %end
 
+    % properties (Dependent)
+    %     labelPrefixes
+    %     labelSuffixes
+    % end
 
-    %%
+    %% Constructor
     methods
+        function this = orientedLabTimeSeries(data, t0, Ts, labels, ...
+                orientation)
+            %orientedLabTimeSeries  Constructor for orientedLabTimeSeries
+            %class
+            %
+            %   this = orientedLabTimeSeries(data, t0, Ts, labels,
+            %   orientation) creates oriented timeseries with specified
+            %   data and orientation
+            %
+            %   Inputs:
+            %       data - matrix of data values (samples x 3*channels),
+            %              organized as [x1 y1 z1 x2 y2 z2 ...]
+            %       t0 - initial time in seconds
+            %       Ts - sampling period in seconds
+            %       labels - cell array of labels ending in 'x', 'y', 'z'
+            %       orientation - orientationInfo object defining
+            %                     coordinate system
+            %
+            %   Outputs:
+            %       this - orientedLabTimeSeries object
+            %
+            %   Note: Necessarily uniformly sampled. Labels must pass
+            %         sanity check.
+            %
+            %   See also: labTimeSeries, orientationInfo
 
-        %Constructor:
-        function this=orientedLabTimeSeries(data,t0,Ts,labels,orientation) %Necessarily uniformly sampled
-            if nargin<1
-                data=[];
-                t0=0;
-                Ts=[];
-                labels={};
-                orientation=orientationInfo();
+            if nargin < 1
+                data = [];
+                t0 = 0;
+                Ts = [];
+                labels = {};
+                orientation = orientationInfo();
             end
             if ~orientedLabTimeSeries.checkLabelSanity(labels)
-                error('orientedLabTimeSeries:Constructor','Provided labels do not pass the sanity check. See issued warnings.')
+                error('orientedLabTimeSeries:Constructor', ...
+                    ['Provided labels do not pass the sanity check. ' ...
+                    'See issued warnings.']);
             end
-            this@labTimeSeries(data,t0,Ts,labels);
-            if isa(orientation,'orientationInfo')
-                this.orientation=orientation;
+            this@labTimeSeries(data, t0, Ts, labels);
+            if isa(orientation, 'orientationInfo')
+                this.orientation = orientation;
             else
-                ME=MException('orientedLabTimeSeries:Constructor','Orientation parameter is not an OrientationInfo object.');
-                throw(ME)
+                ME = MException('orientedLabTimeSeries:Constructor', ...
+                    'Orientation parameter is not an OrientationInfo object.');
+                throw(ME);
             end
         end
+    end
 
-        %-------------------
-
-        %Other I/O functions:
+    %% Data Access Methods
+    methods
         function [newTS,auxLabel]=getDataAsTS(this,label)
             %return data as a time series
             % I think this is unnecessary: default behavior if function is
@@ -1145,8 +1223,7 @@ classdef orientedLabTimeSeries  < labTimeSeries
             Tx = makehgtform('translate',O);
             set(t,'Matrix',Tx*Rz*Ry2*Ry1*Sz)
         end
-
-
     end
 
 end
+
