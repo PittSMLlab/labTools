@@ -1,28 +1,44 @@
 function varargout = GetInfoGUI(varargin)
-% GETINFOGUI  Graphical user interface used to collect information regarding
-%             a single experiment conducted in the HMRL. Refer to help text
-%             in GUI by hovering mouse over a given field.
+% GetInfoGUI  GUI for collecting experimental session information.
 %
-% See also: importc3d/ExpDetails, errorProofInfo
+%   Launches a graphical user interface to gather all information
+%   regarding a single experiment conducted in the Sensorimotor
+%   Learning Laboratory. Fields include participant demographics,
+%   experiment metadata, data file locations, trial and condition
+%   assignments, and EMG channel labels. Refer to the in-GUI help
+%   text (hover over any field) for field-specific guidance.
+%
+%   Outputs:
+%     info - Struct containing all session information entered by
+%            the user, or empty ([]) if the GUI was closed without
+%            saving.
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: errorProofInfo, importc3d/ExpDetails
 
 % Last Modified by GUIDE v2.5 18-Mar-2025 13:58:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
-gui_State = struct('gui_Name',       mfilename, ...
-    'gui_Singleton',  gui_Singleton, ...
-    'gui_OpeningFcn', @GetInfoGUI_OpeningFcn, ...
-    'gui_OutputFcn',  @GetInfoGUI_OutputFcn, ...
-    'gui_LayoutFcn',  [] , ...
+gui_State = struct( ...
+    'gui_Name',       mfilename,               ...
+    'gui_Singleton',  gui_Singleton,           ...
+    'gui_OpeningFcn', @GetInfoGUI_OpeningFcn,  ...
+    'gui_OutputFcn',  @GetInfoGUI_OutputFcn,   ...
+    'gui_LayoutFcn',  [],                      ...
     'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
-    varargout{1:nargout} = gui_mainfcn(gui_State,varargin{:});
+    varargout{1:nargout} = gui_mainfcn(gui_State, varargin{:});
 else
-    gui_mainfcn(gui_State,varargin{:});
+    gui_mainfcn(gui_State, varargin{:});
+end
+
 end
 % End initialization code - DO NOT EDIT
 
