@@ -501,7 +501,9 @@ guidata(hObject,handles)
 
 % Hint: get(hObject,'Value') returns toggle state of EMGworks
 
-% ------------------------Condition Info-------------------------------%
+% ============================================================
+% ----------------------- Condition Info ---------------------
+% ============================================================
 
 function condition1_Callback(hObject, eventdata, handles)
 function condName1_Callback(hObject, eventdata, handles)
@@ -623,63 +625,76 @@ function description20_Callback(hObject, eventdata, handles)
 function trialnum20_Callback(hObject, eventdata, handles)
 function type20_Callback(hObject, eventdata, handles)
 
+% ============================================================
 % --- Executes on button press in saveExpButton.
 function saveExpButton_Callback(hObject, eventdata, handles)
-%generate expDes structure
+% saveExpButton_Callback  Saves the current condition configuration as
+%   a new experiment description file in the ExpDetails directory.
+%
+%   Inputs:
+%     hObject   - handle to saveExpButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
-c=0;
-for i=1:handles.lines
-    %condition numbers
-    condNum=get(handles.(['condition' num2str(i)]),'string');
+% Build the expDes structure from current GUI field values
+c = 0;
+for i = 1:handles.lines
+    % Condition numbers
+    condNum = get(handles.(['condition' num2str(i)]), 'string');
     if ~isempty(condNum)
-        expDes.(['condition' num2str(i)])=condNum;
-        c=c+1;
+        expDes.(['condition' num2str(i)]) = condNum;
+        c = c + 1;
     end
-    %condition names
-    condName=get(handles.(['condName' num2str(i)]),'string');
+    % Condition names
+    condName = get(handles.(['condName' num2str(i)]), 'string');
     if ~isempty(condName)
-        expDes.(['condName' num2str(i)])=condName;
+        expDes.(['condName' num2str(i)]) = condName;
     end
-    %condition descriptions
-    condDesc=get(handles.(['description' num2str(i)]),'string');
+    % Condition descriptions
+    condDesc = get(handles.(['description' num2str(i)]), 'string');
     if ~isempty(condDesc)
-        expDes.(['description' num2str(i)])=condDesc;
+        expDes.(['description' num2str(i)]) = condDesc;
     end
-    %trial numbers for each condition
-    trialNum=get(handles.(['trialnum' num2str(i)]),'string');
+    % Trial numbers for each condition
+    trialNum = get(handles.(['trialnum' num2str(i)]), 'string');
     if ~isempty(trialNum)
-        expDes.(['trialnum' num2str(i)])=trialNum;
+        expDes.(['trialnum' num2str(i)]) = trialNum;
     end
-    %trial types
-    type=get(handles.(['type' num2str(i)]),'string');
+    % Trial types
+    type = get(handles.(['type' num2str(i)]), 'string');
     if ~isempty(type)
-        expDes.(['type' num2str(i)])=type;
+        expDes.(['type' num2str(i)]) = type;
     end
 end
-expDes.numofconds=c;
+expDes.numofconds = c;
 
-answer = inputdlg('Enter name of new experiment description: ','Experiment Description Name');
+answer = inputdlg( ...
+    'Enter name of new experiment description: ', ...
+    'Experiment Description Name');
 if ~isempty(answer)
     answer = char(answer);
-    expDes.group=answer;
-    answer=answer(ismember(answer,['A':'Z' 'a':'z' '0':'9'])); %remove non-alphanumeric characters
-    path=which('GetInfoGUI');
-    path=strrep(path,'GetInfoGUI.m','ExpDetails');
-    if exist([path filesep answer '.mat'],'file')>0
-        choice=questdlg('File name already exists. Overwrite?','File Name Warning','Yes','No','No');
-        if strcmp(choice,'No')
-            h=msgbox('Experiment description was not saved.','');
-            waitfor(h)
-            return
+    expDes.group = answer;
+    % Remove non-alphanumeric characters from the filename
+    answer = answer(ismember(answer, ['A':'Z' 'a':'z' '0':'9']));
+    path = which('GetInfoGUI');
+    path = strrep(path, 'GetInfoGUI.m', 'ExpDetails');
+    if exist([path filesep answer '.mat'], 'file') > 0
+        choice = questdlg( ...
+            'File name already exists. Overwrite?', ...
+            'File Name Warning', 'Yes', 'No', 'No');
+        if strcmp(choice, 'No')
+            h = msgbox('Experiment description was not saved.', '');
+            waitfor(h);
+            return;
         end
     end
-    save([path filesep answer],'expDes')
-    description_edit_CreateFcn(handles.description_edit, eventdata, handles)
-    newContents=get(handles.description_edit,'string');
-    ind=find(ismember(newContents,answer));
-    set(handles.description_edit,'Value',ind)
+    save([path filesep answer], 'expDes');
+    description_edit_CreateFcn(handles.description_edit, ...
+        eventdata, handles);
+    newContents = get(handles.description_edit, 'string');
+    ind = find(ismember(newContents, answer));
+    set(handles.description_edit, 'Value', ind);
 end
-
 
 %---------------------Save as / Okay Button--------------------------%
 
