@@ -38,129 +38,173 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
-
-end
 % End initialization code - DO NOT EDIT
 
+% ============================================================
 % --- Executes just before GetInfoGUI is made visible.
 function GetInfoGUI_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to GetInfoGUI (see VARARGIN)
+% GetInfoGUI_OpeningFcn  Initializes the GUI before it becomes visible.
+%
+%   Inputs:
+%     hObject   - handle to figure
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%     varargin  - command line arguments to GetInfoGUI (see VARARGIN)
 
-% Choose default command line output for GetInfoGUI
+% Set default command line output
 handles.output = hObject;
 
-% Specify number of condition lines in GUI
+% Specify number of condition rows displayed in the GUI
 handles.lines = 20;
 
 % Update handles structure
 guidata(hObject, handles);
 
-%Set GUI position to middle of screen
-% left, bottom, width, height
-scrsz = get(0,'ScreenSize');
-set(gcf,'Units','pixels');
-guiPos = get(hObject,'Position');
-set(hObject, 'Position', [(scrsz(3)-guiPos(3))/2 (scrsz(4)-guiPos(4))/2 guiPos(3) guiPos(4)]);
+% Center GUI on screen  [left, bottom, width, height]
+scrsz  = get(0, 'ScreenSize');
+set(gcf, 'Units', 'pixels');
+guiPos = get(hObject, 'Position');
+set(hObject, 'Position', [ ...
+    (scrsz(3) - guiPos(3)) / 2, ...
+    (scrsz(4) - guiPos(4)) / 2, ...
+    guiPos(3), guiPos(4)]);
 
+% Set tooltip strings displayed when hovering over GUI fields.
+% Note: sprintf is used to allow line breaks in tooltip text.
 
-%Set text that pops up when fields of GUI are hovered over. Note: sprintf
-%used to allow line breaks in tool tip string.
-%------------------------Experiment Info---------------------------------%
-set(handles.description_edit,'TooltipString',sprintf(['Describes the experiment that was performed, in general terms\n',...
-    'Intended to categorize groups of subjects that all performed the same experiment. When a description is selected,\n'...
-    'the Condition Info should be automatically populated. See "Adding an Experiment Description" in the User guide.']));
-set(handles.name_edit,'TooltipString','The person(s) who ran the experiment.');
-set(handles.month_list,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
-set(handles.day_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
-set(handles.year_edit,'TooltipString','Date the experiment was performed (NOT the date the data was processed)');
-set(handles.note_edit,'TooltipString',sprintf(['Notes about the experiment as a whole. If a comment is specific to a trial,\n'...
-    'do not enter it here (there will be a chance later on to comment on individual trials).']));
-set(handles.schenleyLab,'TooltipString','Was the data collect on Schenley Place?');
+% -- Experiment Info tooltips
+set(handles.description_edit, 'TooltipString', sprintf([ ...
+    'Describes the experiment that was performed, in general ' ...
+    'terms\n', ...
+    'Intended to categorize groups of subjects that all ' ...
+    'performed the same experiment. When a description is ' ...
+    'selected,\n', ...
+    'the Condition Info should be automatically populated. ', ...
+    'See "Adding an Experiment Description" in the User guide.']));
+set(handles.name_edit,    'TooltipString', ...
+    'The person(s) who ran the experiment.');
+set(handles.month_list,   'TooltipString', ...
+    ['Date the experiment was performed ' ...
+    '(NOT the date the data was processed)']);
+set(handles.day_edit,     'TooltipString', ...
+    ['Date the experiment was performed ' ...
+    '(NOT the date the data was processed)']);
+set(handles.year_edit,    'TooltipString', ...
+    ['Date the experiment was performed ' ...
+    '(NOT the date the data was processed)']);
+set(handles.note_edit,    'TooltipString', sprintf([ ...
+    'Notes about the experiment as a whole. If a comment is ' ...
+    'specific to a trial,\n', ...
+    'do not enter it here (there will be a chance later on to ' ...
+    'comment on individual trials).']));
+set(handles.schenleyLab,  'TooltipString', ...
+    'Was the data collected on Schenley Place?');
 
-%--------------------------Subject Info----------------------------------%
-set(handles.subID_edit,'TooltipString','Coded value used to identify subject. DO NOT use the subjec''s name!');
-set(handles.DOBmonth_list,'TooltipString','Month subject was born');
-set(handles.DOBday_edit,'TooltipString','Day subject was born');
-set(handles.DOByear_edit,'TooltipString','Year subject was born');
-set(handles.gender_list,'TooltipString','Subject''s gender');
-set(handles.domleg_list,'TooltipString','Dominant leg of subject');
-set(handles.domhand_list,'TooltipString','Dominant hand/arm of subject');
-set(handles.fastLeg,'TooltipString','Leg placed on the fast belt');
-set(handles.height_edit,'TooltipString','Height of subject as measured in the lab (in cm)');
-set(handles.weight_edit,'TooltipString','Weight of subject as measured in the lab (in Kg)');
+% -- Subject Info tooltips
+set(handles.subID_edit,    'TooltipString', ...
+    ['Coded value used to identify subject. ' ...
+    'DO NOT use the subject''s name!']);
+set(handles.DOBmonth_list, 'TooltipString', 'Month subject was born');
+set(handles.DOBday_edit,   'TooltipString', 'Day subject was born');
+set(handles.DOByear_edit,  'TooltipString', 'Year subject was born');
+set(handles.gender_list,   'TooltipString', 'Subject''s gender');
+set(handles.domleg_list,   'TooltipString', 'Dominant leg of subject');
+set(handles.domhand_list,  'TooltipString', ...
+    'Dominant hand/arm of subject');
+set(handles.fastLeg,       'TooltipString', ...
+    'Leg placed on the fast belt');
+set(handles.height_edit,   'TooltipString', ...
+    'Height of subject as measured in the lab (in cm)');
+set(handles.weight_edit,   'TooltipString', ...
+    'Weight of subject as measured in the lab (in kg)');
 
-
-% UIWAIT makes GetInfoGUI wait for user response (see UIRESUME)
+% Wait for user response before returning outputs (see UIRESUME)
 uiwait(handles.figure1);
 
-
+% ============================================================
 % --- Outputs from this function are returned to the command line.
 function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% GetInfoGUI_OutputFcn  Returns GUI outputs to the calling workspace.
+%
+%   Inputs:
+%     hObject   - handle to figure
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+%   Outputs:
+%     varargout{1} - info struct populated by the user, or [] if the
+%                    GUI was closed without saving
 
-if ~(isfield(handles,'noSave') && handles.noSave)
-    info=handles.info;
+if ~(isfield(handles, 'noSave') && handles.noSave)
+    info = handles.info;
 
-    %Forcing save before the rest of the things are done (so, if it fails, we
-    %don't lose it).
-    if exist([info.save_folder filesep info.ID 'info.mat'],'file')>0
-        choice=questdlg(['Info file (and possibly others) already exist for ' info.ID '. Overwrite?'],'File Name Warning','Yes','No','No');
-        if strcmp(choice,'No')
+    % Force save immediately so data is preserved if later steps fail
+    infoFilePath = [info.save_folder filesep info.ID 'info.mat'];
+    if exist(infoFilePath, 'file') > 0
+        choice = questdlg( ...
+            ['Info file (and possibly others) already exist for ' ...
+            info.ID '. Overwrite?'], ...
+            'File Name Warning', 'Yes', 'No', 'No');
+        if strcmp(choice, 'No')
             info.ID = [info.ID '_' date];
-            h=msgbox(['Saving as ' info.ID],'');
-            waitfor(h)
+            h = msgbox(['Saving as ' info.ID], '');
+            waitfor(h);
         end
     end
-    save([info.save_folder filesep info.ID 'info'],'info')
+    save([info.save_folder filesep info.ID 'info'], 'info');
 
-    %ask user if there are observations for individual trials
-    answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+    % Prompt user for individual trial observations
+    answer = inputdlg( ...
+        'Are there any observations for individual trials?(y/n) ', ...
+        's');
 
-    %make sure the correct response is entered
-    while length(answer{1})>1 || (~strcmpi(answer{1},'y') && ~strcmpi(answer{1},'n'))
-        disp('Error: you must enter either "y" or "n"')
-        answer=inputdlg('Are there any observations for individual trials?(y/n) ','s');
+    % Validate response — must be a single 'y' or 'n'
+    while length(answer{1}) > 1 || ...
+            (~strcmpi(answer{1}, 'y') && ~strcmpi(answer{1}, 'n'))
+        disp('Error: you must enter either "y" or "n"');
+        answer = inputdlg( ...
+            'Are there any observations for individual trials?(y/n) ', ...
+            's');
     end
 
-    %create a menu to choose any trial
+    % Pre-allocate trial observation cell array if needed
     expTrials = cell2mat(info.trialnums);
     numTrials = length(expTrials);
-    if ~isfield(info,'trialObs') || length(info.trialObs)<info.numoftrials
-        %if a subject wasn't loaded
-        info.trialObs{1,info.numoftrials} = '';
+    if ~isfield(info, 'trialObs') || ...
+            length(info.trialObs) < info.numoftrials
+        % Subject was not loaded from an existing info file
+        info.trialObs{1, info.numoftrials} = '';
     end
-    if strcmpi(answer{1},'y')
+
+    if strcmpi(answer{1}, 'y')
         trialstr = [];
-        %create trial string
+        % Build comma-separated trial string for the eval menu call
         for t = expTrials
-            trialstr = [trialstr,',''Trial ',num2str(t),''''];
+            trialstr = [trialstr, ',''Trial ', num2str(t), ''''];
         end
-        %generate menu
-        eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
-        while choice ~= numTrials+1
-            % get observation for trial selected
-            obStr = inputdlg(['Observations for Trial ',num2str(expTrials(choice))],'Enter Observation');
-            info.trialObs{expTrials(choice)} = obStr{1,1}; % obStr by itself is a cell object, so need to index to make a char
-            eval(['choice = menu(''Choose Trial''',trialstr,',''Done'');'])
+        % Generate dynamic trial selection menu
+        eval(['choice = menu(''Choose Trial''', ...
+            trialstr, ',''Done'');']);
+        while choice ~= numTrials + 1
+            % Get observation for trial selected
+            obStr = inputdlg( ...
+                ['Observations for Trial ' ...
+                num2str(expTrials(choice))], ...
+                'Enter Observation');
+            % Index into cell to store contents as char
+            info.trialObs{expTrials(choice)} = obStr{1, 1};
+            eval(['choice = menu(''Choose Trial''', ...
+                trialstr, ',''Done'');']);
         end
     end
 
-    varargout{1}=info;
-    save([info.save_folder filesep info.ID 'info'],'info')
+    varargout{1} = info;
+    save([info.save_folder filesep info.ID 'info'], 'info');
 else
-    varargout{1}=[];
+    varargout{1} = [];
 end
 
-
-delete(handles.figure1)
-
+delete(handles.figure1);
 
 %------------------------Experiment Info---------------------------------%
 
