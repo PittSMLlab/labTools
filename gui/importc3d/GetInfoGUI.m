@@ -307,55 +307,97 @@ function height_edit_Callback(hObject, eventdata, handles)
 
 function weight_edit_Callback(hObject, eventdata, handles)
 
-%------------------------Data Info------------------------------%
+% ============================================================
+% -------------------------- Data Info -----------------------
+% ============================================================
 
 % --- Executes on button press in browse.
 function browse_Callback(hObject, eventdata, handles)
-handles.folder_location = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.folder_location==0
-    set(handles.c3dlocation,'string',handles.folder_location)
+% browse_Callback  Opens a folder browser for the C3D data location.
+%
+%   Inputs:
+%     hObject   - handle to browse (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+
+handles.folder_location = uigetdir;
+if ~handles.folder_location == 0
+    set(handles.c3dlocation, 'string', handles.folder_location);
 end
-guidata(hObject,handles);
+guidata(hObject, handles);
 
 function c3dlocation_Callback(hObject, eventdata, handles)
-handles.folder_location = get(hObject,'string');
-guidata(hObject,handles)
+% c3dlocation_Callback  Executes when C3D location is entered manually.
+%
+%   Inputs:
+%     hObject   - handle to c3dlocation (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+
+handles.folder_location = get(hObject, 'string');
+guidata(hObject, handles);
 
 function basefile_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'String') returns contents of basefile as text
-%        str2double(get(hObject,'String')) returns contents of basefile as a double
+% basefile_Callback  Executes on content change in basefile.
+%
+%   Inputs:
+%     hObject   - handle to basefile (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: get(hObject,'String') returns contents as text
+%        str2double(get(hObject,'String')) returns contents as double
 
 function numoftrials_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'String') returns contents of numoftrials as text
-%        str2double(get(hObject,'String')) returns contents of numoftrials as a double
-numoftrials = str2double(get(hObject,'String'));
+% numoftrials_Callback  Executes on content change in numoftrials.
+%
+%   Inputs:
+%     hObject   - handle to numoftrials (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: get(hObject,'String') returns contents as text
+%        str2double(get(hObject,'String')) returns contents as double
+
+numoftrials = str2double(get(hObject, 'String'));
 
 function numofconds_Callback(hObject, eventdata, handles)
-numofconds = str2double(get(hObject,'String'));
+% numofconds_Callback  Enables or disables condition rows based on the
+%   number of conditions entered.
+%
+%   Inputs:
+%     hObject   - handle to numofconds (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
-%first, disable ALL
+numofconds = str2double(get(hObject, 'String'));
+
+% First, disable all condition rows
 for conds = 1:handles.lines
-    set(handles.(['condition',num2str(conds)]),'enable','off')
-    set(handles.(['condName',num2str(conds)]),'enable','off')
-    set(handles.(['description',num2str(conds)]),'enable','off')
-    set(handles.(['trialnum',num2str(conds)]),'enable','off')
-    set(handles.(['type',num2str(conds)]),'enable','off')
+    set(handles.(['condition',   num2str(conds)]), 'enable', 'off');
+    set(handles.(['condName',    num2str(conds)]), 'enable', 'off');
+    set(handles.(['description', num2str(conds)]), 'enable', 'off');
+    set(handles.(['trialnum',    num2str(conds)]), 'enable', 'off');
+    set(handles.(['type',        num2str(conds)]), 'enable', 'off');
 end
-%second, check number eneterd is valid
-if isnan(numofconds) || numofconds<0 || numofconds>20
-    h_error=errordlg('Please enter a number between 1 and 20','Condition Number Error');
-    waitfor(h_error)
-    uicontrol(hObject)
+
+% Second, validate the entered number
+if isnan(numofconds) || numofconds < 0 || numofconds > 20
+    h_error = errordlg( ...
+        'Please enter a number between 1 and 20', ...
+        'Condition Number Error');
+    waitfor(h_error);
+    uicontrol(hObject);
     return
 end
 
-%third, enable based on number of conditions entered
+% Third, enable rows up to the number of conditions entered
 for conds = 1:numofconds
-    set(handles.(['condition',num2str(conds)]),'enable','on')
-    set(handles.(['condName',num2str(conds)]),'enable','on')
-    set(handles.(['description',num2str(conds)]),'enable','on')
-    set(handles.(['trialnum',num2str(conds)]),'enable','on')
-    set(handles.(['type',num2str(conds)]),'enable','on')
+    set(handles.(['condition',   num2str(conds)]), 'enable', 'on');
+    set(handles.(['condName',    num2str(conds)]), 'enable', 'on');
+    set(handles.(['description', num2str(conds)]), 'enable', 'on');
+    set(handles.(['trialnum',    num2str(conds)]), 'enable', 'on');
+    set(handles.(['type',        num2str(conds)]), 'enable', 'on');
 end
 
 % --- Executes on button press in kinematic_check.
@@ -366,96 +408,106 @@ function kinematic_check_Callback(hObject, eventdata, handles)
 function force_check_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of force_check
 
-% --- Executes on button press in new lab (Schenley place).
-function  schenleyLab_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of force_check
+% --- Executes on button press in schenleyLab.
+function schenleyLab_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of schenleyLab
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
-function  perceptualTasks_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of force_check
+function perceptualTasks_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of perceptualTasks
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
-% function  fastLeg_Callback(hObject, eventdata, handles)
+% function fastLeg_Callback(hObject, eventdata, handles)
 % % Hint: get(hObject,'Value') returns toggle state of force_check
 % % set(handles.schenleyLab,'enable','on')
 % % guidata(hObject,handles);
 
-function  backwardCheck_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of force_check
+function backwardCheck_Callback(hObject, eventdata, handles)
+% Hint: get(hObject,'Value') returns toggle state of backwardCheck
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
-% function  fastLeg_Callback(hObject, eventdata, handles)
+% function fastLeg_Callback(hObject, eventdata, handles)
 % % Hint: get(hObject,'Value') returns toggle state of force_check
 % % set(handles.schenleyLab,'enable','on')
 % % guidata(hObject,handles);
 
 % --- Executes on button press in emg_check.
 function emg_check_Callback(hObject, eventdata, handles)
+% emg_check_Callback  Toggles EMG-related controls based on checkbox state.
+%
+%   Inputs:
+%     hObject   - handle to emg_check (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
-state = get(hObject,'Value');
+state = get(hObject, 'Value');
 
 if state
-    set(handles.Nexus,'enable','on')
-    set(handles.EMGworks,'enable','on')
-    for i=1:16
+    set(handles.Nexus,    'enable', 'on');
+    set(handles.EMGworks, 'enable', 'on');
+    for i = 1:16
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''on'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
     end
 else
-    set(handles.Nexus,'enable','off')
-    set(handles.EMGworks,'enable','off')
-    set(handles.secfile_browse,'enable','off')
-    set(handles.secfileloc,'enable','off')
-    for i=1:16
+    set(handles.Nexus,          'enable', 'off');
+    set(handles.EMGworks,       'enable', 'off');
+    set(handles.secfile_browse, 'enable', 'off');
+    set(handles.secfileloc,     'enable', 'off');
+    for i = 1:16
         eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
         eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
     end
 end
-guidata(hObject,handles);
-
+guidata(hObject, handles);
 
 function Nexus_Callback(hObject, eventdata, handles)
-% hObject    handle to Nexus (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Nexus_Callback  Toggles secondary file controls for Nexus EMG source.
+%
+%   Inputs:
+%     hObject   - handle to Nexus (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
 % Hint: get(hObject,'Value') returns toggle state of Nexus
 
-state = get(hObject,'Value');
+state = get(hObject, 'Value');
 if state
-    set(handles.secfile_browse,'enable','on')
-    set(handles.secfileloc,'enable','on')
+    set(handles.secfile_browse, 'enable', 'on');
+    set(handles.secfileloc,     'enable', 'on');
 else
-    set(handles.secfile_browse,'enable','off')
-    set(handles.secfileloc,'enable','off')
+    set(handles.secfile_browse, 'enable', 'off');
+    set(handles.secfileloc,     'enable', 'off');
 end
-guidata(hObject,handles);
-
+guidata(hObject, handles);
 
 % --- Executes on button press in EMGworks.
 function EMGworks_Callback(hObject, eventdata, handles)
-% hObject    handle to EMGworks (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-state = get(hObject,'Value');
+% EMGworks_Callback  Toggles EMGworks file location controls.
+%
+%   Inputs:
+%     hObject   - handle to EMGworks (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+
+state = get(hObject, 'Value');
 if state
-    set(handles.EMGworksFile1_search,'enable','on')
-    set(handles.EMGworksLocation,'enable','on')
-
-    set(handles.SecFileSearchEMGworks,'enable','on')
-    set(handles.SecondEMGworksLocation,'enable','on')
+    set(handles.EMGworksFile1_search,   'enable', 'on');
+    set(handles.EMGworksLocation,        'enable', 'on');
+    set(handles.SecFileSearchEMGworks,   'enable', 'on');
+    set(handles.SecondEMGworksLocation,  'enable', 'on');
 else
-    set(handles.EMGworksFile1_search,'enable','off')
-    set(handles.EMGworksLocation,'enable','off')
-
-    set(handles.SecFileSearchEMGworks,'enable','on')
-    set(handles.SecondEMGworksLocation,'enable','on')
+    set(handles.EMGworksFile1_search,   'enable', 'off');
+    set(handles.EMGworksLocation,        'enable', 'off');
+    set(handles.SecFileSearchEMGworks,   'enable', 'on');
+    set(handles.SecondEMGworksLocation,  'enable', 'on');
 end
-guidata(hObject,handles);
+guidata(hObject, handles);
 
 % --- Executes on button press in secfile_browse.
 function secfile_browse_Callback(hObject, eventdata, handles)
