@@ -1632,196 +1632,123 @@ function backwardCheck_CreateFcn(hObject, eventdata, handles)
 %     set(hObject,'BackgroundColor','white');
 % end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%----------------------------ButtonDownFcns-----------------------------%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% --- If Enable == 'on', executes on mouse press in 5 pixel border.
-% --- Otherwise, executes on mouse press in 5 pixel border or over description_edit.
+% ============================================================
+% ======================== ButtonDownFcns ====================
+% ============================================================
+% If Enable == 'on', executes on mouse press in 5-pixel border.
+% Otherwise, executes on mouse press in border or over the control.
 
 function day_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.day_edit);
 
 function name_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.name_edit);
 
 function year_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.year_edit);
 
 function note_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.note_edit);
 
 function subID_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.subID_edit);
 
 function DOBday_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.DOBday_edit);
 
 function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggel the "Enable" state to ON and clear letters
+% Toggle the 'Enable' state to On and clear the field
 set(hObject, 'Enable', 'On');
-set(hObject,'String',[])
-% Create UI control
+set(hObject, 'String', []);
 uicontrol(handles.DOByear_edit);
 
-
-
-
+% ============================================================
+% ========================= EMG Callbacks ====================
+% ============================================================
 
 function emg1_1_Callback(hObject, eventdata, handles)
-
 function emg1_1_CreateFcn(hObject, eventdata, handles)
-
-function emg1_3_Callback(hObject, eventdata, handles)
-
-function emg1_3_CreateFcn(hObject, eventdata, handles)
-
 function emg1_2_Callback(hObject, eventdata, handles)
-
 function emg1_2_CreateFcn(hObject, eventdata, handles)
-
+function emg1_3_Callback(hObject, eventdata, handles)
+function emg1_3_CreateFcn(hObject, eventdata, handles)
 function emg1_4_Callback(hObject, eventdata, handles)
-
 function emg1_4_CreateFcn(hObject, eventdata, handles)
-
 function emg1_5_Callback(hObject, eventdata, handles)
-
 function emg1_5_CreateFcn(hObject, eventdata, handles)
-
-function emg1_15_Callback(hObject, eventdata, handles)
-
-function emg1_15_CreateFcn(hObject, eventdata, handles)
-
-function emg1_14_Callback(hObject, eventdata, handles)
-
-function emg1_14_CreateFcn(hObject, eventdata, handles)
-
-function emg1_13_Callback(hObject, eventdata, handles)
-
-function emg1_13_CreateFcn(hObject, eventdata, handles)
-
-function emg1_11_Callback(hObject, eventdata, handles)
-
-function emg1_11_CreateFcn(hObject, eventdata, handles)
-
-function emg1_10_Callback(hObject, eventdata, handles)
-
-function emg1_10_CreateFcn(hObject, eventdata, handles)
-
 function emg1_6_Callback(hObject, eventdata, handles)
-
 function emg1_6_CreateFcn(hObject, eventdata, handles)
-
-function emg1_8_Callback(hObject, eventdata, handles)
-
-function emg1_8_CreateFcn(hObject, eventdata, handles)
-
 function emg1_7_Callback(hObject, eventdata, handles)
-
 function emg1_7_CreateFcn(hObject, eventdata, handles)
-
+function emg1_8_Callback(hObject, eventdata, handles)
+function emg1_8_CreateFcn(hObject, eventdata, handles)
 function emg1_9_Callback(hObject, eventdata, handles)
-
 function emg1_9_CreateFcn(hObject, eventdata, handles)
-
+function emg1_10_Callback(hObject, eventdata, handles)
+function emg1_10_CreateFcn(hObject, eventdata, handles)
+function emg1_11_Callback(hObject, eventdata, handles)
+function emg1_11_CreateFcn(hObject, eventdata, handles)
 function emg1_12_Callback(hObject, eventdata, handles)
-
 function emg1_12_CreateFcn(hObject, eventdata, handles)
-
+function emg1_13_Callback(hObject, eventdata, handles)
+function emg1_13_CreateFcn(hObject, eventdata, handles)
+function emg1_14_Callback(hObject, eventdata, handles)
+function emg1_14_CreateFcn(hObject, eventdata, handles)
+function emg1_15_Callback(hObject, eventdata, handles)
+function emg1_15_CreateFcn(hObject, eventdata, handles)
 function emg1_16_Callback(hObject, eventdata, handles)
-
 function emg1_16_CreateFcn(hObject, eventdata, handles)
 
 function emg2_1_Callback(hObject, eventdata, handles)
-
 function emg2_1_CreateFcn(hObject, eventdata, handles)
-
 function emg2_2_Callback(hObject, eventdata, handles)
-
 function emg2_2_CreateFcn(hObject, eventdata, handles)
-
 function emg2_3_Callback(hObject, eventdata, handles)
-
 function emg2_3_CreateFcn(hObject, eventdata, handles)
-
 function emg2_4_Callback(hObject, eventdata, handles)
-
 function emg2_4_CreateFcn(hObject, eventdata, handles)
-
 function emg2_5_Callback(hObject, eventdata, handles)
-
 function emg2_5_CreateFcn(hObject, eventdata, handles)
-
 function emg2_6_Callback(hObject, eventdata, handles)
-
 function emg2_6_CreateFcn(hObject, eventdata, handles)
-
 function emg2_7_Callback(hObject, eventdata, handles)
-
 function emg2_7_CreateFcn(hObject, eventdata, handles)
-
 function emg2_8_Callback(hObject, eventdata, handles)
-
 function emg2_8_CreateFcn(hObject, eventdata, handles)
-
 function emg2_9_Callback(hObject, eventdata, handles)
-
 function emg2_9_CreateFcn(hObject, eventdata, handles)
-
 function emg2_10_Callback(hObject, eventdata, handles)
-
 function emg2_10_CreateFcn(hObject, eventdata, handles)
-
 function emg2_11_Callback(hObject, eventdata, handles)
-
 function emg2_11_CreateFcn(hObject, eventdata, handles)
-
 function emg2_12_Callback(hObject, eventdata, handles)
-
 function emg2_12_CreateFcn(hObject, eventdata, handles)
-
 function emg2_13_Callback(hObject, eventdata, handles)
-
 function emg2_13_CreateFcn(hObject, eventdata, handles)
-
 function emg2_14_Callback(hObject, eventdata, handles)
-
 function emg2_14_CreateFcn(hObject, eventdata, handles)
-
 function emg2_15_Callback(hObject, eventdata, handles)
-
 function emg2_15_CreateFcn(hObject, eventdata, handles)
-
 function emg2_16_Callback(hObject, eventdata, handles)
-
 function emg2_16_CreateFcn(hObject, eventdata, handles)
-
-
-
 
 % --- Executes during object creation, after setting all properties.
 function force_check_CreateFcn(hObject, eventdata, handles)
