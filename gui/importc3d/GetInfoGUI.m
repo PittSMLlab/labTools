@@ -1738,18 +1738,21 @@ end
 
 % --- Executes on button press in schenleyLab.
 function schenleyLab_CreateFcn(hObject, eventdata, handles)
-% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+% if ispc && isequal(get(hObject,'BackgroundColor'), ...
+%         get(0,'defaultUicontrolBackgroundColor'))
 %     set(hObject,'BackgroundColor','white');
 % end
 
 % --- Executes on button press in perceptualTasks.
 function perceptualTasks_CreateFcn(hObject, eventdata, handles)
-% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+% if ispc && isequal(get(hObject,'BackgroundColor'), ...
+%         get(0,'defaultUicontrolBackgroundColor'))
 %     set(hObject,'BackgroundColor','white');
 % end
 
 function backwardCheck_CreateFcn(hObject, eventdata, handles)
-% if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+% if ispc && isequal(get(hObject,'BackgroundColor'), ...
+%         get(0,'defaultUicontrolBackgroundColor'))
 %     set(hObject,'BackgroundColor','white');
 % end
 
@@ -1871,72 +1874,82 @@ function emg2_15_CreateFcn(hObject, eventdata, handles)
 function emg2_16_Callback(hObject, eventdata, handles)
 function emg2_16_CreateFcn(hObject, eventdata, handles)
 
+% ============================================================
+% ====================== KeyPressFcns ========================
+% ============================================================
+
 % --- Executes during object creation, after setting all properties.
 function force_check_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to force_check (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
-
-% --- Executes on key press with focus on force_check and none of its controls.
+% --- Executes on key press with focus on force_check.
 function force_check_KeyPressFcn(hObject, eventdata, handles)
 % hObject    handle to force_check (see GCBO)
-% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% eventdata  structure with fields:
+%   Key      - name of the key pressed, in lower case
+%   Character- character interpretation of the key(s) pressed
+%   Modifier - name(s) of any modifier keys pressed
 % handles    structure with handles and user data (see GUIDATA)
 
-% --- Executes on key press with focus on force_check and none of its controls.
+% --- Executes on key press with focus on schenleyLab.
 function schenleyLab_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to scheleyLab check
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% hObject    handle to schenleyLab (see GCBO)
+% eventdata  structure with fields:
+%   Key      - name of the key pressed, in lower case
+%   Character- character interpretation of the key(s) pressed
+%   Modifier - name(s) of any modifier keys pressed
 % handles    structure with handles and user data (see GUIDATA)
 
-% --- Executes on key press with focus on force_check and none of its controls.
+% --- Executes on key press with focus on perceptualTasks.
 function perceptalTasks_KeyPressFcn(hObject, eventdata, handles)
-% hObject    handle to scheleyLab check
-%	Key: name of the key that was pressed, in lower case
-%	Character: character interpretation of the key(s) that was pressed
-%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% hObject    handle to perceptualTasks (see GCBO)
+% eventdata  structure with fields:
+%   Key      - name of the key pressed, in lower case
+%   Character- character interpretation of the key(s) pressed
+%   Modifier - name(s) of any modifier keys pressed
 % handles    structure with handles and user data (see GUIDATA)
 
-% % --- Executes during object creation, after setting all properties.
+% ---- type CreateFcns (types 16–20 only; earlier types omitted) -
+
+% --- Executes during object creation, after setting all properties.
 function type16_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type16 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
-% % --- Executes during object creation, after setting all properties.
+% --- Executes during object creation, after setting all properties.
 function type17_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type17 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
-% % --- Executes during object creation, after setting all properties.
+% --- Executes during object creation, after setting all properties.
 function type18_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type18 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -1944,11 +1957,12 @@ function type19_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type19 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -1956,10 +1970,11 @@ function type20_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type20 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
