@@ -459,42 +459,55 @@ guidata(hObject,handles);
 
 % --- Executes on button press in secfile_browse.
 function secfile_browse_Callback(hObject, eventdata, handles)
-handles.secfolder_location = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.secfolder_location==0
-    set(handles.secfileloc,'string',handles.secfolder_location)
+% secfile_browse_Callback  Opens folder browser for secondary data location.
+%
+%   Inputs:
+%     hObject   - handle to secfile_browse (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+
+handles.secfolder_location = uigetdir;
+if ~handles.secfolder_location == 0
+    set(handles.secfileloc, 'string', handles.secfolder_location);
 end
-guidata(hObject,handles);
+guidata(hObject, handles);
 
-function secfileloc_Callback(hObject, eventdata, handles) %runs if folder is input manually by subject
-handles.secfolder_location = get(hObject,'string');
-guidata(hObject,handles)
+function secfileloc_Callback(hObject, eventdata, handles)
+% secfileloc_Callback  Executes when secondary folder is entered manually.
+%
+%   Inputs:
+%     hObject   - handle to secfileloc (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
+handles.secfolder_location = get(hObject, 'string');
+guidata(hObject, handles);
 
+% ---- EMGworks file location callbacks --------------------------
 %%%%%%%%%%%%%% DMMO for EMGworks
 % --- Executes on button press in EMGworksFile1_search.
 function EMGworksFile1_search_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.EMGworksFile_Loc==0
-    set(handles.EMGworksLocation,'string',handles.EMGworksFile_Loc)
+handles.EMGworksFile_Loc = uigetdir;
+if ~handles.EMGworksFile_Loc == 0
+    set(handles.EMGworksLocation, 'string', handles.EMGworksFile_Loc);
 end
-guidata(hObject,handles);
+guidata(hObject, handles);
 
 function EMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = get(hObject,'string');
-guidata(hObject,handles)
+handles.EMGworksFile_Loc = get(hObject, 'string');
+guidata(hObject, handles);
 
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = uigetdir; %this is how the output_fcn knows where the folder is
-if ~handles.EMGworksFile2Loc ==0
-    set(handles.SecondEMGworksLocation,'string',handles.EMGworksFile2Loc)
+handles.EMGworksFile2Loc = uigetdir;
+if ~handles.EMGworksFile2Loc == 0
+    set(handles.SecondEMGworksLocation, 'string', ...
+        handles.EMGworksFile2Loc);
 end
-guidata(hObject,handles);
-
+guidata(hObject, handles);
 
 function SecondEMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = get(hObject,'string');
-guidata(hObject,handles)
-
+handles.EMGworksFile2Loc = get(hObject, 'string');
+guidata(hObject, handles);
 
 %%%%%%%%%%%%%% DMMO for EMGworks
 %%%%%%%%%%%%%%
@@ -1570,49 +1583,57 @@ end
 % ---- Data/misc CreateFcns --------------------------------------
 
 function c3dlocation_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function numoftrials_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function numofconds_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function note_edit_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function saveloc_edit_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function basefile_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function secfileloc_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
-
 function SecondEMGworksLocation_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 function EMGworksLocation_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'white');
 end
 
 % --- Executes on button press in schenleyLab.
