@@ -255,19 +255,32 @@ function year_edit_Callback(hObject, eventdata, handles)
 
 function note_edit_Callback(hObject, eventdata, handles)
 
-
-
-%-------------------------Subject Info------------------------------%
-
+% ============================================================
+% ------------------------- Subject Info ---------------------
+% ============================================================
 
 function subID_edit_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'String') returns contents of subID_edit as text
-%        str2double(get(hObject,'String')) returns contents of subID_edit as a double
+% subID_edit_Callback  Executes on content change in subID_edit.
+%
+%   Inputs:
+%     hObject   - handle to subID_edit (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: get(hObject,'String') returns contents as text
+%        str2double(get(hObject,'String')) returns contents as double
 
 % --- Executes on selection change in DOBmonth_list.
 function DOBmonth_list_Callback(hObject, eventdata, handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns DOBmonth_list contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from DOBmonth_list
+% DOBmonth_list_Callback  Executes on selection change in DOBmonth_list.
+%
+%   Inputs:
+%     hObject   - handle to DOBmonth_list (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: contents = cellstr(get(hObject,'String')) returns contents
+%        contents{get(hObject,'Value')} returns selected item
 
 function DOBday_edit_Callback(hObject, eventdata, handles)
 
@@ -287,21 +300,35 @@ function domhand_list_Callback(hObject, eventdata, handles)
 
 % --- Executes on button press in strokeCheck.
 function strokeCheck_Callback(hObject, eventdata, handles)
+% strokeCheck_Callback  Toggles visibility of the affected-side popup.
+%
+%   Inputs:
+%     hObject   - handle to strokeCheck (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
 % Hint: get(hObject,'Value') returns toggle state of strokeCheck
 
-if get(hObject,'Value')
-    set(handles.popupAffected,'Enable','On')
-    set(handles.text63,'Enable','On')
+if get(hObject, 'Value')
+    set(handles.popupAffected, 'Enable', 'On');
+    set(handles.text63,        'Enable', 'On');
 else
-    set(handles.popupAffected,'Enable','Off')
-    set(handles.text63,'Enable','Off')
+    set(handles.popupAffected, 'Enable', 'Off');
+    set(handles.text63,        'Enable', 'Off');
 end
-guidata(hObject,handles)
+guidata(hObject, handles);
 
 % --- Executes on selection change in popupAffected.
 function popupAffected_Callback(hObject, eventdata, handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns popupAffected contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from popupAffected
+% popupAffected_Callback  Executes on selection change in popupAffected.
+%
+%   Inputs:
+%     hObject   - handle to popupAffected (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: contents = cellstr(get(hObject,'String')) returns contents
+%        contents{get(hObject,'Value')} returns selected item
 
 function height_edit_Callback(hObject, eventdata, handles)
 
