@@ -23,7 +23,7 @@ function varargout = GetInfoGUI(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct( ...
-    'gui_Name',       mfilename,               ...
+    'gui_Name',       mfilename(),             ...
     'gui_Singleton',  gui_Singleton,           ...
     'gui_OpeningFcn', @GetInfoGUI_OpeningFcn,  ...
     'gui_OutputFcn',  @GetInfoGUI_OutputFcn,   ...
@@ -62,7 +62,7 @@ guidata(hObject, handles);
 
 % Center GUI on screen  [left, bottom, width, height]
 scrsz  = get(0, 'ScreenSize');
-set(gcf, 'Units', 'pixels');
+set(gcf(), 'Units', 'pixels');
 guiPos = get(hObject, 'Position');
 set(hObject, 'Position', [ ...
     (scrsz(3) - guiPos(3)) / 2, ...
@@ -146,7 +146,7 @@ if ~(isfield(handles, 'noSave') && handles.noSave)
             info.ID '. Overwrite?'], ...
             'File Name Warning', 'Yes', 'No', 'No');
         if strcmp(choice, 'No')
-            info.ID = [info.ID '_' date];
+            info.ID = [info.ID '_' date()];
             h = msgbox(['Saving as ' info.ID], '');
             waitfor(h);
         end
@@ -207,7 +207,7 @@ end
 delete(handles.figure1);
 
 % ============================================================
-% ------------------------ Experiment Info -------------------
+% ==================== Experiment Info =======================
 % ============================================================
 
 function description_edit_Callback(hObject, eventdata, handles)
@@ -224,9 +224,9 @@ expFile  = contents{get(hObject, 'Value')};
 
 % HH 6/16
 % eval(expFile);
-path = which('GetInfoGUI');
-path = strrep(path, 'GetInfoGUI.m', 'ExpDetails');
-if exist([path filesep expFile '.mat'], 'file') > 0
+detailsPath = which('GetInfoGUI');
+detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
+if exist([detailsPath filesep expFile '.mat'], 'file') > 0
     % First, clear all condition fields
     set(handles.numofconds, 'String', '0');
     for conds = 1:handles.lines
@@ -238,7 +238,7 @@ if exist([path filesep expFile '.mat'], 'file') > 0
     end
 
     % Second, populate fields from the selected experiment description
-    a      = load([path filesep expFile]);
+    a      = load([detailsPath filesep expFile]);
     aux    = fields(a);
     expDes = a.(aux{1});
     handles = setExpDescription(handles, expDes);
@@ -277,7 +277,7 @@ function year_edit_Callback(hObject, eventdata, handles)
 function note_edit_Callback(hObject, eventdata, handles)
 
 % ============================================================
-% ------------------------- Subject Info ---------------------
+% ====================== Subject Info ========================
 % ============================================================
 
 function subID_edit_Callback(hObject, eventdata, handles)
@@ -356,7 +356,7 @@ function height_edit_Callback(hObject, eventdata, handles)
 function weight_edit_Callback(hObject, eventdata, handles)
 
 % ============================================================
-% -------------------------- Data Info -----------------------
+% ======================= Data Info ==========================
 % ============================================================
 
 % --- Executes on button press in browse.
@@ -368,7 +368,7 @@ function browse_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-handles.folder_location = uigetdir;
+handles.folder_location = uigetdir();
 if ~handles.folder_location == 0
     set(handles.c3dlocation, 'string', handles.folder_location);
 end
@@ -545,15 +545,15 @@ function EMGworks_Callback(hObject, eventdata, handles)
 
 state = get(hObject, 'Value');
 if state
-    set(handles.EMGworksFile1_search,   'enable', 'on');
-    set(handles.EMGworksLocation,        'enable', 'on');
-    set(handles.SecFileSearchEMGworks,   'enable', 'on');
-    set(handles.SecondEMGworksLocation,  'enable', 'on');
+    set(handles.EMGworksFile1_search,  'enable', 'on');
+    set(handles.EMGworksLocation,      'enable', 'on');
+    set(handles.SecFileSearchEMGworks, 'enable', 'on');
+    set(handles.SecondEMGworksLocation,'enable', 'on');
 else
-    set(handles.EMGworksFile1_search,   'enable', 'off');
-    set(handles.EMGworksLocation,        'enable', 'off');
-    set(handles.SecFileSearchEMGworks,   'enable', 'on');
-    set(handles.SecondEMGworksLocation,  'enable', 'on');
+    set(handles.EMGworksFile1_search,  'enable', 'off');
+    set(handles.EMGworksLocation,      'enable', 'off');
+    set(handles.SecFileSearchEMGworks, 'enable', 'on');
+    set(handles.SecondEMGworksLocation,'enable', 'on');
 end
 guidata(hObject, handles);
 
@@ -566,7 +566,7 @@ function secfile_browse_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-handles.secfolder_location = uigetdir;
+handles.secfolder_location = uigetdir();
 if ~handles.secfolder_location == 0
     set(handles.secfileloc, 'string', handles.secfolder_location);
 end
@@ -587,7 +587,7 @@ guidata(hObject, handles);
 %%%%%%%%%%%%%% DMMO for EMGworks
 % --- Executes on button press in EMGworksFile1_search.
 function EMGworksFile1_search_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = uigetdir;
+handles.EMGworksFile_Loc = uigetdir();
 if ~handles.EMGworksFile_Loc == 0
     set(handles.EMGworksLocation, 'string', handles.EMGworksFile_Loc);
 end
@@ -598,7 +598,7 @@ handles.EMGworksFile_Loc = get(hObject, 'string');
 guidata(hObject, handles);
 
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = uigetdir;
+handles.EMGworksFile2Loc = uigetdir();
 if ~handles.EMGworksFile2Loc == 0
     set(handles.SecondEMGworksLocation, 'string', ...
         handles.EMGworksFile2Loc);
@@ -615,7 +615,7 @@ guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of EMGworks
 
 % ============================================================
-% ----------------------- Condition Info ---------------------
+% ====================== Condition Info ======================
 % ============================================================
 
 function condition1_Callback(hObject, eventdata, handles)
@@ -739,6 +739,10 @@ function trialnum20_Callback(hObject, eventdata, handles)
 function type20_Callback(hObject, eventdata, handles)
 
 % ============================================================
+% =================== Save As / OK Button ====================
+% ============================================================
+
+% ============================================================
 % --- Executes on button press in saveExpButton.
 function saveExpButton_Callback(hObject, eventdata, handles)
 % saveExpButton_Callback  Saves the current condition configuration as
@@ -789,9 +793,9 @@ if ~isempty(answer)
     expDes.group = answer;
     % Remove non-alphanumeric characters from the filename
     answer = answer(ismember(answer, ['A':'Z' 'a':'z' '0':'9']));
-    path = which('GetInfoGUI');
-    path = strrep(path, 'GetInfoGUI.m', 'ExpDetails');
-    if exist([path filesep answer '.mat'], 'file') > 0
+    detailsPath = which('GetInfoGUI');
+    detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
+    if exist([detailsPath filesep answer '.mat'], 'file') > 0
         choice = questdlg( ...
             'File name already exists. Overwrite?', ...
             'File Name Warning', 'Yes', 'No', 'No');
@@ -801,7 +805,7 @@ if ~isempty(answer)
             return;
         end
     end
-    save([path filesep answer], 'expDes');
+    save([detailsPath filesep answer], 'expDes');
     description_edit_CreateFcn(handles.description_edit, ...
         eventdata, handles);
     newContents = get(handles.description_edit, 'string');
@@ -833,9 +837,9 @@ function save_browse_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-path = uigetdir;
-if ~path == 0
-    handles.save_folder = path;
+savePath = uigetdir();
+if ~savePath == 0
+    handles.save_folder = savePath;
     set(handles.saveloc_edit, 'string', handles.save_folder);
 end
 guidata(hObject, handles);
@@ -869,10 +873,10 @@ function loadButton_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-[file, path] = uigetfile('*.mat', 'Choose subject handles file');
+[file, filePath] = uigetfile('*.mat', 'Choose subject handles file');
 
 if file ~= 0
-    aux        = load([path file]);
+    aux        = load([filePath file]);
     fieldNames = fields(aux);
     subInfo    = aux.(fieldNames{1});
     % TODO: check that file is correct
@@ -972,14 +976,18 @@ if file ~= 0
 
         % -- Data Info
         handles.folder_location = subInfo.dir_location;
-        set(handles.c3dlocation,    'string', handles.folder_location);
-        set(handles.basefile,       'string', subInfo.basename);
-        set(handles.numofconds,     'string', subInfo.numofconds);
+        set(handles.c3dlocation,     'string', handles.folder_location);
+        set(handles.basefile,        'string', subInfo.basename);
+        set(handles.numofconds,      'string', subInfo.numofconds);
 
         numofconds_Callback(handles.numofconds, eventdata, handles);
         set(handles.kinematic_check, 'Value', subInfo.kinematics);
         set(handles.force_check,     'Value', subInfo.forces);
-        set(handles.emg_check,       'Value', subInfo.EMGs);
+
+        % Populate EMG checkbox state
+        % Note: both branches of the original conditional were
+        % identical; collapsed to a single unconditional assignment.
+        set(handles.emg_check, 'Value', subInfo.EMGs);
 
         if isfield(subInfo, 'schenleyLab')
             set(handles.schenleyLab, 'Value', subInfo.schenleyLab);
@@ -1000,12 +1008,6 @@ if file ~= 0
         else
             subInfo.backwardCheck = 0;
             set(handles.backwardCheck, 'Value', subInfo.backwardCheck);
-        end
-
-        if isfield(subInfo, 'emg_check')
-            set(handles.emg_check, 'Value', subInfo.EMGs);
-        else
-            set(handles.emg_check, 'Value', subInfo.EMGs);
         end
 
         % if ~handles.emg_check.Value ~= 0
@@ -1152,9 +1154,9 @@ end
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
 % Populate the experiment description dropdown from ExpDetails directory
-path = which('GetInfoGUI');
-path = strrep(path, 'GetInfoGUI.m', 'ExpDetails');
-W = what(path);
+detailsPath = which('GetInfoGUI');
+detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
+W = what(detailsPath);
 % experiments=cellstr(W.m);   % HH 6/16
 experiments = cellstr(W.mat);
 for i = 1:length(experiments)
