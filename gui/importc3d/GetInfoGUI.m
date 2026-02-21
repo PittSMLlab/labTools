@@ -206,48 +206,69 @@ end
 
 delete(handles.figure1);
 
-%------------------------Experiment Info---------------------------------%
+% ============================================================
+% ------------------------ Experiment Info -------------------
+% ============================================================
 
 function description_edit_Callback(hObject, eventdata, handles)
-%This was changed to a list!
-contents = cellstr(get(hObject,'String'));
-expFile = contents{get(hObject,'Value')};
+% description_edit_Callback  Populates condition fields when an
+%   experiment description is selected from the dropdown list.
+%
+%   Inputs:
+%     hObject   - handle to description_edit (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+
+contents = cellstr(get(hObject, 'String'));
+expFile  = contents{get(hObject, 'Value')};
 
 % HH 6/16
-% eval(expFile)
-path=which('GetInfoGUI');
-path=strrep(path,'GetInfoGUI.m','ExpDetails');
-if exist([path filesep expFile '.mat'],'file')>0
-    %first, clear all feilds
-    set(handles.numofconds,'String','0');
+% eval(expFile);
+path = which('GetInfoGUI');
+path = strrep(path, 'GetInfoGUI.m', 'ExpDetails');
+if exist([path filesep expFile '.mat'], 'file') > 0
+    % First, clear all condition fields
+    set(handles.numofconds, 'String', '0');
     for conds = 1:handles.lines
-        set(handles.(['condition',num2str(conds)]),'string','');
-        set(handles.(['condName',num2str(conds)]),'string','');
-        set(handles.(['description',num2str(conds)]),'string','');
-        set(handles.(['trialnum',num2str(conds)]),'string','');
-        set(handles.(['type',num2str(conds)]),'string','');
+        set(handles.(['condition',   num2str(conds)]), 'string', '');
+        set(handles.(['condName',    num2str(conds)]), 'string', '');
+        set(handles.(['description', num2str(conds)]), 'string', '');
+        set(handles.(['trialnum',    num2str(conds)]), 'string', '');
+        set(handles.(['type',        num2str(conds)]), 'string', '');
     end
 
-    %second, populate feilds based on experiment description entered.
-    a=load([path filesep expFile]);
-    aux=fields(a);
-    expDes=a.(aux{1});
-    handles=setExpDescription(handles,expDes);
-    numofconds_Callback(handles.numofconds, eventdata, handles)
+    % Second, populate fields from the selected experiment description
+    a      = load([path filesep expFile]);
+    aux    = fields(a);
+    expDes = a.(aux{1});
+    handles = setExpDescription(handles, expDes);
+    numofconds_Callback(handles.numofconds, eventdata, handles);
 end
 
-guidata(hObject,handles)
-
+guidata(hObject, handles);
 
 function name_edit_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'String') returns contents of name_edit as text
-%        str2double(get(hObject,'String')) returns contents of name_edit as a double
-
+% name_edit_Callback  Executes on content change in name_edit.
+%
+%   Inputs:
+%     hObject   - handle to name_edit (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: get(hObject,'String') returns contents as text
+%        str2double(get(hObject,'String')) returns contents as double
 
 % --- Executes on selection change in month_list.
 function month_list_Callback(hObject, eventdata, handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns month_list contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from month_list
+% month_list_Callback  Executes on selection change in month_list.
+%
+%   Inputs:
+%     hObject   - handle to month_list (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Hints: contents = cellstr(get(hObject,'String')) returns contents
+%        contents{get(hObject,'Value')} returns selected item
 
 function day_edit_Callback(hObject, eventdata, handles)
 
