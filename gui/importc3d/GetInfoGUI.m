@@ -459,9 +459,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function subID_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
+% Ensure the field is enabled and transfer focus to it
 set(hObject, 'Enable', 'On');
-set(hObject, 'String', []);
 uicontrol(handles.subID_edit);
 
 % --- Executes on selection change in DOBmonth_list.
