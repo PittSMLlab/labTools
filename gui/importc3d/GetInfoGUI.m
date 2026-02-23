@@ -1688,8 +1688,9 @@ if file ~= 0
             set(handles.strokeCheck, 'Value', 0);
         end
 
+        % Fire callback to synchronize 'popupAffected' enable state
+        strokeCheck_Callback(handles.strokeCheck, eventdata, handles);
         if get(handles.strokeCheck, 'Value')
-            set(handles.popupAffected, 'Enable', 'On');
             set(handles.popupAffected, 'Value', subInfo.affectedValue);
         end
 
@@ -1728,10 +1729,11 @@ if file ~= 0
         set(handles.kinematic_check, 'Value', subInfo.kinematics);
         set(handles.force_check,     'Value', subInfo.forces);
 
-        % Populate EMG checkbox state
-        % Note: both branches of the original conditional were
-        % identical; collapsed to a single unconditional assignment.
+        % Populate EMG checkbox state and fire callback to synchronize
+        % the enable state of all EMG-related controls (Nexus,
+        % EMGworks, and individual EMG channel label fields)
         set(handles.emg_check, 'Value', subInfo.EMGs);
+        emg_check_Callback(handles.emg_check, eventdata, handles);
 
         if isfield(subInfo, 'schenleyLab')
             set(handles.schenleyLab, 'Value', subInfo.schenleyLab);
@@ -1754,51 +1756,29 @@ if file ~= 0
             set(handles.backwardCheck, 'Value', subInfo.backwardCheck);
         end
 
-        % if ~handles.emg_check.Value ~= 0
-        %     set(handles.emg_check, 'enable', 'on');
-        % end
-
+        % Populate Nexus checkbox state and fire callback to
+        % synchronize secondary C3D file location control enable
+        % states; then restore the saved secondary folder path
         if isfield(handles, 'Nexus')
             set(handles.Nexus, 'Value', subInfo.Nexus);
-            if ~handles.Nexus.Value ~= 0
-                set(handles.Nexus, 'enable', 'on');
-            end
-            set(handles.Nexus, 'enable', 'off');
+            Nexus_Callback(handles.Nexus, eventdata, handles);
+            handles.secfolder_location = subInfo.secdir_location;
+            set(handles.secfileloc, 'string', handles.secfolder_location);
         end
 
+        % Populate EMGworks checkbox state and fire callback to
+        % synchronize EMGworks file location control enable states;
+        % then restore the saved EMGworks folder paths if applicable
         if isfield(handles, 'EMGworks')
             set(handles.EMGworks, 'Value', subInfo.EMGworks);
-            if ~handles.EMGworks.Value ~= 0
-                set(handles.EMGworks, 'enable', 'on');
-            end
-        else
-            set(handles.EMGworks, 'enable', 'off');
-        end
-
-        if isfield(handles, 'Nexus')
-            handles.secfolder_location = subInfo.secdir_location;
-            set(handles.secfileloc, 'string', ...
-                handles.secfolder_location);
-            if ~isempty(handles.secfileloc.String)
-                set(handles.secfileloc,     'enable', 'on');
-                set(handles.secfile_browse, 'enable', 'on');
-            end
-        end
-
-        if isfield(handles, 'EMGworks') && handles.EMGworks == 1
-            handles.EMGworksFile_Loc = subInfo.EMGworksdir_location;
-            set(handles.EMGworksLocation, 'string', ...
-                handles.EMGworksFile_Loc);
-            if ~isempty(handles.EMGworksLocation.String)
-                set(handles.EMGworksLocation,     'enable', 'on');
-                set(handles.EMGworksFile1_search, 'enable', 'on');
-            end
-            handles.EMGworksFile2Loc = subInfo.secEMGworksdir_location;
-            set(handles.SecondEMGworksLocation, 'string', ...
-                handles.EMGworksFile2Loc);
-            if ~isempty(handles.SecondEMGworksLocation.String)
-                set(handles.SecondEMGworksLocation, 'enable', 'on');
-                set(handles.SecFileSearchEMGworks,  'enable', 'on');
+            EMGworks_Callback(handles.EMGworks, eventdata, handles);
+            if subInfo.EMGworks
+                handles.EMGworksFile_Loc = subInfo.EMGworksdir_location;
+                set(handles.EMGworksLocation, 'string', ...
+                    handles.EMGworksFile_Loc);
+                handles.EMGworksFile2Loc = subInfo.secEMGworksdir_location;
+                set(handles.SecondEMGworksLocation, 'string', ...
+                    handles.EMGworksFile2Loc);
             end
         end
 
