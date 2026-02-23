@@ -268,7 +268,7 @@ if exist([detailsPath filesep expFile '.mat'], 'file') > 0
 
     % Second, populate fields from the selected experiment description
     a      = load([detailsPath filesep expFile]);
-    aux    = fields(a);
+    aux    = fieldnames(a);
     expDes = a.(aux{1});
     handles = setExpDescription(handles, expDes);
     numofconds_Callback(handles.numofconds, eventdata, handles);
@@ -1620,7 +1620,7 @@ function loadButton_Callback(hObject, eventdata, handles)
 
 if file ~= 0
     aux        = load([filePath file]);
-    fieldNames = fields(aux);
+    fieldNames = fieldnames(aux);
     subInfo    = aux.(fieldNames{1});
     % TODO: check that file is correct
     if ~isa(subInfo, 'struct')
