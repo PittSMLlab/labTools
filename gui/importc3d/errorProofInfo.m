@@ -197,18 +197,22 @@ if ~(nargin > 1 && ignoreErrors)
         return;
     end
 
-    % -- Subject Information
-    if strcmp(out.ID,'Sub#')
-        h_error=errordlg('Please enter the subject ID','ID Error');
-        waitfor(h_error)
-        uicontrol(handles.subID_edit)
-        out.bad=true; return
+    % -- Subject Info
+    if strcmp(out.ID, 'Sub#')
+        h_error = errordlg( ...
+            'Please enter the subject ID', 'ID Error');
+        waitfor(h_error);
+        uicontrol(handles.subID_edit);
+        out.bad = true;
+        return;
     end
-    if isnan(out.DOBday) || out.DOBday<0 || out.DOBday>31
-        h_error=errordlg('Please enter a day between 1 and 31','Day Error');
-        waitfor(h_error)
-        uicontrol(handles.DOBday_edit)
-        out.bad=true; return
+    if isnan(out.DOBday) || out.DOBday < 0 || out.DOBday > 31
+        h_error = errordlg( ...
+            'Please enter a day between 1 and 31', 'Day Error');
+        waitfor(h_error);
+        uicontrol(handles.DOBday_edit);
+        out.bad = true;
+        return;
     end
     if isnan(out.DOByear) || out.DOByear<1900 || out.year>3000 %seems like an appropriate range...
         h_error=errordlg('Please enter the year when the subject was born','Year Error');
@@ -216,34 +220,46 @@ if ~(nargin > 1 && ignoreErrors)
         uicontrol(handles.DOByear_edit)
         out.bad=true; return
     end
-    if isnan(out.height) || out.height<0 || out.height>230 %seems like an appropriate range...
-        h_error=errordlg('Please enter the height of the subject','Height Error');
-        waitfor(h_error)
-        uicontrol(handles.height_edit)
-        out.bad=true; return
+    if isnan(out.height) || out.height < 0 || out.height > 230
+        % Appropriate range in cm
+        h_error = errordlg( ...
+            'Please enter the height of the subject', ...
+            'Height Error');
+        waitfor(h_error);
+        uicontrol(handles.height_edit);
+        out.bad = true;
+        return;
     end
-    if isnan(out.weight) || out.weight<0 || out.weight>170 %seems like an appropriate range...
-        h_error=errordlg('Please enter the weight of the subject','Weight Error');
-        waitfor(h_error)
-        uicontrol(handles.weight_edit)
-        out.bad=true; return
+    if isnan(out.weight) || out.weight < 0 || out.weight > 170
+        % Appropriate range in kg
+        h_error = errordlg( ...
+            'Please enter the weight of the subject', ...
+            'Weight Error');
+        waitfor(h_error);
+        uicontrol(handles.weight_edit);
+        out.bad = true;
+        return;
     end
-    if strcmp(out.domhand,' ')
-        h_error=errordlg('Please select a dominant arm','Dominant Arm Error');
-        waitfor(h_error)
-        uicontrol(handles.domhand_list)
-        out.bad=true; return
+    if strcmp(out.domhand, ' ')
+        h_error = errordlg( ...
+            'Please select a dominant arm', 'Dominant Arm Error');
+        waitfor(h_error);
+        uicontrol(handles.domhand_list);
+        out.bad = true;
+        return;
     end
-    if strcmp(out.domleg,' ')
-        h_error=errordlg('Please select a dominant leg','Dominant Leg Error');
-        waitfor(h_error)
-        uicontrol(handles.domleg_list)
-        out.bad=true; return
+    if strcmp(out.domleg, ' ')
+        h_error = errordlg( ...
+            'Please select a dominant leg', 'Dominant Leg Error');
+        waitfor(h_error);
+        uicontrol(handles.domleg_list);
+        out.bad = true;
+        return;
     end
-    if out.isStroke==1
-        aux=get(handles.popupAffected,'String');
-        out.affectedValue=get(handles.popupAffected,'Value');
-        out.affectedSide=aux{out.affectedValue};
+    if out.isStroke == 1
+        aux               = get(handles.popupAffected, 'String');
+        out.affectedValue = get(handles.popupAffected, 'Value');
+        out.affectedSide  = aux{out.affectedValue};
     end
 
     % -- Data Information
