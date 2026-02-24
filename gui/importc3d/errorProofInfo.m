@@ -49,39 +49,39 @@ out.year         = str2double(get(handles.year_edit, 'string'));
 out.exp_obs      = get(handles.note_edit, 'string');
 
 % -- Subject Information
-out.ID = get(handles.subID_edit,'string');
-DOBmonthContents = cellstr(get(handles.DOBmonth_list,'String'));
-out.DOBmonth = DOBmonthContents{get(handles.DOBmonth_list,'Value')};
-out.DOBday = str2double(get(handles.DOBday_edit,'string'));
-out.DOByear = str2double(get(handles.DOByear_edit,'string'));
-genderContents = cellstr(get(handles.gender_list,'String'));
-out.gender = genderContents{get(handles.gender_list,'Value')};
-fastLegContents = cellstr(get(handles.fastLeg,'String'));
-out.fastLeg = fastLegContents{get(handles.fastLeg,'Value')};
-domlegContents = cellstr(get(handles.domleg_list,'String'));
-out.domleg = domlegContents{get(handles.domleg_list,'Value')};
-domhandContents = cellstr(get(handles.domhand_list,'String'));
-out.domhand = domhandContents{get(handles.domhand_list,'Value')};
-out.height = str2double(get(handles.height_edit,'string'));
-out.weight = str2double(get(handles.weight_edit,'string'));
-out.isStroke = get(handles.strokeCheck,'Value');
+out.ID           = get(handles.subID_edit, 'string');
+DOBmonthContents = cellstr(get(handles.DOBmonth_list, 'String'));
+out.DOBmonth     = DOBmonthContents{get(handles.DOBmonth_list, 'Value')};
+out.DOBday       = str2double(get(handles.DOBday_edit,  'string'));
+out.DOByear      = str2double(get(handles.DOByear_edit, 'string'));
+genderContents   = cellstr(get(handles.gender_list, 'String'));
+out.gender       = genderContents{get(handles.gender_list, 'Value')};
+fastLegContents  = cellstr(get(handles.fastLeg, 'String'));
+out.fastLeg      = fastLegContents{get(handles.fastLeg, 'Value')};
+domlegContents   = cellstr(get(handles.domleg_list, 'String'));
+out.domleg       = domlegContents{get(handles.domleg_list, 'Value')};
+domhandContents  = cellstr(get(handles.domhand_list, 'String'));
+out.domhand      = domhandContents{get(handles.domhand_list, 'Value')};
+out.height       = str2double(get(handles.height_edit, 'string'));
+out.weight       = str2double(get(handles.weight_edit, 'string'));
+out.isStroke     = get(handles.strokeCheck, 'Value');
 
 % -- Data Information
-if isfield(handles,'folder_location')
+if isfield(handles, 'folder_location')
     out.dir_location = handles.folder_location;
 else
-    out.dir_location = pwd;
+    out.dir_location = pwd();
 end
-out.basename = get(handles.basefile,'string');
-out.numofconds = str2double(get(handles.numofconds,'string'));
-out.kinematics = get(handles.kinematic_check,'Value');
-out.forces = get(handles.force_check,'Value');
-out.EMGs = get(handles.emg_check,'Value');
-out.Nexus = get(handles.Nexus,'Value');
-out.EMGworks = get(handles.EMGworks,'Value');
-out.schenleyLab = get(handles.schenleyLab,'Value');
-out.perceptualTasks = get(handles.perceptualTasks,'Value');
-out.backwardCheck = get(handles.backwardCheck,'Value');
+out.basename        = get(handles.basefile, 'string');
+out.numofconds      = str2double(get(handles.numofconds, 'string'));
+out.kinematics      = get(handles.kinematic_check, 'Value');
+out.forces          = get(handles.force_check, 'Value');
+out.EMGs            = get(handles.emg_check, 'Value');
+out.Nexus           = get(handles.Nexus, 'Value');
+out.EMGworks        = get(handles.EMGworks, 'Value');
+out.schenleyLab     = get(handles.schenleyLab, 'Value');
+out.perceptualTasks = get(handles.perceptualTasks, 'Value');
+out.backwardCheck   = get(handles.backwardCheck, 'Value');
 
 if isfield(handles,'secfolder_location') && out.Nexus == 1
     out.secdir_location = handles.secfolder_location;
@@ -130,28 +130,28 @@ else
     out.trialnums = {0};
 end
 
-trials = cell2mat(out.trialnums);
+trials          = cell2mat(out.trialnums);
 out.numoftrials = max(trials);
 
-% -- EMG data
-if isfield(handles,'emg1_1')
+% -- EMG Data
+if isfield(handles, 'emg1_1')
     for ii = 1:16
         aux1 = ['emg1_' num2str(ii)];
-        out.EMGList1(ii) = {get(handles.(aux1),'string')};
+        out.EMGList1(ii) = {get(handles.(aux1), 'string')};
         aux2 = ['emg2_' num2str(ii)];
-        out.EMGList2(ii) = {get(handles.(aux2),'string')};
+        out.EMGList2(ii) = {get(handles.(aux2), 'string')};
     end
 end
 
 % -- Save Location
-if isfield(handles,'save_folder')
+if isfield(handles, 'save_folder')
     out.save_folder = handles.save_folder;
 else
-    out.save_folder = pwd;
+    out.save_folder = pwd();
 end
 
 % -- Trial Observations
-if isfield(handles,'trialObs')
+if isfield(handles, 'trialObs')
     out.trialObs = handles.trialObs;
 end
 
