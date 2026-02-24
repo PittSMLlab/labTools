@@ -26,27 +26,27 @@ function out = errorProofInfo(handles,ignoreErrors)
 
 out.bad = false;
 
-%% Get Information from GUI Fields
+%% Extract Information from GUI Fields
 % -- Experiment Information
-descriptionContents = cellstr(get(handles.description_edit,'string'));
-if ~isempty(get(handles.description_edit,'Value'))
+descriptionContents = cellstr(get(handles.description_edit, 'string'));
+if ~isempty(get(handles.description_edit, 'Value'))
     out.ExpFile = ...
-        descriptionContents{get(handles.description_edit,'Value')};
+        descriptionContents{get(handles.description_edit, 'Value')};
 else
     out.ExpFile = descriptionContents{1};   % set to empty string
 end
 
-if isfield(handles,'group')
+if isfield(handles, 'group')
     out.ExpDescription = handles.group;
 else
     out.ExpDescription = out.ExpFile;
 end
-out.experimenter = get(handles.name_edit,'string');
-MonthContents = cellstr(get(handles.month_list,'String'));
-out.month = MonthContents{get(handles.month_list,'Value')};
-out.day = str2double(get(handles.day_edit,'string'));
-out.year = str2double(get(handles.year_edit,'string'));
-out.exp_obs = get(handles.note_edit,'string');
+out.experimenter = get(handles.name_edit, 'string');
+MonthContents    = cellstr(get(handles.month_list, 'String'));
+out.month        = MonthContents{get(handles.month_list, 'Value')};
+out.day          = str2double(get(handles.day_edit,  'string'));
+out.year         = str2double(get(handles.year_edit, 'string'));
+out.exp_obs      = get(handles.note_edit, 'string');
 
 % -- Subject Information
 out.ID = get(handles.subID_edit,'string');
