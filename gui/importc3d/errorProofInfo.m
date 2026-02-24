@@ -83,30 +83,30 @@ out.schenleyLab     = get(handles.schenleyLab, 'Value');
 out.perceptualTasks = get(handles.perceptualTasks, 'Value');
 out.backwardCheck   = get(handles.backwardCheck, 'Value');
 
-if isfield(handles,'secfolder_location') && out.Nexus == 1
+if isfield(handles, 'secfolder_location') && out.Nexus == 1
     out.secdir_location = handles.secfolder_location;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated with
-    % the same directory as the primary files, which made no sense
-    % (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated
+    % with the same directory as the primary files, which made no
+    % sense (probably was just done to avoid errors downstream).
     out.secdir_location = '';
 end
 
-if isfield(handles,'EMGworksFile_Loc')
+if isfield(handles, 'EMGworksFile_Loc')
     out.EMGworksdir_location = handles.EMGworksFile_Loc;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated with
-    % the same directory as the primary files, which made no sense
-    % (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated
+    % with the same directory as the primary files, which made no
+    % sense (probably was just done to avoid errors downstream).
     out.EMGworksdir_location = '';
 end
 
-if isfield(handles,'EMGworksFile2Loc')
+if isfield(handles, 'EMGworksFile2Loc')
     out.secEMGworksdir_location = handles.EMGworksFile2Loc;
 else
-    % Pablo I. modified (07/16/2015): previously this was populated with
-    % the same directory as the primary files, which made no sense
-    % (probably was just done to avoid errors downstream).
+    % Pablo I. modified (07/16/2015): previously this was populated
+    % with the same directory as the primary files, which made no
+    % sense (probably was just done to avoid errors downstream).
     out.secEMGworksdir_location = '';
 end
 
@@ -218,7 +218,8 @@ if ~(nargin > 1 && ignoreErrors)
         h_error=errordlg('Please enter the year when the subject was born','Year Error');
         waitfor(h_error)
         uicontrol(handles.DOByear_edit)
-        out.bad=true; return
+        out.bad=true;
+        return;
     end
     if isnan(out.height) || out.height < 0 || out.height > 230
         % Appropriate range in cm
@@ -295,7 +296,7 @@ if ~(nargin > 1 && ignoreErrors)
         waitfor(h_error)
         uicontrol(handles.SecondEMGworksLocation)
         out.bad=1;
-        return
+        return;
     end
 
     % -- Trial Information
@@ -309,7 +310,8 @@ if ~(nargin > 1 && ignoreErrors)
             h_error=errordlg(['The file ',filename,' does not exist.'],'File Name Error');
             waitfor(h_error)
             uicontrol(handles.basefile)
-            out.bad=true; return
+            out.bad=true;
+            return;
         end
         %         %Check marker labels are good in .c3d files
         %         H=btkReadAcquisition(filename);
@@ -329,7 +331,7 @@ if ~(nargin > 1 && ignoreErrors)
         %             h_error=errordlg(['Marker data does not contain: ' str(3:end) '. Edit ''findLabel'' code to fix.'],'Marker Data Error');
         %             waitfor(h_error)
         %             uicontrol(handles.basefile)
-        %             out.bad=true; return
+        %             out.bad=true; return;
         %         end
         if ~isempty(out.secdir_location)
             if t<10
@@ -341,39 +343,52 @@ if ~(nargin > 1 && ignoreErrors)
                 h_error=errordlg(['The file ',filename2,' does not exist.'],'File Name Error');
                 waitfor(h_error)
                 uicontrol(handles.basefile)
-                out.bad=true; return
+                out.bad=true;
+                return;
             end
         end
     end
-    %%%%%%%%%%%%%% DMMO for EMGworks
+
+    % ---- EMGworks file checks (DMMO) ---------------------------------
+    % Note: t retains the value of the last trial from the loop above.
     if ~isempty(out.EMGworksdir_location)
-        if t<10
-            filename3 = [out.EMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
+        if t < 10
+            filename3 = [out.EMGworksdir_location filesep ...
+                out.basename '0' num2str(t) '.mat'];
         else
-            filename3 = [out.EMGworksdir_location filesep out.basename num2str(t) '.mat'];
+            filename3 = [out.EMGworksdir_location filesep ...
+                out.basename num2str(t) '.mat'];
         end
-        if ~exist(filename3,'file')
-            h_error=errordlg(['The file ',filename3,' does not exist.'],'File Name Error');
-            waitfor(h_error)
-            uicontrol(handles.basefile)
-            out.bad=true; return
+        if ~exist(filename3, 'file')
+            h_error = errordlg( ...
+                ['The file ', filename3, ' does not exist.'], ...
+                'File Name Error');
+            waitfor(h_error);
+            uicontrol(handles.basefile);
+            out.bad = true;
+            return;
         end
     end
 
     if ~isempty(out.secEMGworksdir_location)
-        if t<10
-            filename4 = [out.secEMGworksdir_location filesep out.basename  '0' num2str(t) '.mat'];
+        if t < 10
+            filename4 = [out.secEMGworksdir_location filesep ...
+                out.basename '0' num2str(t) '.mat'];
         else
-            filename4 = [out.secEMGworksdir_location filesep out.basename num2str(t) '.mat'];
+            filename4 = [out.secEMGworksdir_location filesep ...
+                out.basename num2str(t) '.mat'];
         end
-        if ~exist(filename4,'file')
-            h_error=errordlg(['The file ',filename4,' does not exist.'],'File Name Error');
-            waitfor(h_error)
-            uicontrol(handles.basefile)
-            out.bad=true; return
+        if ~exist(filename4, 'file')
+            h_error = errordlg( ...
+                ['The file ', filename4, ' does not exist.'], ...
+                'File Name Error');
+            waitfor(h_error);
+            uicontrol(handles.basefile);
+            out.bad = true;
+            return;
         end
     end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 end
 
 % -- EMG data
