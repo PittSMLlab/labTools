@@ -111,20 +111,20 @@ else
 end
 
 % -- Trial Information
-Nconds = str2double(get(handles.numofconds,'string'));  % # of conditions
+Nconds = str2double(get(handles.numofconds, 'string'));
 if ~isnan(Nconds) && Nconds > 0
-    for c = 1:Nconds                            % for each condition, ...
+    for c = 1:Nconds                        % for each condition, ...
         condNum = ...
-            str2double(get(handles.(['condition',num2str(c)]),'string'));
+            str2double(get(handles.(['condition', num2str(c)]), 'string'));
         out.cond(c) = condNum;
         out.conditionNames{condNum} = ...
-            strtrim(get(handles.(['condName',num2str(c)]),'string'));
+            strtrim(get(handles.(['condName', num2str(c)]), 'string'));
         out.conditionDescriptions{condNum} = ...
-            get(handles.(['description',num2str(c)]),'string');
-        trialnums = get(handles.(['trialnum',num2str(c)]),'string');
-        out.trialnums{condNum} = eval(['[',trialnums,']']);
-        % need to evaluate for entry of numbers like '1:6' or '7 8 9'
-        out.type{condNum} = get(handles.(['type',num2str(c)]),'string');
+            get(handles.(['description', num2str(c)]), 'string');
+        trialnums = get(handles.(['trialnum', num2str(c)]), 'string');
+        % Evaluate to support entries like '1:6' or '7 8 9'
+        out.trialnums{condNum} = eval(['[', trialnums, ']']);
+        out.type{condNum} = get(handles.(['type', num2str(c)]), 'string');
     end
 else
     out.trialnums = {0};
@@ -375,14 +375,14 @@ if ~(nargin > 1 && ignoreErrors)
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
-%
-%     % -- EMG data
-%     if isfield(handles,'emg1_1')
-%         allowedMuscles={'BF','SEMB','SEMT','PER','TA','SOL','MG','LG','GLU','TFL','ILP','ADM','RF','VM','VL'};
-%         %Check that all muscles are allowed
-%
-%         %Check for sync signals
-%     end
+
+% -- EMG data
+% if isfield(handles, 'emg1_1')
+%     allowedMuscles = {'BF', 'SEMB', 'SEMT', 'PER', 'TA', 'SOL', 'MG', ...
+%         'LG', 'GLU', 'TFL', 'ILP', 'ADM', 'RF', 'VM', 'VL'};
+%     % Check that all muscles are allowed
+%     % Check for sync signals
+% end
 
 % -- Save Location
 % Note: this check always runs regardless of ignoreErrors, since a valid
