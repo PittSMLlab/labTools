@@ -180,16 +180,21 @@ if ~(nargin > 1 && ignoreErrors)
         return;
     end
     if isnan(out.day) || out.day < 0 || out.day > 31
-        h_error=errordlg('Please enter a day between 1 and 31','Day Error');
-        waitfor(h_error)
-        uicontrol(handles.day_edit)
-        out.bad=true; return
+        h_error = errordlg( ...
+            'Please enter a day between 1 and 31', 'Day Error');
+        waitfor(h_error);
+        uicontrol(handles.day_edit);
+        out.bad = true;
+        return;
     end
-    if isnan(out.year) || out.year<2010 || out.year>3000
-        h_error=errordlg('Please enter the year when the experiment took place','Year Error');
-        waitfor(h_error)
-        uicontrol(handles.year_edit)
-        out.bad=true; return
+    if isnan(out.year) || out.year < 2010 || out.year > 3000
+        h_error = errordlg( ...
+            'Please enter the year when the experiment took place', ...
+            'Year Error');
+        waitfor(h_error);
+        uicontrol(handles.year_edit);
+        out.bad = true;
+        return;
     end
 
     % -- Subject Information
