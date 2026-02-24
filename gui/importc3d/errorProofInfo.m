@@ -214,11 +214,14 @@ if ~(nargin > 1 && ignoreErrors)
         out.bad = true;
         return;
     end
-    if isnan(out.DOByear) || out.DOByear<1900 || out.year>3000 %seems like an appropriate range...
-        h_error=errordlg('Please enter the year when the subject was born','Year Error');
-        waitfor(h_error)
-        uicontrol(handles.DOByear_edit)
-        out.bad=true;
+    if isnan(out.DOByear) || out.DOByear < 1900 || out.year > 3000
+        % Appropriate range of birth years
+        h_error = errordlg( ...
+            'Please enter the year when the subject was born', ...
+            'Year Error');
+        waitfor(h_error);
+        uicontrol(handles.DOByear_edit);
+        out.bad = true;
         return;
     end
     if isnan(out.height) || out.height < 0 || out.height > 230
@@ -291,11 +294,14 @@ if ~(nargin > 1 && ignoreErrors)
         out.bad = true;
         return;
     end
-    if ~isempty(out.secEMGworksdir_location) && out.secEMGworksdir_location~=0 && ~exist(out.secEMGworksdir_location,'dir')
-        h_error=errordlg('Please enter a folder that exists','Directory Error');
-        waitfor(h_error)
-        uicontrol(handles.SecondEMGworksLocation)
-        out.bad=1;
+    if ~isempty(out.secEMGworksdir_location) && ...
+            out.secEMGworksdir_location ~= 0 && ...
+            ~exist(out.secEMGworksdir_location, 'dir')
+        h_error = errordlg( ...
+            'Please enter a folder that exists', 'Directory Error');
+        waitfor(h_error);
+        uicontrol(handles.SecondEMGworksLocation);
+        out.bad = true;
         return;
     end
 
