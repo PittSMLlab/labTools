@@ -262,31 +262,34 @@ if ~(nargin > 1 && ignoreErrors)
         out.affectedSide  = aux{out.affectedValue};
     end
 
-    % -- Data Information
-    if ~exist(out.dir_location,'dir')
-        h_error=errordlg('Please enter a folder that exists','Directory Error');
-        waitfor(h_error)
-        uicontrol(handles.c3dlocation)
-        out.bad=true;
-        return
+    % -- Data Info
+    if ~exist(out.dir_location, 'dir')
+        h_error = errordlg( ...
+            'Please enter a folder that exists', 'Directory Error');
+        waitfor(h_error);
+        uicontrol(handles.c3dlocation);
+        out.bad = true;
+        return;
     end
-    if ~isempty(out.secdir_location) && ~exist(out.secdir_location,'dir')
+    if ~isempty(out.secdir_location) && ~exist(out.secdir_location, 'dir')
         % if ~isempty(out.secdir_location)
-        h_error=errordlg('Please enter a folder that exists','Directory Error');
-        waitfor(h_error)
-        uicontrol(handles.secfileloc)
-        out.bad=1;
-        return
+        h_error = errordlg( ...
+            'Please enter a folder that exists', 'Directory Error');
+        waitfor(h_error);
+        uicontrol(handles.secfileloc);
+        out.bad = true;
+        return;
     end
 
-    if ~isempty(out.EMGworksdir_location) && ~exist(out.EMGworksdir_location,'dir')
-        h_error=errordlg('Please enter a folder that exists','Directory Error');
-        waitfor(h_error)
-        uicontrol(handles.EMGworksLocation)
-        out.bad=1;
-        return
+    if ~isempty(out.EMGworksdir_location) && ...
+            ~exist(out.EMGworksdir_location, 'dir')
+        h_error = errordlg( ...
+            'Please enter a folder that exists', 'Directory Error');
+        waitfor(h_error);
+        uicontrol(handles.EMGworksLocation);
+        out.bad = true;
+        return;
     end
-
     if ~isempty(out.secEMGworksdir_location) && out.secEMGworksdir_location~=0 && ~exist(out.secEMGworksdir_location,'dir')
         h_error=errordlg('Please enter a folder that exists','Directory Error');
         waitfor(h_error)
@@ -381,10 +384,13 @@ end
 %         %Check for sync signals
 %     end
 
-% --  Save Location
-if ~exist(out.save_folder,'dir')
-    h_error =errordlg( ...
-        'Please enter a save folder that exists','Directory Error');
+% -- Save Location
+% Note: this check always runs regardless of ignoreErrors, since a valid
+% save path is required even for lenient close-time saves.
+if ~exist(out.save_folder, 'dir')
+    h_error = errordlg( ...
+        'Please enter a save folder that exists', ...
+        'Directory Error');
     waitfor(h_error);
     uicontrol(handles.saveloc_edit);
     out.bad = true;
