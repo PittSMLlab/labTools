@@ -1,10 +1,28 @@
 function out = errorProofInfo(handles,ignoreErrors)
-%Checks fields of 'GetInfoGUI' to ensure entries are valid and reasonable.
-%If entry is invalid, issues a warning about which field is incorrect.
+% errorProofInfo  Validates and extracts all fields from GetInfoGUI.
 %
-%Inputs:
-% handles - handle structure from 'GetInfoGUI'
-% ignoreErrors - enter true to ignore any errors
+%   Reads all control values from the GetInfoGUI handles structure,
+% packages them into an output struct, and optionally validates that all
+% entries are valid and complete. If an invalid entry is found, an error
+% dialog is shown, focus is returned to the offending field, and out.bad is
+% set to true so that the caller can abort.
+%
+%   Inputs:
+%     handles      - handles struct from GetInfoGUI (see GUIDATA)
+%     ignoreErrors - (optional) logical; set true to skip field validation
+%                    and return the struct regardless of entry validity.
+%                    Defaults to false if omitted.
+%
+%   Outputs:
+%     out - struct containing all session information extracted from
+%           the GUI fields, with the following fields of note:
+%             out.bad - true if a validation error was detected
+%             out.ok  - set to true by ok_button_Callback on success
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: GetInfoGUI, ok_button_Callback, figure1_CloseRequestFcn
 
 out.bad = false;
 
