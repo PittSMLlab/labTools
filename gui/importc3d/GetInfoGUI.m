@@ -135,7 +135,7 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 %     varargout{1} - info struct populated by the user, or [] if the
 %                    GUI was closed without saving
 
-if ~(isfield(handles, 'noSave') && handles.noSave)
+if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     info = handles.info;
 
     % Force save immediately so data is preserved if later steps fail
@@ -221,14 +221,14 @@ choice = questdlg('Do you want to save changes?', ...
     'Save', 'Don''t Save', 'Cancel', 'Cancel');
 switch choice
     case 'Save'
-        % Validate and save whatever was entered
+        % Save directly here; OutputFcn workflow will be bypassed
         info = errorProofInfo(handles, true);
         save([info.save_folder filesep info.ID 'info'], 'info');
-        handles.noSave = true;
+        handles.bypassOutputFcn = true;
         guidata(hObject, handles);
         uiresume(handles.figure1);
     case 'Don''t Save'
-        handles.noSave = true;
+        handles.bypassOutputFcn = true;
         guidata(hObject, handles);
         uiresume(handles.figure1);
     case {'Cancel', ''}
