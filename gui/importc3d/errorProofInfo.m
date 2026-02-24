@@ -155,21 +155,29 @@ if isfield(handles, 'trialObs')
     out.trialObs = handles.trialObs;
 end
 
-%% Check for Errors
-if ~(nargin > 1 && ignoreErrors)
+%% Validate GUI Field Entries
+% This section is skipped when ignoreErrors is provided and true (e.g. when
+% called from figure1_CloseRequestFcn for a lenient close-time save).
 
+if ~(nargin > 1 && ignoreErrors)
     % -- Experiment Info
-    %     if strcmp(out.ExpFile,' ')
-    %         h_error=errordlg('Please choose an experiment description','Description Error');
-    %         waitfor(h_error)
-    %         uicontrol(handles.description_edit)
-    %         out.bad=true; close(h); return
-    %     end
-    if strcmp(out.experimenter,' (Enter name/initials)')
-        h_error=errordlg('Please enter the name of the person who ran the experiment','Experimenter Error');
-        waitfor(h_error)
-        uicontrol(handles.name_edit)
-        out.bad=true; return
+    % if strcmp(out.ExpFile,' ')
+    %     h_error = errordlg( ...
+    %         'Please choose an experiment description', ...
+    %         'Description Error');
+    %     waitfor(h_error);
+    %     uicontrol(handles.description_edit);
+    %     out.bad = true; close(h);
+    %     return;
+    % end
+    if strcmp(out.experimenter, ' (Enter name/initials)')
+        h_error = errordlg( ...
+            ['Please enter the name of the person who ran ' ...
+            'the experiment'], 'Experimenter Error');
+        waitfor(h_error);
+        uicontrol(handles.name_edit);
+        out.bad = true;
+        return;
     end
     if isnan(out.day) || out.day < 0 || out.day > 31
         h_error=errordlg('Please enter a day between 1 and 31','Day Error');
