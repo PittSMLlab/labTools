@@ -114,16 +114,17 @@ end
 Nconds = str2double(get(handles.numofconds, 'string'));
 if ~isnan(Nconds) && Nconds > 0
     for c = 1:Nconds                        % for each condition, ...
-        condNum = ...
-            str2double(get(handles.(['condition', num2str(c)]), 'string'));
+        condNum = str2double( ...
+            get(handles.(['condition', num2str(c)]), 'string'));
         out.cond(c) = condNum;
-        out.conditionNames{condNum} = ...
-            strtrim(get(handles.(['condName', num2str(c)]), 'string'));
+        out.conditionNames{condNum} = strtrim( ...
+            get(handles.(['condName', num2str(c)]), 'string'));
         out.conditionDescriptions{condNum} = ...
             get(handles.(['description', num2str(c)]), 'string');
         trialnums = get(handles.(['trialnum', num2str(c)]), 'string');
-        % Evaluate to support entries like '1:6' or '7 8 9'
-        out.trialnums{condNum} = eval(['[', trialnums, ']']);
+        % str2num handles range notation (e.g. '1:6') and
+        % space-separated lists (e.g. '7 8 9') without eval
+        out.trialnums{condNum} = str2num(trialnums); %#ok<ST2NM>
         out.type{condNum} = get(handles.(['type', num2str(c)]), 'string');
     end
 else
