@@ -179,16 +179,17 @@ if ~ignoreErrors
     % end
     if strcmp(out.experimenter, ' (Enter name/initials)')
         h_error = errordlg( ...
-            ['Please enter the name of the person who ran ' ...
-            'the experiment'], 'Experimenter Error');
+            ['Please enter the name or initials of the person who ' ...
+            'ran the experiment.'], 'Experimenter Error');
         waitfor(h_error);
         uicontrol(handles.name_edit);
         out.bad = true;
         return;
     end
-    if isnan(out.day) || out.day < 0 || out.day > 31
+    if isnan(out.day) || out.day < 1 || out.day > 31
         h_error = errordlg( ...
-            'Please enter a day between 1 and 31', 'Day Error');
+            'Please enter the day of the experiment (1-31).', ...
+            'Experiment Day Error');
         waitfor(h_error);
         uicontrol(handles.day_edit);
         out.bad = true;
@@ -196,8 +197,8 @@ if ~ignoreErrors
     end
     if isnan(out.year) || out.year < 2010 || out.year > 3000
         h_error = errordlg( ...
-            'Please enter the year when the experiment took place', ...
-            'Year Error');
+            ['Please enter the year the experiment took place ' ...
+            '(2010 or later).'], 'Experiment Year Error');
         waitfor(h_error);
         uicontrol(handles.year_edit);
         out.bad = true;
@@ -207,45 +208,44 @@ if ~ignoreErrors
     % -- Subject Info
     if strcmp(out.ID, 'Sub#')
         h_error = errordlg( ...
-            'Please enter the subject ID', 'ID Error');
+            ['Please enter the coded subject ID (do not use the ' ...
+            'subject''s name).'], 'Subject ID Error');
         waitfor(h_error);
         uicontrol(handles.subID_edit);
         out.bad = true;
         return;
     end
-    if isnan(out.DOBday) || out.DOBday < 0 || out.DOBday > 31
+    if isnan(out.DOBday) || out.DOBday < 1 || out.DOBday > 31
         h_error = errordlg( ...
-            'Please enter a day between 1 and 31', 'Day Error');
+            'Please enter the subject''s birth day (1-31).', ...
+            'Birth Day Error');
         waitfor(h_error);
         uicontrol(handles.DOBday_edit);
         out.bad = true;
         return;
     end
     if isnan(out.DOByear) || out.DOByear < 1900 || out.DOByear > 3000
-        % Appropriate range of birth years
         h_error = errordlg( ...
-            'Please enter the year when the subject was born', ...
-            'Year Error');
+            'Please enter the subject''s birth year (1900 or later).', ...
+            'Birth Year Error');
         waitfor(h_error);
         uicontrol(handles.DOByear_edit);
         out.bad = true;
         return;
     end
-    if isnan(out.height) || out.height < 0 || out.height > 230
-        % Appropriate range in cm
+    if isnan(out.height) || out.height <= 0 || out.height > 230
         h_error = errordlg( ...
-            'Please enter the height of the subject', ...
-            'Height Error');
+            ['Please enter the subject''s height in cm ' ...
+            '(valid range: 1-230 cm).'], 'Height Error');
         waitfor(h_error);
         uicontrol(handles.height_edit);
         out.bad = true;
         return;
     end
-    if isnan(out.weight) || out.weight < 0 || out.weight > 170
-        % Appropriate range in kg
+    if isnan(out.weight) || out.weight <= 0 || out.weight > 170
         h_error = errordlg( ...
-            'Please enter the weight of the subject', ...
-            'Weight Error');
+            ['Please enter the subject''s weight in kg ' ...
+            '(valid range: 1-170 kg).'], 'Weight Error');
         waitfor(h_error);
         uicontrol(handles.weight_edit);
         out.bad = true;
@@ -253,7 +253,8 @@ if ~ignoreErrors
     end
     if strcmp(out.domhand, ' ')
         h_error = errordlg( ...
-            'Please select a dominant arm', 'Dominant Arm Error');
+            'Please select the subject''s dominant arm.', ...
+            'Dominant Arm Error');
         waitfor(h_error);
         uicontrol(handles.domhand_list);
         out.bad = true;
@@ -261,7 +262,8 @@ if ~ignoreErrors
     end
     if strcmp(out.domleg, ' ')
         h_error = errordlg( ...
-            'Please select a dominant leg', 'Dominant Leg Error');
+            'Please select the subject''s dominant leg.', ...
+            'Dominant Leg Error');
         waitfor(h_error);
         uicontrol(handles.domleg_list);
         out.bad = true;
@@ -276,7 +278,9 @@ if ~ignoreErrors
     % -- Data Info
     if ~isfolder(out.dir_location)
         h_error = errordlg( ...
-            'Please enter a folder that exists', 'Directory Error');
+            ['The primary C3D data folder does not exist. ' ...
+            'Please enter a valid folder path.'], ...
+            'C3D Data Folder Error');
         waitfor(h_error);
         uicontrol(handles.c3dlocation);
         out.bad = true;
@@ -284,7 +288,9 @@ if ~ignoreErrors
     end
     if ~isempty(out.secdir_location) && ~isfolder(out.secdir_location)
         h_error = errordlg( ...
-            'Please enter a folder that exists', 'Directory Error');
+            ['The secondary C3D data folder does not exist. ' ...
+            'Please enter a valid folder path.'], ...
+            'Secondary C3D Folder Error');
         waitfor(h_error);
         uicontrol(handles.secfileloc);
         out.bad = true;
@@ -294,7 +300,9 @@ if ~ignoreErrors
     if ~isempty(out.EMGworksdir_location) && ...
             ~isfolder(out.EMGworksdir_location)
         h_error = errordlg( ...
-            'Please enter a folder that exists', 'Directory Error');
+            ['The primary EMGworks data folder does not exist. ' ...
+            'Please enter a valid folder path.'], ...
+            'EMGworks Folder Error');
         waitfor(h_error);
         uicontrol(handles.EMGworksLocation);
         out.bad = true;
@@ -303,7 +311,9 @@ if ~ignoreErrors
     if ~isempty(out.secEMGworksdir_location) && ...
             ~isfolder(out.secEMGworksdir_location)
         h_error = errordlg( ...
-            'Please enter a folder that exists', 'Directory Error');
+            ['The secondary EMGworks data folder does not exist. ' ...
+            'Please enter a valid folder path.'], ...
+            'Secondary EMGworks Folder Error');
         waitfor(h_error);
         uicontrol(handles.SecondEMGworksLocation);
         out.bad = true;
@@ -316,8 +326,9 @@ if ~ignoreErrors
             [out.basename sprintf('%02d', t) '.c3d']);
         if ~isfile(filename)
             h_error = errordlg( ...
-                ['The file ', filename, ' does not exist.'], ...
-                'File Name Error');
+                ['The file ', filename, ' does not exist. ' ...
+                'Check the C3D data folder and base file name.'], ...
+                'C3D File Not Found');
             waitfor(h_error);
             uicontrol(handles.basefile);
             out.bad = true;
@@ -353,8 +364,9 @@ if ~ignoreErrors
                 [out.basename sprintf('%02d', t) '.c3d']);
             if ~isfile(filename2)
                 h_error = errordlg( ...
-                    ['The file ', filename2, ' does not exist.'], ...
-                    'File Name Error');
+                    ['The secondary C3D file ', filename2, ' does not ' ...
+                    'exist. Check the secondary C3D folder and base ' ...
+                    'file name.'], 'Secondary C3D File Not Found');
                 waitfor(h_error);
                 uicontrol(handles.basefile);
                 out.bad = true;
@@ -370,8 +382,9 @@ if ~ignoreErrors
             [out.basename sprintf('%02d', t) '.mat']);
         if ~isfile(filename3)
             h_error = errordlg( ...
-                ['The file ', filename3, ' does not exist.'], ...
-                'File Name Error');
+                ['The EMGworks file ', filename3, ' does not exist. ' ...
+                'Check the EMGworks folder and base file name.'], ...
+                'EMGworks File Not Found');
             waitfor(h_error);
             uicontrol(handles.basefile);
             out.bad = true;
@@ -383,8 +396,9 @@ if ~ignoreErrors
             [out.basename sprintf('%02d', t) '.mat']);
         if ~isfile(filename4)
             h_error = errordlg( ...
-                ['The file ', filename4, ' does not exist.'], ...
-                'File Name Error');
+                ['The secondary EMGworks file ', filename4, ' does not '...
+                'exist. Check the secondary EMGworks folder and base ' ...
+                'file name.'], 'Secondary EMGworks File Not Found');
             waitfor(h_error);
             uicontrol(handles.basefile);
             out.bad = true;
@@ -406,9 +420,8 @@ end
 % Note: this check always runs regardless of ignoreErrors, since a valid
 % save path is required even for lenient close-time saves.
 if ~isfolder(out.save_folder)
-    h_error = errordlg( ...
-        'Please enter a save folder that exists', ...
-        'Directory Error');
+    h_error = errordlg(['The save folder does not exist. ' ...
+        'Please enter a valid folder path.'], 'Save Folder Error');
     waitfor(h_error);
     uicontrol(handles.saveloc_edit);
     out.bad = true;
