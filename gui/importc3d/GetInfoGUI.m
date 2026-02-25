@@ -1305,7 +1305,6 @@ function type16_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
-
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
@@ -1341,9 +1340,6 @@ function type17_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type17 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
@@ -1379,9 +1375,6 @@ function type18_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type18 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
@@ -1417,9 +1410,6 @@ function type19_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type19 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
@@ -1455,9 +1445,6 @@ function type20_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to type20 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
@@ -1467,7 +1454,6 @@ end
 % =================== Save As / OK Button ====================
 % ============================================================
 
-% ============================================================
 % --- Executes on button press in saveExpButton.
 function saveExpButton_Callback(hObject, eventdata, handles)
 % saveExpButton_Callback  Saves the current condition configuration as
@@ -1520,7 +1506,7 @@ if ~isempty(answer)
     answer = answer(ismember(answer, ['A':'Z' 'a':'z' '0':'9']));
     detailsPath = which('GetInfoGUI');
     detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
-    if exist([detailsPath filesep answer '.mat'], 'file') > 0
+    if isfile(fullfile(detailsPath, [answer '.mat']))
         choice = questdlg( ...
             'File name already exists. Overwrite?', ...
             'File Name Warning', 'Yes', 'No', 'No');
@@ -1530,17 +1516,13 @@ if ~isempty(answer)
             return;
         end
     end
-    save([detailsPath filesep answer], 'expDes');
+    save(fullfile(detailsPath, answer), 'expDes');
     description_edit_CreateFcn(handles.description_edit, ...
         eventdata, handles);
     newContents = get(handles.description_edit, 'string');
     ind = find(ismember(newContents, answer));
     set(handles.description_edit, 'Value', ind);
 end
-
-% ============================================================
-% ------------------- Save Location / OK Button -------------
-% ============================================================
 
 function saveloc_edit_Callback(hObject, eventdata, handles)
 % saveloc_edit_Callback  Executes when save location is entered manually.
@@ -1569,7 +1551,7 @@ function save_browse_Callback(hObject, eventdata, handles)
 %     handles   - struct with handles and user data (see GUIDATA)
 
 savePath = uigetdir();
-if ~savePath == 0
+if ischar(savePath)
     handles.save_folder = savePath;
     set(handles.saveloc_edit, 'string', handles.save_folder);
 end
@@ -1606,8 +1588,8 @@ function loadButton_Callback(hObject, eventdata, handles)
 
 [file, filePath] = uigetfile('*.mat', 'Choose subject handles file');
 
-if file ~= 0
-    aux        = load([filePath file]);
+if ischar(file)
+    aux        = load(fullfile(filePath, file));
     fieldNames = fieldnames(aux);
     subInfo    = aux.(fieldNames{1});
     % TODO: check that file is correct
