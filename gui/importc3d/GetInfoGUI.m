@@ -1,17 +1,15 @@
 function varargout = GetInfoGUI(varargin)
 % GetInfoGUI  GUI for collecting experimental session information.
 %
-%   Launches a graphical user interface to gather all information
-%   regarding a single experiment conducted in the Sensorimotor
-%   Learning Laboratory. Fields include participant demographics,
-%   experiment metadata, data file locations, trial and condition
-%   assignments, and EMG channel labels. Refer to the in-GUI help
-%   text (hover over any field) for field-specific guidance.
+%   Launches a graphical user interface to gather all information regarding
+% a single experiment conducted in the Sensorimotor Learning Laboratory.
+% Fields include participant demographics, experiment metadata, data file
+% locations, trial and condition assignments, and EMG channel labels. Refer
+% to in-GUI help text (hover over any field) for field-specific guidance.
 %
 %   Outputs:
-%     info - Struct containing all session information entered by
-%            the user, or empty ([]) if the GUI was closed without
-%            saving.
+%     info - Struct containing all session information entered by the user,
+%            or empty ([]) if the GUI was closed without saving.
 %
 %   Toolbox Dependencies:
 %     None
@@ -65,8 +63,7 @@ scrsz  = get(0, 'ScreenSize');
 set(gcf(), 'Units', 'pixels');
 guiPos = get(hObject, 'Position');
 set(hObject, 'Position', [ ...
-    (scrsz(3) - guiPos(3)) / 2, ...
-    (scrsz(4) - guiPos(4)) / 2, ...
+    (scrsz(3) - guiPos(3)) / 2, (scrsz(4) - guiPos(4)) / 2, ...
     guiPos(3), guiPos(4)]);
 
 % Set tooltip strings displayed when hovering over GUI fields.
@@ -139,8 +136,8 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     info = handles.info;
 
     % Force save immediately so data is preserved if later steps fail
-    infoFilePath = [info.save_folder filesep info.ID 'info.mat'];
-    if exist(infoFilePath, 'file') > 0
+    infoFilePath = fullfile(info.save_folder, [info.ID 'info.mat']);
+    if isfile(infoFilePath)
         choice = questdlg( ...
             ['Info file (and possibly others) already exist for ' ...
             info.ID '. Overwrite?'], ...
@@ -151,20 +148,18 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
             waitfor(h);
         end
     end
-    save([info.save_folder filesep info.ID 'info'], 'info');
+    save(fullfile(info.save_folder, [info.ID 'info']), 'info');
 
     % Prompt user for individual trial observations
     answer = inputdlg( ...
-        'Are there any observations for individual trials?(y/n) ', ...
-        's');
+        'Are there any observations for individual trials?(y/n) ', 's');
 
     % Validate response — must be a single 'y' or 'n'
     while length(answer{1}) > 1 || ...
             (~strcmpi(answer{1}, 'y') && ~strcmpi(answer{1}, 'n'))
         disp('Error: you must enter either "y" or "n"');
         answer = inputdlg( ...
-            'Are there any observations for individual trials?(y/n) ', ...
-            's');
+            'Are there any observations for individual trials?(y/n) ','s');
     end
 
     % Pre-allocate trial observation cell array if needed
@@ -199,7 +194,7 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     end
 
     varargout{1} = info;
-    save([info.save_folder filesep info.ID 'info'], 'info');
+    save(fullfile(info.save_folder, [info.ID 'info']), 'info');
 else
     varargout{1} = [];
 end
@@ -217,13 +212,12 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles)
 %     handles   - struct with handles and user data (see GUIDATA)
 
 choice = questdlg('Do you want to save changes?', ...
-    'GetInfoGUI', ...
-    'Save', 'Don''t Save', 'Cancel', 'Cancel');
+    'GetInfoGUI', 'Save', 'Don''t Save', 'Cancel', 'Cancel');
 switch choice
     case 'Save'
         % Save directly here; OutputFcn workflow will be bypassed
         info = errorProofInfo(handles, true);
-        save([info.save_folder filesep info.ID 'info'], 'info');
+        save(fullfile(info.save_folder, [info.ID 'info']), 'info');
         handles.bypassOutputFcn = true;
         guidata(hObject, handles);
         uiresume(handles.figure1);
@@ -251,11 +245,9 @@ function description_edit_Callback(hObject, eventdata, handles)
 contents = cellstr(get(hObject, 'String'));
 expFile  = contents{get(hObject, 'Value')};
 
-% HH 6/16
-% eval(expFile);
 detailsPath = which('GetInfoGUI');
 detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
-if exist([detailsPath filesep expFile '.mat'], 'file') > 0
+if isfile(fullfile(detailsPath, [expFile '.mat']))
     % First, clear all condition fields
     set(handles.numofconds, 'String', '0');
     for conds = 1:handles.lines
@@ -267,7 +259,7 @@ if exist([detailsPath filesep expFile '.mat'], 'file') > 0
     end
 
     % Second, populate fields from the selected experiment description
-    a      = load([detailsPath filesep expFile]);
+    a      = load(fullfile(detailsPath, expFile));
     aux    = fieldnames(a);
     expDes = a.(aux{1});
     handles = setExpDescription(handles, expDes);
@@ -276,8 +268,8 @@ end
 
 guidata(hObject, handles);
 
-% These functions execute during object creation, after all
-% properties have been set.
+% These functions execute during object creation
+% after all properties have been set.
 % Hint: controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 function description_edit_CreateFcn(hObject, eventdata, handles)
@@ -389,7 +381,6 @@ function schenleyLab_Callback(hObject, eventdata, handles)
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
-% --- Executes on button press in schenleyLab.
 function schenleyLab_CreateFcn(hObject, eventdata, handles)
 % if ispc && isequal(get(hObject,'BackgroundColor'), ...
 %         get(0,'defaultUicontrolBackgroundColor'))
@@ -405,12 +396,12 @@ function schenleyLab_KeyPressFcn(hObject, eventdata, handles)
 %   Modifier - name(s) of any modifier keys pressed
 % handles    structure with handles and user data (see GUIDATA)
 
+% --- Executes on button press in perceptualTasks.
 function perceptualTasks_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of perceptualTasks
 % set(handles.schenleyLab,'enable','on')
 % guidata(hObject,handles);
 
-% --- Executes on button press in perceptualTasks.
 function perceptualTasks_CreateFcn(hObject, eventdata, handles)
 % if ispc && isequal(get(hObject,'BackgroundColor'), ...
 %         get(0,'defaultUicontrolBackgroundColor'))
