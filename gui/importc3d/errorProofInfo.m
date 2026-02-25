@@ -24,6 +24,11 @@ function out = errorProofInfo(handles, ignoreErrors)
 %
 %   See also: GetInfoGUI, ok_button_Callback, figure1_CloseRequestFcn
 
+arguments
+    handles      (1,1) struct
+    ignoreErrors (1,1) logical = false
+end
+
 out.bad = false;
 
 %% Extract Information from GUI Fields
@@ -157,10 +162,10 @@ if isfield(handles, 'trialObs')
 end
 
 %% Validate GUI Field Entries
-% This section is skipped when ignoreErrors is provided and true (e.g.,
-% when called from figure1_CloseRequestFcn for a lenient close-time save).
+% This section is skipped when ignoreErrors is true (e.g., when called
+% from figure1_CloseRequestFcn for a lenient close-time save).
 
-if ~(nargin > 1 && ignoreErrors)
+if ~ignoreErrors
     % -- Experiment Info
     % if strcmp(out.ExpFile,' ')
     %     h_error = errordlg( ...
@@ -278,7 +283,6 @@ if ~(nargin > 1 && ignoreErrors)
         return;
     end
     if ~isempty(out.secdir_location) && ~isfolder(out.secdir_location)
-        % if ~isempty(out.secdir_location)
         h_error = errordlg( ...
             'Please enter a folder that exists', 'Directory Error');
         waitfor(h_error);
