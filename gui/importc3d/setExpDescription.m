@@ -1,4 +1,4 @@
-function handles = setExpDescription(handles,expDes)
+function handles = setExpDescription(handles, expDes)
 % setExpDescription  Populates GetInfoGUI condition fields from an
 %   experiment description struct.
 %
@@ -31,42 +31,46 @@ function handles = setExpDescription(handles,expDes)
 %   See also: GetInfoGUI, description_edit_Callback,
 %             description_edit_CreateFcn
 
+%% Set Experiment Group Label
 handles.group = expDes.group;
 
+%% Populate Condition Rows
 count = 0;
 for ii = 1:handles.lines
-    % condition numbers
+    % Condition numbers
     if isfield(expDes,['condition' num2str(ii)])
         set(handles.(['condition' num2str(ii)]), ...
             'string',num2str(expDes.(['condition' num2str(ii)])));
         count = count + 1;
     end
-    % condition names
+    % Condition names
     if isfield(expDes,['condName' num2str(ii)])
         set(handles.(['condName' num2str(ii)]), ...
             'string',expDes.(['condName' num2str(ii)]));
     end
-    % condition descriptions
+    % Condition descriptions
     if isfield(expDes,['description' num2str(ii)])
         set(handles.(['description' num2str(ii)]), ...
             'string',expDes.(['description' num2str(ii)]));
     end
-    % trial numbers for each condition
+    % Trial numbers for each condition
     if isfield(expDes,['trialnum' num2str(ii)])
         set(handles.(['trialnum' num2str(ii)]), ...
             'string',expDes.(['trialnum' num2str(ii)]));
     end
-    % set trial types
+    % Trial types
     if isfield(expDes,['type' num2str(ii)])
         set(handles.(['type' num2str(ii)]), ...
             'string',expDes.(['type' num2str(ii)]));
     end
 end
 
-if isfield(expDes,'numofconds')
-    set(handles.numofconds,'string',expDes.numofconds);
+%% Update Number of Conditions Field
+if isfield(expDes, 'numofconds')
+    set(handles.numofconds, 'string', expDes.numofconds);
 else
-    set(handles.numofconds,'string',num2str(count));
+    % Fall back to the count of populated condition rows
+    set(handles.numofconds, 'string', num2str(count));
 end
 
 end
