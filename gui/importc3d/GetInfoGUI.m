@@ -135,7 +135,7 @@ function varargout = GetInfoGUI_OutputFcn(hObject, eventdata, handles)
 if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     info = handles.info;
 
-    % Force save immediately so data is preserved if later steps fail
+    % Check for an existing file; offer rename if user declines overwrite
     infoFilePath = fullfile(info.save_folder, [info.ID 'info.mat']);
     if isfile(infoFilePath)
         choice = questdlg( ...
@@ -148,7 +148,11 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
             waitfor(h);
         end
     end
-    save(fullfile(info.save_folder, [info.ID 'info']), 'info');
+
+    % Compute save path after potential ID modification, then force-save
+    % immediately so data is preserved if later steps fail
+    infoSavePath = fullfile(info.save_folder, [info.ID 'info']);
+    save(infoSavePath, 'info');
 
     % Prompt user for individual trial observations
     answer = inputdlg( ...
@@ -172,29 +176,23 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
     end
 
     if strcmpi(answer{1}, 'y')
-        trialstr = [];
-        % Build comma-separated trial string for the eval menu call
-        for t = expTrials
-            trialstr = [trialstr, ',''Trial ', num2str(t), ''''];
-        end
-        % Generate dynamic trial selection menu
-        eval(['choice = menu(''Choose Trial''', ...
-            trialstr, ',''Done'');']);
+        % Build cell array of trial label strings for menu display
+        trialLabels = arrayfun(@(t) ['Trial ' num2str(t)], expTrials, ...
+            'UniformOutput', false);
+        % Display trial selection menu using comma expansion
+        choice = menu('Choose Trial', trialLabels{:}, 'Done');
         while choice ~= numTrials + 1
-            % Get observation for trial selected
-            obStr = inputdlg( ...
-                ['Observations for Trial ' ...
-                num2str(expTrials(choice))], ...
-                'Enter Observation');
-            % Index into cell to store contents as char
+            % Get observation for the selected trial
+            obStr = inputdlg(['Observations for Trial ' ...
+                num2str(expTrials(choice))], 'Enter Observation');
+            % Store observation string in the cell array
             info.trialObs{expTrials(choice)} = obStr{1, 1};
-            eval(['choice = menu(''Choose Trial''', ...
-                trialstr, ',''Done'');']);
+            choice = menu('Choose Trial', trialLabels{:}, 'Done');
         end
     end
 
     varargout{1} = info;
-    save(fullfile(info.save_folder, [info.ID 'info']), 'info');
+    save(infoSavePath, 'info');
 else
     varargout{1} = [];
 end
@@ -657,7 +655,7 @@ function numoftrials_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents as text
 %        str2double(get(hObject,'String')) returns contents as double
 
-numoftrials = str2double(get(hObject, 'String'));
+numoftrials = str2double(get(hObject, 'String')); %#ok<NASGU>
 
 function numoftrials_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
@@ -747,11 +745,12 @@ state = get(hObject, 'Value');
 if state
     set(handles.Nexus,    'enable', 'on');
     set(handles.EMGworks, 'enable', 'on');
+    % The off-then-on sequence forces a GUI control state refresh
     for i = 1:16
-        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
-        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
-        eval(['set(handles.emg1_' num2str(i) ',''enable'',''on'');']);
-        eval(['set(handles.emg2_' num2str(i) ',''enable'',''on'');']);
+        set(handles.(['emg1_' num2str(i)]), 'enable', 'off');
+        set(handles.(['emg2_' num2str(i)]), 'enable', 'off');
+        set(handles.(['emg1_' num2str(i)]), 'enable', 'on');
+        set(handles.(['emg2_' num2str(i)]), 'enable', 'on');
     end
 else
     set(handles.Nexus,          'enable', 'off');
@@ -759,8 +758,8 @@ else
     set(handles.secfile_browse, 'enable', 'off');
     set(handles.secfileloc,     'enable', 'off');
     for i = 1:16
-        eval(['set(handles.emg1_' num2str(i) ',''enable'',''off'');']);
-        eval(['set(handles.emg2_' num2str(i) ',''enable'',''off'');']);
+        set(handles.(['emg1_' num2str(i)]), 'enable', 'off');
+        set(handles.(['emg2_' num2str(i)]), 'enable', 'off');
     end
 end
 guidata(hObject, handles);
