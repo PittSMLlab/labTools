@@ -607,7 +607,7 @@ function browse_Callback(hObject, eventdata, handles)
 %     handles   - struct with handles and user data (see GUIDATA)
 
 handles.folder_location = uigetdir();
-if ~handles.folder_location == 0
+if ischar(handles.folder_location)
     set(handles.c3dlocation, 'string', handles.folder_location);
 end
 guidata(hObject, handles);
@@ -818,7 +818,7 @@ function secfile_browse_Callback(hObject, eventdata, handles)
 %     handles   - struct with handles and user data (see GUIDATA)
 
 handles.secfolder_location = uigetdir();
-if ~handles.secfolder_location == 0
+if ischar(handles.secfolder_location)
     set(handles.secfileloc, 'string', handles.secfolder_location);
 end
 guidata(hObject, handles);
@@ -841,11 +841,10 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 % ---- EMGworks file location callbacks --------------------------
-%%%%%%%%%%%%%% DMMO for EMGworks
 % --- Executes on button press in EMGworksFile1_search.
 function EMGworksFile1_search_Callback(hObject, eventdata, handles)
 handles.EMGworksFile_Loc = uigetdir();
-if ~handles.EMGworksFile_Loc == 0
+if ischar(handles.EMGworksFile_Loc)
     set(handles.EMGworksLocation, 'string', handles.EMGworksFile_Loc);
 end
 guidata(hObject, handles);
@@ -862,7 +861,7 @@ end
 
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
 handles.EMGworksFile2Loc = uigetdir();
-if ~handles.EMGworksFile2Loc == 0
+if ischar(handles.EMGworksFile2Loc)
     set(handles.SecondEMGworksLocation, 'string', ...
         handles.EMGworksFile2Loc);
 end
@@ -877,10 +876,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
     set(hObject, 'BackgroundColor', 'white');
 end
-%%%%%%%%%%%%%% DMMO for EMGworks
-%%%%%%%%%%%%%%
 
-% Hint: get(hObject,'Value') returns toggle state of EMGworks
+% Hint: get(hObject, 'Value') returns toggle state of EMGworks
 
 % ============================================================
 % ====================== Condition Info ======================
