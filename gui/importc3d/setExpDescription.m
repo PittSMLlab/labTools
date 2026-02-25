@@ -37,31 +37,31 @@ handles.group = expDes.group;
 %% Populate Condition Rows
 count = 0;
 for ii = 1:handles.lines
+    iStr = num2str(ii);
     % Condition numbers
-    if isfield(expDes,['condition' num2str(ii)])
-        set(handles.(['condition' num2str(ii)]), ...
-            'string',num2str(expDes.(['condition' num2str(ii)])));
+    if isfield(expDes, ['condition' iStr])
+        set(handles.(['condition' iStr]), 'string', ...
+            num2str(expDes.(['condition' iStr])));
         count = count + 1;
     end
     % Condition names
-    if isfield(expDes,['condName' num2str(ii)])
-        set(handles.(['condName' num2str(ii)]), ...
-            'string',expDes.(['condName' num2str(ii)]));
+    if isfield(expDes, ['condName' iStr])
+        set(handles.(['condName' iStr]), 'string', ...
+            expDes.(['condName' iStr]));
     end
     % Condition descriptions
-    if isfield(expDes,['description' num2str(ii)])
-        set(handles.(['description' num2str(ii)]), ...
-            'string',expDes.(['description' num2str(ii)]));
+    if isfield(expDes, ['description' iStr])
+        set(handles.(['description' iStr]), 'string', ...
+            expDes.(['description' iStr]));
     end
     % Trial numbers for each condition
-    if isfield(expDes,['trialnum' num2str(ii)])
-        set(handles.(['trialnum' num2str(ii)]), ...
-            'string',expDes.(['trialnum' num2str(ii)]));
+    if isfield(expDes, ['trialnum' iStr])
+        set(handles.(['trialnum' iStr]), 'string', ...
+            expDes.(['trialnum' iStr]));
     end
     % Trial types
-    if isfield(expDes,['type' num2str(ii)])
-        set(handles.(['type' num2str(ii)]), ...
-            'string',expDes.(['type' num2str(ii)]));
+    if isfield(expDes, ['type' iStr])
+        set(handles.(['type' iStr]), 'string', expDes.(['type' iStr]));
     end
 end
 
