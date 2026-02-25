@@ -156,7 +156,7 @@ if ~(isfield(handles, 'bypassOutputFcn') && handles.bypassOutputFcn)
 
     % Prompt user for individual trial observations
     answer = inputdlg( ...
-        'Are there any observations for individual trials?(y/n) ', 's');
+        'Are there any observations for individual trials? (y/n): ', 's');
 
     % Validate response — must be a single 'y' or 'n'
     while length(answer{1}) > 1 || ...
@@ -686,7 +686,7 @@ end
 % Second, validate the entered number
 if isnan(numofconds) || numofconds < 0 || numofconds > 20
     h_error = errordlg( ...
-        'Please enter a number between 1 and 20', ...
+        'Please enter a number of conditions between 0 and 20.', ...
         'Condition Number Error');
     waitfor(h_error);
     uicontrol(hObject);
