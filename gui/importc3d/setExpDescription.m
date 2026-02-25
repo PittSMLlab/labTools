@@ -1,4 +1,35 @@
 function handles = setExpDescription(handles,expDes)
+% setExpDescription  Populates GetInfoGUI condition fields from an
+%   experiment description struct.
+%
+%   Reads condition numbers, names, descriptions, trial numbers, and trial
+% types from an experiment description struct (loaded from an ExpDetails
+% .mat file) and writes each value into the corresponding GUI control in
+% GetInfoGUI. Also updates the number-of-conditions field.
+%
+%   Inputs:
+%     handles - handles struct from GetInfoGUI (see GUIDATA)
+%     expDes  - experiment description struct, as loaded from an
+%               ExpDetails .mat file. Expected fields (all indexed
+%               1 to handles.lines):
+%                 conditionN   - condition number for row N
+%                 condNameN    - condition name for row N
+%                 descriptionN - condition description for row N
+%                 trialnumN    - trial number string for row N
+%                 typeN        - trial type string for row N
+%                 numofconds   - (optional) total number of conditions;
+%                                counted from populated rows if absent
+%                 group        - experiment group/description label
+%
+%   Outputs:
+%     handles - updated handles struct with handles.group set to
+%               the experiment group label from expDes
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: GetInfoGUI, description_edit_Callback,
+%             description_edit_CreateFcn
 
 handles.group = expDes.group;
 
