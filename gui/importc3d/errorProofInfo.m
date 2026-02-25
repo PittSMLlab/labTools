@@ -308,14 +308,9 @@ if ~(nargin > 1 && ignoreErrors)
 
     % -- Trial Info
     for t = trials
-        if t < 10
-            filename = [out.dir_location filesep ...
-                out.basename '0' num2str(t) '.c3d'];
-        else
-            filename = [out.dir_location filesep ...
-                out.basename num2str(t) '.c3d'];
-        end
-        if ~exist(filename, 'file')
+        filename = fullfile(out.dir_location, ...
+            [out.basename sprintf('%02d', t) '.c3d']);
+        if ~isfile(filename)
             h_error = errordlg( ...
                 ['The file ', filename, ' does not exist.'], ...
                 'File Name Error');
@@ -350,14 +345,9 @@ if ~(nargin > 1 && ignoreErrors)
         %     return;
         % end
         if ~isempty(out.secdir_location)
-            if t < 10
-                filename2 = [out.secdir_location filesep ...
-                    out.basename '0' num2str(t) '.c3d'];
-            else
-                filename2 = [out.secdir_location filesep ...
-                    out.basename num2str(t) '.c3d'];
-            end
-            if ~exist(filename2, 'file')
+            filename2 = fullfile(out.secdir_location, ...
+                [out.basename sprintf('%02d', t) '.c3d']);
+            if ~isfile(filename2)
                 h_error = errordlg( ...
                     ['The file ', filename2, ' does not exist.'], ...
                     'File Name Error');
@@ -372,14 +362,9 @@ if ~(nargin > 1 && ignoreErrors)
     % ---- EMGworks file checks (DMMO) ---------------------------------
     % Note: t retains the value of the last trial from the loop above.
     if ~isempty(out.EMGworksdir_location)
-        if t < 10
-            filename3 = [out.EMGworksdir_location filesep ...
-                out.basename '0' num2str(t) '.mat'];
-        else
-            filename3 = [out.EMGworksdir_location filesep ...
-                out.basename num2str(t) '.mat'];
-        end
-        if ~exist(filename3, 'file')
+        filename3 = fullfile(out.EMGworksdir_location, ...
+            [out.basename sprintf('%02d', t) '.mat']);
+        if ~isfile(filename3)
             h_error = errordlg( ...
                 ['The file ', filename3, ' does not exist.'], ...
                 'File Name Error');
@@ -389,16 +374,10 @@ if ~(nargin > 1 && ignoreErrors)
             return;
         end
     end
-
     if ~isempty(out.secEMGworksdir_location)
-        if t < 10
-            filename4 = [out.secEMGworksdir_location filesep ...
-                out.basename '0' num2str(t) '.mat'];
-        else
-            filename4 = [out.secEMGworksdir_location filesep ...
-                out.basename num2str(t) '.mat'];
-        end
-        if ~exist(filename4, 'file')
+        filename4 = fullfile(out.secEMGworksdir_location, ...
+            [out.basename sprintf('%02d', t) '.mat']);
+        if ~isfile(filename4)
             h_error = errordlg( ...
                 ['The file ', filename4, ' does not exist.'], ...
                 'File Name Error');
