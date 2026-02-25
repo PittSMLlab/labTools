@@ -157,8 +157,8 @@ if isfield(handles, 'trialObs')
 end
 
 %% Validate GUI Field Entries
-% This section is skipped when ignoreErrors is provided and true (e.g. when
-% called from figure1_CloseRequestFcn for a lenient close-time save).
+% This section is skipped when ignoreErrors is provided and true (e.g.,
+% when called from figure1_CloseRequestFcn for a lenient close-time save).
 
 if ~(nargin > 1 && ignoreErrors)
     % -- Experiment Info
@@ -168,7 +168,8 @@ if ~(nargin > 1 && ignoreErrors)
     %         'Description Error');
     %     waitfor(h_error);
     %     uicontrol(handles.description_edit);
-    %     out.bad = true; close(h);
+    %     out.bad = true;
+    %     close(h);
     %     return;
     % end
     if strcmp(out.experimenter, ' (Enter name/initials)')
@@ -268,7 +269,7 @@ if ~(nargin > 1 && ignoreErrors)
     end
 
     % -- Data Info
-    if ~exist(out.dir_location, 'dir')
+    if ~isfolder(out.dir_location)
         h_error = errordlg( ...
             'Please enter a folder that exists', 'Directory Error');
         waitfor(h_error);
@@ -276,7 +277,7 @@ if ~(nargin > 1 && ignoreErrors)
         out.bad = true;
         return;
     end
-    if ~isempty(out.secdir_location) && ~exist(out.secdir_location, 'dir')
+    if ~isempty(out.secdir_location) && ~isfolder(out.secdir_location)
         % if ~isempty(out.secdir_location)
         h_error = errordlg( ...
             'Please enter a folder that exists', 'Directory Error');
@@ -287,7 +288,7 @@ if ~(nargin > 1 && ignoreErrors)
     end
 
     if ~isempty(out.EMGworksdir_location) && ...
-            ~exist(out.EMGworksdir_location, 'dir')
+            ~isfolder(out.EMGworksdir_location)
         h_error = errordlg( ...
             'Please enter a folder that exists', 'Directory Error');
         waitfor(h_error);
@@ -296,8 +297,7 @@ if ~(nargin > 1 && ignoreErrors)
         return;
     end
     if ~isempty(out.secEMGworksdir_location) && ...
-            ~strcmp(out.secEMGworksdir_location,'') && ...
-            ~exist(out.secEMGworksdir_location, 'dir')
+            ~isfolder(out.secEMGworksdir_location)
         h_error = errordlg( ...
             'Please enter a folder that exists', 'Directory Error');
         waitfor(h_error);
@@ -422,7 +422,7 @@ end
 % -- Save Location
 % Note: this check always runs regardless of ignoreErrors, since a valid
 % save path is required even for lenient close-time saves.
-if ~exist(out.save_folder, 'dir')
+if ~isfolder(out.save_folder)
     h_error = errordlg( ...
         'Please enter a save folder that exists', ...
         'Directory Error');
