@@ -29,12 +29,16 @@ function [expData,rawExpData,adaptData] = c3d2matCLI(infoFile,eventClass)
 %
 %   See also: c3d2mat, GetInfoGUI, loadSubject, errorProofInfo
 
-if nargin < 2                           % if no second input argument, ...
-    eventClass = '';                    % use default event detection
+arguments
+    infoFile   (1,:) char
+    eventClass (1,:) char = ''              % default gait event detection
 end
 
+%% Load Experimental Session Information
 handles = loadInfoFile(infoFile,'');
 out = errorProofInfo(handles,ignoreErrors);
+
+%% Process Experimental Data
 [expData,rawExpData,adaptData] = loadSubject(info,eventClass);
 
 end
