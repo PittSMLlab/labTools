@@ -92,19 +92,20 @@ end
 % string (e.g., 'OG' or 'TM') and the string 'base'. For example, a
 % treadmill baseline condition could be named 'TM base'.
 %
-% EDIT: update each condName field to match your conditions. Add or remove
-% lines as needed to match maxConds.
+% EDIT: update the cell array entries below to match your conditions. Add
+% or remove entries as needed — the total must equal maxConds.
 
-expDes.condName1  = 'OG base';   % used for 'OG' trial bias removal
-expDes.condName2  = 'slow base';
-expDes.condName3  = 'short split';
-expDes.condName4  = 'fast base';
-expDes.condName5  = 'TM base';   % used for 'TM' trial bias removal
-expDes.condName6  = 'adaptation';
-expDes.condName7  = 'catch';
-expDes.condName8  = 're-adaptation';
-expDes.condName9  = 'OG post';
-expDes.condName10 = 'TM post';
+condNames = { ...
+    'OG base',       ...    % condition 1  — OG bias removal baseline
+    'slow base',     ...    % condition 2
+    'short split',   ...    % condition 3
+    'fast base',     ...    % condition 4
+    'TM base',       ...    % condition 5  — TM bias removal baseline
+    'adaptation',    ...    % condition 6
+    'catch',         ...    % condition 7
+    're-adaptation', ...    % condition 8
+    'OG post',       ...    % condition 9
+    'TM post'};             % condition 10
 
 % ============================================================
 % ================ 6. Condition Descriptions =================
@@ -116,18 +117,19 @@ expDes.condName10 = 'TM post';
 % information. Format: '<N> strides at <speed(s)>', '<duration> on <N>m
 % walkway', or similar as appropriate.
 %
-% EDIT: update each description field to match your conditions.
+% EDIT: update the cell array entries below to match your conditions.
 
-expDes.description1  = '8 m walkway for 6 min';
-expDes.description2  = '150 strides at 0.5 m/s';
-expDes.description3  = '10 strides 2:1, 1 m/s and 0.5 m/s';
-expDes.description4  = '150 strides at 1 m/s';
-expDes.description5  = '150 strides at 0.75 m/s';
-expDes.description6  = '600 strides 2:1, 1 m/s and 0.5 m/s';
-expDes.description7  = '10 strides at 0.75 m/s';
-expDes.description8  = '300 strides 2:1, 1 m/s and 0.5 m/s';
-expDes.description9  = '8 m walkway for 6 min';
-expDes.description10 = '450 strides at 0.75 m/s';
+condDescriptions = { ...
+    '8 m walkway for 6 min',                ...    % condition 1
+    '150 strides at 0.5 m/s',               ...    % condition 2
+    '10 strides 2:1, 1 m/s and 0.5 m/s',    ...    % condition 3
+    '150 strides at 1 m/s',                 ...    % condition 4
+    '150 strides at 0.75 m/s',              ...    % condition 5
+    '600 strides 2:1, 1 m/s and 0.5 m/s',   ...    % condition 6
+    '10 strides at 0.75 m/s',               ...    % condition 7
+    '300 strides 2:1, 1 m/s and 0.5 m/s',   ...    % condition 8
+    '8 m walkway for 6 min',                ...    % condition 9
+    '450 strides at 0.75 m/s'};                    % condition 10
 
 % ============================================================
 % ================== 7. Trial Numbers ========================
@@ -145,46 +147,49 @@ expDes.description10 = '450 strides at 0.75 m/s';
 % These are default values that may be adjusted for each individual session
 % in GetInfoGUI after the experiment description is loaded.
 %
-% EDIT: update each trialnum field to match your expected trial numbering.
+% EDIT: update the cell array entries below to match your expected trial
+% numbering.
 
-expDes.trialnum1  = '1:6';
-expDes.trialnum2  = '7';
-expDes.trialnum3  = '8';
-expDes.trialnum4  = '9';
-expDes.trialnum5  = '10';
-expDes.trialnum6  = '11:14';
-expDes.trialnum7  = '15';
-expDes.trialnum8  = '16 17';
-expDes.trialnum9  = '18:23';
-expDes.trialnum10 = '24:26';
+trialNums = { ...
+    '1:6',   ...    % condition 1
+    '7',     ...    % condition 2
+    '8',     ...    % condition 3
+    '9',     ...    % condition 4
+    '10',    ...    % condition 5
+    '11:14', ...    % condition 6
+    '15',    ...    % condition 7
+    '16 17', ...    % condition 8
+    '18:23', ...    % condition 9
+    '24:26'};       % condition 10
 
 % ============================================================
 % ==================== Save expDes File ======================
 % ============================================================
 % --------------- DO NOT EDIT BELOW THIS LINE ----------------
 
-% Validate that the number of condName, description, and trialnum fields
-% each match maxConds before saving. A mismatch means a field was added,
-% removed, or misspelled during editing.
-fNames        = fieldnames(expDes);
-nCondNames    = sum(strncmp(fNames, 'condName',    length('condName')));
-nDescriptions = sum(strncmp(fNames, 'description', length('description')));
-nTrialNums    = sum(strncmp(fNames, 'trialnum',    length('trialnum')));
+% Validate that each cell array contains exactly maxConds entries before
+% populating the struct and saving.
+if length(condNames) ~= maxConds
+    error(['expDesTemplate: %d condName entries defined, but ' ...
+        'maxConds = %d. Add or remove entries to match.'], ...
+        length(condNames), maxConds);
+end
+if length(condDescriptions) ~= maxConds
+    error(['expDesTemplate: %d description entries defined, but ' ...
+        'maxConds = %d. Add or remove entries to match.'], ...
+        length(condDescriptions), maxConds);
+end
+if length(trialNums) ~= maxConds
+    error(['expDesTemplate: %d trialnum entries defined, but ' ...
+        'maxConds = %d. Add or remove entries to match.'], ...
+        length(trialNums), maxConds);
+end
 
-if nCondNames ~= maxConds
-    error(['expDesTemplate: %d condName field(s) defined, but ' ...
-        'maxConds = %d. Add or remove condName fields to match.'], ...
-        nCondNames, maxConds);
-end
-if nDescriptions ~= maxConds
-    error(['expDesTemplate: %d description field(s) defined, but ' ...
-        'maxConds = %d. Add or remove description fields to match.'], ...
-        nDescriptions, maxConds);
-end
-if nTrialNums ~= maxConds
-    error(['expDesTemplate: %d trialnum field(s) defined, but ' ...
-        'maxConds = %d. Add or remove trialnum fields to match.'], ...
-        nTrialNums, maxConds);
+% Populate expDes struct fields from validated cell arrays
+for cond = 1:maxConds
+    expDes.(['condName'     num2str(cond)]) = condNames{cond};
+    expDes.(['description'  num2str(cond)]) = condDescriptions{cond};
+    expDes.(['trialnum'     num2str(cond)]) = trialNums{cond};
 end
 
 % Derive the MAT filename from the group name (alphabetic characters only)
