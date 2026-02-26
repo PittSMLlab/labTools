@@ -1,34 +1,57 @@
-%EDIT THIS COMMENT: INCLUDE A BREIF DESCRIPTION OF THE STUDY
-% Example: OG study: older participants adapted abruptly
+% expDesTemplate  Template script for generating an experiment description.
+%
+%   Defines an experiment description structure (expDes) and saves it as a
+% MAT file in the ExpDetails folder, where it becomes available as a
+% selectable option in the GetInfoGUI experiment description dropdown.
+%
+%   How to use this template:
+%     1. Save a copy of this file under a new, descriptive name that
+%        reflects your experiment (e.g., 'myStudyOlderAdults.m'). The
+%        saved MAT file will share this name.
+%     2. Edit all fields in Sections 1-6 to match your experimental design.
+%        Follow the inline guidance for each field.
+%     3. Run the script once. The expDes struct will be saved automatically
+%        to the ExpDetails folder and will appear in GetInfoGUI.
+%     4. Re-run the script any time you need to update the description.
+%        The existing MAT file will be overwritten.
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: GetInfoGUI, errorProofInfo, setExpDescription
 
-% The different fields of the condition info are defined here.
-% Save this code to a different name, and then run it once
-% Finish editing for changes to appear in 'GetInfoGUI'
+% EDIT THIS COMMENT: INCLUDE A BRIEF DESCRIPTION OF THE STUDY
+% EXAMPLE: OG Study: older participants adapted abruptly
 
 % ============================================================
 % ===================== 1. Group Name ========================
 % ============================================================
 
-% define name of group
-expDes.group = 'New Group';
+% Define the display name for this experiment group. This is the label
+% that will appear in the GetInfoGUI experiment description dropdown, and
+% is stored in info.ExpDescription for all sessions using this template.
+% The MAT file will be saved using only the alphabetic characters of this
+% string (see the save step at the bottom of this script).
+expDes.group = 'New Group';             % EDIT: descriptive group name
 
 % ============================================================
 % ================ 2. Number of Conditions ===================
 % ============================================================
 
-% define maximum number of conditions
-maxConds = 10;                          % EDIT FOR YOUR EXPERIMENT
-
-% define total number of conditions
-expDes.numofconds = num2str(maxConds);  % matches defined maximum
+% Define the total number of experimental conditions. All subsequent
+% sections (trial types, names, descriptions, and trial numbers) must
+% define exactly this many entries.
+maxConds          = 10;                 % EDIT: total number of conditions
+expDes.numofconds = num2str(maxConds);  % stored as string for GUI
 
 % ============================================================
 % =================== 3. Condition Numbers ===================
 % ============================================================
 
-% define condition numbers
-for cond = 1:maxConds                   % for each condition, ...
-    expDes.(['condition' num2str(cond)]) = num2str(cond);   % set numbers
+% Condition numbers are assigned sequentially and should not need editing.
+% They are used internally to index into condition-specific fields.
+for cond = 1:maxConds
+    expDes.(['condition' num2str(cond)]) = num2str(cond);
 end
 
 % ============================================================
