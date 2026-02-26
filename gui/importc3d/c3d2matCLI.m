@@ -42,7 +42,8 @@ handles = loadInfoFile(infoFile, '');
 info    = errorProofInfo(handles, true);
 
 %% Process Experimental Data
-[expData,rawExpData,adaptData] = loadSubject(info,eventClass);
+% Main processing call for the participant's experimental data
+[expData, rawExpData, adaptData] = loadSubject(info, eventClass);
 
 end
 
