@@ -5,8 +5,16 @@
 % Save this code to a different name, and then run it once
 % Finish editing for changes to appear in 'GetInfoGUI'
 
+% ============================================================
+% ===================== 1. Group Name ========================
+% ============================================================
+
 % define name of group
 expDes.group = 'New Group';
+
+% ============================================================
+% ================ 2. Number of Conditions ===================
+% ============================================================
 
 % define maximum number of conditions
 maxConds = 10;                          % EDIT FOR YOUR EXPERIMENT
@@ -14,10 +22,18 @@ maxConds = 10;                          % EDIT FOR YOUR EXPERIMENT
 % define total number of conditions
 expDes.numofconds = num2str(maxConds);  % matches defined maximum
 
+% ============================================================
+% =================== 3. Condition Numbers ===================
+% ============================================================
+
 % define condition numbers
 for cond = 1:maxConds                   % for each condition, ...
     expDes.(['condition' num2str(cond)]) = num2str(cond);   % set numbers
 end
+
+% ============================================================
+% ==================== 4. Trial Types ========================
+% ============================================================
 
 % define trial types
 %   Trial types descibe the general condition of the trial (e.g, walking
@@ -35,6 +51,10 @@ for t = [2:8 10]                            % for TM trial indices, ...
 end
 % NOTE: 'IN' is typically used for inclined treadmill trial types
 
+% ============================================================
+% ================== 5. Condition Names ======================
+% ============================================================
+
 % define condition names, which should be short but descriptive and should
 % follow lab conventions, if possible. IMPORTANT: The condition that will
 % be used to remove a bias from all other trials of the same type MUST
@@ -51,6 +71,10 @@ expDes.condName8 = 're-adaptation';
 expDes.condName9 = 'OG post';
 expDes.condName10 = 'TM post';
 
+% ============================================================
+% ================ 6. Condition Descriptions =================
+% ============================================================
+
 % define condition descriptions. Be as descriptive as possible. Include
 % whatever information seems important to someone who is unfamiliar with
 % the experimental protocol, such as the number of strides and possibly the
@@ -65,6 +89,10 @@ expDes.description7 = '10 strides at 0.75 m/s';
 expDes.description8 = '300 strides 2:1, 1 m/s and 0.5 m/s';
 expDes.description9 = '8 m walkway for 6 min';
 expDes.description10 = '450 strides at 0.75 m/s';
+
+% ============================================================
+% ================== 7. Trial Numbers ========================
+% ============================================================
 
 % define (expected) trial numbers for each condition where multiple trials
 % per condition can be specified as '1:5', '1,2,3', or '4 5', but not
@@ -82,7 +110,10 @@ expDes.trialnum8 = '16 17';
 expDes.trialnum9 = '18:23';
 expDes.trialnum10 = '24:26';
 
-% --------------------- DO NOT EDIT BELOW THIS LINE --------------------- %
+% ============================================================
+% ==================== Save expDes File ======================
+% ============================================================
+% --------------- DO NOT EDIT BELOW THIS LINE ----------------
 groupName = expDes.group;
 groupName = groupName(ismember(groupName,['A':'Z' 'a':'z']));
 path = which('GetInfoGUI');
