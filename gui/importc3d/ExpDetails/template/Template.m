@@ -42,7 +42,7 @@ expDes.group = 'New Group';             % EDIT: descriptive group name
 % sections (trial types, names, descriptions, and trial numbers) must
 % define exactly this many entries.
 maxConds          = 10;                 % EDIT: total number of conditions
-expDes.numofconds = num2str(maxConds);  % stored as string for GUI
+expDes.numofconds = maxConds;           % stored as double
 
 % ============================================================
 % =================== 3. Condition Numbers ===================
@@ -72,6 +72,7 @@ end
 %
 % EDIT: replace the index vectors below with the condition indices for each
 % type in your experiment.
+
 for t = [1 9]                               % EDIT: OG condition indices
     expDes.(['type' num2str(t)]) = 'OG';    % overground walking
 end
@@ -93,6 +94,7 @@ end
 %
 % EDIT: update each condName field to match your conditions. Add or remove
 % lines as needed to match maxConds.
+
 expDes.condName1  = 'OG base';   % used for 'OG' trial bias removal
 expDes.condName2  = 'slow base';
 expDes.condName3  = 'short split';
@@ -115,6 +117,7 @@ expDes.condName10 = 'TM post';
 % walkway', or similar as appropriate.
 %
 % EDIT: update each description field to match your conditions.
+
 expDes.description1  = '8 m walkway for 6 min';
 expDes.description2  = '150 strides at 0.5 m/s';
 expDes.description3  = '10 strides 2:1, 1 m/s and 0.5 m/s';
@@ -143,6 +146,7 @@ expDes.description10 = '450 strides at 0.75 m/s';
 % in GetInfoGUI after the experiment description is loaded.
 %
 % EDIT: update each trialnum field to match your expected trial numbering.
+
 expDes.trialnum1  = '1:6';
 expDes.trialnum2  = '7';
 expDes.trialnum3  = '8';
@@ -158,12 +162,37 @@ expDes.trialnum10 = '24:26';
 % ==================== Save expDes File ======================
 % ============================================================
 % --------------- DO NOT EDIT BELOW THIS LINE ----------------
+
+% Validate that the number of condName, description, and trialnum fields
+% each match maxConds before saving. A mismatch means a field was added,
+% removed, or misspelled during editing.
+fNames        = fieldnames(expDes);
+nCondNames    = sum(strncmp(fNames, 'condName',    length('condName')));
+nDescriptions = sum(strncmp(fNames, 'description', length('description')));
+nTrialNums    = sum(strncmp(fNames, 'trialnum',    length('trialnum')));
+
+if nCondNames ~= maxConds
+    error(['expDesTemplate: %d condName field(s) defined, but ' ...
+        'maxConds = %d. Add or remove condName fields to match.'], ...
+        nCondNames, maxConds);
+end
+if nDescriptions ~= maxConds
+    error(['expDesTemplate: %d description field(s) defined, but ' ...
+        'maxConds = %d. Add or remove description fields to match.'], ...
+        nDescriptions, maxConds);
+end
+if nTrialNums ~= maxConds
+    error(['expDesTemplate: %d trialnum field(s) defined, but ' ...
+        'maxConds = %d. Add or remove trialnum fields to match.'], ...
+        nTrialNums, maxConds);
+end
+
 % Derive the MAT filename from the group name (alphabetic characters only)
 % and save to the ExpDetails folder alongside GetInfoGUI.
-groupName    = expDes.group;
-groupName    = groupName(ismember(groupName, ['A':'Z' 'a':'z']));
-detailsPath  = which('GetInfoGUI');
-detailsPath  = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
+groupName   = expDes.group;
+groupName   = groupName(ismember(groupName, ['A':'Z' 'a':'z']));
+detailsPath = which('GetInfoGUI');
+detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
 save(fullfile(detailsPath, groupName), 'expDes');
 fprintf('Experiment description saved: %s\n', ...
     fullfile(detailsPath, [groupName '.mat']));
