@@ -193,12 +193,32 @@ for cond = 1:maxConds
 end
 
 % Derive the MAT filename from the group name (alphabetic characters only)
-% and save to the ExpDetails folder alongside GetInfoGUI.
+% and resolve paths for ExpDetails and its Archive subfolder.
 groupName   = expDes.group;
 groupName   = groupName(ismember(groupName, ['A':'Z' 'a':'z']));
 detailsPath = which('GetInfoGUI');
 detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
+archivePath = fullfile(detailsPath, 'Archive');
+matFileName = [groupName '.mat'];
+
+% Check for a naming conflict in ExpDetails/ — throw an error so the user
+% can make an explicit decision (rename the new file, or manually archive
+% the existing one) before any file is overwritten.
+if isfile(fullfile(detailsPath, matFileName))
+    error(['expDesTemplate: ''%s'' already exists in ExpDetails/. ' ...
+        'To overwrite it, delete or archive the existing file manually '...
+        'and then re-run this script.'], matFileName);
+end
+
+% Check for a naming conflict in the Archive subfolder — issue a warning
+% so the user is aware, but do not block the save.
+if isfolder(archivePath) && isfile(fullfile(archivePath, matFileName))
+    warning(['expDesTemplate: ''%s'' also exists in ' ...
+        'ExpDetails/Archive/. The new file will be saved to ExpDetails/'...
+        ' without affecting the archived copy.'], matFileName);
+end
+
 save(fullfile(detailsPath, groupName), 'expDes');
 fprintf('Experiment description saved: %s\n', ...
-    fullfile(detailsPath, [groupName '.mat']));
+    fullfile(detailsPath, matFileName));
 
