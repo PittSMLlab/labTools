@@ -72,7 +72,6 @@ end
 %
 % EDIT: replace the index vectors below with the condition indices for each
 % type in your experiment.
-
 for t = [1 9]                               % EDIT: OG condition indices
     expDes.(['type' num2str(t)]) = 'OG';    % overground walking
 end
@@ -84,11 +83,16 @@ end
 % ================== 5. Condition Names ======================
 % ============================================================
 
-% define condition names, which should be short but descriptive and should
-% follow lab conventions, if possible. IMPORTANT: The condition that will
-% be used to remove a bias from all other trials of the same type MUST
-% be named such that one of the type strings and the string ‘base’ are
-% both included in the name of the condition.
+% Condition names should be short but descriptive and follow lab naming
+% conventions where possible.
+%
+% IMPORTANT: The condition used as the bias-removal baseline for all other
+% conditions of the same type MUST have a name that includes both the type
+% string (e.g., 'OG' or 'TM') and the string 'base'. For example, a
+% treadmill baseline condition could be named 'TM base'.
+%
+% EDIT: update each condName field to match your conditions. Add or remove
+% lines as needed to match maxConds.
 expDes.condName1  = 'OG base';   % used for 'OG' trial bias removal
 expDes.condName2  = 'slow base';
 expDes.condName3  = 'short split';
@@ -104,10 +108,13 @@ expDes.condName10 = 'TM post';
 % ================ 6. Condition Descriptions =================
 % ============================================================
 
-% define condition descriptions. Be as descriptive as possible. Include
-% whatever information seems important to someone who is unfamiliar with
-% the experimental protocol, such as the number of strides and possibly the
-% speeds at which the treadmill belts were set.
+% Descriptions should provide enough detail for someone unfamiliar with
+% the protocol to understand what occurred in each condition. Include the
+% number of strides (or duration) and any relevant speed or belt ratio
+% information. Format: '<N> strides at <speed(s)>', '<duration> on <N>m
+% walkway', or similar as appropriate.
+%
+% EDIT: update each description field to match your conditions.
 expDes.description1  = '8 m walkway for 6 min';
 expDes.description2  = '150 strides at 0.5 m/s';
 expDes.description3  = '10 strides 2:1, 1 m/s and 0.5 m/s';
@@ -123,11 +130,19 @@ expDes.description10 = '450 strides at 0.75 m/s';
 % ================== 7. Trial Numbers ========================
 % ============================================================
 
-% define (expected) trial numbers for each condition where multiple trials
-% per condition can be specified as '1:5', '1,2,3', or '4 5', but not
-% '1-5'). These default values may need to be edited for each experimental
-% session. NOTE that the numbers correspond to names of the Vicon Nexus
-% files generated during experiment.
+% Trial numbers correspond to the numeric suffixes of the Vicon Nexus
+% C3D files recorded during the session (e.g., 'basename07.c3d').
+%
+% Multiple trials per condition can be specified as:
+%   '1:5'   - trials 1 through 5 (contiguous range)
+%   '1 2 3' - trials 1, 2, and 3 (space-separated list)
+%   '1,2,3' - trials 1, 2, and 3 (comma-separated list)
+% NOTE: '1-5' is NOT a supported format.
+%
+% These are default values that may be adjusted for each individual session
+% in GetInfoGUI after the experiment description is loaded.
+%
+% EDIT: update each trialnum field to match your expected trial numbering.
 expDes.trialnum1  = '1:6';
 expDes.trialnum2  = '7';
 expDes.trialnum3  = '8';
@@ -143,6 +158,8 @@ expDes.trialnum10 = '24:26';
 % ==================== Save expDes File ======================
 % ============================================================
 % --------------- DO NOT EDIT BELOW THIS LINE ----------------
+% Derive the MAT filename from the group name (alphabetic characters only)
+% and save to the ExpDetails folder alongside GetInfoGUI.
 groupName    = expDes.group;
 groupName    = groupName(ismember(groupName, ['A':'Z' 'a':'z']));
 detailsPath  = which('GetInfoGUI');
