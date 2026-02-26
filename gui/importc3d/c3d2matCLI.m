@@ -1,4 +1,4 @@
-function [expData,rawExpData,adaptData] = c3d2matCLI(infoFile,eventClass)
+function [expData, rawExpData, adaptData] = c3d2matCLI(infoFile,eventClass)
 % c3d2matCLI  Parses C3D session files into a MAT file without a GUI.
 %
 %   Performs the same processing as the c3d2mat script, but accepts a
@@ -35,8 +35,11 @@ arguments
 end
 
 %% Load Experimental Session Information
-handles = loadInfoFile(infoFile,'');
-out = errorProofInfo(handles,ignoreErrors);
+% Load the previously saved info struct from the specified MAT file.
+% Validation is skipped (ignoreErrors = true) because the data was
+% already validated interactively when the file was originally created.
+handles = loadInfoFile(infoFile, '');
+info    = errorProofInfo(handles, true);
 
 %% Process Experimental Data
 [expData,rawExpData,adaptData] = loadSubject(info,eventClass);
