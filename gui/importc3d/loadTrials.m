@@ -13,10 +13,9 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %     fileList    - Cell array of C3D file paths (without extension)
 %                   containing kinematic and force data; index
 %                   corresponds to trial number
-%     secFileList - Cell array of secondary file paths (without
-%                   extension) containing EMG data from a second PC;
-%                   empty entries indicate no secondary file for that
-%                   trial
+%     secFileList - Cell array of secondary file paths (without extension)
+%                   containing EMG data from a second PC; empty entries
+%                   indicate no secondary file for that trial
 %     info        - Struct of session information returned by GetInfoGUI
 %
 %   Outputs:
@@ -30,6 +29,13 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %                                     btkGetMarkers; external dependency)
 %
 %   See also: rawTrialData, loadSubject, getTrialMetaData
+
+arguments
+    trialMD     cell
+    fileList    cell
+    secFileList cell
+    info        (1,1) struct
+end
 
 % orientationInfo(offset, foreaftAx, sideAx, updownAx, foreaftSign, ...
 %     sideSign, updownSign);
