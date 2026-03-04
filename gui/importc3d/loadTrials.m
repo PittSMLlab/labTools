@@ -106,14 +106,15 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         forceLabels = {};
         units       = {};
         fieldList   = fieldnames(analogs);
-        fL   = cellfun(@(x) ~isempty(x), regexp(fieldList, '^Raw'));
-        ttt  = fieldList(fL);
-        raws = [];
-        for ii = 1:length(ttt)
-            raws = [raws analogs.(ttt{ii})]; % extract raw analog data
-        end
+
+        % Collect all raw analog channels for offset calibration
+        rawMask  = startsWith(fieldList, 'Raw');
+        ttt      = fieldList(rawMask);
+        rawCells = cellfun(@(f) analogs.(f), ttt, 'UniformOutput', false);
+        raws = [rawCells{:}];
         raws = zscore(raws);
-        % For each force, moment, center of pressure (COP) channel, ...
+
+        % For each force, moment, center of pressure (COP) channel,...
         for j = 1:length(fieldList)
             % If field starts with 'F', 'M', or contains
             % 'Force'/'Moment', process it
@@ -315,21 +316,20 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     if info.EMGs
         % -- Primary file (PC 1)
         if info.Nexus == 1
-            relData     = [];
-            relDataTemp = [];
-            fieldList   = fieldnames(analogs);
-            idxList     = [];
-            for j = 1:length(fieldList)
-                % Get fields that contain 'EMG' only
-                if ~isempty(strfind(fieldList{j}, 'EMG'))
-                    relDataTemp = [relDataTemp, ...
-                        analogs.(fieldList{j})];
-                    idxList(end+1) = str2num(fieldList{j}( ...
-                        strfind(fieldList{j}, 'EMG')+3:end));
-                    % Remove field to save memory
-                    analogs = rmfield(analogs, fieldList{j});
-                end
-            end
+            relData   = [];
+            fieldList = fieldnames(analogs);
+
+            % Identify all EMG channel fields, parse their channel
+            % numbers, extract data, and remove fields to save memory
+            emgMask     = contains(fieldList, 'EMG');
+            emgFields   = fieldList(emgMask);
+            idxList     = cellfun(@(f) ...
+                str2double(f(strfind(f, 'EMG')+3:end)), emgFields);
+            emgCells    = cellfun(@(f) analogs.(f), emgFields, ...
+                'UniformOutput', false);
+            relDataTemp = [emgCells{:}];
+            analogs     = rmfield(analogs, emgFields);
+
             emptyChannels1 = cellfun(@(x) isempty(x), info.EMGList1);
             EMGList1       = info.EMGList1(~emptyChannels1);
             % Re-sort to fix 1,10,11,...,2,3 ordering from MATLAB
@@ -342,17 +342,18 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             idxList2     = [];
             if secondFile
                 fieldList = fieldnames(analogs2);
-                for j = 1:length(fieldList)
-                    % Get fields that contain 'EMG' only
-                    if ~isempty(strfind(fieldList{j}, 'EMG'))
-                        relDataTemp2 = [relDataTemp2, ...
-                            analogs2.(fieldList{j})];
-                        idxList2(end+1) = str2num(fieldList{j}( ...
-                            strfind(fieldList{j}, 'EMG')+3:end));
-                        % Remove field to save memory
-                        analogs2 = rmfield(analogs2, fieldList{j});
-                    end
-                end
+
+                % Identify all EMG channel fields, parse their channel
+                % numbers, extract data, and remove to save memory
+                emgMask2     = contains(fieldList, 'EMG');
+                emgFields2   = fieldList(emgMask2);
+                idxList2     = cellfun(@(f) ...
+                    str2double(f(strfind(f, 'EMG')+3:end)), emgFields2);
+                emgCells2    = cellfun(@(f) analogs2.(f), emgFields2,...
+                    'UniformOutput', false);
+                relDataTemp2 = [emgCells2{:}];
+                analogs2     = rmfield(analogs2, emgFields2);
+
                 emptyChannels2 = ...
                     cellfun(@(x) isempty(x), info.EMGList2);
                 % Use names only for channels in the file
@@ -720,25 +721,23 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             EMGList = [EMGList, EMGList2];
         end
 
-        % Sort muscles into orderedEMGList order for consistent storage
-        orderedIndexes = zeros(length(orderedEMGList), 1);
-        for j = 1:length(orderedEMGList)
-            for k = 1:length(EMGList)
-                if strcmpi(orderedEMGList{j}, EMGList{k})
-                    orderedIndexes(j) = k;
-                    break;
-                end
-            end
-        end
-        % Remove entries for missing muscles
+        % Map each entry of orderedEMGList to its column position in
+        % EMGList using case-insensitive matching via ismember with
+        % lower(), which is equivalent to the original strcmpi loop.
+        % Zero entries (muscles absent from this session) are removed.
+        [~, orderedIndexes] = ismember( ...
+            lower(orderedEMGList(:)), lower(EMGList(:)));
         orderedIndexes = orderedIndexes(orderedIndexes ~= 0);
-        aux = zeros(length(EMGList), 1);
-        aux(orderedIndexes) = 1;
-        if any(aux == 0) && ~all(strcmpi(EMGList(aux == 0), 'sync'))
+
+        % Identify EMGList channels not present in orderedEMGList;
+        % warn if any are found that are not sync signals
+        inOrdered = ismember(lower(EMGList(:)), lower(orderedEMGList(:)));
+        if any(~inOrdered) && ~all(strcmpi(EMGList(~inOrdered), 'sync'))
             warning(['loadTrials: Not all of the provided muscles ' ...
                 'are in the ordered list, ignoring ' ...
-                EMGList{aux == 0}]);
+                EMGList{~inOrdered}]);
         end
+
         % Set exactly-zero samples to NaN (unavailable samples)
         allData(allData == 0) = NaN;
         % Discard sync signal; store remainder as EMGData object
@@ -750,27 +749,26 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         % -- Primary file (PC 1)
         if info.Nexus == 1
             relData   = [];
-            idxList   = [];
             fieldList = fieldnames(analogs);
-            for j = 1:length(fieldList)
-                % Get fields that contain 'ACC' only
-                if ~isempty(strfind(fieldList{j}, 'ACC'))
-                    idxList(j) = str2num(fieldList{j}( ...
-                        strfind(fieldList{j}, 'ACC')+4:end));
-                    switch fieldList{j}( ...
-                            strfind(fieldList{j}, 'ACC')+3)
-                        case 'X',  aux = 1;
-                        case 'Y',  aux = 2;
-                        case 'Z',  aux = 3;
-                    end
-                    relData(:, idxList(j), aux) = ...
-                        analogs.(fieldList{j});
-                    % Remove field to save memory
-                    analogs = rmfield(analogs, fieldList{j});
+
+            % Identify ACC fields and loop only over those, assigning
+            % each channel into a 3D array (samples × channel × axis).
+            % rmfield is called once on all ACC fields after the loop.
+            accMask   = contains(fieldList, 'ACC');
+            accFields = fieldList(accMask);
+            for j = 1:length(accFields)
+                accPos = strfind(accFields{j}, 'ACC');
+                chIdx  = str2double(accFields{j}(accPos+4:end));
+                switch accFields{j}(accPos+3)
+                    case 'X',  axIdx = 1;
+                    case 'Y',  axIdx = 2;
+                    case 'Z',  axIdx = 3;
                 end
+                relData(:, chIdx, axIdx) = analogs.(accFields{j});
             end
-            relData = permute(relData(:, ~emptyChannels1, :), ...
-                [1, 3, 2]);
+            analogs = rmfield(analogs, accFields);
+
+            relData = permute(relData(:, ~emptyChannels1, :), [1, 3, 2]);
             relData = relData(:, :);
             % Downsample if frequency changed during EMG processing
             if EMGfrequency ~= analogsInfo.frequency
@@ -786,26 +784,25 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
 
             % -- Secondary file (PC 2)
             relData2 = [];
-            idxList2 = [];
             if secondFile
                 fieldList = fieldnames(analogs2);
-                for j = 1:length(fieldList)
-                    % Get fields that contain 'ACC' only
-                    if ~isempty(strfind(fieldList{j}, 'ACC'))
-                        idxList2(j) = str2num(fieldList{j}( ...
-                            strfind(fieldList{j}, 'ACC')+4:end));
-                        switch fieldList{j}( ...
-                                strfind(fieldList{j}, 'ACC')+3)
-                            case 'X',  aux = 1;
-                            case 'Y',  aux = 2;
-                            case 'Z',  aux = 3;
-                        end
-                        relData2(:, idxList2(j), aux) = ...
-                            analogs2.(fieldList{j});
-                        % Remove field to save memory
-                        analogs2 = rmfield(analogs2, fieldList{j});
+
+                % Identify ACC fields and assign into 3D array;
+                % rmfield is called once after the loop
+                accMask2   = contains(fieldList, 'ACC');
+                accFields2 = fieldList(accMask2);
+                for j = 1:length(accFields2)
+                    accPos = strfind(accFields2{j}, 'ACC');
+                    chIdx  = str2double(accFields2{j}(accPos+4:end));
+                    switch accFields2{j}(accPos+3)
+                        case 'X',  axIdx = 1;
+                        case 'Y',  axIdx = 2;
+                        case 'Z',  axIdx = 3;
                     end
+                    relData2(:, chIdx, axIdx) = analogs2.(accFields2{j});
                 end
+                analogs2 = rmfield(analogs2, accFields2);
+
                 relData2 = permute( ...
                     relData2(:, ~emptyChannels2, :), [1, 3, 2]);
                 relData2 = relData2(:, :);
@@ -877,20 +874,20 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     end
 
     %% Add H-Reflex Stimulator Pin If Present
-    relData      = [];
-    stimLabels   = {};
-    units        = {};
-    fieldList    = fieldnames(analogs);
-    stimLabelIdx = cellfun(@(x) ~isempty(x), ...
-        regexp(fieldList, '^Stimulator_Trigger_Sync_'));
-    stimLabelIdx = find(stimLabelIdx);
-    if ~isempty(stimLabelIdx)       % if there is a stimulator pin, ...
-        for j = 1:length(stimLabelIdx)
-            stimLabels{end+1} = fieldList{stimLabelIdx(j)};
-            units{end+1}      = ...
-                analogsInfo.units.(fieldList{stimLabelIdx(j)});
-            relData = [relData analogs.(fieldList{stimLabelIdx(j)})];
-        end
+    relData   = [];
+    fieldList = fieldnames(analogs);
+
+    % Identify stimulator trigger fields and extract labels, units,
+    % and data in one pass using cellfun, avoiding a growth loop
+    stimMask   = startsWith(fieldList, 'Stimulator_Trigger_Sync_');
+    stimFields = fieldList(stimMask);
+    if ~isempty(stimFields)         % if there is a stimulator pin, ...
+        stimLabels = stimFields';
+        unitsCells = cellfun(@(f) analogsInfo.units.(f), stimFields, ...
+            'UniformOutput', false);
+        stimCells  = cellfun(@(f) analogs.(f), stimFields, ...
+            'UniformOutput', false);
+        relData    = [stimCells{:}];
         % NOTE: second argument is time offset (zero, like force data)
         % third argument is sampling period (1/frequency)
         HreflexStimPinData = labTimeSeries( ...
