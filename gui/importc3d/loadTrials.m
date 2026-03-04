@@ -7,6 +7,11 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 % ground reaction forces, synchronizes and sorts EMG channels, processes
 % accelerometer data, and packages everything into a rawTrialData object.
 %
+%   When secondary C3D files (PC2 EMG) are expected for the session but
+% missing for individual trials, those trials are processed with NaN-
+% filled PC2 channels so that all rawTrialData objects in the session
+% share a consistent channel layout.
+%
 %   Inputs:
 %     trialMD     - Cell array of trialMetaData objects; cell index
 %                   corresponds to trial number
@@ -52,6 +57,10 @@ for j = 1:length(orderedMuscleList)
     orderedEMGList{end+1} = ['L' orderedMuscleList{j}];
 end
 
+% Determine whether the session expects data from a second PC at all;
+% used to detect trials with missing PC2 files vs. single-PC sessions
+sessionHasPC2 = any(~cellfun(@isempty, secFileList));
+
 for tr = cell2mat(info.trialnums)       % for each trial, ...
     % FIXME: close all figures and remove intermediate variables to
     % free up some memory in MATLAB.
@@ -65,16 +74,28 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     close('all');
     clc();
     clearvars -except trialMD fileList secFileList info tr ...
-        orderedEMGList orientation trials;
+        orderedEMGList orientation trials sessionHasPC2;
 
     % Import C3D data using BTK (Biomechanics Toolkit)
     H = btkReadAcquisition([fileList{tr} '.c3d']);
     [analogs, analogsInfo] = btkGetAnalogs(H);
-    secondFile = false;
-    if ~isempty(secFileList{tr})        % if C3D files (EMG) on PC2, ...
-        H2 = btkReadAcquisition([secFileList{tr} '.c3d']);
+
+    % Load secondary PC file if present; flag missing file separately
+    % from single-PC sessions so PC2 channels can be NaN-filled
+    secondFile  = false;
+    pc2Missing  = false;
+    secFilePath = [secFileList{tr} '.c3d'];
+    if isfile(secFilePath)              % if C3D files (EMG) on PC2,...
+        H2 = btkReadAcquisition(secFilePath);
         [analogs2, analogsInfo2] = btkGetAnalogs(H2);
         secondFile = true;              % indicate two PCs of EMG data
+    elseif sessionHasPC2                % PC2 expected but file absent
+        pc2Missing = true;
+        warning('loadTrials:missingPC2', ...
+            ['Secondary C3D file is missing for trial ' ...
+            num2str(tr) '. PC2 EMG channels will be filled ' ...
+            'with NaN for this trial to maintain a consistent ' ...
+            'channel layout across the session.']);
     end
 
     %% Process Ground Reaction Force (GRF) Data
@@ -340,6 +361,17 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 relData2(:, idxList2) = relDataTemp2;
                 relData2 = relData2(:, ~emptyChannels2);
                 EMGList  = [EMGList1, EMGList2];
+            elseif pc2Missing
+                % PC2 file absent: derive channel metadata from session
+                % info so the EMG channel layout remains consistent.
+                % NaN data is appended to allData after sync processing
+                % (EMGList is updated there to avoid a column mismatch
+                % between allData and syncIdx during sync computation).
+                emptyChannels2 = ...
+                    cellfun(@(x) isempty(x), info.EMGList2);
+                EMGList2 = info.EMGList2(~emptyChannels2);
+                % idxList2 is empty; info.EMGList2 is not updated in
+                % the name-validation loop when pc2Missing is true
             end
         elseif info.EMGworks == 1
             [analogs, EMGList, relData, relData2, secondFile, ...
@@ -350,7 +382,10 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 info.EMGworksdir_location, fileList{tr});
         end
 
-        % Check if muscle names match expectations; query user if not
+        % Check if muscle names match expectations; query user if not.
+        % When pc2Missing, only PC1 names (in EMGList = EMGList1) are
+        % validated here; PC2 names from info.EMGList2 are assumed
+        % valid since they were set in a prior session or in the GUI.
         for k = 1:length(EMGList)
             while sum(strcmpi(orderedEMGList, EMGList{k})) == 0 ...
                     && ~strcmpi(EMGList{k}(1:4), 'sync')
@@ -362,7 +397,9 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                     ' or ''sync''.'], 's');
                 if k <= length(EMGList1)
                     info.EMGList1{idxList(k)} = aux{1};
-                else
+                elseif ~pc2Missing
+                    % Only update info when PC2 data was actually
+                    % loaded; idxList2 is empty when pc2Missing
                     info.EMGList2{idxList2(k-length(EMGList1))} = ...
                         aux{1};
                 end
@@ -416,7 +453,9 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             EMGfrequency = analogsInfo.frequency;
         end
 
-        % Keep only matrices of the same size
+        % Keep only matrices of the same size.
+        % When pc2Missing, only PC1 data is in allData during sync;
+        % PC2 NaN columns are appended after sync processing below.
         if secondFile
             [auxData, auxData2] = ...
                 truncateToSameLength(relData, relData2);
@@ -672,6 +711,15 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             warning('No sync signals were present, using data as-is.');
         end
 
+        % When the PC2 file was missing for this trial, append NaN
+        % columns to allData and update EMGList now that sync
+        % processing is complete and allData columns match EMGList.
+        if pc2Missing
+            nPC2ch  = sum(~emptyChannels2);
+            allData = [allData, NaN(size(allData, 1), nPC2ch)];
+            EMGList = [EMGList, EMGList2];
+        end
+
         % Sort muscles into orderedEMGList order for consistent storage
         orderedIndexes = zeros(length(orderedEMGList), 1);
         for j = 1:length(orderedEMGList)
@@ -784,9 +832,19 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 end
             else
                 allData = relData;
+                % When PC2 file was missing, append NaN columns for
+                % PC2 ACC channels (3 axes per channel) so that all
+                % trials have the same accelerometer channel layout
+                if pc2Missing
+                    nPC2acc = 3 * sum(~emptyChannels2);
+                    allData = [allData, ...
+                        NaN(size(allData, 1), nPC2acc)];
+                end
             end
 
-            % Assign ACC channel name labels (no empty fields to drop)
+            % Assign ACC channel name labels.
+            % At this point EMGList includes both PC1 and (when
+            % applicable) PC2 names, so ACCList covers all channels.
             ACCList = {};
             for j = 1:length(EMGList)
                 ACCList{end+1} = [EMGList{j} 'x'];
