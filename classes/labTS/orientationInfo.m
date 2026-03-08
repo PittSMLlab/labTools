@@ -1,34 +1,33 @@
 classdef orientationInfo
-    %orientationInfo  Holds information about a three-dimensional
-    %coordinate system
+    % orientationInfo  Holds information about a 3-D coordinate system.
     %
     %   orientationInfo defines the orientation of a coordinate system by
-    %   specifying which physical directions (fore-aft, side-to-side,
-    %   up-down) correspond to which axes (x, y, z) and their signs.
+    % specifying which physical directions (fore-aft, side-to-side,
+    % up-down) correspond to which axes (x, y, z) and their signs.
     %
-    %orientationInfo properties:
-    %   offset - 1x3 vector for coordinate system origin offset
+    % orientationInfo properties:
+    %   offset      - 1x3 vector for coordinate system origin offset
     %   foreaftAxis - axis for fore-aft direction ('x', 'y', or 'z')
     %   foreaftSign - sign convention (1 if forward is positive)
-    %   sideAxis - axis for side-to-side direction ('x', 'y', or 'z')
-    %   sideSign - sign convention (1 if left to right is positive)
-    %   updownAxis - axis for vertical direction ('x', 'y', or 'z')
-    %   updownSign - sign convention (1 if upwards is positive)
+    %   sideAxis    - axis for side-to-side direction ('x', 'y', or 'z')
+    %   sideSign    - sign convention (1 if left to right is positive)
+    %   updownAxis  - axis for vertical direction ('x', 'y', or 'z')
+    %   updownSign  - sign convention (1 if upwards is positive)
     %
-    %orientationInfo methods:
-    %   orientationInfo - constructor for orientation info
+    % orientationInfo methods:
+    %   orientationInfo - constructor for orientationInfo object
     %
-    %See also: orientedLabTimeSeries
+    % See also: orientedLabTimeSeries
 
     %% Properties
     properties
-        offset = 0; % Should be 1x3 for vector data
-        foreaftAxis = ''; % Either 'x', 'y' or 'z' (NO caps!)
-        foreaftSign = 1; % Should be 1 if forward is positive
-        sideAxis = '';
-        sideSign = 1; % should be 1 if left to right is positive
-        updownAxis = '';
-        updownSign = 1; % Should be 1 if upwards is positive
+        offset      = 0;   % Origin offset; should be 1x3 for vector data
+        foreaftAxis = '';  % Fore-aft axis ('x', 'y', or 'z'; no caps)
+        foreaftSign = 1;   % 1 if forward is positive
+        sideAxis    = '';  % Side-to-side axis ('x', 'y', or 'z')
+        sideSign    = 1;   % 1 if left-to-right is positive
+        updownAxis  = '';  % Vertical axis ('x', 'y', or 'z')
+        updownSign  = 1;   % 1 if upward is positive
     end
 
     %% Constructor
