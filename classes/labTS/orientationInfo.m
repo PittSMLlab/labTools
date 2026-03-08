@@ -34,56 +34,50 @@ classdef orientationInfo
     methods
         function this = orientationInfo(offset, foreaftAx, sideAx, ...
                 updownAx, foreaftSign, sideSign, updownSign)
-            %orientationInfo  Constructor for orientationInfo class
+            % orientationInfo  Constructor for orientationInfo class.
             %
-            %   this = orientationInfo() creates orientation info with
-            %   default values
+            %   this = orientationInfo() creates an orientationInfo object
+            %   with default property values.
             %
-            %   this = orientationInfo(offset, foreaftAx, sideAx,
-            %   updownAx, foreaftSign, sideSign, updownSign) creates
-            %   orientation info with specified parameters
+            %   this = orientationInfo(offset, foreaftAx, sideAx, updownAx,
+            %   foreaftSign, sideSign, updownSign) creates an
+            %   orientationInfo object with specified parameters.
             %
             %   Inputs:
-            %       offset - 1x3 vector for origin offset (optional)
-            %       foreaftAx - axis for fore-aft, 'x', 'y', or 'z'
-            %                   (optional)
-            %       sideAx - axis for side-to-side, 'x', 'y', or 'z'
-            %                (optional)
-            %       updownAx - axis for up-down, 'x', 'y', or 'z'
-            %                  (optional)
-            %       foreaftSign - sign for fore-aft (+1 or -1) (optional)
-            %       sideSign - sign for side-to-side (+1 or -1) (optional)
-            %       updownSign - sign for up-down (+1 or -1) (optional)
+            %     offset      - (optional) 1x3 origin offset vector
+            %     foreaftAx   - (optional) Fore-aft axis: 'x', 'y', or 'z'
+            %     sideAx      - (optional) Side axis: 'x', 'y', or 'z'
+            %     updownAx    - (optional) Vertical axis: 'x', 'y', or 'z'
+            %     foreaftSign - (optional) Fore-aft sign (+1 or -1)
+            %     sideSign    - (optional) Side sign (+1 or -1)
+            %     updownSign  - (optional) Vertical sign (+1 or -1)
             %
             %   Outputs:
-            %       this - orientationInfo object
+            %     this - orientationInfo object
             %
             %   See also: orientedLabTimeSeries
 
             if nargin > 0 && ~isempty(offset)
                 this.offset = offset;
             end
-            if nargin > 1 && ~isempty(foreaftAx) && isa(foreaftAx, 'char')
-                if strcmp(foreaftAx, 'x') || strcmp(foreaftAx, 'y') || ...
-                        strcmp(foreaftAx, 'z')
+            if nargin > 1 && ~isempty(foreaftAx) && ischar(foreaftAx)
+                if ismember(foreaftAx, {'x', 'y', 'z'})
                     this.foreaftAxis = foreaftAx;
                 else
                     error('OrientationInfo:Constructor', ...
                         'Axis is not one of ''x'', ''y'' or ''z''.');
                 end
             end
-            if nargin > 2 && ~isempty(sideAx) && isa(sideAx, 'char')
-                if strcmp(sideAx, 'x') || strcmp(sideAx, 'y') || ...
-                        strcmp(sideAx, 'z')
+            if nargin > 2 && ~isempty(sideAx) && ischar(sideAx)
+                if ismember(sideAx, {'x', 'y', 'z'})
                     this.sideAxis = sideAx;
                 else
                     error('OrientationInfo:Constructor', ...
                         'Axis is not one of ''x'', ''y'' or ''z''.');
                 end
             end
-            if nargin > 3 && ~isempty(updownAx) && isa(updownAx, 'char')
-                if strcmp(updownAx, 'x') || strcmp(updownAx, 'y') || ...
-                        strcmp(updownAx, 'z')
+            if nargin > 3 && ~isempty(updownAx) && ischar(updownAx)
+                if ismember(updownAx, {'x', 'y', 'z'})
                     this.updownAxis = updownAx;
                 else
                     error('OrientationInfo:Constructor', ...
