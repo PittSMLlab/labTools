@@ -47,58 +47,47 @@ classdef orientationInfo
             %
             %   this = orientationInfo(offset, foreaftAx, sideAx, updownAx,
             %   foreaftSign, sideSign, updownSign) creates an
-            %   orientationInfo object with specified parameters.
+            %   orientationInfo object with the specified parameters.
+            %   Input validation is enforced by property validators on
+            %   assignment; see the property block for permitted values.
             %
             %   Inputs:
-            %     offset      - (optional) 1x3 origin offset vector
-            %     foreaftAx   - (optional) Fore-aft axis: 'x', 'y', or 'z'
-            %     sideAx      - (optional) Side axis: 'x', 'y', or 'z'
-            %     updownAx    - (optional) Vertical axis: 'x', 'y', or 'z'
-            %     foreaftSign - (optional) Fore-aft sign (+1 or -1)
-            %     sideSign    - (optional) Side sign (+1 or -1)
-            %     updownSign  - (optional) Vertical sign (+1 or -1)
+            %     offset      - (optional) 1x3 origin offset vector;
+            %                   defaults to [0 0 0]
+            %     foreaftAx   - (optional) Fore-aft axis: 'x', 'y', or 'z';
+            %                   defaults to ''
+            %     sideAx      - (optional) Side axis: 'x', 'y', or 'z';
+            %                   defaults to ''
+            %     updownAx    - (optional) Vertical axis: 'x', 'y', or 'z';
+            %                   defaults to ''
+            %     foreaftSign - (optional) Fore-aft sign (1 or -1);
+            %                   defaults to 1
+            %     sideSign    - (optional) Side sign (1 or -1);
+            %                   defaults to 1
+            %     updownSign  - (optional) Vertical sign (1 or -1);
+            %                   defaults to 1
             %
             %   Outputs:
             %     this - orientationInfo object
             %
             %   See also: orientedLabTimeSeries
 
-            if nargin > 0 && ~isempty(offset)
-                this.offset = offset;
+            arguments
+                offset      (1,3) double = [0 0 0]
+                foreaftAx   (1,:) char   = ''
+                sideAx      (1,:) char   = ''
+                updownAx    (1,:) char   = ''
+                foreaftSign (1,1) double = 1
+                sideSign    (1,1) double = 1
+                updownSign  (1,1) double = 1
             end
-            if nargin > 1 && ~isempty(foreaftAx) && ischar(foreaftAx)
-                if ismember(foreaftAx, {'x', 'y', 'z'})
-                    this.foreaftAxis = foreaftAx;
-                else
-                    error('OrientationInfo:Constructor', ...
-                        'Axis is not one of ''x'', ''y'' or ''z''.');
-                end
-            end
-            if nargin > 2 && ~isempty(sideAx) && ischar(sideAx)
-                if ismember(sideAx, {'x', 'y', 'z'})
-                    this.sideAxis = sideAx;
-                else
-                    error('OrientationInfo:Constructor', ...
-                        'Axis is not one of ''x'', ''y'' or ''z''.');
-                end
-            end
-            if nargin > 3 && ~isempty(updownAx) && ischar(updownAx)
-                if ismember(updownAx, {'x', 'y', 'z'})
-                    this.updownAxis = updownAx;
-                else
-                    error('OrientationInfo:Constructor', ...
-                        'Axis is not one of ''x'', ''y'' or ''z''.');
-                end
-            end
-            if nargin > 4 && ~isempty(foreaftSign)
-                this.foreaftSign = foreaftSign;
-            end
-            if nargin > 5 && ~isempty(sideSign)
-                this.sideSign = sideSign;
-            end
-            if nargin > 6 && ~isempty(updownSign)
-                this.updownSign = updownSign;
-            end
+            this.offset      = offset;
+            this.foreaftAxis = foreaftAx;
+            this.sideAxis    = sideAx;
+            this.updownAxis  = updownAx;
+            this.foreaftSign = foreaftSign;
+            this.sideSign    = sideSign;
+            this.updownSign  = updownSign;
         end
     end
 
