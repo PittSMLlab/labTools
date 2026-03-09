@@ -1,8 +1,8 @@
 classdef orientationInfo
     % orientationInfo  Holds information about a 3-D coordinate system.
     %
-    %   orientationInfo defines the orientation of a coordinate system by
-    % specifying which physical directions (fore-aft, side-to-side,
+    %   orientationInfo defines the orientation of a coordinate system
+    % by specifying which physical directions (fore-aft, side-to-side,
     % up-down) correspond to which axes (x, y, z) and their signs.
     %
     % orientationInfo properties:
@@ -21,13 +21,19 @@ classdef orientationInfo
 
     %% Properties
     properties
-        offset      = 0;   % Origin offset; should be 1x3 for vector data
-        foreaftAxis = '';  % Fore-aft axis ('x', 'y', or 'z'; no caps)
-        foreaftSign = 1;   % 1 if forward is positive
-        sideAxis    = '';  % Side-to-side axis ('x', 'y', or 'z')
-        sideSign    = 1;   % 1 if left-to-right is positive
-        updownAxis  = '';  % Vertical axis ('x', 'y', or 'z')
-        updownSign  = 1;   % 1 if upward is positive
+        offset      (1,3) double = [0 0 0]
+        foreaftAxis (1,:) char ...
+            {mustBeMember(foreaftAxis, {'x', 'y', 'z', ''})} = ''
+        foreaftSign (1,1) double ...
+            {mustBeMember(foreaftSign, [1, -1])}              = 1
+        sideAxis    (1,:) char ...
+            {mustBeMember(sideAxis,    {'x', 'y', 'z', ''})} = ''
+        sideSign    (1,1) double ...
+            {mustBeMember(sideSign,    [1, -1])}              = 1
+        updownAxis  (1,:) char ...
+            {mustBeMember(updownAxis,  {'x', 'y', 'z', ''})} = ''
+        updownSign  (1,1) double ...
+            {mustBeMember(updownSign,  [1, -1])}              = 1
     end
 
     %% Constructor
