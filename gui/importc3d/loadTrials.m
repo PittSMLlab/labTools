@@ -212,8 +212,8 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                     % idx=num2str(map(k)); % Hardcoded map of input
                     % pins to forces/moments. Outdated.
                     [~, idx] = max(abs(relData(:, k)' * raws));
-                    idx            = ttt{idx}(end);
-                    pinFieldMask   = ~cellfun(@isempty, ...
+                    idx          = ttt{idx}(end);
+                    pinFieldMask = ~cellfun(@isempty, ...
                         regexp(aux, ['Pin_' idx '$']));
                     raw  = analogs.(aux{pinFieldMask});
                     proc = relData(:, k);
@@ -327,8 +327,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             EMGList = EMGList1;
 
             % -- Secondary file (PC 2)
-            relDataTemp2 = [];
-            idxList2     = [];
+            idxList2 = [];
             if secondFile
                 fieldList = fieldnames(analogs2);
 
@@ -399,9 +398,9 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         % across Nexus versions
         fieldNames = fieldnames(analogs);
         refSync    = analogs.(fieldNames{cellfun( ...
-            @(x) ~isempty(strfind(x, 'Pin3'))  | ...
-            ~isempty(strfind(x, 'Pin_3')) | ...
-            ~isempty(strfind(x, 'Raw_3')), fieldNames)});
+            @(x) contains(x, 'Pin3')  | ...
+            contains(x, 'Pin_3') | ...
+            contains(x, 'Raw_3'), fieldNames)});
 
         % Check for frequency mismatch between the two PCs
         if secondFile
@@ -468,7 +467,6 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
         if ~isempty(sync)           % if sync signals present, proceed
             % Clip top and bottom 0.1%
             sync = clipSignals(sync, 0.1);
-            N    = size(sync, 1);
             aux  = medfilt1(sync, 20, [], 1); % median filter for spikes
             % aux(aux>(median(aux)+5*iqr(aux)) | ...
             %     aux<(median(aux)-5*iqr(aux)))=median(aux(:));
@@ -483,7 +481,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 newRelData2 = resampleShiftAndScale( ...
                     relData2, timeScaleFactor, lagInSamples, 1);
             end
-            [~, timeScaleFactorA, lagInSamplesA, ~] = ...
+            [~, ~, lagInSamplesA, ~] = ...
                 matchSignals(refAux, aux(:, 1));
             newRelData = resampleShiftAndScale( ...
                 relData, 1, lagInSamplesA, 1);
@@ -577,10 +575,10 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                     'worked: signal mismatch is too high in ' ...
                     'trial ' num2str(tr) '.']);
                 h = figure();
-                subplot(2, 2, [1:2]);
+                subplot(2, 2, 1:2);
                 hold on;
                 title(['Trial ' num2str(tr) ' Synchronization']);
-                time = [0:length(refSync)-1] * 1/EMGfrequency;
+                time = (0:length(refSync)-1) * 1/EMGfrequency;
                 plot(time, refSync);
                 plot(time, sync(:, 1) * gain1, 'r');
                 if secondFile
@@ -638,10 +636,10 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
 
             % Plot to visually confirm that alignment worked
             h = figure();
-            subplot(2, 2, [1:2]);
+            subplot(2, 2, 1:2);
             hold on;
             title(['Trial ' num2str(tr) ' Synchronization']);
-            time = [0:length(refSync)-1] * 1/EMGfrequency;
+            time = (0:length(refSync)-1) * 1/EMGfrequency;
             plot(time, refSync);
             plot(time, sync(:, 1) * gain1, 'r');
             leg1 = ['sync1, delay=' ...
@@ -870,8 +868,6 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     stimFields = fieldList(stimMask);
     if ~isempty(stimFields)         % if there is a stimulator pin, ...
         stimLabels = stimFields';
-        unitsCells = cellfun(@(f) analogsInfo.units.(f), stimFields, ...
-            'UniformOutput', false);
         stimCells  = cellfun(@(f) analogs.(f), stimFields, ...
             'UniformOutput', false);
         relData    = [stimCells{:}];
