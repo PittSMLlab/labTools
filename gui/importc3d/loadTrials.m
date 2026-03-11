@@ -212,10 +212,10 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                     % idx=num2str(map(k)); % Hardcoded map of input
                     % pins to forces/moments. Outdated.
                     [~, idx] = max(abs(relData(:, k)' * raws));
-                    idx = ttt{idx}(end);
-                    iii = find(cellfun(@(x) ~isempty(x), ...
-                        regexp(aux, ['Pin_' idx '$'])));
-                    raw  = analogs.(aux{iii});
+                    idx            = ttt{idx}(end);
+                    pinFieldMask   = ~cellfun(@isempty, ...
+                        regexp(aux, ['Pin_' idx '$']));
+                    raw  = analogs.(aux{pinFieldMask});
                     proc = relData(:, k);
                     % figure; plot(raw,proc,'.') % Finally found
                     % where c3d2mat plots were coming from
@@ -227,8 +227,14 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                         % Could be rounded to 2 sig. figs.
                         gain(j)   = coef(1);
                         offset(j) = -coef(2) / coef(1);
-                        C  = [-1:0.001:1];
-                        Hh = hist(raw, C);
+                        % histcounts requires bin edges, not centers;
+                        % shift center vector by half a bin width to
+                        % form edges for equivalent binning behavior
+                        C        = -1:0.001:1;
+                        binWidth = C(2) - C(1);
+                        edges    = (C(1) - binWidth/2) : ...
+                            binWidth : (C(end) + binWidth/2);
+                        Hh            = histcounts(raw, edges);
                         trueOffset(j) = C(Hh == max(Hh));
                         differenceInForceUnits(j) = ...
                             gain(j) * (trueOffset(j) - offset(j));
@@ -313,7 +319,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             relDataTemp = [emgCells{:}];
             analogs     = rmfield(analogs, emgFields);
 
-            emptyChannels1 = cellfun(@(x) isempty(x), info.EMGList1);
+            emptyChannels1 = cellfun(@isempty, info.EMGList1);
             EMGList1       = info.EMGList1(~emptyChannels1);
             % Re-sort to fix 1,10,11,...,2,3 ordering from MATLAB
             relData(:, idxList) = relDataTemp;
@@ -337,8 +343,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 relDataTemp2 = [emgCells2{:}];
                 analogs2     = rmfield(analogs2, emgFields2);
 
-                emptyChannels2 = ...
-                    cellfun(@(x) isempty(x), info.EMGList2);
+                emptyChannels2 = cellfun(@isempty, info.EMGList2);
                 % Use names only for channels in the file
                 EMGList2 = info.EMGList2(~emptyChannels2);
                 % Re-sort to fix 1,10,11,...,2,3 ordering
@@ -351,8 +356,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
                 % NaN data is appended to allData after sync processing
                 % (EMGList is updated there to avoid a column mismatch
                 % between allData and syncIdx during sync computation).
-                emptyChannels2 = ...
-                    cellfun(@(x) isempty(x), info.EMGList2);
+                emptyChannels2 = cellfun(@isempty, info.EMGList2);
                 EMGList2 = info.EMGList2(~emptyChannels2);
                 % idxList2 is empty; info.EMGList2 is not updated in
                 % the name-validation loop when pc2Missing is true
