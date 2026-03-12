@@ -61,7 +61,11 @@ end
 % used to detect trials with missing PC2 files vs. single-PC sessions
 sessionHasPC2 = any(~cellfun(@isempty, secFileList));
 
-for tr = cell2mat(info.trialnums)       % for each trial, ...
+% Pre-allocate output cell array to avoid repeated dynamic growth
+trialNums = cell2mat(info.trialnums);
+trials    = cell(1, max(trialNums));
+
+for tr = trialNums                      % for each trial, ...
     % FIXME: close all figures and remove intermediate variables to
     % free up some memory in MATLAB.
     % There seems to be a memory issue since summer 2025. During
@@ -74,7 +78,7 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
     close('all');
     clc();
     clearvars -except trialMD fileList secFileList info tr ...
-        orderedEMGList orientation trials sessionHasPC2;
+        orderedEMGList orientation trials sessionHasPC2 trialNums;
 
     % Import C3D data using BTK (Biomechanics Toolkit)
     H = btkReadAcquisition([fileList{tr} '.c3d']);
@@ -281,8 +285,9 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             end
         catch ME
             warning('loadTrials:GRFs', ...
-                ['Could not perform offset check. ' ...
-                'Proceeding with data as is.']);
+                ['Could not perform offset check for trial ' ...
+                num2str(tr) '. Proceeding with data as is. ' ...
+                'Error: ' ME.message]);
         end
 
         % Create 'labTimeSeries' object
@@ -394,13 +399,13 @@ for tr = cell2mat(info.trialnums)       % for each trial, ...
             end
         end
 
-        % Note: analog pin naming convention is not kept consistently
-        % across Nexus versions
-        fieldNames = fieldnames(analogs);
-        refSync    = analogs.(fieldNames{cellfun( ...
-            @(x) contains(x, 'Pin3')  | ...
-            contains(x, 'Pin_3') | ...
-            contains(x, 'Raw_3'), fieldNames)});
+        % Locate the reference sync pin channel; the naming convention
+        % is not kept consistently across Nexus versions, so all three
+        % known variants are checked simultaneously using contains with
+        % a string array, which operates directly on the cell array
+        fieldNames    = fieldnames(analogs);
+        refSyncMask   = contains(fieldNames, {'Pin3', 'Pin_3', 'Raw_3'});
+        refSync       = analogs.(fieldNames{refSyncMask});
 
         % Check for frequency mismatch between the two PCs
         if secondFile
