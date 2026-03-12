@@ -233,13 +233,15 @@ for tr = trialNums                      % for each trial, ...
                         offset(j) = -coef(2) / coef(1);
                         % histcounts requires bin edges, not centers;
                         % shift center vector by half a bin width to
-                        % form edges for equivalent binning behavior
+                        % form edges for equivalent binning behavior.
+                        % find(..., 1) picks the lowest-valued bin
+                        % center deterministically when counts are tied.
                         C        = -1:0.001:1;
                         binWidth = C(2) - C(1);
                         edges    = (C(1) - binWidth/2) : ...
                             binWidth : (C(end) + binWidth/2);
                         Hh            = histcounts(raw, edges);
-                        trueOffset(j) = C(Hh == max(Hh));
+                        trueOffset(j) = C(find(Hh == max(Hh), 1));
                         differenceInForceUnits(j) = ...
                             gain(j) * (trueOffset(j) - offset(j));
                     end
@@ -403,9 +405,9 @@ for tr = trialNums                      % for each trial, ...
         % is not kept consistently across Nexus versions, so all three
         % known variants are checked simultaneously using contains with
         % a string array, which operates directly on the cell array
-        fieldNames    = fieldnames(analogs);
-        refSyncMask   = contains(fieldNames, {'Pin3', 'Pin_3', 'Raw_3'});
-        refSync       = analogs.(fieldNames{refSyncMask});
+        fieldNames  = fieldnames(analogs);
+        refSyncMask = contains(fieldNames, {'Pin3', 'Pin_3', 'Raw_3'});
+        refSync     = analogs.(fieldNames{refSyncMask});
 
         % Check for frequency mismatch between the two PCs
         if secondFile
