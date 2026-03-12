@@ -42,6 +42,36 @@ arguments
     info        (1,1) struct
 end
 
+% -----------------------------------------------------------------------
+%  Named constants — centralised here for easy tuning
+% -----------------------------------------------------------------------
+
+% Kernel length (samples) for the median filter applied to raw sync
+% signals before differentiation
+medFiltKernel     = 20;
+
+% Kernel length (samples) for the median filter applied to the
+% differentiated sync signal used in matchSignals
+medFiltDiffKernel = 10;
+
+% Percentile (%) used to symmetrically clip the top and bottom of
+% sync signals, removing isolated large-amplitude outliers
+clipPercentile    = 0.1;
+
+% Fractional signal-energy threshold above which EMG synchronization
+% is considered to have failed and a warning/prompt is raised (1%)
+syncMismatchThreshold = 0.01;
+
+% Integer downsampling factor applied to accelerometer data;
+% reduces the native EMG-system rate to approximately 150 Hz
+accDownsampleFactor = 13;
+
+% Duration (seconds) of the start and end segments shown in the
+% sync diagnostic figure subplots
+syncPlotDuration  = 3;
+
+% -----------------------------------------------------------------------
+
 % orientationInfo(offset, foreaftAx, sideAx, updownAx, foreaftSign, ...
 %     sideSign, updownSign);
 % check signs! this is used in biomechanics calculations
@@ -78,7 +108,9 @@ for tr = trialNums                      % for each trial, ...
     close('all');
     clc();
     clearvars -except trialMD fileList secFileList info tr ...
-        orderedEMGList orientation trials sessionHasPC2 trialNums;
+        orderedEMGList orientation trials sessionHasPC2 trialNums ...
+        medFiltKernel medFiltDiffKernel clipPercentile ...
+        syncMismatchThreshold accDownsampleFactor syncPlotDuration;
 
     % Import C3D data using BTK (Biomechanics Toolkit)
     H = btkReadAcquisition([fileList{tr} '.c3d']);
@@ -459,25 +491,25 @@ for tr = trialNums                      % for each trial, ...
             allData = relData;
         end
 
-        % Pre-process reference sync signal
-        % Clip top and bottom 0.1% of samples (1 out of 1e3)
-        refSync = clipSignals(refSync(:), 0.1);
-        refAux  = medfilt1(refSync, 20);
+        % Pre-process reference sync signal: clip outliers, then
+        % median-filter the signal and its derivative
+        refSync = clipSignals(refSync(:), clipPercentile);
+        refAux  = medfilt1(refSync, medFiltKernel);
         % refAux(refAux<(median(refAux)-5*iqr(refAux)) | ...
         %     refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
-        refAux = medfilt1(diff(refAux), 10);
+        refAux = medfilt1(diff(refAux), medFiltDiffKernel);
         clear auxData*;
 
         syncIdx = strncmpi(EMGList, 'Sync', 4); % compare first 4 chars
         sync    = allData(:, syncIdx);
 
         if ~isempty(sync)           % if sync signals present, proceed
-            % Clip top and bottom 0.1%
-            sync = clipSignals(sync, 0.1);
-            aux  = medfilt1(sync, 20, [], 1); % median filter for spikes
+            % Clip outliers, then median-filter signal and derivative
+            sync = clipSignals(sync, clipPercentile);
+            aux  = medfilt1(sync, medFiltKernel, [], 1);
             % aux(aux>(median(aux)+5*iqr(aux)) | ...
             %     aux<(median(aux)-5*iqr(aux)))=median(aux(:));
-            aux = medfilt1(diff(aux), 10, [], 1);
+            aux = medfilt1(diff(aux), medFiltDiffKernel, [], 1);
             if secondFile
                 [~, timeScaleFactor, lagInSamples, ~] = ...
                     matchSignals(aux(:, 1), aux(:, 2));
@@ -514,12 +546,12 @@ for tr = trialNums                      % for each trial, ...
 
             % Find gains via least-squares on high-pass filtered sync
             % signals (why use HPF for gains and not for sync?)
-            refSync = clipSignals(refSync(:), 0.1);
+            refSync = clipSignals(refSync(:), clipPercentile);
             refSync = idealHPF(refSync, 0);    % remove DC only
             [allData, refSync] = ...
                 truncateToSameLength(allData, refSync);
             sync = allData(:, syncIdx);
-            sync = clipSignals(sync, 0.1);
+            sync = clipSignals(sync, clipPercentile);
             sync = idealHPF(sync, 0);
             gain1    = refSync' / sync(:, 1)';
             indStart = round(max([lagInSamplesA+1, 1]));
@@ -576,8 +608,10 @@ for tr = trialNums                      % for each trial, ...
             disp(['Typical sync parameters are: gain= 1; ' ...
                 'delay= 0.040s; sampling= 35 ppm']);
 
-            % Warn if mismatch exceeds 1% of original signal energy
-            if isnan(E1) || isnan(E2) || E1 > 0.01 || E2 > 0.01
+            % Warn if mismatch exceeds the energy threshold
+            if isnan(E1) || isnan(E2) || ...
+                    E1 > syncMismatchThreshold || ...
+                    E2 > syncMismatchThreshold
                 warning(['Time alignment doesnt seem to have ' ...
                     'worked: signal mismatch is too high in ' ...
                     'trial ' num2str(tr) '.']);
@@ -603,7 +637,8 @@ for tr = trialNums                      % for each trial, ...
                 legend('refSync', leg1, leg2);
                 hold off;
                 subplot(2, 2, 3);
-                T = round(3 * EMGfrequency);    % 3 secs to plot
+                % Number of samples covering syncPlotDuration seconds
+                T = round(syncPlotDuration * EMGfrequency);
                 if T < length(refSync)
                     hold on;
                     plot(time(1:T), refSync(1:T));
@@ -666,7 +701,8 @@ for tr = trialNums                      % for each trial, ...
             end
             hold off;
             subplot(2, 2, 3);
-            T = round(3 * EMGfrequency);    % 3 secs to plot
+            % Number of samples covering syncPlotDuration seconds
+            T = round(syncPlotDuration * EMGfrequency);
             if T < length(refSync)
                 hold on;
                 plot(time(1:T), refSync(1:T));
@@ -841,11 +877,12 @@ for tr = trialNums                      % for each trial, ...
                 ACCList{end+1} = [EMGList{j} 'z'];
             end
 
-            % Downsample to ~150 Hz (closer to original 148 Hz rate)
+            % Downsample by accDownsampleFactor to approximately
+            % 150 Hz (closer to original 148 Hz rate)
             % (where does this get upsampled? why?)
             accData = orientedLabTimeSeries( ...
-                allData(1:13:end, :), 0, 13/EMGfrequency, ...
-                ACCList, orientation);
+                allData(1:accDownsampleFactor:end, :), 0, ...
+                accDownsampleFactor/EMGfrequency, ACCList, orientation);
             % Note: orientation is local and unique to each sensor,
             % which is affixed to a body segment
         elseif info.EMGworks == 1
@@ -856,8 +893,8 @@ for tr = trialNums                      % for each trial, ...
             % Samplingfrequency = analogsInfo.frequency;
             accData = [];
             % accData = orientedLabTimeSeries( ...
-            %     allData(1:13:end,:), 0, Samplingfrequency, ...
-            %     ACCList, orientation);
+            %     allData(1:accDownsampleFactor:end,:), 0, ...
+            %     Samplingfrequency, ACCList, orientation);
         end
         clear allData* relData* auxData*;
     else
