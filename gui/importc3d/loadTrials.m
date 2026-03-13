@@ -636,7 +636,7 @@ for tr = trialNums                      % for each trial, ...
                 end
             end
 
-            % Plot to visually confirm that alignment worked, then save
+            % Plot to visually confirm alignment, then save the figure.
             h = plotSyncFigure(tr, refSync, sync, ...
                 gain1, gain2, lagInSamplesA, lagInSamples, ...
                 E1, E2, EMGfrequency, secondFile, syncPlotDuration);
@@ -958,18 +958,18 @@ function h = plotSyncFigure(tr, refSync, sync, gain1, gain2, ...
 % to avoid code duplication.
 %
 %   Inputs:
-%     tr              - Trial number (used in the figure title)
-%     refSync         - Reference sync signal vector
-%     sync            - Matrix of sync signals (columns = PCs)
-%     gain1           - Least-squares gain for PC1 sync signal
-%     gain2           - Least-squares gain for PC2 sync signal
-%     lagInSamplesA   - Sample lag of PC1 relative to reference
-%     lagInSamples    - Sample lag of PC2 relative to PC1
-%     E1              - Fractional mismatch energy for PC1
-%     E2              - Fractional mismatch energy for PC2
-%     EMGfrequency    - Sampling frequency of the EMG system (Hz)
-%     secondFile      - Logical; true when a second PC file was loaded
-%     syncPlotDuration - Duration (s) shown in start/end close-up plots
+%     tr               - Trial number (used in the figure title)
+%     refSync          - Reference sync signal vector
+%     sync             - Matrix of sync signals (columns = PCs)
+%     gain1            - Least-squares gain for PC1 sync signal
+%     gain2            - Least-squares gain for PC2 sync signal
+%     lagInSamplesA    - Sample lag of PC1 relative to reference
+%     lagInSamples     - Sample lag of PC2 relative to PC1
+%     E1               - Fractional mismatch energy for PC1
+%     E2               - Fractional mismatch energy for PC2
+%     EMGfrequency     - Sampling frequency of the EMG system (Hz)
+%     secondFile       - Logical; true when a second PC file was loaded
+%     syncPlotDuration - Duration (s) shown in start/end close-up tiles
 %
 %   Outputs:
 %     h - Handle to the created figure
@@ -985,12 +985,14 @@ leg2 = ['sync2, delay=' ...
 
 time = (0:length(refSync)-1) * 1 / EMGfrequency;
 
-h = figure();
+h  = figure();
+tl = tiledlayout(2, 2, ...
+    'TileSpacing', 'compact', 'Padding', 'compact');
+title(tl, ['Trial ' num2str(tr) ' Synchronization']);
 
-% -- Full-length overlay (top panel)
-subplot(2, 2, 1:2);
+% -- Full-length overlay spanning the entire top row
+nexttile(1, [1 2]);
 hold on;
-title(['Trial ' num2str(tr) ' Synchronization']);
 plot(time, refSync);
 plot(time, sync(:, 1) * gain1, 'r');
 if secondFile
@@ -999,28 +1001,34 @@ if secondFile
 else
     legend('refSync', leg1);
 end
+xlabel('Time (s)');
+ylabel('Amplitude');
 hold off;
 
-% -- Close-up of start and end segments (bottom panels)
-% Number of samples covering syncPlotDuration seconds
+% -- Close-ups of the start and end of the trial (bottom tiles).
+% Number of samples covering syncPlotDuration seconds.
 T = round(syncPlotDuration * EMGfrequency);
 if T < length(refSync)
-    subplot(2, 2, 3);
+    nexttile(3);
     hold on;
     plot(time(1:T), refSync(1:T));
     plot(time(1:T), sync(1:T, 1) * gain1, 'r');
     if secondFile
         plot(time(1:T), sync(1:T, 2) * gain2, 'g');
     end
+    xlabel('Time (s)');
+    ylabel('Amplitude');
     hold off;
 
-    subplot(2, 2, 4);
+    nexttile(4);
     hold on;
     plot(time(end-T:end), refSync(end-T:end));
     plot(time(end-T:end), sync(end-T:end, 1) * gain1, 'r');
     if secondFile
         plot(time(end-T:end), sync(end-T:end, 2) * gain2, 'g');
     end
+    xlabel('Time (s)');
+    ylabel('Amplitude');
     hold off;
 end
 
