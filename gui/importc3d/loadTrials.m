@@ -608,56 +608,16 @@ for tr = trialNums                      % for each trial, ...
             disp(['Typical sync parameters are: gain= 1; ' ...
                 'delay= 0.040s; sampling= 35 ppm']);
 
-            % Warn if mismatch exceeds the energy threshold
+            % Warn and prompt user if mismatch exceeds energy threshold
             if isnan(E1) || isnan(E2) || ...
                     E1 > syncMismatchThreshold || ...
                     E2 > syncMismatchThreshold
                 warning(['Time alignment doesnt seem to have ' ...
                     'worked: signal mismatch is too high in ' ...
                     'trial ' num2str(tr) '.']);
-                h = figure();
-                subplot(2, 2, 1:2);
-                hold on;
-                title(['Trial ' num2str(tr) ' Synchronization']);
-                time = (0:length(refSync)-1) * 1/EMGfrequency;
-                plot(time, refSync);
-                plot(time, sync(:, 1) * gain1, 'r');
-                if secondFile
-                    plot(time, sync(:, 2) * gain2, 'g');
-                end
-                leg1 = ['sync1, delay=' ...
-                    num2str(lagInSamplesA/EMGfrequency, 3) ...
-                    's, gain=' num2str(gain1, 4) ...
-                    ', mismatch(%)=' num2str(100*E1, 3)];
-                leg2 = ['sync2, delay=' ...
-                    num2str((lagInSamplesA+lagInSamples)/ ...
-                    EMGfrequency, 3) 's, gain=' ...
-                    num2str(gain2, 4) ', mismatch(%)=' ...
-                    num2str(100*E2, 3)];
-                legend('refSync', leg1, leg2);
-                hold off;
-                subplot(2, 2, 3);
-                % Number of samples covering syncPlotDuration seconds
-                T = round(syncPlotDuration * EMGfrequency);
-                if T < length(refSync)
-                    hold on;
-                    plot(time(1:T), refSync(1:T));
-                    plot(time(1:T), sync(1:T, 1) * gain1, 'r');
-                    if secondFile
-                        plot(time(1:T), sync(1:T, 2) * gain2, 'g');
-                    end
-                    hold off;
-                    subplot(2, 2, 4);
-                    hold on;
-                    plot(time(end-T:end), refSync(end-T:end));
-                    plot(time(end-T:end), ...
-                        sync(end-T:end, 1) * gain1, 'r');
-                    if secondFile
-                        plot(time(end-T:end), ...
-                            sync(end-T:end, 2) * gain2, 'g');
-                    end
-                    hold off;
-                end
+                h = plotSyncFigure(tr, refSync, sync, gain1, gain2, ...
+                    lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, ...
+                    secondFile, syncPlotDuration);
                 s = inputdlg( ...
                     ['If sync parameters between signals look ' ...
                     'fine and mismatch is below 5%, we ' ...
@@ -676,62 +636,10 @@ for tr = trialNums                      % for each trial, ...
                 end
             end
 
-            % Plot to visually confirm that alignment worked
-            h = figure();
-            subplot(2, 2, 1:2);
-            hold on;
-            title(['Trial ' num2str(tr) ' Synchronization']);
-            time = (0:length(refSync)-1) * 1/EMGfrequency;
-            plot(time, refSync);
-            plot(time, sync(:, 1) * gain1, 'r');
-            leg1 = ['sync1, delay=' ...
-                num2str(lagInSamplesA/EMGfrequency, 3) ...
-                's, gain=' num2str(gain1, 4) ...
-                ', mismatch(%)=' num2str(100*E1, 3)];
-            if secondFile
-                plot(time, sync(:, 2) * gain2, 'g');
-                leg2 = ['sync2, delay=' ...
-                    num2str((lagInSamplesA+lagInSamples)/ ...
-                    EMGfrequency, 3) 's, gain=' ...
-                    num2str(gain2, 4) ', mismatch(%)=' ...
-                    num2str(100*E2, 3)];
-                legend('refSync', leg1, leg2);
-            else
-                legend('refSync', leg1);
-            end
-            hold off;
-            subplot(2, 2, 3);
-            % Number of samples covering syncPlotDuration seconds
-            T = round(syncPlotDuration * EMGfrequency);
-            if T < length(refSync)
-                hold on;
-                plot(time(1:T), refSync(1:T));
-                plot(time(1:T), sync(1:T, 1) * gain1, 'r');
-                if secondFile
-                    plot(time(1:T), sync(1:T, 2) * gain2, 'g');
-                end
-                % legend('refSync',['sync1, delay=' ...
-                %     num2str(lagInSamplesA/ ...
-                %     analogsInfo.frequency,3) 's'], ...
-                %     ['sync2, delay=' num2str((lagInSamplesA+ ...
-                %     lagInSamples)/analogsInfo.frequency,3) 's'])
-                hold off;
-                subplot(2, 2, 4);
-                hold on;
-                plot(time(end-T:end), refSync(end-T:end));
-                plot(time(end-T:end), ...
-                    sync(end-T:end, 1) * gain1, 'r');
-                if secondFile
-                    plot(time(end-T:end), ...
-                        sync(end-T:end, 2) * gain2, 'g');
-                end
-                % legend('refSync',['sync1, delay=' ...
-                %     num2str(lagInSamplesA/ ...
-                %     analogsInfo.frequency,3) 's'], ...
-                %     ['sync2, delay=' num2str((lagInSamplesA+ ...
-                %     lagInSamples)/analogsInfo.frequency,3) 's'])
-                hold off;
-            end
+            % Plot to visually confirm that alignment worked, then save
+            h = plotSyncFigure(tr, refSync, sync, ...
+                gain1, gain2, lagInSamplesA, lagInSamples, ...
+                E1, E2, EMGfrequency, secondFile, syncPlotDuration);
             saveFig(h, ...
                 [fullfile(info.save_folder, 'EMGSyncFile') filesep], ...
                 ['Trial ' num2str(tr) ' Synchronization']);
@@ -1029,6 +937,91 @@ for tr = trialNums                      % for each trial, ...
     trials{tr} = rawTrialData(trialMD{tr}, markerData, EMGData, ...
         GRFData, [], [], accData, [], [], HreflexStimPinData);
 
+end
+
+end
+
+% ============================================================
+% ==================== Local Functions =======================
+% ============================================================
+
+function h = plotSyncFigure(tr, refSync, sync, gain1, gain2, ...
+    lagInSamplesA, lagInSamples, E1, E2, EMGfrequency, ...
+    secondFile, syncPlotDuration)
+% plotSyncFigure  Creates a 4-panel EMG synchronization diagnostic figure.
+%
+%   Produces a figure with four subplots for visually assessing EMG signal
+% alignment quality: a full-length overlay of the reference and
+% synchronised signals (top), and close-ups of the first and last
+% syncPlotDuration seconds (bottom left and right, respectively). Called
+% for both the mismatch-warning prompt and the post-sync confirmation save
+% to avoid code duplication.
+%
+%   Inputs:
+%     tr              - Trial number (used in the figure title)
+%     refSync         - Reference sync signal vector
+%     sync            - Matrix of sync signals (columns = PCs)
+%     gain1           - Least-squares gain for PC1 sync signal
+%     gain2           - Least-squares gain for PC2 sync signal
+%     lagInSamplesA   - Sample lag of PC1 relative to reference
+%     lagInSamples    - Sample lag of PC2 relative to PC1
+%     E1              - Fractional mismatch energy for PC1
+%     E2              - Fractional mismatch energy for PC2
+%     EMGfrequency    - Sampling frequency of the EMG system (Hz)
+%     secondFile      - Logical; true when a second PC file was loaded
+%     syncPlotDuration - Duration (s) shown in start/end close-up plots
+%
+%   Outputs:
+%     h - Handle to the created figure
+%
+%   See also: loadTrials
+
+% Build legend label strings from sync parameters
+leg1 = ['sync1, delay=' num2str(lagInSamplesA/EMGfrequency, 3) ...
+    's, gain=' num2str(gain1, 4) ', mismatch(%)=' num2str(100*E1, 3)];
+leg2 = ['sync2, delay=' ...
+    num2str((lagInSamplesA+lagInSamples)/EMGfrequency, 3) 's, gain=' ...
+    num2str(gain2, 4) ', mismatch(%)=' num2str(100*E2, 3)];
+
+time = (0:length(refSync)-1) * 1 / EMGfrequency;
+
+h = figure();
+
+% -- Full-length overlay (top panel)
+subplot(2, 2, 1:2);
+hold on;
+title(['Trial ' num2str(tr) ' Synchronization']);
+plot(time, refSync);
+plot(time, sync(:, 1) * gain1, 'r');
+if secondFile
+    plot(time, sync(:, 2) * gain2, 'g');
+    legend('refSync', leg1, leg2);
+else
+    legend('refSync', leg1);
+end
+hold off;
+
+% -- Close-up of start and end segments (bottom panels)
+% Number of samples covering syncPlotDuration seconds
+T = round(syncPlotDuration * EMGfrequency);
+if T < length(refSync)
+    subplot(2, 2, 3);
+    hold on;
+    plot(time(1:T), refSync(1:T));
+    plot(time(1:T), sync(1:T, 1) * gain1, 'r');
+    if secondFile
+        plot(time(1:T), sync(1:T, 2) * gain2, 'g');
+    end
+    hold off;
+
+    subplot(2, 2, 4);
+    hold on;
+    plot(time(end-T:end), refSync(end-T:end));
+    plot(time(end-T:end), sync(end-T:end, 1) * gain1, 'r');
+    if secondFile
+        plot(time(end-T:end), sync(end-T:end, 2) * gain2, 'g');
+    end
+    hold off;
 end
 
 end
