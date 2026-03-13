@@ -976,6 +976,15 @@ function h = plotSyncFigure(tr, refSync, sync, gain1, gain2, ...
 %
 %   See also: loadTrials
 
+% ---- Plot appearance constants ----------------------------------------
+% RGB triplets from MATLAB's default color order; orange-red and purple
+% are more distinguishable than red and green for color vision deficiency
+colorRef  = [0.0000 0.4470 0.7410];    % MATLAB default blue  (refSync)
+colorPC1  = [0.8500 0.3250 0.0980];    % MATLAB default orange-red (PC1)
+colorPC2  = [0.4940 0.1840 0.5560];    % MATLAB default purple     (PC2)
+lineWidth = 1.25;
+% -----------------------------------------------------------------------
+
 % Build legend label strings from sync parameters
 leg1 = ['sync1, delay=' num2str(lagInSamplesA/EMGfrequency, 3) ...
     's, gain=' num2str(gain1, 4) ', mismatch(%)=' num2str(100*E1, 3)];
@@ -984,19 +993,33 @@ leg2 = ['sync2, delay=' ...
     num2str(gain2, 4) ', mismatch(%)=' num2str(100*E2, 3)];
 
 time = (0:length(refSync)-1) * 1 / EMGfrequency;
+% Build the sync quality summary line shown below the main title.
+% The PC2 entry is omitted in single-PC sessions. subtitle() is not
+% used here for R2021a compatibility; a two-element cell array passed
+% to title(tl,...) produces the same two-line result on all supported
+% MATLAB versions.
+if secondFile
+    syncQualityStr = ['PC1 mismatch: ' num2str(100*E1, 3) ...
+        '% | PC2 mismatch: ' num2str(100*E2, 3) '%'];
+else
+    syncQualityStr = ['PC1 mismatch: ' num2str(100*E1, 3) '%'];
+end
 
 h  = figure();
 tl = tiledlayout(2, 2, ...
     'TileSpacing', 'compact', 'Padding', 'compact');
-title(tl, ['Trial ' num2str(tr) ' Synchronization']);
+title(tl, {['Trial ' num2str(tr) ' Synchronization'], syncQualityStr});
 
 % -- Full-length overlay spanning the entire top row
 nexttile(1, [1 2]);
 hold on;
-plot(time, refSync);
-plot(time, sync(:, 1) * gain1, 'r');
+plot(time, refSync, ...
+    'Color', colorRef, 'LineWidth', lineWidth);
+plot(time, sync(:, 1) * gain1, ...
+    'Color', colorPC1, 'LineWidth', lineWidth);
 if secondFile
-    plot(time, sync(:, 2) * gain2, 'g');
+    plot(time, sync(:, 2) * gain2, ...
+        'Color', colorPC2, 'LineWidth', lineWidth);
     legend('refSync', leg1, leg2);
 else
     legend('refSync', leg1);
@@ -1011,10 +1034,13 @@ T = round(syncPlotDuration * EMGfrequency);
 if T < length(refSync)
     nexttile(3);
     hold on;
-    plot(time(1:T), refSync(1:T));
-    plot(time(1:T), sync(1:T, 1) * gain1, 'r');
+    plot(time(1:T), refSync(1:T), ...
+        'Color', colorRef, 'LineWidth', lineWidth);
+    plot(time(1:T), sync(1:T, 1) * gain1, ...
+        'Color', colorPC1, 'LineWidth', lineWidth);
     if secondFile
-        plot(time(1:T), sync(1:T, 2) * gain2, 'g');
+        plot(time(1:T), sync(1:T, 2) * gain2, ...
+            'Color', colorPC2, 'LineWidth', lineWidth);
     end
     xlabel('Time (s)');
     ylabel('Amplitude');
@@ -1022,10 +1048,13 @@ if T < length(refSync)
 
     nexttile(4);
     hold on;
-    plot(time(end-T:end), refSync(end-T:end));
-    plot(time(end-T:end), sync(end-T:end, 1) * gain1, 'r');
+    plot(time(end-T:end), refSync(end-T:end), ...
+        'Color', colorRef, 'LineWidth', lineWidth);
+    plot(time(end-T:end), sync(end-T:end, 1) * gain1, ...
+        'Color', colorPC1, 'LineWidth', lineWidth);
     if secondFile
-        plot(time(end-T:end), sync(end-T:end, 2) * gain2, 'g');
+        plot(time(end-T:end), sync(end-T:end, 2) * gain2, ...
+            'Color', colorPC2, 'LineWidth', lineWidth);
     end
     xlabel('Time (s)');
     ylabel('Amplitude');
