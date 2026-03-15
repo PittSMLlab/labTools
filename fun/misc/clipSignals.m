@@ -14,8 +14,10 @@ function signals = clipSignals(signals, percentile)
 %                  bounds. Samples below the p-th percentile are clamped
 %                  to that percentile value, and samples above the
 %                  (100-p)-th percentile are clamped to that value.
-%                  Typical value: 0.1 (clips the outermost 0.1% at each
-%                  end of the distribution).
+%                  Must be in the range (0, 50). Typical value: 0.1
+%                  (clips the outermost 0.1% at each end of the
+%                  distribution). A value of 0 is a no-op and returns
+%                  the input unchanged.
 %
 %   Outputs:
 %     signals - Clipped signal matrix, same size as the input.
@@ -24,6 +26,18 @@ function signals = clipSignals(signals, percentile)
 %     Statistics and Machine Learning Toolbox  (prctile)
 %
 %   See also: loadTrials, prctile
+
+arguments
+    signals    (:, :) {mustBeNumeric}
+    percentile (1, 1) {mustBeNumeric, mustBeReal, ...
+        mustBeNonnegative, mustBeLessThan(percentile, 50)}
+end
+
+% A percentile of zero returns the data min/max as bounds, so clamping
+% has no effect; return immediately to avoid an unnecessary loop.
+if percentile == 0
+    return;
+end
 
 for i = 1:size(signals, 2)
     lims = prctile(signals(:, i), [percentile, 100 - percentile]);
