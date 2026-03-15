@@ -39,11 +39,11 @@ if percentile == 0
     return;
 end
 
-for i = 1:size(signals, 2)
-    lims = prctile(signals(:, i), [percentile, 100 - percentile]);
-    signals(signals(:, i) < lims(1), i) = lims(1);
-    signals(signals(:, i) > lims(2), i) = lims(2);
-end
+% Compute clip bounds for all columns simultaneously. prctile returns
+% a 2 × N matrix when given a two-element percentile vector and a
+% matrix input: row 1 holds lower bounds, row 2 holds upper bounds.
+lims    = prctile(signals, [percentile; 100 - percentile], 1);
+signals = min(max(signals, lims(1, :)), lims(2, :));
 
 end
 
