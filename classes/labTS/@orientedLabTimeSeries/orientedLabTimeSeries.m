@@ -159,106 +159,15 @@ classdef orientedLabTimeSeries < labTimeSeries
 
     %% Spatial Transformation Methods
     methods
-        function newThis = translate(this,vector)
-            %translate OTS data by input vector (vector addition)
+        newThis = translate(this, vector)
 
-            %Check: vector is 1x3 or Tx3
-            [M,N] = size(vector);
-            if N ~= 3 || (M ~= 1 && M ~= numel(this.Time))
-                error('orientedLabTS:translate',['Translation vector ' ...
-                    'has to be size 3 on second dim, and singleton or ' ...
-                    'of length(time) in the first.']);
-            end
-            data = getOrientedData(this);
-            vector = reshape(vector,M,1,3);
-            newData = permute(bsxfun(@plus,data,vector),[1 3 2]);
-            newThis = orientedLabTimeSeries(newData(:,:),this.Time(1), ...
-                this.sampPeriod,this.labels,this.orientation);
-            %newThis.UserData.translation=; %ToDo: store the translation
-            %info in some structure so that it can be backtracked
-        end
+        newThis = rotate(this, matrix)
 
-        function newThis=rotate(this, matrix)
-            %rotate OTS data using input rotation matrix
-            %Since no check is done on the matrix, it really allows for any
-            %arbitrary linear transformation of the data [including
-            %contractions/expansions and inversions]
+        newThis = flipAxis(this, axis)
 
-            [data,label]=getOrientedData(this);
-            if ndims(matrix)==3
-                M=size(matrix,1);
-            else
-                M=1;
-            end
-            matrix=reshape(matrix,M,1,3,3);
-            newData=permute(sum(bsxfun(@times,data,matrix),3),[1,4,2,3]);
-            newThis=orientedLabTimeSeries(newData(:,:),this.Time(1),this.sampPeriod,this.labels,this.orientation);
-            %newThis.UserData.rotation=; %ToDo: store the rotation
-            %info in some structure so that it can be backtracked
-        end
+        newThis = alignRotate(this, newX, newZ)
 
-        function newThis=flipAxis(this,axis)
-            matrix=eye(3);
-            if isa(axis,'char')
-                axis=axis-'w'; %This converts 'x','y','z' to 1,2,3
-            end
-            matrix(axis,axis)=-1;
-            newThis=this.rotate(matrix);
-        end
-
-        function newThis=alignRotate(this,newX,newZ)
-            %newX and newZ need to be 1x3 or Nx3 where N=size(this.Data,1)
-            %Check:
-            N=size(this.Data,1);
-            if (size(newX,1)~=1 && size(newX,1)~=N) || size(newX,2)~=3
-                error('orientedLabTS:alignRotate','newX has to be 1x3 or Nx3.')
-            end
-            if size(newZ,1)~=1 && size(newZ,1)~=N || size(newZ,2)~=3
-                error('orientedLabTS:alignRotate','newZ has to be 1x3 or Nx3.')
-            end
-
-            %In case of one being 1x3 and the other Nx3, making them both
-            %Nx3
-            %FIXME: Align z to newZ, and x to newX projected in a direction
-            %orthogonal to newZ (or check that newX is orthogonal to newZ
-            %to start with)
-            if size(newX,1)~=size(newZ,1)
-                if size(newX,1)==1
-                    newX=repmat(newX,N,1);
-                else
-                    newZ=repmat(newZ,N,1);
-                end
-            end
-
-            newX=bsxfun(@rdivide,newX,sqrt(sum(newX.^2,2)));
-            newZ=bsxfun(@rdivide,newZ,sqrt(sum(newZ.^2,2)));
-            %Find rotation matrix
-            newY=-cross(newX,newZ); %orthogonal to the other two
-            newY=bsxfun(@rdivide,newY,sqrt(sum(newY.^2,2)));
-            matrix1=permute(newX,[1,3,2]);
-            matrix2=permute(newY,[1,3,2]);
-            matrix3=permute(newZ,[1,3,2]);
-            matrix=cat(2,matrix1,matrix2);
-            matrix=cat(2,matrix,matrix3);
-            for i=1:size(matrix,1)
-                if ~any(isnan(matrix(i,:,:)))
-                    matrix(i,1:3,1:3)=inv(squeeze(matrix(i,:,:))); %Very expensive computation
-                else
-                    matrix(i,1:3,1:3)=nan;
-                end
-            end
-            %Rotate
-            newThis=rotate(this, matrix);
-        end
-
-        function newThis=referenceToMarker(this,marker)
-            %align data relative to input marker, calls
-            %orientedLabTimeSeries.translate()
-
-            %Check: marker needs to be a suffix of this object.
-            [data,~]=getOrientedData(this,marker);
-            newThis=translate(this,squeeze(-1*data));
-        end
+        newThis = referenceToMarker(this, marker)
     end
 
     %% Thresholding Methods
