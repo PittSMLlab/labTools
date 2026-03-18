@@ -263,18 +263,9 @@ classdef orientedLabTimeSeries < labTimeSeries
 
     %% Thresholding Methods
     methods
-        function newThis=threshold(this,th)
-            newThis=this;
-            newThis.Data(sqrt(sum(newThis.Data.^2))<th,:)=0;
-        end
+        newThis = threshold(this, th)
 
-        function newThis=thresholdByChannel(this,th,label,moreThanFlag)
-            if nargin<4 || isempty(moreThanFlag)
-                moreThanFlag=[];
-            end
-            newThis=thresholdByChannel@labTimeSeries(this,th,label,moreThanFlag);
-            newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,this.labels,this.orientation);
-        end
+        newThis = thresholdByChannel(this, th, label, moreThanFlag)
     end
 
     %% Override Methods - Type Preservation
