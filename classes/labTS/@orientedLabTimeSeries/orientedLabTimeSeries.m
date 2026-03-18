@@ -128,92 +128,15 @@ classdef orientedLabTimeSeries < labTimeSeries
 
     %% Distance and Difference Computation Methods
     methods
-        function [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2)
-            %Computes the difference vector between two markers, for the time interval [t0,t1]
-            %If labels is specified, only those markers are used
-            %If labels2 is specified, distance to those markers only is
-            %specified
-            [data,label]=getOrientedData(this,this.getLabelPrefix);
-            [T,N,M]=size(data); %M=3
+        [diffMatrix, labels, labels2, Time] = computeDifferenceMatrix( ...
+            this, t0, t1, labels, labels2)
 
-            %Inefficient way: compute the difference matrix for all times
-            %and markers, and then reduce it
-            diffMatrix=nan(T,N,M,N);
-            for i=1:N
-                diffMatrix(:,:,:,i)= bsxfun(@minus,data,data(:,i,:));
-            end
-            diffMatrix=permute(diffMatrix,[1,2,4,3]);
-            if nargin<2 || isempty(t0)
-                t0=this.Time(1);
-            end
-            if nargin<3 || isempty(t1)
-                t1=this.Time(end);
-            end
-            if nargin<4 || isempty(labels)
-                labels=this.getLabelPrefix;
-            end
-            if nargin<5 || isempty(labels2)
-                labels2=this.getLabelPrefix;
-            end
-            %Reduce it:
-            timeIdxs=find(this.Time<=t1 & this.Time>=t0);
-            [~,labelIdxs]=isaLabelPrefix(this,labels);
-            [~,label2Idxs]=isaLabelPrefix(this,labels2);
-            diffMatrix=diffMatrix(timeIdxs,labelIdxs,label2Idxs,:);
-            Time=this.Time(timeIdxs);
+        diffOTS = computeDifferenceOTS(this, t0, t1, labels, labels2)
 
-        end
+        [distMatrix, labels, labels2, Time] = computeDistanceMatrix(...
+            this, t0, t1, labels, labels2)
 
-        function [diffOTS]=computeDifferenceOTS(this,t0,t1,labels,labels2)
-            %compute difference matrix for oriented time series
-            if nargin<2 || isempty(t0)
-                t0=this.Time(1);
-            end
-            if nargin<3 || isempty(t1)
-                t1=this.Time(end)+eps;
-            end
-            if nargin<4 || isempty(labels)
-                labels=this.getLabelPrefix;
-            end
-            if nargin<5 || isempty(labels2)
-                labels2=this.getLabelPrefix;
-            end
-            [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2);
-            newLabels=cell(1,length(labels)*length(labels2));
-            for i=1:length(labels2)
-                newLabels((i-1)*length(labels)+1:i*length(labels))=strcat(labels,[' - ' labels2{i}]);
-            end
-            newLabels2=[strcat(newLabels,'x');strcat(newLabels,'y');strcat(newLabels,'z')];
-            aux=reshape(diffMatrix,size(diffMatrix,1),size(diffMatrix,2)*size(diffMatrix,3),size(diffMatrix,4));
-            aux=permute(aux,[1,3,2]);
-            diffOTS=orientedLabTimeSeries(aux(:,:),Time(1),this.sampPeriod,newLabels2(:),this.orientation);
-
-        end
-
-        function [distMatrix,labels,labels2,Time]=computeDistanceMatrix(this,t0,t1,labels,labels2)
-            %Computes the distance vector between two markers, for the time interval [t0,t1]
-            %If labels is specified, only those markers are used
-            %If labels2 is specified, distance to those markers only is
-            %specified
-            if nargin<2 || isempty(t0)
-                t0=[];
-            end
-            if nargin<3 || isempty(t1)
-                t1=[];
-            end
-            if nargin<4 || isempty(labels)
-                labels=[];
-            end
-            if nargin<5 || isempty(labels2)
-                labels2=[];
-            end
-            [diffMatrix,labels,labels2,Time]=computeDifferenceMatrix(this,t0,t1,labels,labels2);
-            distMatrix=sqrt(sum(diffMatrix.^2,4));
-        end
-
-        function newThis=vectorNorm(this)
-            newThis=labTimeSeries(sqrt(sum(this.getOrientedData.^2,3)),this.Time(1),this.sampPeriod,strcat(this.getLabelPrefix,'_2-norm'));
-        end
+        newThis = vectorNorm(this)
     end
 
     %% Model and Quality Methods
