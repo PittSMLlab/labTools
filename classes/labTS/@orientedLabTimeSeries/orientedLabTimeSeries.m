@@ -270,85 +270,27 @@ classdef orientedLabTimeSeries < labTimeSeries
 
     %% Override Methods - Type Preservation
     methods
-        function newThis=cat(this, other)
-            newThis=cat@labTimeSeries(this,other);
-            newThis=orientedLabTimeSeries(newThis.Data,this.Time(1),this.sampPeriod,newThis.labels,this.orientation);
-        end
+        newThis = cat(this, other)
 
-        function newThis=resample(this,newTs,newT0,hiddenFlag)
-            %Resample to a new sampling period
-            if nargin<4
-                hiddenFlag=[];
-            end
-            auxThis=this.resample@labTimeSeries(newTs,newT0,hiddenFlag);
-            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
-        end
+        newThis = resample(this, newTs, newT0, hiddenFlag)
 
-        function newThis=resampleN(this,newN,method)
-            %Same as resample function, but directly fixing the number of samples instead of TS
+        newThis = resampleN(this, newN, method)
 
-            if nargin<3
-                method=[];
-            end
-            auxThis=this.resampleN@labTimeSeries(newN,method);
-            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
-        end
+        newThis = split(this, t0, t1)
 
-        function newThis=split(this,t0,t1)
-            %returns TS from t0 to t1
-            auxThis=this.split@labTimeSeries(t0,t1);
-            newThis=orientedLabTimeSeries(auxThis.Data,t0,auxThis.sampPeriod,auxThis.labels,this.orientation);
-        end
+        newThis = derivate(this)
 
-        function newThis=derivate(this)
-            %take derivative of OTS
+        newThis = derivative(this, diffOrder)
 
-            auxThis=this.derivate@labTimeSeries;
-            newThis=orientedLabTimeSeries(auxThis.Data,auxThis.Time(1),auxThis.sampPeriod,auxThis.labels,this.orientation);
-        end
+        newThis = lowPassFilter(this, fcut)
 
-        function newThis=derivative(this,diffOrder)
-            if nargin<2
-                diffOrder=[];
-            end
-            newThis=derivative@labTimeSeries(this,diffOrder);
-            newThis=newThis.castAsOTS(this.orientation);
-        end
+        newThis = highPassFilter(this, fcut)
 
-        function newThis=lowPassFilter(this,fcut)
-            newThis=lowPassFilter@labTimeSeries(this,fcut);
-            newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newThis.labels,this.orientation);
-        end
+        newThis = substituteNaNs(this, method)
 
-        function newThis=highPassFilter(this,fcut)
-            newThis=highPassFilter@labTimeSeries(this,fcut);
-            newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newThis.labels,this.orientation);
-        end
+        newThis = plus(this, other)
 
-        function newThis=substituteNaNs(this,method)
-            if nargin<2 || isempty(method)
-                method=[];
-            end
-            newThis=substituteNaNs@labTimeSeries(this,method);
-            newThis=newThis.castAsOTS(this.orientation);
-        end
-
-        function newThis=plus(this,other)
-            newThis=plus@labTimeSeries(this,other);
-            tL=this.getLabelPrefix;
-            oL=other.getLabelPrefix;
-            newLabelPrefixes=cell(size(tL));
-            for i=1:length(newLabelPrefixes)
-                newLabelPrefixes{i}=['(' tL{i} ' + ' oL{i} ')'];
-            end
-            newLabels=orientedLabTimeSeries.addLabelSuffix(newLabelPrefixes);
-            newThis=orientedLabTimeSeries(newThis.Data,newThis.Time(1),newThis.sampPeriod,newLabels,this.orientation);
-        end
-
-        function newThis=times(this,constant)
-            newThis=times@labTimeSeries(this,constant);
-            newThis=newThis.castAsOTS(this.orientation);
-        end
+        newThis = times(this, constant)
 
         function this=renameLabels(this,originalPrefixes,newPrefixes)
             warning('You should not be renaming the labels. You have been warned. Also, in OTS you can only rename the prefixes.')
