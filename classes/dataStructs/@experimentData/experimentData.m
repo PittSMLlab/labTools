@@ -65,15 +65,15 @@ classdef experimentData
     %% Constructor
     methods
         function this = experimentData(meta, sub, data)
-            %experimentData  Constructor for experimentData class
+            %experimentData  Constructor for experimentData class.
             %
             %   this = experimentData(meta, sub, data) creates an
-            %   experiment data object with specified metadata, subject
-            %   data, and trial data
+            % experiment data object with specified metadata, subject data,
+            % and trial data.
             %
             %   Inputs:
             %       meta - experimentMetaData object
-            %       sub - subjectData object
+            %       sub  - subjectData object
             %       data - cell array of labData objects
             %
             %   Outputs:
@@ -96,7 +96,7 @@ classdef experimentData
     %% Property Setters
     methods
         function this = set.metaData(this, meta)
-            %set.metaData  Validates and sets experiment metadata
+            %set.metaData  Validates and sets experiment metadata.
             %
             %   Inputs:
             %       this - experimentData object
@@ -113,11 +113,11 @@ classdef experimentData
         end
 
         function this = set.subData(this, sub)
-            %set.subData  Validates and sets subject data
+            %set.subData  Validates and sets subject data.
             %
             %   Inputs:
             %       this - experimentData object
-            %       sub - subjectData object
+            %       sub  - subjectData object
 
             if isa(sub, 'subjectData')
                 this.subData = sub;
@@ -129,7 +129,7 @@ classdef experimentData
         end
 
         function this = set.data(this, data)
-            %set.data  Validates and sets experimental trial data
+            %set.data  Validates and sets experimental trial data.
             %
             %   Inputs:
             %       this - experimentData object
@@ -141,8 +141,8 @@ classdef experimentData
                     if ~isa(data{aux(i)}, 'labData') && ...
                             ~isa(data{aux(i)}, 'reducedLabData')
                         ME = MException('experimentData:Constructor', ...
-                            ['Data is not a cell array of labData (or ' ...
-                            'one of its subclasses) objects.']);
+                            ['Data is not a cell array of labData ' ...
+                            '(or one of its subclasses) objects.']);
                         throw(ME);
                     end
                 end
@@ -158,10 +158,10 @@ classdef experimentData
     %% Dependent Property Getters
     methods
         function a = get.isProcessed(this)
-            %get.isProcessed  Checks if trials have been processed
+            %get.isProcessed  Checks if trials have been processed.
             %
-            %   Returns true if the trials have been processed (i.e.
-            %   parameters have been calculated through ladData.process()),
+            %   Returns true if the trials have been processed (i.e.,
+            %   parameters have been calculated through labData.process()),
             %   and false if they contain only rawData.
             %
             %   Inputs:
@@ -171,8 +171,8 @@ classdef experimentData
             %       a - boolean indicating if data is processed
 
             aux = cellfun('isempty', this.data);
-            idx = find(aux ~= 1); % Not empty
-            a = true;
+            idx = find(aux ~= 1);       % not empty
+            a   = true;
             for i = idx
                 if ~isa(this.data{i}, 'processedLabData')
                     a = false;
@@ -181,9 +181,9 @@ classdef experimentData
         end
 
         function a = get.isStepped(this)
-            %get.isStepped  Checks if data is strided
+            %get.isStepped  Checks if data is strided.
             %
-            %   Returns true if data is an object of the strideData class
+            %   Returns true if data is an object of the strideData class.
             %
             %   Inputs:
             %       this - experimentData object
@@ -193,13 +193,13 @@ classdef experimentData
 
             aux = cellfun('isempty', this.data);
             idx = find(aux ~= 1, 1);
-            a = isa(this.data{idx}, 'strideData');
+            a   = isa(this.data{idx}, 'strideData');
         end
 
         function a = get.isRaw(this)
-            %get.isRaw  Checks if data is raw
+            %get.isRaw  Checks if data is raw.
             %
-            %   Returns true if data is an object of the rawLabData class
+            %   Returns true if data is an object of the rawLabData class.
             %
             %   Inputs:
             %       this - experimentData object
@@ -209,15 +209,15 @@ classdef experimentData
 
             aux = cellfun('isempty', this.data);
             idx = find(aux ~= 1, 1);
-            a = isa(this.data{idx}, 'rawLabData');
+            a   = isa(this.data{idx}, 'rawLabData');
         end
 
         function fastLeg = get.fastLeg(this)
-            %get.fastLeg  Determines which leg was on fast belt
+            %get.fastLeg  Determines which leg was on the fast belt.
             %
             %   Based on each trial, determines from the data (not
-            %   metadata which could be wrong) which leg is the fast
-            %   leg, even if there is no belt data
+            %   metadata, which could be wrong) which leg is the fast
+            %   leg, even if there is no belt data.
             %
             %   Inputs:
             %       this - experimentData object
@@ -230,8 +230,8 @@ classdef experimentData
 
             error(['Unimplemented. Try getRefLeg, which reads ' ...
                 'slow/fast leg labels from trial metaData.']);
-            vR = [];
-            vL = [];
+            vR     = [];
+            vL     = [];
             trials = cell2mat(this.metaData.trialsInCondition);
             for i = 1:length(trials)
                 trial = trials(i);
@@ -240,8 +240,14 @@ classdef experimentData
                         % Old version: Need to fix, as we are not
                         % really populating the beltSpeedReadData
                         % field.
-                        % vR(end + 1) = nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('R'));
-                        % vL(end + 1) = nanmean(this.data{trial}.beltSpeedReadData.getDataAsVector('L'));
+                        % vR(end+1) = nanmean( ...
+                        %     this.data{trial} ...
+                        %     .beltSpeedReadData ...
+                        %     .getDataAsVector('R'));
+                        % vL(end+1) = nanmean( ...
+                        %     this.data{trial} ...
+                        %     .beltSpeedReadData ...
+                        %     .getDataAsVector('L'));
                         % New version:
                         % TODO: Need to come up with an appropriate
                         % velocity measurement if we want this
@@ -249,9 +255,16 @@ classdef experimentData
                     end
                 else % Stepped trial
                     for step = 1:length(this.data{trial})
-                        if ~isempty(this.data{trial}{step}.beltSpeedReadData)
-                            % vR(end + 1) = nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('R'));
-                            % vL(end + 1) = nanmean(this.data{trial}{step}.beltSpeedReadData.getDataAsVector('L'));
+                        if ~isempty( ...
+                                this.data{trial}{step}.beltSpeedReadData)
+                            % vR(end+1) = nanmean( ...
+                            %     this.data{trial}{step} ...
+                            %     .beltSpeedReadData ...
+                            %     .getDataAsVector('R'));
+                            % vL(end+1) = nanmean( ...
+                            %     this.data{trial}{step} ...
+                            %     .beltSpeedReadData ...
+                            %     .getDataAsVector('L'));
                         end
                     end
                 end
