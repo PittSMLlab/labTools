@@ -1,62 +1,64 @@
 classdef experimentData
-    %experimentData  Contains all information for a single experiment
+    % experimentData  Contains all information for a single
+    %   experimental session.
     %
     %   experimentData organizes all data, metadata, and subject
-    %   information for a complete experimental session. It provides
-    %   methods for data processing, analysis, visualization, and
-    %   parameter extraction.
+    % information for a complete experimental session. It provides
+    % methods for data processing, analysis, visualization, and
+    % parameter extraction.
     %
-    %experimentData properties:
-    %   metaData - experimentMetaData object containing experimental
-    %              conditions and trial organization
-    %   subData - subjectData object containing subject demographics
-    %             and anthropometrics
-    %   data - cell array of labData objects or any objects which
-    %          extend labData
-    %   isRaw - returns true if data is rawLabData class (dependent)
-    %   isProcessed - returns true if data is processedLabData class
+    % experimentData properties:
+    %   metaData    - experimentMetaData object with experimental
+    %                 conditions and trial organization
+    %   subData     - subjectData object with subject demographics
+    %                 and anthropometrics
+    %   data        - cell array of labData objects or any objects
+    %                 that extend labData
+    %   isRaw       - true if data contains rawLabData objects (dependent)
+    %   isProcessed - true if data contains processedLabData objects
     %                 (dependent)
-    %   isStepped - returns true if data is strideData class (dependent)
-    %   fastLeg - computes which belt ('L' or 'R') was the fast belt
-    %             (dependent)
+    %   isStepped   - true if data contains strideData objects (dependent)
+    %   fastLeg     - leg on the fast belt, 'L' or 'R' (dependent)
     %
-    %experimentData methods:
-    %   getSubjectAgeAtExperimentDate - computes subject age at
-    %                                   experiment time
-    %   getSlowLeg - returns leg that was on the slow belt
-    %   getRefLeg - returns reference leg for parameter computations
-    %   getNonRefLeg - returns non-reference leg
-    %   process - processes raw data for all trials
-    %   extractMarkerModels - builds marker position models from data
-    %   checkMarkerHealth - validates marker data quality
-    %   computeAngles - calculates joint angles for all trials
-    %   makeDataObj - creates an adaptationData object
-    %   reduce - creates reducedLabData for all trials
-    %   parameterEvolutionPlot - plots parameter evolution
-    %   parameterTimeCourse - plots parameter time course
-    %   recomputeParameters - recalculates adaptation parameters
-    %   flushAndRecomputeParameters - completely recalculates parameters
-    %   recomputeEvents - recalculates gait events and parameters
-    %   splitIntoStrides - separates trials into individual strides
-    %   getStridedField - extracts strided field data
-    %   getAlignedField - extracts time-aligned field data
-    %   getConditionIdxsFromName - gets condition indices from names
-    %   getStrideInfo - returns stride timing information
+    % experimentData methods:
+    %   experimentData                - constructor
+    %   getSubjectAgeAtExperimentDate - subject age at experiment date
+    %   getSlowLeg                    - slow-belt leg identifier
+    %   getRefLeg                     - reference leg identifier
+    %   getNonRefLeg                  - non-reference leg identifier
+    %   process                       - processes all raw trial data
+    %   extractMarkerModels           - builds marker position models
+    %   checkMarkerHealth             - validates marker data quality
+    %   computeAngles                 - computes joint angles
+    %   makeDataObj                   - creates adaptationData object
+    %   reduce                        - creates reducedLabData objects
+    %   parameterEvolutionPlot        - plots parameter evolution
+    %   parameterTimeCourse           - plots parameter time course
+    %   recomputeParameters           - recalculates adaptation params
+    %   flushAndRecomputeParameters   - fully recalculates parameters
+    %   recomputeEvents               - recalculates gait events
+    %   splitIntoStrides              - splits trials into strides
+    %   getStridedField               - extracts strided field data
+    %   getAlignedField               - extracts time-aligned data
+    %   getConditionIdxsFromName      - condition indices from names
+    %   getStrideInfo                 - stride timing information
     %
-    %See also: experimentMetaData, subjectData, labData,
-    %          adaptationData
+    % experimentData static methods:
+    %   loadobj - backward-compatible object loading (removes DOB)
+    %
+    % See also: experimentMetaData, subjectData, labData, adaptationData
 
     %% Properties
     properties
         metaData % experimentMetaData object with experiment info
-        subData % subjectData object
-        data % cell array of labData or subclass objects
+        subData  % subjectData object
+        data     % cell array of labData or subclass objects
     end
 
     properties (Dependent)
-        isRaw % true if data is rawLabData class
+        isRaw       % true if data is rawLabData class
         isProcessed % true if data is processedLabData class
-        isStepped % true if data is strideData class (or strided)
+        isStepped   % true if data is strideData class (or strided)
         fastLeg
     end
 
