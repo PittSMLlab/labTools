@@ -1,4 +1,4 @@
-classdef orientedLabTimeSeries  < labTimeSeries
+classdef orientedLabTimeSeries < labTimeSeries
     %orientedLabTimeSeries  Time series for 3D oriented/vector data
     %
     %   orientedLabTimeSeries extends labTimeSeries for data with spatial
@@ -115,102 +115,15 @@ classdef orientedLabTimeSeries  < labTimeSeries
 
     %% Data Access Methods
     methods
-        function [newTS,auxLabel]=getDataAsTS(this,label)
-            %return data as a time series
-            % I think this is unnecessary: default behavior if function is
-            %not defined in inheriting class is to call the superclass'
-            %method
-            [newTS,auxLabel]=getDataAsTS@labTimeSeries(this,label);
-        end
+        [newTS, auxLabel] = getDataAsTS(this, label)
 
-        function [data,label] = getOrientedData(this,label)
-            %Returns data as a 3D tensor, where the last dim contains the componentes x,y,z
-            %[data,label]=getOrientedData(this,label)
-            %INPUT:
-            %this = orientedLabTS object
-            %label = cell array of strings, each containing the prefix of a
-            %marker present in this TS (e.g.: label={'LHIP','RHIP'}, not
-            %{'LHIPx','RHIPx'}. If any of the provided labels do not exist
-            %AS A PREFIX, NaNs are returned in the corresponding matrix components.
-            %OUTPUT:
-            %data= matrix of dimensions TxNx3, where N is the length of label
-            %(# of requested markers), T is the number of available time
-            %samples. Each slice data(:,i,:) contains 3D position of marker
-            %i at all time samples.
-            %label=Currently returns the same label given as input.
+        [data, label] = getOrientedData(this, label)
 
-            T = size(this.Data,1);
-            if nargin < 2 || isempty(label)
-                label = this.getLabelPrefix;    % retrieve all mrkr labels
-            elseif isa(label,'char')
-                label = {label};
-            end
+        newThis = getDataAsOTS(this, label)
 
-            data = nan(T,length(label)*3);
-            extendedLabels = this.addLabelSuffix(label);
-            if ~orientedLabTimeSeries.checkLabelSanity(this.labels)
-                error('Labels in this object do not pass sanity check.');
-            end
-            bool = this.isaLabel(extendedLabels);
-            data(:,bool) = this.getDataAsVector(extendedLabels(bool));
-            data = permute( ...
-                reshape(data,T,3,round(numel(extendedLabels)/3)),[1 3 2]);
-        end
+        labelPref = getLabelPrefix(this)
 
-        function newThis=getDataAsOTS(this,label)
-            %get data as an oriented time series
-            if nargin<2 || isempty(label)
-                label=[];
-            end
-            [data,label]=getOrientedData(this,label);
-            data=permute(data,[1,3,2]);
-            newThis=orientedLabTimeSeries(data(:,:),this.Time(1),this.sampPeriod,orientedLabTimeSeries.addLabelSuffix(label),this.orientation);
-        end
-
-        function labelPref=getLabelPrefix(this)
-            %return label prefixes from this.labels
-            %works for any orientedTS instance, GRFData and markerdata
-            %
-            %example:
-            %this.labels = {'RPSISx','RPSISy',RPSISz','LPSISx','LPSISy','LPSISz',...}
-            %aux = cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);
-            %labelPref=aux(1:3:end);
-            %labelPref = {'RPSIS','LPSIS',...}
-
-            aux=cellfun(@(x) x(1:end-1),this.labels,'UniformOutput',false);%isolate correct prefixes
-            labelPref=aux(1:3:end);%remove duplicate prefixes for each marker
-        end
-
-        function [boolFlag,labelIdx]=isaLabelPrefix(this,label)
-            %checks if a label(s) is/are a valid prefix
-            %
-            %INPUT:
-            %label, can be a string or cell array of strings containing a
-            %label
-            %
-            %OUTPUT:
-            %boolFlag, a boolean vector TRUE for matches, FALSE if not
-            %labelIdx, a vector containing the indices of the TRUE labels
-
-            if isa(label,'char')
-                auxLabel{1}=label;
-            elseif isa(label,'cell')
-                auxLabel=label;
-            else
-                error('labTimeSeries:isaLabel','label input argument has to be a string or a cell array containing strings.')
-            end
-
-            N=length(auxLabel);
-            boolFlag=false(N,1);
-            labelIdx=zeros(N,1);
-            for j=1:N
-                %Alternative efficient formulation:
-                boolFlag(j)=any(strcmp(auxLabel{j},this.getLabelPrefix));
-                if boolFlag(j)
-                    labelIdx(j)=find(strcmp(auxLabel{j},this.getLabelPrefix));
-                end
-            end
-        end
+        [boolFlag, labelIdx] = isaLabelPrefix(this, label)
     end
 
     %% Distance and Difference Computation Methods
