@@ -315,8 +315,8 @@ classdef experimentData
 
     %% Data Reduction and Object Creation
     methods
-        adaptData = makeDataObj(this, filename, experimentalFlag, ...
-            contraLateralFlag)
+        adaptData = makeDataObj( ...
+            this, filename, experimentalFlag, contraLateralFlag)
 
         reducedThis = reduce(this, eventLabels, N)
     end
@@ -324,18 +324,19 @@ classdef experimentData
     %% Visualization Methods
     methods
         %% Display
-        %HH: I don't like either of these functions. They take way too long
-        %to run, and at the time being they assume that if a field isn't a
-        %label of the adaptParams property, then it must be a label of
-        %experimentalParams (which is a bad assumption because it could
-        %result in 5+ minutes of waiting just to find out the parameter
-        %doesn't exist.)
-        %PI, 5/26/2015: Agreed. Is there any other way to do it if someone asks for a
-        %label that does not exist? Do note that these functions are here
-        %for flexibility of the code, but the really efficient way to do it
-        %is generate an adaptData object (and save it) and use its plotting
-        %functions (which is what these do). Perhaps we could issue a
-        %warning or a disclaimer telling the user that this takes TOO long.
+        % HH: I don't like either of these functions. They take way too
+        % long to run, and at the time being they assume that if a field
+        % isn't a label of the adaptParams property, then it must be a
+        % label of experimentalParams (which is a bad assumption because it
+        % could result in 5+ minutes of waiting just to find out the
+        % parameter doesn't exist.)
+        % PI, 5/26/2015: Agreed. Is there any other way to do it if someone
+        % asks for a label that does not exist? Do note that these
+        % functions are here for flexibility of the code, but the really
+        % efficient way to do it is generate an adaptData object (and save
+        % it) and use its plotting functions (which is what these do).
+        % Perhaps we could issue a warning or a disclaimer telling the user
+        % that this takes TOO long.
         [h, adaptDataObject] = parameterEvolutionPlot(this, field)
 
         [h, adaptDataObject] = parameterTimeCourse(this, field)
@@ -343,11 +344,10 @@ classdef experimentData
 
     %% Parameter and Event Methods
     methods
-        this = recomputeParameters(this, eventClass, initEventSide, ...
-            parameterClasses)
+        this = recomputeParameters( ...
+            this, eventClass, initEventSide, parameterClasses)
 
-        this = flushAndRecomputeParameters(this, eventClass, ...
-            initEventSide)
+        this = flushAndRecomputeParameters(this, eventClass, initEventSide)
 
         this = recomputeEvents(this, eventClass, initEventSide)
     end
@@ -356,91 +356,105 @@ classdef experimentData
     methods
         stridedExp = splitIntoStrides(this, refEvent)
 
-        % [stridedField, bad, originalTrial, originalInitTime, events] = ...
-        %         getStridedField(this, field, conditions, events)
-        function [stridedField,bad,originalTrial,originalInitTime,events]=getStridedField(this,field,conditions,events)
-            if nargin<4 || isempty(events)
-                events=[this.getSlowLeg 'HS'];
+        % [stridedField, bad, originalTrial, originalInitTime, events] =...
+        %     getStridedField(this, field, conditions, events)
+        function [stridedField, bad, originalTrial, originalInitTime, ...
+                events] = getStridedField(this, field, conditions, events)
+            if nargin < 4 || isempty(events)
+                events = [this.getSlowLeg() 'HS'];
             end
-            if nargin<3 || isempty(conditions)
-                trials=cell2mat(this.metaData.trialsInCondition);
+            if nargin < 3 || isempty(conditions)
+                trials = cell2mat(this.metaData.trialsInCondition);
             else
-                if ~isa(conditions,'double') %If conditions are given by name, and not by index
-                    conditions=getConditionIdxsFromName(this,conditions);
+                % If conditions are given by name, not by index
+                if ~isa(conditions, 'double')
+                    conditions = getConditionIdxsFromName( ...
+                        this, conditions);
                 end
-                trials=cell2mat(this.metaData.trialsInCondition(conditions));
+                trials = cell2mat( ...
+                    this.metaData.trialsInCondition(conditions));
             end
-            stridedField={};
-            bad=[];
-            originalInitTime=[];
-            originalTrial=[];
-            for i=trials
-                %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
-                [aux,bad1,initTime1,events]=this.data{i}.getStridedField(field,events);
-                stridedField=[stridedField; aux];
-                bad=[bad; bad1];
-                originalTrial=[originalTrial; i*ones(size(bad1))];
-                originalInitTime=[originalInitTime; initTime1];
+            stridedField     = {};
+            bad              = [];
+            originalInitTime = [];
+            originalTrial    = [];
+            for i = trials
+                % [aux, bad1, initTime1] = ...
+                %     this.data{i}.(field).splitByEvents( ...
+                %     this.data{i}.gaitEvents, events);
+                [aux, bad1, initTime1, events] = ...
+                    this.data{i}.getStridedField(field, events);
+                stridedField     = [stridedField; aux];
+                bad              = [bad; bad1];
+                originalTrial    = [originalTrial; i * ones(size(bad1))];
+                originalInitTime = [originalInitTime; initTime1];
             end
         end
 
-        % [alignedField, originalTrial, bad] = getAlignedField(this, ...
-        %     field, conditions, events, alignmentLengths)
-        function [alignedField,originalTrial,bad]=getAlignedField(this,field,conditions,events,alignmentLengths)
-            if nargin<4 || isempty(events)
-                events=[this.getSlowLeg 'HS'];
+        % [alignedField, originalTrial, bad] = getAlignedField( ...
+        %     this, field, conditions, events, alignmentLengths)
+        function [alignedField, originalTrial, bad] = getAlignedField( ...
+                this, field, conditions, events, alignmentLengths)
+            if nargin < 4 || isempty(events)
+                events = [this.getSlowLeg() 'HS'];
             end
-            if nargin<3 || isempty(conditions)
-                trials=cell2mat(this.metaData.trialsInCondition);
+            if nargin < 3 || isempty(conditions)
+                trials = cell2mat(this.metaData.trialsInCondition);
             else
-                if ~isa(conditions,'double') %If conditions are given by name, and not by index
-                    conditions=getConditionIdxsFromName(this,conditions);
+                % If conditions are given by name, not by index
+                if ~isa(conditions, 'double')
+                    conditions = getConditionIdxsFromName(this,conditions);
                 end
-                trials=cell2mat(this.metaData.trialsInCondition(conditions));
+                trials = cell2mat( ...
+                    this.metaData.trialsInCondition(conditions));
             end
-            bad=[];
-            originalInitTime=[];
-            originalTrial=[];
-            originalDurations=[];
-            for i=trials %Trials in condition
-                %[aux,bad1,initTime1]=this.data{i}.(field).splitByEvents(this.data{i}.gaitEvents,events);
-                [alignedField1,bad1]=this.data{i}.getAlignedField(field,events,alignmentLengths);
-                if i==trials(1)
-                    alignedField=alignedField1;
+            bad               = [];
+            originalInitTime  = [];
+            originalTrial     = [];
+            originalDurations = [];
+            for i = trials   % Trials in condition
+                % [aux, bad1, initTime1] = ...
+                %     this.data{i}.(field).splitByEvents( ...
+                %     this.data{i}.gaitEvents, events);
+                [alignedField1, bad1] = this.data{i}.getAlignedField( ...
+                    field, events, alignmentLengths);
+                if i == trials(1)
+                    alignedField = alignedField1;
                 else
-                    force=false;
-                    alignedField=alignedField.cat(alignedField1,[],force);
+                    force        = false;
+                    alignedField = alignedField.cat( ...
+                        alignedField1, [], force);
                 end
-                bad=[bad; bad1];
-                originalTrial=[originalTrial; i*ones(size(bad1))];
-                %originalInitTime=[originalInitTime; initTime1];
-                %originalDurations=[originalDurations; originalDurations1];
+                bad           = [bad; bad1];
+                originalTrial = [originalTrial; i * ones(size(bad1))];
+                % originalInitTime = [originalInitTime; initTime1];
+                % originalDurations = [originalDurations; ...
+                %     originalDurations1];
             end
         end
     end
 
     %% Auxiliary Methods
     methods
-        conditionIdxs = getConditionIdxsFromName(this, ...
-            conditionNames)
+        conditionIdxs = getConditionIdxsFromName(this, conditionNames)
 
-        [numStrides, trials, initTimes, endTimes] = ...
-            getStrideInfo(this, eventClass)
+        [numStrides, trials, initTimes, endTimes] = getStrideInfo( ...
+            this, eventClass)
     end
 
     %% Private Methods
     methods (Hidden = true, Access = private)
-        adaptData = makeDataObjNew(this, filename, experimentalFlag, ...
-            contraLateralFlag)
+        adaptData = makeDataObjNew( ...
+            this, filename, experimentalFlag, contraLateralFlag)
     end
 
     %% Static Methods
     methods (Static)
         function this = loadobj(this)
-            %loadobj  Object loading method for backward compatibility
+            %loadobj  Object loading method for backward compatibility.
             %
             %   this = loadobj(this) scrubs date of birth information
-            %   when loading saved experimentData objects for privacy
+            %   when loading saved experimentData objects for privacy.
             %
             %   Inputs:
             %       this - experimentData object being loaded
@@ -459,14 +473,17 @@ classdef experimentData
                     'in the future. Please check that all other ' ...
                     'information is intact before overwriting.']);
                 % Determine age (in months):
-                age = round(this.metaData.date.timeSince(...
+                age = round(this.metaData.date.timeSince( ...
                     this.subData.dateOfBirth));
                 % Scrub DOB from subject meta data, save age at
                 % experiment time (in years):
-                this.subData = subjectData([], this.subData.sex, ...
+                this.subData = subjectData([], ...
+                    this.subData.sex, ...
                     this.subData.dominantLeg, ...
-                    this.subData.dominantArm, this.subData.height, ...
-                    this.subData.weight, age / 12, this.subData.ID);
+                    this.subData.dominantArm, ...
+                    this.subData.height, ...
+                    this.subData.weight, ...
+                    age / 12, this.subData.ID);
             end
         end
     end
