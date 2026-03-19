@@ -349,82 +349,12 @@ classdef experimentData
     methods
         stridedExp = splitIntoStrides(this, refEvent)
 
-        % [stridedField, bad, originalTrial, originalInitTime, events] =...
-        %     getStridedField(this, field, conditions, events)
-        function [stridedField, bad, originalTrial, originalInitTime, ...
-                events] = getStridedField(this, field, conditions, events)
-            if nargin < 4 || isempty(events)
-                events = [this.getSlowLeg() 'HS'];
-            end
-            if nargin < 3 || isempty(conditions)
-                trials = cell2mat(this.metaData.trialsInCondition);
-            else
-                % If conditions are given by name, not by index
-                if ~isa(conditions, 'double')
-                    conditions = getConditionIdxsFromName( ...
-                        this, conditions);
-                end
-                trials = cell2mat( ...
-                    this.metaData.trialsInCondition(conditions));
-            end
-            stridedField     = {};
-            bad              = [];
-            originalInitTime = [];
-            originalTrial    = [];
-            for i = trials
-                % [aux, bad1, initTime1] = ...
-                %     this.data{i}.(field).splitByEvents( ...
-                %     this.data{i}.gaitEvents, events);
-                [aux, bad1, initTime1, events] = ...
-                    this.data{i}.getStridedField(field, events);
-                stridedField     = [stridedField; aux];
-                bad              = [bad; bad1];
-                originalTrial    = [originalTrial; i * ones(size(bad1))];
-                originalInitTime = [originalInitTime; initTime1];
-            end
-        end
+        [stridedField, bad, originalTrial, originalInitTime, ...
+            gaitEventLabel] = getStridedField(this, field, ...
+            conditions, gaitEventLabel)
 
-        % [alignedField, originalTrial, bad] = getAlignedField( ...
-        %     this, field, conditions, events, alignmentLengths)
-        function [alignedField, originalTrial, bad] = getAlignedField( ...
-                this, field, conditions, events, alignmentLengths)
-            if nargin < 4 || isempty(events)
-                events = [this.getSlowLeg() 'HS'];
-            end
-            if nargin < 3 || isempty(conditions)
-                trials = cell2mat(this.metaData.trialsInCondition);
-            else
-                % If conditions are given by name, not by index
-                if ~isa(conditions, 'double')
-                    conditions = getConditionIdxsFromName(this,conditions);
-                end
-                trials = cell2mat( ...
-                    this.metaData.trialsInCondition(conditions));
-            end
-            bad               = [];
-            originalInitTime  = [];
-            originalTrial     = [];
-            originalDurations = [];
-            for i = trials   % Trials in condition
-                % [aux, bad1, initTime1] = ...
-                %     this.data{i}.(field).splitByEvents( ...
-                %     this.data{i}.gaitEvents, events);
-                [alignedField1, bad1] = this.data{i}.getAlignedField( ...
-                    field, events, alignmentLengths);
-                if i == trials(1)
-                    alignedField = alignedField1;
-                else
-                    force        = false;
-                    alignedField = alignedField.cat( ...
-                        alignedField1, [], force);
-                end
-                bad           = [bad; bad1];
-                originalTrial = [originalTrial; i * ones(size(bad1))];
-                % originalInitTime = [originalInitTime; initTime1];
-                % originalDurations = [originalDurations; ...
-                %     originalDurations1];
-            end
-        end
+        [alignedField, originalTrial, bad] = getAlignedField( ...
+            this, field, conditions, gaitEventLabel, alignmentLengths)
     end
 
     %% Auxiliary Methods
