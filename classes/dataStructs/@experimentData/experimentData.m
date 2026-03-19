@@ -53,9 +53,14 @@ classdef experimentData
 
     %% Properties
     properties
-        metaData = []  % experimentMetaData object with experiment info
-        subData  = []  % subjectData object
-        data     = {}  % cell array of labData or subclass objects
+        % experimentMetaData object with experiment info
+        metaData {mustBeA(metaData, 'experimentMetaData')} = []
+        % subjectData object; mustBeA accepts subjectData subclasses
+        % (e.g., strokeSubjectData), so both healthy and stroke
+        % participant objects pass validation.
+        subData  {mustBeA(subData,  'subjectData')}        = []
+        % cell array of labData or subclass objects
+        data                                               = {}
     end
 
     properties (Dependent)
@@ -71,71 +76,49 @@ classdef experimentData
             %experimentData  Constructor for experimentData class.
             %
             %   this = experimentData(meta, sub, data) creates an
-            % experiment data object with specified metadata, subject data,
-            % and trial data.
+            %   experiment data object with specified metadata, subject
+            %   data, and trial data. All arguments are optional.
             %
             %   Inputs:
-            %       meta - experimentMetaData object
-            %       sub  - subjectData object
-            %       data - cell array of labData objects
+            %       meta - (optional) experimentMetaData object
+            %       sub  - (optional) subjectData object
+            %       data - (optional) cell array of labData objects
             %
             %   Outputs:
             %       this - experimentData object
             %
             %   See also: experimentMetaData, subjectData, labData
 
-            if nargin > 0
+            arguments
+                meta = []
+                sub  = []
+                data = {}
+            end
+
+            % Only assign non-empty arguments to avoid triggering
+            % property validators with the default empty values
+            if ~isempty(meta)
                 this.metaData = meta;
             end
-            if nargin > 1
+            if ~isempty(sub)
                 this.subData = sub;
             end
-            if nargin > 2
+            if ~isempty(data)
                 this.data = data;
             end
         end
     end
 
-    %% Property Setters
+    %% Property Setter
     methods
-        function this = set.metaData(this, meta)
-            %set.metaData  Validates and sets experiment metadata.
-            %
-            %   Inputs:
-            %       this - experimentData object
-            %       meta - experimentMetaData object
-
-            if isa(meta, 'experimentMetaData')
-                this.metaData = meta;
-            else
-                ME = MException('experimentData:Constructor', ...
-                    ['Experiment metaData is not an ' ...
-                    'experimentMetaData type object.']);
-                throw(ME);
-            end
-        end
-
-        function this = set.subData(this, sub)
-            %set.subData  Validates and sets subject data.
-            %
-            %   Inputs:
-            %       this - experimentData object
-            %       sub  - subjectData object
-
-            % isa() returns true for subclasses of subjectData (e.g.,
-            % strokeSubjectData), so this validator correctly accepts
-            % both healthy and stroke participant data objects.
-            if isa(sub, 'subjectData')
-                this.subData = sub;
-            else
-                ME = MException('experimentData:Constructor', ...
-                    'Subject data is not a subjectData type object.');
-                throw(ME);
-            end
-        end
-
         function this = set.data(this, data)
             %set.data  Validates and sets experimental trial data.
+            %
+            %   Element-level validation (each non-empty cell must
+            %   contain a labData or reducedLabData object) cannot be
+            %   expressed in the properties block, so this setter is
+            %   retained while set.metaData and set.subData have been
+            %   replaced by property-block validators.
             %
             %   Inputs:
             %       this - experimentData object
@@ -250,14 +233,14 @@ classdef experimentData
                         % Old version: Need to fix, as we are not
                         % really populating the beltSpeedReadData
                         % field.
-                        % vR(end+1) = nanmean( ...
+                        % vR(end+1) = mean( ...
                         %     this.data{trial} ...
                         %     .beltSpeedReadData ...
-                        %     .getDataAsVector('R'));
-                        % vL(end+1) = nanmean( ...
+                        %     .getDataAsVector('R'), 'omitnan');
+                        % vL(end+1) = mean( ...
                         %     this.data{trial} ...
                         %     .beltSpeedReadData ...
-                        %     .getDataAsVector('L'));
+                        %     .getDataAsVector('L'), 'omitnan');
                         % New version:
                         % TODO: Need to come up with an appropriate
                         % velocity measurement if we want this
@@ -267,14 +250,14 @@ classdef experimentData
                     for step = 1:length(this.data{trial})
                         if ~isempty( ...
                                 this.data{trial}{step}.beltSpeedReadData)
-                            % vR(end+1) = nanmean( ...
+                            % vR(end+1) = mean( ...
                             %     this.data{trial}{step} ...
                             %     .beltSpeedReadData ...
-                            %     .getDataAsVector('R'));
-                            % vL(end+1) = nanmean( ...
+                            %     .getDataAsVector('R'), 'omitnan');
+                            % vL(end+1) = mean( ...
                             %     this.data{trial}{step} ...
                             %     .beltSpeedReadData ...
-                            %     .getDataAsVector('L'));
+                            %     .getDataAsVector('L'), 'omitnan');
                         end
                     end
                 end
