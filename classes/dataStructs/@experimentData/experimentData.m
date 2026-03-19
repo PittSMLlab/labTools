@@ -7,6 +7,9 @@ classdef experimentData
     % methods for data processing, analysis, visualization, and
     % parameter extraction.
     %
+    % Toolbox Dependencies:
+    %   None
+    %
     % experimentData properties:
     %   metaData    - experimentMetaData object with experimental
     %                 conditions and trial organization
@@ -50,9 +53,9 @@ classdef experimentData
 
     %% Properties
     properties
-        metaData % experimentMetaData object with experiment info
-        subData  % subjectData object
-        data     % cell array of labData or subclass objects
+        metaData = []  % experimentMetaData object with experiment info
+        subData  = []  % subjectData object
+        data     = {}  % cell array of labData or subclass objects
     end
 
     properties (Dependent)
@@ -119,6 +122,9 @@ classdef experimentData
             %       this - experimentData object
             %       sub  - subjectData object
 
+            % isa() returns true for subclasses of subjectData (e.g.,
+            % strokeSubjectData), so this validator correctly accepts
+            % both healthy and stroke participant data objects.
             if isa(sub, 'subjectData')
                 this.subData = sub;
             else
@@ -228,8 +234,12 @@ classdef experimentData
             %   Note: Currently unimplemented. Try getRefLeg, which
             %         reads slow/fast leg labels from trial metaData.
 
+            % NOTE: The error below makes all code in this method
+            % body unreachable. See suggestion to either remove the
+            % dead code or complete the implementation.
             error(['Unimplemented. Try getRefLeg, which reads ' ...
                 'slow/fast leg labels from trial metaData.']);
+            % -- Dead code below this line ---------------------------
             vR     = [];
             vL     = [];
             trials = cell2mat(this.metaData.trialsInCondition);
@@ -270,9 +280,9 @@ classdef experimentData
                 end
             end
             if ~isempty(vR) && ~isempty(vL)
-                if nanmean(vR) < nanmean(vL)
+                if mean(vR, 'omitnan') < mean(vL, 'omitnan')
                     fastLeg = 'L';
-                elseif nanmean(vR) > nanmean(vL)
+                elseif mean(vR, 'omitnan') > mean(vL, 'omitnan')
                     % Defaults to this, even if there is no beltSpeedData
                     fastLeg = 'R';
                 else
