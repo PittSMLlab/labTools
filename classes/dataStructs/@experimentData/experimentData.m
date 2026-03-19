@@ -53,14 +53,9 @@ classdef experimentData
 
     %% Properties
     properties
-        % experimentMetaData object with experiment info
-        metaData {mustBeA(metaData, 'experimentMetaData')} = []
-        % subjectData object; mustBeA accepts subjectData subclasses
-        % (e.g., strokeSubjectData), so both healthy and stroke
-        % participant objects pass validation.
-        subData  {mustBeA(subData,  'subjectData')}        = []
-        % cell array of labData or subclass objects
-        data                                               = {}
+        metaData = [] % experimentMetaData object with experiment info
+        subData  = [] % subjectData object
+        data     = {} % cell array of labData or subclass objects
     end
 
     properties (Dependent)
@@ -109,16 +104,68 @@ classdef experimentData
         end
     end
 
-    %% Property Setter
+    %% Property Setters
     methods
+        function this = set.metaData(this, meta)
+            %set.metaData  Validates and sets experiment metadata.
+            %
+            %   Property-block validators (mustBeA) were not used here
+            %   because MATLAB evaluates them against the declared
+            %   default value at class load time, causing an immediate
+            %   error since the default [] is a double, not an
+            %   experimentMetaData. The constructor's if ~isempty()
+            %   guard prevents this setter from being reached with the
+            %   default empty value.
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %       meta - experimentMetaData object
+
+            if isa(meta, 'experimentMetaData')
+                this.metaData = meta;
+            else
+                ME = MException('experimentData:Constructor', ...
+                    ['Experiment metaData is not an ' ...
+                    'experimentMetaData type object.']);
+                throw(ME);
+            end
+        end
+
+        function this = set.subData(this, sub)
+            %set.subData  Validates and sets subject data.
+            %
+            %   Property-block validators (mustBeA) were not used here
+            %   because MATLAB evaluates them against the declared
+            %   default value at class load time, causing an immediate
+            %   error since the default [] is a double, not a
+            %   subjectData. The constructor's if ~isempty() guard
+            %   prevents this setter from being reached with the
+            %   default empty value.
+            %
+            %   isa() returns true for subclasses of subjectData (e.g.,
+            %   strokeSubjectData), so this validator correctly accepts
+            %   both healthy and stroke participant data objects.
+            %
+            %   Inputs:
+            %       this - experimentData object
+            %       sub  - subjectData object
+
+            if isa(sub, 'subjectData')
+                this.subData = sub;
+            else
+                ME = MException('experimentData:Constructor', ...
+                    'Subject data is not a subjectData type object.');
+                throw(ME);
+            end
+        end
+
         function this = set.data(this, data)
             %set.data  Validates and sets experimental trial data.
             %
             %   Element-level validation (each non-empty cell must
             %   contain a labData or reducedLabData object) cannot be
-            %   expressed in the properties block, so this setter is
-            %   retained while set.metaData and set.subData have been
-            %   replaced by property-block validators.
+            %   expressed in the properties block, so all three
+            %   property setters are retained as explicit methods.
             %
             %   Inputs:
             %       this - experimentData object
