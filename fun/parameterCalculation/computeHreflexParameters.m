@@ -207,13 +207,6 @@ shouldDiscardStimFast = (timeStimFast <= timeFHSNoNaNs(1)) | ...
     (timeStimFast >= (timeFHSNoNaNs(end)+1));
 timeStimSlow = timeStimSlow(~shouldDiscardStimSlow);
 timeStimFast = timeStimFast(~shouldDiscardStimFast);
-if indSlow == 1     % if right leg is slow, ...
-    indsStimArtValid = {indsStimArtifact{1}(~shouldDiscardStimSlow); ...
-        indsStimArtifact{2}(~shouldDiscardStimFast)};
-else                % otherwise, right leg is fast, ...
-    indsStimArtValid = {indsStimArtifact{1}(~shouldDiscardStimFast); ...
-        indsStimArtifact{2}(~shouldDiscardStimSlow)};
-end
 if any(shouldDiscardStimSlow)               % if discarding any stim, ...
     warning('Dropping %d stimuli for the slow leg', ...
         sum(shouldDiscardStimSlow));
@@ -229,6 +222,34 @@ indsStimStrideSlow = arrayfun(@(x) ...
 indsStimStrideFast = arrayfun(@(x) ...
     find((x - timeFHS) > 0,1,'last'),timeStimFast);
 
+%% Check for duplicate stide numbers that share a stim index 
+%%(has happened when stimulation occurred on first step from rest)
+% Find unique values and their first occurrence indices
+[indsStimStrideFast, firstIdxfast] = unique(indsStimStrideFast, 'stable');
+[indsStimStrideSlow, firstIdxslow] = unique(indsStimStrideSlow, 'stable');
+
+% Find duplicates by checking elements not in first occurrence
+duplicateMaskfast = ~ismember(1:numel(indsStimStrideFast), firstIdxfast);
+duplicateMaskslow = ~ismember(1:numel(indsStimStrideSlow), firstIdxslow);
+
+timeStimFast(duplicateMaskfast) = [];
+timeStimSlow(duplicateMaskslow) = [];
+
+if indSlow == 1     % if right leg is slow, ...
+    indsStimArtValid = {indsStimArtifact{1}(~shouldDiscardStimSlow); ...
+        indsStimArtifact{2}(~shouldDiscardStimFast)};
+    %remove stimulation that occured without a valid stride number, has to
+    %do it this way because the duplicatemask may not have the same size as
+    %shouldDiscardStimSlow
+    indsStimArtValid{1}(duplicateMaskslow) = [];
+    indsStimArtValid{2}(duplicateMaskfast) = [];    
+else                % otherwise, right leg is fast, ...
+    indsStimArtValid = {indsStimArtifact{1}(~shouldDiscardStimFast); ...
+        indsStimArtifact{2}(~shouldDiscardStimSlow)};
+    indsStimArtValid{1}(duplicateMaskfast) = [];
+    indsStimArtValid{2}(duplicateMaskslow) = [];   
+end
+%%
 % create logical arrays for indexing for (valid) strides with stimulation
 isStimStrideSlow = false(size(timeSHS));
 isStimStrideFast = false(size(timeFHS));
