@@ -53,6 +53,8 @@ if contains(erase(studyName,' '),'SpinalAdaptation')
         condsToUpdate = find(condsToUpdate)
         error('Conds to split missing, expected 9 condsToUpdate. Got %d, Check condition name.',sum(condsToUpdate))
     end
+elseif contains(erase(studyName,' '),'SpinalAdaptBout')
+    condsToUpdate = contains(expData.metaData.conditionName,'Train');
 else %default to all false (no update), add other study specific logic here.
     condsToUpdate = false(size(expData.metaData.trialsInCondition)); 
 end
@@ -61,6 +63,7 @@ origTrials = cell2mat(expData.metaData.trialsInCondition(condsToUpdate));
 %% Separate conditions using info from the audioCue timing in the datlog.
 tic
 for origTrialIdx = origTrials
+% for origTrialIdx = 3
     fprintf('Processing orig trial %d\n', origTrialIdx)
     
     %use original index to get data log, original condition name 
@@ -89,6 +92,12 @@ for origTrialIdx = origTrials
             %Improvements: this can be done with reg exp
             relMsg(1) = false; %ignore the 1st rest (from rest to mid, only had 1 condition = ramp to start walking, 2nd condition is mid = tied walking)
         end
+    elseif contains(erase(studyName,' '),'SpinalAdaptBoutStudy')
+        if contains(origCondName,'Control')
+            relMsg = ~ismember(msg, 'AccRamp1') & ~contains(msg, 'TMStopAudioCountDown_Train') & ~contains(msg, 'Rest') & ~contains(msg, 'Trial_End');
+        elseif contains(origCondName,'Split Train')
+            relMsg = ~ismember(msg, 'AccRamp1') & ~contains(msg, 'TMStopAudioCountDown_Train') & ~startsWith(msg, 'Split')& ~contains(msg, 'Rest')& ~contains(msg, 'Mid5') & ~contains(msg, 'Trial_End');
+        end
     else %default to all false, add other study specific logic here.
         relMsg = false(size(msg)); 
     end
@@ -105,6 +114,9 @@ for origTrialIdx = origTrials
                 else
                     newName = [origCondName ' ' msg{msgIdx}];
                 end
+            elseif contains(erase(studyName,' '),'SpinalAdaptBoutStudy')
+                %StudySpecific logic: create new trial from event time and after, update curTrl to only keep 1 to eventtime -1 , and update trial meta data
+                    newName = [origCondName ' ' msg{msgIdx}];
             else %default value, add other study specific logic here.
                 newName = [origCondName ' Default'];
             end
@@ -131,9 +143,11 @@ for origTrialIdx = origTrials
                 if ~isempty(trialData{jj})
                     trialData{jj}.metaData.condition = trialData{jj}.metaData.condition+1;
                     if contains(trialData{jj}.metaData.rawDataFilename,'_SpltNewIdx') %already been renamed in prev ite, replace it.
-                        trialData{jj}.metaData.rawDataFilename(end-1:end) = sprintf('%02d',jj);
+                        %TODO: this line needs to support 3 digits in the
+                        %two lines below.
+                        trialData{jj}.metaData.rawDataFilename(end-2:end) = sprintf('%03d',jj);
                     else %1st time being renamed, append
-                        trialData{jj}.metaData.rawDataFilename = [trialData{jj}.metaData.rawDataFilename '_SpltNewIdx' sprintf('%02d',jj)];
+                        trialData{jj}.metaData.rawDataFilename = [trialData{jj}.metaData.rawDataFilename '_SpltNewIdx' sprintf('%03d',jj)];
                         %the correct trialIdx should be the index of this trial in the list of trialData.
                     end
                 end
@@ -220,7 +234,7 @@ end
 tic
 
 %save an intermediate file with the sep conditions
-% save([resSavePath subjectID 'Separated.mat'],'newExpData','-v7.3') 
+save([resSavePath subjectID 'Separated.mat'],'newExpData','-v7.3') 
 
 %save a copy of the exp and adapt data if exists, then replace it.
 if exist([resSavePath filesep subjectID '.mat'],'file')
