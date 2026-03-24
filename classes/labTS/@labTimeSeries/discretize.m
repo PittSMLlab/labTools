@@ -38,6 +38,8 @@ if nargin < 5 || isempty(summaryFunction)
     summaryFunction = 'nanmean';
 end
 eval(['myfun = @(x) ' summaryFunction '(x, 1);']);
+%README: if you fail here due to concatenation issues, make sure nirs-toolbox is
+%not on your path
 d = cell2mat( ...
     cellfun(@(x) myfun(x.Data), slicedTS, 'UniformOutput', false)');
 [M, N1] = size(expEventTimes);
