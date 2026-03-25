@@ -93,136 +93,146 @@ classdef labData
             %
             %   See also: labMetaData, orientedLabTimeSeries, labTimeSeries
 
-            % ----------------
+            arguments
+                metaData
+                markerData        = []
+                EMGData           = []
+                GRFData           = []
+                beltSpeedSetData  = []
+                beltSpeedReadData = []
+                accData           = []
+                EEGData           = []
+                footSwitches      = []
+                HreflexPin        = []
+            end
 
             % if nargin < 1 || isempty(metaData)
-            %     this.metaData = labMetaData(); % I think this should
-            %     be mandatory and fail instead of putting an empty
-            %     metaData.
+            %     % should be mandatory and fail instead of empty metaData
+            %     this.metaData = labMetaData();
             % end
-            % if isa(metaData, 'trialMetaData') % Had to comment this
-            % on 10/7/2014, because trialMetaData and
-            % experimentMetaData are no longer labMetaData objects.
-            % -Pablo
+            % commented because trialMetaData and experimentMetaData are
+            % no longer labMetaData objects
+            % if isa(metaData, 'trialMetaData')
             this.metaData = metaData;
             % else
-            %     ME = MException('labData:Constructor', 'First
-            %     argument (metaData) should be a labMetaData
-            %     object.');
-            %     throw(ME)
+            %     ME = MException('labData:Constructor', ...
+            %         ['First argument (metaData) should be a ' ...
+            %         'labMetaData object.']);
+            %     throw(ME);
             % end
 
-            if nargin < 2 || isempty(markerData)
-                this.markerData = [];
-            elseif isa(markerData, 'orientedLabTimeSeries')
-                this.markerData = markerData; % Needs to be empty or
-                % have labels {'Lxxx*', 'Rxxx*'}, where 'xxx' is a
-                % 2 or 3-letter abbreviation from the list: {'ANK',
-                % 'TOE','HEE','KNE','TIB','THI','PEL','HIP','SHO',
-                % 'ELB','WRI'} or {'HEA*'}
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Second argument (markerData) should be an ' ...
-                    'orientedLabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(markerData)
+                if isa(markerData, 'orientedLabTimeSeries')
+                    % Needs to be empty or have labels {'Lxxx*', 'Rxxx*'},
+                    % where 'xxx' is 2- or 3-letter abbreviation from list:
+                    % {'ANK','TOE','HEE','KNE','TIB','THI','PEL','HIP', ...
+                    % 'SHO','ELB','WRI'} or {'HEA*'}
+                    this.markerData = markerData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Second argument (markerData) should ' ...
+                        'be an orientedLabTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 3 || isempty(EMGData)
-                this.EMGData = [];
-            elseif isa(EMGData, 'labTimeSeries')
-                this.EMGData = EMGData; % Needs to be empty or have
-                % labels {'Lxxx', 'Rxxx'}, where 'xxx' is a 2 or
-                % 3-letter abbreviation from the list: {'TA','PER',
-                % 'SOL','MG','BF','RF','VM','TFL','GLU'}
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Third argument (EMGData) should be a ' ...
-                    'labTimeSeries object.']);
-                throw(ME);
+            if ~isempty(EMGData)
+                if isa(EMGData, 'labTimeSeries')
+                    % Needs to be empty or have labels {'Lxxx', 'Rxxx'},
+                    % where 'xxx' is 2- or 3-letter abbreviation from list:
+                    % {'TA','PER','SOL','MG','BF','RF','VM','TFL','GLU'}
+                    this.EMGData = EMGData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Third argument (EMGData) should be ' ...
+                        'a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 4 || isempty(GRFData)
-                this.GRFData = [];
-            elseif isa(GRFData, 'orientedLabTimeSeries')
-                this.GRFData = GRFData; % Needs to be empty or have
-                % labels {'F*L','F*R','M*R','M*L'}, where '*' is
-                % either 'x', 'y' or 'z'
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Fourth argument (GRFData) should be an ' ...
-                    'orientedLabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(GRFData)
+                if isa(GRFData, 'orientedLabTimeSeries')
+                    % Needs to be empty or have labels {'F*L','F*R', ...
+                    % 'M*R','M*L'}, where '*' is either 'x', 'y' or 'z'
+                    this.GRFData = GRFData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Fourth argument (GRFData) should be ' ...
+                        'an orientedLabTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 5 || isempty(beltSpeedSetData)
-                this.beltSpeedSetData = [];
-            elseif isa(beltSpeedSetData, 'labTimeSeries')
-                % Empty or labels 'L' and 'R'
-                this.beltSpeedSetData = beltSpeedSetData;
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Fifth argument (beltSpeedSetData) should ' ...
-                    'be a LabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(beltSpeedSetData)
+                if isa(beltSpeedSetData, 'labTimeSeries')
+                    % Empty or labels 'L' and 'R'
+                    this.beltSpeedSetData = beltSpeedSetData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Fifth argument (beltSpeedSetData) ' ...
+                        'should be a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 6 || isempty(beltSpeedReadData)
-                this.beltSpeedReadData = [];
-            elseif isa(beltSpeedReadData, 'labTimeSeries')
-                % Empty or labels 'L' and 'R'
-                this.beltSpeedReadData = beltSpeedReadData;
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Sixth argument (beltSpeadReadData) should ' ...
-                    'be a LabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(beltSpeedReadData)
+                if isa(beltSpeedReadData, 'labTimeSeries')
+                    % Empty or labels 'L' and 'R'
+                    this.beltSpeedReadData = beltSpeedReadData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Sixth argument (beltSpeedReadData) ' ...
+                        'should be a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 7 || isempty(accData)
-                this.accData = [];
-            elseif isa(accData, 'orientedLabTimeSeries')
-                this.accData = accData;
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Seventh argument (accData) should be an ' ...
-                    'orientedLabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(accData)
+                if isa(accData, 'orientedLabTimeSeries')
+                    this.accData = accData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Seventh argument (accData) should be ' ...
+                        'an orientedLabTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 8 || isempty(EEGData)
-                this.EEGData = [];
-            elseif isa(EEGData, 'labTimeSeries')
-                this.EEGData = EEGData; % Needs to be empty or have
-                % labels in the international 10-20 system.
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Eigth argument (EEGData) should be a ' ...
-                    'LabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(EEGData)
+                if isa(EEGData, 'labTimeSeries')
+                    % Needs to be empty or have labels in the international
+                    % 10-20 system
+                    this.EEGData = EEGData;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Eighth argument (EEGData) should be ' ...
+                        'a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 9 || isempty(footSwitches)
-                this.footSwitchData = [];
-            elseif isa(footSwitches, 'labTimeSeries')
-                % Empty or labels 'L' and 'R'
-                this.footSwitchData = footSwitches;
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Ninth argument (footSwitches) should be a ' ...
-                    'LabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(footSwitches)
+                if isa(footSwitches, 'labTimeSeries')
+                    % Empty or labels 'L' and 'R'
+                    this.footSwitchData = footSwitches;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Ninth argument (footSwitches) should ' ...
+                        'be a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
 
-            if nargin < 10 || isempty(HreflexPin)
-                this.HreflexPin = [];
-            elseif isa(HreflexPin, 'labTimeSeries')
-                % Empty or labels 'L' and 'R'
-                this.HreflexPin = HreflexPin;
-            else
-                ME = MException('labData:Constructor', ...
-                    ['Tenth argument (HreflexPin) should be a ' ...
-                    'LabTimeSeries object.']);
-                throw(ME);
+            if ~isempty(HreflexPin)
+                if isa(HreflexPin, 'labTimeSeries')
+                    % Empty or labels 'L' and 'R'
+                    this.HreflexPin = HreflexPin;
+                else
+                    ME = MException('labData:Constructor', ...
+                        ['Tenth argument (HreflexPin) should ' ...
+                        'be a labTimeSeries object.']);
+                    throw(ME);
+                end
             end
             % ---------------
             % Check that all data is from the same time interval: TODO!
