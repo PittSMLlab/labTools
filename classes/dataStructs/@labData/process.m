@@ -36,8 +36,8 @@ function processedData = process(this, subData, eventClass)
 
 arguments
     this
-    subData
-    eventClass (1,:) char = ''
+    subData    (1,1) subjectData
+    eventClass (1,:) char        = ''
 end
 
 % 1) Extract amplitude from EMG data if present
