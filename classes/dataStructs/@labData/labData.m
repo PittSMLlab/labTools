@@ -15,7 +15,7 @@ classdef labData
     %   beltSpeedSetData  - labTS with treadmill speed commands
     %   beltSpeedReadData - labTS with speed read from treadmill
     %   footSwitchData    - labTS with foot switch data
-    %   HreflexPin        - labTS with H-reflex stim signal
+    %   HreflexPin        - labTS with H-reflex sync signal
     %
     % labData methods:
     %   labData                   - constructor
@@ -45,16 +45,16 @@ classdef labData
 
     %% Properties
     properties % (SetAccess = private)
-        metaData          % labMetaData object
-        markerData        % orientedLabTS with kinematic data
-        EMGData           % labTS with EMG recordings
-        EEGData           % labTS with EEG recordings
-        GRFData           % orientedLabTS with kinetic data
-        accData           % orientedLabTS with acceleration data
-        beltSpeedSetData  % labTS with treadmill speed commands
-        beltSpeedReadData % labTS with speed read from treadmill
-        footSwitchData    % labTS with foot switch data
-        HreflexPin        % labTS with H-reflex sync signal
+        metaData          = [] % labMetaData object
+        markerData        = [] % orientedLabTS with kinematic data
+        EMGData           = [] % labTS with EMG recordings
+        EEGData           = [] % labTS with EEG recordings
+        GRFData           = [] % orientedLabTS with kinetic data
+        accData           = [] % orientedLabTS with acceleration data
+        beltSpeedSetData  = [] % labTS with treadmill speed commands
+        beltSpeedReadData = [] % labTS with speed read from treadmill
+        footSwitchData    = [] % labTS with foot switch data
+        HreflexPin        = [] % labTS with H-reflex sync signal
     end
 
     %% Constructor
@@ -91,8 +91,7 @@ classdef labData
             %   Outputs:
             %     this - labData object
             %
-            %   See also: labMetaData, orientedLabTimeSeries,
-            %     labTimeSeries
+            %   See also: labMetaData, orientedLabTimeSeries, labTimeSeries
 
             % ----------------
 
