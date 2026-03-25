@@ -1,60 +1,60 @@
 classdef labData
-    %labData  Contains data collected in the lab, including kinematics,
-    %kinetics, and EMG signals.
+    % labData  Contains data collected in the lab, including
+    %   kinematics, kinetics, and EMG signals.
     %
-    %labData properties:
-    %   metaData - labMetaData objetct
-    %   markerData - orientedLabTS with kinematic data
-    %   EMGData - labTS with EMG recordings
-    %   EEGData - labTS with EEG recordings
-    %   GRFData - orientedLabTS with kinetic data
-    %   accData - orientedLabTS with acceleration data
-    %   beltSpeedSetData - labTS with commands sent to treadmill
+    % Toolbox Dependencies:
+    %   None
+    %
+    % labData properties:
+    %   metaData          - labMetaData object
+    %   markerData        - orientedLabTS with kinematic data
+    %   EMGData           - labTS with EMG recordings
+    %   EEGData           - labTS with EEG recordings
+    %   GRFData           - orientedLabTS with kinetic data
+    %   accData           - orientedLabTS with acceleration data
+    %   beltSpeedSetData  - labTS with treadmill speed commands
     %   beltSpeedReadData - labTS with speed read from treadmill
-    %   footSwitchData - labTS with data from foot switches
-    %   HreflexPin - labTS with analog signal with spike once in a while
-    %                representing time when H-reflex stimulation is being
-    %                delivered
+    %   footSwitchData    - labTS with foot switch data
+    %   HreflexPin        - labTS with H-reflex stim signal
     %
-    %labData methods:
+    % labData methods:
+    %   labData                   - constructor
+    %   getMarkerData             - accessor for marker data
+    %   getMarkerList             - list of available marker labels
+    %   getEMGData                - accessor for EMG data
+    %   getEMGList                - list of available EMG labels
+    %   getEEGData                - accessor for EEG data
+    %   getEEGList                - list of available EEG labels
+    %   getGRFList                - list of available force labels
+    %   getForce                  - accessor for forces from GRFData
+    %   getMoment                 - accessor for moments from GRFData
+    %   getBeltSpeed              - accessor for beltSpeedReadData
+    %   computeCOP                - computes center of pressure
+    %   computeCOM                - computes center of mass
+    %   computeCOPAlt             - alternative COP computation
+    %   computeTorques            - computes joint torques
+    %   estimateSubjectBodyWeight - estimates subject weight from GRF
+    %   process                   - processes raw data for events and
+    %                               adaptation parameters
+    %   recomputeEvents           - recalculates gait events
+    %   checkMarkerDataHealth     - diagnoses marker data issues
+    %   split                     - splits data into time segments
+    %   alignAllTS (unimplemented)- aligns all time series data
     %
-    %   getMarkerData - accessor method for marker data
-    %   getMarkerList - returns a list of marker labels
-    %   getEMGData - accessor for EMG data
-    %   getEMGList - returns a list of EMG labels
-    %   getEEGData - accessor for EEG data
-    %   getEEGList - returns list of EEG labels
-    %   getGRFList - returns list of force labels
-    %   getForce - accessor for forces (from GRFData)
-    %   getMoment - accessor for moments (from GRFData)
-    %   getBeltSpeed - accessor for beltSpeedReadData
-    %   computeCOP - computes center of pressure from GRF data
-    %   computeCOM - computes center of mass from marker data
-    %   computeCOPAlt - alternative COP computation method
-    %   computeTorques - computes joint torques from kinematics and
-    %                    kinetics
-    %   estimateSubjectBodyWeight - estimates subject weight from GRF data
-    %   process - processes raw data to find angles, events, and adaptation
-    %             parameters. Returns processedTrialData object
-    %   recomputeEvents - re-calculates gait events from angle data
-    %   checkMarkerDataHealth - diagnoses issues with marker data
-    %   split - splits data into time-delimited segments
-    %   alignAllTS - aligns all time series data (unimplemented)
-    %
-    %See also: labMetaData, orientedLabTimeSeries, labTimeSeries
+    % See also: labMetaData, orientedLabTimeSeries, labTimeSeries
 
     %% Properties
     properties % (SetAccess = private)
-        metaData % labMetaData object
-        markerData % orientedLabTS
-        EMGData % labTS
-        EEGData % labTS
-        GRFData % orientedLabTS
-        accData % orientedLabTS
-        beltSpeedSetData % labTS, sent commands to treadmill
-        beltSpeedReadData % labTS, speed read from treadmill
-        footSwitchData % labTS
-        HreflexPin % labTS, sync signal for H-reflex stimulus delivery
+        metaData          % labMetaData object
+        markerData        % orientedLabTS with kinematic data
+        EMGData           % labTS with EMG recordings
+        EEGData           % labTS with EEG recordings
+        GRFData           % orientedLabTS with kinetic data
+        accData           % orientedLabTS with acceleration data
+        beltSpeedSetData  % labTS with treadmill speed commands
+        beltSpeedReadData % labTS with speed read from treadmill
+        footSwitchData    % labTS with foot switch data
+        HreflexPin        % labTS with H-reflex sync signal
     end
 
     %% Constructor
