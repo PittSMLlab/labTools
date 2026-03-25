@@ -34,8 +34,10 @@ function processedData = process(this, subData, eventClass)
 %
 %   See also: processedTrialData, calcParameters, experimentData/process
 
-if nargin < 3 || isempty(eventClass)
-    eventClass = [];
+arguments
+    this
+    subData
+    eventClass (1,:) char = ''
 end
 
 % 1) Extract amplitude from EMG data if present
