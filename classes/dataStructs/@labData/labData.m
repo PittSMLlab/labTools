@@ -59,12 +59,40 @@ classdef labData
 
     %% Constructor
     methods
-        function this = labData(metaData, markerData, EMGData, GRFData, ...
-                beltSpeedSetData, beltSpeedReadData, accData, EEGData, ...
-                footSwitches, HreflexPin)
-            %labData  Constructor for labData class
+        function this = labData(metaData, markerData, EMGData, ...
+                GRFData, beltSpeedSetData, beltSpeedReadData, ...
+                accData, EEGData, footSwitches, HreflexPin)
+            % labData  Constructor for labData class.
             %
-            %   All arguments validated for proper type
+            %   All input arguments except metaData are optional
+            %   and validated for proper type.
+            %
+            %   Inputs:
+            %     metaData          - labMetaData object
+            %     markerData        - (optional) orientedLabTimeSeries
+            %                        with kinematic marker data
+            %     EMGData           - (optional) labTimeSeries with
+            %                        EMG recordings
+            %     GRFData           - (optional) orientedLabTimeSeries
+            %                        with ground reaction force data
+            %     beltSpeedSetData  - (optional) labTimeSeries with
+            %                        treadmill speed commands
+            %     beltSpeedReadData - (optional) labTimeSeries with
+            %                        treadmill speed readings
+            %     accData           - (optional) orientedLabTimeSeries
+            %                        with acceleration data
+            %     EEGData           - (optional) labTimeSeries with
+            %                        EEG recordings
+            %     footSwitches      - (optional) labTimeSeries with
+            %                        foot switch data
+            %     HreflexPin        - (optional) labTimeSeries with
+            %                        H-reflex sync signal
+            %
+            %   Outputs:
+            %     this - labData object
+            %
+            %   See also: labMetaData, orientedLabTimeSeries,
+            %     labTimeSeries
 
             % ----------------
 
@@ -84,6 +112,7 @@ classdef labData
             %     object.');
             %     throw(ME)
             % end
+
             if nargin < 2 || isempty(markerData)
                 this.markerData = [];
             elseif isa(markerData, 'orientedLabTimeSeries')
@@ -94,9 +123,11 @@ classdef labData
                 % 'ELB','WRI'} or {'HEA*'}
             else
                 ME = MException('labData:Constructor', ...
-                    'Second argument (markerData) should be an orientedLabTimeSeries object.');
+                    ['Second argument (markerData) should be an ' ...
+                    'orientedLabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 3 || isempty(EMGData)
                 this.EMGData = [];
             elseif isa(EMGData, 'labTimeSeries')
@@ -106,9 +137,11 @@ classdef labData
                 % 'SOL','MG','BF','RF','VM','TFL','GLU'}
             else
                 ME = MException('labData:Constructor', ...
-                    'Third argument (EMGData) should be a labTimeSeries object.');
+                    ['Third argument (EMGData) should be a ' ...
+                    'labTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 4 || isempty(GRFData)
                 this.GRFData = [];
             elseif isa(GRFData, 'orientedLabTimeSeries')
@@ -117,9 +150,11 @@ classdef labData
                 % either 'x', 'y' or 'z'
             else
                 ME = MException('labData:Constructor', ...
-                    'Fourth argument (GRFData) should be an orientedLabTimeSeries object.');
+                    ['Fourth argument (GRFData) should be an ' ...
+                    'orientedLabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 5 || isempty(beltSpeedSetData)
                 this.beltSpeedSetData = [];
             elseif isa(beltSpeedSetData, 'labTimeSeries')
@@ -127,9 +162,11 @@ classdef labData
                 this.beltSpeedSetData = beltSpeedSetData;
             else
                 ME = MException('labData:Constructor', ...
-                    'Fifth argument (beltSpeedSetData) should be a LabTimeSeries object.');
+                    ['Fifth argument (beltSpeedSetData) should ' ...
+                    'be a LabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 6 || isempty(beltSpeedReadData)
                 this.beltSpeedReadData = [];
             elseif isa(beltSpeedReadData, 'labTimeSeries')
@@ -137,18 +174,22 @@ classdef labData
                 this.beltSpeedReadData = beltSpeedReadData;
             else
                 ME = MException('labData:Constructor', ...
-                    'Sixth argument (beltSpeadReadData) should be a LabTimeSeries object.');
+                    ['Sixth argument (beltSpeadReadData) should ' ...
+                    'be a LabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 7 || isempty(accData)
                 this.accData = [];
             elseif isa(accData, 'orientedLabTimeSeries')
                 this.accData = accData;
             else
                 ME = MException('labData:Constructor', ...
-                    'Seventh argument (accData) should be an orientedLabTimeSeries object.');
+                    ['Seventh argument (accData) should be an ' ...
+                    'orientedLabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 8 || isempty(EEGData)
                 this.EEGData = [];
             elseif isa(EEGData, 'labTimeSeries')
@@ -156,9 +197,11 @@ classdef labData
                 % labels in the international 10-20 system.
             else
                 ME = MException('labData:Constructor', ...
-                    'Eigth argument (EEGData) should be a LabTimeSeries object.');
+                    ['Eigth argument (EEGData) should be a ' ...
+                    'LabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 9 || isempty(footSwitches)
                 this.footSwitchData = [];
             elseif isa(footSwitches, 'labTimeSeries')
@@ -166,9 +209,11 @@ classdef labData
                 this.footSwitchData = footSwitches;
             else
                 ME = MException('labData:Constructor', ...
-                    'Ninth argument (footSwitches) should be a LabTimeSeries object.');
+                    ['Ninth argument (footSwitches) should be a ' ...
+                    'LabTimeSeries object.']);
                 throw(ME);
             end
+
             if nargin < 10 || isempty(HreflexPin)
                 this.HreflexPin = [];
             elseif isa(HreflexPin, 'labTimeSeries')
@@ -176,7 +221,8 @@ classdef labData
                 this.HreflexPin = HreflexPin;
             else
                 ME = MException('labData:Constructor', ...
-                    'Tenth argument (HreflexPin) should be a LabTimeSeries object.');
+                    ['Tenth argument (HreflexPin) should be a ' ...
+                    'LabTimeSeries object.']);
                 throw(ME);
             end
             % ---------------
@@ -190,7 +236,8 @@ classdef labData
         % Other I/O:
         % function partialMarkerData = getMarkerData(this, markerName)
         %     % returns marker data for input markername
-        %     partialMarkerData = this.getPartialData('markerData', markerName);
+        %     partialMarkerData = this.getPartialData( ...
+        %         'markerData', markerName);
         % end
 
         % function list = getMarkerList(this)
@@ -206,8 +253,10 @@ classdef labData
         %     list = this.getLabelList('EMGData');
         % end
 
-        % function partialEEGData = getEEGData(this, positionName) % Standard 10-20 nomenclature
-        %     partialEEGData = this.getPartialData('EEGData', positionName);
+        % function partialEEGData = getEEGData(this, positionName)
+        %     % Standard 10-20 nomenclature
+        %     partialEEGData = this.getPartialData( ...
+        %         'EEGData', positionName);
         % end
 
         % function list = getEEGList(this)
@@ -223,7 +272,8 @@ classdef labData
         % end
 
         % function specificForce = getForce(this, side, axis)
-        %     specificForce = this.getGRFData([side 'F' axis]); % Assuming that labels in GRF data are 'FxL', 'FxR', 'FyL' and so on...
+        %     % Labels in GRF data: 'FxL', 'FxR', 'FyL', etc.
+        %     specificForce = this.getGRFData([side 'F' axis]);
         % end
 
         % function specificMoment = getMoment(this, side, axis)
