@@ -41,13 +41,12 @@ arguments
 end
 
 % 1) Extract amplitude from EMG data if present
-spikeRemovalFlag = 0;
+spikeRemovalFlag = false;
 [procEMGData, filteredEMGData] = processEMG(this, spikeRemovalFlag);
 
 % 2) Interpolate marker data if there is missing data
 %    (make into function once we have a method to do this)
-markers = this.markerData;
-if ~isempty(markers)
+if ~isempty(this.markerData)
     % function goes here: check marker data health
 end
 
@@ -64,7 +63,8 @@ if isempty(this.beltSpeedReadData)
     this.beltSpeedReadData = getBeltSpeedsFromFootMarkers(this,gaitEvents);
 end
 
-% 6) Compute COP, COM, and joint torque data
+% 6) Compute COP, COM, and joint torque data; COP from
+%    computeTorques is discarded in favor of computeCOPAlt below
 [jointMomentsData, ~, COMData] = this.computeTorques(subData.weight);
 % Replacing COPData with alternative computation
 COPData = this.computeCOPAlt();
