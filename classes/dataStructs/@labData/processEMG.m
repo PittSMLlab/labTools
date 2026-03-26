@@ -83,11 +83,10 @@ if ~isempty(emg)
         % error(['Some channels showed more than 1% bad samples, ' ...
         %     'that is NOT GOOD. Please review the data']);
     end
-
-    if any(any(aaux))
-        quality = 4 * aaux + quality;
-        warning(['Found samples outside the normal range ' ...
-            '(+-5e-3 mV), sensor  was probably loose.']);
+    if any(looseSensorMask, 'all')
+        quality = 4 * looseSensorMask + quality;
+        warning(['Found samples outside the normal range (+-5 mV). ' ...
+            'Sensor may have been loose.']);
     end
     % Delsys says sensor range is +-5.5 mV, but samples up to 5.9 mV appear
     aaux = sparse(abs(emg.Data) >= 6e-3);
@@ -101,8 +100,8 @@ if ~isempty(emg)
     % ---- Step 1: Interpolate missing samples ---------------------------
     emg = emg.substituteNaNs('linear');
 
-        error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
-            'NaN, the filters will fail']); % FIXME!
+    error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
+        'NaN, the filters will fail']); % FIXME!
     if any(isnan(emg.Data), 'all')
     end
 
@@ -113,13 +112,13 @@ if ~isempty(emg)
 
     if spikeFlag
         load('template.mat'); %#ok<LOAD>
+        spikeThreshold = 0.95;  % cross-correlation threshold
         for chan = 1:length(emg.labels)
             whitenFlag = 0; % Not used until whitening is further tested
-            [c, k, ~, ~] = findTemplate(template, emg.Data(:, j), ...
-                whitenFlag);
-            beta = 0.95;    % define threshold
-            t    = find(abs(c) > beta);
-            if ~isempty(t)
+            [corrCoeff, templateMatchIdx, ~, ~] = ...
+                findTemplate(template, emg.Data(:, chan), whitenFlag);
+            threshExceededIdx = find(abs(corrCoeff) > spikeThreshold);
+            if ~isempty(threshExceededIdx)
                 % Discard consecutive events, keeping the first in each
                 % sequence. Single-event sequences are discarded on
                 % purpose (probably spurious).
@@ -129,11 +128,11 @@ if ~isempty(emg)
                     warning(['Found spikes in more than 1% total ' ...
                         'signal length. Probably not good.']);
                 end
-                k = k(t_); %#ok<NASGU>
+                templateMatchIdx = templateMatchIdx(spikeStartIdx); %#ok<NASGU>
             else
-                t_ = [];
+                spikeStartIdx = [];
             end
-            for i = 1:length(t_)
+            for spike = 1:length(spikeStartIdx)
                 % Set spike region to zero
                 t2 = min([t_(i) + length(template) - 1, size(emg.Data,1)]);
                 quality(t_(i):t2, j) = 2;
