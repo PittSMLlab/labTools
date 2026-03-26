@@ -1,4 +1,4 @@
-function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
+function [procEMGData, filteredEMGData] = processEMG(trialData, spikeFlag)
 % processEMG  Extracts processed and filtered EMG amplitude envelopes
 %   from raw trial EMG data.
 %
@@ -44,9 +44,6 @@ if ~isempty(emg)
     quality = sparse([], [], [],  size(emg.Data, 1), size(emg.Data, 2), ...
         round(0.1 * numel(emg.Data)));
 
-            if abs(nanmean(emg.Data(:,i)))>0.01
-                warning('Check raw data. non-zero Signal offset. To continue, mean value will be remove mean of the dataß')
-                emg.Data(:,i)=emg.Data(:,i)-nanmean(emg.Data(:,i));
     % ---- Step 0: Remove samples outside the [-5, 5] mV range --------
     % Included on March 12th because P0011 was presenting huge (1e5)
     % spikes obviously caused by data corruption. We may want to go back
@@ -63,6 +60,11 @@ if ~isempty(emg)
         for i = find(tt)
             disp([emg.labels{i} '(' ...
                 num2str(round(badSamples(i) * 1000) / 10) '% bad)']);
+            if abs(nanmean(emg.Data(:, i))) > 0.01
+                warning(['Check raw data. non-zero Signal offset. ' ...
+                    'To continue, mean value will be remove mean ' ...
+                    'of the data']);
+                emg.Data(:, i) = emg.Data(:, i) - nanmean(emg.Data(:, i));
                 % Set +-5 mV as normal range
                 aaux2       = sparse(abs(emg.Data) >= 5e-3);
                 badSamples2 = sum(aaux2) ./ size(aaux2, 1);
@@ -139,31 +141,38 @@ if ~isempty(emg)
     [procEMG, filteredEMG, filterList, procList] = ...
         extractMuscleActivityFromEMG(emg.Data, emg.sampFreq, fCut);
 
-    %Step 3: create processedEMGTimeSeries object
-    procInfo=processingInfo([filterList, procList]);
-    procEMGData=processedEMGTimeSeries(procEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-    procInfo=processingInfo(filterList);
-    filteredEMGData=processedEMGTimeSeries(filteredEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
+    % ---- Step 3: Create processedEMGTimeSeries objects -----------------
+    procInfo    = processingInfo([filterList, procList]);
+    procEMGData = processedEMGTimeSeries(procEMG, emg.Time(1), ...
+        emg.sampPeriod, emg.labels, procInfo);
+    procInfo        = processingInfo(filterList);
+    filteredEMGData = processedEMGTimeSeries(filteredEMG, emg.Time(1), ...
+        emg.sampPeriod, emg.labels, procInfo);
 
-    %Step 4: update quality info on timeseries, incorporating previously
-    %existing quality info
-    if ~isempty(emg.Quality) %Case where there was pre-existing quality info
-        filteredEMGData.Quality=emg.Quality;
-        filteredEMGData.Quality(quality==2)=2;
-        filteredEMGData.Quality(quality==3)=4;
-        filteredEMGData.Quality(quality==3)=8;
-        filteredEMGData.QualityInfo.Code=[emg.QualityInfo.Code 2 4 8];
-        filteredEMGData.QualityInfo.Description=[emg.QualityInfo.Description, 'spike', 'sensorLoose' ,'outsideValidRange'];
+    % ---- Step 4: Update quality info, incorporating pre-existing -------
+    if ~isempty(emg.Quality)    % if pre-existing quality info exists, ...
+        filteredEMGData.Quality               = emg.Quality;
+        filteredEMGData.Quality(quality == 2) = 2;
+        filteredEMGData.Quality(quality == 3) = 4;
+        filteredEMGData.Quality(quality == 3) = 8;
+        filteredEMGData.QualityInfo.Code      = ...
+            [emg.QualityInfo.Code 2 4 8];
+        filteredEMGData.QualityInfo.Description = ...
+            [emg.QualityInfo.Description, ...
+            'spike', 'sensorLoose', 'outsideValidRange'];
     else
-        filteredEMGData.Quality=int8(quality); %Need to cast as int8 because Matlab's timeseries forces this for the quality property
-        filteredEMGData.QualityInfo.Code=[0 2 4 8];
-        filteredEMGData.QualityInfo.Description={'good', 'spike', 'sensorLoose','outsideValidRange'};
+        % Cast as int8: MATLAB's timeseries enforces this type for
+        % the Quality property
+        filteredEMGData.Quality             = int8(quality);
+        filteredEMGData.QualityInfo.Code    = [0 2 4 8];
+        filteredEMGData.QualityInfo.Description = ...
+            {'good', 'spike', 'sensorLoose', 'outsideValidRange'};
     end
-    procEMGData.Quality= filteredEMGData.Quality;
-    procEMGData.QualityInfo=filteredEMGData.QualityInfo;
+    procEMGData.Quality     = filteredEMGData.Quality;
+    procEMGData.QualityInfo = filteredEMGData.QualityInfo;
 
-else %Case of empty emg data
-    procEMGData=[];
+else    % if EMG data is empty, return empty outputs
+    procEMGData     = [];
     filteredEMGData = [];
 end
 
