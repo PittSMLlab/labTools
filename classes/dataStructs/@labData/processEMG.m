@@ -29,65 +29,79 @@ function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
 %   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,
 %     processingInfo, labData/process
 
-emg=trialData.EMGData;
-if isprop(emg,'processingInfo')
-    warning('Trying to re-process already processed EMG data, this can lead to over-smoothing. Skipping.')
-    filteredEMGData=emg;
-    procEMGData=trialData.procEMGData;
-    return
-    %If you really want to re-process EMG data, you should get the RAW EMG!
+emg = trialData.EMGData;
+if isprop(emg, 'processingInfo')
+    warning(['Trying to re-process already processed EMG data, ' ...
+        'this can lead to over-smoothing. Skipping.']);
+    filteredEMGData = emg;
+    procEMGData     = trialData.procEMGData;
+    return;
+    % If you really want to re-process EMG data, you should use RAW EMG!
 end
 
 if ~isempty(emg)
-    quality=sparse([],[],[],size(emg.Data,1),size(emg.Data,2),round(.1*numel(emg.Data)));%Pre-allocating for 1% spikes total.
+    % Pre-allocate sparse quality matrix; sized for ~10% spikes total
+    quality = sparse([], [], [],  size(emg.Data, 1), size(emg.Data, 2), ...
+        round(0.1 * numel(emg.Data)));
 
-    %Step 0: remove samples outside the [-5,5]e-3 range (+- 5mv): this was
-    %included on March 12th because P0011 was presenting huge (1e5) spikes
-    %that are obviously caused by some data corruption. We may want to go
-    %back and re-process from scratch, but it was only in a short time
-    %period (~200ms) so decided to clip, issue warning, and add new quality
-    %category.
-    aaux=sparse(abs(emg.Data)>=5e-3); %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
-    badSamples=sum(aaux)./size(aaux,1);
-    tt=badSamples>.01;
-    if any(tt) %More than 1% bad samples on single channel, NOT GOOD
-        disp('Channels with more than 1% bad samples (!):')
-        for i=find(tt)
-            disp([emg.labels{i} '(' num2str(round(badSamples(i)*1000)/10) '% bad)'])
             if abs(nanmean(emg.Data(:,i)))>0.01
                 warning('Check raw data. non-zero Signal offset. To continue, mean value will be remove mean of the dataß')
                 emg.Data(:,i)=emg.Data(:,i)-nanmean(emg.Data(:,i));
-                aaux2=sparse(abs(emg.Data)>=5e-3); %Set +-5mV as normal range, although good EMG signals rarely go above 2mV
-                badSamples2=sum(aaux2)./size(aaux2,1);
-                tt2=badSamples2>.01;
-                disp([emg.labels{i} '(' num2str(round(badSamples2(i)*1000)/10) '% bad after mean adjustment)'])
+    % ---- Step 0: Remove samples outside the [-5, 5] mV range --------
+    % Included on March 12th because P0011 was presenting huge (1e5)
+    % spikes obviously caused by data corruption. We may want to go back
+    % and re-process from scratch, but it was only in a short time period
+    % (~200 ms) so decided to clip, issue a warning, and add a new
+    % quality category.
+
+    % Set +-5 mV as normal range (good EMG signals rarely exceed 2 mV)
+    aaux       = sparse(abs(emg.Data) >= 5e-3);
+    badSamples = sum(aaux) ./ size(aaux, 1);
+    tt         = badSamples > 0.01;
+    if any(tt)      % more than 1% bad samples on a channel: NOT GOOD
+        disp('Channels with more than 1% bad samples (!):');
+        for i = find(tt)
+            disp([emg.labels{i} '(' ...
+                num2str(round(badSamples(i) * 1000) / 10) '% bad)']);
+                % Set +-5 mV as normal range
+                aaux2       = sparse(abs(emg.Data) >= 5e-3);
+                badSamples2 = sum(aaux2) ./ size(aaux2, 1);
+                tt2         = badSamples2 > 0.01; %#ok<NASGU>
+                disp([emg.labels{i} '(' ...
+                    num2str(round(badSamples2(i) * 1000) / 10) ...
+                    '% bad after mean adjustment)']);
             end
         end
-        %error('Some channels showed more than 1% bad samples, that is NOT GOOD. Please review the data')
-    end
-    if any(any(aaux))
-        quality=4*aaux+quality;
-        warning(['Found samples outside the normal range (+-5e-3 mV), sensor '  ' was probably loose.'])
-    end
-    aaux=sparse(abs(emg.Data)>=6e-3); %Delsys claims the sensor range is +-5.5mV, but samples up to 5.9mV do appear
-    if any(any(aaux))
-        quality=4*aaux+quality;
-        emg.Data(aaux)=0;
-        warning('Found samples outside the valid range (+-6e-3 mV). Clipping.')
+        % error(['Some channels showed more than 1% bad samples, ' ...
+        %     'that is NOT GOOD. Please review the data']);
     end
 
+    if any(any(aaux))
+        quality = 4 * aaux + quality;
+        warning(['Found samples outside the normal range ' ...
+            '(+-5e-3 mV), sensor  was probably loose.']);
+    end
+    % Delsys says sensor range is +-5.5 mV, but samples up to 5.9 mV appear
+    aaux = sparse(abs(emg.Data) >= 6e-3);
+    if any(any(aaux))
+        quality        = 4 * aaux + quality;
+        emg.Data(aaux) = 0;
+        warning(['Found samples outside the valid range ' ...
+            '(+-6e-3 mV). Clipping.']);
+    end
 
-    %Step 1: interpolate missing samples
-    emg=emg.substituteNaNs('linear');
+    % ---- Step 1: Interpolate missing samples ---------------------------
+    emg = emg.substituteNaNs('linear');
 
     if any(isnan(emg.Data(:)))
-        error('processEMG:isNaN','Some samples in the EMG data are NaN, the filters will fail'); %FIXME!
+        error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
+            'NaN, the filters will fail']); % FIXME!
     end
 
-
-    %Step 1.5: Find spikes and remove them by setting them to 0
-    %load('../matData/subP0001.mat')
-    %template=expData.data{1}.EMGData.getPartialDataAsVector('LGLU',235.695,235.755);
+    % ---- Step 1.5: Find spikes and remove by setting them to zero ------
+    % load('../matData/subP0001.mat')
+    % template = expData.data{1}.EMGData.getPartialDataAsVector( ...
+    %     'LGLU', 235.695, 235.755);
 
     if nargin>1 && ~isempty(spikeFlag) && spikeFlag==1
         load('template.mat');
