@@ -88,13 +88,14 @@ if ~isempty(emg)
         warning(['Found samples outside the normal range (+-5 mV). ' ...
             'Sensor may have been loose.']);
     end
-    % Delsys says sensor range is +-5.5 mV, but samples up to 5.9 mV appear
-    aaux = sparse(abs(emg.Data) >= 6e-3);
-    if any(any(aaux))
-        quality        = 4 * aaux + quality;
-        emg.Data(aaux) = 0;
-        warning(['Found samples outside the valid range ' ...
-            '(+-6e-3 mV). Clipping.']);
+    % Delsys claims the sensor range is +-5.5 mV, but samples up to
+    % 5.9 mV do appear; clip anything at or beyond +-6 mV
+    saturationMask = sparse(abs(emg.Data) >= 6e-3);
+    if any(saturationMask, 'all')
+        quality                   = 4 * saturationMask + quality;
+        emg.Data(saturationMask)  = 0;
+        warning(['Found samples outside the valid hardware range ' ...
+            '(+-6 mV). Clipping affected samples.']);
     end
 
     % ---- Step 1: Interpolate missing samples ---------------------------
@@ -122,10 +123,12 @@ if ~isempty(emg)
                 % Discard consecutive events, keeping the first in each
                 % sequence. Single-event sequences are discarded on
                 % purpose (probably spurious).
-                t_ = t(diff(t) == 1 & diff(diff([-Inf; t])) < 0);
-                if numel(t_) > round(0.01 * size(emg.Data, 1) / ...
-                        length(template))
-                    warning(['Found spikes in more than 1% total ' ...
+                spikeStartIdx = threshExceededIdx( ...
+                    diff(threshExceededIdx) == 1 & ...
+                    diff(diff([-Inf; threshExceededIdx])) < 0);
+                if numel(spikeStartIdx) > ...
+                        round(0.01 * size(emg.Data, 1) / length(template))
+                    warning(['Found spikes in more than 1% of total ' ...
                         'signal length. Probably not good.']);
                 end
                 templateMatchIdx = templateMatchIdx(spikeStartIdx); %#ok<NASGU>
