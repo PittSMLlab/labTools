@@ -34,6 +34,43 @@ arguments
     spikeFlag  (1,1) logical = false
 end
 
+%% Named Constants
+% EMG amplitude thresholds (V).
+% Note: Delsys claims a +-5.5 mV max sensor range, but values up to
+% 5.9 mV can appear, so the hardware limit is set conservatively at 6 mV.
+normalRangeLimit   = 5e-3;  % samples >= this indicate a loose sensor
+hardwareRangeLimit = 6e-3;  % samples >= this exceed the hardware range
+
+% Fraction of samples per channel above normalRangeLimit that triggers
+% a bad-sample report to the command window
+badSampleFracThreshold = 0.01;  % 1%
+
+% Signal mean magnitude above which mean subtraction is applied when a
+% channel shows a non-zero DC offset
+meanOffsetThreshold = 0.01;     % V
+
+% Low-pass cutoff frequency (Hz) for EMG amplitude envelope extraction
+envelopeCutoffFreq = 10;
+
+% Cross-correlation threshold for template-based spike detection
+spikeCorrelThreshold = 0.95;
+
+% Whitening flag for template matching (disabled until further tested)
+spikeWhitenFlag = false;
+
+% Fraction of total signal length above which the detected spike count
+% triggers a warning
+spikeHighFracThreshold = 0.01;  % 1%
+
+% Estimated fraction of non-zero entries for sparse quality matrix
+% pre-allocation (conservative upper bound)
+qualitySparseDensity = 0.1;
+
+% Full path to EMG spike template file; resolved via the MATLAB path so the
+% location is explicit without hardcoding a user-specific absolute path
+templateFilePath = which('template.mat');
+
+%% Process EMG Data
 emg = trialData.EMGData;
 if isprop(emg, 'processingInfo')
     warning(['Trying to re-process already processed EMG data, ' ...
