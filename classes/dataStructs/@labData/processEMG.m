@@ -100,9 +100,9 @@ if ~isempty(emg)
     % ---- Step 1: Interpolate missing samples ---------------------------
     emg = emg.substituteNaNs('linear');
 
-    error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
-        'NaN, the filters will fail']); % FIXME!
     if any(isnan(emg.Data), 'all')
+        error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
+            'NaN, the filters will fail']); % FIXME!
     end
 
     % ---- Step 1.5: Find spikes and remove by setting them to zero ------
@@ -134,9 +134,10 @@ if ~isempty(emg)
             end
             for spike = 1:length(spikeStartIdx)
                 % Set spike region to zero
-                t2 = min([t_(i) + length(template) - 1, size(emg.Data,1)]);
-                quality(t_(i):t2, j) = 2;
-                emg.Data(t_(i):t2, j) = 0;
+                spikeEndIdx = min([spikeStartIdx(spike) + ...
+                    length(template) - 1, size(emg.Data, 1)]);
+                quality(spikeStartIdx(spike):spikeEndIdx, chan) = 2;
+                emg.Data(spikeStartIdx(spike):spikeEndIdx, chan) = 0;
             end
         end
     end
@@ -160,8 +161,7 @@ if ~isempty(emg)
         filteredEMGData.Quality(quality == 2) = 2;
         filteredEMGData.Quality(quality == 3) = 4;
         filteredEMGData.Quality(quality == 3) = 8;
-        filteredEMGData.QualityInfo.Code      = ...
-            [emg.QualityInfo.Code 2 4 8];
+        filteredEMGData.QualityInfo.Code = [emg.QualityInfo.Code 2 4 8];
         filteredEMGData.QualityInfo.Description = ...
             [emg.QualityInfo.Description, ...
             'spike', 'sensorLoose', 'outsideValidRange'];
