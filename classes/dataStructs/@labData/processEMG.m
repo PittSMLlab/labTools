@@ -103,34 +103,41 @@ if ~isempty(emg)
     % template = expData.data{1}.EMGData.getPartialDataAsVector( ...
     %     'LGLU', 235.695, 235.755);
 
-    if nargin>1 && ~isempty(spikeFlag) && spikeFlag==1
-        load('template.mat');
-        for j=1:length(emg.labels)
-            whitenFlag=0; %Not used until the whitening mechanism is further tested
-            [c,k,~,~] = findTemplate(template,emg.Data(:,j),whitenFlag);
-            beta=.95; %Define threshold
-            t=find(abs(c)>beta);
+    if nargin > 1 && ~isempty(spikeFlag) && spikeFlag == 1
+        load('template.mat'); %#ok<LOAD>
+        for j = 1:length(emg.labels)
+            whitenFlag = 0; % Not used until whitening is further tested
+            [c, k, ~, ~] = findTemplate(template, emg.Data(:, j), ...
+                whitenFlag);
+            beta = 0.95;    % define threshold
+            t    = find(abs(c) > beta);
             if ~isempty(t)
-                t_=t(diff(t)==1 & diff(diff([-Inf;t]))<0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
-                if numel(t_)>round(.01*size(emg.Data,1)/length(template))
-                    warning('Found spikes in more than 1% total signal length. Probably not good.')
+                % Discard consecutive events, keeping the first in each
+                % sequence. Single-event sequences are discarded on
+                % purpose (probably spurious).
+                t_ = t(diff(t) == 1 & diff(diff([-Inf; t])) < 0);
+                if numel(t_) > round(0.01 * size(emg.Data, 1) / ...
+                        length(template))
+                    warning(['Found spikes in more than 1% total ' ...
+                        'signal length. Probably not good.']);
                 end
-                k=k(t_);
+                k = k(t_); %#ok<NASGU>
             else
-                t_=[];
+                t_ = [];
             end
-            for i=1:length(t_)
-                %Setting to 0s
-                t2=min([t_(i)+length(template)-1,size(emg.Data,1)]);
-                quality(t_(i):t2,j)=2;
-                emg.Data(t_(i):t2,j)=0;
+            for i = 1:length(t_)
+                % Set spike region to zero
+                t2 = min([t_(i) + length(template) - 1, size(emg.Data,1)]);
+                quality(t_(i):t2, j) = 2;
+                emg.Data(t_(i):t2, j) = 0;
             end
         end
     end
 
-    %Step 2: do amplitude extraction
-    f_cut=10; %Hz
-    [procEMG,filteredEMG,filterList,procList] = extractMuscleActivityFromEMG(emg.Data,emg.sampFreq,f_cut);
+    % ---- Step 2: Extract amplitude envelope ----------------------------
+    fCut = 10;  % Hz
+    [procEMG, filteredEMG, filterList, procList] = ...
+        extractMuscleActivityFromEMG(emg.Data, emg.sampFreq, fCut);
 
     %Step 3: create processedEMGTimeSeries object
     procInfo=processingInfo([filterList, procList]);
