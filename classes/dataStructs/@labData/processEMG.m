@@ -56,11 +56,12 @@ if ~isempty(emg)
     % (~200 ms) so decided to clip, issue a warning, and add a new
     % quality category.
 
-    % Set +-5 mV as normal range (good EMG signals rarely exceed 2 mV)
-    aaux       = sparse(abs(emg.Data) >= 5e-3);
-    badSamples = sum(aaux) ./ size(aaux, 1);
-    tt         = badSamples > 0.01;
-    if any(tt)      % more than 1% bad samples on a channel: NOT GOOD
+    % Flag samples exceeding the normal +-5 mV range; good EMG signals
+    % rarely exceed +-2 mV, so this threshold catches loose sensors
+    looseSensorMask = sparse(abs(emg.Data) >= 5e-3);
+    badSampleFrac   = sum(looseSensorMask) ./ size(looseSensorMask, 1);
+    highBadSampleChanMask = badSampleFrac > 0.01;
+    if any(highBadSampleChanMask)   % > 1% bad samples: NOT GOOD
         disp('Channels with more than 1% bad samples (!):');
         for i = find(tt)
             disp([emg.labels{i} '(' ...
@@ -100,9 +101,9 @@ if ~isempty(emg)
     % ---- Step 1: Interpolate missing samples ---------------------------
     emg = emg.substituteNaNs('linear');
 
-    if any(isnan(emg.Data(:)))
         error('processEMG:isNaN', ['Some samples in the EMG data are ' ...
             'NaN, the filters will fail']); % FIXME!
+    if any(isnan(emg.Data), 'all')
     end
 
     % ---- Step 1.5: Find spikes and remove by setting them to zero ------
@@ -110,9 +111,9 @@ if ~isempty(emg)
     % template = expData.data{1}.EMGData.getPartialDataAsVector( ...
     %     'LGLU', 235.695, 235.755);
 
-    if nargin > 1 && ~isempty(spikeFlag) && spikeFlag == 1
+    if spikeFlag
         load('template.mat'); %#ok<LOAD>
-        for j = 1:length(emg.labels)
+        for chan = 1:length(emg.labels)
             whitenFlag = 0; % Not used until whitening is further tested
             [c, k, ~, ~] = findTemplate(template, emg.Data(:, j), ...
                 whitenFlag);
