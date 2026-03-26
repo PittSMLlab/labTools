@@ -1,4 +1,33 @@
- function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
+function [procEMGData,filteredEMGData] = processEMG(trialData,spikeFlag)
+% processEMG  Extracts processed and filtered EMG amplitude envelopes
+%   from raw trial EMG data.
+%
+%   Performs quality checks, outlier clipping, optional template-based
+% spike removal, NaN interpolation, and bandpass/envelope amplitude
+% extraction on the EMG time series in trialData. Returns both a
+% filtered envelope and a fully processed (smoothed) envelope.
+%
+%   If the EMG data already has a processingInfo property, the function
+% returns the existing processed data unchanged to avoid over-smoothing.
+% To re-process, retrieve the original raw EMG before calling.
+%
+%   Inputs:
+%     trialData - labData object whose EMGData property contains the
+%                 raw EMG time series to process
+%     spikeFlag - (optional) Logical flag to enable template-based spike
+%                 removal. Default: false
+%
+%   Outputs:
+%     procEMGData     - processedEMGTimeSeries with fully processed
+%                       amplitude envelope
+%     filteredEMGData - processedEMGTimeSeries with filtered (not fully
+%                       smoothed) EMG data
+%
+%   Toolbox Dependencies:
+%     Signal Processing Toolbox  (used in extractMuscleActivityFromEMG)
+%
+%   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,
+%     processingInfo, labData/process
 
 emg=trialData.EMGData;
 if isprop(emg,'processingInfo')
@@ -46,16 +75,16 @@ if ~isempty(emg)
         emg.Data(aaux)=0;
         warning('Found samples outside the valid range (+-6e-3 mV). Clipping.')
     end
-    
-    
+
+
     %Step 1: interpolate missing samples
     emg=emg.substituteNaNs('linear');
-    
+
     if any(isnan(emg.Data(:)))
         error('processEMG:isNaN','Some samples in the EMG data are NaN, the filters will fail'); %FIXME!
     end
-	
-    
+
+
     %Step 1.5: Find spikes and remove them by setting them to 0
     %load('../matData/subP0001.mat')
     %template=expData.data{1}.EMGData.getPartialDataAsVector('LGLU',235.695,235.755);
@@ -68,11 +97,11 @@ if ~isempty(emg)
             beta=.95; %Define threshold
             t=find(abs(c)>beta);
             if ~isempty(t)
-            t_=t(diff(t)==1 & diff(diff([-Inf;t]))<0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
-            if numel(t_)>round(.01*size(emg.Data,1)/length(template))
-               warning('Found spikes in more than 1% total signal length. Probably not good.') 
-            end
-            k=k(t_);
+                t_=t(diff(t)==1 & diff(diff([-Inf;t]))<0); %Discarding consecutive events, keeping the first in each sequence. If sequence consists of a single event, it is DISCARDED (on purpose, as it is probably spurious).
+                if numel(t_)>round(.01*size(emg.Data,1)/length(template))
+                    warning('Found spikes in more than 1% total signal length. Probably not good.')
+                end
+                k=k(t_);
             else
                 t_=[];
             end
@@ -88,13 +117,13 @@ if ~isempty(emg)
     %Step 2: do amplitude extraction
     f_cut=10; %Hz
     [procEMG,filteredEMG,filterList,procList] = extractMuscleActivityFromEMG(emg.Data,emg.sampFreq,f_cut);
-    
+
     %Step 3: create processedEMGTimeSeries object
     procInfo=processingInfo([filterList, procList]);
     procEMGData=processedEMGTimeSeries(procEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
     procInfo=processingInfo(filterList);
     filteredEMGData=processedEMGTimeSeries(filteredEMG,emg.Time(1),emg.sampPeriod,emg.labels,procInfo);
-    
+
     %Step 4: update quality info on timeseries, incorporating previously
     %existing quality info
     if ~isempty(emg.Quality) %Case where there was pre-existing quality info
@@ -111,8 +140,11 @@ if ~isempty(emg)
     end
     procEMGData.Quality= filteredEMGData.Quality;
     procEMGData.QualityInfo=filteredEMGData.QualityInfo;
-    
+
 else %Case of empty emg data
     procEMGData=[];
     filteredEMGData = [];
 end
+
+end
+
