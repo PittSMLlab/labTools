@@ -29,6 +29,11 @@ function [procEMGData, filteredEMGData] = processEMG(trialData, spikeFlag)
 %   See also: extractMuscleActivityFromEMG, processedEMGTimeSeries,
 %     processingInfo, labData/process
 
+arguments
+    trialData  (1,1) labData
+    spikeFlag  (1,1) logical = false
+end
+
 emg = trialData.EMGData;
 if isprop(emg, 'processingInfo')
     warning(['Trying to re-process already processed EMG data, ' ...
