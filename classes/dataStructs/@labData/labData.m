@@ -337,5 +337,10 @@ classdef labData
         COP = mergeHemiCOPs(COPL, COPR, FL, FR, noFilterFlag)
     end
 
+    %% Private Methods
+    methods (Access = private)
+        [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)
+    end
+
 end
 

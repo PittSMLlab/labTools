@@ -1,4 +1,4 @@
-function [procEMGData, filteredEMGData] = processEMG(trialData, spikeFlag)
+function [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)
 % processEMG  Extracts processed and filtered EMG amplitude envelopes
 %   from raw trial EMG data.
 %
@@ -30,7 +30,7 @@ function [procEMGData, filteredEMGData] = processEMG(trialData, spikeFlag)
 %     processingInfo, labData/process
 
 arguments
-    trialData  (1,1) labData
+    this       (1,1) labData
     spikeFlag  (1,1) logical = false
 end
 
@@ -71,12 +71,12 @@ qualitySparseDensity = 0.1;
 templateFilePath = which('template.mat');
 
 %% Process EMG Data
-emg = trialData.EMGData;
+emg = this.EMGData;
 if isprop(emg, 'processingInfo')
     warning(['Trying to re-process already processed EMG data, ' ...
         'this can lead to over-smoothing. Skipping.']);
     filteredEMGData = emg;
-    procEMGData     = trialData.procEMGData;
+    procEMGData     = this.procEMGData;
     return;
     % If you really want to re-process EMG data, you should use RAW EMG!
 end
