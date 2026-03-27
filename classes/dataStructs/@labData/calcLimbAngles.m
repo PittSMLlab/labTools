@@ -179,29 +179,46 @@ LLimbAngle = calcangle([LankPos2D(:, 1)  LankPos2D(:, 2)], ...
 %     [LhipPos2D(:, 1)   LhipPos2D(:, 2)], ...
 %     [LhipPos2D(:, 1) + 100  LhipPos2D(:, 2)]) - 90;
 
-RThighAngle=atand((RhipPos2D(:,1)-RkneePos2D(:,1))./(RhipPos2D(:,2)-RkneePos2D(:,2)));
-LThighAngle=atand((LhipPos2D(:,1)-LkneePos2D(:,1))./(LhipPos2D(:,2)-LkneePos2D(:,2)));
+% ---- Calculate segment angles (thigh, shank, foot) ------------------
+RThighAngle = atand((RhipPos2D(:, 1) - RkneePos2D(:, 1)) ./ ...
+    (RhipPos2D(:, 2) - RkneePos2D(:, 2)));
+LThighAngle = atand((LhipPos2D(:, 1) - LkneePos2D(:, 1)) ./ ...
+    (LhipPos2D(:, 2) - LkneePos2D(:, 2)));
 
-RShankAngle=atand((RkneePos2D(:,1)-RankPos2D(:,1))./(RkneePos2D(:,2)-RankPos2D(:,2)));
-LShankAngle=atand((LkneePos2D(:,1)-LankPos2D(:,1))./(LkneePos2D(:,2)-LankPos2D(:,2)));
+RShankAngle = atand((RkneePos2D(:, 1) - RankPos2D(:, 1)) ./ ...
+    (RkneePos2D(:, 2) - RankPos2D(:, 2)));
+LShankAngle = atand((LkneePos2D(:, 1) - LankPos2D(:, 1)) ./ ...
+    (LkneePos2D(:, 2) - LankPos2D(:, 2)));
 
-RfootAngle=atand((RtoePos2D(:,2)-RheelPos2D(:,2))./(RtoePos2D(:,1)-RheelPos2D(:,1)));
-LfootAngle=atand((LtoePos2D(:,2)-LheelPos2D(:,2))./(LtoePos2D(:,1)-LheelPos2D(:,1)));
+RfootAngle = atand((RtoePos2D(:, 2) - RheelPos2D(:, 2)) ./ ...
+    (RtoePos2D(:, 1) - RheelPos2D(:, 1)));
+LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ ...
+    (LtoePos2D(:, 1) - LheelPos2D(:, 1)));
 
-RhipAngle=RThighAngle;%assuming that trunk is vertical
-LhipAngle=LThighAngle;
-RhipAngVel=diff(RhipAngle)*fs;RhipAngVel(end+1)=RhipAngVel(end);%to ensure that vectors are the same length
-LhipAngVel=diff(LhipAngle)*fs;LhipAngVel(end+1)=LhipAngVel(end);
+% ---- Calculate joint angles and angular velocities ------------------
+% Hip: thigh angle from vertical, assuming trunk is vertical
+RhipAngle         = RThighAngle;
+LhipAngle         = LThighAngle;
+RhipAngVel        = diff(RhipAngle) * fs;
+RhipAngVel(end+1) = RhipAngVel(end);   % extend to match signal length
+LhipAngVel        = diff(LhipAngle) * fs;
+LhipAngVel(end+1) = LhipAngVel(end);
 
-RkneeAngle=180-((90-RThighAngle)+(90+RShankAngle));
-LkneeAngle=180-((90-LThighAngle)+(90+LShankAngle));
-RkneeAngVel=diff(RkneeAngle)*fs;RkneeAngVel(end+1)=RkneeAngVel(end);
-LkneeAngVel=diff(LkneeAngle)*fs;LkneeAngVel(end+1)=LkneeAngVel(end);
+% Knee: supplementary angle derived from thigh and shank segment angles
+RkneeAngle         = 180 - ((90 - RThighAngle) + (90 + RShankAngle));
+LkneeAngle         = 180 - ((90 - LThighAngle) + (90 + LShankAngle));
+RkneeAngVel        = diff(RkneeAngle) * fs;
+RkneeAngVel(end+1) = RkneeAngVel(end);
+LkneeAngVel        = diff(LkneeAngle) * fs;
+LkneeAngVel(end+1) = LkneeAngVel(end);
 
-RankAngle=90-(RShankAngle+90+RfootAngle);
-LankAngle=90-(LShankAngle+90+LfootAngle);
-RankAngVel=diff(RankAngle)*fs;RankAngVel(end+1)=RankAngVel(end);
-LankAngVel=diff(LankAngle)*fs;LankAngVel(end+1)=LankAngVel(end);
+% Ankle: foot deviation from shank alignment
+RankAngle         = 90 - (RShankAngle + 90 + RfootAngle);
+LankAngle         = 90 - (LShankAngle + 90 + LfootAngle);
+RankAngVel        = diff(RankAngle) * fs;
+RankAngVel(end+1) = RankAngVel(end);
+LankAngVel        = diff(LankAngle) * fs;
+LankAngVel(end+1) = LankAngVel(end);
 
 %keyboard
 % RhipAngle = calcangle([RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)+100])-90;%this does not work, cosine has problem with negative values I think
