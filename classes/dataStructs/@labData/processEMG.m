@@ -86,8 +86,6 @@ if ~isempty(emg)
     % rarely exceed +-2 mV, so this threshold catches loose sensors
     looseSensorMask = sparse(abs(emg.Data) >= 5e-3);
     badSampleFrac   = sum(looseSensorMask) ./ size(looseSensorMask, 1);
-    highBadSampleChanMask = badSampleFrac > 0.01;
-    if any(highBadSampleChanMask)   % > 1% bad samples: NOT GOOD
     % Quality matrix internal encoding used throughout this function:
     %   0 (not set) - good sample
     %   2           - spike (detected by template matching)
@@ -104,6 +102,9 @@ if ~isempty(emg)
     % corruption. Only ~200 ms were affected, so clipping was preferred
     % over reprocessing from scratch.
 
+    highBadSampleChanMask = badSampleFrac > badSampleFracThreshold;
+
+    if any(highBadSampleChanMask)
         disp('Channels with more than 1% bad samples (!):');
         for chan = find(highBadSampleChanMask)
             fprintf('  %s (%.1f%% bad)\n', emg.labels{chan}, ...
@@ -126,22 +127,21 @@ if ~isempty(emg)
         % error(['Some channels showed more than 1% bad samples, ' ...
         %     'that is NOT GOOD. Please review the data']);
     end
-    if any(looseSensorMask, 'all')
-        quality = 4 * looseSensorMask + quality;
-        warning(['Found samples outside the normal range ' ...
-            '(+-%.0f mV). Sensor may have been loose.'], ...
-            normalRangeLimit * 1e3);
+    saturationMask = sparse(abs(emg.Data) >= hardwareRangeLimit);
+
+    if any(looseSensorOnlyMask, 'all')
+        quality = 3 * looseSensorOnlyMask + quality;
+        warning(['Found samples outside the normal range (+-%.0f mV). ' ...
+            'Sensor may have been loose.'], normalRangeLimit * 1e3);
     end
-    saturationMask = sparse(abs(emg.Data) >= 6e-3);
 
     % Delsys claims +-5.5 mV max; samples up to 5.9 mV do appear.
     % Clip samples at or above hardwareRangeLimit and mark as saturated.
     if any(saturationMask, 'all')
-        quality                   = 4 * saturationMask + quality;
-        emg.Data(saturationMask)  = 0;
-        warning(['Found samples outside the hardware range ' ...
-            '(+-%.0f mV). Clipping affected samples.'], ...
-            hardwareRangeLimit * 1e3);
+        quality                  = 4 * saturationMask + quality;
+        emg.Data(saturationMask) = 0;
+        warning(['Found samples outside the hardware range (+-%.0f mV).'...
+            ' Clipping affected samples.'], hardwareRangeLimit * 1e3);
     end
 
     % ---- Step 1: Interpolate missing samples ---------------------------
@@ -159,18 +159,18 @@ if ~isempty(emg)
     if spikeFlag
         load(templateFilePath, 'template');
         for chan = 1:length(emg.labels)
-            [corrCoeff, templateMatchIdx, ~, ~] = ...
-                findTemplate(template, emg.Data(:, chan), whitenFlag);
-            threshExceededIdx = find(abs(corrCoeff) > spikeThreshold);
+            [corrCoeff, templateMatchIdx, ~, ~] = findTemplate( ...
+                template, emg.Data(:, chan), spikeWhitenFlag);
+            threshExceededIdx = ...
+                find(abs(corrCoeff) > spikeCorrelThreshold);
             if ~isempty(threshExceededIdx)
-                % Discard consecutive events, keeping the first in each
-                % sequence. Single-event sequences are discarded on
-                % purpose (probably spurious).
+                % Keep only the first event in each consecutive run;
+                % isolated single-sample events are discarded as spurious
                 spikeStartIdx = threshExceededIdx( ...
                     diff(threshExceededIdx) == 1 & ...
                     diff(diff([-Inf; threshExceededIdx])) < 0);
-                if numel(spikeStartIdx) > ...
-                        round(0.01 * size(emg.Data, 1) / length(template))
+                if numel(spikeStartIdx) > round(spikeHighFracThreshold *...
+                        size(emg.Data, 1) / length(template))
                     warning(['Found spikes in more than 1% of ' ...
                         'total signal length. Probably not good.']);
                 end
@@ -205,9 +205,9 @@ if ~isempty(emg)
     % ---- Step 4: Update quality info, incorporating pre-existing -------
     if ~isempty(emg.Quality)    % if pre-existing quality info exists, ...
         filteredEMGData.Quality               = emg.Quality;
-        filteredEMGData.Quality(quality == 2) = 2;
-        filteredEMGData.Quality(quality == 3) = 4;
-        filteredEMGData.Quality(quality == 3) = 8;
+        filteredEMGData.Quality(quality == 2) = 2;  % spike
+        filteredEMGData.Quality(quality == 3) = 4;  % sensorLoose
+        filteredEMGData.Quality(quality == 4) = 8;  % outsideValidRange
         filteredEMGData.QualityInfo.Code = [emg.QualityInfo.Code 2 4 8];
         filteredEMGData.QualityInfo.Description = ...
             [emg.QualityInfo.Description, ...
