@@ -116,7 +116,6 @@ if ~isempty(emg)
                 emg.Data(:, chan) = emg.Data(:, chan) - ...
                     mean(emg.Data(:, chan), 'omitnan');
                 % Re-check bad sample fraction after mean subtraction
-                looseSensorMask   = sparse(abs(emg.Data) >= 5e-3);
                 badSampleFrac     = sum(looseSensorMask) ./ ...
                     size(looseSensorMask, 1);
                 highBadSampleChanMask = badSampleFrac > 0.01; %#ok<NASGU>
@@ -127,6 +126,14 @@ if ~isempty(emg)
         % error(['Some channels showed more than 1% bad samples, ' ...
         %     'that is NOT GOOD. Please review the data']);
     end
+
+    % Build mutually exclusive quality masks after any mean corrections
+    % so that they reflect the corrected data.
+    % 'looseSensorOnlyMask' covers [normalRangeLimit, hardwareRangeLimit)
+    % and maps to quality value 3; 'saturationMask' covers
+    % [hardwareRangeLimit, Inf) and maps to quality value 4.
+    looseSensorOnlyMask = sparse(abs(emg.Data) >= normalRangeLimit & ...
+        abs(emg.Data) <  hardwareRangeLimit);
     saturationMask = sparse(abs(emg.Data) >= hardwareRangeLimit);
 
     if any(looseSensorOnlyMask, 'all')
@@ -158,6 +165,13 @@ if ~isempty(emg)
     %     'LGLU', 235.695, 235.755);
     if spikeFlag
         load(templateFilePath, 'template');
+
+        % Accumulate all spike row and column indices across channels for
+        % a single bulk quality update after the loop; this avoids the
+        % slow sparse range-assignment warning that results from indexing
+        % into a sparse matrix with a colon range inside an inner loop
+        spikeRowIdx = [];
+        spikeColIdx = [];
         for chan = 1:length(emg.labels)
             [corrCoeff, templateMatchIdx, ~, ~] = findTemplate( ...
                 template, emg.Data(:, chan), spikeWhitenFlag);
@@ -183,9 +197,18 @@ if ~isempty(emg)
                 % Set spike region to zero
                 spikeEndIdx = min([spikeStartIdx(spike) + ...
                     length(template) - 1, size(emg.Data, 1)]);
-                quality(spikeStartIdx(spike):spikeEndIdx, chan) = 2;
+                newRows = (spikeStartIdx(spike):spikeEndIdx)';
+                spikeRowIdx = [spikeRowIdx; newRows]; %#ok<AGROW>
+                spikeColIdx = [spikeColIdx; ...
+                    repmat(chan, length(newRows), 1)]; %#ok<AGROW>
                 emg.Data(spikeStartIdx(spike):spikeEndIdx, chan) = 0;
             end
+        end
+
+        % Update quality matrix for all spike samples in one operation
+        if ~isempty(spikeRowIdx)
+            quality = quality + sparse(spikeRowIdx, spikeColIdx, 2, ...
+                size(quality, 1), size(quality, 2));
         end
     end
 
