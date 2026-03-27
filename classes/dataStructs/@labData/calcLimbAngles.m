@@ -81,55 +81,83 @@ else
     return;
 end
 
-% get knee position in fore-aft and up-down axes
+% ---- Retrieve knee marker positions ---------------------------------
 if this.markerData.isaLabel('RKNEx') && this.markerData.isaLabel('LKNEx')
-    LkneePos2D=this.markerData.getDataAsVector({['LKNE' orientation.foreaftAxis],['LKNE' orientation.updownAxis]});
-    LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
-    RkneePos2D=this.markerData.getDataAsVector({['RKNE' orientation.foreaftAxis],['RKNE' orientation.updownAxis]});
-    RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
-elseif this.markerData.isaLabel('RKNEEx') && this.markerData.isaLabel('LKNEEx')
-    LkneePos2D=this.markerData.getDataAsVector({['LKNEE' orientation.foreaftAxis],['LKNEE' orientation.updownAxis]});
-    LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
-    RkneePos2D=this.markerData.getDataAsVector({['RKNEE' orientation.foreaftAxis],['RKNEE' orientation.updownAxis]});
-    RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
+    LkneePos2D = this.markerData.getDataAsVector( ...
+        {['LKNE' orientation.foreaftAxis], ...
+        ['LKNE' orientation.updownAxis]});
+    LkneePos2D = [orientation.foreaftSign * LkneePos2D(:, 1), ...
+        orientation.updownSign * LkneePos2D(:, 2)];
+    RkneePos2D = this.markerData.getDataAsVector( ...
+        {['RKNE' orientation.foreaftAxis], ...
+        ['RKNE' orientation.updownAxis]});
+    RkneePos2D = [orientation.foreaftSign * RkneePos2D(:, 1), ...
+        orientation.updownSign * RkneePos2D(:, 2)];
+elseif this.markerData.isaLabel('RKNEEx') && ...
+        this.markerData.isaLabel('LKNEEx')
+    LkneePos2D = this.markerData.getDataAsVector( ...
+        {['LKNEE' orientation.foreaftAxis], ...
+        ['LKNEE' orientation.updownAxis]});
+    LkneePos2D = [orientation.foreaftSign * LkneePos2D(:, 1), ...
+        orientation.updownSign * LkneePos2D(:, 2)];
+    RkneePos2D = this.markerData.getDataAsVector( ...
+        {['RKNEE' orientation.foreaftAxis], ...
+        ['RKNEE' orientation.updownAxis]});
+    RkneePos2D = [orientation.foreaftSign * RkneePos2D(:, 1), ...
+        orientation.updownSign * RkneePos2D(:, 2)];
 else
-
-    warning(['There are missing knee markers in',file,'. Unable to claculate limb angles']);
-
-    %     %Marcela temporal fix
-    %     temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
-    %     LkneePos2D = nan*ones(size(temp));
-    %     RkneePos2D = nan*ones(size(temp));
-    %    % angleData=[];
-    return
+    warning(['There are missing knee markers in ' file ...
+        '. Unable to calculate limb angles.']);
+    % % Marcela temporary fix
+    % temp = this.markerData.getDataAsVector( ...
+    %     {['RHIP' orientation.foreaftAxis], ...
+    %     ['RHIP' orientation.updownAxis]});
+    % LkneePos2D = nan * ones(size(temp));
+    % RkneePos2D = nan * ones(size(temp));
+    % % angleData = [];
+    return;
 end
 
-% get toe position in fore-aft and up-down axes
+% ---- Retrieve toe marker positions ----------------------------------
 if this.markerData.isaLabel('RTOEx') && this.markerData.isaLabel('LTOEx')
-    LtoePos2D=this.markerData.getDataAsVector({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
-    LtoePos2D=[orientation.foreaftSign* LtoePos2D(:,1),orientation.updownSign*LtoePos2D(:,2)];
-    RtoePos2D=this.markerData.getDataAsVector({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
-    RtoePos2D=[orientation.foreaftSign* RtoePos2D(:,1),orientation.updownSign*RtoePos2D(:,2)];
+    LtoePos2D = this.markerData.getDataAsVector( ...
+        {['LTOE' orientation.foreaftAxis], ...
+        ['LTOE' orientation.updownAxis]});
+    LtoePos2D = [orientation.foreaftSign * LtoePos2D(:, 1), ...
+        orientation.updownSign * LtoePos2D(:, 2)];
+    RtoePos2D = this.markerData.getDataAsVector( ...
+        {['RTOE' orientation.foreaftAxis], ...
+        ['RTOE' orientation.updownAxis]});
+    RtoePos2D = [orientation.foreaftSign * RtoePos2D(:, 1), ...
+        orientation.updownSign * RtoePos2D(:, 2)];
 else
-    warning(['There are missing toe markers in',file,'. Unable to claculate limb angles']);
+    warning(['There are missing toe markers in ' file ...
+        '. Unable to calculate limb angles.']);
     % keyboard
-    %angleData=[];
-    return
+    % angleData = [];
+    return;
 end
 
-% get heel position in fore-aft and up-down axes
+% ---- Retrieve heel marker positions ---------------------------------
 if this.markerData.isaLabel('RHEEx') && this.markerData.isaLabel('LHEEx')
-    LheelPos2D=this.markerData.getDataAsVector({['LHEE' orientation.foreaftAxis],['LHEE' orientation.updownAxis]});
-    LheelPos2D=[orientation.foreaftSign* LheelPos2D(:,1),orientation.updownSign*LheelPos2D(:,2)];
-    RheelPos2D=this.markerData.getDataAsVector({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis]});
-    RheelPos2D=[orientation.foreaftSign* RheelPos2D(:,1),orientation.updownSign*RheelPos2D(:,2)];
+    LheelPos2D = this.markerData.getDataAsVector( ...
+        {['LHEE' orientation.foreaftAxis], ...
+        ['LHEE' orientation.updownAxis]});
+    LheelPos2D = [orientation.foreaftSign * LheelPos2D(:, 1), ...
+        orientation.updownSign * LheelPos2D(:, 2)];
+    RheelPos2D = this.markerData.getDataAsVector( ...
+        {['RHEE' orientation.foreaftAxis], ...
+        ['RHEE' orientation.updownAxis]});
+    RheelPos2D = [orientation.foreaftSign * RheelPos2D(:, 1), ...
+        orientation.updownSign * RheelPos2D(:, 2)];
 else
-    LheelPos2D=nan(size(LtoePos2D));
-    RheelPos2D=nan(size(RtoePos2D));
-    warning(['There are missing heel markers in',file,'. Unable to claculate limb angles']);
+    LheelPos2D = nan(size(LtoePos2D));
+    RheelPos2D = nan(size(RtoePos2D));
+    warning(['There are missing heel markers in ' file ...
+        '. Unable to calculate limb angles.']);
     % keyboard
-    %angleData=[];
-    return
+    % angleData = [];
+    return;
 end
 
 % calculate limb angles
