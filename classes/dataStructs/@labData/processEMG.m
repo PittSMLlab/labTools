@@ -101,12 +101,12 @@ if ~isempty(emg)
     if any(highBadSampleChanMask)   % > 1% bad samples: NOT GOOD
         disp('Channels with more than 1% bad samples (!):');
         for chan = find(highBadSampleChanMask)
-            disp([emg.labels{chan} '(' ...
-                num2str(round(badSampleFrac(chan) * 1000) / 10) '% bad)']);
-            if abs(mean(emg.Data(:, chan), 'omitnan')) > 0.01
+            fprintf('  %s (%.1f%% bad)\n', emg.labels{chan}, ...
+                badSampleFrac(chan) * 100);
+            if abs(mean(emg.Data(:,chan), 'omitnan')) > meanOffsetThreshold
                 warning(['Check raw data: non-zero signal offset ' ...
-                    'detected for this channel. The channel mean ' ...
-                    'will be subtracted to continue.']);
+                    'detected. The channel mean will be subtracted ' ...
+                    'to continue.']);
                 emg.Data(:, chan) = emg.Data(:, chan) - ...
                     mean(emg.Data(:, chan), 'omitnan');
                 % Re-check bad sample fraction after mean subtraction
@@ -114,9 +114,8 @@ if ~isempty(emg)
                 badSampleFrac     = sum(looseSensorMask) ./ ...
                     size(looseSensorMask, 1);
                 highBadSampleChanMask = badSampleFrac > 0.01; %#ok<NASGU>
-                disp([emg.labels{chan} '(' ...
-                    num2str(round(badSampleFrac(chan) * 1000) / 10) ...
-                    '% bad after mean adjustment)']);
+                fprintf('  %s (%.1f%% bad after mean adjustment)\n', ...
+                    emg.labels{chan}, badSampleFrac(chan) * 100);
             end
         end
         % error(['Some channels showed more than 1% bad samples, ' ...
@@ -124,17 +123,20 @@ if ~isempty(emg)
     end
     if any(looseSensorMask, 'all')
         quality = 4 * looseSensorMask + quality;
-        warning(['Found samples outside the normal range (+-5 mV). ' ...
-            'Sensor may have been loose.']);
+        warning(['Found samples outside the normal range ' ...
+            '(+-%.0f mV). Sensor may have been loose.'], ...
+            normalRangeLimit * 1e3);
     end
-    % Delsys claims the sensor range is +-5.5 mV, but samples up to
-    % 5.9 mV do appear; clip anything at or beyond +-6 mV
     saturationMask = sparse(abs(emg.Data) >= 6e-3);
+
+    % Delsys claims +-5.5 mV max; samples up to 5.9 mV do appear.
+    % Clip samples at or above hardwareRangeLimit and mark as saturated.
     if any(saturationMask, 'all')
         quality                   = 4 * saturationMask + quality;
         emg.Data(saturationMask)  = 0;
-        warning(['Found samples outside the valid hardware range ' ...
-            '(+-6 mV). Clipping affected samples.']);
+        warning(['Found samples outside the hardware range ' ...
+            '(+-%.0f mV). Clipping affected samples.'], ...
+            hardwareRangeLimit * 1e3);
     end
 
     % ---- Step 1: Interpolate missing samples ---------------------------
@@ -151,10 +153,8 @@ if ~isempty(emg)
     %     'LGLU', 235.695, 235.755);
 
     if spikeFlag
-        load('template.mat'); %#ok<LOAD>
-        spikeThreshold = 0.95;  % cross-correlation threshold
+        load(templateFilePath, 'template');
         for chan = 1:length(emg.labels)
-            whitenFlag = 0; % Not used until whitening is further tested
             [corrCoeff, templateMatchIdx, ~, ~] = ...
                 findTemplate(template, emg.Data(:, chan), whitenFlag);
             threshExceededIdx = find(abs(corrCoeff) > spikeThreshold);
@@ -167,8 +167,8 @@ if ~isempty(emg)
                     diff(diff([-Inf; threshExceededIdx])) < 0);
                 if numel(spikeStartIdx) > ...
                         round(0.01 * size(emg.Data, 1) / length(template))
-                    warning(['Found spikes in more than 1% of total ' ...
-                        'signal length. Probably not good.']);
+                    warning(['Found spikes in more than 1% of ' ...
+                        'total signal length. Probably not good.']);
                 end
                 templateMatchIdx = templateMatchIdx(spikeStartIdx); %#ok<NASGU>
             else
