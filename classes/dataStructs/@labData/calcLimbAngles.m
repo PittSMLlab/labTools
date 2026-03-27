@@ -1,16 +1,35 @@
 function angleData = calcLimbAngles(trialData)
-% calcLimbAngles  Calculates angles using marker data   
-%   angleData=clacLimbAngles(trailData) returns a labTimeSeries object
-%   containg angles computed from marker data given an object of the
-%   labData class.
+% calcLimbAngles  Calculates limb and joint angles from marker data.
+%
+%   Computes sagittal-plane limb, thigh, shank, foot, hip, knee, and
+% ankle angles and their angular velocities for both legs from the 2D
+% marker positions in this.markerData. Angles are defined as follows:
+%   - Limb angle:  between the vertical and the line connecting the
+%                  hip to the ankle
+%   - Hip angle:   thigh angle with respect to vertical (assumes
+%                  trunk is vertical)
+%   - Knee angle:  between the thigh and shank segments
+%   - Ankle angle: between the shank and foot segments
+%
+%   Inputs:
+%     this - labData object containing markerData with hip, ankle,
+%            knee, toe, and heel marker trajectories
+%
+%   Outputs:
+%     angleData - labTimeSeries with 20 channels of angle and angular
+%                 velocity time series for both legs (degrees, deg/s)
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: labTimeSeries, orientationInfo, calcangle, labData/process
+%
+%   Created:  2014-05-14  HMH
+%   Modified: Adapted by Digna de Kam to compute individual joint angles
 
-%Created 5/14/2014 by HMH
-% adapted by Digna de Kam to compute individual joint angles
-% -hip angle is between vertical and line connecting hip and knee
-% -knee angle is between line connecting hip and knee and line connecting
-%  knee and ankle
-% -ankle angle is between line connecting knee and ankle and line
-%  connecting heel and toe
+arguments
+    this (1,1) labData
+end
 
 %disp('TEST: computing limb angles')
 fs=1/trialData.markerData.sampPeriod;
@@ -33,7 +52,7 @@ if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIP
     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
 else
     warning(['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
-      angleData=[];
+    angleData=[];
     return
 end
 
@@ -43,9 +62,9 @@ if trialData.markerData.isaLabel('RANKx') && trialData.markerData.isaLabel('LANK
     LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
     RankPos2D=trialData.markerData.getDataAsVector({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
     RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
-else    
+else
     warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
-%    angleData=[];
+    %    angleData=[];
     return
 end
 
@@ -55,20 +74,20 @@ if trialData.markerData.isaLabel('RKNEx') && trialData.markerData.isaLabel('LKNE
     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
     RkneePos2D=trialData.markerData.getDataAsVector({['RKNE' orientation.foreaftAxis],['RKNE' orientation.updownAxis]});
     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
-elseif trialData.markerData.isaLabel('RKNEEx') && trialData.markerData.isaLabel('LKNEEx')  
+elseif trialData.markerData.isaLabel('RKNEEx') && trialData.markerData.isaLabel('LKNEEx')
     LkneePos2D=trialData.markerData.getDataAsVector({['LKNEE' orientation.foreaftAxis],['LKNEE' orientation.updownAxis]});
     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
     RkneePos2D=trialData.markerData.getDataAsVector({['RKNEE' orientation.foreaftAxis],['RKNEE' orientation.updownAxis]});
     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
 else
-    
+
     warning(['There are missing knee markers in',file,'. Unable to claculate limb angles']);
-    
-%     %Marcela temporal fix
-%     temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
-%     LkneePos2D = nan*ones(size(temp));
-%     RkneePos2D = nan*ones(size(temp));
-%    % angleData=[];
+
+    %     %Marcela temporal fix
+    %     temp = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
+    %     LkneePos2D = nan*ones(size(temp));
+    %     RkneePos2D = nan*ones(size(temp));
+    %    % angleData=[];
     return
 end
 
@@ -78,9 +97,9 @@ if trialData.markerData.isaLabel('RTOEx') && trialData.markerData.isaLabel('LTOE
     LtoePos2D=[orientation.foreaftSign* LtoePos2D(:,1),orientation.updownSign*LtoePos2D(:,2)];
     RtoePos2D=trialData.markerData.getDataAsVector({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
     RtoePos2D=[orientation.foreaftSign* RtoePos2D(:,1),orientation.updownSign*RtoePos2D(:,2)];
-else    
+else
     warning(['There are missing toe markers in',file,'. Unable to claculate limb angles']);
-   % keyboard
+    % keyboard
     %angleData=[];
     return
 end
@@ -91,11 +110,11 @@ if trialData.markerData.isaLabel('RHEEx') && trialData.markerData.isaLabel('LHEE
     LheelPos2D=[orientation.foreaftSign* LheelPos2D(:,1),orientation.updownSign*LheelPos2D(:,2)];
     RheelPos2D=trialData.markerData.getDataAsVector({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis]});
     RheelPos2D=[orientation.foreaftSign* RheelPos2D(:,1),orientation.updownSign*RheelPos2D(:,2)];
-else    
+else
     LheelPos2D=nan(size(LtoePos2D));
     RheelPos2D=nan(size(RtoePos2D));
     warning(['There are missing heel markers in',file,'. Unable to claculate limb angles']);
-   % keyboard
+    % keyboard
     %angleData=[];
     return
 end
@@ -135,10 +154,10 @@ LankAngVel=diff(LankAngle)*fs;LankAngVel(end+1)=LankAngVel(end);
 %keyboard
 % RhipAngle = calcangle([RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)+100])-90;%this does not work, cosine has problem with negative values I think
 % LhipAngle = calcangle([LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)+100])-90;
-% 
+%
 % RkneeAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)],[RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)])-90;
 % LkneeAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)],[LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)])-90;
-% 
+%
 % RankAngle = calcangle2([RkneePos2D(:,1) RkneePos2D(:,2)]-[RankPos2D(:,1) RankPos2D(:,2)],[RtoePos2D(:,1) RtoePos2D(:,2)]-[RheelPos2D(:,1) RheelPos2D(:,2)])-90;
 % LankAngle = calcangle2([LkneePos2D(:,1) LkneePos2D(:,2)]-[LankPos2D(:,1) LankPos2D(:,2)],[LtoePos2D(:,1) LtoePos2D(:,2)]-[LheelPos2D(:,1) LheelPos2D(:,2)])-90;
 % %keyboard
