@@ -82,23 +82,28 @@ if isprop(emg, 'processingInfo')
 end
 
 if ~isempty(emg)
-    % Pre-allocate sparse quality matrix; sized for ~10% spikes total
-    quality = sparse([], [], [],  size(emg.Data, 1), size(emg.Data, 2), ...
-        round(0.1 * numel(emg.Data)));
-
-    % ---- Step 0: Remove samples outside the [-5, 5] mV range --------
-    % Included on March 12th because P0011 was presenting huge (1e5)
-    % spikes obviously caused by data corruption. We may want to go back
-    % and re-process from scratch, but it was only in a short time period
-    % (~200 ms) so decided to clip, issue a warning, and add a new
-    % quality category.
-
     % Flag samples exceeding the normal +-5 mV range; good EMG signals
     % rarely exceed +-2 mV, so this threshold catches loose sensors
     looseSensorMask = sparse(abs(emg.Data) >= 5e-3);
     badSampleFrac   = sum(looseSensorMask) ./ size(looseSensorMask, 1);
     highBadSampleChanMask = badSampleFrac > 0.01;
     if any(highBadSampleChanMask)   % > 1% bad samples: NOT GOOD
+    % Quality matrix internal encoding used throughout this function:
+    %   0 (not set) - good sample
+    %   2           - spike (detected by template matching)
+    %   3           - loose sensor (|data| in [5, 6) mV)
+    %   4           - outside hardware range (|data| >= 6 mV, clipped)
+    % In Step 4 these values are mapped to final QualityInfo codes:
+    %   quality 3 -> code 4 (sensorLoose)
+    %   quality 4 -> code 8 (outsideValidRange)
+    quality = sparse([], [], [], size(emg.Data, 1), size(emg.Data, 2), ...
+        round(qualitySparseDensity * numel(emg.Data)));
+
+    % ---- Step 0: Flag and handle samples outside expected ranges -------
+    % Included March 12th: P0011 had huge (1e5) spikes from data
+    % corruption. Only ~200 ms were affected, so clipping was preferred
+    % over reprocessing from scratch.
+
         disp('Channels with more than 1% bad samples (!):');
         for chan = find(highBadSampleChanMask)
             fprintf('  %s (%.1f%% bad)\n', emg.labels{chan}, ...
@@ -151,7 +156,6 @@ if ~isempty(emg)
     % load('../matData/subP0001.mat')
     % template = expData.data{1}.EMGData.getPartialDataAsVector( ...
     %     'LGLU', 235.695, 235.755);
-
     if spikeFlag
         load(templateFilePath, 'template');
         for chan = 1:length(emg.labels)
@@ -170,7 +174,8 @@ if ~isempty(emg)
                     warning(['Found spikes in more than 1% of ' ...
                         'total signal length. Probably not good.']);
                 end
-                templateMatchIdx = templateMatchIdx(spikeStartIdx); %#ok<NASGU>
+                templateMatchIdx = ...
+                    templateMatchIdx(spikeStartIdx); %#ok<NASGU>
             else
                 spikeStartIdx = [];
             end
@@ -185,17 +190,17 @@ if ~isempty(emg)
     end
 
     % ---- Step 2: Extract amplitude envelope ----------------------------
-    fCut = 10;  % Hz
     [procEMG, filteredEMG, filterList, procList] = ...
-        extractMuscleActivityFromEMG(emg.Data, emg.sampFreq, fCut);
+        extractMuscleActivityFromEMG( ...
+        emg.Data, emg.sampFreq, envelopeCutoffFreq);
 
     % ---- Step 3: Create processedEMGTimeSeries objects -----------------
     procInfo    = processingInfo([filterList, procList]);
-    procEMGData = processedEMGTimeSeries(procEMG, emg.Time(1), ...
-        emg.sampPeriod, emg.labels, procInfo);
+    procEMGData = processedEMGTimeSeries( ...
+        procEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
     procInfo        = processingInfo(filterList);
-    filteredEMGData = processedEMGTimeSeries(filteredEMG, emg.Time(1), ...
-        emg.sampPeriod, emg.labels, procInfo);
+    filteredEMGData = processedEMGTimeSeries( ...
+        filteredEMG, emg.Time(1), emg.sampPeriod, emg.labels, procInfo);
 
     % ---- Step 4: Update quality info, incorporating pre-existing -------
     if ~isempty(emg.Quality)    % if pre-existing quality info exists, ...
