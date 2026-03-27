@@ -82,10 +82,6 @@ if isprop(emg, 'processingInfo')
 end
 
 if ~isempty(emg)
-    % Flag samples exceeding the normal +-5 mV range; good EMG signals
-    % rarely exceed +-2 mV, so this threshold catches loose sensors
-    looseSensorMask = sparse(abs(emg.Data) >= 5e-3);
-    badSampleFrac   = sum(looseSensorMask) ./ size(looseSensorMask, 1);
     % Quality matrix internal encoding used throughout this function:
     %   0 (not set) - good sample
     %   2           - spike (detected by template matching)
@@ -102,6 +98,8 @@ if ~isempty(emg)
     % corruption. Only ~200 ms were affected, so clipping was preferred
     % over reprocessing from scratch.
 
+    % Compute fraction of samples above normalRangeLimit per channel
+    badSampleFrac         = mean(abs(emg.Data) >= normalRangeLimit, 1);
     highBadSampleChanMask = badSampleFrac > badSampleFracThreshold;
 
     if any(highBadSampleChanMask)
@@ -115,10 +113,10 @@ if ~isempty(emg)
                     'to continue.']);
                 emg.Data(:, chan) = emg.Data(:, chan) - ...
                     mean(emg.Data(:, chan), 'omitnan');
-                % Re-check bad sample fraction after mean subtraction
-                badSampleFrac     = sum(looseSensorMask) ./ ...
-                    size(looseSensorMask, 1);
-                highBadSampleChanMask = badSampleFrac > 0.01; %#ok<NASGU>
+                % Re-check this channel only after mean subtraction;
+                % scoped to avoid a full recompute across all channels
+                badSampleFrac(chan) = mean( ...
+                    abs(emg.Data(:, chan)) >= normalRangeLimit);
                 fprintf('  %s (%.1f%% bad after mean adjustment)\n', ...
                     emg.labels{chan}, badSampleFrac(chan) * 100);
             end
