@@ -35,36 +35,50 @@ end
 fs   = 1 / this.markerData.sampPeriod;
 file = getSimpleFileName(this.metaData.rawDataFilename); % for warnings
 
-%get orientation
+% Get orientation axes and signs from marker data
 if isempty(this.markerData.orientation)
     warning('Assuming default orientation of axes for marker data.');
-    orientation=orientationInfo([0,0,0],'x','y','z',1,1,1);
+    orientation = orientationInfo([0, 0, 0], 'x', 'y', 'z', 1, 1, 1);
 else
-    orientation=this.markerData.orientation;
+    orientation = this.markerData.orientation;
 end
 
-% get hip position in fore-aft and up-down axes
+% ---- Retrieve hip marker positions ----------------------------------
 if this.markerData.isaLabel('RHIPx') && this.markerData.isaLabel('LHIPx')
-    LhipPos2D=this.markerData.getDataAsVector({['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
-    LhipPos2D=[orientation.foreaftSign* LhipPos2D(:,1),orientation.updownSign*LhipPos2D(:,2)];
-    RhipPos2D=this.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
-    RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
+    LhipPos2D = this.markerData.getDataAsVector( ...
+        {['LHIP' orientation.foreaftAxis], ...
+        ['LHIP' orientation.updownAxis]});
+    LhipPos2D = [orientation.foreaftSign * LhipPos2D(:, 1), ...
+        orientation.updownSign * LhipPos2D(:, 2)];
+    RhipPos2D = this.markerData.getDataAsVector( ...
+        {['RHIP' orientation.foreaftAxis], ...
+        ['RHIP' orientation.updownAxis]});
+    RhipPos2D = [orientation.foreaftSign * RhipPos2D(:, 1), ...
+        orientation.updownSign * RhipPos2D(:, 2)];
 else
-    warning(['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
-    angleData=[];
-    return
+    warning(['There are missing hip markers in ' file ...
+        '. Unable to calculate limb angles.']);
+    angleData = [];
+    return;
 end
 
-% get ankle position in fore-aft and up-down axes
+% ---- Retrieve ankle marker positions --------------------------------
 if this.markerData.isaLabel('RANKx') && this.markerData.isaLabel('LANKx')
-    LankPos2D=this.markerData.getDataAsVector({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
-    LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
-    RankPos2D=this.markerData.getDataAsVector({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
-    RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
+    LankPos2D = this.markerData.getDataAsVector( ...
+        {['LANK' orientation.foreaftAxis], ...
+        ['LANK' orientation.updownAxis]});
+    LankPos2D = [orientation.foreaftSign * LankPos2D(:, 1), ...
+        orientation.updownSign * LankPos2D(:, 2)];
+    RankPos2D = this.markerData.getDataAsVector( ...
+        {['RANK' orientation.foreaftAxis], ...
+        ['RANK' orientation.updownAxis]});
+    RankPos2D = [orientation.foreaftSign * RankPos2D(:, 1), ...
+        orientation.updownSign * RankPos2D(:, 2)];
 else
-    warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
-    %    angleData=[];
-    return
+    warning(['There are missing ankle markers in ' file ...
+        '. Unable to calculate limb angles.']);
+    % angleData = [];
+    return;
 end
 
 % get knee position in fore-aft and up-down axes
