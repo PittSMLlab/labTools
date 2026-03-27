@@ -160,22 +160,33 @@ else
     return;
 end
 
-% calculate limb angles
-RLimbAngle = calcangle([RankPos2D(:,1) RankPos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;%so this computes angle with the horizontal, which is why 90 deg is subtracted
-LLimbAngle = calcangle([LankPos2D(:,1) LankPos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
+% ---- Calculate limb angles ------------------------------------------
+% Angle of the hip-to-ankle segment with the horizontal; the 90-degree
+% subtraction converts from the angle with a horizontal reference
+% to the angle with the vertical
+RLimbAngle = calcangle([RankPos2D(:, 1)  RankPos2D(:, 2)], ...
+    [RhipPos2D(:, 1)  RhipPos2D(:, 2)], ...
+    [RhipPos2D(:, 1) + 100  RhipPos2D(:, 2)]) - 90;
+LLimbAngle = calcangle([LankPos2D(:, 1)  LankPos2D(:, 2)], ...
+    [LhipPos2D(:, 1)  LhipPos2D(:, 2)], ...
+    [LhipPos2D(:, 1) + 100  LhipPos2D(:, 2)]) - 90;
 
-% calculate limb angles
-% RhipAngle = calcangle([RkneePos2D(:,1) RkneePos2D(:,2)], [RhipPos2D(:,1) RhipPos2D(:,2)], [RhipPos2D(:,1)+100 RhipPos2D(:,2)])-90;
-% LhipAngle = calcangle([LkneePos2D(:,1) LkneePos2D(:,2)], [LhipPos2D(:,1) LhipPos2D(:,2)], [LhipPos2D(:,1)+100 LhipPos2D(:,2)])-90;
+% Commented-out alternative using the hip-knee segment
+% RhipAngle = calcangle([RkneePos2D(:, 1)  RkneePos2D(:, 2)], ...
+%     [RhipPos2D(:, 1)   RhipPos2D(:, 2)], ...
+%     [RhipPos2D(:, 1) + 100  RhipPos2D(:, 2)]) - 90;
+% LhipAngle = calcangle([LkneePos2D(:, 1)  LkneePos2D(:, 2)], ...
+%     [LhipPos2D(:, 1)   LhipPos2D(:, 2)], ...
+%     [LhipPos2D(:, 1) + 100  LhipPos2D(:, 2)]) - 90;
 
-RThighAngle=atand([RhipPos2D(:,1)-RkneePos2D(:,1)]./[RhipPos2D(:,2)-RkneePos2D(:,2)]);
-LThighAngle=atand([LhipPos2D(:,1)-LkneePos2D(:,1)]./[LhipPos2D(:,2)-LkneePos2D(:,2)]);
+RThighAngle=atand((RhipPos2D(:,1)-RkneePos2D(:,1))./(RhipPos2D(:,2)-RkneePos2D(:,2)));
+LThighAngle=atand((LhipPos2D(:,1)-LkneePos2D(:,1))./(LhipPos2D(:,2)-LkneePos2D(:,2)));
 
-RShankAngle=atand([RkneePos2D(:,1)-RankPos2D(:,1)]./[RkneePos2D(:,2)-RankPos2D(:,2)]);
-LShankAngle=atand([LkneePos2D(:,1)-LankPos2D(:,1)]./[LkneePos2D(:,2)-LankPos2D(:,2)]);
+RShankAngle=atand((RkneePos2D(:,1)-RankPos2D(:,1))./(RkneePos2D(:,2)-RankPos2D(:,2)));
+LShankAngle=atand((LkneePos2D(:,1)-LankPos2D(:,1))./(LkneePos2D(:,2)-LankPos2D(:,2)));
 
-RfootAngle=atand([RtoePos2D(:,2)-RheelPos2D(:,2)]./[RtoePos2D(:,1)-RheelPos2D(:,1)]);
-LfootAngle=atand([LtoePos2D(:,2)-LheelPos2D(:,2)]./[LtoePos2D(:,1)-LheelPos2D(:,1)]);
+RfootAngle=atand((RtoePos2D(:,2)-RheelPos2D(:,2))./(RtoePos2D(:,1)-RheelPos2D(:,1)));
+LfootAngle=atand((LtoePos2D(:,2)-LheelPos2D(:,2))./(LtoePos2D(:,1)-LheelPos2D(:,1)));
 
 RhipAngle=RThighAngle;%assuming that trunk is vertical
 LhipAngle=LThighAngle;
