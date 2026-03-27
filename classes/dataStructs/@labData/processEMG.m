@@ -66,8 +66,8 @@ spikeHighFracThreshold = 0.01;  % 1%
 % pre-allocation (conservative upper bound)
 qualitySparseDensity = 0.1;
 
-% Full path to EMG spike template file; resolved via the MATLAB path so the
-% location is explicit without hardcoding a user-specific absolute path
+% Full path to the EMG spike template file; resolved via the MATLAB path so
+% the location is explicit without hardcoding a user-specific absolute path
 templateFilePath = which('template.mat');
 
 %% Process EMG Data
@@ -82,14 +82,13 @@ if isprop(emg, 'processingInfo')
 end
 
 if ~isempty(emg)
-    % Quality matrix internal encoding used throughout this function:
+    % Quality matrix values are the final QualityInfo codes used throughout
+    % this function. Using final codes directly avoids a remapping step and
+    % keeps the pre-existing and no-quality branches in Step 4 consistent:
     %   0 (not set) - good sample
     %   2           - spike (detected by template matching)
-    %   3           - loose sensor (|data| in [5, 6) mV)
-    %   4           - outside hardware range (|data| >= 6 mV, clipped)
-    % In Step 4 these values are mapped to final QualityInfo codes:
-    %   quality 3 -> code 4 (sensorLoose)
-    %   quality 4 -> code 8 (outsideValidRange)
+    %   4           - loose sensor (|data| in [5, 6) mV)
+    %   8           - outside hardware range (|data| >= 6 mV, clipped)
     quality = sparse([], [], [], size(emg.Data, 1), size(emg.Data, 2), ...
         round(qualitySparseDensity * numel(emg.Data)));
 
@@ -135,7 +134,7 @@ if ~isempty(emg)
     saturationMask = sparse(abs(emg.Data) >= hardwareRangeLimit);
 
     if any(looseSensorOnlyMask, 'all')
-        quality = 3 * looseSensorOnlyMask + quality;
+        quality = 4 * looseSensorOnlyMask + quality;
         warning(['Found samples outside the normal range (+-%.0f mV). ' ...
             'Sensor may have been loose.'], normalRangeLimit * 1e3);
     end
@@ -143,7 +142,7 @@ if ~isempty(emg)
     % Delsys claims +-5.5 mV max; samples up to 5.9 mV do appear.
     % Clip samples at or above hardwareRangeLimit and mark as saturated.
     if any(saturationMask, 'all')
-        quality                  = 4 * saturationMask + quality;
+        quality                  = 8 * saturationMask + quality;
         emg.Data(saturationMask) = 0;
         warning(['Found samples outside the hardware range (+-%.0f mV).'...
             ' Clipping affected samples.'], hardwareRangeLimit * 1e3);
@@ -227,8 +226,8 @@ if ~isempty(emg)
     if ~isempty(emg.Quality)    % if pre-existing quality info exists, ...
         filteredEMGData.Quality               = emg.Quality;
         filteredEMGData.Quality(quality == 2) = 2;  % spike
-        filteredEMGData.Quality(quality == 3) = 4;  % sensorLoose
-        filteredEMGData.Quality(quality == 4) = 8;  % outsideValidRange
+        filteredEMGData.Quality(quality == 4) = 4;  % sensorLoose
+        filteredEMGData.Quality(quality == 8) = 8;  % outsideValidRange
         filteredEMGData.QualityInfo.Code = [emg.QualityInfo.Code 2 4 8];
         filteredEMGData.QualityInfo.Description = ...
             [emg.QualityInfo.Description, ...
