@@ -1,4 +1,4 @@
-function angleData = calcLimbAngles(trialData)
+function angleData = calcLimbAngles(this)
 % calcLimbAngles  Calculates limb and joint angles from marker data.
 %
 %   Computes sagittal-plane limb, thigh, shank, foot, hip, knee, and
@@ -31,24 +31,23 @@ arguments
     this (1,1) labData
 end
 
-%disp('TEST: computing limb angles')
-fs=1/trialData.markerData.sampPeriod;
-
-file = getSimpleFileName(trialData.metaData.rawDataFilename); %for error printout purposes
+% disp('TEST: computing limb angles');
+fs   = 1 / this.markerData.sampPeriod;
+file = getSimpleFileName(this.metaData.rawDataFilename); % for warnings
 
 %get orientation
-if isempty(trialData.markerData.orientation)
+if isempty(this.markerData.orientation)
     warning('Assuming default orientation of axes for marker data.');
     orientation=orientationInfo([0,0,0],'x','y','z',1,1,1);
 else
-    orientation=trialData.markerData.orientation;
+    orientation=this.markerData.orientation;
 end
 
 % get hip position in fore-aft and up-down axes
-if trialData.markerData.isaLabel('RHIPx') && trialData.markerData.isaLabel('LHIPx')
-    LhipPos2D=trialData.markerData.getDataAsVector({['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
+if this.markerData.isaLabel('RHIPx') && this.markerData.isaLabel('LHIPx')
+    LhipPos2D=this.markerData.getDataAsVector({['LHIP' orientation.foreaftAxis],['LHIP' orientation.updownAxis]});
     LhipPos2D=[orientation.foreaftSign* LhipPos2D(:,1),orientation.updownSign*LhipPos2D(:,2)];
-    RhipPos2D=trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
+    RhipPos2D=this.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['RHIP' orientation.updownAxis]});
     RhipPos2D=[orientation.foreaftSign* RhipPos2D(:,1),orientation.updownSign*RhipPos2D(:,2)];
 else
     warning(['There are missing hip markers in ',file,'. Unable to claculate limb angles']);
@@ -57,10 +56,10 @@ else
 end
 
 % get ankle position in fore-aft and up-down axes
-if trialData.markerData.isaLabel('RANKx') && trialData.markerData.isaLabel('LANKx')
-    LankPos2D=trialData.markerData.getDataAsVector({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
+if this.markerData.isaLabel('RANKx') && this.markerData.isaLabel('LANKx')
+    LankPos2D=this.markerData.getDataAsVector({['LANK' orientation.foreaftAxis],['LANK' orientation.updownAxis]});
     LankPos2D=[orientation.foreaftSign* LankPos2D(:,1),orientation.updownSign*LankPos2D(:,2)];
-    RankPos2D=trialData.markerData.getDataAsVector({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
+    RankPos2D=this.markerData.getDataAsVector({['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
     RankPos2D=[orientation.foreaftSign* RankPos2D(:,1),orientation.updownSign*RankPos2D(:,2)];
 else
     warning(['There are missing ankle markers in',file,'. Unable to claculate limb angles']);
@@ -69,15 +68,15 @@ else
 end
 
 % get knee position in fore-aft and up-down axes
-if trialData.markerData.isaLabel('RKNEx') && trialData.markerData.isaLabel('LKNEx')
-    LkneePos2D=trialData.markerData.getDataAsVector({['LKNE' orientation.foreaftAxis],['LKNE' orientation.updownAxis]});
+if this.markerData.isaLabel('RKNEx') && this.markerData.isaLabel('LKNEx')
+    LkneePos2D=this.markerData.getDataAsVector({['LKNE' orientation.foreaftAxis],['LKNE' orientation.updownAxis]});
     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
-    RkneePos2D=trialData.markerData.getDataAsVector({['RKNE' orientation.foreaftAxis],['RKNE' orientation.updownAxis]});
+    RkneePos2D=this.markerData.getDataAsVector({['RKNE' orientation.foreaftAxis],['RKNE' orientation.updownAxis]});
     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
-elseif trialData.markerData.isaLabel('RKNEEx') && trialData.markerData.isaLabel('LKNEEx')
-    LkneePos2D=trialData.markerData.getDataAsVector({['LKNEE' orientation.foreaftAxis],['LKNEE' orientation.updownAxis]});
+elseif this.markerData.isaLabel('RKNEEx') && this.markerData.isaLabel('LKNEEx')
+    LkneePos2D=this.markerData.getDataAsVector({['LKNEE' orientation.foreaftAxis],['LKNEE' orientation.updownAxis]});
     LkneePos2D=[orientation.foreaftSign* LkneePos2D(:,1),orientation.updownSign*LkneePos2D(:,2)];
-    RkneePos2D=trialData.markerData.getDataAsVector({['RKNEE' orientation.foreaftAxis],['RKNEE' orientation.updownAxis]});
+    RkneePos2D=this.markerData.getDataAsVector({['RKNEE' orientation.foreaftAxis],['RKNEE' orientation.updownAxis]});
     RkneePos2D=[orientation.foreaftSign* RkneePos2D(:,1),orientation.updownSign*RkneePos2D(:,2)];
 else
 
@@ -92,10 +91,10 @@ else
 end
 
 % get toe position in fore-aft and up-down axes
-if trialData.markerData.isaLabel('RTOEx') && trialData.markerData.isaLabel('LTOEx')
-    LtoePos2D=trialData.markerData.getDataAsVector({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
+if this.markerData.isaLabel('RTOEx') && this.markerData.isaLabel('LTOEx')
+    LtoePos2D=this.markerData.getDataAsVector({['LTOE' orientation.foreaftAxis],['LTOE' orientation.updownAxis]});
     LtoePos2D=[orientation.foreaftSign* LtoePos2D(:,1),orientation.updownSign*LtoePos2D(:,2)];
-    RtoePos2D=trialData.markerData.getDataAsVector({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
+    RtoePos2D=this.markerData.getDataAsVector({['RTOE' orientation.foreaftAxis],['RTOE' orientation.updownAxis]});
     RtoePos2D=[orientation.foreaftSign* RtoePos2D(:,1),orientation.updownSign*RtoePos2D(:,2)];
 else
     warning(['There are missing toe markers in',file,'. Unable to claculate limb angles']);
@@ -105,10 +104,10 @@ else
 end
 
 % get heel position in fore-aft and up-down axes
-if trialData.markerData.isaLabel('RHEEx') && trialData.markerData.isaLabel('LHEEx')
-    LheelPos2D=trialData.markerData.getDataAsVector({['LHEE' orientation.foreaftAxis],['LHEE' orientation.updownAxis]});
+if this.markerData.isaLabel('RHEEx') && this.markerData.isaLabel('LHEEx')
+    LheelPos2D=this.markerData.getDataAsVector({['LHEE' orientation.foreaftAxis],['LHEE' orientation.updownAxis]});
     LheelPos2D=[orientation.foreaftSign* LheelPos2D(:,1),orientation.updownSign*LheelPos2D(:,2)];
-    RheelPos2D=trialData.markerData.getDataAsVector({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis]});
+    RheelPos2D=this.markerData.getDataAsVector({['RHEE' orientation.foreaftAxis],['RHEE' orientation.updownAxis]});
     RheelPos2D=[orientation.foreaftSign* RheelPos2D(:,1),orientation.updownSign*RheelPos2D(:,2)];
 else
     LheelPos2D=nan(size(LtoePos2D));
@@ -163,8 +162,8 @@ LankAngVel=diff(LankAngle)*fs;LankAngVel(end+1)=LankAngVel(end);
 % %keyboard
 
 % time info needed for labtimeseries object
-t0=trialData.markerData.Time(1);
-Ts=trialData.markerData.sampPeriod;
+t0=this.markerData.Time(1);
+Ts=this.markerData.sampPeriod;
 
 angleData = labTimeSeries([RLimbAngle LLimbAngle RThighAngle LThighAngle RShankAngle LShankAngle RfootAngle LfootAngle RhipAngle LhipAngle RkneeAngle LkneeAngle RankAngle LankAngle RhipAngVel LhipAngVel RkneeAngVel LkneeAngVel RankAngVel LankAngVel]...
     ,t0,Ts,{'RLimb','LLimb','RThigh','LThigh','RShank','LShank','RFoot','LFoot','Rhip','Lhip','Rknee','Lknee','Rank','Lank','RhipVel','LhipVel','RkneeVel','LkneeVel','RankVel','LankVel'});

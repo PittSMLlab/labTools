@@ -340,6 +340,8 @@ classdef labData
     %% Private Methods
     methods (Access = private)
         [procEMGData, filteredEMGData] = processEMG(this, spikeFlag)
+
+        angleData = calcLimbAngles(this)
     end
 
 end
