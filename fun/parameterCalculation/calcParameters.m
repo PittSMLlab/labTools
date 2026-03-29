@@ -1,22 +1,57 @@
 function out = calcParameters(trialData,subData,eventClass, ...
     initEventSide,parameterClasses)
-%CALCPARAMETERS calculate stride-by-stride parameters for later analysis
+% calcParameters  Compute stride-by-stride parameters for analysis.
 %
-%INPUTS:
-%trialData: 'processedTrialData' object
-%subData: 'subjectData' object
-%eventClass (optional): string containing the event class prefix:
-%   {'force','kin',''} (default: '', OG: kinematics, TM: forces)
-%initEventSide (optional): 'L' or 'R' (default: trialData.metaData.refLeg)
+%   Computes adaptation parameters on a stride-by-stride basis for a
+% single processed trial, including temporal, spatial, EMG, GRF, H-
+% reflex, and perceptual task parameters. Returns a parameterSeries
+% object containing all requested parameter classes, with each stride
+% labeled as good or bad based on event quality and duration criteria.
 %
-%To add a new parameter, update the 'paramLabels' cell and ensure the label
-%is the same as the variable name where the data assigned in the code.
-%(e.g., in 'paramlabels': 'swingTimeSlow',
-%in code: swingTimeSlow(t) = timeSHS2 - timeSTO;)
+% To add a new parameter, update the paramLabels cell and ensure the
+% label matches the variable name where the data is assigned in the
+% code (e.g., in paramLabels: 'swingTimeSlow'; in code:
+% swingTimeSlow(t) = timeSHS2 - timeSTO).
 %
-%NOTE: if adding a slow and fast version of a parameter, make sure 'Fast'
-%and 'Slow' appear at the end of the respective parameter names. See
-%existing parameter names as an example.
+% Note: If adding slow and fast versions of a parameter, ensure
+%   'Fast' and 'Slow' appear at the end of the respective parameter
+%   names. See existing parameter names as examples.
+%
+%   Inputs:
+%     trialData        - processedTrialData object containing gait
+%                        events, marker, EMG, and GRF data
+%     subData          - subjectData object containing subject weight
+%                        and other anthropometric information
+%     eventClass       - (optional) String specifying the gait event
+%                        detection method. Defaults to '' if omitted:
+%                          ''      - default (TM: forces, OG: kinematics)
+%                          'kin'   - strictly from kinematics
+%                          'force' - strictly from forces
+%     initEventSide    - (optional) 'L' or 'R'; side for the initial
+%                        gait event. Defaults to
+%                        trialData.metaData.refLeg if omitted or empty
+%     parameterClasses - (optional) String or cell array of strings
+%                        specifying which parameter classes to compute.
+%                        Defaults to all classes if omitted:
+%                          'basic'    - event type, bad/good flags, trial
+%                                       number, initial/final event times
+%                          'temporal' - temporal gait parameters
+%                          'spatial'  - spatial gait parameters
+%                          'rawEMG'   - raw EMG parameters
+%                          'procEMG'  - processed EMG parameters
+%                          'force'    - treadmill force parameters
+%
+%   Outputs:
+%     out - parameterSeries object containing all stride-by-stride
+%           parameters with good/bad stride labels
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: parameterSeries, processedTrialData, labData/process,
+%     computeTemporalParameters, computeSpatialParameters,
+%     computeEMGParameters, computeForceParameters,
+%     computeHreflexParameters, computePercParameters, getStrideInfo
 
 file = getSimpleFileName(trialData.metaData.rawDataFilename);
 
