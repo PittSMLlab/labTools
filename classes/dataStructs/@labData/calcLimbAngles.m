@@ -31,9 +31,23 @@ arguments
     this (1,1) labData
 end
 
+%% Named Constants
+% Horizontal offset (in marker data units, typically mm) used to define
+% the reference direction for limb angle calculation via calcangle.
+% The reference point is placed to the right of the hip along the
+% fore-aft axis, so the resulting angle is measured from the horizontal,
+% and 90 degrees is subtracted to convert to angle from the vertical.
+limbAngleRefOffset = 100;
+
+%% Setup
 % disp('TEST: computing limb angles');
 fs   = 1 / this.markerData.sampPeriod;
 file = getSimpleFileName(this.metaData.rawDataFilename); % for warnings
+
+% Angular velocity helper: forward-differentiates an angle signal,
+% extending the result by one sample (repeating the last value) to
+% preserve the original signal length after diff reduces it by one
+angVel = @(angle) [diff(angle); angle(end) - angle(end-1)] * fs;
 
 % Get orientation axes and signs from marker data
 if isempty(this.markerData.orientation)
@@ -43,7 +57,9 @@ else
     orientation = this.markerData.orientation;
 end
 
-% ---- Retrieve hip marker positions ----------------------------------
+%% Retrieve Marker Positions
+
+% ---- Hip ------------------------------------------------------------
 if this.markerData.isaLabel('RHIPx') && this.markerData.isaLabel('LHIPx')
     LhipPos2D = this.markerData.getDataAsVector( ...
         {['LHIP' orientation.foreaftAxis], ...
@@ -62,7 +78,7 @@ else
     return;
 end
 
-% ---- Retrieve ankle marker positions --------------------------------
+% ---- Ankle ----------------------------------------------------------
 if this.markerData.isaLabel('RANKx') && this.markerData.isaLabel('LANKx')
     LankPos2D = this.markerData.getDataAsVector( ...
         {['LANK' orientation.foreaftAxis], ...
@@ -81,7 +97,7 @@ else
     return;
 end
 
-% ---- Retrieve knee marker positions ---------------------------------
+% ---- Knee -----------------------------------------------------------
 if this.markerData.isaLabel('RKNEx') && this.markerData.isaLabel('LKNEx')
     LkneePos2D = this.markerData.getDataAsVector( ...
         {['LKNE' orientation.foreaftAxis], ...
@@ -118,7 +134,7 @@ else
     return;
 end
 
-% ---- Retrieve toe marker positions ----------------------------------
+% ---- Toe ------------------------------------------------------------
 if this.markerData.isaLabel('RTOEx') && this.markerData.isaLabel('LTOEx')
     LtoePos2D = this.markerData.getDataAsVector( ...
         {['LTOE' orientation.foreaftAxis], ...
@@ -138,7 +154,7 @@ else
     return;
 end
 
-% ---- Retrieve heel marker positions ---------------------------------
+% ---- Heel -----------------------------------------------------------
 if this.markerData.isaLabel('RHEEx') && this.markerData.isaLabel('LHEEx')
     LheelPos2D = this.markerData.getDataAsVector( ...
         {['LHEE' orientation.foreaftAxis], ...
@@ -179,7 +195,7 @@ LLimbAngle = calcangle([LankPos2D(:, 1)  LankPos2D(:, 2)], ...
 %     [LhipPos2D(:, 1)   LhipPos2D(:, 2)], ...
 %     [LhipPos2D(:, 1) + 100  LhipPos2D(:, 2)]) - 90;
 
-% ---- Calculate segment angles (thigh, shank, foot) ------------------
+% ---- Segment angles (thigh, shank, foot) ----------------------------
 RThighAngle = atand((RhipPos2D(:, 1) - RkneePos2D(:, 1)) ./ ...
     (RhipPos2D(:, 2) - RkneePos2D(:, 2)));
 LThighAngle = atand((LhipPos2D(:, 1) - LkneePos2D(:, 1)) ./ ...
@@ -195,7 +211,7 @@ RfootAngle = atand((RtoePos2D(:, 2) - RheelPos2D(:, 2)) ./ ...
 LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ ...
     (LtoePos2D(:, 1) - LheelPos2D(:, 1)));
 
-% ---- Calculate joint angles and angular velocities ------------------
+% ---- Joint angles and angular velocities ----------------------------
 % Hip: thigh angle from vertical, assuming trunk is vertical
 RhipAngle         = RThighAngle;
 LhipAngle         = LThighAngle;
@@ -253,17 +269,14 @@ LankAngVel(end+1) = LankAngVel(end);
 %     [LheelPos2D(:, 1) LheelPos2D(:, 2)]) - 90;
 % % keyboard
 
-% ---- Construct labTimeSeries output object --------------------------
-t0 = this.markerData.Time(1);
-Ts = this.markerData.sampPeriod;
-
+%% Construct Output
 angleData = labTimeSeries( ...
     [RLimbAngle   LLimbAngle   RThighAngle  LThighAngle  ...
     RShankAngle  LShankAngle  RfootAngle   LfootAngle   ...
     RhipAngle    LhipAngle    RkneeAngle   LkneeAngle   ...
     RankAngle    LankAngle    RhipAngVel   LhipAngVel   ...
     RkneeAngVel  LkneeAngVel  RankAngVel   LankAngVel], ...
-    t0, Ts, ...
+    this.markerData.Time(1), this.markerData.sampPeriod, ...
     {'RLimb',    'LLimb',    'RThigh',   'LThigh',   ...
     'RShank',   'LShank',   'RFoot',    'LFoot',    ...
     'Rhip',     'Lhip',     'Rknee',    'Lknee',    ...
