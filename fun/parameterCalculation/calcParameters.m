@@ -141,27 +141,28 @@ for ev = 1:length(eventTypes)       % for each gait event type, ...
 end
 
 %% Compute Parameters
-% time of the SHS, FTO, FHS, FTO, SHS2, and FTO2 events (in that order)
-extendedEventTimes = [eventTimes eventTimes2(:,1:2)];
-% average all gait event times if available
-times = mean(extendedEventTimes,2,'omitnan');
-% initialize output 'parameterSeries' object
-out = parameterSeries(zeros(length(times),0),{},times,{});
-% compute duration (seconds) of stride as time difference between SHS2, SHS
-strideDuration = diff(extendedEventTimes(:,[1 5]),1,2);
-% five criteria to determine whether a stride is 'bad':
-%   1. any event times are 'NaN' (i.e., missing gait event)
-%   2. difference between any two consecutive gait event times is negative
-%   3. stride duration > 1.5 * median stride duration of the trial
-%   4. stride duration < 0.4 seconds (i.e., stride too short)
-%   5. stride duration > 2.5 seconds (i.e., stride too long)
+% Times of the SHS, FTO, FHS, FTO, SHS2, and FTO2 events (in order)
+extendedEventTimes = [eventTimes eventTimes2(:, 1:2)];
+% Average all gait event times if available
+times = mean(extendedEventTimes, 2, 'omitnan');
+% Initialize output 'parameterSeries' object
+out = parameterSeries(zeros(length(times), 0), {}, times, {});
+% Compute stride duration (seconds) as time between SHS and SHS2
+strideDuration = diff(extendedEventTimes(:, [1 5]), 1, 2);
+% Five criteria to determine whether a stride is 'bad':
+%   1. Any event times are 'NaN' (i.e., missing gait event)
+%   2. Difference between any two consecutive event times is negative
+%   3. Stride duration > 1.5 * median stride duration of the trial
+%   4. Stride duration < 0.4 seconds (stride too short)
+%   5. Stride duration > 2.5 seconds (stride too long)
 % TODO: NWB found that 2.5 seconds may be too stringent for slower older
 % adult walkers and 1.5 * median may be a sufficient threshold to exclude
-% outliers (especially in overground trials); consider removing criterion
-bad = any(isnan(extendedEventTimes),2) | ...
-    any(diff(extendedEventTimes,1,2) < 0,2) | ...
-    (strideDuration > 1.5*median(strideDuration,'omitnan')) | ...
-    (strideDuration < 0.4) | (strideDuration > 2.5);
+% outliers (especially in overground trials); consider removing criterion 5
+bad = any(isnan(extendedEventTimes), 2)                       | ...
+    any(diff(extendedEventTimes, 1, 2) < 0, 2)                | ...
+    (strideDuration > 1.5*median(strideDuration, 'omitnan'))  | ...
+    (strideDuration < 0.4)                                    | ...
+    (strideDuration > 2.5);
 
 %% Extract Basic Parameters & Save to Output 'parameterSeries' Object
 if any(strcmpi(parameterClasses,'basic'))   % if adding 'basic' params, ...
