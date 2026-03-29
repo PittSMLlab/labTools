@@ -73,39 +73,39 @@ elseif ischar(parameterClasses)             % otherwise, ...
     parameterClasses = {parameterClasses};  % compute requested parameters
 end
 
-%% Separate Data by Stride & Identify Gait Events for Each Stride
-% one 'stride' contains the events: SHS, FTO, FHS, STO, SHS2, FTO2
-if refLeg == 'R'            % if reference leg is right, ...
-    s = 'R';                % set slow leg to right
-    f = 'L';                % TODO: substitute with 'getOtherLeg()'
-elseif refLeg == 'L'        % if reference leg is left, ...
-    s = 'L';                % set slow leg to left
-    f = 'R';                % TODO: substitute with 'getOtherLeg()'
-else                        % otherwise, ...
+%% Separate Data by Stride and Identify Gait Events for Each Stride
+% One 'stride' contains the events: SHS, FTO, FHS, STO, SHS2, FTO2
+if refLeg == 'R'                % if reference leg is right, ...
+    s = 'R';                    % set slow leg to right
+    f = 'L';                    % TODO: substitute with 'getOtherLeg()'
+elseif refLeg == 'L'            % if reference leg is left, ...
+    s = 'L';                    % set slow leg to left
+    f = 'R';                    % TODO: substitute with 'getOtherLeg()'
+else                            % otherwise, ...
     ME = MException('MakeParameters:refLegError', ...
         ['the refLeg/initEventSide property of metaData must be ' ...
         'either ''L'' or ''R''.']);
     throw(ME);
 end
 
-% define the events that will be used for all further computations
-eventTypes = {[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
-eventTypes = strcat(eventClass,eventTypes);
-eventLabels = {'SHS','FTO','FHS','STO'};
+% Define the events used for all further computations
+eventTypes   = {[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
+eventTypes   = strcat(eventClass, eventTypes);
+eventLabels  = {'SHS', 'FTO', 'FHS', 'STO'};
 triggerEvent = eventTypes{1};
 
-% initialize stride information variables
-[numStrides,initTime,endTime] = getStrideInfo(trialData,triggerEvent);
+% Initialize stride information variables
+[numStrides, initTime, endTime] = getStrideInfo(trialData, triggerEvent);
 % arrayedEvents = trialData.getArrayedEvents(eventTypes);
-if numStrides == 0          % if there are no strides in the trial, ...
+if numStrides == 0              % if there are no strides in trial, ...
     % TODO: consider initializing 'parameterSeries' object with all
     % parameters and zero strides instead of as empty
-    disp(['Warning: No strides detected in ' file]);    % display warning
-    out = parameterSeries([],{},[],{}); % output empty 'parameterSeries'
+    disp(['Warning: No strides detected in ' file]);
+    out = parameterSeries([], {}, [], {});
     return;
 end
-stridedEventData = cell(numStrides,1);
-stridedAngleData = cell(numStrides,1);
+stridedEventData = cell(numStrides, 1);
+stridedAngleData = cell(numStrides, 1);
 
 % extract binned angle data and stride-by-stride gait event times
 eventTimes = nan(numStrides,length(eventTypes));
