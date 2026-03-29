@@ -107,36 +107,37 @@ end
 stridedEventData = cell(numStrides, 1);
 stridedAngleData = cell(numStrides, 1);
 
-% extract binned angle data and stride-by-stride gait event times
-eventTimes = nan(numStrides,length(eventTypes));
-for st = 1:numStrides                       % for each stride in trial, ...
-    % below conditional added by Digna de Kam to bin angle data
-    if ~isempty(trialData.angleData)        % if angle data present, ...
-        stridedAngleData{st} = ...            retrieve binned data
-            trialData.angleData.split(initTime(st),endTime(st));
+% Extract binned angle data and stride-by-stride gait event times
+eventTimes = nan(numStrides, length(eventTypes));
+for st = 1:numStrides           % for each stride in trial, ...
+    % Conditional added by Digna de Kam to bin angle data
+    if ~isempty(trialData.angleData)    % if angle data present, ...
+        stridedAngleData{st} = ...      % retrieve binned angle data
+            trialData.angleData.split(initTime(st), endTime(st));
     end
 
-    % stridedMarkerData{st} = in.('markerData').split(initTime(st),endTime(st));
+    % stridedMarkerData{st} = in.('markerData').split( ...
+    %     initTime(st), endTime(st));
     stridedEventData{st} = ...
-        trialData.gaitEvents.split(initTime(st),endTime(st));
-    for ev = 1:length(eventTypes)           % for each gait event type, ...
+        trialData.gaitEvents.split(initTime(st), endTime(st));
+    for ev = 1:length(eventTypes)   % for each gait event type, ...
         aux = stridedEventData{st}.getDataAsVector(eventTypes{ev});
-        % find next two events of the type
-        % HH: it is pointless to find the next two events, since find will
-        % still return a value even if it only finds one.
-        aux = find(aux,2,'first');
+        % Find next two events of the type.
+        % HH: it is pointless to find the next two events, since find
+        % will still return a value even if it only finds one.
+        aux = find(aux, 2, 'first');
         % HH: maybe instead we should check if aux has a length of two
-        if ~isempty(aux)                    % if data present, ...
-            eventTimes(st,ev) = stridedEventData{st}.Time(aux(1));
+        if ~isempty(aux)            % if data present, ...
+            eventTimes(st, ev) = stridedEventData{st}.Time(aux(1));
         end
     end
 end
-% TODO: improve by searching for any remaining events after the last stride
-eventTimes2 = [eventTimes(2:end,:); nan(1,size(eventTimes,2))];
-for ev = 1:length(eventTypes)               % for each gait event type, ...
-    % generate a structure of 'tSHS', 'tFTO', etc.
-    strideEvents.(['t' upper(eventLabels{ev})]) = eventTimes(:,ev);
-    strideEvents.(['t' upper(eventLabels{ev}) '2']) = eventTimes2(:,ev);
+% TODO: improve by searching for any remaining events after last stride
+eventTimes2 = [eventTimes(2:end, :); nan(1, size(eventTimes, 2))];
+for ev = 1:length(eventTypes)       % for each gait event type, ...
+    % Generate a structure of 'tSHS', 'tFTO', etc.
+    strideEvents.(['t' upper(eventLabels{ev})]) = eventTimes(:, ev);
+    strideEvents.(['t' upper(eventLabels{ev}) '2']) = eventTimes2(:, ev);
 end
 
 %% Compute Parameters
