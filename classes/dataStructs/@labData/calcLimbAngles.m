@@ -213,28 +213,22 @@ LfootAngle = atand((LtoePos2D(:, 2) - LheelPos2D(:, 2)) ./ ...
 
 % ---- Joint angles and angular velocities ----------------------------
 % Hip: thigh angle from vertical, assuming trunk is vertical
-RhipAngVel        = diff(RhipAngle) * fs;
-RhipAngVel(end+1) = RhipAngVel(end);   % extend to match signal length
-LhipAngVel        = diff(LhipAngle) * fs;
-LhipAngVel(end+1) = LhipAngVel(end);
 RhipAngle   = RThighAngle;
 LhipAngle   = LThighAngle;
+RhipAngVel  = angVel(RhipAngle);
+LhipAngVel  = angVel(LhipAngle);
 
 % Knee: supplementary angle derived from thigh and shank segment angles
-RkneeAngVel        = diff(RkneeAngle) * fs;
-RkneeAngVel(end+1) = RkneeAngVel(end);
-LkneeAngVel        = diff(LkneeAngle) * fs;
-LkneeAngVel(end+1) = LkneeAngVel(end);
 RkneeAngle  = 180 - ((90 - RThighAngle) + (90 + RShankAngle));
 LkneeAngle  = 180 - ((90 - LThighAngle) + (90 + LShankAngle));
+RkneeAngVel = angVel(RkneeAngle);
+LkneeAngVel = angVel(LkneeAngle);
 
 % Ankle: foot deviation from shank alignment
-RankAngVel        = diff(RankAngle) * fs;
-RankAngVel(end+1) = RankAngVel(end);
-LankAngVel        = diff(LankAngle) * fs;
-LankAngVel(end+1) = LankAngVel(end);
 RankAngle   = 90 - (RShankAngle + 90 + RfootAngle);
 LankAngle   = 90 - (LShankAngle + 90 + LfootAngle);
+RankAngVel  = angVel(RankAngle);
+LankAngVel  = angVel(LankAngle);
 
 % keyboard
 % Commented-out alternative joint angle calculations using calcangle
