@@ -170,15 +170,21 @@ LhipAngle   = LThighAngle;
 RhipAngVel  = angVel(RhipAngle);
 LhipAngVel  = angVel(LhipAngle);
 
-% Knee: supplementary angle derived from thigh and shank segment angles
-RkneeAngle  = 180 - ((90 - RThighAngle) + (90 + RShankAngle));
-LkneeAngle  = 180 - ((90 - LThighAngle) + (90 + LShankAngle));
+% Knee: angle between the thigh and shank segments.
+% Derivation: 180 - ((90 - thighAngle) + (90 + shankAngle))
+%           = 180 - 90 + thighAngle - 90 - shankAngle
+%           = thighAngle - shankAngle
+RkneeAngle  = RThighAngle - RShankAngle;
+LkneeAngle  = LThighAngle - LShankAngle;
 RkneeAngVel = angVel(RkneeAngle);
 LkneeAngVel = angVel(LkneeAngle);
 
-% Ankle: foot deviation from shank alignment
-RankAngle   = 90 - (RShankAngle + 90 + RfootAngle);
-LankAngle   = 90 - (LShankAngle + 90 + LfootAngle);
+% Ankle: foot deviation from shank alignment.
+% Derivation: 90 - (shankAngle + 90 + footAngle)
+%           = 90 - shankAngle - 90 - footAngle
+%           = -(shankAngle + footAngle)
+RankAngle   = -(RShankAngle + RfootAngle);
+LankAngle   = -(LShankAngle + LfootAngle);
 RankAngVel  = angVel(RankAngle);
 LankAngVel  = angVel(LankAngle);
 
