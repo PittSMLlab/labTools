@@ -207,25 +207,25 @@ if any(strcmpi(parameterClasses,'basic'))   % if adding 'basic' params, ...
 end
 
 %% Extract Temporal Parameters
-if any(strcmpi(parameterClasses,'temporal'))
+if any(strcmpi(parameterClasses, 'temporal'))
     temp = computeTemporalParameters(strideEvents);
-    out = cat(out,temp);    % concatentate temporal parameters to existing
+    out  = cat(out, temp);
 end
 
 %% Extract Spatial Parameters
-if any(strcmpi(parameterClasses,'spatial')) && ...
+if any(strcmpi(parameterClasses, 'spatial')) && ...
         ~isempty(trialData.markerData) && ...
         (numel(trialData.markerData.labels) ~= 0)
-    spat = computeSpatialParameters(strideEvents,trialData.markerData, ...
-        trialData.angleData,s);
-    out = cat(out,spat);    % concatentate spatial parameters to existing
+    spat = computeSpatialParameters( ...
+        strideEvents, trialData.markerData, trialData.angleData, s);
+    out  = cat(out, spat);
 end
 
 %% Extract Muscle Activity (EMG) Parameters
-if any(strcmpi(parameterClasses,'rawEMG')) && ~isempty(trialData.EMGData)
+if any(strcmpi(parameterClasses, 'rawEMG')) && ~isempty(trialData.EMGData)
     EMG_alt = computeEMGParameters(trialData.EMGData, ...
-        trialData.gaitEvents,s,eventTypes); % classic way
-    out = cat(out,EMG_alt);     % concatentate EMG parameters to existing
+        trialData.gaitEvents, s, eventTypes);   % classic way
+    out = cat(out, EMG_alt);
 end
 
 %% Extract Angles Parameters
@@ -244,7 +244,7 @@ if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
     end
 end
 
-%% Extract (Overground) Force Parameters
+%% Extract Overground Force Parameters
 % If you encounter a bug with a line of code in this section (e.g.,
 % indexing array out of bounds), comment it out, which will prevent the
 % overground forces from being processed and output.
@@ -365,9 +365,9 @@ end
 
 %% Mask Strides Labeled 'bad' as 'NaN'
 % NOTE: this line has been commented out for a while and is unnecessary
-% TODO: remove line permanently so users have option of keeping all strides
-% only mask parameters in columns 6 to end, leave first five untouched
-% out.Data(bad == 1,6:end) = NaN;
+% TODO: remove permanently so users have option of keeping all strides
+% Only mask parameters in columns 6 to end, leave first five untouched:
+% out.Data(bad == 1, 6:end) = NaN;
 
 end
 
