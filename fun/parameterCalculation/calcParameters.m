@@ -236,28 +236,28 @@ if any(strcmpi(parameterClasses, 'rawEMG')) && ~isempty(trialData.EMGData)
     out = cat(out, EMG_alt);
 end
 
-%% Extract Angles Parameters
-if ~isempty(trialData.angleData)            % if angle data is present, ...
-    angles = computeAngleParameters(trialData.angleData, ...
-        trialData.gaitEvents,s,eventTypes);
-    out = cat(out,angles);      % concatentate angle parameters to existing
+%% Extract Joint Angle Parameters
+if ~isempty(trialData.angleData)        % if angle data is present, ...
+    angles = computeAngleParameters( ...
+        trialData.angleData, trialData.gaitEvents, s, eventTypes);
+    out = cat(out, angles);
 end
 
-%% Extract (Treadmill) Force Parameters
-if any(strcmpi(parameterClasses,'force')) && ~isempty(trialData.GRFData)
-    force = computeForceParameters(strideEvents,trialData.GRFData,s,f, ...
-        subData.weight,trialData.metaData,trialData.markerData,subData);
-    if ~isempty(force.Data)     % if output force data not empty, ...
-        out = cat(out,force);   % concatentate force parameters to existing
+%% Extract Treadmill Force Parameters
+if any(strcmpi(parameterClasses, 'force')) && ~isempty(trialData.GRFData)
+    force = computeForceParameters( ...
+        strideEvents, trialData.GRFData, s, f, subData.weight, ...
+        trialData.metaData, trialData.markerData, subData);
+    if ~isempty(force.Data)         % if output force data not empty, ...
+        out = cat(out, force);
     end
 end
 
 %% Extract Overground Force Parameters
 % If you encounter a bug with a line of code in this section (e.g.,
-% indexing array out of bounds), comment it out, which will prevent the
+% indexing array out of bounds), comment it out to prevent the
 % overground forces from being processed and output.
 
-% only compute these parameters if there are overground force recordings
 OG_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
 OG_idx = contains(trialData.GRFData.labels,OG_names);
 
@@ -278,16 +278,16 @@ if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - mi
         out = cat(out,force_OGFP_aligned);  % concatenate force parameters
     end
 end
+% Only compute these parameters if there are overground force recordings.
 
 %% Extract H-Reflex Parameters
-fields = fieldnames(trialData); % retrieve all 'trialData' obj. field names
-if any(contains(fields,'HreflexPin'))   % if 'HreflexPin' field exists, ...
-    % if there is data in the 'HreflexPin' and 'EMGData' fields, ...
+fields = fieldnames(trialData);     % retrieve all trialData field names
+if any(contains(fields, 'HreflexPin'))  % if 'HreflexPin' exists, ...
+    % If there is data in the 'HreflexPin' and 'EMGData' fields, ...
     if ~isempty(trialData.HreflexPin) && ~isempty(trialData.EMGData)
-        % compute parameters associated with H-reflex stimulation
-        Hreflex = computeHreflexParameters(strideEvents, ...
-            trialData.HreflexPin,trialData.EMGData,s);
-        out = cat(out,Hreflex); % concatentate H-reflex parameters
+        Hreflex = computeHreflexParameters( ...
+            strideEvents, trialData.HreflexPin, trialData.EMGData, s);
+        out = cat(out, Hreflex);
     end
 end
 
