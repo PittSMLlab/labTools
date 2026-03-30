@@ -356,26 +356,26 @@ if any(strcmpi(parameterClasses, 'basic'))
         end
     end
 
-    % criterion 4: if any 'swingRange' < 50mm or if equivalent speed is too
-    % small (OG trials only, NOTE: may be problematic for children)
-    if strcmp(trialData.metaData.type,'OG')
+    % Criterion 4: if any 'swingRange' < 50 mm or if equivalent speed
+    % is too small (OG trials only; may be problematic for children)
+    if strcmp(trialData.metaData.type, 'OG')
         % TODO: implement this handling
     end
 
-    % remove outlier strides based on new 'bad' labeling
-    [~,idxs] = out.isaParameter({'bad','good'});% parameter column indices
-    out.Data(:,idxs) = [bad ~bad];              % update parameters
-    % identify strides that are currently marked 'bad' but not previously
+    % Update 'bad' labeling in the parameterSeries output
+    [~, idxs] = out.isaParameter({'bad', 'good'});
+    out.Data(:, idxs) = [bad ~bad];
+    % Identify strides newly marked 'bad' since the initial labeling
     outlierStrides = find(bad & ~badStart);
-    % TODO: confusing NWB sees no code removing 'bad' strides from data and
-    % why are not all 'bad' strides displayed in below warning?
+    % TODO: confusing — NWB sees no code removing 'bad' strides from
+    % data; why are not all 'bad' strides displayed in below warning?
     disp(['Removed ' num2str(numel(outlierStrides)) ...
         ' stopping/starting strides from ' file ' at stride(s) ' ...
         num2str(outlierStrides')]);
 
-    if any(bad)             % if there are any 'bad' strides in trial, ...
+    if any(bad)             % if there are any 'bad' strides, ...
         disp(['Warning: ' num2str(sum(bad)) ' strides of ' file ...
-            ' were labeled as bad']);   % display command window warning
+            ' were labeled as bad']);
     end
 end
 
