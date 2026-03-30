@@ -164,46 +164,50 @@ bad = any(isnan(extendedEventTimes), 2)                       | ...
     (strideDuration < 0.4)                                    | ...
     (strideDuration > 2.5);
 
-%% Extract Basic Parameters & Save to Output 'parameterSeries' Object
-if any(strcmpi(parameterClasses,'basic'))   % if adding 'basic' params, ...
-    try                                     % try initializing trial number
+%% Extract Basic Parameters and Save to Output parameterSeries Object
+if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
+    try                             % try initializing trial number
         % need to FIX, but data is currently unavailable on 'trialMetaData'
         trial = str2double(trialData.metaData.rawDataFilename(end-1:end));
     catch
-        warning('calcParametersNew:gettingTrialNumber',['Could not ' ...
+        warning('calcParametersNew:gettingTrialNumber', ['Could not ' ...
             'determine trial number from metaData, setting to NaN.']);
-        trial = nan;                        % set trial to 'NaN'
+        trial = nan;
     end
-    trial = repmat(trial,length(bad),1);    % repeat number for each stride
+    trial = repmat(trial, length(bad), 1);
 
-    initTime = extendedEventTimes(:,1);     % initial times (all SHS times)
-    finalTime = extendedEventTimes(:,6);    % finale times (all FTO2 times)
+    initTime  = extendedEventTimes(:, 1);   % initial SHS times
+    finalTime = extendedEventTimes(:, 6);   % final FTO2 times
 
-    if strcmp(eventClass,'')                % if default event method, ...
-        % determine type of event detection used for this trial
+    if strcmp(eventClass, '')           % if default event method, ...
+        % Determine type of event detection used for this trial
         Event = full(trialData.gaitEvents.Data);
-        if isequal(Event(:,1),Event(:,5))
-            eventType = 2 * ones(length(finalTime),1);  % use forces
-        elseif isequal(Event(:,1),Event(:,9))
-            eventType = 1 * ones(length(finalTime),1);  % use kinematics
+        if isequal(Event(:, 1), Event(:, 5))
+            % Use forces
+            eventType = 2 * ones(length(finalTime), 1);
+        elseif isequal(Event(:, 1), Event(:, 9))
+            % Use kinematics
+            eventType = 1 * ones(length(finalTime), 1);
         end
-    elseif strcmp(eventClass,'kin')         % if using kinematics, ...
-        eventType = 1 * ones(length(finalTime),1);      % set to '1'
-    elseif strcmp(eventClass,'force')       % if using forces, ...
-        eventType = 2 * ones(length(finalTime),1);      % set to '2'
+    elseif strcmp(eventClass, 'kin')    % if using kinematics, ...
+        eventType = 1 * ones(length(finalTime), 1);
+    elseif strcmp(eventClass, 'force')  % if using forces, ...
+        eventType = 2 * ones(length(finalTime), 1);
     end
 
-    % add 'basic' parameters to output 'parameterSeries' object
-    data = [eventType bad ~bad trial initTime finalTime];
-    labels = {'eventType','bad','good','trial','initTime','finalTime'};
+    % Add 'basic' parameters to output 'parameterSeries' object
+    data   = [eventType bad ~bad trial initTime finalTime];
+    labels = {'eventType', 'bad', 'good', 'trial', ...
+        'initTime', 'finalTime'};
     description = {'1 kinematics, 2 forces', ...
-        'True if events are missing, disordered or if stride time is too long or too short.', ...
+        ['True if events are missing, disordered, or if stride ' ...
+        'time is too long or too short.'], ...
         'Opposite of bad.', ...
         'Original trial number for stride', ...
-        'Time of initial event (SHS), with respect to trial beginning.', ...
+        'Time of initial event (SHS), with respect to trial beginning.',...
         'Time of final event (FTO2), with respect to trial beginning.'};
-    basic = parameterSeries(data,labels,times,description);
-    out = cat(out,basic);
+    basic = parameterSeries(data, labels, times, description);
+    out   = cat(out, basic);
 end
 
 %% Extract Temporal Parameters
