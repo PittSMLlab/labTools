@@ -221,6 +221,14 @@ if any(strcmpi(parameterClasses, 'spatial')) && ...
     out  = cat(out, spat);
 end
 
+%% Extract Harmonic Ratio Parameters
+% TODO: add checks to ensure GT markers are present before computing
+if ~isempty(trialData.markerData)
+    % harmonicRatios = computeHarmonicRatioParameters( ...
+    %     strideEvents, trialData.markerData);
+    % out = cat(out, harmonicRatios);
+end
+
 %% Extract Muscle Activity (EMG) Parameters
 if any(strcmpi(parameterClasses, 'rawEMG')) && ~isempty(trialData.EMGData)
     EMG_alt = computeEMGParameters(trialData.EMGData, ...
