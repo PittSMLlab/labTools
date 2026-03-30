@@ -1,5 +1,5 @@
-function out = calcParameters(trialData,subData,eventClass, ...
-    initEventSide,parameterClasses)
+function out = calcParameters(trialData, subData, eventClass, ...
+    initEventSide, parameterClasses)
 % calcParameters  Compute stride-by-stride parameters for analysis.
 %
 %   Computes adaptation parameters on a stride-by-stride basis for a
@@ -262,27 +262,29 @@ end
 % indexing array out of bounds), comment it out to prevent the
 % overground forces from being processed and output.
 
-OG_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
-OG_idx = contains(trialData.GRFData.labels,OG_names);
+% Only compute these parameters if there are overground force recordings.
+OG_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
+OG_idx = contains(trialData.GRFData.labels, OG_names);
 
-if sum(OG_idx) == length(OG_names) | (max(trialData.GRFData.Data(:,OG_idx)) - min(trialData.GRFData.Data(:,OG_idx))) > 100
-    % there are differences in forces throughout the experiment and not a
-    % constant value or NaNs
+if sum(OG_idx) == length(OG_names) | ...
+        (max(trialData.GRFData.Data(:,OG_idx)) - ...
+        min(trialData.GRFData.Data(:,OG_idx))) > 100
+    % There are differences in forces throughout the experiment, and
+    % not a constant value or NaNs.
     force_OGFP.Data = computeForceParameters_OGFP( ...
-        strideEvents,trialData.GRFData,s,f,subData.weight,trialData, ...
-        trialData.markerData);
+        strideEvents, trialData.GRFData, s, f, subData.weight, ...
+        trialData, trialData.markerData);
     if ~isempty(force_OGFP.Data)
-        out = cat(out,force_OGFP);      % concatenate OG force parameters
+        out = cat(out, force_OGFP);
     end
 
     force_OGFP_aligned.Data = computeForceParameters_OGFP_aligned( ...
-        strideEvents,trialData.GRFData,s,f,subData.weight,trialData, ...
-        trialData.markerData);
+        strideEvents, trialData.GRFData, s, f, subData.weight, ...
+        trialData, trialData.markerData);
     if ~isempty(force_OGFP_aligned.Data)
-        out = cat(out,force_OGFP_aligned);  % concatenate force parameters
+        out = cat(out, force_OGFP_aligned);
     end
 end
-% Only compute these parameters if there are overground force recordings.
 
 %% Extract H-Reflex Parameters
 fields = fieldnames(trialData);     % retrieve all trialData field names
@@ -296,12 +298,12 @@ if any(contains(fields, 'HreflexPin'))  % if 'HreflexPin' exists, ...
 end
 
 %% Extract Perceptual Task Parameters
-slaIdx = strcmpi(spat.labels,'netContributionNorm2');   % SLA param. index
-% if there are gait events indicating start / stop of perceptual trial, ...
-if any(contains(trialData.gaitEvents.labels,'perc'))
-    PerceptualTasks = computePercParameters(trialData,initTime, ...
-        endTime,spat.Data(:,slaIdx));
-    out = cat(out,PerceptualTasks); % concatenate perceptual parameters
+slaIdx = strcmpi(spat.labels, 'netContributionNorm2'); % SLA param idx
+% If there are gait events indicating start/stop of perceptual trial,...
+if any(contains(trialData.gaitEvents.labels, 'perc'))
+    PerceptualTasks = computePercParameters( ...
+        trialData, initTime, endTime, spat.Data(:, slaIdx));
+    out = cat(out, PerceptualTasks);
 end
 
 %% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
