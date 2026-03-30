@@ -53,24 +53,27 @@ function out = calcParameters(trialData, subData, eventClass, ...
 %     computeEMGParameters, computeForceParameters,
 %     computeHreflexParameters, computePercParameters, getStrideInfo
 
+arguments
+    trialData        (1,1)
+    subData          (1,1)
+    eventClass       (1,:) char = ''
+    initEventSide    (1,:) char = ''
+    parameterClasses = {'basic', 'temporal', 'spatial', ...
+        'rawEMG', 'procEMG', 'force'}
+end
+
 file = getSimpleFileName(trialData.metaData.rawDataFilename);
 
-% if fewer than three input arguments or no 'eventClass' input, ...
-if nargin < 3 || isempty(eventClass)
-    eventClass = '';                        % set to default value
+% Resolve the reference leg from initEventSide or trial metadata
+if isempty(initEventSide)
+    refLeg = trialData.metaData.refLeg;
+else
+    refLeg = initEventSide;
 end
-% if fewer than four input arguments or no 'initEventSide' input, ...
-if nargin < 4 || isempty(initEventSide)
-    refLeg = trialData.metaData.refLeg;     % retrieve from trial meta data
-else                                        % otherwise, ...
-    refLeg = initEventSide;                 % use provided input argument
-end
-% if fewer than five input arguments or no 'parameterClasses' input, ...
-if nargin < 5 || isempty(parameterClasses)
-    parameterClasses = {'basic','temporal','spatial','rawEMG', ...
-        'procEMG','force'};                 % compute default parameters
-elseif ischar(parameterClasses)             % otherwise, ...
-    parameterClasses = {parameterClasses};  % compute requested parameters
+
+% Convert a single parameter class string to a cell array
+if ischar(parameterClasses)
+    parameterClasses = {parameterClasses};
 end
 
 %% Separate Data by Stride and Identify Gait Events for Each Stride
