@@ -1002,10 +1002,12 @@ classdef adaptationData
             end
         end
 
-        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR)
+        function [fh,ph,labels,dataE,dataRef]=plotCheckerboards(this,labelPrefix,epochs,fh,ph,refEpoch,flipLR, summFlag)
             %This is meant to be used with parameters that end in
             %'s1...s12' as are computed for EMG and angles. The 's' must be
             %included in the labelPrefixes (to allow for other options too)
+            %summFlag: represents how do we want to summarize the data
+            %across strides (e.g., nanmean or nanmedian)
             %See also: groupAdaptationData.plotCheckerboards
 
             if nargin<7 || isempty(flipLR)
@@ -1020,7 +1022,10 @@ classdef adaptationData
             if nargin<6
                 refEpoch=[];
             end
-           [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR); %Call onto groupAdaptData method
+            if nargin<8 
+                summFlag=[];
+            end
+           [fh,ph,labels,dataE,dataRef]=this.createSingleSubjGroup.plotCheckerboards(labelPrefix,epochs,fh,ph,refEpoch,flipLR,summFlag); %Call onto groupAdaptData method
         end
         
         function [dataE,dataRef,labels,groups]=getCheckerboardsData(this,labelPrefix,epochs,refEpoch,flipLR)
@@ -1205,7 +1210,7 @@ classdef adaptationData
 
         end
 
-        function groupData=createGroupAdaptData(adaptDataList, parametersToKeep)
+        function groupData=createGroupAdaptData(adaptDataList, parametersToKeep, rmvDatlog)
             %Check that it is a single cell array of chars (subIDs):
             %Ex: GroupName=adaptationData.createGroupAdaptData({'X1params','x2params','X3params'})
             %Input
@@ -1219,8 +1224,13 @@ classdef adaptationData
             %       avoid out of memory error. Not provided or leave empty
             %       [] will create the group object with the full
             %       parameters.
+            % - rmvDatlog: OPTIONAL. boolean indicating if datalog should
+            %       be removed. this helps to save storage space (default true)
             %Load and construct object:
                        
+            if nargin < 3 || isempty(rmvDatlog)
+                rmvDatlog = true;
+            end
             for i=1:length(adaptDataList)
                 try
                     a=load(adaptDataList{i});
@@ -1237,11 +1247,15 @@ classdef adaptationData
                         end
                     end
                 end
+                if rmvDatlog && isprop(a.adaptData.metaData,'datlog')
+                    a.adaptData.metaData.datlog = {};
+                end
                 data{i}=a.('adaptData');
-                if nargin == 2 && ~isempty(parametersToKeep) %valid parameters given, now reduce it to only keep the parameters given.
+                if nargin >= 2 && ~isempty(parametersToKeep) %valid parameters given, now reduce it to only keep the parameters given.
                     data{i}=data{i}.reduce(parametersToKeep);
                 end
                 ID{i}=a.('adaptData').subData.ID;
+                clear a %maybe helps with memory
             end
             groupData=groupAdaptationData(ID,data);
         end
