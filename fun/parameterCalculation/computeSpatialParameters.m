@@ -44,8 +44,9 @@ timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
 timeSTO2 = strideEvents.tSTO2;  % 2nd slow toe off event times
 eventTimes = [timeSHS timeFTO timeFHS timeSTO ...
     timeSHS2 timeFTO2 timeFHS2 timeSTO2];
-% numbers correspond to the column of the 'eventTimes' matrix
-SHS = 1; FTO = 2; FHS = 3; STO = 4; SHS2 = 5; FTO2 = 6; FHS2 = 7; STO2 = 8;
+% Column indices into the eventTimes matrix (named constants)
+SHS  = 1;  FTO  = 2;  FHS  = 3;  STO  = 4;
+SHS2 = 5;  FTO2 = 6;  FHS2 = 7;  STO2 = 8;
 
 %% Labels and Descriptions
 aux = { ...
@@ -169,17 +170,18 @@ aux = { ...
 paramLabels = aux(:, 1);
 description = aux(:, 2);
 
-%% Detect Any Markers at Origin (0,0,0) & Set Data to 'NaN'
-[dd,ll] = markerData.getOrientedData();
-dd = permute(dd,[1 3 2]);
-ee = all(dd == 0,2);
+%% Detect Markers at the Origin and Set Data to NaN
+[dd, ll] = markerData.getOrientedData();
+dd = permute(dd, [1 3 2]);
+ee = all(dd == 0, 2);
 if any(ee(:))
-    msg = ['Markers were reconstructed at the origin. Setting to NaN ' ...
-        'for spatial parameter computation.'];
-    for ii = 1:size(ee,3)
-        if any(ee(:,1,ii)) && sum(ee(:,1,ii)) * markerData.sampPeriod > 1
+    msg = ['Markers were reconstructed at the origin. Setting ' ...
+        'to NaN for spatial parameter computation.'];
+    for ii = 1:size(ee, 3)
+        if any(ee(:, 1, ii)) && ...
+                sum(ee(:, 1, ii)) * markerData.sampPeriod > 1
             msg = [msg ' ' ll{ii} ' was at origin for ' ...
-                num2str(sum(ee(:,1,ii)) * markerData.sampPeriod) 's.'];
+                num2str(sum(ee(:, 1, ii)) * markerData.sampPeriod) 's.'];
         end
     end
     warning(msg);
