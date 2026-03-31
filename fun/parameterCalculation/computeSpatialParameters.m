@@ -1,14 +1,37 @@
-function out = computeSpatialParameters(strideEvents,markerData, ...
-    angleData,s)
-%This function computes summary spatial parameters per stride
-%   This function outputs a 'parameterSeries' object, which can be
-% concatenated with other 'parameterSeries' objects, for example, with
-% those from 'computeTemporalParameters'. While this function is used for
-% spatial parameters exclusively, it should work for any 'labTS' object.
-% This function computes summary spatial parameters per stride.
+function out = computeSpatialParameters(strideEvents, markerData, ...
+    angleData, s)
+% computeSpatialParameters  Compute spatial parameters per stride.
 %
-% See also computeHreflexParameters, computeTemporalParameters,
-% computeForceParameters, parameterSeries
+%   Computes stride-by-stride spatial gait parameters and returns a
+% parameterSeries object that can be concatenated with other parameter
+% series objects (e.g., from computeTemporalParameters).
+%
+%   Inputs:
+%     strideEvents - Struct of stride-level gait event times generated
+%                    by calcParameters, with fields tSHS, tFTO, tFHS,
+%                    tSTO, tSHS2, tFTO2, tFHS2, and tSTO2 (N-by-1
+%                    vectors, in seconds)
+%     markerData   - orientedLabTimeSeries containing kinematic marker
+%                    data for the trial
+%     angleData    - labTimeSeries containing limb angle data, or []
+%                    if angle data is not available
+%     s            - Char specifying the slow-belt leg ('L' or 'R')
+%
+%   Outputs:
+%     out - parameterSeries object containing all spatial parameters
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeTemporalParameters, computeForceParameters,
+%     computeHreflexParameters, parameterSeries, calcParameters
+
+arguments
+    strideEvents (1,1) struct
+    markerData
+    angleData
+    s            (1,:) char
+end
 
 %% Gait Stride Event Times
 timeSHS  = strideEvents.tSHS;   % slow heel strike event times
@@ -24,7 +47,7 @@ eventTimes = [timeSHS timeFTO timeFHS timeSTO ...
 % numbers correspond to the column of the 'eventTimes' matrix
 SHS = 1; FTO = 2; FHS = 3; STO = 4; SHS2 = 5; FTO2 = 6; FHS2 = 7; STO2 = 8;
 
-%% Labels & Descriptions
+%% Labels and Descriptions
 aux = { ...
     'direction',                    '-1 if walking towards window, 1 if walking towards door (implemented for OG bias removal and coordinate rotation)'; ...
     'hipPos',                       'mid hip position at SHS. NOT: average hip pos of stride (should be nearly constant on treadmill - implemented for OG bias removal) (in mm)'; ...
@@ -143,8 +166,8 @@ aux = { ...
     % 'avgRotation',                  'Angle that the coordinates were rotated by';...
     };
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
 %% Detect Any Markers at Origin (0,0,0) & Set Data to 'NaN'
 [dd,ll] = markerData.getOrientedData();
