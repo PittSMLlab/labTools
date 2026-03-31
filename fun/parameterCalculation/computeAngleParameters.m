@@ -39,19 +39,20 @@ end
 fastLeg = getOtherLeg(slowLeg);
 lS = angleData.getLabelsThatMatch(['^' slowLeg]);
 lF = angleData.getLabelsThatMatch(['^' fastLeg]);
-angleData = angleData.renameLabels(lS,regexprep(lS,['^' slowLeg],'s'));
-angleData = angleData.renameLabels(lF,regexprep(lF,['^' fastLeg],'f'));
 
 % Silence renameLabels warning temporarily during relabeling
 warning('off', 'labTS:renameLabels:dont');
+angleData = angleData.renameLabels(lS, regexprep(lS, ['^' slowLeg], 's'));
+angleData = angleData.renameLabels(lF, regexprep(lF, ['^' fastLeg], 'f'));
 angleData = angleData.renameLabels( ...
-    angleData.labels,strcat(angleData.labels,{'Angle'}));
+    angleData.labels, strcat(angleData.labels, {'Angle'}));
 warning('on', 'labTS:renameLabels:dont');
 
-%% Compute & Output Angle Parameters
-Angles_alt = computeTSdiscreteParameters(angleData,gaitEvents,eventTypes);
-Angles_HS = computeHSparameters(angleData,gaitEvents,eventTypes);
-out = cat(Angles_alt,Angles_HS);
+%% Compute and Output Angle Parameters
+Angles_alt = computeTSdiscreteParameters( ...
+    angleData, gaitEvents, eventTypes);
+Angles_HS  = computeHSparameters(angleData, gaitEvents, eventTypes);
+out = cat(Angles_alt, Angles_HS);
 
 end
 
