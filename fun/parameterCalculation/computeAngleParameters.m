@@ -26,9 +26,6 @@ function out = computeAngleParameters(angleData, gaitEvents, slowLeg, ...
 %     computeForceParameters, computeTSdiscreteParameters,
 %     computeHSparameters, parameterSeries, calcParameters
 
-%% Preprocess Data
-% update labeling as slow vs. fast rather than left vs. right
-lS = angleData.getLabelsThatMatch(['^' slowLeg]);
 arguments
     angleData  (1,1)
     gaitEvents (1,1)
@@ -36,15 +33,20 @@ arguments
     eventTypes (1,:) cell
 end
 
+%% Pre-Process Angle Labels
+% Rename channel labels from L/R convention to s/f convention so that
+% downstream parameter names are leg-agnostic
 fastLeg = getOtherLeg(slowLeg);
+lS = angleData.getLabelsThatMatch(['^' slowLeg]);
 lF = angleData.getLabelsThatMatch(['^' fastLeg]);
-% temporarily silence 'renameLabels' warning message
-warning('off','labTS:renameLabels:dont');
 angleData = angleData.renameLabels(lS,regexprep(lS,['^' slowLeg],'s'));
 angleData = angleData.renameLabels(lF,regexprep(lF,['^' fastLeg],'f'));
+
+% Silence renameLabels warning temporarily during relabeling
+warning('off', 'labTS:renameLabels:dont');
 angleData = angleData.renameLabels( ...
     angleData.labels,strcat(angleData.labels,{'Angle'}));
-warning('on','labTS:renameLabels:dont');    % resume warning messages
+warning('on', 'labTS:renameLabels:dont');
 
 %% Compute & Output Angle Parameters
 Angles_alt = computeTSdiscreteParameters(angleData,gaitEvents,eventTypes);
