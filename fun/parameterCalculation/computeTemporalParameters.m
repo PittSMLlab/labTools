@@ -1,22 +1,37 @@
 function out = computeTemporalParameters(strideEvents)
-%This function computes summary temporal parameters per stride
-%   This function outputs a 'parameterSeries' object, which can be
-% concatenated with other 'parameterSeries' objects, for example, with
-% those from 'computeSpatialParameters'. While this function is used for
-% temporal parameters exclusively, it should work for any 'labTS' object.
+% computeTemporalParameters  Compute temporal parameters per stride.
 %
-% See also computeSpatialParameters, computeTemporalParameters,
-% computeForceParameters, parameterSeries
+%   Computes stride-by-stride temporal gait parameters and returns a
+% parameterSeries object that can be concatenated with other parameter
+% series objects (e.g., from computeSpatialParameters).
+%
+%   Inputs:
+%     strideEvents - Struct of stride-level gait event times generated
+%                    by calcParameters, with fields tSHS, tFTO, tFHS,
+%                    tSTO, tSHS2, and tFTO2 (N-by-1 vectors, seconds)
+%
+%   Outputs:
+%     out - parameterSeries object containing all temporal parameters
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeSpatialParameters, computeForceParameters,
+%     parameterSeries, calcParameters
+
+arguments
+    strideEvents (1,1) struct
+end
 
 %% Gait Stride Event Times
-timeSHS = strideEvents.tSHS;    % slow heel strike event times
-timeFTO = strideEvents.tFTO;    % fast toe off event times
-timeFHS = strideEvents.tFHS;    % fast heel strike event times
-timeSTO = strideEvents.tSTO;    % slow toe off event times
+timeSHS  = strideEvents.tSHS;   % slow heel strike event times
+timeFTO  = strideEvents.tFTO;   % fast toe off event times
+timeFHS  = strideEvents.tFHS;   % fast heel strike event times
+timeSTO  = strideEvents.tSTO;   % slow toe off event times
 timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
 timeFTO2 = strideEvents.tFTO2;  % 2nd fast toe off event times
 
-%% Labels & Descriptions
+%% Labels and Descriptions
 aux = { ...
     'swingTimeSlow',            'time from STO to SHS2 (in s)'; ...
     'swingTimeFast',            'time from FTO to FHS (in s)'; ...
@@ -46,8 +61,8 @@ aux = { ...
     'Tgoal',                    'stanceTimeDiff/strideTimeSlow'; ...
     'TgoalSW',                  'swingTimeDiff/strideTimeSlow (should be same as Tgoal)'};
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
 %% Compute Temporal Parameters
 % intraleg parameters (i.e., within each leg)
