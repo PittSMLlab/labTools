@@ -185,11 +185,11 @@ if any(ee(:))
     warning(msg);
 end
 
-ee = repmat(ee,1,3,1);
+ee = repmat(ee, 1, 3, 1);
 markerData.Data(ee) = NaN;
-dd = markerData.getOrientedData;
-dd = permute(dd,[1 3 2]);
-ee = all(dd == 0,2);
+dd = markerData.getOrientedData();
+dd = permute(dd, [1 3 2]);
+ee = all(dd == 0, 2);
 if any(ee(:))
     error('Setting markers at the origin to NaN did not work.');
 end
@@ -204,12 +204,12 @@ end
     getKinematicDataAbs(eventTimes,markerData,angleData,s);
 
 %% Compute Intralimb Spatial Parameters
-if strcmp(s,'L')        % if slow leg is left, ...
-    f = 'R';            % fast is right
-elseif strcmp(s,'R')    % if slow leg is right, ...
+if strcmp(s, 'L')           % if slow leg is left, ...
+    f = 'R';                % fast is right
+elseif strcmp(s, 'R')       % if slow leg is right, ...
     f = 'L';
-else                    % otherwise, invalid leg ID
-    error('Invalid slow leg input argument, must be ''R'' or ''L''');
+else                        % otherwise, invalid leg ID
+    error('Invalid slow leg input argument, must be ''R'' or ''L''.');
 end
 
 % step lengths (1D)
