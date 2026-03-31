@@ -196,14 +196,14 @@ if any(ee(:))
     error('Setting markers at the origin to NaN did not work.');
 end
 
-%% Get Rotated Data
-[rotatedMarkerData,sAnkFwd,fAnkFwd,sAnk2D,fAnk2D,sAngle,fAngle, ...
-    direction,hipPos,sAnk_fromAvgHip,fAnk_fromAvgHip] = ...
-    getKinematicData(eventTimes,markerData,angleData,s);
-[rotatedMarkerDataAbs,sAnkFwdAbs,fAnkFwdAbs,sAnk2DAbs,fAnk2DAbs, ...
-    sAngleAbs,fAngleAbs,directionAbs,hipPosSHSAbs, ...
-    sAnk_fromAvgHipAbs,fAnk_fromAvgHipAbs] = ...
-    getKinematicDataAbs(eventTimes,markerData,angleData,s);
+%% Get Rotated Kinematic Data
+[rotatedMarkerData, sAnkFwd, fAnkFwd, sAnk2D, fAnk2D, sAngle, fAngle, ...
+    direction, hipPos, sAnk_fromAvgHip, fAnk_fromAvgHip] = ...
+    getKinematicData(eventTimes, markerData, angleData, s);
+[rotatedMarkerDataAbs, sAnkFwdAbs, fAnkFwdAbs, sAnk2DAbs, fAnk2DAbs, ...
+    sAngleAbs, fAngleAbs, directionAbs, hipPosSHSAbs, ...
+    sAnk_fromAvgHipAbs, fAnk_fromAvgHipAbs] = ...
+    getKinematicDataAbs(eventTimes, markerData, angleData, s);
 
 %% Compute Intralimb Spatial Parameters
 if strcmp(s, 'L')           % if slow leg is left, ...
@@ -213,12 +213,6 @@ elseif strcmp(s, 'R')       % if slow leg is right, ...
 else                        % otherwise, invalid leg ID
     error('Invalid slow leg input argument, must be ''R'' or ''L''.');
 end
-
-% step lengths (1D)
-stepLengthSlow = sAnkFwd(:,SHS2) - fAnkFwd(:,SHS2); %If sAnkFwd and fAnkFwd are measured with respect to the same reference, this is the same as just subtracting the marker positions
-stepLengthFast = fAnkFwd(:,FHS) - sAnkFwd(:,FHS);
-takeOffLengthSlow = sAnkFwd(:,STO) - fAnkFwd(:,STO);
-takeOffLengthFast = fAnkFwd(:,FTO) - sAnkFwd(:,FTO);
 
 %ALTERNATIVE COMPUTATION WAY: doesn't use HIP, so HIP loss is not an issue
 %(HIP value doesn't affect tis computation, but since it is used as
@@ -294,24 +288,32 @@ alphaSlow_fromAvgHip = -1 * sAnk_fromAvgHip(:,SHS2);
 xTemp_fromAvgHip = -1 * fAnk_fromAvgHip(:,SHS);
 xSlow_fromAvgHip = -1 * sAnk_fromAvgHip(:,FHS);
 xFast_fromAvgHip = -1 * fAnk_fromAvgHip(:,SHS2);
+% Step lengths (1D).
+% If sAnkFwd and fAnkFwd are measured with respect to the same
+% reference, this equals the difference of the marker positions.
+stepLengthSlow    = sAnkFwd(:, SHS2) - fAnkFwd(:, SHS2);
+stepLengthFast    = fAnkFwd(:, FHS)  - sAnkFwd(:, FHS);
+takeOffLengthSlow = sAnkFwd(:, STO)  - fAnkFwd(:, STO);
+takeOffLengthFast = fAnkFwd(:, FTO)  - sAnkFwd(:, FTO);
+
 
 %% Compute Interlimb Spatial Parameters
-stepLengthDiff = stepLengthFast - stepLengthSlow;
-stepLengthAsym = stepLengthDiff ./ (stepLengthFast + stepLengthSlow);
+stepLengthDiff   = stepLengthFast   - stepLengthSlow;
+stepLengthAsym   = stepLengthDiff  ./ (stepLengthFast + stepLengthSlow);
 stepLengthDiff2D = stepLengthFast2D - stepLengthSlow2D;
-stepLengthAsym2D = ...
-    stepLengthDiff2D ./ (stepLengthFast2D + stepLengthSlow2D);
+stepLengthAsym2D = stepLengthDiff2D ./ ...
+    (stepLengthFast2D + stepLengthSlow2D);
 angularSpreadDiff = omegaFast - omegaSlow;
 angularSpreadAsym = angularSpreadDiff ./ (omegaFast + omegaSlow);
-Sout = (alphaFast - alphaSlow) ./ (alphaFast + alphaSlow);
-Serror = alphaRatioSlow - alphaRatioFast;
+Sout     = (alphaFast - alphaSlow) ./ (alphaFast + alphaSlow);
+Serror   = alphaRatioSlow - alphaRatioFast;
 SerrorOld = alphaRatioFast ./ alphaRatioSlow;
-Sgoal = (stanceRangeFast - stanceRangeSlow) ./ ...
+Sgoal    = (stanceRangeFast - stanceRangeSlow) ./ ...
     (stanceRangeFast + stanceRangeSlow);
 centerSlow = (alphaAngSlow + betaAngSlow) ./ 2;
 centerFast = (alphaAngFast + betaAngFast) ./ 2;
 angleOfOscillationAsym = centerFast - centerSlow;
-Xasym = Xdiff ./ (stepLengthFast + stepLengthSlow);
+Xasym    = Xdiff ./ (stepLengthFast + stepLengthSlow);
 alphaAsym = alphaDiff ./ (stepLengthFast + stepLengthSlow);
 %phase shift (using angles)
 % slowlimb=sAngle(indSHS:indSHS2);
@@ -319,7 +321,7 @@ alphaAsym = alphaDiff ./ (stepLengthFast + stepLengthSlow);
 % slowlimb=slowlimb-mean(slowlimb);
 % fastlimb=fastlimb-mean(fastlimb);
 % % Circular correlation
-% phaseShift=circCorr(slowlimb,fastlimb);
+% phaseShift = circCorr(slowlimb, fastlimb);
 %
 % %phase shift (using marker locations)
 % slowlimb=sAnkPos(indSHS:indSHS2);
