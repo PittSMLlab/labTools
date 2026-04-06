@@ -40,6 +40,56 @@ diaryFileName = fullfile(info.save_folder, [info.ID 'loading.log']);
 diary(diaryFileName);
 cleanupDiary  = onCleanup(@() diary('off'));
 
+%% Ask user for EMG normalization condition if EMG data is present
+if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
+    %EMG is present, ask user what normalization condition they want to
+    %use. If none provided will use OGBase first is available
+    %Then TMBase, Then NIM base, if none is present will do trial1
+    %
+     [indx,tf] = listdlg('PromptString',{'EMG data is present.',...
+         'Select a condition to normalize the EMG data (all data will be strecthed %',...
+         'where 0% = min and 100% = max of this condition'},...
+        'SelectionMode','single','ListString',info.conditionNames,...
+        'ListSize',[400,250],'InitialValue',1);
+     if tf == 0 %no selection was made
+         warning(['EMG data present but no normalization reference condition was provided to compute EMG norms',...
+             'Will use default (look inforder for OGBase, TMBase, NimBase, TRBase, TSBase and use the first one found.',...
+             'When still cannot find, will normalize use any conditions containing base matching type of the 1st condition'])
+         normalizationRefCond = '';
+     else
+         normalizationRefCond = info.conditionNames{indx};
+         fprintf('EMG data present, will normalize to reference condition using %s based on users choice.\n',normalizationRefCond)
+     end
+
+    %next ask the user to choose how they want to bias the data.
+    opts.Interpreter = 'tex';
+    % Include the desired Default answer
+    opts.Default = 'Default';
+    answer = questdlg(['After normalization, we will also compute bias removed norms.',...
+        'Do you want to default bias removal (remove based on trial type, this is default behavior) ',...
+        'or do you want to force bias removal to use the same condition throughout?'],...
+         '||EMG|| bias removal condition',...
+                  'Default','Select my own',opts);
+    if strcmp(answer,'Default')
+        biasRemovalCond = '';
+        fprintf('Will compute unbiased EMG norm using default bias removal where trial type specific bias will be removed\n');
+    else
+        
+        [indx,tf] = listdlg('PromptString',{'Force bias removal to use the same condition for all trials.',...
+                'Select a condition to unbias the EMG data'},...
+                'SelectionMode','single','ListString',info.conditionNames,...
+                'ListSize',[400,250],'InitialValue',1);
+         if tf == 0 %no selection was made
+             warning(['User wanted to choose their own bias removal conditions to remove bias when computing unbiased EMG norms, ',...
+                 'but no selection was made. Will revert to use default (remove condition type specific bias)'])
+             biasRemovalCond = '';
+         else
+             biasRemovalCond = info.conditionNames{indx};
+             fprintf('When computing EMG norm will unbias the data for all trials using %s based on users choice',biasRemovalCond)
+         end
+    end
+end
+
 %% Determine Experiment Date
 % 'labDate' is a 'labTools' repository class
 expDate = labDate(info.day, info.month, info.year);
@@ -114,7 +164,7 @@ rawExpData = experimentData(expMD, subData, rawTrialData);
 % variables is a temporary workaround to allow the code to run.
 close('all');
 clc();
-clearvars -except info eventClass rawExpData datlogExist;
+clearvars -except info eventClass rawExpData datlogExist normalizationRefCond biasRemovalCond;
 
 % Synchronize data logs if datlog files exist for all trials and the
 % forces exist within those files.
@@ -127,15 +177,44 @@ save(fullfile(info.save_folder, [info.ID 'RAW.mat']), ...
 
 %% Process Data
 expData   = rawExpData.process(eventClass);
+adaptData = expData.makeDataObj([]); %make one without saving it.
+
+%if EMG is present, now also compute EMG norm parameters and populate the
+%norm back to expData
+if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
+    try
+        muscleLabels = [info.EMGList1, info.EMGList2];
+        muscleLabels = muscleLabels(~(cellfun(@isempty,muscleLabels) | startsWith(muscleLabels,'sync')));
+        muscleLabels = unique(cellfun(@(x) x(2:end),muscleLabels,'UniformOutput',false));
+        adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
+        expData = populateNewParamBackToExpData(expData,adaptData);
+    catch ME
+        %if the adapt creation or the appending new data fails, save the
+        %expData anyway to have some intermediate data to work with.
+        % Save processed data object
+        warning('EMG data present but norm calculation failed. Saving the data without EMG norm.\n')
+        fprintf(2, '%s\n', getReport(ME, 'extended', 'hyperlinks', 'off'))
+    end
+end
+
 % Save processed data object
 save(fullfile(info.save_folder, [info.ID '.mat']), 'expData', '-v7.3');
-% Create 'adaptationData' object, and save 'params' file
+
+% Make a new 'adaptationData' object and save in the 'params' file. This
+% ensures parameter order is consistent with what we expect (where
+% fakeparams) is the last parameter
 adaptData = expData.makeDataObj(fullfile(info.save_folder, info.ID));
 
 %% Handle Experiments Requiring Special Trial Splitting from Data Logs
 if contains(erase(info.ExpDescription, ' '), 'SpinalAdaptation')
-    [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
-        info.save_folder, info.ID, eventClass, info.ExpDescription);
+    if ~isempty(info.EMGList1) || ~isempty(info.EMGList2)
+        [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
+            info.save_folder, info.ID, eventClass, info.ExpDescription,...
+            muscleLabels, normalizationRefCond, biasRemovalCond);
+    else
+        [expData, adaptData] = SepCondsInExpByAudioCue(expData, ...
+            info.save_folder, info.ID, eventClass, info.ExpDescription);
+    end
 end
 
 end
