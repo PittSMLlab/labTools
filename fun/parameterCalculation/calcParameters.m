@@ -71,8 +71,10 @@ else
     refLeg = initEventSide;
 end
 
-% Convert a single parameter class string to a cell array
-if ischar(parameterClasses)
+if isempty(parameterClasses) %if provided but it's empty, use default value
+    parameterClasses = {'basic', 'temporal', 'spatial', ...
+        'rawEMG', 'procEMG', 'force'};
+elseif ischar(parameterClasses) % Convert a single parameter class string to a cell array
     parameterClasses = {parameterClasses};
 end
 
