@@ -1,4 +1,4 @@
-function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName)
+function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, subjectID, eventClass, studyName, muscleLabels, normalizationRefCond, biasRemovalCond)
 % Separate 1 condition into multiple in expData using timing information from audioCue.
 % The function saves the new expData and adaptData in [resSavePath
 % subjectID] and copies the old files into [resSavePath subjectID originalCondName]
@@ -13,16 +13,40 @@ function [expData, adaptData] = SepCondsInExpByAudioCue(expData, resSavePath, su
 %                   separated. 
 %             -adaptData: adaptationData object with conitions separated.
 % INPUTARGS: 
-%           - expData: rawExperimentData object with datlog loaded.
-%           - resSavePath: string, the directory to save the exp and adapt
+%       - expData: rawExperimentData object with datlog loaded.
+%       - resSavePath: string, the directory to save the exp and adapt
 %                   data with conditions separated.
-%           - subjectID: string, subject ID.
-%           - eventClass: string, allowed values: 'force',
+%       - subjectID: string, subject ID.
+%       - eventClass: string, allowed values: 'force',
 %                  'kin',''(default), this usually comes from the info file
 %                   in c3d2mat
-%           - studyName: string, name of the study (use this to add in
+%       - studyName: string, name of the study (use this to add in
 %                   study specific logic when separating trials).
-% Examples: See: loadSubject.m
+%       - shouldComputeEMGNorm - boolean, indicating if EMG norm parameters
+%           should be computed (optional), default false.
+%       - muscleLabels: cell array of strings that represent the
+%           muscleLabels, contains unique muscle names only. e.g., 
+%           {'BF'	'GLU'	'LG'	'MG'	'PER'	'SEMT'	'SOL'	'TA'	'VL'
+%          'VM'}. If shouldComputeEMGNorm, this arg needs to be provided.
+%           If not provided. will throw a warning and make no norm calculations.
+%           note only the muscles provided in the list will have norm per
+%           muscle calculated and the whole leg norm assumes these are all
+%         the muscles available
+%       - normalizationRefCond: string representing the conditon name that will
+%           be used to normalize the EMG data, i.e., all EMG data will be stretched
+%           in reference to the last 40 stirdes (excluding the last 5) of this refcondition such that 100%
+%           = max of the ref condition, 0 = min of the ref condition.
+%       - biasRemovalCond: OPTIONAL. string representing the condition name to
+%           use to compute bias removed EMG norm. if provided, will remove bias using the providec condition and
+%           ignore the trial type (e.g., if provided 'OGBase' will remove
+%           OGBase for all types of trials including TM, etc.)
+%           If not provided, will use default bias removal behavior which looks
+%           for trial type specific baseline (see
+%           labTools\classes\dataStructs\@adaptationData\removeBiasV4.m)
+%
+% Examples: see loadSubject.m,
+% See Also: labTools\fun\parameterCalculation\appendEMGNormParameters.m
+
 
 % $Author: Shuqi Liu $	$Date: 2024/05/22 13:24:55 $	$Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2024
@@ -245,10 +269,24 @@ if exist([resSavePath filesep subjectID 'params.mat'])
 end
 
 %recompute and overwrite/replace the expData
-expData = newExpData.flushAndRecomputeParameters(eventClass);
-save([resSavePath filesep subjectID '.mat'],'expData','-v7.3') 
+if nargin == 8 && ~isempty(muscleLabels)
+    try
+        expData = newExpData.flushAndRecomputeParameters(eventClass, [],...
+            true, muscleLabels, ...
+            normalizationRefCond, biasRemovalCond);
+    catch
+        %if the adapt creation or the appending new data fails, save the
+            %expData anyway to have some intermediate data to work with.
+            % Save processed data object
+            warning('muscleLabels provided but norm calculation failed. Compute parameters without EMG norm.\n')
+            expData = newExpData.flushAndRecomputeParameters(eventClass);
+    end
+else
+    expData = newExpData.flushAndRecomputeParameters(eventClass);
+end
 
-%create adaptationData object
+save([resSavePath filesep subjectID '.mat'],'expData','-v7.3') 
+%create and save adaptationData object
 adaptData=expData.makeDataObj([resSavePath filesep subjectID]);
 
 toc
