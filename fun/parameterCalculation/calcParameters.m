@@ -261,9 +261,9 @@ if any(strcmpi(parameterClasses, 'force')) && ~isempty(trialData.GRFData)
 end
 
 %% Extract Overground Force Parameters
-% If you encounter a bug with a line of code in this section (e.g.,
-% indexing array out of bounds), comment it out to prevent the
-% overground forces from being processed and output.
+% This block is wrapped in try-catch so that errors here do not abort
+% the full c3d2mat processing pipeline. If an error occurs, a warning
+% is issued and the trial proceeds without overground force parameters.
 
 % Only compute these parameters if there are overground force recordings.
 OG_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
@@ -274,18 +274,31 @@ if sum(OG_idx) == length(OG_names) | ...
         min(trialData.GRFData.Data(:,OG_idx))) > 100
     % There are differences in forces throughout the experiment, and
     % not a constant value or NaNs.
-    force_OGFP.Data = computeForceParameters_OGFP( ...
-        strideEvents, trialData.GRFData, s, f, subData.weight, ...
-        trialData, trialData.markerData);
-    if ~isempty(force_OGFP.Data)
-        out = cat(out, force_OGFP);
+    try
+        forceParamsOGFP.Data = computeForceParameters_OGFP( ...
+            strideEvents, trialData.GRFData, s, f, subData.weight, ...
+            trialData, trialData.markerData);
+        if ~isempty(forceParamsOGFP.Data)
+            out = cat(out, forceParamsOGFP);
+        end
+    catch ME
+        warning('calcParameters:OGForceError', ...
+            ['Could not compute OG force parameters (OGFP) for ' ...
+            file '. Skipping. Error: ' ME.message]);
     end
 
-    force_OGFP_aligned.Data = computeForceParameters_OGFP_aligned( ...
-        strideEvents, trialData.GRFData, s, f, subData.weight, ...
-        trialData, trialData.markerData);
-    if ~isempty(force_OGFP_aligned.Data)
-        out = cat(out, force_OGFP_aligned);
+    try
+        forceParamsOGFPAligned.Data = ...
+            computeForceParameters_OGFP_aligned( ...
+            strideEvents, trialData.GRFData, s, f, subData.weight, ...
+            trialData, trialData.markerData);
+        if ~isempty(forceParamsOGFPAligned.Data)
+            out = cat(out, forceParamsOGFPAligned);
+        end
+    catch ME
+        warning('calcParameters:OGForceAlignedError', ['Could not ' ...
+            'compute OG force parameters (OGFP aligned) for ' file '. ' ...
+            'Skipping. Error: ' ME.message]);
     end
 end
 
