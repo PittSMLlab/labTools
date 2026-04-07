@@ -325,7 +325,7 @@ end
 
 %% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
 if any(strcmpi(parameterClasses, 'basic'))
-    badStart = bad;     % copy 'bad' strides array for later comparison
+    badOriginal = bad;  % copy 'bad' strides array for later comparison
 
     % ------------------- REMOVE OUTLIER STRIDES ----------------------
     % NOTE: Pablo I. commented this outlier strides block (13 Mar.
@@ -342,21 +342,23 @@ if any(strcmpi(parameterClasses, 'basic'))
     %     'alphaSlow', 'alphaFast', 'alphaTemp', ...
     %     'betaSlow', 'betaFast'};
     % for ii = 1:length(paramsToFilter)
-    %     aux = out.getDataAsVector(paramsToFilter{ii});
-    %     if ~isempty(aux)
-    %         aux = aux - runAvg(aux, 50);
+    %     paramVals = out.getDataAsVector(paramsToFilter{ii});
+    %     if ~isempty(paramVals)
+    %         paramVals = paramVals - runAvg(paramVals, 50);
     %         % Criterion 1: if step length, alpha, or beta are larger
     %         % than +/- 3.5x the interquartile range from the median
-    %         bad(abs(aux-median(aux,'omitnan')) > 3.5*iqr(aux)) = true;
+    %         bad(abs(paramVals - median(paramVals,'omitnan')) > ...
+    %             3.5*iqr(paramVals)) = true;
     %
     %         % Criterion 2: ignore the first five strides of any trial
     %         % NOTE: NWB how does this add anything from criterion 1?
-    %         inds = find(abs(aux - median(aux,'omitnan')) > 3.5*iqr(aux));
+    %         inds = find(abs(paramVals - ...
+    %             median(paramVals,'omitnan')) > 3.5*iqr(paramVals));
     %         inds = inds(inds > 5);
     %         bad(inds) = true;
     %     end
     % end
-    % outlierStrides = find(bad & ~badStart);
+    % outlierStrides = find(bad & ~badOriginal);
     % disp(['Removed ' num2str(numel(outlierStrides)) ...
     %     ' outlier(s) from ' file ' at stride(s) ' ...
     %     num2str(outlierStrides')]);
@@ -365,11 +367,12 @@ if any(strcmpi(parameterClasses, 'basic'))
     % Criterion 3: if 'singleStanceSpeed' of BOTH legs is less than
     % 0.05 m/s (50 mm/s), label as starting/stopping strides (TM only)
     if strcmp(trialData.metaData.type, 'TM')
-        aux = out.getDataAsVector( ...
+        slowFastSpeedData = out.getDataAsVector( ...
             {'singleStanceSpeedFastAbs', 'singleStanceSpeedSlowAbs'});
-        if ~isempty(aux)        % if parameters not empty arrays, ...
+        if ~isempty(slowFastSpeedData)  % if parameters not empty, ...
             % Label as 'bad' TM strides where moving too slowly
-            bad(abs(aux(:, 1)) < 50 & abs(aux(:, 2)) < 50) = true;
+            bad(abs(slowFastSpeedData(:, 1)) < 50 & ...
+                abs(slowFastSpeedData(:, 2)) < 50) = true;
         end
     end
 
@@ -380,10 +383,10 @@ if any(strcmpi(parameterClasses, 'basic'))
     end
 
     % Update 'bad' labeling in the parameterSeries output
-    [~, idxs] = out.isaParameter({'bad', 'good'});
-    out.Data(:, idxs) = [bad ~bad];
+    [~, badGoodColIdxs] = out.isaParameter({'bad', 'good'});
+    out.Data(:, badGoodColIdxs) = [bad ~bad];
     % Identify strides newly marked 'bad' since the initial labeling
-    outlierStrides = find(bad & ~badStart);
+    outlierStrides = find(bad & ~badOriginal);
     % TODO: confusing — NWB sees no code removing 'bad' strides from
     % data; why are not all 'bad' strides displayed in below warning?
     disp(['Removed ' num2str(numel(outlierStrides)) ...
