@@ -124,28 +124,28 @@ for st = 1:numStrides           % for each stride in trial, ...
     stridedEventData{st} = ...
         trialData.gaitEvents.split(initTime(st), endTime(st));
     for ev = 1:length(eventTypes)   % for each gait event type, ...
-        aux = stridedEventData{st}.getDataAsVector(eventTypes{ev});
+        evSamples = stridedEventData{st}.getDataAsVector(eventTypes{ev});
         % Find next two events of the type.
         % HH: it is pointless to find the next two events, since find
         % will still return a value even if it only finds one.
-        aux = find(aux, 2, 'first');
+        evSamples = find(evSamples, 2, 'first');
         % HH: maybe instead we should check if aux has a length of two
-        if ~isempty(aux)            % if data present, ...
-            eventTimes(st, ev) = stridedEventData{st}.Time(aux(1));
+        if ~isempty(evSamples)      % if data present, ...
+            eventTimes(st, ev) = stridedEventData{st}.Time(evSamples(1));
         end
     end
 end
 % TODO: improve by searching for any remaining events after last stride
-eventTimes2 = [eventTimes(2:end, :); nan(1, size(eventTimes, 2))];
+nextEventTimes = [eventTimes(2:end, :); nan(1, size(eventTimes, 2))];
 for ev = 1:length(eventTypes)       % for each gait event type, ...
     % Generate a structure of 'tSHS', 'tFTO', etc.
     strideEvents.(['t' upper(eventLabels{ev})]) = eventTimes(:, ev);
-    strideEvents.(['t' upper(eventLabels{ev}) '2']) = eventTimes2(:, ev);
+    strideEvents.(['t' upper(eventLabels{ev}) '2']) = nextEventTimes(:,ev);
 end
 
 %% Compute Parameters
 % Times of the SHS, FTO, FHS, FTO, SHS2, and FTO2 events (in order)
-extendedEventTimes = [eventTimes eventTimes2(:, 1:2)];
+extendedEventTimes = [eventTimes nextEventTimes(:, 1:2)];
 % Average all gait event times if available
 times = mean(extendedEventTimes, 2, 'omitnan');
 % Initialize output 'parameterSeries' object
@@ -184,11 +184,11 @@ if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
 
     if strcmp(eventClass, '')           % if default event method, ...
         % Determine type of event detection used for this trial
-        Event = full(trialData.gaitEvents.Data);
-        if isequal(Event(:, 1), Event(:, 5))
+        eventMatrix = full(trialData.gaitEvents.Data);
+        if isequal(eventMatrix(:, 1), eventMatrix(:, 5))
             % Use forces
             eventType = 2 * ones(length(finalTime), 1);
-        elseif isequal(Event(:, 1), Event(:, 9))
+        elseif isequal(eventMatrix(:, 1), eventMatrix(:, 9))
             % Use kinematics
             eventType = 1 * ones(length(finalTime), 1);
         end
@@ -199,33 +199,34 @@ if any(strcmpi(parameterClasses, 'basic'))  % if adding basic params,...
     end
 
     % Add 'basic' parameters to output 'parameterSeries' object
-    data   = [eventType bad ~bad trial initTime finalTime];
-    labels = {'eventType', 'bad', 'good', 'trial', ...
+    basicData   = [eventType bad ~bad trial initTime finalTime];
+    basicLabels = {'eventType', 'bad', 'good', 'trial', ...
         'initTime', 'finalTime'};
-    description = {'1 kinematics, 2 forces', ...
+    basicDescriptions = {'1 kinematics, 2 forces', ...
         ['True if events are missing, disordered, or if stride ' ...
         'time is too long or too short.'], ...
         'Opposite of bad.', ...
         'Original trial number for stride', ...
         'Time of initial event (SHS), with respect to trial beginning.',...
         'Time of final event (FTO2), with respect to trial beginning.'};
-    basic = parameterSeries(data, labels, times, description);
-    out   = cat(out, basic);
+    basicParams = parameterSeries( ...
+        basicData, basicLabels, times, basicDescriptions);
+    out = cat(out, basicParams);
 end
 
 %% Extract Temporal Parameters
 if any(strcmpi(parameterClasses, 'temporal'))
-    temp = computeTemporalParameters(strideEvents);
-    out  = cat(out, temp);
+    temporalParams = computeTemporalParameters(strideEvents);
+    out = cat(out, temporalParams);
 end
 
 %% Extract Spatial Parameters
 if any(strcmpi(parameterClasses, 'spatial')) && ...
         ~isempty(trialData.markerData) && ...
         (numel(trialData.markerData.labels) ~= 0)
-    spat = computeSpatialParameters( ...
+    spatParams = computeSpatialParameters( ...
         strideEvents, trialData.markerData, trialData.angleData, s);
-    out  = cat(out, spat);
+    out = cat(out, spatParams);
 end
 
 %% Extract Harmonic Ratio Parameters
