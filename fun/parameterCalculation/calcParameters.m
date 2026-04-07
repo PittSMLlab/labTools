@@ -239,25 +239,25 @@ end
 
 %% Extract Muscle Activity (EMG) Parameters
 if any(strcmpi(parameterClasses, 'rawEMG')) && ~isempty(trialData.EMGData)
-    EMG_alt = computeEMGParameters(trialData.EMGData, ...
+    emgParams = computeEMGParameters(trialData.EMGData, ...
         trialData.gaitEvents, s, eventTypes);   % classic way
-    out = cat(out, EMG_alt);
+    out = cat(out, emgParams);
 end
 
 %% Extract Joint Angle Parameters
 if ~isempty(trialData.angleData)        % if angle data is present, ...
-    angles = computeAngleParameters( ...
+    angleParams = computeAngleParameters( ...
         trialData.angleData, trialData.gaitEvents, s, eventTypes);
-    out = cat(out, angles);
+    out = cat(out, angleParams);
 end
 
 %% Extract Treadmill Force Parameters
 if any(strcmpi(parameterClasses, 'force')) && ~isempty(trialData.GRFData)
-    force = computeForceParameters( ...
+    forceParams = computeForceParameters( ...
         strideEvents, trialData.GRFData, s, f, subData.weight, ...
         trialData.metaData, trialData.markerData, subData);
-    if ~isempty(force.Data)         % if output force data not empty, ...
-        out = cat(out, force);
+    if ~isempty(forceParams.Data)   % if output force data not empty,...
+        out = cat(out, forceParams);
     end
 end
 
@@ -304,23 +304,23 @@ if sum(OG_idx) == length(OG_names) | ...
 end
 
 %% Extract H-Reflex Parameters
-fields = fieldnames(trialData);     % retrieve all trialData field names
-if any(contains(fields, 'HreflexPin'))  % if 'HreflexPin' exists, ...
+trialDataFields = fieldnames(trialData);
+if any(contains(trialDataFields, 'HreflexPin'))
     % If there is data in the 'HreflexPin' and 'EMGData' fields, ...
     if ~isempty(trialData.HreflexPin) && ~isempty(trialData.EMGData)
-        Hreflex = computeHreflexParameters( ...
+        hreflexParams = computeHreflexParameters( ...
             strideEvents, trialData.HreflexPin, trialData.EMGData, s);
-        out = cat(out, Hreflex);
+        out = cat(out, hreflexParams);
     end
 end
 
 %% Extract Perceptual Task Parameters
-slaIdx = strcmpi(spat.labels, 'netContributionNorm2'); % SLA param idx
+slaParamIdx = strcmpi(spatParams.labels, 'netContributionNorm2');
 % If there are gait events indicating start/stop of perceptual trial,...
 if any(contains(trialData.gaitEvents.labels, 'perc'))
-    PerceptualTasks = computePercParameters( ...
-        trialData, initTime, endTime, spat.Data(:, slaIdx));
-    out = cat(out, PerceptualTasks);
+    perceptualParams = computePercParameters( ...
+        trialData, initTime, endTime, spatParams.Data(:, slaParamIdx));
+    out = cat(out, perceptualParams);
 end
 
 %% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
