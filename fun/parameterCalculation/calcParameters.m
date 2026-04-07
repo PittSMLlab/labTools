@@ -13,7 +13,7 @@ function out = calcParameters(trialData, subData, eventClass, ...
 % code (e.g., in paramLabels: 'swingTimeSlow'; in code:
 % swingTimeSlow(t) = timeSHS2 - timeSTO).
 %
-% Note: If adding slow and fast versions of a parameter, ensure
+% NOTE: If adding slow and fast versions of a parameter, ensure
 %   'Fast' and 'Slow' appear at the end of the respective parameter
 %   names. See existing parameter names as examples.
 %
@@ -71,10 +71,8 @@ else
     refLeg = initEventSide;
 end
 
-if isempty(parameterClasses) %if provided but it's empty, use default value
-    parameterClasses = {'basic', 'temporal', 'spatial', ...
-        'rawEMG', 'procEMG', 'force'};
-elseif ischar(parameterClasses) % Convert a single parameter class string to a cell array
+% Convert a single parameter class string to a cell array
+if ischar(parameterClasses)
     parameterClasses = {parameterClasses};
 end
 
