@@ -76,6 +76,11 @@ if ischar(parameterClasses)
     parameterClasses = {parameterClasses};
 end
 
+% Validate that all requested parameter class names are recognized
+validClasses = {'basic', 'temporal', 'spatial', ...
+    'rawEMG', 'procEMG', 'force'};
+mustBeMember(parameterClasses, validClasses);
+
 %% Separate Data by Stride and Identify Gait Events for Each Stride
 % One 'stride' contains the events: SHS, FTO, FHS, STO, SHS2, FTO2
 if refLeg == 'R'                % if reference leg is right, ...
