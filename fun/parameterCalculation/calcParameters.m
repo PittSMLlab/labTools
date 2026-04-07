@@ -315,12 +315,27 @@ if any(contains(trialDataFields, 'HreflexPin'))
 end
 
 %% Extract Perceptual Task Parameters
-slaParamIdx = strcmpi(spatParams.labels, 'netContributionNorm2');
-% If there are gait events indicating start/stop of perceptual trial,...
-if any(contains(trialData.gaitEvents.labels, 'perc'))
-    perceptualParams = computePercParameters( ...
-        trialData, initTime, endTime, spatParams.Data(:, slaParamIdx));
-    out = cat(out, perceptualParams);
+% Requires spatial parameters (for the SLA normalization index) and
+% basic parameters (for the initTime and endTime stride boundaries).
+% If either was skipped or spatial params could not be computed (e.g.,
+% missing marker data), a warning is issued and this block is skipped.
+spatParamsExist  = any(strcmpi(parameterClasses, 'spatial')) && ...
+    exist('spatParams', 'var');
+basicParamsExist = any(strcmpi(parameterClasses, 'basic'));
+hasPercEvents    = any(contains(trialData.gaitEvents.labels, 'perc'));
+if hasPercEvents
+    if spatParamsExist && basicParamsExist
+        slaParamIdx = strcmpi(spatParams.labels, 'netContributionNorm2');
+        perceptualParams = computePercParameters( ...
+            trialData, initTime, endTime, spatParams.Data(:, slaParamIdx));
+        out = cat(out, perceptualParams);
+    else
+        warning('calcParameters:perceptualParamSkipped', ...
+            ['Perceptual task parameters could not be computed for ' ...
+            file ' because spatial or basic parameters were not ' ...
+            'available. Include both ''spatial'' and ''basic'' in ' ...
+            'parameterClasses to compute perceptual parameters.']);
+    end
 end
 
 %% Update 'bad' Stride Labeling (Only If Basic Parameters Computed)
