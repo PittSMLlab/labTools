@@ -254,7 +254,7 @@ classdef parameterSeries < labTimeSeries
     methods
         this = normalizeToBaseline(this, labels, rangeValues)
 
-        newThis = linearStretch(this, labels, rangeValues)
+        newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)
     end
 
     % function newThis=EMGnormAllData(this,labels,rangeValues)

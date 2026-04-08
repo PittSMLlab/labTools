@@ -269,7 +269,11 @@ classdef adaptationData
                 rangeValues(1,:)=0;
             end
             for i=1:length(labelPrefix)
-                this.data=this.data.linearStretch(label(:,i),rangeValues(:,i));
+                if ismember('Description',baseEpoch.Properties.VarNames)
+                    this.data=this.data.linearStretch(label(:,i),rangeValues(:,i),['baseEcpoh Info: ' baseEpoch.Description{1}]);
+                else
+                    this.data=this.data.linearStretch(label(:,i),rangeValues(:,i));
+                end
             end
             newThis=this;
         end

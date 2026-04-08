@@ -119,14 +119,12 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
     refEp = defineEpochs({normalizationRefCond}, {normalizationRefCond},-40,0,5,'nanmean');
     
     % In case there is already old parameters that
-    %have normalized data, named as Normxx, get them and rename to a
-    %nonsense string so that new clean normalized parameters can be created
-    %without confusion. This use case is rare because in the current flow
-    %we never save the normalized groupAdaptationData
-    ss =adaptData.data.getLabelsThatMatch('^Norm');
-    s2 = regexprep(ss,'^Norm','dsjrs'); %this renames Norm xx to dsjrs a
-    % nonsense string, to avoid using old Normxx parameters
-    adaptData=adaptData.renameParams(ss,s2);
+    %have normalized data, named as Normxx, remove them so that new clean normalized parameters can be created
+    %as a replacement. This will happen whenever we save the normalized
+    %data either individually or as a group
+    ss = adaptData.data.getLabelsThatMatch('^Norm');
+    s2 = adaptData.data.labels(~ismember(adaptData.data.labels,ss));
+    adaptData = adaptData.reduce(s2);
 
     %check for any labels that already contains the name L2norm (they had
     %norm generated already), throw them away and regenerate. 
@@ -140,27 +138,18 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         startsWith(adaptData.data.labels,strcat('s',muscleLabels,'_s')));
     newLabelPrefix = unique(cellfun(@(x) x(1:end-2), newLabelPrefix,'UniformOutput',false));
     
-    adaptData_untouched = adaptData; 
-    %save a copy after renaming parameters
-    % before normalization with the stretched EMG parameters.
-
     fprintf('\nNormalizing the data using %s\n', normalizationRefCond);
     %this function call will create new parameters as NormsTA_s 1 etc. for all
-    %muscles with the linearly stretched data.
+    %muscles with the linearly stretched data and raw unit data is in sTA_s
+    %1
     adaptData = adaptData.normalizeToBaselineEpoch(newLabelPrefix,refEp);
     
     % adaptData = adaptData.removeBadStrides;
     
-    %rename the new parameters from NormsTA_s 1 into sTAs 1 etc. for 12
-    %intervals and all muscles
-    ll=adaptData.data.getLabelsThatMatch('^Norm');
-    l2=regexprep(regexprep(ll,'^Norm',''),'_s','s');
-    adaptData=adaptData.renameParams(ll,l2);
-    
     %at this point, the raw data is in format sTA_s 1, the normalized data
-    %is in sTAs 1
+    %is in NormsTA_s 1. A total of length(newLabelPrefix) x 12 new labels will be created. 
     rawDataLabelPrefix = newLabelPrefix; %save the old prefix to extract the voltage data
-    normalizedDataLabelPrefix = regexprep(newLabelPrefix,'_s','s');
+    normalizedDataLabelPrefix = strcat('Norm',newLabelPrefix);
     
     clear l1 l2 newLabelPrefix s2 ss
     adaptDataOriginal = adaptData;
@@ -201,9 +190,13 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
             %record #of muscles that are all nan, compute it only once bc normalized vs raw should have the same nan content, will have 1
             %at a stride for a given muscle i that is all nan at that stride
             allnanMuslcesByStride(:,i) = all(isnan(curdata),2);
-            curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
+            curdata(isnan(curdata))=0; %nan are made zero to computer the norm
+            %make nan zero to compute the norm, unless the whole 12 sub
+            %interval is nan in which case the norm should also be nan.
             %now compute a by muscle norm, take L2 norm, over dim=2 (per rows)
             newData(:,newDataCol) = vecnorm(curdata,2,2);
+            %set the strides that had nans in all 12 subintervals to nan.
+            newData(allnanMuslcesByStride(:,i),newDataCol) = nan; 
             newLabels{newDataCol} = [normalizedDataLabelPrefix{i},'_L2normPercentUnit' labelSuffix];
             newDescp{newDataCol} = ['L2norm of: ', normalizedDataLabelPrefix{i}, ' in the precentge unit '...
                 'after stretching each stride to have 100% = max of nanmean of last 40 strides of' normalizationRefCond ' and 0 = min of ' normalizationRefCond ...
@@ -219,6 +212,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
             curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
             %now compute a by muscle norm
             newData(:,newDataCol) = vecnorm(curdata,2,2);
+            %set the strides that had nans in all 12 subintervals to nan,
+            %assume if it's nan in percentage unit will also be nan in the
+            %raw unit.
+            newData(allnanMuslcesByStride(:,i),newDataCol) = nan; 
             newLabels{newDataCol} =  [rawDataLabelPrefix{i},'_L2normRawUnit' labelSuffix];
             newDescp{newDataCol} = ['L2norm of: ', rawDataLabelPrefix{i}, ' in the original voltage unit for every stride, the norm is' ...
                 'computed from the vecnorm of the 12 subintervasl of the current strides. nan values are treated as 0.' descpSuffix];
@@ -227,8 +224,11 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
           
         %% compute the norm for the both legs and the avg norm (norm weighted by number of non-nan contributing muscles)
         curdata = adaptData.data.Data(:,any(bothLegsColsIdx,1));
+        %find strides where all muscle are nan.
+        allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
         curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
         newData(:,newDataCol) = vecnorm(curdata,2,2);
+        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol} = ['BothLegEMGL2normPercentUnit' labelSuffix];
         newDescp{newDataCol} = ['L2norm of all muscles after they are flattend as a 1D vector.' ...
             'in the percentage unit after stretching each stride to have 100% = max of nanmean of last 40 strides of ' normalizationRefCond ...
@@ -246,8 +246,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         newDataCol = newDataCol + 1;
         
         curdata = adaptData.data.Data(:,any(bothLegsColsIdx_rawUnit,1));
+        allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
         curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
         newData(:,newDataCol) = vecnorm(curdata,2,2);
+        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol}  = ['BothLegEMGL2normRawUnit' labelSuffix];
         newDescp{newDataCol}  = ['L2norm of all muscles after they are flattend as a 1D vector.' ...
             'in the raw voltage unit. Nan values are treated as 0.' descpSuffix];
@@ -272,8 +274,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         %% Get the norm per leg
         for legs = {'slow','fast'}
             curdata = adaptData.data.Data(:,any(bothLegsColsIdx(startsWith(normalizedDataLabelPrefix,legs{1}(1)),:),1));
+            allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
             curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
             newData(:,newDataCol) = vecnorm(curdata,2,2);
+            newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
             newLabels{newDataCol}  = [legs{1} 'LegEMGL2normPercentUnit'  labelSuffix];
             newDescp{newDataCol}  = ['L2norm of ' legs{1} ' leg muscles after they are flattend as a 1D vector.' ...
                 'The data is in the percentage unit after stretching each stride to have 100% = max of nanmean of last 40 strides of ' normalizationRefCond ...
@@ -291,8 +295,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
             newDataCol = newDataCol + 1;
             
             curdata = adaptData.data.Data(:,any(bothLegsColsIdx_rawUnit(startsWith(rawDataLabelPrefix,legs{1}(1)),:),1));
+            allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
             curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
             newData(:,newDataCol) = vecnorm(curdata,2,2);
+            newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
             newLabels{newDataCol}  = [legs{1} 'LegEMGL2normRawUnit' labelSuffix];
             newDescp{newDataCol}  = ['L2norm of ' legs{1} ' leg muscles after they are flattend as a 1D vector.' ...
                 'in the raw voltage unit. Nan values are treated as 0.' descpSuffix];
@@ -327,13 +333,14 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         i = 1;
         for m = muscleLabels
             %first identify the prefix for this muscle, then look for match in
-            %al labels that start with the prefix and ends with digits
+            %all labels that start with the prefix and ends with digits
+            %(look for match that starts with NormfTA_s and end with digits.
             fastCol=cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-                ['^' normalizedDataLabelPrefix{startsWith(normalizedDataLabelPrefix,['f' m{1}])} '[ ]?\d+$']));
+                ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix,['f' m{1}])} '[ ]?\d+$']));
             fastdata = adaptData.data.Data(:,fastCol);
-    
+            
             slowCol = cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-                ['^' normalizedDataLabelPrefix{startsWith(normalizedDataLabelPrefix,['s' m{1}])} '[ ]?\d+$']));
+                ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix,['s' m{1}])} '[ ]?\d+$']));
             slowdata = adaptData.data.Data(:,slowCol);
             if ~isempty(fastdata) && ~isempty(slowdata)
                 asymdata = fastdata - slowdata; %strides x 12
@@ -341,6 +348,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
                 allmusclesAsym=[allmusclesAsym,asymdata]; %concatenate horizontally to get strides x n where n = 12x# of muscles with both legs recorded where asym can be computed
                 asymdata(isnan(asymdata))=0; %nan are made zero to computer the norm 
                 newData(:,newDataCol) = vecnorm(asymdata,2,2); %l2 norm over columns
+                newData(allnanAsymMuslcesByStride(:,i),newDataCol) = nan;  %if all muscles are nan for a given stride, set norm to nan
                 newDescp{newDataCol} = ['L2 norm of Asymmetry of ' m{1} ' between fast-slow leg in the percentage unit'...
                     'The data is in the percentage unit after stretching each stride to have 100% = max of nanmean of last 40 strides of ' normalizationRefCond ...
                     ' and 0 = min of ' normalizationRefCond '(specific OGBase 0-100% calculation see your refEp definition). Nan values are treated as 0.' descpSuffix];
@@ -348,6 +356,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
                 newDataCol = newDataCol+1;
             end
         
+            %look for match that start with fTA_s and ends with digits
             fastCol=cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
                 ['^' rawDataLabelPrefix{startsWith(rawDataLabelPrefix,['f' m{1}])} '[ ]?\d+$']));
             fastdata = adaptData.data.Data(:,fastCol);
@@ -360,6 +369,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
                 allmusclesAsym_rawUnit=[allmusclesAsym_rawUnit,asymdata]; %concatenate horizontally to get strides x n where n = 12x# of muscles with both legs recorded where asym can be computed
                 asymdata(isnan(asymdata))=0; %nan are made zero to computer the norm 
                 newData(:,newDataCol) = vecnorm(asymdata,2,2); %l2 norm over columns
+                newData(allnanAsymMuslcesByStride(:,i),newDataCol) = nan;  %if all muscles are nan for a given stride, set norm to nan
                 newDescp{newDataCol} = ['L2 norm of Asymmetry of ' m{1} ' between fast-slow leg in the raw voltage unit' descpSuffix];
                 newLabels{newDataCol} = [m{1} 'AsymL2normRawUnit' labelSuffix];
                 newDataCol = newDataCol+1;
@@ -368,8 +378,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         end
         
         %% get the whole leg asym norm
+        allMsNanStride = all(isnan(allmusclesAsym),2); %all nans across a column, set that stride to nan.
         allmusclesAsym(isnan(allmusclesAsym))=0; %nan are made zero to computer the norm 
         newData(:,newDataCol) = vecnorm(allmusclesAsym,2,2); %l2 norm over columns
+        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol} = ['BothLegsAsymL2normPercentUnit' labelSuffix];
         newDescp{newDataCol} = ['L2 norm of Asymmetry of all muscles between fast-slow leg in the percentage unit'...
             'fter they are flattend as a 1D vector.' ...
@@ -390,8 +402,10 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         newDataCol = newDataCol + 1;
         
         %get whole leg asym norm in raw unit
+        allMsNanStride = all(isnan(allmusclesAsym_rawUnit),2); %all nans across a column, set that stride to nan.
         allmusclesAsym_rawUnit(isnan(allmusclesAsym_rawUnit))=0; %nan are made zero to computer the norm 
         newData(:,newDataCol) = vecnorm(allmusclesAsym_rawUnit,2,2); %l2 norm over columns
+        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol} = ['BothLegsAsymL2normRawUnit' labelSuffix];
         newDescp{newDataCol} = ['L2 norm of Asymmetry of all muscles between fast-slow leg in the raw voltage unit' descpSuffix];
         newDataCol = newDataCol+1;
@@ -421,13 +435,17 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
     newLabels(:,newDataCol:end) = [];
     newDescp(:,newDataCol:end) = [];
     
-    %set up the adaptData to return, make sure it's the original with only additions of the norm parameters
-    adaptData = adaptData_untouched; 
+    %set up the adaptData to return, make sure it's the original with only
+    %additions of the norm parameters + normalized data per interval (e.g.,
+    %NormsVL_s 1), without any manipulations like removeBias, removeBadStrides.
+    % A totla of muscles x 12 + 208 (norm)
+    %parameters will be created. (e.g., 28 muscle x 12 + 208 = 544). Or if
+    %this is in a flushAndRecompute, then the net new parameters are 0.
+    adaptData = adaptDataOriginal; 
     
     %popuate new data
     adaptData.data=adaptData.data.appendData(newData,newLabels,newDescp);
-    %without any manipulations like removeBias, removeBadStrides or
-    %normalization
+    
     adaptData.data.DataInfo.UserData = struct();
     adaptData.data.DataInfo.UserData.muscleLabels = muscleLabels;
     adaptData.data.DataInfo.UserData.normalizationRefCond = normalizationRefCond;

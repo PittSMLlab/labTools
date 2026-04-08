@@ -1,4 +1,4 @@
-function newThis = linearStretch(this, labels, rangeValues)
+function newThis = linearStretch(this, labels, rangeValues, descriptionSuffix)
 %linearStretch  Linearly transforms parameter values
 %
 %   newThis = linearStretch(this, labels, rangeValues) transforms
@@ -10,6 +10,11 @@ function newThis = linearStretch(this, labels, rangeValues)
 %       labels - cell array of parameter labels to transform
 %       rangeValues - 2-element vector [min max] defining range to
 %                     normalize
+%       descriptionSuffix - OPTIONAL. a string representing a description
+%           suffix to append to the new parameter's descriptions. Default
+%           empty. By default, the new parameter's description will be
+%           normalized to range =[rangemin, rangemax]. if suffix is provided
+%           will be appended to the description.
 %
 %   Outputs:
 %       newThis - parameterSeries with normalized parameters added as
@@ -24,6 +29,17 @@ if numel(rangeValues) ~= 2
     error('parameterSeries:linearStretch', ...
         'rangeValues has to be a 2 element vector');
 end
+
+if nargin < 4 || isempty(descriptionSuffix)
+    descriptionSuffix = '';
+elseif iscell(descriptionSuffix)
+    descriptionSuffix = descriptionSuffix{1};
+    fprintf('A cell is provided for descriptionSuffix, will use the 1st element only.\n')
+end
+
+if ~ischar(descriptionSuffix)
+    error('A non character string was given for descriptionSuffix, which will not be compatible with the existing description format. Check your input. ')
+end
 % [boolFlag, labelIdx] = isaLabel(this, labels);
 % for i = 1:length(labels)
 %     if boolFlag(i)
@@ -36,7 +52,7 @@ end
 % More efficient:
 N = length(labels);
 newDesc = repmat({['Normalized to range = [' ...
-    num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ']']}, N, 1);
+    num2str(rangeValues(1)) ',' num2str(rangeValues(2)) ']. ' descriptionSuffix]}, N, 1);
 newL = cell(N, 1);
 nD = zeros(size(this.Data, 1), N);
 for i = 1:N
