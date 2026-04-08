@@ -58,8 +58,7 @@ arguments
     subData          (1,1)
     eventClass       (1,:) char = ''
     initEventSide    (1,:) char = ''
-    parameterClasses = {'basic', 'temporal', 'spatial', ...
-        'rawEMG', 'procEMG', 'force'}
+    parameterClasses            = []
 end
 
 file = getSimpleFileName(trialData.metaData.rawDataFilename);
@@ -71,14 +70,23 @@ else
     refLeg = initEventSide;
 end
 
-% Convert a single parameter class string to a cell array
-if ischar(parameterClasses)
+% Single source of truth for all recognized parameter class names.
+% validClasses also defines the default set: passing [] (or omitting
+% parameterClasses) computes all classes, so callers such as
+% recomputeParameters never need to enumerate this list explicitly.
+% Any future addition here is automatically included in the default.
+validClasses = {'basic', 'temporal', 'spatial', ...
+    'rawEMG', 'procEMG', 'force'};
+
+% Normalize parameterClasses: empty resolves to all valid classes;
+% a single string is wrapped in a cell array for uniform handling
+if isempty(parameterClasses)
+    parameterClasses = validClasses;
+elseif ischar(parameterClasses)
     parameterClasses = {parameterClasses};
 end
 
 % Validate that all requested parameter class names are recognized
-validClasses = {'basic', 'temporal', 'spatial', ...
-    'rawEMG', 'procEMG', 'force'};
 mustBeMember(parameterClasses, validClasses);
 
 %% Separate Data by Stride and Identify Gait Events for Each Stride
