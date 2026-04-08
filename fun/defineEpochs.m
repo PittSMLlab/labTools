@@ -55,10 +55,21 @@ elseif numel(shortName) == 1
     shortName = repmat(shortName,N,1);
 end
 
+%add a description string that can be included when we want a description
+%of the epoch, this is helpful string to use when we want to include the
+%refEpoch info in any new parameters or any display string to remind us
+%what was done.
+description = cell(N,1);
+for i = 1:N
+    description{i} = sprintf('condition: %s, stride no: %d, exemptfirst: %d, exceptLast: %d, earlyOrLate: %d, summaryMethod: %s, short name: %s',...
+        condition{i},strideNo(i),exemptFirst(i), ...
+    exemptLast(i),earlyOrLate(i),summaryMethod{i},shortName{i});
+end
+
 epochs = dataset(condition(:),abs(strideNo(:)),exemptFirst(:), ...
-    exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:), ...
+    exemptLast(:),earlyOrLate(:),summaryMethod(:),shortName(:),description(:), ...
     'VarNames',{'Condition','Stride_No','ExemptFirst','ExemptLast', ...
-    'EarlyOrLate','summaryMethod','shortName'},'ObsNames',epochNames);
+    'EarlyOrLate','summaryMethod','shortName','Description'},'ObsNames',epochNames);
 
 end
 
