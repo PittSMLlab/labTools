@@ -273,7 +273,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
         
         %% Get the norm per leg
         for legs = {'slow','fast'}
-            curdata = adaptData.data.Data(:,any(bothLegsColsIdx(startsWith(normalizedDataLabelPrefix,legs{1}(1)),:),1));
+            curdata = adaptData.data.Data(:,any(bothLegsColsIdx(startsWith(normalizedDataLabelPrefix,['Norm' legs{1}(1)]),:),1));
             allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
             curdata(isnan(curdata))=0; %nan are made zero to computer the norm 
             newData(:,newDataCol) = vecnorm(curdata,2,2);
@@ -284,7 +284,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
                 ' and 0 = min of ' normalizationRefCond '(specific OGBase 0-100% calculation see your refEp definition). Nan values are treated as 0.' descpSuffix];
             newDataCol = newDataCol + 1;
 
-            newData(:,newDataCol) = newData(:,newDataCol-1)./sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,legs{1}(1))),2);
+            newData(:,newDataCol) = newData(:,newDataCol-1)./sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,['Norm' legs{1}(1)])),2);
             newLabels{newDataCol}  = [legs{1} 'LegEMGL2normPercentUnitAvg'  labelSuffix];
             newDescp{newDataCol}  = ['L2norm of ' legs{1} ' muscles after they are flattend as a 1D vector divided by number of muscles that contribute to the norm.' ...
                 'At any stride, if all data for a muscle is nan, the denominator will decrease by 1 (e.g., if only 8 muscles have non-nan entries, will take vecnom/8' ...
@@ -305,7 +305,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
             newDataCol = newDataCol + 1;
             
             %denominator is the same regardless of norm or raw voltage unit
-            newData(:,newDataCol) = newData(:,newDataCol-1)./sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,legs{1}(1))),2);
+            newData(:,newDataCol) = newData(:,newDataCol-1)./sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,['Norm' legs{1}(1)])),2);
             newLabels{newDataCol}  = [legs{1} 'LegEMGL2normRawUnitAvg' labelSuffix];
             newDescp{newDataCol}  = ['L2norm of ' legs{1} ' muscles after they are flattend as a 1D vector divided by number of muscles that contribute to the norm.' ...
                 'At any stride, if all data for a muscle is nan, the denominator will decrease by 1 (e.g., if only 8 muscles have non-nan entries, will take vecnom/8' ...
@@ -316,7 +316,7 @@ function adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizat
 
             %record the # of non-nan muscles to make it super clear how the
             %avg was calculated
-            newData(:,newDataCol) = sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,legs{1}(1))),2);
+            newData(:,newDataCol) = sum(~allnanMuslcesByStride(:,startsWith(normalizedDataLabelPrefix,['Norm' legs{1}(1)])),2);
             newLabels{newDataCol} = [legs{1} 'LegEMGL2normNumMuscles' labelSuffix];
             newDescp{newDataCol}  = ['Number of non-nan muscles that contributed to the norm for ' legs{1} ,...
                 ' leg at a given stride. ',...
