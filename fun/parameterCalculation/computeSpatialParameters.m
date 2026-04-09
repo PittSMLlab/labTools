@@ -337,13 +337,16 @@ phaseShiftPos = nan(T, 1);
 for ii = 1:T
     if ~isnan(timeSHS(ii)) && ~isnan(timeSHS2(ii))
         if ~isempty(angleData)
-            sLimb = angleData.split(timeSHS(ii),timeSHS2(ii)).getDataAsVector({[s 'Limb']});
-            fLimb = angleData.split(timeSHS(ii),timeSHS2(ii)).getDataAsVector({[f 'Limb']});
+            sLimb = angleData.split( ...
+                timeSHS(ii), timeSHS2(ii)).getDataAsVector({[s 'Limb']});
+            fLimb = angleData.split( ...
+                timeSHS(ii), timeSHS2(ii)).getDataAsVector({[f 'Limb']});
             if ~isempty(sLimb) && ~isempty(fLimb)
                 phaseShift(ii) = circCorr(sLimb, fLimb);
             end
         end
-        Pos = rotatedMarkerData.split(timeSHS(ii),timeSHS2(ii)).getOrientedData({[s 'ANK'],[f 'ANK']});
+        Pos = rotatedMarkerData.split(timeSHS(ii), timeSHS2(ii)) ...
+            .getOrientedData({[s 'ANK'], [f 'ANK']});
         if ~isempty(Pos)
             % Use only y-axis components, equivalent to sAnkFwd
             phaseShiftPos(ii) = circCorr(Pos(:, 1, 2), Pos(:, 2, 2));
@@ -361,11 +364,11 @@ ts    = timeFHS  - timeSHS;
 tf    = timeSHS2 - timeFHS;
 difft = ts - tf;
 
-% FIXME: DO NOT use absolute value, if the sign is supposed to be the
-% opposite one, just leave it as is. The absolute value makes it murky to
-% know what this quantity means.
-dispSlow = abs(sAnkFwd(:,FHS) - sAnkFwd(:,SHS));
-dispFast = abs(fAnkFwd(:,SHS2) - fAnkFwd(:,FHS));
+% FIXME: DO NOT use absolute value; if the sign is supposed to be the
+% opposite one, just leave it as is. The absolute value makes it murky
+% to know what this quantity means.
+dispSlow = abs(sAnkFwd(:, FHS)  - sAnkFwd(:, SHS));
+dispFast = abs(fAnkFwd(:, SHS2) - fAnkFwd(:, FHS));
 
 % Velocity of foot relative to hip; should be close to actual belt speed
 velocitySlow = dispSlow ./ ts;
@@ -379,12 +382,12 @@ velocityContribution  = avgStepTime .* (velocitySlow - velocityFast);
 netContribution = ...
     spatialContribution + stepTimeContribution + velocityContribution;
 
-% alternative and normalized contributions
-strideTimeSlow = timeSHS2 - timeSHS;% same as in computeTemporalParameters
-spatialContributionAlt = spatialContribution ./ strideTimeSlow;
-stepTimeContributionAlt = stepTimeContribution ./ strideTimeSlow;
-velocityContributionAlt = velocityContribution ./ strideTimeSlow;
-netContributionAlt = netContribution ./ strideTimeSlow;
+% Alternative and normalized contributions
+strideTimeSlow = timeSHS2 - timeSHS; % same as in computeTemporalParameters
+spatialContributionAlt   = spatialContribution  ./ strideTimeSlow;
+stepTimeContributionAlt  = stepTimeContribution ./ strideTimeSlow;
+velocityContributionAlt  = velocityContribution ./ strideTimeSlow;
+netContributionAlt       = netContribution      ./ strideTimeSlow;
 
 % spatialContributionNorm = spatialContributionAlt ./ equivalentSpeed;
 % stepTimeContributionNorm = stepTimeContributionAlt ./ equivalentSpeed;
@@ -407,12 +410,13 @@ velocityContributionNorm2 = velocityContribution ./ Dist;
 netContributionNorm2      = netContribution      ./ Dist;
 
 aux = markerData.getDataAsTS( ...
-    {[f 'ANKy'],[ s 'ANKy']}).getSample(eventTimes,'closest');  % N x 8 x 2
-spatialContributionP = -(2 * aux(:,FHS,1) - aux(:,SHS2,2) - aux(:,SHS,2));
-vf = (aux(:,SHS2,1) - aux(:,FHS,1)) ./ tf;
-vs = (aux(:,FHS,2) - aux(:,SHS,2)) ./ ts;
-stepTimeContributionP = 0.5 * (vf + vs) .* (ts - tf);
-velocityContributionP = 0.5 * (vs - vf) .* (tf + ts);
+    {[f 'ANKy'], [s 'ANKy']}).getSample(eventTimes, 'closest');
+spatialContributionP = ...
+    -(2 * aux(:, FHS, 1) - aux(:, SHS2, 2) - aux(:, SHS, 2));
+vf = (aux(:, SHS2, 1) - aux(:, FHS,  1)) ./ tf;
+vs = (aux(:, FHS,  2) - aux(:, SHS,  2)) ./ ts;
+stepTimeContributionP  = 0.5 * (vf + vs) .* (ts - tf);
+velocityContributionP  = 0.5 * (vs - vf) .* (tf + ts);
 netContributionP = ...
     spatialContributionP + stepTimeContributionP + velocityContributionP;
 
@@ -421,13 +425,12 @@ stepTimeContributionPNorm = stepTimeContributionP ./ Dist;
 velocityContributionPNorm = velocityContributionP ./ Dist;
 netContributionPNorm      = netContributionP      ./ Dist;
 
-% added by Marcela 06/01/2021
-% displacement for single stance
-% FIXME: DO NOT use absolute value, if the sign is supposed to be the
-% opposite one, just leave it as is since the absolute value makes it murky
-% to know what this quantity means.
-dispS = abs(sAnkFwd(:,FHS) - sAnkFwd(:,FTO));
-dispF = abs(fAnkFwd(:,SHS2) - fAnkFwd(:,STO));
+% Added by Marcela 06/01/2021: displacement for single stance.
+% FIXME: DO NOT use absolute value; if the sign is supposed to be the
+% opposite one, just leave it as is since the absolute value makes it
+% murky to know what this quantity means.
+dispS = abs(sAnkFwd(:, FHS) - sAnkFwd(:, FTO));
+dispF = abs(fAnkFwd(:, SHS2) - fAnkFwd(:, STO));
 
 singleStanceSpeedSlow = dispS ./ (timeFHS  - timeFTO);
 singleStanceSpeedFast = dispF ./ (timeSHS2 - timeSTO);
@@ -449,7 +452,7 @@ velocityContributionP2 = 0.5 * (vs2 - vf2) .* (tf + ts);
 netContributionP2 = ...
     spatialContributionP2 + stepTimeContributionP2 + velocityContributionP2;
 
-spatialContributionPNorm2 = spatialContributionP2 ./ Dist;
+spatialContributionPNorm2  = spatialContributionP2  ./ Dist;
 stepTimeContributionPNorm2 = stepTimeContributionP2 ./ Dist;
 velocityContributionPNorm2 = velocityContributionP2 ./ Dist;
 netContributionPNorm2      = netContributionP2      ./ Dist;
@@ -473,9 +476,10 @@ spatialErrorS  = spatialIdealS  - spatialContributionNorm2;
 stepTimeErrorS = stepTimeIdealS - stepTimeContributionNorm2;
 
 %% Compute Speeds
-% weighted average of ipsilateral speeds: if subjects spend much more time
-% over one foot than the other, this might not be close to arithmetic mean
-% = (ts./tf+ts)*dispSlow./ts + (tf./tf+ts)*dispFast./tf = (ts./tf+ts)*vs + (tf./tf+ts)*vf
+% Weighted average of ipsilateral speeds: if subjects spend much more
+% time over one foot than the other, this may not be the arithmetic
+% mean. = (ts./(tf+ts))*dispSlow./ts + (tf./(tf+ts))*dispFast./tf
+%       = (ts./(tf+ts))*vs + (tf./(tf+ts))*vf
 equivalentSpeed = (dispSlow + dispFast) ./ (ts + tf);
 
 % sStanceIdxs = indFTO:indFHS;
