@@ -98,9 +98,11 @@ aux = { ...
 paramLabels = aux(:, 1);
 description = aux(:, 2);
 
-% retrieve trial description, which contains TM inclination information
-trial = trialData.description;
 %% Retrieve Trial Information and Filter Data
+% Retrieve trial description, which contains TM inclination information
+% (currently unused directly; retained as reference for the
+% commented-out computeCOM call below)
+trial       = trialData.description; %#ok<NASGU>
 tmAngle     = DetermineTMAngle(trialData);
 numStrides  = length(strideEvents.tSHS);
 
@@ -135,15 +137,16 @@ filteredGRF = GRFData.lowPassFilter(20);
 % are assumed to be correctly zeroed during c3d2mat; if they are not, gait
 % events will be incorrect and this correction will not help.
 
-for i=1:length(strideEvents.tSHS)-1
-    timeGRF = round(Filtered.Time,6);
-    SHS = strideEvents.tSHS(i);
-    FTO = strideEvents.tFTO(i);
-    FHS = strideEvents.tFHS(i);
-    STO = strideEvents.tSTO(i);
 % figure; plot(filteredGRF.getDataAsTS([s 'Fy']).Data, 'b');
 % hold on; plot(filteredGRF.getDataAsTS([f 'Fy']).Data, 'r');
 
+fastLegOffsetData = nan(1, numStrides - 1);
+slowLegOffsetData = nan(1, numStrides - 1);
+for i = 1:numStrides - 1
+    SHS  = strideEvents.tSHS(i);
+    FTO  = strideEvents.tFTO(i);
+    FHS  = strideEvents.tFHS(i);
+    STO  = strideEvents.tSTO(i);
     FTO2 = strideEvents.tFTO2(i);
     SHS2 = strideEvents.tSHS2(i);
 
@@ -165,8 +168,13 @@ slowLegOffset = round(median(slowLegOffsetData, 'omitnan'), 3);
 disp(['Fast Leg Offset: ' num2str(fastLegOffset) ...
     ', Slow Leg Offset: ' num2str(slowLegOffset)]);
 
-Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy'])))=Filtered.getDataAsVector([fastleg 'Fy'])-FastLegOffSet;
-Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getDataAsVector([slowleg 'Fy'])-SlowLegOffSet;
+% Apply the estimated offsets to the filtered Fy channels
+fastFyIdx = find(strcmp(filteredGRF.getLabels(), [fastleg 'Fy']));
+filteredGRF.Data(:, fastFyIdx) = ...
+    filteredGRF.getDataAsVector([fastleg 'Fy']) - fastLegOffset;
+slowFyIdx = find(strcmp(filteredGRF.getLabels(), [slowleg 'Fy']));
+filteredGRF.Data(:, slowFyIdx) = ...
+    filteredGRF.getDataAsVector([slowleg 'Fy']) - slowLegOffset;
 
 % figure; plot(filteredGRF.getDataAsTS([slowleg 'Fy']).Data, 'b');
 % hold on; plot(filteredGRF.getDataAsTS([fastleg 'Fy']).Data, 'r');
@@ -204,15 +212,15 @@ FyBFmax_ABS   = nan(1, numStrides);
 ImpactMagS    = nan(1, numStrides);
 ImpactMagF    = nan(1, numStrides);
 
-if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there will not be any forces to analyze
-    for i=1:length(strideEvents.tSHS)-1
-        %Get the entire stride of interest on BOTH sides (SHS-->SHS2, and
-        %FHS--> FHS2)  Also flip it if decline people
-        timeGRF = round(GRFData.Time,6);
-        SHS = strideEvents.tSHS(i);
-        FTO = strideEvents.tFTO(i);
-        FHS = strideEvents.tFHS(i);
-        STO = strideEvents.tSTO(i);
+%% Compute Stride-by-Stride Force Parameters
+% Only compute force parameters for treadmill (TM) trials; overground
+% (OG) trials do not have reliable belt force plate data.
+if ~isempty(regexp(trialData.type, 'TM')) %#ok<RGXP1>
+    for i = 1:numStrides - 1
+        SHS  = strideEvents.tSHS(i);
+        FTO  = strideEvents.tFTO(i);
+        FHS  = strideEvents.tFHS(i);
+        STO  = strideEvents.tSTO(i);
         FTO2 = strideEvents.tFTO2(i);
         SHS2 = strideEvents.tSHS2(i);
 
