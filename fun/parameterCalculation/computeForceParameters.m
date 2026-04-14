@@ -1,5 +1,5 @@
-function out = computeForceParameters(strideEvents,GRFData,slowleg, ...
-    fastleg,BW,trialData,markerData,subData,FyPSat)
+function out = computeForceParameters(strideEvents, GRFData, slowleg, ...
+    fastleg, BW, trialData, markerData, subData, FyPSat)
 % computeForceParameters  Compute kinetic treadmill parameters per stride.
 %
 %   Analyzes anterior-posterior ground reaction force (GRF) data on a
@@ -158,10 +158,10 @@ for i=1:length(strideEvents.tSHS)-1
             .getDataAsTS([slowleg 'Fy']).Data, 'omitnan');
     end
 end
-FastLegOffSet = round(median(FastLegOffSetData,'omitnan'),3);
-SlowLegOffSet = round(median(SlowLegOffSetData,'omitnan'),3);
-display(['Fast Leg Off Set: ' num2str(FastLegOffSet) ...
-    ', Slow Leg OffSet: ' num2str(SlowLegOffSet)]);
+fastLegOffset = round(median(fastLegOffsetData, 'omitnan'), 3);
+slowLegOffset = round(median(slowLegOffsetData, 'omitnan'), 3);
+disp(['Fast Leg Offset: ' num2str(fastLegOffset) ...
+    ', Slow Leg Offset: ' num2str(slowLegOffset)]);
 
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy'])))=Filtered.getDataAsVector([fastleg 'Fy'])-FastLegOffSet;
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getDataAsVector([slowleg 'Fy'])-SlowLegOffSet;
@@ -213,18 +213,20 @@ if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there wi
         FTO2 = strideEvents.tFTO2(i);
         SHS2 = strideEvents.tSHS2(i);
 
-        % Get the slow step for this stride
+        % Slow-leg stance phase Fy (SHS to STO), normalized to BW
         if isnan(SHS) || isnan(STO)
-            striderS=[];
+            striderS = [];
         else
-            striderS=flipIT.*Filtered.split(SHS, STO).getDataAsTS([slowleg 'Fy']).Data/Normalizer;
+            striderS = flipSign .* filteredGRF.split(SHS, STO) ...
+                .getDataAsTS([slowleg 'Fy']).Data / normalizer;
         end
 
-        % Get the fast step for this strides
+        % Fast-leg stance phase Fy (FHS to FTO2), normalized to BW
         if isnan(FHS) || isnan(FTO2)
-            striderF=[];
+            striderF = [];
         else
-            striderF=flipIT.*Filtered.split(FHS, FTO2).getDataAsTS([fastleg 'Fy']).Data/Normalizer;
+            striderF = flipSign .* filteredGRF.split(FHS, FTO2) ...
+                .getDataAsTS([fastleg 'Fy']).Data / normalizer;
         end
 
         % Get the handrail data
@@ -287,21 +289,21 @@ FastB_Contra_FySym = FyBFmax + FyPSmax;
 
 %% Center of Mass (COM): Not Robust Enough for General Code
 % if ~isempty(markerData.getLabelsThatMatch('HAT'))
-%    outCOM = computeCOM(strideEvents,markerData,BW,slowleg,fastleg, ...
-%        impactS,expData,gaitEvents,flipIT,FyPSat);
+%     outCOM = computeCOM(strideEvents, markerData, BW, slowleg, ...
+%         fastleg, impactS, expData, gaitEvents, flipSign, FyPSat);
 % else
-outCOM.Data = [];
-outCOM.labels = [];
+outCOM.Data        = [];
+outCOM.labels      = [];
 outCOM.description = [];
 % end
 
 %% Center of Pressure (COP): Not Ready to Be Used
 % if ~isempty(markerData.getLabelsThatMatch('LCOP'))
-%     outCOP = computeCOPParams(strideEvents,markerData,BW,slowleg, ...
-%         fastleg,impactS,expData,gaitEvents);
+%     outCOP = computeCOPParams(strideEvents, markerData, BW, ...
+%         slowleg, fastleg, impactS, expData, gaitEvents);
 % else
-outCOP.Data = [];
-outCOP.labels = [];
+outCOP.Data        = [];
+outCOP.labels      = [];
 outCOP.description = [];
 % end
 
@@ -310,14 +312,14 @@ outCOP.description = [];
 %     description = [description outCOM.description outCOP.description];
 % end
 
-%% Assign Parameters to the Data Matrix
-data = nan(lenny,length(paramLabels));
+%% Assign Parameters to Data Matrix
+data = nan(numStrides, length(paramLabels));
 for ii = 1:length(paramLabels)
-    eval(['data(:,ii) = ' paramLabels{ii} ';']);
+    eval(['data(:, ii) = ' paramLabels{ii} ';']);
 end
 
-%% Output the Computed Parameters
-out = parameterSeries(data,paramLabels,[],description);
+%% Output Computed Parameters
+out = parameterSeries(data, paramLabels, [], description);
 
 end
 
