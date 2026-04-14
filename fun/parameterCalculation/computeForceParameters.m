@@ -1,12 +1,55 @@
 function out = computeForceParameters(strideEvents,GRFData,slowleg, ...
     fastleg,BW,trialData,markerData,subData,FyPSat)
-% computeForceParameters -- analyzes kinetic treadmill data
-%   inital reprocessing and any reprocessing will again analyze the kinetic
-%   data.  Analysis is mostly focused on the anterior-posterior forces
-%   which is the focus of the (Sombric et al. 2019) and (Sombric et. al
-%   2020) papers.
+% computeForceParameters  Compute kinetic treadmill parameters per stride.
+%
+%   Analyzes anterior-posterior ground reaction force (GRF) data on a
+% stride-by-stride basis, focused on braking and propulsion forces as
+% described in Sombric et al. (2019, 2020). Returns a parameterSeries
+% object that can be concatenated with other parameter series objects
+% (e.g., from computeTemporalParameters).
+%
+%   Inputs:
+%     strideEvents - Struct of stride-level gait event times generated
+%                    by calcParameters, with fields tSHS, tFTO, tFHS,
+%                    tSTO, tSHS2, and tFTO2 (N-by-1 vectors, in seconds)
+%     GRFData      - orientedLabTimeSeries containing ground reaction
+%                    force data for the trial
+%     slowleg      - Char specifying the slow-belt leg ('L' or 'R')
+%     fastleg      - Char specifying the fast-belt leg ('L' or 'R')
+%     BW           - Body weight of the subject (in kg)
+%     trialData    - processedTrialData object; used for trial type,
+%                    description, and inclination angle
+%     markerData   - orientedLabTimeSeries containing kinematic marker
+%                    data (used for optional COM/COP computations)
+%     subData      - subjectData object containing subject information,
+%                    including the ID used to detect decline trials
+%     FyPSat       - (optional) Saturation value for the slow-leg
+%                    propulsion force; passed to the commented-out
+%                    computeCOM call. Defaults to [] if omitted.
+%
+%   Outputs:
+%     out - parameterSeries object containing all kinetic parameters
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeTemporalParameters, computeSpatialParameters,
+%     ComputeLegForceParameters, DetermineTMAngle, parameterSeries,
+%     calcParameters
 
-%% Labels & Descriptions
+arguments
+    strideEvents (1,1) struct
+    GRFData
+    slowleg      (1,:) char
+    fastleg      (1,:) char
+    BW           (1,1) double
+    trialData    (1,1)
+    markerData
+    subData      (1,1)
+    FyPSat              = []
+end
+
+%% Labels and Descriptions
 aux = { ...
     'TMAngle',              'Angle I think the study was run at';...
     'WalkingDirection',     'Identified as a decline trial with subjects walking backwards';...
@@ -52,8 +95,8 @@ aux = { ...
     'FyBFmax_ABS',          'FyBFmax_ABS';...
     'FyBSmax_ABS',          'FyBSmax_ABS'};
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
 %% Retrieve Trial Information & Preliminarily Filter the Data
 % retrieve trial description, which contains TM inclination information
