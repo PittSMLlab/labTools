@@ -98,29 +98,30 @@ aux = { ...
 paramLabels = aux(:, 1);
 description = aux(:, 2);
 
-%% Retrieve Trial Information & Preliminarily Filter the Data
 % retrieve trial description, which contains TM inclination information
 trial = trialData.description;
+%% Retrieve Trial Information and Filter Data
+tmAngle     = DetermineTMAngle(trialData);
 
-if strcmpi(trialData.type,'NIM')    % if Nimbus shoe trial, ...
+% Normalize forces to body weight (add Nimbus shoe mass for those trials)
+if strcmpi(trialData.type, 'NIM')   % if Nimbus shoe trial, ...
     % TODO: update this block to account for weight of new Moonwalkers
-    Normalizer = 9.81 * (BW + 3.4); % two Nimbus shoes weigh 3.4 kg
+    normalizer = 9.81 * (BW + 3.4);    % two Nimbus shoes weigh 3.4 kg
 else                                % otherwise, ...
-    Normalizer = 9.81 * BW;
+    normalizer = 9.81 * BW;
 end
 % NOTE: may want to change if desire braking magnitudes
-FlipB = 1;
+flipB = 1;
 
 if iscell(trial)        % if 'trial' is a cell array, ...
     trial = trial{1};   % retrieve only first element
 end
 
-% if participants are walking declined (i.e., backwards on TM), ...
-ang = DetermineTMAngle(trialData);
-if contains(lower(subData.ID),'decline')
-    flipIT = -1;
+% Determine walking direction sign for force flipping in decline trials
+if contains(lower(subData.ID), 'decline')
+    flipSign = -1;
 else
-    flipIT = 1;
+    flipSign = 1;
 end
 
 % filter forces before further processing
@@ -143,16 +144,18 @@ for i=1:length(strideEvents.tSHS)-1
     FTO2 = strideEvents.tFTO2(i);
     SHS2 = strideEvents.tSHS2(i);
 
-    if isnan(FTO) || isnan(FHS) ||FTO>FHS
         %keyboard
-        FastLegOffSetData(i) = NaN;
+    if isnan(FTO) || isnan(FHS) || FTO > FHS
+        fastLegOffsetData(i) = NaN;
     else
-        FastLegOffSetData(i) = median(Filtered.split(FTO,FHS).getDataAsTS([fastleg 'Fy']).Data,'omitnan');
+        fastLegOffsetData(i) = median(filteredGRF.split(FTO, FHS) ...
+            .getDataAsTS([fastleg 'Fy']).Data, 'omitnan');
     end
     if isnan(STO) || isnan(SHS2)
-        SlowLegOffSetData(i) = NaN;
+        slowLegOffsetData(i) = NaN;
     else
-        SlowLegOffSetData(i) = median(Filtered.split(STO,SHS2).getDataAsTS([slowleg 'Fy']).Data,'omitnan');
+        slowLegOffsetData(i) = median(filteredGRF.split(STO, SHS2) ...
+            .getDataAsTS([slowleg 'Fy']).Data, 'omitnan');
     end
 end
 FastLegOffSet = round(median(FastLegOffSetData,'omitnan'),3);
