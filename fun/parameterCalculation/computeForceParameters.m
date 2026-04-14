@@ -125,27 +125,28 @@ else
     flipSign = 1;
 end
 
-% filter forces before further processing
-Filtered = GRFData.lowPassFilter(20);   % cutoff frequency: 20 Hz
+% Low-pass filter forces prior to all further processing (cutoff: 20 Hz)
+filteredGRF = GRFData.lowPassFilter(20);
 
-%~~~~~~~~~~~~~~~~ REMOVE ANY OFFSETS IN THE DATA~~~~~~~~~~~~~~~~~~~~~~~~~~~
-%New 8/5/2016 CJS: It came to my attenion that one of the decline subjects
-%(LD30) one of the force plates was not properly zeroed.  Here I am
-%manually shifting the forces.  I am assuming that the vertical forces have
-%been properly been shifted during the c3d2mat process, otherwise the
-%events are wrong and these lines of code will not save you. rats
+%% Remove Anterior-Posterior Force Offsets
+% CJS (8/5/2016): One decline subject (LD30) had a force plate that was not
+% properly zeroed. The Fy offsets are estimated here from the swing phase
+% of each leg (when that leg is airborne, Fy should be ~0). Vertical forces
+% are assumed to be correctly zeroed during c3d2mat; if they are not, gait
+% events will be incorrect and this correction will not help.
 
-%figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');
 for i=1:length(strideEvents.tSHS)-1
     timeGRF = round(Filtered.Time,6);
     SHS = strideEvents.tSHS(i);
     FTO = strideEvents.tFTO(i);
     FHS = strideEvents.tFHS(i);
     STO = strideEvents.tSTO(i);
+% figure; plot(filteredGRF.getDataAsTS([s 'Fy']).Data, 'b');
+% hold on; plot(filteredGRF.getDataAsTS([f 'Fy']).Data, 'r');
+
     FTO2 = strideEvents.tFTO2(i);
     SHS2 = strideEvents.tSHS2(i);
 
-        %keyboard
     if isnan(FTO) || isnan(FHS) || FTO > FHS
         fastLegOffsetData(i) = NaN;
     else
@@ -166,10 +167,13 @@ disp(['Fast Leg Offset: ' num2str(fastLegOffset) ...
 
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy'])))=Filtered.getDataAsVector([fastleg 'Fy'])-FastLegOffSet;
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getDataAsVector([slowleg 'Fy'])-SlowLegOffSet;
-%figure; plot(Filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-LevelofInterest = 0.5 .* flipIT .* cosd(90 - abs(ang)); %The actual angle of the incline
+% figure; plot(filteredGRF.getDataAsTS([slowleg 'Fy']).Data, 'b');
+% hold on; plot(filteredGRF.getDataAsTS([fastleg 'Fy']).Data, 'r');
+% line([0 5*10^5], [0, 0]);
+
+% Incline-specific gravity component along the walking direction (mm/s^2)
+levelOfInterest = 0.5 .* flipSign .* cosd(90 - abs(tmAngle));
 
 %% Initialize Output Arrays
 TMAngle          = repmat(tmAngle,   1, numStrides);
