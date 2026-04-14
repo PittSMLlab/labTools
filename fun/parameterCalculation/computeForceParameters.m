@@ -102,6 +102,7 @@ description = aux(:, 2);
 trial = trialData.description;
 %% Retrieve Trial Information and Filter Data
 tmAngle     = DetermineTMAngle(trialData);
+numStrides  = length(strideEvents.tSHS);
 
 % Normalize forces to body weight (add Nimbus shoe mass for those trials)
 if strcmpi(trialData.type, 'NIM')   % if Nimbus shoe trial, ...
@@ -170,36 +171,34 @@ Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy'])))=Filtered.getD
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LevelofInterest = 0.5 .* flipIT .* cosd(90 - abs(ang)); %The actual angle of the incline
 
-%Initalize data objects
-lenny = length(strideEvents.tSHS);
-TMAngle = repmat(ang,1,lenny);
-WalkingDirection = repmat(flipIT,1,lenny);
-FyBS = NaN .* ones(1,lenny);
-FyPS = NaN .* ones(1,lenny);
-FzS = NaN .* ones(1,lenny);
-FxS = NaN .* ones(1,lenny);
-FyBF = NaN .* ones(1,lenny);
-FyPF = NaN .* ones(1,lenny);
-FzF = NaN .* ones(1,lenny);
-FxF = NaN .* ones(1,lenny);
-HandrailHolding = NaN .* ones(1,lenny);
-FyBSmax = NaN .* ones(1,lenny);
-FyPSmax = NaN .* ones(1,lenny);
-FzSmax = NaN .* ones(1,lenny);
-FxSmax = NaN .* ones(1,lenny);
-FyBFmax = NaN .* ones(1,lenny);
-FyPFmax = NaN .* ones(1,lenny);
-FzFmax = NaN .* ones(1,lenny);
-FxFmax = NaN .* ones(1,lenny);
-FxFmax = NaN .* ones(1,lenny);
-FyPSsum = NaN .* ones(1,lenny);
-FyPFsum = NaN .* ones(1,lenny);
-FyBSsum = NaN .* ones(1,lenny);
-FyBFsum = NaN .* ones(1,lenny);
-FyBSmax_ABS = NaN .* ones(1,lenny);
-FyBFmax_ABS = NaN .* ones(1,lenny);
-ImpactMagS = NaN .* ones(1,lenny);
-ImpactMagF = NaN .* ones(1,lenny);
+%% Initialize Output Arrays
+TMAngle          = repmat(tmAngle,   1, numStrides);
+WalkingDirection = repmat(flipSign,  1, numStrides);
+FyBS          = nan(1, numStrides);
+FyPS          = nan(1, numStrides);
+FzS           = nan(1, numStrides);
+FxS           = nan(1, numStrides);
+FyBF          = nan(1, numStrides);
+FyPF          = nan(1, numStrides);
+FzF           = nan(1, numStrides);
+FxF           = nan(1, numStrides);
+HandrailHolding = nan(1, numStrides);
+FyBSmax       = nan(1, numStrides);
+FyPSmax       = nan(1, numStrides);
+FzSmax        = nan(1, numStrides);
+FxSmax        = nan(1, numStrides);
+FyBFmax       = nan(1, numStrides);
+FyPFmax       = nan(1, numStrides);
+FzFmax        = nan(1, numStrides);
+FxFmax        = nan(1, numStrides);
+FyPSsum       = nan(1, numStrides);
+FyPFsum       = nan(1, numStrides);
+FyBSsum       = nan(1, numStrides);
+FyBFsum       = nan(1, numStrides);
+FyBSmax_ABS   = nan(1, numStrides);
+FyBFmax_ABS   = nan(1, numStrides);
+ImpactMagS    = nan(1, numStrides);
+ImpactMagF    = nan(1, numStrides);
 
 if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there will not be any forces to analyze
     for i=1:length(strideEvents.tSHS)-1
@@ -229,39 +228,36 @@ if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there wi
                 .getDataAsTS([fastleg 'Fy']).Data / normalizer;
         end
 
-        % Get the handrail data
-        %Currently not defining handrail data because data integrity is
-        %poor unless experimenter explictly collected this data.
-        %HandrailHolding(i)= NaN;
-
-        %% Slow Leg --  Compute some measures of anterior-posterior forces
-        %Previously the following was part of a funciton called SeperateBP
         if ~isempty(striderS) && ~all(striderS==striderS(1)) && ~isempty(FTO) && ~isempty(STO) % Make sure there are no problems with the GRF
             if std(striderS,'omitnan') > 0.01 && mean(striderS,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
+        % Currently, handrail holding is not computed because data
+        % integrity is poor unless it was explicitly collected.
+        % HandrailHolding(i) = NaN;
 
                 [FyBS(i), FyBSsum(i), FyPS(i), FyPSsum(i), FyBSmax(i), FyBSmax_ABS(i),...
                     FyBSmaxQS(i), FyPSmax(i), FyPSmaxQS(i), ImpactMagS(i)] ...
                     = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, ['Epoch: ' trialData.name, '; Stide#:' num2str(i) '; SlowLeg']);
+        % Slow leg: compute anterior-posterior force measures
             end
 
-            % Compute some measures of the vertical and medial-lateral forces
             FzS(i) = -1 * mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,'omitnan') / Normalizer;
             FxS(i) = mean(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,'omitnan') / Normalizer;
             FzSmax(i) = -1 * min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fz']).Data,[],'omitnan') / Normalizer;
             FxSmax(i) = min(Filtered.split(SHS,STO).getDataAsTS([slowleg 'Fx']).Data,[],'omitnan') / Normalizer;
+            % Vertical and medial-lateral force measures
         end
 
-        %% Fast Leg -- Compute some measures of anterior-posterior forces
         if ~isempty(striderF) && ~all(striderF==striderF(1)) && ~isempty(FTO) && ~isempty(STO)
             if std(striderF,'omitnan') > 0.01 || mean(striderF,'omitnan') > 0.01 %This is to get rid of places where there is only noise and no data
                 [FyBF(i), FyBFsum(i), FyPF(i), FyPFsum(i), FyBFmax(i), FyBFmax_ABS(i),...
                     FyBFmaxQS(i), FyPFmax(i),  FyPFmaxQS(i), ImpactMagF(i)] ...
                     = ComputeLegForceParameters(striderF,  LevelofInterest, FlipB, ['Epoch: ' trialData.name, '; Stide#:' num2str(i) '; FastLeg']);
+        % Fast leg: compute anterior-posterior force measures
             end
 
-            % Compute some measures of the vertical and medial-lateral forces
             FzF(i) = -1 * mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,'omitnan') / Normalizer;
             FxF(i) = mean(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,'omitnan') / Normalizer;
+            % Vertical and medial-lateral force measures
             % TODO: why min & max here compared to min & min above?
             FzFmax(i) = -1 * min(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fz']).Data,[],'omitnan') / Normalizer;
             FxFmax(i) = max(Filtered.split(FHS,FTO2).getDataAsTS([fastleg 'Fx']).Data,[],'omitnan') / Normalizer;
@@ -270,20 +266,22 @@ if ~isempty(regexp(trialData.type,'TM')) %If overground (i.e., OG) then there wi
 end
 
 %% Kinetic Symmetry Measures
-FyBSym = FyBF - FyBS;
-FyPSym = FyPF - FyPS;
-FyBmaxSym = FyBFmax - FyBSmax;
-FyPmaxSym = FyPFmax - FyPSmax;
-FyBmaxRatio = FyBSmax ./ FyBFmax;
-FyPmaxRatio = FyPSmax ./ FyPFmax;
-FyBmaxSymNorm = (abs(FyBFmax)-abs(FyBSmax)) ./ (abs(FyBFmax)+abs(FyBSmax));
-FyPmaxSymNorm = (abs(FyPFmax)-abs(FyPSmax)) ./ (abs(FyPFmax)+abs(FyPSmax));
-FyBFmaxPer = abs(FyBFmax) ./ (abs(FyBFmax) + abs(FyBSmax));
-FyBSmaxPer = abs(FyBSmax) ./ (abs(FyBFmax) + abs(FyBSmax));
-FyPFmaxPer = abs(FyPFmax) ./ (abs(FyPFmax) + abs(FyPSmax));
-FyPSmaxPer = abs(FyPSmax) ./ (abs(FyPFmax) + abs(FyPSmax));
-Slow_Ipsi_FySym = FyBSmax + FyPSmax;
-Fast_Ipsi_FySym = FyBFmax + FyPFmax;
+FyBSym       = FyBF   - FyBS;
+FyPSym       = FyPF   - FyPS;
+FyBmaxSym    = FyBFmax - FyBSmax;
+FyPmaxSym    = FyPFmax - FyPSmax;
+FyBmaxRatio  = FyBSmax ./ FyBFmax;
+FyPmaxRatio  = FyPSmax ./ FyPFmax;
+FyBmaxSymNorm = (abs(FyBFmax) - abs(FyBSmax)) ./ ...
+    (abs(FyBFmax) + abs(FyBSmax));
+FyPmaxSymNorm = (abs(FyPFmax) - abs(FyPSmax)) ./ ...
+    (abs(FyPFmax) + abs(FyPSmax));
+FyBFmaxPer   = abs(FyBFmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+FyBSmaxPer   = abs(FyBSmax) ./ (abs(FyBFmax) + abs(FyBSmax));
+FyPFmaxPer   = abs(FyPFmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+FyPSmaxPer   = abs(FyPSmax) ./ (abs(FyPFmax) + abs(FyPSmax));
+Slow_Ipsi_FySym    = FyBSmax + FyPSmax;
+Fast_Ipsi_FySym    = FyBFmax + FyPFmax;
 SlowB_Contra_FySym = FyBSmax + FyPFmax;
 FastB_Contra_FySym = FyBFmax + FyPSmax;
 
