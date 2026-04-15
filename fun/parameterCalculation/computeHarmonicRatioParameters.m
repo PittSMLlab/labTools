@@ -17,11 +17,22 @@ function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
 %                    prefixes
 %     options      - (optional) Struct with fields:
 %                      .numHarmonics: number of harmonics to include
-%                                     (default: 20)
-%                      .useMarkers:   'GT' or 'ALL' (default: 'GT')
+%                                     (default: 10; following Menz,
+%                                     Lord & Fitzpatrick 2003 J
+%                                     Gerontol A, the foundational HR
+%                                     paper for walking)
+%                      .useMarkers:   'GT' or 'ALL' (default: 'GT';
+%                                     GT markers sit on a firm bony
+%                                     prominence and have lower soft-
+%                                     tissue artifact than ASIS/PSIS)
 %                      .filterCutoff: low-pass cutoff frequency in Hz
 %                                     applied to pelvis position before
-%                                     differentiation (default: 6)
+%                                     double differentiation (default:
+%                                     6; conservative cutoff to limit
+%                                     ω² noise amplification from
+%                                     double differentiation; yields
+%                                     ~6 meaningful harmonics at a
+%                                     typical ~1 Hz stride frequency)
 %
 %   Outputs:
 %     out - parameterSeries object containing all harmonic ratio
@@ -47,7 +58,7 @@ arguments
 end
 
 if ~isfield(options, 'numHarmonics')    % if no field, ...
-    options.numHarmonics = 20;          % set to default (20 harmonics)
+    options.numHarmonics = 10;          % set to default (10 harmonics)
 end
 if ~isfield(options, 'useMarkers')      % if no field, ...
     options.useMarkers = 'GT';          % use only 'GT' markers (default)
