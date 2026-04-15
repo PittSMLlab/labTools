@@ -162,19 +162,16 @@ function pelvisPos = computePelvisPosition(markerData, useMarkers)
 % Compute pelvis position as (T x 3) centroid of available markers.
 % Returns columns [x, y, z] in the same units as markerData.
 if strcmpi(useMarkers, 'GT')
-    % use only Greater Trochanter markers (most reliable)
-    pelvisPos = (markerData.R_GT + markerData.L_GT) / 2;
+    % Use only Greater Trochanter markers (most reliable)
+    GTdata    = markerData.getOrientedData({'RGT', 'LGT'});
+    pelvisPos = squeeze(mean(GTdata, 2, 'omitnan'));
 else
-    % use all available markers
-    markers = {};
-    if isfield(markerData, 'R_GT'),   markers{end+1} = markerData.R_GT;   end
-    if isfield(markerData, 'L_GT'),   markers{end+1} = markerData.L_GT;   end
-    if isfield(markerData, 'R_ASIS'), markers{end+1} = markerData.R_ASIS; end
-    if isfield(markerData, 'L_ASIS'), markers{end+1} = markerData.L_ASIS; end
-    if isfield(markerData, 'R_PSIS'), markers{end+1} = markerData.R_PSIS; end
-    if isfield(markerData, 'L_PSIS'), markers{end+1} = markerData.L_PSIS; end
-
-    pelvisPos = mean(cat(3, markers{:}), 3);
+    % Use all available pelvis markers; getOrientedData returns NaN
+    % columns for any prefixes not present, which are then excluded
+    % by the 'omitnan' flag in mean()
+    pelvisLabels = {'RGT', 'LGT', 'RASI', 'LASI', 'RPSI', 'LPSI'};
+    GTdata    = markerData.getOrientedData(pelvisLabels);
+    pelvisPos = squeeze(mean(GTdata, 2, 'omitnan'));
 end
 end
 
