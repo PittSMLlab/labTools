@@ -10,20 +10,26 @@ function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
 %
 %   Inputs:
 %     strideEvents - Struct of stride-level gait event times generated
-%                    by calcParameters, with fields tSHS, tFTO, tFHS,
-%                    tSTO, tSHS2, and tFHS2 (N-by-1 vectors, in seconds)
+%                    by calcParameters, with fields tSHS and tSHS2
+%                    (N-by-1 vectors, in seconds)
 %     markerData   - orientedLabTimeSeries containing kinematic marker
-%                    data; used to compute pelvis position and acceleration
+%                    data; must include 'RGT' and/or 'LGT' label
+%                    prefixes
 %     options      - (optional) Struct with fields:
 %                      .numHarmonics: number of harmonics to include
 %                                     (default: 20)
 %                      .useMarkers:   'GT' or 'ALL' (default: 'GT')
+%                      .filterCutoff: low-pass cutoff frequency in Hz
+%                                     applied to pelvis position before
+%                                     differentiation (default: 6)
 %
 %   Outputs:
-%     out - parameterSeries object containing all harmonic ratio parameters
+%     out - parameterSeries object containing all harmonic ratio
+%           parameters
 %
 %   Toolbox Dependencies:
-%     None
+%     Signal Processing Toolbox (butter, filtfilt — used in
+%     filterMarkerData local function)
 %
 %   See also: computeSpatialParameters, computeTemporalParameters,
 %     computeForceParameters, parameterSeries, calcParameters
@@ -82,13 +88,13 @@ pelvisAccel = computeAcceleration(pelvisPosFilt, samplingRate);
 % Identify complete strides (right HS to right HS or left HS to left HS)
 % Use the leg with more detected heel strikes
 allHS = combineHeelStrikes(heelStrikes);
+% Initialize output arrays (one value per stride)
+numStrides     = length(timeSHS);
+harmonicRatio  = nan(numStrides, 1);
+harmonicRatioX = nan(numStrides, 1);
+harmonicRatioY = nan(numStrides, 1);
+harmonicRatioZ = nan(numStrides, 1);
 
-% Initialize output arrays
-numStrides = length(allHS.indices) - 1;
-HR_VT         = nan(numStrides, 1);
-HR_AP         = nan(numStrides, 1);
-HR_ML         = nan(numStrides, 1);
-HR_MAG        = nan(numStrides, 1);
 strideIndices = zeros(numStrides, 2);
 strideTimes   = zeros(numStrides, 1);
 strideFreq    = zeros(numStrides, 1);
@@ -145,7 +151,8 @@ end
 %% Local Functions
 
 function pelvisPos = computePelvisPosition(markerData, useMarkers)
-% Compute pelvis position as centroid of available markers
+% Compute pelvis position as (T x 3) centroid of available markers.
+% Returns columns [x, y, z] in the same units as markerData.
 if strcmpi(useMarkers, 'GT')
     % use only Greater Trochanter markers (most reliable)
     pelvisPos = (markerData.R_GT + markerData.L_GT) / 2;
