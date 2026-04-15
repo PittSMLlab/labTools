@@ -96,9 +96,6 @@ pelvisPosFilt = filterMarkerData(pelvisPos, samplingRate, options.filterCutoff);
 % Compute pelvis acceleration via double differentiation
 pelvisAccel = computeAcceleration(pelvisPosFilt, samplingRate);
 
-% Identify complete strides (right HS to right HS or left HS to left HS)
-% Use the leg with more detected heel strikes
-allHS = combineHeelStrikes(heelStrikes);
 % Initialize output arrays (one value per stride)
 numStrides     = length(timeSHS);
 harmonicRatio  = nan(numStrides, 1);
@@ -236,22 +233,6 @@ function accel = computeAcceleration(pos, fs)
 vel = gradient(pos, 1/fs);
 % Second derivative (acceleration)
 accel = gradient(vel, 1/fs);
-end
-
-function allHS = combineHeelStrikes(heelStrikes)
-% Combine and sort heel strikes from both legs
-% Determine which to use for stride segmentation
-rightHS = heelStrikes.right;
-leftHS  = heelStrikes.left;
-
-% Use whichever leg has more heel strikes
-if length(rightHS) >= length(leftHS)
-    allHS.indices = sort(rightHS);
-    allHS.leg = 'right';
-else
-    allHS.indices = sort(leftHS);
-    allHS.leg = 'left';
-end
 end
 
 function HR = computeHR_singleStride(signal, strideFreq, numHarmonics)
