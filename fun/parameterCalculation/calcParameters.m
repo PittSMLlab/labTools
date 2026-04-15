@@ -248,11 +248,21 @@ if any(strcmpi(parameterClasses, 'spatial')) && ...
 end
 
 %% Extract Harmonic Ratio Parameters
-% TODO: add checks to ensure GT markers are present before computing
-if ~isempty(trialData.markerData)
-    % harmonicRatios = computeHarmonicRatioParameters( ...
-    %     strideEvents, trialData.markerData);
-    % out = cat(out, harmonicRatios);
+% Only compute if marker data is present and GT markers are available.
+% Wrapped in try-catch so that errors here do not abort the full
+% c3d2mat processing pipeline. If an error occurs, a warning is
+% issued and the trial proceeds without harmonic ratio parameters.
+if ~isempty(trialData.markerData) && ...
+        ~isempty(trialData.markerData.getLabelsThatMatch('GT'))
+    try
+        harmonicRatios = computeHarmonicRatioParameters( ...
+            strideEvents, trialData.markerData);
+        out = cat(out, harmonicRatios);
+    catch ME
+        warning('calcParameters:harmonicRatioError', ...
+            ['Could not compute harmonic ratio parameters for ' ...
+            file '. Skipping. Error: ' ME.message]);
+    end
 end
 
 %% Extract Muscle Activity (EMG) Parameters
