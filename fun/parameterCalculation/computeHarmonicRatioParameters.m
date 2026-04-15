@@ -1,6 +1,6 @@
 function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
     options)
-% computeHarmonicRatioParameters  Compute harmonic ratio parameters per stride.
+% computeHarmonicRatioParameters  Compute harmonic ratios per stride.
 %
 %   Computes stride-by-stride harmonic ratio parameters and returns a
 % parameterSeries object that can be concatenated with other parameter
@@ -63,7 +63,7 @@ if ~isfield(options, 'useMarkers')      % if no field, ...
     options.useMarkers = 'GT';          % use only 'GT' markers (default)
 end
 if ~isfield(options, 'filterCutoff')    % if no field, ...
-    options.filterCutoff = 6;           % set to 6 Hz (default for kinematics)
+    options.filterCutoff = 6;           % set to default (6 Hz)
 end
 
 %% Gait Stride Event Times
@@ -90,7 +90,8 @@ samplingRate = 1 / markerData.sampPeriod;
 pelvisPos = computePelvisPosition(markerData, options.useMarkers);
 
 % Low-pass filter pelvis position data before differentiation
-pelvisPosFilt = filterMarkerData(pelvisPos, samplingRate, options.filterCutoff);
+pelvisPosFilt = filterMarkerData( ...
+    pelvisPos, samplingRate, options.filterCutoff);
 
 % Compute pelvis acceleration via double differentiation
 pelvisAccel = computeAcceleration(pelvisPosFilt, samplingRate);
@@ -176,7 +177,7 @@ function markerDataOut = transformCoordinateSystem(markerDataIn, coordMapping)
 % Inputs:
 %   markerDataIn:  struct with marker fields (each [n x 3])
 %   coordMapping:  string specifying the transformation
-%       'XYZ_to_MLAP_VT' - x=ML, y=AP, z=VT (your system, no change needed)
+%       'XYZ_to_MLAP_VT' - x=ML, y=AP, z=VT (no change needed)
 %       'XZY_to_MLAP_VT' - x=ML, z=AP, y=VT (swap y and z)
 %       'YXZ_to_MLAP_VT' - y=ML, x=AP, z=VT (swap x and y)
 %       Custom: [ML_col, AP_col, VT_col] e.g., [1,2,3] or [2,1,3]
@@ -201,7 +202,8 @@ switch coordMapping
         if isnumeric(coordMapping) && length(coordMapping) == 3
             colOrder = coordMapping;
         else
-            error('Unknown coordinate mapping. Use predefined string or [ML_col, AP_col, VT_col]');
+            error(['Unknown coordinate mapping. Use predefined ' ...
+                'string or [ML_col, AP_col, VT_col].']);
         end
 end
 
@@ -210,7 +212,8 @@ for i = 1:length(fields)
     markerDataOut.(fields{i}) = markerDataIn.(fields{i})(:, colOrder);
 end
 
-fprintf('Applied coordinate transformation: columns [%d,%d,%d] → [ML,AP,VT]\n', colOrder);
+fprintf(['Applied coordinate transformation: ' ...
+    'columns [%d,%d,%d] → [ML,AP,VT]\n'], colOrder);
 end
 
 function dataFilt = filterMarkerData(data, fs, fc)
@@ -244,8 +247,8 @@ P = P(1:floor(n/2)+1);
 P(2:end-1) = 2*P(2:end-1);
 
 % Frequency vector
-fs_local = n * strideFreq; % Effective sampling rate for this stride
-f = fs_local * (0:(floor(n/2))) / n;
+fsLocal = n * strideFreq; % Effective sampling rate for this stride
+f = fsLocal * (0:(floor(n/2))) / n;
 
 % Extract harmonic amplitudes
 evenSum = 0;
