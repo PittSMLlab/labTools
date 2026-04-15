@@ -95,18 +95,21 @@ for i = 1:numStrides
     idx_end   = allHS.indices(i+1);
 
     % Store stride info
-    strideIndices(i,:) = [idx_start, idx_end];
-    strideTimes(i) = (idx_start + idx_end) / 2 / samplingRate;
-    strideDuration = (idx_end - idx_start) / samplingRate;
-    strideFreq(i) = 1 / strideDuration;
+    strideIndices(i, :) = [idx_start, idx_end];
+    strideTimes(i)      = (idx_start + idx_end) / 2 / samplingRate;
+    strideDuration      = (idx_end - idx_start) / samplingRate;
+    strideFreq(i)       = 1 / strideDuration;
 
     % Extract acceleration for this stride
     accel_stride = pelvisAccel(idx_start:idx_end, :);
 
     % Compute harmonic ratio for each direction
-    HR_VT(i) = computeHR_singleStride(accel_stride(:,3), strideFreq(i), options.numHarmonics);
-    HR_AP(i) = computeHR_singleStride(accel_stride(:,2), strideFreq(i), options.numHarmonics);
-    HR_ML(i) = computeHR_singleStride(accel_stride(:,1), strideFreq(i), options.numHarmonics);
+    HR_VT(i)  = computeHR_singleStride( ...
+        accel_stride(:, 3), strideFreq(i), options.numHarmonics);
+    HR_AP(i)  = computeHR_singleStride( ...
+        accel_stride(:, 2), strideFreq(i), options.numHarmonics);
+    HR_ML(i)  = computeHR_singleStride( ...
+        accel_stride(:, 1), strideFreq(i), options.numHarmonics);
 
     % Compute aggregate HR using vector magnitude
     accel_mag = sqrt(sum(accel_stride.^2, 2));
@@ -158,8 +161,8 @@ function markerDataOut = transformCoordinateSystem(markerDataIn, coordMapping)
 % Transform marker data between coordinate systems
 %
 % Inputs:
-%   markerDataIn: struct with marker fields (each [n x 3])
-%   coordMapping: string specifying the transformation
+%   markerDataIn:  struct with marker fields (each [n x 3])
+%   coordMapping:  string specifying the transformation
 %       'XYZ_to_MLAP_VT' - x=ML, y=AP, z=VT (your system, no change needed)
 %       'XZY_to_MLAP_VT' - x=ML, z=AP, y=VT (swap y and z)
 %       'YXZ_to_MLAP_VT' - y=ML, x=AP, z=VT (swap x and y)
@@ -215,7 +218,7 @@ function allHS = combineHeelStrikes(heelStrikes)
 % Combine and sort heel strikes from both legs
 % Determine which to use for stride segmentation
 rightHS = heelStrikes.right;
-leftHS = heelStrikes.left;
+leftHS  = heelStrikes.left;
 
 % Use whichever leg has more heel strikes
 if length(rightHS) >= length(leftHS)
@@ -229,8 +232,8 @@ end
 
 function HR = computeHR_singleStride(signal, strideFreq, numHarmonics)
 % Compute harmonic ratio for a single stride
-% signal: [n x 1] acceleration signal for one stride
-% strideFreq: fundamental frequency (stride frequency in Hz)
+% signal:       [n x 1] acceleration signal for one stride
+% strideFreq:   fundamental frequency (stride frequency in Hz)
 % numHarmonics: number of harmonics to analyze
 
 % Ensure signal is column vector and remove mean
@@ -252,7 +255,7 @@ f = fs_local * (0:(floor(n/2))) / n;
 
 % Extract harmonic amplitudes
 evenSum = 0;
-oddSum = 0;
+oddSum  = 0;
 
 for h = 1:numHarmonics
     harmonicFreq = h * strideFreq;
