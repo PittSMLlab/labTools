@@ -261,6 +261,11 @@ introduced after R2021a without an explicit compatibility note.
 - Wrap lines at 76 characters (the MATLAB editor default)
 - Use camelCase or PascalCase for all variable, function, and script
   file names (not underscore-separated)
+- Do not use `i` or `j` as loop index variables (reserved for the
+  imaginary unit in MATLAB); use descriptive names instead. For
+  stride loops use `st`; for generic enumeration use `ii`; for
+  loops over a named collection use a prefixed name such as `iField`
+  or `iMarker` to make the indexing role explicit
 - Do not indent the base level of code inside functions, as the
   MATLAB IDE autoformatter removes this indentation
 
