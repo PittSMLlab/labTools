@@ -136,15 +136,6 @@ for i = 1:numStrides
         accel_mag, strideFreq_i, options.numHarmonics);
 end
 
-% Package results
-HR_results.HR_VT         = HR_VT;
-HR_results.HR_AP         = HR_AP;
-HR_results.HR_ML         = HR_ML;
-HR_results.HR_MAG        = HR_MAG;
-HR_results.strideIndices = strideIndices;
-HR_results.strideTimes   = strideTimes;
-HR_results.strideFreq    = strideFreq;
-
 %% Assign Parameters to Data Matrix
 data = nan(numStrides, length(paramLabels));
 for ii = 1:length(paramLabels)
