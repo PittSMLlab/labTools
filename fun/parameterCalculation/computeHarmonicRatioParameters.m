@@ -66,13 +66,17 @@ paramLabels = aux(:, 1);
 description = aux(:, 2);
 
 %% Compute Harmonic Ratio Parameters
-% Compute pelvis position (centroid of markers)
+% Get sampling rate from marker data
+samplingRate = 1 / markerData.sampPeriod;
+
+% Compute pelvis position as centroid of GT markers; pelvisPos is
+% a (T x 3) array where the columns correspond to x, y, z
 pelvisPos = computePelvisPosition(markerData, options.useMarkers);
 
-% Filter position data before differentiation
+% Low-pass filter pelvis position data before differentiation
 pelvisPosFilt = filterMarkerData(pelvisPos, samplingRate, options.filterCutoff);
 
-% Compute acceleration via double differentiation
+% Compute pelvis acceleration via double differentiation
 pelvisAccel = computeAcceleration(pelvisPosFilt, samplingRate);
 
 % Identify complete strides (right HS to right HS or left HS to left HS)
@@ -113,8 +117,9 @@ for i = 1:numStrides
         accel_stride(:, 1), strideFreq(i), options.numHarmonics);
 
     % Compute aggregate HR using vector magnitude
-    accel_mag = sqrt(sum(accel_stride.^2, 2));
-    HR_MAG(i) = computeHR_singleStride(accel_mag, strideFreq(i), options.numHarmonics);
+    accel_mag        = sqrt(sum(accel_stride.^2, 2));
+    harmonicRatio(i) = computeHR_singleStride( ...
+        accel_mag, strideFreq_i, options.numHarmonics);
 end
 
 % Package results
@@ -127,7 +132,7 @@ HR_results.strideTimes   = strideTimes;
 HR_results.strideFreq    = strideFreq;
 
 %% Assign Parameters to Data Matrix
-data = nan(length(timeSHS), length(paramLabels));
+data = nan(numStrides, length(paramLabels));
 for ii = 1:length(paramLabels)
     eval(['data(:, ii) = ' paramLabels{ii} ';']);
 end
@@ -250,9 +255,6 @@ P(2:end-1) = 2*P(2:end-1);
 % Frequency vector
 fs_local = n * strideFreq; % Effective sampling rate for this stride
 f = fs_local * (0:(floor(n/2))) / n;
-
-% Find fundamental frequency and harmonics
-[~, idx_fundamental] = min(abs(f - strideFreq));
 
 % Extract harmonic amplitudes
 evenSum = 0;
