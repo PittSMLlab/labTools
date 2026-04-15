@@ -1,4 +1,4 @@
-function out = computeHarmonicRatioParameters(strideEvents,markerData, ...
+function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
     options)
 %This function computes harmonic ratio parameters per stride
 %   This function outputs a 'parameterSeries' object, which can be
@@ -25,22 +25,23 @@ function out = computeHarmonicRatioParameters(strideEvents,markerData, ...
 if nargin < 4                           % if no 'options' structure, ...
     options = struct();                 % set to empty structure
 end
-if ~isfield(options,'numHarmonics')     % if no field, ...
+
+if ~isfield(options, 'numHarmonics')    % if no field, ...
     options.numHarmonics = 20;          % set to default (20 harmonics)
 end
-if ~isfield(options,'useMarkers')       % if no field, ...
+if ~isfield(options, 'useMarkers')      % if no field, ...
     options.useMarkers = 'GT';          % use only 'GT' markers (default)
 end
 
 %% Gait Stride Event Times
-timeSHS = strideEvents.tSHS;    % slow heel strike event times
-timeFTO = strideEvents.tFTO;    % fast toe off event times
-timeFHS = strideEvents.tFHS;    % fast heel strike event times
-timeSTO = strideEvents.tSTO;    % slow toe off event times
+timeSHS  = strideEvents.tSHS;   % slow heel strike event times
+timeFTO  = strideEvents.tFTO;   % fast toe off event times
+timeFHS  = strideEvents.tFHS;   % fast heel strike event times
+timeSTO  = strideEvents.tSTO;   % slow toe off event times
 timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
 timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
 
-%% Labels & Descriptions
+%% Labels and Descriptions
 % harmonic ratio parameters
 aux = { ...
     'harmonicRatio',    'aggregate harmonic ratio'; ...
@@ -48,10 +49,10 @@ aux = { ...
     'harmonicRatioY',   'harmonic ratio along anterior-posterior (i.e., Y) axis'; ...
     'harmonicRatioZ',   'harmonic ratio along vertical (i.e., Z) axis'};
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
-%%
+%% Compute Harmonic Ratio Parameters
 % Compute pelvis position (centroid of markers)
 pelvisPos = computePelvisPosition(markerData, options.useMarkers);
 
@@ -67,19 +68,19 @@ allHS = combineHeelStrikes(heelStrikes);
 
 % Initialize output arrays
 numStrides = length(allHS.indices) - 1;
-HR_VT = nan(numStrides, 1);
-HR_AP = nan(numStrides, 1);
-HR_ML = nan(numStrides, 1);
-HR_MAG = nan(numStrides, 1);
+HR_VT         = nan(numStrides, 1);
+HR_AP         = nan(numStrides, 1);
+HR_ML         = nan(numStrides, 1);
+HR_MAG        = nan(numStrides, 1);
 strideIndices = zeros(numStrides, 2);
-strideTimes = zeros(numStrides, 1);
-strideFreq = zeros(numStrides, 1);
+strideTimes   = zeros(numStrides, 1);
+strideFreq    = zeros(numStrides, 1);
 
 % Compute harmonic ratio for each stride
 for i = 1:numStrides
     % Extract stride data
     idx_start = allHS.indices(i);
-    idx_end = allHS.indices(i+1);
+    idx_end   = allHS.indices(i+1);
 
     % Store stride info
     strideIndices(i,:) = [idx_start, idx_end];
@@ -101,26 +102,26 @@ for i = 1:numStrides
 end
 
 % Package results
-HR_results.HR_VT = HR_VT;
-HR_results.HR_AP = HR_AP;
-HR_results.HR_ML = HR_ML;
-HR_results.HR_MAG = HR_MAG;
+HR_results.HR_VT         = HR_VT;
+HR_results.HR_AP         = HR_AP;
+HR_results.HR_ML         = HR_ML;
+HR_results.HR_MAG        = HR_MAG;
 HR_results.strideIndices = strideIndices;
-HR_results.strideTimes = strideTimes;
-HR_results.strideFreq = strideFreq;
+HR_results.strideTimes   = strideTimes;
+HR_results.strideFreq    = strideFreq;
 
-%% Assign Parameters to the Data Matrix
-data = nan(length(timeSHS),length(paramLabels));
+%% Assign Parameters to Data Matrix
+data = nan(length(timeSHS), length(paramLabels));
 for ii = 1:length(paramLabels)
-    eval(['data(:,ii) = ' paramLabels{ii} ';']);
+    eval(['data(:, ii) = ' paramLabels{ii} ';']);
 end
 
-%% Output the Computed Parameters
-out = parameterSeries(data,paramLabels,[],description);
+%% Output Computed Parameters
+out = parameterSeries(data, paramLabels, [], description);
 
 end
 
-%% Helper Functions
+%% Local Functions
 
 function pelvisPos = computePelvisPosition(markerData,useMarkers)
 % compute pelvis position as centroid of available markers
