@@ -48,7 +48,6 @@ function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
 % TODO:
 %   - store parameters as a structure if possible to convert to
 % 'parameterSeries' object to help code readability (i.e., far fewer lines)
-%   - refilter marker data if beneficial for analysis
 %   - rotate marker data to use a participant-based reference frame
 
 arguments
@@ -103,32 +102,37 @@ harmonicRatioX = nan(numStrides, 1);
 harmonicRatioY = nan(numStrides, 1);
 harmonicRatioZ = nan(numStrides, 1);
 
-strideIndices = zeros(numStrides, 2);
-strideTimes   = zeros(numStrides, 1);
-strideFreq    = zeros(numStrides, 1);
+markerTime = markerData.Time;
 
 % Compute harmonic ratio for each stride
 for i = 1:numStrides
-    % Extract stride data
-    idx_start = allHS.indices(i);
-    idx_end   = allHS.indices(i+1);
+    tStart = timeSHS(i);
+    tEnd   = timeSHS2(i);
 
-    % Store stride info
-    strideIndices(i, :) = [idx_start, idx_end];
-    strideTimes(i)      = (idx_start + idx_end) / 2 / samplingRate;
-    strideDuration      = (idx_end - idx_start) / samplingRate;
-    strideFreq(i)       = 1 / strideDuration;
+    % Skip strides with missing or invalid boundaries
+    if isnan(tStart) || isnan(tEnd) || tEnd <= tStart
+        continue;
+    end
 
-    % Extract acceleration for this stride
-    accel_stride = pelvisAccel(idx_start:idx_end, :);
+    % Find sample indices for this stride window
+    idx = markerTime >= tStart & markerTime <= tEnd;
 
-    % Compute harmonic ratio for each direction
-    HR_VT(i)  = computeHR_singleStride( ...
-        accel_stride(:, 3), strideFreq(i), options.numHarmonics);
-    HR_AP(i)  = computeHR_singleStride( ...
-        accel_stride(:, 2), strideFreq(i), options.numHarmonics);
-    HR_ML(i)  = computeHR_singleStride( ...
-        accel_stride(:, 1), strideFreq(i), options.numHarmonics);
+    % Skip strides with insufficient samples to resolve numHarmonics
+    if sum(idx) < 2 * options.numHarmonics
+        continue;
+    end
+
+    accel_stride   = pelvisAccel(idx, :);
+    strideDuration = tEnd - tStart;
+    strideFreq_i   = 1 / strideDuration;
+
+    % Compute harmonic ratio for each cardinal direction
+    harmonicRatioX(i) = computeHR_singleStride( ...
+        accel_stride(:, 1), strideFreq_i, options.numHarmonics);
+    harmonicRatioY(i) = computeHR_singleStride( ...
+        accel_stride(:, 2), strideFreq_i, options.numHarmonics);
+    harmonicRatioZ(i) = computeHR_singleStride( ...
+        accel_stride(:, 3), strideFreq_i, options.numHarmonics);
 
     % Compute aggregate HR using vector magnitude
     accel_mag        = sqrt(sum(accel_stride.^2, 2));
