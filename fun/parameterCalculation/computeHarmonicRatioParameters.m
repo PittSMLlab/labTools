@@ -257,13 +257,13 @@ oddSum  = 0;
 
 for h = 1:numHarmonics
     harmonicFreq = h * strideFreq;
-    [~, idx] = min(abs(f - harmonicFreq));
+    [~, freqIdx] = min(abs(f - harmonicFreq));
 
-    if idx <= length(P)
+    if freqIdx <= length(P)
         if mod(h, 2) == 0
-            evenSum = evenSum + P(idx);
+            evenSum = evenSum + P(freqIdx);
         else
-            oddSum = oddSum + P(idx);
+            oddSum = oddSum + P(freqIdx);
         end
     end
 end
