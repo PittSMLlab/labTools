@@ -34,8 +34,10 @@ function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
 %   - refilter marker data if beneficial for analysis
 %   - rotate marker data to use a participant-based reference frame
 
-if nargin < 4                           % if no 'options' structure, ...
-    options = struct();                 % set to empty structure
+arguments
+    strideEvents (1,1) struct
+    markerData
+    options      (1,1) struct = struct()
 end
 
 if ~isfield(options, 'numHarmonics')    % if no field, ...
@@ -138,20 +140,20 @@ end
 
 %% Local Functions
 
-function pelvisPos = computePelvisPosition(markerData,useMarkers)
-% compute pelvis position as centroid of available markers
-if strcmpi(useMarkers,'GT')
+function pelvisPos = computePelvisPosition(markerData, useMarkers)
+% Compute pelvis position as centroid of available markers
+if strcmpi(useMarkers, 'GT')
     % use only Greater Trochanter markers (most reliable)
     pelvisPos = (markerData.R_GT + markerData.L_GT) / 2;
 else
     % use all available markers
     markers = {};
-    if isfield(markerData,'R_GT'), markers{end+1} = markerData.R_GT; end
-    if isfield(markerData,'L_GT'), markers{end+1} = markerData.L_GT; end
-    if isfield(markerData,'R_ASIS'), markers{end+1} = markerData.R_ASIS; end
-    if isfield(markerData,'L_ASIS'), markers{end+1} = markerData.L_ASIS; end
-    if isfield(markerData,'R_PSIS'), markers{end+1} = markerData.R_PSIS; end
-    if isfield(markerData,'L_PSIS'), markers{end+1} = markerData.L_PSIS; end
+    if isfield(markerData, 'R_GT'),   markers{end+1} = markerData.R_GT;   end
+    if isfield(markerData, 'L_GT'),   markers{end+1} = markerData.L_GT;   end
+    if isfield(markerData, 'R_ASIS'), markers{end+1} = markerData.R_ASIS; end
+    if isfield(markerData, 'L_ASIS'), markers{end+1} = markerData.L_ASIS; end
+    if isfield(markerData, 'R_PSIS'), markers{end+1} = markerData.R_PSIS; end
+    if isfield(markerData, 'L_PSIS'), markers{end+1} = markerData.L_PSIS; end
 
     pelvisPos = mean(cat(3, markers{:}), 3);
 end
