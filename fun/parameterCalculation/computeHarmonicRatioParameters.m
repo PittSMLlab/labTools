@@ -46,14 +46,13 @@ end
 if ~isfield(options, 'useMarkers')      % if no field, ...
     options.useMarkers = 'GT';          % use only 'GT' markers (default)
 end
+if ~isfield(options, 'filterCutoff')    % if no field, ...
+    options.filterCutoff = 6;           % set to 6 Hz (default for kinematics)
+end
 
 %% Gait Stride Event Times
 timeSHS  = strideEvents.tSHS;   % slow heel strike event times
-timeFTO  = strideEvents.tFTO;   % fast toe off event times
-timeFHS  = strideEvents.tFHS;   % fast heel strike event times
-timeSTO  = strideEvents.tSTO;   % slow toe off event times
 timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
-timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
 
 %% Labels and Descriptions
 % harmonic ratio parameters
