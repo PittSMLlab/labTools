@@ -1,20 +1,32 @@
 function out = computeHarmonicRatioParameters(strideEvents, markerData, ...
     options)
-%This function computes harmonic ratio parameters per stride
-%   This function outputs a 'parameterSeries' object, which can be
-% concatenated with other 'parameterSeries' objects, for example, with
-% those from 'computeTemporalParameters'. While this function is used for
-% harmonic ratio parameters exclusively, it should work for any 'labTS'
-% object. This function computes the vertical, medial-lateral,
-% anterior-posterior, and aggregate harmonic ratios parameters using the GT
-% markers.
+% computeHarmonicRatioParameters  Compute harmonic ratio parameters per stride.
 %
-%   options: struct (optional) with fields:
-%       .numHarmonics: number of harmonics to include (default: 20)
-%       .useMarkers: 'GT' or 'ALL' (default: 'GT')
+%   Computes stride-by-stride harmonic ratio parameters and returns a
+% parameterSeries object that can be concatenated with other parameter
+% series objects (e.g., from computeTemporalParameters). Computes the
+% vertical, medial-lateral, anterior-posterior, and aggregate harmonic
+% ratios using the greater trochanter (GT) markers.
 %
-% See also computeSpatialParameters, computeTemporalParameters,
-% computeForceParameters, parameterSeries
+%   Inputs:
+%     strideEvents - Struct of stride-level gait event times generated
+%                    by calcParameters, with fields tSHS, tFTO, tFHS,
+%                    tSTO, tSHS2, and tFHS2 (N-by-1 vectors, in seconds)
+%     markerData   - orientedLabTimeSeries containing kinematic marker
+%                    data; used to compute pelvis position and acceleration
+%     options      - (optional) Struct with fields:
+%                      .numHarmonics: number of harmonics to include
+%                                     (default: 20)
+%                      .useMarkers:   'GT' or 'ALL' (default: 'GT')
+%
+%   Outputs:
+%     out - parameterSeries object containing all harmonic ratio parameters
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeSpatialParameters, computeTemporalParameters,
+%     computeForceParameters, parameterSeries, calcParameters
 
 % TODO:
 %   - store parameters as a structure if possible to convert to
