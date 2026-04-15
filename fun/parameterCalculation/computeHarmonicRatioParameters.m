@@ -106,9 +106,9 @@ harmonicRatioZ = nan(numStrides, 1);
 markerTime = markerData.Time;
 
 % Compute harmonic ratio for each stride
-for i = 1:numStrides
-    tStart = timeSHS(i);
-    tEnd   = timeSHS2(i);
+for st = 1:numStrides
+    tStart = timeSHS(st);
+    tEnd   = timeSHS2(st);
 
     % Skip strides with missing or invalid boundaries
     if isnan(tStart) || isnan(tEnd) || tEnd <= tStart
@@ -116,29 +116,29 @@ for i = 1:numStrides
     end
 
     % Find sample indices for this stride window
-    idx = markerTime >= tStart & markerTime <= tEnd;
+    sampleIdx = markerTime >= tStart & markerTime <= tEnd;
 
     % Skip strides with insufficient samples to resolve numHarmonics
-    if sum(idx) < 2 * options.numHarmonics
+    if sum(sampleIdx) < 2 * options.numHarmonics
         continue;
     end
 
-    accel_stride   = pelvisAccel(idx, :);
+    accelStride    = pelvisAccel(sampleIdx, :);
     strideDuration = tEnd - tStart;
-    strideFreq_i   = 1 / strideDuration;
+    strideFreq     = 1 / strideDuration;
 
     % Compute harmonic ratio for each cardinal direction
-    harmonicRatioX(i) = computeHR_singleStride( ...
-        accel_stride(:, 1), strideFreq_i, options.numHarmonics);
-    harmonicRatioY(i) = computeHR_singleStride( ...
-        accel_stride(:, 2), strideFreq_i, options.numHarmonics);
-    harmonicRatioZ(i) = computeHR_singleStride( ...
-        accel_stride(:, 3), strideFreq_i, options.numHarmonics);
+    harmonicRatioX(st) = computeHR_singleStride( ...
+        accelStride(:, 1), strideFreq, options.numHarmonics);
+    harmonicRatioY(st) = computeHR_singleStride( ...
+        accelStride(:, 2), strideFreq, options.numHarmonics);
+    harmonicRatioZ(st) = computeHR_singleStride( ...
+        accelStride(:, 3), strideFreq, options.numHarmonics);
 
     % Compute aggregate HR using vector magnitude
-    accel_mag        = sqrt(sum(accel_stride.^2, 2));
-    harmonicRatio(i) = computeHR_singleStride( ...
-        accel_mag, strideFreq_i, options.numHarmonics);
+    accelMag          = sqrt(sum(accelStride.^2, 2));
+    harmonicRatio(st) = computeHR_singleStride( ...
+        accelMag, strideFreq, options.numHarmonics);
 end
 
 %% Assign Parameters to Data Matrix
@@ -208,8 +208,9 @@ switch coordMapping
 end
 
 % Apply transformation to all marker fields
-for i = 1:length(fields)
-    markerDataOut.(fields{i}) = markerDataIn.(fields{i})(:, colOrder);
+for iField = 1:length(fields)
+    fname = fields{iField};
+    markerDataOut.(fname) = markerDataIn.(fname)(:, colOrder);
 end
 
 fprintf(['Applied coordinate transformation: ' ...
