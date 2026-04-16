@@ -1,5 +1,5 @@
-function out = computeHreflexParameters(strideEvents,HreflexData, ...
-    EMGData,slowLeg)
+function out = computeHreflexParameters(strideEvents, HreflexData, ...
+    EMGData, slowLeg)
 %This function computes summary H-reflex parameters per stride
 %   This function outputs a 'parameterSeries' object, which can be
 % concatenated with other 'parameterSeries' objects, for example, with
@@ -25,8 +25,8 @@ timeSHS2 = strideEvents.tSHS2;  % 2nd slow heel strike event times
 timeFHS2 = strideEvents.tFHS2;  % 2nd fast heel strike event times
 
 %% Labels & Descriptions
-muscles = {'SOL','MG','LG'};
-legs = {'Slow','Fast'};
+muscles = {'SOL', 'MG', 'LG'};
+legs = {'Slow', 'Fast'};
 % H-reflex stimulation timing and amplitude parameters
 % TODO: add convenience parameter for percentage of stance phase
 % TODO: consider implementing Wilson Amplitude, sample entropy, skewness,
@@ -118,8 +118,8 @@ aux = { ...
 % 'HreflexBEMGMAVSlowLG',   'mean absolute value of the slow leg background EMG (in mV)'; ...
 % 'HreflexBEMGMAVFastLG',   'mean absolute value of the fast leg background EMG (in mV)'; ...
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
 %% Initialize All Parameter Arrays
 % initialize parameter arrays: stimulation timing and H-reflex amplitudes
@@ -151,7 +151,7 @@ end
 
 %% Identify Stimulus Artifact Indices
 % extract time for the trial, and use proximal TA to localize stim artifact
-[EMG_RTAP,times] = EMGData.getDataAsVector('RTAP');
+[EMG_RTAP, times] = EMGData.getDataAsVector('RTAP');
 EMG_LTAP = EMGData.getDataAsVector('LTAP');
 stimTrigR = HreflexData.getDataAsVector( ...
     'Stimulator_Trigger_Sync_Right_Stimulator');
@@ -162,9 +162,9 @@ indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
 if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
     data = nan(length(timeSHS),length(paramLabels));
     for ii = 1:length(paramLabels)
-        eval(['data(:,ii) = ' paramLabels{ii} ';']);
+        eval(['data(:, ii) = ' paramLabels{ii} ';']);
     end
-    out = parameterSeries(data,paramLabels,[],description);
+    out = parameterSeries(data, paramLabels, [], description);
     return;                                         % return from function
 end
 
@@ -182,7 +182,7 @@ end
 
 %% Compute H-Reflex Stimulation Timing Parameters
 % NaN values give false in logical comparison
-indsComp = all(~isnan([timeSHS timeFHS]),2);    % comparison inds (no NaNs)
+indsComp = all(~isnan([timeSHS timeFHS]), 2);    % comparison inds (no NaNs)
 % TODO: could also check the SHS2 and FHS2 times to be ultra safe
 isSlowFirst = all(timeSHS(indsComp) < timeFHS(indsComp));
 
@@ -218,9 +218,9 @@ end
 
 % compute valid stride indices corresponding from the filtered stim times
 indsStimStrideSlow = arrayfun(@(x) ...
-    find((x - timeSHS) > 0,1,'last'),timeStimSlow);
+    find((x - timeSHS) > 0, 1, 'last'), timeStimSlow);
 indsStimStrideFast = arrayfun(@(x) ...
-    find((x - timeFHS) > 0,1,'last'),timeStimFast);
+    find((x - timeFHS) > 0, 1, 'last'), timeStimFast);
 
 %% Check for duplicate stide numbers that share a stim index
 %%(has happened when stimulation occurred on first step from rest)
@@ -291,7 +291,7 @@ EMG_LMG = EMGData.getDataAsVector('LMG');
 EMG_RLG = EMGData.getDataAsVector('RLG');
 EMG_LLG = EMGData.getDataAsVector('LLG');
 % organize EMG Data for Each Muscle
-EMGDataByMuscle = {EMG_RSOL,EMG_LSOL; EMG_RMG,EMG_LMG; EMG_RLG,EMG_LLG};
+EMGDataByMuscle = {EMG_RSOL, EMG_LSOL; EMG_RMG, EMG_LMG; EMG_RLG, EMG_LLG};
 
 %% Identify Indices of Mid-Single Stance (No Stim) using Valid Stim Strides
 timesMidSingleStanceSlow = timeFTO + ((timeFHS - timeFTO) / 2);
@@ -354,8 +354,8 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
     snippetsHreflexBEMG = Hreflex.extractBackgroundEMG( ...
         indsStimArtValid,EMGDataByMuscle(m,:)',opts);
     % compute root mean square of background EMG windows
-    rmsHreflexBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2,2,'omitnan')), ...
-        snippetsHreflexBEMG,'UniformOutput',false);
+    rmsHreflexBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
+        snippetsHreflexBEMG, 'UniformOutput', false);
 
     for l = 1:2                         % for slow (1) & fast (2) leg, ...
         leg = legs{l};                  % name of current leg
@@ -373,13 +373,13 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
 end
 
 %% Assign Parameters to the Data Matrix
-data = nan(length(timeSHS),length(paramLabels));
+data = nan(length(timeSHS), length(paramLabels));
 for ii = 1:length(paramLabels)
-    eval(['data(:,ii) = ' paramLabels{ii} ';']);
+    eval(['data(:, ii) = ' paramLabels{ii} ';']);
 end
 
 %% Output the Computed Parameters
-out = parameterSeries(data,paramLabels,[],description);
+out = parameterSeries(data, paramLabels, [], description);
 
 end
 

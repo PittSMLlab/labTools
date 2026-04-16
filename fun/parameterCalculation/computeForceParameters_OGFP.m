@@ -1,4 +1,4 @@
-function [out] = computeForceParameters_OGFP(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
+function [out] = computeForceParameters_OGFP(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis.
 % This code is a bit eccentric in the way that identifies the inclination for the TM.
 
@@ -47,12 +47,12 @@ FilteredS = Filtered;
 fFy = Filtered.getDataAsTS([fastleg 'Fy']);
 sFy = Filtered.getDataAsTS([slowleg 'Fy']);
 
-FastLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
-SlowLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+FastLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
+SlowLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
 if Filtered.isaLabel('HFx')
-    handrailData=Filtered.getDataAsTS({'HFy','HFz'});
+    handrailData=Filtered.getDataAsTS({'HFy', 'HFz'});
 elseif Filtered.isaLabel('XFx')
-    handrailData=Filtered.getDataAsTS({'XFy','XFz'});
+    handrailData=Filtered.getDataAsTS({'XFy', 'XFz'});
     warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
 else
     handrailData=[];
@@ -74,21 +74,21 @@ end
 %     Ally = {'LFy','RFy'};
 % end
 
-Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
-Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
-OGFPy_names = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy'};
-OGFPz_names = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz'};
+Allz = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz', 'LFz', 'RFz'};
+Ally = {'FP4Fy', 'FP5Fy', 'FP6Fy', 'FP7Fy', 'LFy', 'RFy'};
+OGFPy_names = {'FP4Fy', 'FP5Fy', 'FP6Fy', 'FP7Fy'};
+OGFPz_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
 
 
 for j = 1:length(Ally)
     if Filtered.isaLabel(Ally{j})
         OGFP.(Ally{j}) = Filtered.getDataAsTS(Ally{j});
-        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
-        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
+        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
     else
         OGFP.(Ally{j}) = [];
-        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
-        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
+        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
     end
 end
 
@@ -333,7 +333,7 @@ for i=1:length(strideEvents.tSHS)-1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check if the participant is holding the handrail %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if ~isempty(handrailData)
-        HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2,2)))/Normalizer;
+        HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2, 2)))/Normalizer;
     else
         HandrailHolding(i)=NaN;
     end
@@ -946,7 +946,7 @@ if isempty(markerData.getLabelsThatMatch('Hat'))
 end
 
 %out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);
-out = parameterSeries(data_all,labels_all,[],description_all);
+out = parameterSeries(data_all, labels_all, [], description_all);
 
 %% Labels and descriptions:
 % aux={'impactS',               'GRF-FYs average signed impact force';...

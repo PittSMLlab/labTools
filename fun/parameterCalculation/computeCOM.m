@@ -274,6 +274,6 @@ if length(impactS)==length(COMveloFY)
     data=[data; NaN(1, size(data, 2)) ];
 end
 description=cell(1, size(data, 2)); description(:)={''};
-out=parameterSeries(data,labels,[],description);
+out=parameterSeries(data, labels, [], description);
 end
 

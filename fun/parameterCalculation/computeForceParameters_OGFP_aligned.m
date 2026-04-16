@@ -1,4 +1,4 @@
-function [out] = computeForceParameters_OGFP_aligned(strideEvents,GRFData,slowleg, fastleg,BW, trialData, markerData)
+function [out] = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis.
 % This code is a bit eccentric in the way that identifies the inclination for the TM.
 
@@ -46,8 +46,8 @@ if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM
     %     Allz = {'FP4Fz','FP5Fz','FP6Fz','FP7Fz','LFz','RFz'};
     %     Ally = {'FP4Fy','FP5Fy','FP6Fy','FP7Fy','LFy','RFy'};
 else
-    Allz = {'LFz','RFz'};
-    Ally = {'LFy','RFy'};
+    Allz = {'LFz', 'RFz'};
+    Ally = {'LFy', 'RFy'};
 end
 
 h_fast = [];
@@ -82,12 +82,12 @@ h_slow = [];
 fFy = Filtered.getDataAsTS([fastleg 'Fy']);
 sFy = Filtered.getDataAsTS([slowleg 'Fy']);
 
-FastLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
-SlowLegOffSetData=nan(length(strideEvents.tSHS)-1,1);
+FastLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
+SlowLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
 if Filtered.isaLabel('HFx')
-    handrailData=Filtered.getDataAsTS({'HFy','HFz'});
+    handrailData=Filtered.getDataAsTS({'HFy', 'HFz'});
 elseif Filtered.isaLabel('XFx')
-    handrailData=Filtered.getDataAsTS({'XFy','XFz'});
+    handrailData=Filtered.getDataAsTS({'XFy', 'XFz'});
     warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
 else
     handrailData=[];
@@ -97,12 +97,12 @@ end
 for j = 1:length(Ally)
     if Filtered.isaLabel(Ally{j})
         OGFP.(Ally{j}) = Filtered.getDataAsTS(Ally{j});
-        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
-        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
+        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
     else
         OGFP.(Ally{j}) = [];
-        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
-        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1,1);
+        FastLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
+        SlowLegOffSetData_OGFP.(Ally{j}) = nan(length(strideEvents.tSHS)-1, 1);
     end
 end
 

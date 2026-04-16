@@ -1,4 +1,4 @@
-function [out] = computePercParameters(trialData,initTime,endTime,slaParam)
+function [out] = computePercParameters(trialData, initTime, endTime, slaParam)
 % This function will add some parameters and summary information from the perceptual task in the datlogs
 % The output is a parameterSeries object, which can be concatenated with
 % other parameterSeries objects, for example with those from
@@ -12,12 +12,12 @@ function [out] = computePercParameters(trialData,initTime,endTime,slaParam)
 % Date: 06/12/24
 
 %% Gait perceptual task gait event times
-idxPstart = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percStartCue'))));
+idxPstart = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percStartCue'))));
 
 if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation
-    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndRamp'))));
+    idxPend = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percEndRamp'))));
 else
-    idxPend = find(full(trialData.gaitEvents.Data(:,strcmpi(trialData.gaitEvents.labels,'percEndCue'))));
+    idxPend = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percEndCue'))));
 end
 
 if length(idxPstart)~= length(idxPend)
@@ -46,8 +46,8 @@ aux={'percTaskInitStride',        'binary parameter where 1 indicates the beginn
     'SLAinPercTask',          'step length asymmetry parameter for the perceptual trials, otherwise nan'; ...
     'SLAnotPercTask',          'step length asymmetry parameter except for the perceptual trials (filled with nans)'};
 
-paramLabels = aux(:,1);
-description = aux(:,2);
+paramLabels = aux(:, 1);
+description = aux(:, 2);
 
 %% Initialize the parameters
 
@@ -67,9 +67,9 @@ SLAnotPercTask = nan(size(initTime));
 
 SLAnotPercTask = slaParam;
 if ~isempty(timePercInit) && ~isempty(timePercEnd)
-    indsInitStride = arrayfun(@(x) find((x-initTime) > 0,1,'last'), ...
+    indsInitStride = arrayfun(@(x) find((x-initTime) > 0, 1, 'last'), ...
         timePercInit); %initTime is the stride initial times
-    indsEndStride = arrayfun(@(x) find((x-endTime) < 0,1,'first'), ...
+    indsEndStride = arrayfun(@(x) find((x-endTime) < 0, 1, 'first'), ...
         timePercEnd); %timePercEnd is the stride final times
 
     % populate the times for the strides that have perceptual tasks
@@ -91,13 +91,13 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
 
 end
 %% Assign Parameters to the Data Matrix
-data = nan(length(initTime),length(paramLabels));
+data = nan(length(initTime), length(paramLabels));
 for i=1:length(paramLabels)
-    eval(['data(:,i)=' paramLabels{i} ';'])
+    eval(['data(:, i) = ' paramLabels{i} ';'])
 end
 
 %% Create parameterSeries
-out = parameterSeries(data,paramLabels,[],description);
+out = parameterSeries(data, paramLabels, [], description);
 
 end
 

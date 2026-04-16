@@ -1,4 +1,4 @@
-function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS,  LevelofInterest, FlipB, titleTXT)
+function [SB, SBsum, SP, SPsum, SBmax, SBmax_ABS, SBmaxQS, SPmax, SPmaxQS, ImpactMagS] = ComputeLegForceParameters(striderS, LevelofInterest, FlipB, titleTXT)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 

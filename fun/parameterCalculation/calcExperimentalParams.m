@@ -1,4 +1,4 @@
-function out = calcExperimentalParams(in,subData,eventClass,initEventSide)
+function out = calcExperimentalParams(in, subData, eventClass, initEventSide)
 %Calculate parameters:
 %
 %INPUTS
@@ -18,9 +18,9 @@ else
     refLeg=initEventSide;
 end
 
-if strcmp(refLeg,'R')
+if strcmp(refLeg, 'R')
     s = 'R';    f = 'L';
-elseif strcmp(refLeg,'L')
+elseif strcmp(refLeg, 'L')
     s = 'L';    f = 'R';
 else
     ME=MException('MakeParameters:refLegError','the refLeg property of metaData must be either ''L'' or ''R''.');
@@ -36,23 +36,23 @@ good=good(ts);
 Nstrides=length(good);%Using lenght of the 'good' parameter already calculated in calcParams
 
 %% get events
-eventTypes={[s,'HS'],[f,'TO'],[f,'HS'],[s,'TO']};
-eventTypes=strcat(eventClass,eventTypes);
-eventTypes2={['SHS'],['FTO'],['FHS'],['STO']};
+eventTypes={[s, 'HS'], [f, 'TO'], [f, 'HS'], [s, 'TO']};
+eventTypes=strcat(eventClass, eventTypes);
+eventTypes2={['SHS'], ['FTO'], ['FHS'], ['STO']};
 triggerEvent=eventTypes{1};
-[strideIdxs,initTime,endTime]=getStrideInfo(in,triggerEvent);
+[strideIdxs, initTime, endTime]=getStrideInfo(in, triggerEvent);
 
 %% Compute params
 aux1={ 'fakeParam', 'fakeDescription'};
-paramLabels=aux1(:,1);
-description=aux1(:,2);
-fakeParam=nan(Nstrides,1);
+paramLabels=aux1(:, 1);
+description=aux1(:, 2);
+fakeParam=nan(Nstrides, 1);
 
 %% Save all the params in the data matrix & generate labTimeSeries
 for i=1:length(paramLabels)
-    eval(['data(:,i)=',paramLabels{i},';'])
+    eval(['data(:, i)=', paramLabels{i}, ';'])
 end
 
 %%
-out=parameterSeries(data,paramLabels,in.adaptParams.hiddenTime,description);
+out=parameterSeries(data, paramLabels, in.adaptParams.hiddenTime, description);
 

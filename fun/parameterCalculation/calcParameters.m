@@ -153,7 +153,7 @@ nextEventTimes = [eventTimes(2:end, :); nan(1, size(eventTimes, 2))];
 for ev = 1:length(eventTypes)       % for each gait event type, ...
     % Generate a structure of 'tSHS', 'tFTO', etc.
     strideEvents.(['t' upper(eventLabels{ev})]) = eventTimes(:, ev);
-    strideEvents.(['t' upper(eventLabels{ev}) '2']) = nextEventTimes(:,ev);
+    strideEvents.(['t' upper(eventLabels{ev}) '2']) = nextEventTimes(:, ev);
 end
 
 %% Compute Parameters
@@ -299,8 +299,8 @@ OG_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
 OG_idx = contains(trialData.GRFData.labels, OG_names);
 
 if sum(OG_idx) == length(OG_names) | ...
-        (max(trialData.GRFData.Data(:,OG_idx)) - ...
-        min(trialData.GRFData.Data(:,OG_idx))) > 100
+        (max(trialData.GRFData.Data(:, OG_idx)) - ...
+        min(trialData.GRFData.Data(:, OG_idx))) > 100
     % There are differences in forces throughout the experiment, and
     % not a constant value or NaNs.
     try

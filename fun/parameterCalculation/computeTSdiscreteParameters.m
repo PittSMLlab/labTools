@@ -1,4 +1,4 @@
-function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignmentVector,summaryFun)
+function [out] = computeTSdiscreteParameters(someTS, gaitEvents, eventTypes, alignmentVector, summaryFun)
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -24,7 +24,7 @@ if nargin<4 || isempty(alignmentVector)
         end
 
         s=eventTypes;    f=getOtherLeg(s);
-        eventTypes={[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
+        eventTypes={[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
     end
 
     alignmentVector=[2,4,2,4];
@@ -46,11 +46,11 @@ if nargin<5
     summaryFun=[];
 end
 someTS.Quality=[];%Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary
-[DTS,~]=someTS.discretize(gaitEvents,eventTypes,alignmentVector,summaryFun);
+[DTS,~]=someTS.discretize(gaitEvents, eventTypes, alignmentVector, summaryFun);
 [N,M,P]=size(DTS.Data);
 %Make labels:
-ll=strcat(repmat(strcat(DTS.labels,'_s'),N,1),repmat(mat2cell(num2str([1:N]'),ones(N,1),2),1,M));
+ll=strcat(repmat(strcat(DTS.labels, '_s'), N, 1), repmat(mat2cell(num2str([1:N]'), ones(N, 1), 2), 1, M));
 %Make descriptions:
-desc=strcat(strcat(strcat('Mean of data in TS ', repmat(DTS.labels,N,1)), ' from '), repmat(desc2,1,M));
-out= parameterSeries(reshape(DTS.Data,N*M,P)',ll(:),1:P,desc(:));
+desc=strcat(strcat(strcat('Mean of data in TS ', repmat(DTS.labels, N, 1)), ' from '), repmat(desc2, 1, M));
+out= parameterSeries(reshape(DTS.Data, N*M, P)', ll(:), 1:P, desc(:));
 end
