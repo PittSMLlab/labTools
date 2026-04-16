@@ -24,30 +24,30 @@ times(:, 1)=eventsTime(aux(1:M));
 %Set other events for all steps except last
 for step=1:M-1;
     for i=2:N
-        eval(['inds(step,i)=find((eventsTime>times(step,i-1))&' eventList{i} ',1);']);
-        times(step,i)=eventsTime(inds(step,i));
+        eval(['inds(step, i)=find((eventsTime>times(step, i-1))&' eventList{i} ', 1);']);
+        times(step, i)=eventsTime(inds(step, i));
     end
-    inds(step,N+1)=inds(step+1,1);
-    times(step,N+1)=eventsTime(inds(step,N+1));
+    inds(step, N+1)=inds(step+1, 1);
+    times(step, N+1)=eventsTime(inds(step, N+1));
     for i=N+2:2*N
-        eval(['inds(step,i)=find((eventsTime>times(step,i-1))&' eventList{i} ',1);']);
-        times(step,i)=eventsTime(inds(step,i));
+        eval(['inds(step, i)=find((eventsTime>times(step, i-1))&' eventList{i} ', 1);']);
+        times(step, i)=eventsTime(inds(step, i));
     end
 end
 
 %Set for last step:
 step=M;
 for i=2:N
-    eval(['inds(step,i)=find((eventsTime>times(step,i-1))&' eventList{i} ',1);']);
-    times(step,i)=eventsTime(inds(step,i));
+    eval(['inds(step, i)=find((eventsTime>times(step, i-1))&' eventList{i} ', 1);']);
+    times(step, i)=eventsTime(inds(step, i));
 end
-inds(step,N+1)=aux(M+1);
-times(step,N+1)=eventsTime(inds(step,N+1));
+inds(step, N+1)=aux(M+1);
+times(step, N+1)=eventsTime(inds(step, N+1));
 for i=N+2:2*N
-    eval(['aux=find((eventsTime>times(step,i-1))&' eventList{i} ',1);']); %There is no assurance that these events exist, as we only now that there are M+1 SHS events, but not FTO, FHS, STO
+    eval(['aux=find((eventsTime>times(step, i-1))&' eventList{i} ', 1);']); %There is no assurance that these events exist, as we only now that there are M+1 SHS events, but not FTO, FHS, STO
     if ~isempty(aux) %In case an event was actually found, if not, leave NaN in place
-        inds(step,i)=aux;
-        times(step,i)=eventsTime(inds(step,i));
+        inds(step, i)=aux;
+        times(step, i)=eventsTime(inds(step, i));
     end
 end
 

@@ -49,7 +49,7 @@ if ~isempty(findstr(trial, 'deg'))%( ~iscell(cell2mat(regexp(trial, 'deg'))))|| 
 
             %Should check that digits are consecutive indexes, except for a single
             %dot in the middle:
-            aux=sort([digits dots],'ascend');
+            aux=sort([digits dots], 'ascend');
             if any((aux-firstDigit-[0:length(aux)-1])~=0)
                 failRead=true;
             end

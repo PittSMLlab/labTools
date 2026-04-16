@@ -212,7 +212,7 @@ i_slow = 0; i_fast = 0;
 SlowCount_force = 0; SlowCount_no_force = 0;
 FastCount_force = 0; FastCount_no_force = 0;
 
-for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),length(filteredFast_align.Data(1,1,:))])
+for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :)), length(filteredFast_align.Data(1, 1, :))])
     % get the filtered data for the slow and fast stance phases
     filteredSlowStance = FilteredS.split(SHS, STO);
     filteredFastStance = FilteredF.split(FHS, FTO2);
@@ -425,7 +425,7 @@ for i=1:min([length(strideEvents.tSHS)-1,length(filteredSlow_align.Data(1,1,:)),
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check if the participant is holding the handrail %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if ~isempty(handrailData)
-        HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2,2)))/Normalizer;
+        HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2, 2)))/Normalizer;
     else
         HandrailHolding(i)=NaN;
     end
@@ -1060,7 +1060,7 @@ if isempty(markerData.getLabelsThatMatch('Hat'))
 end
 
 %out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);
-out = parameterSeries(data_align,labels_align,[],description_align);
+out = parameterSeries(data_align, labels_align, [], description_align);
 
 %% Labels and descriptions:
 % aux={'impactS',               'GRF-FYs average signed impact force';...

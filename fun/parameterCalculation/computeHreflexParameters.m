@@ -335,7 +335,7 @@ end
 for m = 1:length(muscles)               % for each muscle of interest, ...
     muscle = muscles{m};                % name of current muscle
     snippets = Hreflex.extractSnippets( ...
-        indsStimArtValid,EMGDataByMuscle(m,:)');
+        indsStimArtValid, EMGDataByMuscle(m, :)');
     [amps, rms] = Hreflex.computeAmplitudes(snippets(:, 1));
     % convert wave amplitudes from Volts to Millivolts
     amps = cellfun(@(x) 1000.*x, amps, 'UniformOutput', false);
@@ -343,7 +343,7 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
 
     if any(cellfun(@(x) ~isempty(x), indsNoStimBEMG))
         snippetsNoStimBEMG = Hreflex.extractBackgroundEMG( ...
-            indsNoStimBEMG,EMGDataByMuscle(m,:)');
+            indsNoStimBEMG, EMGDataByMuscle(m, :)');
         % compute root mean square of background EMG windows
         rmsNoStimBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
             snippetsNoStimBEMG, 'UniformOutput', false);
@@ -352,7 +352,7 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
     end
 
     snippetsHreflexBEMG = Hreflex.extractBackgroundEMG( ...
-        indsStimArtValid,EMGDataByMuscle(m,:)',opts);
+        indsStimArtValid, EMGDataByMuscle(m, :)', opts);
     % compute root mean square of background EMG windows
     rmsHreflexBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
         snippetsHreflexBEMG, 'UniformOutput', false);
