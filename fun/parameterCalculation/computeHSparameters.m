@@ -1,4 +1,4 @@
-function [out] = computeHSparameters(someTS, gaitEvents, eventType)
+function out = computeHSparameters(someTS, gaitEvents, eventType)
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -17,8 +17,8 @@ function [out] = computeHSparameters(someTS, gaitEvents, eventType)
 
 %get slow heel strikes times
 % T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
-T_HS=labTimeSeries.getArrayedEvents(gaitEvents, eventType);
-nstrides=size(T_HS,1);
+T_HS = labTimeSeries.getArrayedEvents(gaitEvents, eventType);
+nstrides = size(T_HS, 1);
 %keyboard
 % iSHS=find(ismember(someTS.Time,T_HS(2:end,1)));
 % iFHS=find(ismember(someTS.Time,T_HS(1:end-1,2)));
@@ -32,18 +32,18 @@ Ang_SHS=squeeze(someTS.getSample(T_HS(2:end, 1)));
 try
     Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1, 2)));
 catch
-    Ang_FHS=NaN(size(Ang_SHS));%NEEDS FIX
+    Ang_FHS = NaN(size(Ang_SHS));%NEEDS FIX
     disp('no gait events for fast leg!')
 end
 
 %rename labels
-Slabs=strcat(someTS.labels,{'AtSHS'});
-Flabs=strcat(someTS.labels,{'AtFHS'});
+Slabs = strcat(someTS.labels, {'AtSHS'});
+Flabs = strcat(someTS.labels, {'AtFHS'});
 %Ang_SHS=Ang_SHS.renameLabels(Ang_SHS.labels,strcat(Ang_SHS.labels,{'@SHS'}));
 %Ang_FHS=Ang_FHS.renameLabels(Ang_FHS.labels,strcat(Ang_FHS.labels,{'@FHS'}));
-PangSHS=parameterSeries(Ang_SHS(:, :), Slabs, [], Slabs);
-PangFHS=parameterSeries(Ang_FHS(:, :), Flabs, [], Flabs);
-out=cat(PangSHS, PangFHS);
+PangSHS = parameterSeries(Ang_SHS(:, :), Slabs, [], Slabs);
+PangFHS = parameterSeries(Ang_FHS(:, :), Flabs, [], Flabs);
+out = cat(PangSHS, PangFHS);
 
 end
 

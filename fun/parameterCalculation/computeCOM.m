@@ -1,4 +1,4 @@
-function [ out ] = computeCOM( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT )
+function out = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 timeSHS=strideEvents.tSHS;
@@ -15,22 +15,22 @@ SHS=1; FTO=2; FHS=3; STO=4; SHS2=5; FTO2=6; FHS2=7; STO2=8; %numbers correspond 
 % "getKinematicData" as a template as this converts everything into hip
 % centered.
 if isempty(markerData.getLabelsThatMatch('BCOM'))
-    [markerData] = COMCalculator(markerData, 9.81*BW);
+    markerData = COMCalculator(markerData, 9.81*BW);
 end
 %animate(markerData)
 
 % 3.) Rotate with respect to the ankle
-[rotatedMarkerData_F]=getKinematicData_respect2Ank(markerData, {[fastleg, 'ANK']});
-[rotatedMarkerData_S]=getKinematicData_respect2Ank(markerData, {[slowleg, 'ANK']});
+rotatedMarkerData_F = getKinematicData_respect2Ank(markerData, {[fastleg, 'ANK']});
+rotatedMarkerData_S = getKinematicData_respect2Ank(markerData, {[slowleg, 'ANK']});
 %animate(rotatedMarkerData_F)
 
 % ROTATED
-[COMTS_FANK] = getDataAsTS(rotatedMarkerData_F, {'BCOMx' 'BCOMy' 'BCOMz'});
-[COMTS_SANK] =getDataAsTS(rotatedMarkerData_S, {'BCOMx' 'BCOMy' 'BCOMz'});
+COMTS_FANK = getDataAsTS(rotatedMarkerData_F, {'BCOMx' 'BCOMy' 'BCOMz'});
+COMTS_SANK = getDataAsTS(rotatedMarkerData_S, {'BCOMx' 'BCOMy' 'BCOMz'});
 
 % 4.) Aquire the speed of the COMTS in ankle specific CS for that ankles
 % heel strike
-T=length(timeSHS);
+T = length(timeSHS);
 
 veloCOM_F_unfilteredY=COMTS_FANK.derivate.getDataAsTS({'d/dt BCOMy'});
 veloCOM_S_unfilteredY=COMTS_SANK.derivate.getDataAsTS({'d/dt BCOMy'});
@@ -221,7 +221,7 @@ COMveloSYMZ_Norm_Rot_max=COMveloFZ_Norm_Rot_max-COMveloSZ_Norm_Rot_max;
 COMveloSYMZ_Norm_Rot_min=COMveloFZ_Norm_Rot_min-COMveloSZ_Norm_Rot_min;
 
 
-data=[COMveloY' COMveloFY' COMveloSY' COMveloZ' ...
+data = [COMveloY' COMveloFY' COMveloSY' COMveloZ' ...
     COMveloFZ' COMveloSZ' ...
     COMY' COMFY' COMSY' COMZ' COMFZ' COMSZ' ...
     COMsymY_Norm_Rot_mean' COMFY_Norm_Rot_mean' COMSY_Norm_Rot_mean'...
@@ -245,7 +245,7 @@ data=[COMveloY' COMveloFY' COMveloSY' COMveloZ' ...
     COMveloSYMZ_Norm_Rot_max' COMveloFZ_Norm_Rot_max' COMveloSZ_Norm_Rot_max'...
     COMveloSYMZ_Norm_Rot_min' COMveloFZ_Norm_Rot_min' COMveloSZ_Norm_Rot_min'];
 
-labels={'COMveloY' 'COMveloFY' 'COMveloSY' 'COMveloZ' ...
+labels = {'COMveloY' 'COMveloFY' 'COMveloSY' 'COMveloZ' ...
     'COMveloFZ' 'COMveloSZ' ...
     'COMY' 'COMFY' 'COMSY' 'COMZ' 'COMFZ' 'COMSZ' ...
     'COMsymY_Norm_Rot_mean' 'COMFY_Norm_Rot_mean' 'COMSY_Norm_Rot_mean'...
@@ -271,9 +271,9 @@ labels={'COMveloY' 'COMveloFY' 'COMveloSY' 'COMveloZ' ...
 
 %% Actually output and store stuff
 if length(impactS)==length(COMveloFY)
-    data=[data; NaN(1, size(data, 2)) ];
+    data = [data; NaN(1, size(data, 2))];
 end
-description=cell(1, size(data, 2)); description(:)={''};
-out=parameterSeries(data, labels, [], description);
+description = cell(1, size(data, 2)); description(:) = {''};
+out = parameterSeries(data, labels, [], description);
 end
 

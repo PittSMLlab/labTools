@@ -1,16 +1,16 @@
-function [out] = computeForceParameters_OGFP(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
+function out = computeForceParameters_OGFP(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
 % CJS 2017: Here I am including the code that I have been using for the incline decline analysis.
 % This code is a bit eccentric in the way that identifies the inclination for the TM.
 
 %~~~~~~~ Here is where I am putting real stuffs ~~~~~~~~
-trial=trialData.metaData.description;
+trial = trialData.metaData.description;
 %If I want all the forces to be unitless then set this to 9.81*BW, else set it
 %to 1*BW
 
 if strcmpi(trialData.metaData.type,'NIM')
     Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
 else
-    Normalizer=9.81*BW;
+    Normalizer = 9.81*BW;
 end
 
 % Normalizer=9.81*BW;
@@ -19,10 +19,10 @@ early_th = 0.2;
 end_th = 0.2;
 divideri = 8;
 trialNum = str2double(trialData.metaData.rawDataFilename(end-1:end));
-FlipB=1; %7/21/2016, nevermind, making 1 8/1/2016
+FlipB = 1; %7/21/2016, nevermind, making 1 8/1/2016
 
 if iscell(trial)
-    trial=trial{1};
+    trial = trial{1};
 end
 
 
@@ -30,8 +30,8 @@ end
 if strcmp(trialData.metaData.type, 'IN')
     ang = 8.5;
 end
-flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
-Filtered=GRFData.lowPassFilter(20);
+flipIT = 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
+Filtered = GRFData.lowPassFilter(20);
 FilteredF = Filtered;
 FilteredS = Filtered;
 
@@ -103,12 +103,12 @@ for i=1:length(strideEvents.tSHS)-1
     if isnan(FTO) || isnan(FHS) || FTO>FHS
         %nop
     else
-        FastLegOffSetData(i)=nanmedian(fFy.split(FTO, FHS).Data);
+        FastLegOffSetData(i) = nanmedian(fFy.split(FTO, FHS).Data);
     end
     if isnan(STO) || isnan(SHS2)
         %nop
     else
-        SlowLegOffSetData(i)=nanmedian(sFy.split(STO, SHS2).Data);
+        SlowLegOffSetData(i) = nanmedian(sFy.split(STO, SHS2).Data);
     end
 
     for j = 1:length(Ally)
@@ -118,8 +118,8 @@ for i=1:length(strideEvents.tSHS)-1
         end
     end
 end
-FastLegOffSet=round(nanmedian(FastLegOffSetData), 3);
-SlowLegOffSet=round(nanmedian(SlowLegOffSetData), 3);
+FastLegOffSet = round(nanmedian(FastLegOffSetData), 3);
+SlowLegOffSet = round(nanmedian(SlowLegOffSetData), 3);
 display(['Fast Leg Offset: ' num2str(FastLegOffSet) ', Slow Leg Offset: ' num2str(SlowLegOffSet)]);
 
 Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy']))) = Filtered.getDataAsVector([fastleg 'Fy']) - FastLegOffSet;
@@ -129,10 +129,10 @@ Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy']))) = Filtered.ge
 for j = 1:length(Ally)
 
     FastLegOffSet_OGFP.(Ally{j}) = round(nanmedian(FastLegOffSetData_OGFP.(Ally{j})), 3);
-    FilteredF.Data(:, find(strcmp(FilteredF.getLabels,Ally{j}))) = FilteredF.getDataAsVector(Ally{j}) - FastLegOffSet_OGFP.(Ally{j});
+    FilteredF.Data(:, find(strcmp(FilteredF.getLabels, Ally{j}))) = FilteredF.getDataAsVector(Ally{j}) - FastLegOffSet_OGFP.(Ally{j});
 
     SlowLegOffSet_OGFP.(Ally{j}) = round(nanmedian(SlowLegOffSetData_OGFP.(Ally{j})), 3);
-    FilteredS.Data(:, find(strcmp(FilteredS.getLabels,Ally{j}))) = FilteredS.getDataAsVector(Ally{j}) - SlowLegOffSet_OGFP.(Ally{j});
+    FilteredS.Data(:, find(strcmp(FilteredS.getLabels, Ally{j}))) = FilteredS.getDataAsVector(Ally{j}) - SlowLegOffSet_OGFP.(Ally{j});
 
 end
 
@@ -157,14 +157,14 @@ for j = 1:length(Ally)
     FB_OGFP.(Ally{j}) = NaN(1, lenny); FP_OGFP.(Ally{j}) = NaN(1, lenny); FZ_OGFP.(Ally{j}) = NaN(1, lenny); FX_OGFP.(Ally{j}) = NaN(1, lenny);
     SBmax_OGFP.(Ally{j}) = NaN(1, lenny); SPmax_OGFP.(Ally{j}) = NaN(1, lenny); SZmax_OGFP.(Ally{j}) = NaN(1, lenny); SXmax_OGFP.(Ally{j}) = NaN(1, lenny);
     impactSmax_OGFP.(Ally{j}) = NaN(1, lenny); impactFmax_OGFP.(Ally{j}) = NaN(1, lenny);
-    FBmax_OGFP.(Ally{j}) = NaN(1, lenny); FPmax_OGFP.(Ally{j}) = NaN(1, lenny); FZmax_OGFP.(Ally{j}) = NaN(1, lenny);FXmax_OGFP.(Ally{j}) = NaN(1, lenny);
+    FBmax_OGFP.(Ally{j}) = NaN(1, lenny); FPmax_OGFP.(Ally{j}) = NaN(1, lenny); FZmax_OGFP.(Ally{j}) = NaN(1, lenny); FXmax_OGFP.(Ally{j}) = NaN(1, lenny);
 end
 
 i_slow = 0; i_fast = 0;
 SlowCount_force = 0; SlowCount_no_force = 0;
 FastCount_force = 0; FastCount_no_force = 0;
 
-for i=1:length(strideEvents.tSHS)-1
+for i = 1:length(strideEvents.tSHS)-1
     % get the filtered data for the slow and fast stance phases
     filteredSlowStance = FilteredS.split(SHS, STO);
     filteredFastStance = FilteredF.split(FHS, FTO2);
@@ -174,7 +174,7 @@ for i=1:length(strideEvents.tSHS)-1
     filteredFastSingleStance = FilteredF.split(STO, SHS2);
 
     % Getting the events
-    SHS=strideEvents.tSHS(i); FTO=strideEvents.tFTO(i); FHS=strideEvents.tFHS(i); STO=strideEvents.tSTO(i); SHS2=strideEvents.tSHS2(i); FTO2=strideEvents.tFTO2(i);
+    SHS = strideEvents.tSHS(i); FTO = strideEvents.tFTO(i); FHS = strideEvents.tFHS(i); STO = strideEvents.tSTO(i); SHS2 = strideEvents.tSHS2(i); FTO2 = strideEvents.tFTO2(i);
 
     if isnan(SHS) || isnan(STO) % make sure the slow events are not empty
         striderSy_all = []; striderSz_all = [];
@@ -256,7 +256,7 @@ for i=1:length(strideEvents.tSHS)-1
                 end
             end
         else
-            striderSy_all=[]; striderSz_all = [];
+            striderSy_all = []; striderSz_all = [];
         end
     end
 
@@ -333,9 +333,9 @@ for i=1:length(strideEvents.tSHS)-1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Check if the participant is holding the handrail %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     if ~isempty(handrailData)
-        HandrailHolding(i)= .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2, 2)))/Normalizer;
+        HandrailHolding(i) = .05 < sqrt(nanmean(sum(handrailData.split(SHS, SHS2).Data.^2, 2)))/Normalizer;
     else
-        HandrailHolding(i)=NaN;
+        HandrailHolding(i) = NaN;
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for the force plate that a good stance occures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

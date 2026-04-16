@@ -1,4 +1,4 @@
-function [COP] = computeCOP(GRFDataS, GRFDataF, s, f)
+function COP = computeCOP(GRFDataS, GRFDataF, s, f)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -15,14 +15,14 @@ COPS(:, 1)=(-5*relGRF(:, 1) - relGRF(:, 5))./relGRF(:, 3);
 COPS(:, 3)=0;
 COPS=bsxfun(@plus, STransformationMatrix*COPS', STransformationVec);
 
-FzS=relGRF(:, 3);
-relGRF=GRFDataF;
-COPF(:, 2)=(-5*relGRF(:, 2) + relGRF(:, 4))./relGRF(:, 3);
-COPF(:, 1)=(-5*relGRF(:, 1) - relGRF(:, 5))./relGRF(:, 3);
-COPF(:, 3)=0;
-COPF=bsxfun(@plus, FTransformationMatrix*COPF', FTransformationVec);
-FzF=relGRF(:, 3);
-COP=bsxfun(@rdivide,(bsxfun(@times,COPF,FzF') + bsxfun(@times,COPS,FzS')),(FzS'+FzF'));
+FzS = relGRF(:, 3);
+relGRF = GRFDataF;
+COPF(:, 2) = (-5*relGRF(:, 2) + relGRF(:, 4))./relGRF(:, 3);
+COPF(:, 1) = (-5*relGRF(:, 1) - relGRF(:, 5))./relGRF(:, 3);
+COPF(:, 3) = 0;
+COPF = bsxfun(@plus, FTransformationMatrix*COPF', FTransformationVec);
+FzF = relGRF(:, 3);
+COP = bsxfun(@rdivide,(bsxfun(@times,COPF,FzF') + bsxfun(@times,COPS,FzS')),(FzS'+FzF'));
 
 end
 
