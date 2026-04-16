@@ -1,5 +1,5 @@
 function [markerDataNEW] = COMCalculator(markerData, BW)
-%CJS 5/2017  -- COMCalculator 
+%CJS 5/2017  -- COMCalculator
 % Takes marker data and will give you an approximation of the COM position
 % (1) If a HAT marker is present then a more correct version of the COM will be
 %       Calculated using anthropometry tables from
@@ -8,7 +8,7 @@ function [markerDataNEW] = COMCalculator(markerData, BW)
 %       WHICH ASSUMES: I am assuming that the arms don't affect anything because they are swinging completely counter clockwise to each other
 % (2) If not HAT marker is present than we will use the average of the hips
 %       isntead.  I know what you are thinking!  Yes, the ASIS and PSIS
-%       would be better ("Alteration in the center of mass trajectory of 
+%       would be better ("Alteration in the center of mass trajectory of
 %       patients after stroke"), but people don't take the time to fill these
 %       markers in so I think from than perspective, the hips are better.
 %% Step 1: Get relevant marker data
@@ -33,7 +33,7 @@ if isempty(markerData.getLabelsThatMatch('HAT')) %we don't have the data we need
     %take the time to fill these markers, so this will be more robust
     BCOM=[mean([RHip(:,1) LHip(:,1)], 2) mean([RHip(:,2) LHip(:,2)], 2) mean([RHip(:,3) LHip(:,3)], 2)];
 else
-    
+
     %get ankle position
     RAnk=markerData.getDataAsVector({['RANK' orientation.sideAxis],['RANK' orientation.foreaftAxis],['RANK' orientation.updownAxis]});
     RAnk=[orientation.sideSign*RAnk(:,1),orientation.foreaftSign*RAnk(:,2),orientation.updownSign*RAnk(:,3)];
@@ -52,9 +52,9 @@ else
     %get HAT position
     HAT=markerData.getDataAsVector({['HAT' orientation.sideAxis],['HAT' orientation.foreaftAxis],['HAT' orientation.updownAxis]});
     HAT=[orientation.sideSign*HAT(:,1),orientation.foreaftSign*HAT(:,2),orientation.updownSign*HAT(:,3)];
-    
+
     %% Need to calculate the position of the center of mass of each segment
-    
+
     %Foot:
     fcomxR=abs(RAnk(:,1)-RToe(:,1)).*.5+RToe(:,1); %m
     fcomxL=abs(LAnk(:,1)-LToe(:,1)).*.5+LToe(:,1); %m
@@ -62,10 +62,10 @@ else
     fcomzR=abs(RAnk(:,3)-RToe(:,3)).*.5+RToe(:,3); %m
     fcomyL=abs(LAnk(:,2)-LToe(:,2)).*.5+LToe(:,2); %m
     fcomzL=abs(LAnk(:,3)-LToe(:,3)).*.5+LToe(:,3); %m
-    
+
     fcomR=[fcomxR,fcomyR,fcomzR]; %foot
     fcomL=[fcomxL,fcomyL,fcomzL];
-    
+
     %Shank: former I was using 0.394, but that is the whole leg, I just want
     %the shank, 0.567 is closer to what I want but I need to recalculate
     display('Updated Shank COM length?')
@@ -75,10 +75,10 @@ else
     scomzR=abs(RKnee(:,3)-RAnk(:,3)).*.567+RAnk(:,3);
     scomyL=abs(LKnee(:,2)-LAnk(:,2)).*.567+LAnk(:,2);
     scomzL=abs(LKnee(:,3)-LAnk(:,3)).*.567+LAnk(:,3);
-    
+
     scomR=[scomxR,scomyR,scomzR]; %Shank
     scomL=[scomxL,scomyL,scomzL];
-    
+
     %Thigh:
     tcomxR=abs(RHip(:,1)-RKnee(:,1)).*.567+RKnee(:,1);
     tcomxL=abs(LHip(:,1)-LKnee(:,1)).*.567+LKnee(:,1);
@@ -86,29 +86,29 @@ else
     tcomzR=abs(RHip(:,3)-RKnee(:,3)).*.567+RKnee(:,3);
     tcomyL=abs(LHip(:,2)-LKnee(:,2)).*.567+LKnee(:,2);
     tcomzL=abs(LHip(:,3)-LKnee(:,3)).*.567+LKnee(:,3);
-    
+
     tcomR=[tcomxR,tcomyR,tcomzR]; %Thigh
     tcomL=[tcomxL,tcomyL,tcomzL];
-    
+
     %HAT: head, arms, trunk
     % The distal distance from top of the head I calculated useing winter and
     % the midsized pilot from this document (http://www.smf.org/docs/articles/hic/USAARL_88-5.pdf)
     HATcomx=abs(nanmean([RHip(:,1) LHip(:,1)], 2)-HAT(:,1)).*(1-0.697)+nanmean([RHip(:,1); LHip(:,1)]);
     HATcomy=abs(nanmean([RHip(:,2) LHip(:,2)], 2)-HAT(:,2)).*(1-0.697)+nanmean([RHip(:,2); LHip(:,2)]);
     HATcomz=abs(nanmean([RHip(:,3) LHip(:,3)], 2)-HAT(:,3)).*(1-0.697)+nanmean([RHip(:,3); LHip(:,3)]);
-    
+
     HATcom=[HATcomx, HATcomy, HATcomz];
-    
+
     %% Need to compile whole body COM
     FootW=0.0145.*BW;
     shankW=0.0465.*BW;
     thighW=0.1.*BW;
     HATW=0.71.*BW;
-    
+
     BodyCOMx=(1/BW).*((fcomxR*FootW+scomxR*shankW+tcomxR*thighW)+(fcomxL*FootW+scomxL*shankW+tcomxL*thighW)+HATcomx*HATW);
     BodyCOMy=(1/BW).*((fcomyR*FootW+scomyR*shankW+tcomyR*thighW)+(fcomyL*FootW+scomyL*shankW+tcomyL*thighW)+HATcomy*HATW);
     BodyCOMz=(1/BW).*((fcomzR*FootW+scomzR*shankW+tcomzR*thighW)+(fcomzL*FootW+scomzL*shankW+tcomzL*thighW)+HATcomz*HATW);
-    
+
     BCOM=[BodyCOMx, BodyCOMy, BodyCOMz];
     %% Save everything in an orientedLabTS
     COMData=[fcomR fcomL scomR scomL tcomR tcomL HATcom BCOM]; %CJS note to self, change here to change what is stored in the COM

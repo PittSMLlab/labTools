@@ -2,7 +2,7 @@ function [out] = computeTSstatParameters(someTS,arrayedEvents)
 %This function computes summary parameters per stride based on labTS data.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
-%computeTemporalParameters. 
+%computeTemporalParameters.
 %See also computeSpatialParameters, computeTemporalParameters,
 %computeForceParameters, parameterSeries
 
@@ -18,7 +18,7 @@ paramLabels=cell(length(labs),Nl);
 description=cell(length(labs),Nl);
 %Define parameter names and descriptions:
 for j=1:length(labs) %Muscles
-     for k=1:Nl
+    for k=1:Nl
         if strcmp(labelSuff{k},'bad')
             paramLabels{j,k}=[labs{j} labelSuff{k}];
             description{j,k}=['Signals if quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
@@ -26,7 +26,7 @@ for j=1:length(labs) %Muscles
             paramLabels{j,k}=[labs{j} labelSuff{k}];
             description{j,k}=[labelSuff{k} ' in timeseries ' labs{j}];
         end
-     end
+    end
 end
 
 for i=1:N %For each stride
@@ -75,6 +75,6 @@ for i=1:N %For each stride
     end
 end
 %% Create parameterSeries
-out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));        
+out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));
 end
 

@@ -1,10 +1,10 @@
 function out = calcExperimentalParams(in,subData,eventClass,initEventSide)
-%Calculate parameters: 
+%Calculate parameters:
 %
 %INPUTS
 %'in' must be an instance of the class "processedlabData"
 %'subData' is the instance of subjectData e.g. subject.mat/expData.subData
-%'eventClass' 
+%'eventClass'
 %'initEventSide' can be either 'R' or 'L', if blank this comes from come from
 %subjectRAW.mat/rawExpData.data{i,j}.metaData.refLeg, or the first input
 %'in'
@@ -15,7 +15,7 @@ end
 if nargin<3 || isempty(initEventSide)
     refLeg=in.metaData.refLeg;
 else
-    refLeg=initEventSide; 
+    refLeg=initEventSide;
 end
 
 if strcmp(refLeg,'R')

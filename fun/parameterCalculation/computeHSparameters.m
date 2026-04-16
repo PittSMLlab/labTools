@@ -2,7 +2,7 @@ function [out] = computeHSparameters(someTS,gaitEvents,eventType)
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
-%computeTemporalParameters. 
+%computeTemporalParameters.
 %See also computeSpatialParameters, computeTemporalParameters,
 %computeForceParameters, parameterSeries
 
@@ -30,11 +30,11 @@ nstrides=size(T_HS,1);
 Ang_SHS=squeeze(someTS.getSample(T_HS(2:end,1)));
 
 try
-    Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1,2)));   
+    Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1,2)));
 catch
     Ang_FHS=NaN(size(Ang_SHS));%NEEDS FIX
-     disp('no gait events for fast leg!')
-end   
+    disp('no gait events for fast leg!')
+end
 
 %rename labels
 Slabs=strcat(someTS.labels,{'AtSHS'});

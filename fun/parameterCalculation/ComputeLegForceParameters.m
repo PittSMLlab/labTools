@@ -18,8 +18,8 @@ ps=find((striderS-LevelofInterest)>0);
 % be considered when we are computing braking and propulsion measures.
 if isempty(ImpactSWhere)~=1
     % New method 2/25/2020
-        ps(find(ps<ImpactSWhere))=[];
-        ns(find(ns<ImpactSWhere))=[];
+    ps(find(ps<ImpactSWhere))=[];
+    ns(find(ns<ImpactSWhere))=[];
 end
 
 %% Mean Behaviors
@@ -55,16 +55,16 @@ if isempty(ns)
     SBmax=NaN;
     SBmax_ABS=NaN;
     SBmaxQS=NaN;
-else% As long as there are some braking data points    
+else% As long as there are some braking data points
     [SBmax]=nanmin(striderS(ns));%-LevelofInterest
     SBmax=FlipB.*SBmax;
     SBmaxQS=SBmax-2.*FlipB.*(LevelofInterest);
     SBmax_ABS=FlipB.*(nanmin(striderS-LevelofInterest));
 end
- 
+
 if isempty(ps)
     SPmax=NaN;
-   SPmaxQS=NaN;
+    SPmaxQS=NaN;
 else % As long as there are some propulsion data points
     [SPmax]=nanmax(striderS(ps));%-LevelofInterest
     SPmaxQS=SPmax-2.*LevelofInterest;

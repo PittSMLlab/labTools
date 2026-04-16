@@ -64,12 +64,12 @@ for i=1:T
         COMveloSY(i)=veloCOM_SY.Data(veloCOM_SY.getIndexClosestToTimePoint(SHS));
         COMveloFZ(i)=veloCOM_FZ.Data(veloCOM_FZ.getIndexClosestToTimePoint(FHS));
         COMveloSZ(i)=veloCOM_SZ.Data(veloCOM_SZ.getIndexClosestToTimePoint(SHS));
-        
+
         COMFY(i)=flipIT.*COMTS_FANK.Data(veloCOM_FY.getIndexClosestToTimePoint(FHS), 2);
         COMSY(i)=flipIT.*COMTS_SANK.Data(veloCOM_SY.getIndexClosestToTimePoint(SHS), 2);
         COMFZ(i)=flipIT.*COMTS_FANK.Data(veloCOM_FZ.getIndexClosestToTimePoint(FHS), 3);
         COMSZ(i)=flipIT.*COMTS_SANK.Data(veloCOM_SZ.getIndexClosestToTimePoint(SHS), 3);
-        
+
         %Max/Min
         if T>10 && i<=T-5
             % AVERAGE: Time Normalied -- Rotated -- COM position and Velocity
@@ -77,110 +77,110 @@ for i=1:T
             COMSY_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(8:23, 2, i));
             COMFZ_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMTS_F.Data(8:23, 3, i));
             COMSZ_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(8:23, 3, i));
-            
+
             COMveloFY_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMVelo_FY.Data(8:23, 1, i));
             COMveloSY_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMVelo_SY.Data(8:23, 1, i));
             COMveloFZ_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMVelo_FZ.Data(8:23, 1, i));
             COMveloSZ_Norm_Rot_mean(i)=flipIT.*nanmean(AlignedCOMVelo_SZ.Data(8:23, 1, i));
-            
+
             % AVERAGE: Time Normalied -- Rotated -- COM position and Velocity
             COMFY_Norm_Rot_DSmean(i)=flipIT.*nanmean(AlignedCOMTS_F.Data(8:15, 2, i));
             COMSY_Norm_Rot_DSmean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(8:15, 2, i));
             COMFZ_Norm_Rot_DSmean(i)=flipIT.*nanmean(AlignedCOMTS_F.Data(8:15, 3, i));
             COMSZ_Norm_Rot_DSmean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(8:15, 3, i));
-            
+
             % WHOLE AVERAGE: Time Normalied -- Rotated -- COM position and Velocity
             COMFY_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMTS_F.Data(:, 2, i));
             COMSY_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(:, 2, i));
             COMFZ_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMTS_F.Data(:, 3, i));
             COMSZ_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMTS_S.Data(:, 3, i));
-            
+
             COMveloFY_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMVelo_FY.Data(:, 1, i));
             COMveloSY_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMVelo_SY.Data(:, 1, i));
             COMveloFZ_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMVelo_FZ.Data(:, 1, i));
             COMveloSZ_Norm_Rot_WHOLEmean(i)=flipIT.*nanmean(AlignedCOMVelo_SZ.Data(:, 1, i));
-            
+
             % Little Bump Average First Attemps: Time Normalied -- Rotated -- COM position and Velocity
             COMFZ_Norm_Rot_Retraction(i)=flipIT.*nanmin(AlignedCOMTS_F.Data(90:100, 3, i));
             COMSZ_Norm_Rot_Retraction(i)=flipIT.*nanmin(AlignedCOMTS_S.Data(90:100, 3, i));
             COMveloFZ_Norm_Rot_Retraction(i)=flipIT.*nanmin(AlignedCOMVelo_FZ.Data(90:100, 1, i));
             COMveloSZ_Norm_Rot_Retraction(i)=flipIT.*nanmin(AlignedCOMVelo_SZ.Data(90:100, 1, i));
-            
+
             %Time Normalied -- Rotated -- COM position and Velocity
             [COMFY_Norm_Rot_max(i) COMFY_Norm_Rot_maxIndex(i)]=nanmax(flipIT.*AlignedCOMTS_F.Data(:, 2, i));
             [COMSY_Norm_Rot_max(i) COMSY_Norm_Rot_maxIndex(i)]=nanmax(flipIT.*AlignedCOMTS_S.Data(:, 2, i));
             [COMFY_Norm_Rot_min(i) COMFY_Norm_Rot_minIndex(i)]=nanmin(flipIT.*AlignedCOMTS_F.Data(:, 2, i));
             [COMSY_Norm_Rot_min(i) COMSY_Norm_Rot_minIndex(i)]=nanmin(flipIT.*AlignedCOMTS_S.Data(:, 2, i));
-            
+
             [COMFZ_Norm_Rot_max(i) COMFZ_Norm_Rot_maxIndex(i)]=nanmax(AlignedCOMTS_F.Data(:, 3, i));
             [COMSZ_Norm_Rot_max(i) COMSZ_Norm_Rot_maxIndex(i)]=nanmax(AlignedCOMTS_S.Data(:, 3, i));
             [COMFZ_Norm_Rot_min(i) COMFZ_Norm_Rot_minIndex(i)]=nanmin(AlignedCOMTS_F.Data(:, 3, i));
             [COMSZ_Norm_Rot_min(i) COMSZ_Norm_Rot_minIndex(i)]=nanmin(AlignedCOMTS_S.Data(:, 3, i));
-            
+
             [COMveloFY_Norm_Rot_max(i) COMveloFY_Norm_Rot_maxIndex(i)]=nanmax(flipIT.*AlignedCOMVelo_FY.Data(:, 1, i));
             [COMveloSY_Norm_Rot_max(i) COMveloSY_Norm_Rot_maxIndex(i)]=nanmax(flipIT.*AlignedCOMVelo_SY.Data(:, 1, i));
             [COMveloFY_Norm_Rot_min(i) COMveloFY_Norm_Rot_minIndex(i)]=nanmin(flipIT.*AlignedCOMVelo_FY.Data(:, 1, i));
             [COMveloSY_Norm_Rot_min(i) COMveloSY_Norm_Rot_minIndex(i)]=nanmin(flipIT.*AlignedCOMVelo_SY.Data(:, 1, i));
-            
+
             [COMveloFZ_Norm_Rot_max(i) COMveloFZ_Norm_Rot_maxIndex(i)]=nanmax(AlignedCOMVelo_FZ.Data(:, 1, i));
             [COMveloSZ_Norm_Rot_max(i) COMveloSZ_Norm_Rot_maxIndex(i)]=nanmax(AlignedCOMVelo_SZ.Data(:, 1, i));
             [COMveloFZ_Norm_Rot_min(i) COMveloFZ_Norm_Rot_minIndex(i)]=nanmin(AlignedCOMVelo_FZ.Data(:, 1, i));
             [COMveloSZ_Norm_Rot_min(i) COMveloSZ_Norm_Rot_minIndex(i)]=nanmin(AlignedCOMVelo_SZ.Data(:, 1, i));
-            
+
         else
             COMFZ_Norm_Rot_minIndex(i)=NaN;
             COMSZ_Norm_Rot_minIndex(i)=NaN;
-            
+
             % AVERAGE: Time Normalied -- Rotated -- COM position and Velocity
             COMFY_Norm_Rot_mean(i)=NaN;
             COMSY_Norm_Rot_mean(i)=NaN;
             COMFZ_Norm_Rot_mean(i)=NaN;
             COMSZ_Norm_Rot_mean(i)=NaN;
-            
+
             COMveloFY_Norm_Rot_mean(i)=NaN;
             COMveloSY_Norm_Rot_mean(i)=NaN;
             COMveloFZ_Norm_Rot_mean(i)=NaN;
             COMveloSZ_Norm_Rot_mean(i)=NaN;
-            
+
             COMFY_Norm_Rot_DSmean(i)=NaN;
             COMSY_Norm_Rot_DSmean(i)=NaN;
             COMFZ_Norm_Rot_DSmean(i)=NaN;
             COMSZ_Norm_Rot_DSmean(i)=NaN;
-            
-            
-            
+
+
+
             COMFY_Norm_Rot_WHOLEmean(i)=NaN;
             COMSY_Norm_Rot_WHOLEmean(i)=NaN;
             COMFZ_Norm_Rot_WHOLEmean(i)=NaN;
             COMSZ_Norm_Rot_WHOLEmean(i)=NaN;
-            
+
             COMveloFY_Norm_Rot_WHOLEmean(i)=NaN;
             COMveloSY_Norm_Rot_WHOLEmean(i)=NaN;
             COMveloFZ_Norm_Rot_WHOLEmean(i)=NaN;
             COMveloSZ_Norm_Rot_WHOLEmean(i)=NaN;
-            
+
             % Little Bump Average First Attemps: Time Normalied -- Rotated -- COM position and Velocity
             COMFZ_Norm_Rot_Retraction(i)=NaN;
             COMSZ_Norm_Rot_Retraction(i)=NaN;
             COMveloFZ_Norm_Rot_Retraction(i)=NaN;
             COMveloSZ_Norm_Rot_Retraction(i)=NaN;
-            
+
             %Time Normalied -- Rotated -- COM position and Velocity
             COMFY_Norm_Rot_max(i)=NaN; COMFY_Norm_Rot_maxIndex(i)=NaN;
             COMSY_Norm_Rot_max(i)=NaN; COMSY_Norm_Rot_maxIndex(i)=NaN;
             COMFY_Norm_Rot_min(i)=NaN; COMFY_Norm_Rot_minIndex(i)=NaN;
             COMSY_Norm_Rot_min(i)=NaN; COMSY_Norm_Rot_minIndex(i)=NaN;
-            
+
             COMFZ_Norm_Rot_max(i)=NaN; COMFZ_Norm_Rot_maxIndex(i)=NaN;
             COMSZ_Norm_Rot_max(i)=NaN; COMSZ_Norm_Rot_maxIndex(i)=NaN;
             COMFZ_Norm_Rot_min(i)=NaN; COMFZ_Norm_Rot_minIndex(i)=NaN;
             COMSZ_Norm_Rot_min(i)=NaN; COMSZ_Norm_Rot_minIndex(i)=NaN;
-            
+
             COMveloFY_Norm_Rot_max(i)=NaN; COMveloFY_Norm_Rot_maxIndex(i)=NaN;
             COMveloSY_Norm_Rot_max(i)=NaN; COMveloSY_Norm_Rot_maxIndex(i)=NaN;
             COMveloFY_Norm_Rot_min(i)=NaN; COMveloFY_Norm_Rot_minIndex(i)=NaN;
             COMveloSY_Norm_Rot_min(i)=NaN; COMveloSY_Norm_Rot_minIndex(i)=NaN;
-            
+
             COMveloFZ_Norm_Rot_max(i)=NaN; COMveloFZ_Norm_Rot_maxIndex(i)=NaN;
             COMveloSZ_Norm_Rot_max(i)=NaN; COMveloSZ_Norm_Rot_maxIndex(i)=NaN;
             COMveloFZ_Norm_Rot_min(i)=NaN; COMveloFZ_Norm_Rot_minIndex(i)=NaN;

@@ -2,7 +2,7 @@ function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignm
 %This function averages labTS data across given phases.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
-%computeTemporalParameters. 
+%computeTemporalParameters.
 %See also computeSpatialParameters, computeTemporalParameters,
 %computeForceParameters, parameterSeries
 
@@ -16,17 +16,17 @@ function [out] = computeTSdiscreteParameters(someTS,gaitEvents,eventTypes,alignm
 %TODO: this should be a method of labTS
 
 if nargin<4 || isempty(alignmentVector)
-    
-    if ~isa(eventTypes,'cell') %Allow to change the type of event post-processing 
-        
+
+    if ~isa(eventTypes,'cell') %Allow to change the type of event post-processing
+
         if ~isa(eventTypes,'char')
             error('Bad argument for eventTypes')
         end
-        
+
         s=eventTypes;    f=getOtherLeg(s);
         eventTypes={[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
     end
-  
+
     alignmentVector=[2,4,2,4];
     desc2={'SHS to mid DS1','mid DS1 to FTO',...
         'FTO to 1/4 fast swing','1/4 to mid fast swing',...
@@ -35,7 +35,7 @@ if nargin<4 || isempty(alignmentVector)
         'STO to 1/4 slow swing','1/4  to mid slow swing',...
         'mid slow swing to 3/4','3/4 slow swing to SHS'}';
 else
-    if length(eventTypes)~=length(alignmentVector) 
+    if length(eventTypes)~=length(alignmentVector)
         if ~isempty(alignmentVector)
             error('Inconsistent sizes of eventTypes and alignmentVector')
         end

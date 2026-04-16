@@ -12,7 +12,7 @@ for i=1:N
 end
 
 eventsTime=gaitEvents.Time;
-aux=find(SHS); 
+aux=find(SHS);
 M=length(aux)-1;
 inds=NaN(M,2*N);
 times=NaN(M,2*N);
