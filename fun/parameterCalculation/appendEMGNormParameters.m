@@ -179,14 +179,14 @@ for rmBiase = [0, 1]
     end
 
     %% For each muscle, get L2 norm in original unit + in percentage unit
-    bothLegsColsIdx = nan(numel(normalizedDataLabelPrefix),numel(adaptData.data.labels)); %for each muscle, store the binary array of where the corresponding column of data is
-    bothLegsColsIdx_rawUnit = nan(numel(normalizedDataLabelPrefix),numel(adaptData.data.labels));
-    allnanMuslcesByStride = false(size(adaptData.data.Data,1),numel(normalizedDataLabelPrefix)); %stride x muscles
+    bothLegsColsIdx = nan(numel(normalizedDataLabelPrefix), numel(adaptData.data.labels)); %for each muscle, store the binary array of where the corresponding column of data is
+    bothLegsColsIdx_rawUnit = nan(numel(normalizedDataLabelPrefix), numel(adaptData.data.labels));
+    allnanMuslcesByStride = false(size(adaptData.data.Data, 1), numel(normalizedDataLabelPrefix)); %stride x muscles
     for i = 1:numel(normalizedDataLabelPrefix)
         %Finding the columns of the data
-        dataColIdx=(cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,['^' normalizedDataLabelPrefix{i} '[ ]?\d+$'])));
-        bothLegsColsIdx(i,:) = dataColIdx;
-        curdata = adaptData.data.Data(:,dataColIdx);
+        dataColIdx=(cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels, ['^' normalizedDataLabelPrefix{i} '[ ]?\d+$'])));
+        bothLegsColsIdx(i, :) = dataColIdx;
+        curdata = adaptData.data.Data(:, dataColIdx);
         %record #of muscles that are all nan, compute it only once bc normalized vs raw should have the same nan content, will have 1
         %at a stride for a given muscle i that is all nan at that stride
         allnanMuslcesByStride(:, i) = all(isnan(curdata), 2);
@@ -206,9 +206,9 @@ for rmBiase = [0, 1]
         newDataCol = newDataCol + 1;
 
         %do the same for the raw unit
-        dataColIdx=(cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,['^' rawDataLabelPrefix{i} '[ ]?\d+$'])));
-        bothLegsColsIdx_rawUnit(i,:) = dataColIdx;
-        curdata = adaptData.data.Data(:,dataColIdx);
+        dataColIdx=(cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels, ['^' rawDataLabelPrefix{i} '[ ]?\d+$'])));
+        bothLegsColsIdx_rawUnit(i, :) = dataColIdx;
+        curdata = adaptData.data.Data(:, dataColIdx);
         curdata(isnan(curdata))=0; %nan are made zero to computer the norm
         %now compute a by muscle norm
         newData(:, newDataCol) = vecnorm(curdata, 2, 2);
@@ -273,11 +273,11 @@ for rmBiase = [0, 1]
 
     %% Get the norm per leg
     for legs = {'slow','fast'}
-        curdata = adaptData.data.Data(:,any(bothLegsColsIdx(startsWith(normalizedDataLabelPrefix,['Norm' legs{1}(1)]),:),1));
-        allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
+        curdata = adaptData.data.Data(:, any(bothLegsColsIdx(startsWith(normalizedDataLabelPrefix, ['Norm' legs{1}(1)]), :), 1));
+        allMsNanStride = all(isnan(curdata), 2); %all nans across a column, set that stride to nan.
         curdata(isnan(curdata))=0; %nan are made zero to computer the norm
-        newData(:,newDataCol) = vecnorm(curdata,2,2);
-        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
+        newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+        newData(allMsNanStride, newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol}  = [legs{1} 'LegEMGL2normPercentUnit'  labelSuffix];
         newDescp{newDataCol}  = ['L2norm of ' legs{1} ' leg muscles after they are flattend as a 1D vector.' ...
             'The data is in the percentage unit after stretching each stride to have 100% = max of nanmean of last 40 strides of ' normalizationRefCond ...
@@ -294,11 +294,11 @@ for rmBiase = [0, 1]
             ' and 0 = min of ' normalizationRefCond '(specific OGBase 0-100% calculation see your refEp definition). Nan values are treated as 0.' descpSuffix];
         newDataCol = newDataCol + 1;
 
-        curdata = adaptData.data.Data(:,any(bothLegsColsIdx_rawUnit(startsWith(rawDataLabelPrefix,legs{1}(1)),:),1));
-        allMsNanStride = all(isnan(curdata),2); %all nans across a column, set that stride to nan.
+        curdata = adaptData.data.Data(:, any(bothLegsColsIdx_rawUnit(startsWith(rawDataLabelPrefix, legs{1}(1)), :), 1));
+        allMsNanStride = all(isnan(curdata), 2); %all nans across a column, set that stride to nan.
         curdata(isnan(curdata))=0; %nan are made zero to computer the norm
-        newData(:,newDataCol) = vecnorm(curdata,2,2);
-        newData(allMsNanStride,newDataCol) = nan; %set strides that had all nans per muscles as nan.
+        newData(:, newDataCol) = vecnorm(curdata, 2, 2);
+        newData(allMsNanStride, newDataCol) = nan; %set strides that had all nans per muscles as nan.
         newLabels{newDataCol}  = [legs{1} 'LegEMGL2normRawUnit' labelSuffix];
         newDescp{newDataCol}  = ['L2norm of ' legs{1} ' leg muscles after they are flattend as a 1D vector.' ...
             'in the raw voltage unit. Nan values are treated as 0.' descpSuffix];
@@ -335,20 +335,20 @@ for rmBiase = [0, 1]
         %first identify the prefix for this muscle, then look for match in
         %all labels that start with the prefix and ends with digits
         %(look for match that starts with NormfTA_s and end with digits.
-        fastCol=cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-            ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix,['f' m{1}])} '[ ]?\d+$']));
-        fastdata = adaptData.data.Data(:,fastCol);
+        fastCol=cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels,...
+            ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix, ['f' m{1}])} '[ ]?\d+$']));
+        fastdata = adaptData.data.Data(:, fastCol);
 
-        slowCol = cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-            ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix,['s' m{1}])} '[ ]?\d+$']));
-        slowdata = adaptData.data.Data(:,slowCol);
+        slowCol = cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels,...
+            ['^' normalizedDataLabelPrefix{contains(normalizedDataLabelPrefix, ['s' m{1}])} '[ ]?\d+$']));
+        slowdata = adaptData.data.Data(:, slowCol);
         if ~isempty(fastdata) && ~isempty(slowdata)
             asymdata = fastdata - slowdata; %strides x 12
-            allnanAsymMuslcesByStride(:,i) = all(isnan(asymdata),2);
-            allmusclesAsym=[allmusclesAsym,asymdata]; %concatenate horizontally to get strides x n where n = 12x# of muscles with both legs recorded where asym can be computed
+            allnanAsymMuslcesByStride(:, i) = all(isnan(asymdata), 2);
+            allmusclesAsym=[allmusclesAsym, asymdata]; %concatenate horizontally to get strides x n where n = 12x# of muscles with both legs recorded where asym can be computed
             asymdata(isnan(asymdata))=0; %nan are made zero to computer the norm
-            newData(:,newDataCol) = vecnorm(asymdata,2,2); %l2 norm over columns
-            newData(allnanAsymMuslcesByStride(:,i),newDataCol) = nan;  %if all muscles are nan for a given stride, set norm to nan
+            newData(:, newDataCol) = vecnorm(asymdata, 2, 2); %l2 norm over columns
+            newData(allnanAsymMuslcesByStride(:, i), newDataCol) = nan;  %if all muscles are nan for a given stride, set norm to nan
             newDescp{newDataCol} = ['L2 norm of Asymmetry of ' m{1} ' between fast-slow leg in the percentage unit'...
                 'The data is in the percentage unit after stretching each stride to have 100% = max of nanmean of last 40 strides of ' normalizationRefCond ...
                 ' and 0 = min of ' normalizationRefCond '(specific OGBase 0-100% calculation see your refEp definition). Nan values are treated as 0.' descpSuffix];
@@ -357,13 +357,13 @@ for rmBiase = [0, 1]
         end
 
         %look for match that start with fTA_s and ends with digits
-        fastCol=cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-            ['^' rawDataLabelPrefix{startsWith(rawDataLabelPrefix,['f' m{1}])} '[ ]?\d+$']));
-        fastdata = adaptData.data.Data(:,fastCol);
+        fastCol=cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels,...
+            ['^' rawDataLabelPrefix{startsWith(rawDataLabelPrefix, ['f' m{1}])} '[ ]?\d+$']));
+        fastdata = adaptData.data.Data(:, fastCol);
 
-        slowCol = cellfun(@(x) ~isempty(x),regexp(adaptData.data.labels,...
-            ['^' rawDataLabelPrefix{startsWith(rawDataLabelPrefix,['s' m{1}])} '[ ]?\d+$']));
-        slowdata = adaptData.data.Data(:,slowCol);
+        slowCol = cellfun(@(x) ~isempty(x), regexp(adaptData.data.labels,...
+            ['^' rawDataLabelPrefix{startsWith(rawDataLabelPrefix, ['s' m{1}])} '[ ]?\d+$']));
+        slowdata = adaptData.data.Data(:, slowCol);
         if ~isempty(fastdata) && ~isempty(slowdata)
             asymdata = fastdata - slowdata; %strides x 12
             allmusclesAsym_rawUnit=[allmusclesAsym_rawUnit, asymdata]; %concatenate horizontally to get strides x n where n = 12x# of muscles with both legs recorded where asym can be computed
