@@ -2,6 +2,10 @@ function out = computeAngleParameters(angleData, gaitEvents, slowLeg, ...
     eventTypes)
 % computeAngleParameters  Compute joint angle parameters per stride.
 %
+%   Syntax:
+%     out = computeAngleParameters(angleData, gaitEvents, slowLeg, ...
+%         eventTypes)
+%
 %   Computes stride-by-stride joint angle parameters and returns a
 % parameterSeries object that can be concatenated with other parameter
 % series objects (e.g., from computeTemporalParameters).

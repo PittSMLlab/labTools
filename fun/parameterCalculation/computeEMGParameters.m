@@ -2,6 +2,9 @@ function out = computeEMGParameters( ...
     EMGData, gaitEvents, slowLeg, eventTypes)
 % computeEMGParameters  Compute EMG parameters per stride.
 %
+%   Syntax:
+%     out = computeEMGParameters(EMGData, gaitEvents, slowLeg, eventTypes)
+%
 %   Computes stride-by-stride EMG parameters and returns a
 % parameterSeries object that can be concatenated with other parameter
 % series objects (e.g., from computeTemporalParameters).

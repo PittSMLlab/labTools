@@ -1,6 +1,9 @@
 function out = computeTemporalParameters(strideEvents)
 % computeTemporalParameters  Compute temporal parameters per stride.
 %
+%   Syntax:
+%     out = computeTemporalParameters(strideEvents)
+%
 %   Computes stride-by-stride temporal gait parameters and returns a
 % parameterSeries object that can be concatenated with other parameter
 % series objects (e.g., from computeSpatialParameters).

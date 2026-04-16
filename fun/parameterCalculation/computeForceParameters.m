@@ -2,6 +2,12 @@ function out = computeForceParameters(strideEvents, GRFData, slowleg, ...
     fastleg, BW, trialData, markerData, subData, FyPSat)
 % computeForceParameters  Compute kinetic treadmill parameters per stride.
 %
+%   Syntax:
+%     out = computeForceParameters(strideEvents, GRFData, slowleg, ...
+%         fastleg, BW, trialData, markerData, subData)
+%     out = computeForceParameters(strideEvents, GRFData, slowleg, ...
+%         fastleg, BW, trialData, markerData, subData, FyPSat)
+%
 %   Analyzes anterior-posterior ground reaction force (GRF) data on a
 % stride-by-stride basis, focused on braking and propulsion forces as
 % described in Sombric et al. (2019, 2020). Returns a parameterSeries
