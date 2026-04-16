@@ -196,16 +196,16 @@ end
 
 
 if strcmp(trialData.metaData.type,'OG') || strcmp(trialData.metaData.type,'NIM')
-    filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
-    filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting,:,:);
-    filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.5*fast_frames),floor(0.3*fast_frames)]);
-    filteredFast_align.Data = filteredFast_align.Data(1:fast_frames-endcutting,:,:);
+    filteredSlow_align = FilteredS.align(gaitEvents, {[slowleg 'HS'], [fastleg 'TO'], [fastleg 'HS']}, [floor(0.2*slow_frames), floor(0.4*slow_frames), floor(0.4*slow_frames)]);
+    filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting, :, :);
+    filteredFast_align = FilteredF.align(gaitEvents, {[fastleg 'HS'], [slowleg 'TO'], [slowleg 'HS']}, [floor(0.2*fast_frames), floor(0.5*fast_frames), floor(0.3*fast_frames)]);
+    filteredFast_align.Data = filteredFast_align.Data(1:fast_frames-endcutting, :, :);
 else
-    filteredSlow_align = FilteredS.align(gaitEvents,{[slowleg 'HS'],[fastleg 'TO'],[fastleg 'HS']},[floor(0.2*slow_frames),floor(0.4*slow_frames),floor(0.4*slow_frames)]);
-    filteredSlow_align.Data = [filteredSlow_align.Data(slow_frames-19:end,:,:); filteredSlow_align.Data(1:slow_frames-40-endcutting,:,:)];
+    filteredSlow_align = FilteredS.align(gaitEvents, {[slowleg 'HS'], [fastleg 'TO'], [fastleg 'HS']}, [floor(0.2*slow_frames), floor(0.4*slow_frames), floor(0.4*slow_frames)]);
+    filteredSlow_align.Data = [filteredSlow_align.Data(slow_frames-19:end, :, :); filteredSlow_align.Data(1:slow_frames-40-endcutting, :, :)];
 
-    filteredFast_align = FilteredF.align(gaitEvents,{[fastleg 'HS'],[slowleg 'TO'],[slowleg 'HS']},[floor(0.2*fast_frames),floor(0.4*fast_frames),floor(0.4*fast_frames)]);
-    filteredFast_align.Data = [filteredFast_align.Data(fast_frames-19:end,:,:); filteredFast_align.Data(1:fast_frames-40-endcutting,:,:)];
+    filteredFast_align = FilteredF.align(gaitEvents, {[fastleg 'HS'], [slowleg 'TO'], [slowleg 'HS']}, [floor(0.2*fast_frames), floor(0.4*fast_frames), floor(0.4*fast_frames)]);
+    filteredFast_align.Data = [filteredFast_align.Data(fast_frames-19:end, :, :); filteredFast_align.Data(1:fast_frames-40-endcutting, :, :)];
 end
 
 i_slow = 0; i_fast = 0;
@@ -254,8 +254,8 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
             striderSy_OGFP.(Ally{j}) = flipIT.*filteredSlowStance.getDataAsVector(Ally{j})/Normalizer;
             striderSz_OGFP.(Allz{j}) = flipIT.*filteredSlowStance.getDataAsVector(Allz{j})/Normalizer;
 
-            striderSy_OGFP_align.(Ally{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Ally{j}).Data(:,1,i)/Normalizer;
-            striderSz_OGFP_align.(Allz{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Allz{j}).Data(:,1,i)/Normalizer;
+            striderSy_OGFP_align.(Ally{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Ally{j}).Data(:, 1, i)/Normalizer;
+            striderSz_OGFP_align.(Allz{j}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Allz{j}).Data(:, 1, i)/Normalizer;
 
             % getting each force-plate value during single stance
             striderSy_OGFP_SS.(Ally{j}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Ally{j})/Normalizer;
@@ -304,8 +304,8 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
             %striderSy_align = flipIT.*filteredSlowStance.getDataAsVector(OGFPy_slow)/Normalizer;
             %striderSz_align = flipIT.*filteredSlowStance.getDataAsVector(OGFPz_slow)/Normalizer;
 
-            striderSy_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPy_slow).Data(:,1,i)/Normalizer;
-            striderSz_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPz_slow).Data(:,1,i)/Normalizer;
+            striderSy_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPy_slow).Data(:, 1, i)/Normalizer;
+            striderSz_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPz_slow).Data(:, 1, i)/Normalizer;
 
             slow_divider = floor(length(striderSy_align)/divideri);
             if isempty(striderSy_align)
@@ -356,8 +356,8 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
             striderFy_OGFP.(Ally{j}) = flipIT.*filteredFastStance.getDataAsVector(Ally{j})/Normalizer;
             striderFz_OGFP.(Allz{j}) = flipIT.*filteredFastStance.getDataAsVector(Allz{j})/Normalizer;
 
-            striderFy_OGFP_align.(Ally{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Ally{j}).Data(:,1,i)/Normalizer;
-            striderFz_OGFP_align.(Allz{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Allz{j}).Data(:,1,i)/Normalizer;
+            striderFy_OGFP_align.(Ally{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Ally{j}).Data(:, 1, i)/Normalizer;
+            striderFz_OGFP_align.(Allz{j}) = flipIT.*filteredFast_align.getPartialDataAsATS(Allz{j}).Data(:, 1, i)/Normalizer;
 
             striderFy_OGFP_SS.(Ally{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Ally{j})/Normalizer;
             striderFz_OGFP_SS.(Allz{j}) = flipIT.*filteredFastSingleStance.getDataAsVector(Allz{j})/Normalizer;
@@ -400,8 +400,8 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
             %             striderFy_align = flipIT.*filteredFastStance.getDataAsVector(OGFPy_fast)/Normalizer;
             %             striderFz_align = flipIT.*filteredFastStance.getDataAsVector(OGFPz_fast)/Normalizer;
 
-            striderFy_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPy_fast).Data(:,1,i)/Normalizer;
-            striderFz_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPz_fast).Data(:,1,i)/Normalizer;
+            striderFy_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPy_fast).Data(:, 1, i)/Normalizer;
+            striderFz_align = flipIT.*filteredFast_align.getPartialDataAsATS(OGFPz_fast).Data(:, 1, i)/Normalizer;
 
             if isempty(striderFy_align)
                 striderFz_align = [];
@@ -539,10 +539,10 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
         %         SZmax_align(i)=-1*nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']))/Normalizer;
         %         SXmax_align(i)=nanmin(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']))/Normalizer;
 
-        SZ_align(i)=-1*nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:,1,i))/Normalizer;
-        SX_align(i)=nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:,1,i))/Normalizer;
-        SZmax_align(i)=-1*nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:,1,i))/Normalizer;
-        SXmax_align(i)=nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        SZ_align(i)=-1*nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:, 1, i))/Normalizer;
+        SX_align(i)=nanmean(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:, 1, i))/Normalizer;
+        SZmax_align(i)=-1*nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'z']).Data(:, 1, i))/Normalizer;
+        SXmax_align(i)=nanmin(filteredSlow_align.getPartialDataAsATS([OGFPy_slow(1:end-1) 'x']).Data(:, 1, i))/Normalizer;
 
 
 
@@ -643,10 +643,10 @@ for i=1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :
         %         FZmax_align(i)=-1*nanmin(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']))/Normalizer;
         %         FXmax_align(i)=nanmax(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']))/Normalizer;
 
-        FZ_align(i)=-1*nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:,1,i))/Normalizer;
-        FX_align(i)=nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:,1,i))/Normalizer;
-        FZmax_align(i)=-1*nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:,1,i))/Normalizer;
-        FXmax_align(i)=nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:,1,i))/Normalizer;
+        FZ_align(i)=-1*nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:, 1, i))/Normalizer;
+        FX_align(i)=nanmean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:, 1, i))/Normalizer;
+        FZmax_align(i)=-1*nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:, 1, i))/Normalizer;
+        FXmax_align(i)=nanmin(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:, 1, i))/Normalizer;
 
     end
 

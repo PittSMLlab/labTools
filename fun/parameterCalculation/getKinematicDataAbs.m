@@ -107,13 +107,13 @@ end
 
 %% Extract Angle Data at Gait Event Times
 if ~isempty(angleData)
-    newAngleData = angleData.getDataAsTS({[s 'Limb'],[f 'Limb']});
-    newAngleData = newAngleData.getSample(eventTimes,'closest');
-    sAngle = newAngleData(:,:,1);
-    fAngle = newAngleData(:,:,2);
+    newAngleData = angleData.getDataAsTS({[s 'Limb'], [f 'Limb']});
+    newAngleData = newAngleData.getSample(eventTimes, 'closest');
+    sAngle = newAngleData(:, :, 1);
+    fAngle = newAngleData(:, :, 2);
 else
-    sAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
-    fAngle = nan(size(eventTimes,1),size(eventTimes,2),1);
+    sAngle = nan(size(eventTimes, 1), size(eventTimes, 2), 1);
+    fAngle = nan(size(eventTimes, 1), size(eventTimes, 2), 1);
 end
 
 %% Compute Walking Direction
@@ -173,23 +173,23 @@ hipPosAvg_forSlow = mean(mean(hipPosFwd(:, 3:8), 'omitnan')); % average hip posi
 % NEED TO ROTATE
 hipPos2D = hipPos3D(:, :, 1:2);
 % compute ankle positions
-sAnkFwd = sAnk(:,:,2);
-fAnkFwd = fAnk(:,:,2);
-sAnk2D = sAnk(:,:,1:2);
-fAnk2D = fAnk(:,:,1:2);
-sAnk_fromAvgHip = sAnk(:,:,2) - hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
-fAnk_fromAvgHip = fAnk(:,:,2) - hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
+sAnkFwd = sAnk(:, :, 2);
+fAnkFwd = fAnk(:, :, 2);
+sAnk2D = sAnk(:, :, 1:2);
+fAnk2D = fAnk(:, :, 1:2);
+sAnk_fromAvgHip = sAnk(:, :, 2) - hipPosAvg_forSlow; % y positon of slow ankle corrected by average hip postion
+fAnk_fromAvgHip = fAnk(:, :, 2) - hipPosAvg_forFast; % y positon of fast ankle corrected by average hip postion
 
 % set all steps to have the same slope (a negative slope during stance phase is assumed)
 %WHAT IS THIS FOR? WHAT PROBLEMS DOES IT SOLVE THAT THE PREVIOUS ROTATION
 %DOESN'T?
 
 % adjust stride data to ensure consistent slope during stance phase
-aux = sign(diff(sAnk(:,[4 5],2),1,2));  % checks for: sAnk(indSHS2,2) < sAnk(indSTO,2) (doesn't use HIP to avoid HIP fluctuation issues)
-sAnkFwd = bsxfun(@times,sAnkFwd,aux);
-fAnkFwd = bsxfun(@times,fAnkFwd,aux);
-sAnk2D = bsxfun(@times,sAnk2D,aux);
-fAnk2D = bsxfun(@times,fAnk2D,aux);
+aux = sign(diff(sAnk(:, [4 5], 2), 1, 2));  % checks for: sAnk(indSHS2,2) < sAnk(indSTO,2) (doesn't use HIP to avoid HIP fluctuation issues)
+sAnkFwd = bsxfun(@times, sAnkFwd, aux);
+fAnkFwd = bsxfun(@times, fAnkFwd, aux);
+sAnk2D = bsxfun(@times, sAnk2D, aux);
+fAnk2D = bsxfun(@times, fAnk2D, aux);
 
 %Alternative definition: should be equivalent, since we reference to midHip
 %when doing the rotation. Only difference may be in sign of walking, since
