@@ -158,9 +158,9 @@ stimTrigR = HreflexData.getDataAsVector( ...
 stimTrigL = HreflexData.getDataAsVector( ...
     'Stimulator_Trigger_Sync_Left__Stimulator');
 indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
-    times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
-if all(cellfun(@isempty,indsStimArtifact))          % if no stim, ...
-    data = nan(length(timeSHS),length(paramLabels));
+    times, {EMG_RTAP, EMG_LTAP}, {stimTrigR, stimTrigL});
+if all(cellfun(@isempty, indsStimArtifact))          % if no stim, ...
+    data = nan(length(timeSHS), length(paramLabels));
     for ii = 1:length(paramLabels)
         eval(['data(:, ii) = ' paramLabels{ii} ';']);
     end
@@ -301,9 +301,9 @@ indsMidSingleStanceFast = nan(size(timesMidSingleStanceFast));
 isValidSlow = ~isnan(timesMidSingleStanceSlow);
 isValidFast = ~isnan(timesMidSingleStanceFast);
 indsMidSingleStanceSlow(isValidSlow) = arrayfun(@(x) ...
-    find((x - times) > 0,1,'last'),timesMidSingleStanceSlow(isValidSlow));
+    find((x - times) > 0, 1, 'last'), timesMidSingleStanceSlow(isValidSlow));
 indsMidSingleStanceFast(isValidFast) = arrayfun(@(x) ...
-    find((x - times) > 0,1,'last'),timesMidSingleStanceFast(isValidFast));
+    find((x - times) > 0, 1, 'last'), timesMidSingleStanceFast(isValidFast));
 
 %% Compute Backgound EMG Parameters
 f = EMGData.sampFreq;                       % sampling frequency (2 kHz)
@@ -336,17 +336,17 @@ for m = 1:length(muscles)               % for each muscle of interest, ...
     muscle = muscles{m};                % name of current muscle
     snippets = Hreflex.extractSnippets( ...
         indsStimArtValid,EMGDataByMuscle(m,:)');
-    [amps,rms] = Hreflex.computeAmplitudes(snippets(:,1));
+    [amps, rms] = Hreflex.computeAmplitudes(snippets(:, 1));
     % convert wave amplitudes from Volts to Millivolts
-    amps = cellfun(@(x) 1000.*x,amps,'UniformOutput',false);
-    rms = cellfun(@(x) 1000.*x,rms,'UniformOutput',false);
+    amps = cellfun(@(x) 1000.*x, amps, 'UniformOutput', false);
+    rms = cellfun(@(x) 1000.*x, rms, 'UniformOutput', false);
 
-    if any(cellfun(@(x) ~isempty(x),indsNoStimBEMG))
+    if any(cellfun(@(x) ~isempty(x), indsNoStimBEMG))
         snippetsNoStimBEMG = Hreflex.extractBackgroundEMG( ...
             indsNoStimBEMG,EMGDataByMuscle(m,:)');
         % compute root mean square of background EMG windows
-        rmsNoStimBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2,2,'omitnan')),...
-            snippetsNoStimBEMG,'UniformOutput',false);
+        rmsNoStimBEMG = cellfun(@(x) 1000.*sqrt(mean(x.^2, 2, 'omitnan')), ...
+            snippetsNoStimBEMG, 'UniformOutput', false);
         eval(['NoStimBEMGRMSSlow' muscle '(~isStimStrideSlow) = rmsNoStimBEMG{indSlow};']);
         eval(['NoStimBEMGRMSFast' muscle '(~isStimStrideFast) = rmsNoStimBEMG{indFast};']);
     end

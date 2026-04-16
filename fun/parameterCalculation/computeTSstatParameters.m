@@ -1,4 +1,4 @@
-function [out] = computeTSstatParameters(someTS,arrayedEvents)
+function [out] = computeTSstatParameters(someTS, arrayedEvents)
 %This function computes summary parameters per stride based on labTS data.
 %The output is a parameterSeries object, which can be concatenated with
 %other parameterSeries objects, for example with those from
@@ -7,9 +7,9 @@ function [out] = computeTSstatParameters(someTS,arrayedEvents)
 %computeForceParameters, parameterSeries
 
 %% Parameter list and description (per muscle!)
-labelSuff={'max','min','avg','var','med','snr','bad'}; %Some stats on channel data, excluded 'skw','kur','iqr' because they are never used and take long to compute
+labelSuff={'max', 'min', 'avg', 'var', 'med', 'snr', 'bad'}; %Some stats on channel data, excluded 'skw','kur','iqr' because they are never used and take long to compute
 %%
-slicedTS=someTS.sliceTS(arrayedEvents(:,1),0); %Slicing by first event ONLY
+slicedTS=someTS.sliceTS(arrayedEvents(:, 1), 0); %Slicing by first event ONLY
 N=length(slicedTS);
 Nl=length(labelSuff);
 labs=someTS.labels;
@@ -55,13 +55,13 @@ for i=1:N %For each stride
                     paramData(i,j,k)=mean(mData);
                 case 'var'
                     %description{j,k}=['Variance of proc EMG in muscle ' labs{j}];
-                    paramData(i,j,k)=var(mData,0); %Unbiased
+                    paramData(i,j,k)=var(mData, 0); %Unbiased
                 case 'skw'
                     %description{j,k}=['Skewness of proc EMG in muscle ' labs{j}];
-                    paramData(i,j,k)=skewness(mData,0); %Unbiased
+                    paramData(i,j,k)=skewness(mData, 0); %Unbiased
                 case 'kur'
                     %description{j,k}=['Kurtosis of proc EMG in muscle ' labs{j}];
-                    paramData(i,j,k)=kurtosis(mData,0); %Unbiased
+                    paramData(i,j,k)=kurtosis(mData, 0); %Unbiased
                 case 'med'
                     %description{j,k}=['Median of proc EMG in muscle ' labs{j}];
                     paramData(i,j,k)=median(mData);
@@ -75,6 +75,6 @@ for i=1:N %For each stride
     end
 end
 %% Create parameterSeries
-out=parameterSeries(paramData(:,:),paramLabels(:),[],description(:));
+out=parameterSeries(paramData(:, :), paramLabels(:), [], description(:));
 end
 
