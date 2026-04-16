@@ -1,4 +1,4 @@
-function [expData] = populateNewParamBackToExpData(expData,adaptData)
+function [expData] = populateNewParamBackToExpData(expData, adaptData)
 %When new parameters are calculated in adaptData only (current use case
 %is with EMG norm parameters). Populate them back into the exp data so
 %that the expData and the adapt data is consistent, this will also be
@@ -25,15 +25,15 @@ function [expData] = populateNewParamBackToExpData(expData,adaptData)
 % $Author: Shuqi Liu $	$Date: 2026/04/02 13:43:01 $	$Revision: 0.1 $
 % Copyright: Sensorimotor Learning Laboratory 2026
 
-trials = find(~cellfun(@isempty,expData.data));
-trialCol = ismember(adaptData.data.labels,'trial');
+trials = find(~cellfun(@isempty, expData.data));
+trialCol = ismember(adaptData.data.labels, 'trial');
 for t = trials
     %find columes containing new data (do not touch data that's already
     %there + do not populate a fakeparam which is always in
     %experimentalParams, otherwise the fakeparam will be repeated and cause parameter
     % collision downstream when trying to create adaptData using adaptData = expData.makeDataObj([]);
-    newDataCol = ~ismember(adaptData.data.labels,[expData.data{t}.adaptParams.labels;expData.data{t}.experimentalParams.labels]);
-    newData = adaptData.data.Data(adaptData.data.Data(:,trialCol) == t,newDataCol);
+    newDataCol = ~ismember(adaptData.data.labels, [expData.data{t}.adaptParams.labels; expData.data{t}.experimentalParams.labels]);
+    newData = adaptData.data.Data(adaptData.data.Data(:, trialCol) == t, newDataCol);
     newLabels = adaptData.data.labels(newDataCol);
     newDescp = adaptData.data.description(newDataCol);
     expData.data{t}.adaptParams = expData.data{t}.adaptParams.appendData(newData, newLabels, newDescp);

@@ -1,25 +1,25 @@
-function [indData] = getIndsForAllSteps(gaitEvents,s,f)
+function [indData] = getIndsForAllSteps(gaitEvents, s, f)
 %Returns index of occurrence and time of occurrence for first 8 (eight!)
 %events, starting with a SHS.
 %Output structure contains both the data and the labels for each column
 
-eventList={[s 'HS'],[f 'TO'],[f 'HS'],[s 'TO']};
+eventList={[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
 N=length(eventList);
 events=gaitEvents.getDataAsVector(eventList);
 
 for i=1:N
-    eval([eventList{i} '=events(:,i);']);
+    eval([eventList{i} '=events(:, i);']);
 end
 
 eventsTime=gaitEvents.Time;
 aux=find(SHS);
 M=length(aux)-1;
-inds=NaN(M,2*N);
-times=NaN(M,2*N);
+inds=NaN(M, 2*N);
+times=NaN(M, 2*N);
 
 %Set ind and time for all SHS events
-inds(:,1)=aux(1:M);
-times(:,1)=eventsTime(aux(1:M));
+inds(:, 1)=aux(1:M);
+times(:, 1)=eventsTime(aux(1:M));
 
 %Set other events for all steps except last
 for step=1:M-1;
@@ -53,7 +53,7 @@ end
 
 
 %Set labels for events
-labels=cell(4*N,1);
+labels=cell(4*N, 1);
 labels(1:N)=eventList;
 for i=1:N
     labels(i)=['inds' eventList{i}];
@@ -62,7 +62,7 @@ for i=1:N
     labels(3*N+i)=['times' eventList{i} '2'];
 end
 
-indData.Data=[inds,times];
+indData.Data=[inds, times];
 indData.labels=labels;
 
 end

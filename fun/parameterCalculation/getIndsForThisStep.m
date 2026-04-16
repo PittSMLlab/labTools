@@ -1,4 +1,4 @@
-function [indSHS,indFTO,indFHS,indSTO,indSHS2,indFTO2,indFHS2,indSTO2,timeSHS,timeFTO,timeFHS,timeSTO,timeSHS2,timeFTO2,timeFHS2,timeSTO2] = getIndsForThisStep(events,eventsTime,step)
+function [indSHS, indFTO, indFHS, indSTO, indSHS2, indFTO2, indFHS2, indSTO2, timeSHS, timeFTO, timeFHS, timeSTO, timeSHS2, timeFTO2, timeFHS2, timeSTO2] = getIndsForThisStep(events, eventsTime, step)
 
 SHS=events(:,1);
 FHS=events(:,2);
