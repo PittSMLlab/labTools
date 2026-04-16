@@ -41,13 +41,15 @@ end
 % Rename channel labels from L/R convention to s/f convention so that
 % downstream parameter names are leg-agnostic
 fastLeg = getOtherLeg(slowLeg);
-lS = angleData.getLabelsThatMatch(['^' slowLeg]);
-lF = angleData.getLabelsThatMatch(['^' fastLeg]);
+slowLabels = angleData.getLabelsThatMatch(['^' slowLeg]);
+fastLabels = angleData.getLabelsThatMatch(['^' fastLeg]);
 
 % Silence renameLabels warning temporarily during relabeling
 warning('off', 'labTS:renameLabels:dont');
-angleData = angleData.renameLabels(lS, regexprep(lS, ['^' slowLeg], 's'));
-angleData = angleData.renameLabels(lF, regexprep(lF, ['^' fastLeg], 'f'));
+angleData = angleData.renameLabels( ...
+    slowLabels, regexprep(slowLabels, ['^' slowLeg], 's'));
+angleData = angleData.renameLabels( ...
+    fastLabels, regexprep(fastLabels, ['^' fastLeg], 'f'));
 angleData = angleData.renameLabels( ...
     angleData.labels, strcat(angleData.labels, {'Angle'}));
 warning('on', 'labTS:renameLabels:dont');
