@@ -34,6 +34,13 @@ function [out] = computePercParameters(trialData, initTime, endTime, slaParam)
 
 %% Gait perceptual task gait event times
 idxPstart = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percStartCue'))));
+arguments
+    trialData (1,1)
+    initTime
+    endTime
+    slaParam
+end
+
 
 if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation
     idxPend = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percEndRamp'))));

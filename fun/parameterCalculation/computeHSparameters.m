@@ -28,9 +28,15 @@ function out = computeHSparameters(someTS, gaitEvents, eventType)
 %     computeSpatialParameters, computeForceParameters, parameterSeries,
 %     calcParameters
 
-%TODO: this should be a method of labTS
+% TODO: this should be a method of labTS
 
 %get slow heel strikes times
+arguments
+    tsData     (1,1)
+    gaitEvents (1,1)
+    eventTypes
+end
+
 % T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
 T_HS = labTimeSeries.getArrayedEvents(gaitEvents, eventType);
 nstrides = size(T_HS, 1);

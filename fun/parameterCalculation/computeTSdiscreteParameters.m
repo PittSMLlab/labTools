@@ -36,8 +36,8 @@ function out = computeTSdiscreteParameters(someTS, gaitEvents, eventTypes, align
 %     computeTemporalParameters, computeForceParameters,
 %     parameterSeries, calcParameters
 
+% TODO: this should be a method of labTS
 
-%TODO: this should be a method of labTS
 
 if nargin<4 || isempty(alignmentVector)
 
@@ -46,6 +46,13 @@ if nargin<4 || isempty(alignmentVector)
         if ~isa(eventTypes,'char')
             error('Bad argument for eventTypes')
         end
+arguments
+    tsData          (1,1)
+    gaitEvents      (1,1)
+    eventTypes
+    alignmentVector = []
+    summaryFun      = []
+end
 
         s = eventTypes;    f = getOtherLeg(s);
         eventTypes={[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
