@@ -180,20 +180,20 @@ function pelvisPos = computePelvisPosition(markerData, useMarkers)
 %     None
 if strcmpi(useMarkers, 'GT')
     % Use only Greater Trochanter markers (most reliable)
-    GTdata    = markerData.getOrientedData({'RGT', 'LGT'});
-    pelvisPos = squeeze(mean(GTdata, 2, 'omitnan'));
+    gtData    = markerData.getOrientedData({'RGT', 'LGT'});
+    pelvisPos = squeeze(mean(gtData, 2, 'omitnan'));
 else
     % Use all available pelvis markers; getOrientedData returns NaN
     % columns for any prefixes not present, which are then excluded
     % by the 'omitnan' flag in mean()
     pelvisLabels = {'RGT', 'LGT', 'RASI', 'LASI', 'RPSI', 'LPSI'};
-    GTdata    = markerData.getOrientedData(pelvisLabels);
-    pelvisPos = squeeze(mean(GTdata, 2, 'omitnan'));
+    gtData    = markerData.getOrientedData(pelvisLabels);
+    pelvisPos = squeeze(mean(gtData, 2, 'omitnan'));
 end
 end
 
-function markerDataOut = transformCoordinateSystem(markerDataIn, coordMapping)
-% Transform marker data between coordinate systems
+function markerDataOut = transformCoordinateSystem( ...
+    markerDataIn, coordMapping)
 % transformCoordinateSystem  Reorder marker data columns to ML/AP/VT.
 %
 %   Syntax:
@@ -238,8 +238,8 @@ end
 
 % Apply transformation to all marker fields
 for iField = 1:length(fields)
-    fname = fields{iField};
-    markerDataOut.(fname) = markerDataIn.(fname)(:, colOrder);
+    fieldName = fields{iField};
+    markerDataOut.(fieldName) = markerDataIn.(fieldName)(:, colOrder);
 end
 
 fprintf(['Applied coordinate transformation: ' ...
@@ -268,9 +268,6 @@ dataFilt = filtfilt(b, a, data);
 end
 
 function accel = computeAcceleration(pos, fs)
-% First derivative (velocity)
-vel = gradient(pos, 1/fs);
-% Second derivative (acceleration)
 % computeAcceleration  Compute acceleration via double differentiation.
 %
 %   Syntax:
@@ -286,6 +283,8 @@ vel = gradient(pos, 1/fs);
 %   Toolbox Dependencies:
 %     None
 
+% First derivative (velocity), then second derivative (acceleration)
+vel   = gradient(pos, 1/fs);
 accel = gradient(vel, 1/fs);
 end
 
@@ -345,3 +344,4 @@ else
     HR = NaN;
 end
 end
+
