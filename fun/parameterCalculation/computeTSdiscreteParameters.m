@@ -1,17 +1,41 @@
 function out = computeTSdiscreteParameters(someTS, gaitEvents, eventTypes, alignmentVector, summaryFun)
-%This function averages labTS data across given phases.
-%The output is a parameterSeries object, which can be concatenated with
-%other parameterSeries objects, for example with those from
-%computeTemporalParameters.
-%See also computeSpatialParameters, computeTemporalParameters,
-%computeForceParameters, parameterSeries
+% computeTSdiscreteParameters  Discretize time series into stride phases.
+%
+%   Syntax:
+%     out = computeTSdiscreteParameters(tsData, gaitEvents, eventTypes)
+%     out = computeTSdiscreteParameters(tsData, gaitEvents, eventTypes, ...
+%         alignmentVector)
+%     out = computeTSdiscreteParameters(tsData, gaitEvents, eventTypes, ...
+%         alignmentVector, summaryFun)
+%
+%   Averages labTS data across given gait phases and returns a
+% parameterSeries object that can be concatenated with other parameter
+% series objects (e.g., from computeTemporalParameters).
+%
+%   Inputs:
+%     tsData          - labTimeSeries object to discretize
+%     gaitEvents      - labTimeSeries of gait events for the trial
+%     eventTypes      - Cell array of gait event type strings as
+%                       constructed in calcParameters (e.g.,
+%                       {'LHS','RTO','RHS','LTO'}), or a single char
+%                       specifying the slow leg ('L' or 'R')
+%     alignmentVector - (optional) Integer vector of the same length as
+%                       eventTypes specifying phase alignment; defaults
+%                       to [2, 4, 2, 4]
+%     summaryFun      - (optional) Summary function handle applied per
+%                       phase; defaults to [] (mean)
+%
+%   Outputs:
+%     out - parameterSeries object containing one parameter per channel
+%           per gait phase
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeAngleParameters, computeEMGParameters,
+%     computeTemporalParameters, computeForceParameters,
+%     parameterSeries, calcParameters
 
-%%INPUT:
-%someTS: labTS object to discretize
-%gaitEvents: eventTS
-%eventTypes: either a cell array of strings, or a single char indicating
-%the slow leg
-%alignmentVector: integer vector of same size as eventType
 
 %TODO: this should be a method of labTS
 

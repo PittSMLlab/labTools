@@ -1,15 +1,36 @@
 function [out] = computePercParameters(trialData, initTime, endTime, slaParam)
-% This function will add some parameters and summary information from the perceptual task in the datlogs
-% The output is a parameterSeries object, which can be concatenated with
-% other parameterSeries objects, for example with those from
-% computeTemporalParameters. While this is used for perceptual tasks parameters
-% strictly, it should work for any labTS.
-% See also computeSpatialParameters, computeTemporalParameters,
-% computeForceParameters, parameterSeries
-% This code will only add the parameters using the events information, if
-% the events doesn't exist all parameters will most likely be NaNs or zeros
-% Author: MGR
-% Date: 06/12/24
+% computePercParameters  Compute perceptual task parameters per stride.
+%
+%   Syntax:
+%     out = computePercParameters(trialData, initTime, endTime, slaParam)
+%
+%   Computes stride-by-stride parameters related to the perceptual
+% split-belt treadmill task and returns a parameterSeries object that
+% can be concatenated with other parameter series objects (e.g., from
+% computeTemporalParameters). Only adds parameters using gait event
+% information; all parameters will be NaN or zero if the relevant
+% events do not exist.
+%
+%   Inputs:
+%     trialData - processedTrialData object for the trial; must contain
+%                 gaitEvents with 'percStartCue', 'percEndCue', and
+%                 'percEndRamp' labels, and metaData with a datlog
+%     initTime  - N-by-1 vector of stride start times (in seconds)
+%     endTime   - N-by-1 vector of stride end times (in seconds)
+%     slaParam  - N-by-1 vector of step length asymmetry values
+%
+%   Outputs:
+%     out - parameterSeries object containing all perceptual task
+%           parameters
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeTemporalParameters, computeSpatialParameters,
+%     computeForceParameters, parameterSeries, calcParameters
+%
+%   Author: MGR
+%   Date: 06/12/24
 
 %% Gait perceptual task gait event times
 idxPstart = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percStartCue'))));

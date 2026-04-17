@@ -1,17 +1,32 @@
 function out = computeHSparameters(someTS, gaitEvents, eventType)
-%This function averages labTS data across given phases.
-%The output is a parameterSeries object, which can be concatenated with
-%other parameterSeries objects, for example with those from
-%computeTemporalParameters.
-%See also computeSpatialParameters, computeTemporalParameters,
-%computeForceParameters, parameterSeries
-
-%%INPUT:
-%someTS: labTS object to discretize
-%gaitEvents: eventTS
-%eventTypes: either a cell array of strings, or a single char indicating
-%the slow leg
-%alignmentVector: integer vector of same size as eventType
+% computeHSparameters  Compute heel-strike-aligned parameters per stride.
+%
+%   Syntax:
+%     out = computeHSparameters(tsData, gaitEvents, eventTypes)
+%
+%   Extracts the value of each channel in tsData at the slow and fast
+% heel strike events for each stride, and returns a parameterSeries
+% object that can be concatenated with other parameter series objects
+% (e.g., from computeTemporalParameters).
+%
+%   Inputs:
+%     tsData     - labTimeSeries object whose channels will be sampled
+%                  at each heel strike event
+%     gaitEvents - labTimeSeries of gait events for the trial
+%     eventTypes - Cell array of gait event type strings as constructed
+%                  in calcParameters (e.g., {'LHS','RTO','RHS','LTO'}),
+%                  or a single char specifying the slow leg ('L' or 'R')
+%
+%   Outputs:
+%     out - parameterSeries object containing one parameter per channel
+%           per leg, sampled at each stride's heel strike
+%
+%   Toolbox Dependencies:
+%     None
+%
+%   See also: computeAngleParameters, computeTemporalParameters,
+%     computeSpatialParameters, computeForceParameters, parameterSeries,
+%     calcParameters
 
 %TODO: this should be a method of labTS
 
