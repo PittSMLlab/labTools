@@ -56,6 +56,7 @@ end
 
         s = eventTypes;    f = getOtherLeg(s);
         eventTypes={[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
+%% Configure Event Types and Phase Labels
     end
 
     alignmentVector = [2, 4, 2, 4];
@@ -75,13 +76,16 @@ else
 end
 if nargin<5
     summaryFun = [];
+%% Discretize Time Series
+% TODO: use quality info to mark parameters as BAD if necessary
+
+%% Build Parameter Labels and Descriptions
+%% Output Computed Parameters
 end
 someTS.Quality = []; %Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary
 [DTS, ~] = someTS.discretize(gaitEvents, eventTypes, alignmentVector, summaryFun);
 [N, M, P] = size(DTS.Data);
-%Make labels:
 ll = strcat(repmat(strcat(DTS.labels, '_s'), N, 1), repmat(mat2cell(num2str([1:N]'), ones(N, 1), 2), 1, M));
-%Make descriptions:
 desc = strcat(strcat(strcat('Mean of data in TS ', repmat(DTS.labels, N, 1)), ' from '), repmat(desc2, 1, M));
 out = parameterSeries(reshape(DTS.Data, N*M, P)', ll(:), 1:P, desc(:));
 end

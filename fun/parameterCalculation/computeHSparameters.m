@@ -30,13 +30,13 @@ function out = computeHSparameters(someTS, gaitEvents, eventType)
 
 % TODO: this should be a method of labTS
 
-%get slow heel strikes times
 arguments
     tsData     (1,1)
     gaitEvents (1,1)
     eventTypes
 end
 
+%% Get Heel Strike Times
 % T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
 T_HS = labTimeSeries.getArrayedEvents(gaitEvents, eventType);
 nstrides = size(T_HS, 1);
@@ -47,8 +47,8 @@ nstrides = size(T_HS, 1);
 % iSHS=find(ismember(someTS.Time,round(strideEvents.tSHS2,6)));
 % iFHS=find(ismember(someTS.Time,round(strideEvents.tFHS,6)));
 
-%extract parameters
 Ang_SHS=squeeze(someTS.getSample(T_HS(2:end, 1)));
+%% Extract Parameters at Heel Strike
 
 try
     Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1, 2)));
@@ -57,9 +57,9 @@ catch
     disp('no gait events for fast leg!')
 end
 
-%rename labels
 Slabs = strcat(someTS.labels, {'AtSHS'});
 Flabs = strcat(someTS.labels, {'AtFHS'});
+%% Assign Labels and Build Output
 %Ang_SHS=Ang_SHS.renameLabels(Ang_SHS.labels,strcat(Ang_SHS.labels,{'@SHS'}));
 %Ang_FHS=Ang_FHS.renameLabels(Ang_FHS.labels,strcat(Ang_FHS.labels,{'@FHS'}));
 PangSHS = parameterSeries(Ang_SHS(:, :), Slabs, [], Slabs);
