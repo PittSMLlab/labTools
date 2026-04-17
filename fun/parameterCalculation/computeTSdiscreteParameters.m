@@ -1,4 +1,5 @@
-function out = computeTSdiscreteParameters(someTS, gaitEvents, eventTypes, alignmentVector, summaryFun)
+function out = computeTSdiscreteParameters(tsData, gaitEvents, ...
+    eventTypes, alignmentVector, summaryFun)
 % computeTSdiscreteParameters  Discretize time series into stride phases.
 %
 %   Syntax:
@@ -59,33 +60,42 @@ end
 %% Configure Event Types and Phase Labels
     end
 
-    alignmentVector = [2, 4, 2, 4];
-    desc2={'SHS to mid DS1', 'mid DS1 to FTO', ...
+    alignmentVector   = [2, 4, 2, 4];
+    phaseDescriptions = {'SHS to mid DS1', 'mid DS1 to FTO', ...
         'FTO to 1/4 fast swing', '1/4 to mid fast swing', ...
         'mid fast swing to 3/4', '3/4 fast swing to FHS', ...
         'FHS to mid DS2', 'mid DS2 to STO', ...
         'STO to 1/4 slow swing', '1/4  to mid slow swing', ...
         'mid slow swing to 3/4', '3/4 slow swing to SHS'}';
 else
-    if length(eventTypes)~=length(alignmentVector)
+    if length(eventTypes) ~= length(alignmentVector)
         if ~isempty(alignmentVector)
             error('Inconsistent sizes of eventTypes and alignmentVector')
         end
     end
-    desc2 = cell(sum(alignmentVector), 1);
+    phaseDescriptions = cell(sum(alignmentVector), 1);
 end
 if nargin<5
     summaryFun = [];
 %% Discretize Time Series
 % TODO: use quality info to mark parameters as BAD if necessary
+tsData.Quality = []; % needed to avoid error in discretize()
+[discTS, ~] = tsData.discretize( ...
+    gaitEvents, eventTypes, alignmentVector, summaryFun);
+[numPhases, numChannels, numStrides] = size(discTS.Data);
 
 %% Build Parameter Labels and Descriptions
+labelsGrid = strcat( ...
+    repmat(strcat(discTS.labels, '_s'), numPhases, 1), ...
+    repmat(mat2cell(num2str((1:numPhases)'), ones(numPhases, 1), 2), ...
+    1, numChannels));
+description = strcat(strcat( ...
+    strcat('Mean of data in TS ', repmat(discTS.labels, numPhases, 1)), ...
+    ' from '), repmat(phaseDescriptions, 1, numChannels));
+
 %% Output Computed Parameters
-end
-someTS.Quality = []; %Needed to avoid error %TODO: use quality info to mark parameters as BAD if necessary
-[DTS, ~] = someTS.discretize(gaitEvents, eventTypes, alignmentVector, summaryFun);
-[N, M, P] = size(DTS.Data);
-ll = strcat(repmat(strcat(DTS.labels, '_s'), N, 1), repmat(mat2cell(num2str([1:N]'), ones(N, 1), 2), 1, M));
-desc = strcat(strcat(strcat('Mean of data in TS ', repmat(DTS.labels, N, 1)), ' from '), repmat(desc2, 1, M));
-out = parameterSeries(reshape(DTS.Data, N*M, P)', ll(:), 1:P, desc(:));
+out = parameterSeries( ...
+    reshape(discTS.Data, numPhases * numChannels, numStrides)', ...
+    labelsGrid(:), 1:numStrides, description(:));
+
 end
