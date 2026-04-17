@@ -62,14 +62,17 @@ end
 timePercInit = trialData.gaitEvents.Time(idxPstart);
 timePercEnd  = trialData.gaitEvents.Time(idxPend);
 
-profile = trialData.metaData.datlog.speedprofile.velR-trialData.metaData.datlog.speedprofile.velL; % negative perturbation sizes mean that the right leg was slower
-nanProfile = isnan(profile);
-
-isNextOne = arrayfun(@(i) (nanProfile(i) == 1 && nanProfile(i-1) == 0 && nanProfile(i+1) == 1), 2:length(nanProfile)-1);
-speedDiffPercTask = profile(isNextOne); % This are the values of pert size in mm/s that will be saved in the params
 %% Extract Perturbation Sizes
 % Grab the perturbation sizes tested from the speed profiles in the
 % datlogs. Negative values indicate the right leg was slower.
+beltSpeedDiff = trialData.metaData.datlog.speedprofile.velR ...
+    - trialData.metaData.datlog.speedprofile.velL;
+nanMask = isnan(beltSpeedDiff);
+nanBoundaryMask = arrayfun( ...
+    @(i) (nanMask(i) == 1 && nanMask(i-1) == 0 ...
+    && nanMask(i+1) == 1), 2:length(nanMask)-1);
+speedDiffPercTask = beltSpeedDiff(nanBoundaryMask); % pert sizes in mm/s
+
 %% Labels and Descriptions
 aux = { ...
     'percTaskInitStride',   'binary parameter where 1 indicates the beginning of a perceptual trial'; ...
@@ -98,28 +101,35 @@ SLAnotPercTask     = nan(size(initTime));
 
 SLAnotPercTask = slaParam;
 if ~isempty(timePercInit) && ~isempty(timePercEnd)
-    indsInitStride = arrayfun(@(x) find((x-initTime) > 0, 1, 'last'), ...
-        timePercInit); %initTime is the stride initial times
-    indsEndStride = arrayfun(@(x) find((x-endTime) < 0, 1, 'first'), ...
-        timePercEnd); %timePercEnd is the stride final times
+    indsInitStride = arrayfun( ...
+        @(x) find((x - initTime) > 0, 1, 'last'), ...
+        timePercInit); % initTime is the stride initial times
+    indsEndStride  = arrayfun( ...
+        @(x) find((x - endTime) < 0, 1, 'first'), ...
+        timePercEnd); % timePercEnd is the stride final times
 
-    % populate the times for the strides that have perceptual tasks
     percTaskInitStride(indsInitStride) = 1;
-
-
-    for i = 1:length(indsInitStride)
     percTaskEndStride(indsEndStride)   = 1;
 
-        percTask(indsInitStride(i):indsEndStride(i)) = 1; % Previously I had indsEndStride(i)+3 to consider that we do not reach the speeds (tied) right away because we update belts speeds separately during swing
-        SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i)); % This one I do not consider the back to tied strides, since I want the true end of perceptual task
-        SLAnotPercTask(indsInitStride(i):indsEndStride(i)) = nan; % Previously I had indsEndStride(i)+3
-        if length(speedDiffPercTask) >= i
-            pertSizePercTask(indsInitStride(i):indsEndStride(i)) = speedDiffPercTask(i);
+    for iPerc = 1:length(indsInitStride)
         % Here I am not currently considering the changes in the belt
         % speed when going back to tied; sometimes it takes a couple of
         % strides to reach this fully.
         % Previously used indsEndStride(iPerc)+3 to account for the
         % delay before belt speed reaches the tied condition.
+        percTask(indsInitStride(iPerc):indsEndStride(iPerc)) = 1;
+
+        % No +3 buffer here: use the true perceptual task end for SLA.
+        SLAinPercTask(indsInitStride(iPerc):indsEndStride(iPerc)) = ...
+            slaParam(indsInitStride(iPerc):indsEndStride(iPerc));
+
+        % Previously used indsEndStride(iPerc)+3 here as well.
+        SLAnotPercTask(indsInitStride(iPerc):indsEndStride(iPerc)) = nan;
+
+        if length(speedDiffPercTask) >= iPerc
+            pertSizePercTask( ...
+                indsInitStride(iPerc):indsEndStride(iPerc)) = ...
+                speedDiffPercTask(iPerc);
         end
     end
 end
