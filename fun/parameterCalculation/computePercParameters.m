@@ -1,4 +1,5 @@
-function [out] = computePercParameters(trialData, initTime, endTime, slaParam)
+function out = computePercParameters(trialData, initTime, endTime, ...
+    slaParam)
 % computePercParameters  Compute perceptual task parameters per stride.
 %
 %   Syntax:
@@ -32,7 +33,6 @@ function [out] = computePercParameters(trialData, initTime, endTime, slaParam)
 %   Author: MGR
 %   Date: 06/12/24
 
-idxPstart = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percStartCue'))));
 arguments
     trialData (1,1)
     initTime
@@ -41,49 +41,54 @@ arguments
 end
 
 %% Locate Perceptual Task Event Indices
+idxPstart = find(full(trialData.gaitEvents.Data(:, ...
+    strcmpi(trialData.gaitEvents.labels, 'percStartCue'))));
 
-if contains(lower(trialData.metaData.ID),'weber') %if this is true, we were most likely ramping down the perturbation
-    idxPend = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percEndRamp'))));
+% If Weber trial, the perturbation was most likely ramped down
+if contains(lower(trialData.metaData.ID), 'weber')
+    idxPend = find(full(trialData.gaitEvents.Data(:, ...
+        strcmpi(trialData.gaitEvents.labels, 'percEndRamp'))));
 else
-    idxPend = find(full(trialData.gaitEvents.Data(:, strcmpi(trialData.gaitEvents.labels, 'percEndCue'))));
+    idxPend = find(full(trialData.gaitEvents.Data(:, ...
+        strcmpi(trialData.gaitEvents.labels, 'percEndCue'))));
 end
 
-if length(idxPstart)~= length(idxPend)
-    mask=min(length(idxPstart),length(idxPend));
-    idxPstart=idxPstart(1:mask);
-    idxPend=idxPend(1:mask);
+if length(idxPstart) ~= length(idxPend)
+    minLen    = min(length(idxPstart), length(idxPend));
+    idxPstart = idxPstart(1:minLen);
+    idxPend   = idxPend(1:minLen);
 end
 
 timePercInit = trialData.gaitEvents.Time(idxPstart);
-timePercEnd = trialData.gaitEvents.Time(idxPend);
+timePercEnd  = trialData.gaitEvents.Time(idxPend);
 
 profile = trialData.metaData.datlog.speedprofile.velR-trialData.metaData.datlog.speedprofile.velL; % negative perturbation sizes mean that the right leg was slower
 nanProfile = isnan(profile);
 
 isNextOne = arrayfun(@(i) (nanProfile(i) == 1 && nanProfile(i-1) == 0 && nanProfile(i+1) == 1), 2:length(nanProfile)-1);
 speedDiffPercTask = profile(isNextOne); % This are the values of pert size in mm/s that will be saved in the params
-
-aux={'percTaskInitStride',        'binary parameter where 1 indicates the beginning of a perceptual trial'; ...
-    'percTaskEndStride',         'binary parameter where 1 indicates the end of a perceptual trial'; ...
-    'percTask',          'binary parameter where 1 indicates the stride belong to a perceptual trial'; ...
-    'pertSizePercTask',          'value of the leg-speed difference experienced during the perceptual trial'; ...
-    'SLAinPercTask',          'step length asymmetry parameter for the perceptual trials, otherwise nan'; ...
-    'SLAnotPercTask',          'step length asymmetry parameter except for the perceptual trials (filled with nans)'};
 %% Extract Perturbation Sizes
 % Grab the perturbation sizes tested from the speed profiles in the
 % datlogs. Negative values indicate the right leg was slower.
 %% Labels and Descriptions
+aux = { ...
+    'percTaskInitStride',   'binary parameter where 1 indicates the beginning of a perceptual trial'; ...
+    'percTaskEndStride',    'binary parameter where 1 indicates the end of a perceptual trial'; ...
+    'percTask',             'binary parameter where 1 indicates the stride belongs to a perceptual trial'; ...
+    'pertSizePercTask',     'value of the leg-speed difference experienced during the perceptual trial'; ...
+    'SLAinPercTask',        'step length asymmetry parameter for the perceptual trials, otherwise nan'; ...
+    'SLAnotPercTask',       'step length asymmetry parameter except for the perceptual trials (filled with nans)'};
 
 paramLabels = aux(:, 1);
 description = aux(:, 2);
 
 %% Initialize Output Arrays
 percTaskInitStride = zeros(size(initTime));
-percTaskEndStride = zeros(size(initTime));
-percTask = zeros(size(initTime));
-pertSizePercTask = nan(size(initTime));
-SLAinPercTask = nan(size(initTime));
-SLAnotPercTask = nan(size(initTime));
+percTaskEndStride  = zeros(size(initTime));
+percTask           = zeros(size(initTime));
+pertSizePercTask   = nan(size(initTime));
+SLAinPercTask      = nan(size(initTime));
+SLAnotPercTask     = nan(size(initTime));
 
 %% Compute Perceptual Task Parameters
 % Find the indices of the nearest heel strike to the start/end of each
@@ -100,10 +105,10 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
 
     % populate the times for the strides that have perceptual tasks
     percTaskInitStride(indsInitStride) = 1;
-    percTaskEndStride(indsEndStride) = 1;
 
 
     for i = 1:length(indsInitStride)
+    percTaskEndStride(indsEndStride)   = 1;
 
         percTask(indsInitStride(i):indsEndStride(i)) = 1; % Previously I had indsEndStride(i)+3 to consider that we do not reach the speeds (tied) right away because we update belts speeds separately during swing
         SLAinPercTask(indsInitStride(i):indsEndStride(i)) = slaParam(indsInitStride(i):indsEndStride(i)); % This one I do not consider the back to tied strides, since I want the true end of perceptual task
@@ -117,13 +122,12 @@ if ~isempty(timePercInit) && ~isempty(timePercEnd)
         % delay before belt speed reaches the tied condition.
         end
     end
-
 end
 
 %% Assign Parameters to Data Matrix
 data = nan(length(initTime), length(paramLabels));
-for i=1:length(paramLabels)
-    eval(['data(:, i) = ' paramLabels{i} ';'])
+for ii = 1:length(paramLabels)
+    eval(['data(:, ii) = ' paramLabels{ii} ';']);
 end
 
 %% Output Computed Parameters
