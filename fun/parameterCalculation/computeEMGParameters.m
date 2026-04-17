@@ -40,16 +40,18 @@ end
 % Rename channel labels from L/R convention to s/f convention so that
 % downstream parameter names are leg-agnostic
 fastLeg = getOtherLeg(slowLeg);
-lS = EMGData.getLabelsThatMatch(['^' slowLeg]);
-lF = EMGData.getLabelsThatMatch(['^' fastLeg]);
+slowLabels = EMGData.getLabelsThatMatch(['^' slowLeg]);
+fastLabels = EMGData.getLabelsThatMatch(['^' fastLeg]);
 
 % Silence renameLabels warning temporarily during relabeling
 warning('off', 'labTS:renameLabels:dont');
-EMGData = EMGData.renameLabels(lS, regexprep(lS, ['^' slowLeg], 's'));
-EMGData = EMGData.renameLabels(lF, regexprep(lF, ['^' fastLeg], 'f'));
+EMGData = EMGData.renameLabels( ...
+    slowLabels, regexprep(slowLabels, ['^' slowLeg], 's'));
+EMGData = EMGData.renameLabels( ...
+    fastLabels, regexprep(fastLabels, ['^' fastLeg], 'f'));
 
 % Get rectified EMG and strip the 'abs' suffix added by rectify()
-newEMG = EMGData.rectify.renameLabels([], EMGData.labels);
+rectEMG = EMGData.rectify().renameLabels([], EMGData.labels);
 warning('on', 'labTS:renameLabels:dont');
 
 %% Compute EMG Parameters
@@ -66,9 +68,9 @@ end
 statEMG = computeTSstatParameters(EMGData, arrayedEvents);
 
 % Discrete stride-level parameters for rectified EMG (mean and median)
-EMG_alt  = computeTSdiscreteParameters(newEMG, gaitEvents, ...
+EMG_alt  = computeTSdiscreteParameters(rectEMG, gaitEvents, ...
     eventTypes, []);
-EMG_alt2 = computeTSdiscreteParameters(newEMG, gaitEvents, ...
+EMG_alt2 = computeTSdiscreteParameters(rectEMG, gaitEvents, ...
     eventTypes, [], 'nanmedian');
 
 % Prefix median-aggregated parameter labels with 'med' to distinguish
