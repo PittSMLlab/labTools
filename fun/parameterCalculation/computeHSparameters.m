@@ -1,4 +1,4 @@
-function out = computeHSparameters(someTS, gaitEvents, eventType)
+function out = computeHSparameters(tsData, gaitEvents, eventTypes)
 % computeHSparameters  Compute heel-strike-aligned parameters per stride.
 %
 %   Syntax:
@@ -38,8 +38,8 @@ end
 
 %% Get Heel Strike Times
 % T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
-T_HS = labTimeSeries.getArrayedEvents(gaitEvents, eventType);
-nstrides = size(T_HS, 1);
+tHS = labTimeSeries.getArrayedEvents(gaitEvents, eventTypes);
+numStrides = size(tHS, 1); %#ok<NASGU>
 %keyboard
 % iSHS=find(ismember(someTS.Time,T_HS(2:end,1)));
 % iFHS=find(ismember(someTS.Time,T_HS(1:end-1,2)));
@@ -47,24 +47,24 @@ nstrides = size(T_HS, 1);
 % iSHS=find(ismember(someTS.Time,round(strideEvents.tSHS2,6)));
 % iFHS=find(ismember(someTS.Time,round(strideEvents.tFHS,6)));
 
-Ang_SHS=squeeze(someTS.getSample(T_HS(2:end, 1)));
 %% Extract Parameters at Heel Strike
+angSHS = squeeze(tsData.getSample(tHS(2:end, 1)));
 
 try
-    Ang_FHS=squeeze(someTS.getSample(T_HS(1:end-1, 2)));
+    angFHS = squeeze(tsData.getSample(tHS(1:end-1, 2)));
 catch
-    Ang_FHS = NaN(size(Ang_SHS));%NEEDS FIX
+    angFHS = NaN(size(angSHS)); %NEEDS FIX
     disp('no gait events for fast leg!')
 end
 
-Slabs = strcat(someTS.labels, {'AtSHS'});
-Flabs = strcat(someTS.labels, {'AtFHS'});
 %% Assign Labels and Build Output
+slowHSLabels = strcat(tsData.labels, {'AtSHS'});
+fastHSLabels = strcat(tsData.labels, {'AtFHS'});
 %Ang_SHS=Ang_SHS.renameLabels(Ang_SHS.labels,strcat(Ang_SHS.labels,{'@SHS'}));
 %Ang_FHS=Ang_FHS.renameLabels(Ang_FHS.labels,strcat(Ang_FHS.labels,{'@FHS'}));
-PangSHS = parameterSeries(Ang_SHS(:, :), Slabs, [], Slabs);
-PangFHS = parameterSeries(Ang_FHS(:, :), Flabs, [], Flabs);
-out = cat(PangSHS, PangFHS);
+paramSHS = parameterSeries(angSHS(:, :), slowHSLabels, [], slowHSLabels);
+paramFHS = parameterSeries(angFHS(:, :), fastHSLabels, [], fastHSLabels);
+out = cat(paramSHS, paramFHS);
 
 end
 
