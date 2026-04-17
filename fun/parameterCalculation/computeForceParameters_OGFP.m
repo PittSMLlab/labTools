@@ -8,7 +8,7 @@ trial = trialData.metaData.description;
 %to 1*BW
 
 if strcmpi(trialData.metaData.type,'NIM')
-    Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
+    Normalizer = 9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
 else
     Normalizer = 9.81*BW;
 end
@@ -47,16 +47,16 @@ FilteredS = Filtered;
 fFy = Filtered.getDataAsTS([fastleg 'Fy']);
 sFy = Filtered.getDataAsTS([slowleg 'Fy']);
 
-FastLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
-SlowLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
+FastLegOffSetData = nan(length(strideEvents.tSHS)-1, 1);
+SlowLegOffSetData = nan(length(strideEvents.tSHS)-1, 1);
 if Filtered.isaLabel('HFx')
-    handrailData=Filtered.getDataAsTS({'HFy', 'HFz'});
+    handrailData = Filtered.getDataAsTS({'HFy', 'HFz'});
 elseif Filtered.isaLabel('XFx')
-    handrailData=Filtered.getDataAsTS({'XFy', 'XFz'});
-    warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
+    handrailData = Filtered.getDataAsTS({'XFy', 'XFz'});
+    warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).');
 else
-    handrailData=[];
-    warning('Found no handrail force data.')
+    handrailData = [];
+    warning('Found no handrail force data.');
 end
 
 % adding the force-plates data overground
@@ -92,13 +92,13 @@ for j = 1:length(Ally)
     end
 end
 
-for i=1:length(strideEvents.tSHS)-1
-    SHS=strideEvents.tSHS(i);
-    FTO=strideEvents.tFTO(i);
-    FHS=strideEvents.tFHS(i);
-    STO=strideEvents.tSTO(i);
-    FTO2=strideEvents.tFTO2(i);
-    SHS2=strideEvents.tSHS2(i);
+for i = 1:length(strideEvents.tSHS)-1
+    SHS = strideEvents.tSHS(i);
+    FTO = strideEvents.tFTO(i);
+    FHS = strideEvents.tFHS(i);
+    STO = strideEvents.tSTO(i);
+    FTO2 = strideEvents.tFTO2(i);
+    SHS2 = strideEvents.tSHS2(i);
 
     if isnan(FTO) || isnan(FHS) || FTO>FHS
         %nop
@@ -370,8 +370,8 @@ for i = 1:length(strideEvents.tSHS)-1
             if isempty(ImpactMagS_all)%~=1
                 postImpactS_all = ns_all(find(ns_all>ImpactMagS_all(end), 1, 'first'));
                 if isempty(postImpactS_all)%~=1
-                    ps_all(find(ps_all<postImpactS_all))=[];
-                    ns_all(find(ns_all<postImpactS_all))=[];
+                    ps_all(find(ps_all < postImpactS_all)) = [];
+                    ns_all(find(ns_all < postImpactS_all)) = [];
                 end
             end
 
@@ -384,19 +384,19 @@ for i = 1:length(strideEvents.tSHS)-1
             if isempty(ps_all)
 
             else
-                SP_all(i)=nanmean(striderSy_all(ps_all)-LevelofInterest);
-                SPmax_all(i)=nanmax(striderSy_all(ps_all)-LevelofInterest);
+                SP_all(i) = nanmean(striderSy_all(ps_all)-LevelofInterest);
+                SPmax_all(i) = nanmax(striderSy_all(ps_all)-LevelofInterest);
             end
 
             if exist('postImpactS_all')==0 || isempty(postImpactS_all)==1
                 %                     impactS(i)=NaN;
                 %                     impactSmax(i)=NaN;
             else
-                impactS_all(i)=nanmean(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
+                impactS_all(i) = nanmean(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
                 if isempty(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))
                     %impactSmax(i)=NaN;
                 else
-                    impactSmax_all(i)=nanmax(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
+                    impactSmax_all(i) = nanmax(striderSy_all(find((striderSy_all(SHS-SHS+1: postImpactS_all)-LevelofInterest)>0)))-LevelofInterest;
                 end
             end
 
@@ -454,8 +454,8 @@ for i = 1:length(strideEvents.tSHS)-1
         if nanstd(striderFy_all)<0.01 && nanmean(striderFy_all)<0.01 %This is to get rid of places where there is only noise and no data
 
         else
-            nf_all=find((striderFy_all-LevelofInterest)<0.1);%1:65
-            pf_all=find((striderFy_all-LevelofInterest)>0);
+            nf_all = find((striderFy_all-LevelofInterest)<0.1);%1:65
+            pf_all = find((striderFy_all-LevelofInterest)>0);
 
             %             if strcmp(trialData.metaData.name,'adaptation')
             %                 nf_all(find(nf_all>=0.5*length(striderFy_all)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
@@ -553,8 +553,8 @@ for i = 1:length(strideEvents.tSHS)-1
         if nanstd(striderSy_OGFP_sum)<0.01 && nanmean(striderSy_OGFP_sum)<0.01 %This is to get rid of places where there is only noise and no data
 
         else
-            ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)<0);%1:65
-            ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)>0);
+            ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) < 0);%1:65
+            ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) > 0);
 
             %             ImpactMagS_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)==nanmax(striderSy_OGFP_sum(1:75)-LevelofInterest));%no longer percent of stride
             %             if isempty(ImpactMagS_OGFP_sum)~=1
@@ -572,7 +572,7 @@ for i = 1:length(strideEvents.tSHS)-1
                 SBmax_OGFP_sum(i) = FlipB.*(nanmin(striderSy_OGFP_sum(ns_OGFP_sum)-LevelofInterest));
             end
             if isempty(ps_OGFP_sum)
-                SPmax_OGFP_sum(i)= NaN;
+                SPmax_OGFP_sum(i) = NaN;
             else
                 SP_OGFP_sum(i)=nanmean(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest);
                 SPmax_OGFP_sum(i)=nanmax(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest);
@@ -581,7 +581,7 @@ for i = 1:length(strideEvents.tSHS)-1
             if exist('postImpactS_OGFP_sum')==0 || isempty(postImpactS_OGFP_sum)==1 || isnan(SHS)
                 %                     impactS(i)=NaN;
                 %                     impactSmax(i)=NaN;
-                impactSmax_OGFP_sum(i)= NaN;
+                impactSmax_OGFP_sum(i) = NaN;
             else
                 impactS_OGFP_sum(i)=nanmean(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)>0)))-LevelofInterest;
                 if isempty(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)>0)))
@@ -621,13 +621,13 @@ for i = 1:length(strideEvents.tSHS)-1
             %             end
 
             if isempty(pf_OGFP_sum)
-                FPmax_OGFP_sum(i)= NaN;
+                FPmax_OGFP_sum(i) = NaN;
             else
                 FP_OGFP_sum(i)=nanmean(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest);
                 FPmax_OGFP_sum(i)=nanmax(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest);
             end
             if isempty(nf_OGFP_sum)
-                FBmax_OGFP_sum(i)= NaN;
+                FBmax_OGFP_sum(i) = NaN;
             else
                 FB_OGFP_sum(i)=FlipB.*(nanmean(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest));
                 FBmax_OGFP_sum(i)=FlipB.*(nanmin(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest));
@@ -636,11 +636,11 @@ for i = 1:length(strideEvents.tSHS)-1
             if exist('postImpactF_OGFP_sum')==0 || isempty(postImpactF_OGFP_sum)==1 || isnan(FHS)==1
                 impactFmax_OGFP_sum(i) = NaN;
             else
-                impactF_OGFP_sum(i)=nanmean(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))-LevelofInterest;
+                impactF_OGFP_sum(i) = nanmean(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))-LevelofInterest;
                 if isempty(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))
 
                 else
-                    impactFmax_OGFP_sum(i)=nanmax(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))-LevelofInterest;
+                    impactFmax_OGFP_sum(i) = nanmax(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))-LevelofInterest;
                 end
             end
 
@@ -861,18 +861,18 @@ end
 if false %~isempty(markerData.getLabelsThatMatch('HAT'))
     [ outCOM ] = computeCOM(strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents, flipIT );
 else
-    outCOM.Data=[];
-    outCOM.labels=[];
-    outCOM.description=[];
+    outCOM.Data = [];
+    outCOM.labels = [];
+    outCOM.description = [];
 end
 
 %% COP: not ready for real life
 % if ~isempty(markerData.getLabelsThatMatch('LCOP'))
 %     [outCOP] = computeCOPParams( strideEvents, markerData, BW, slowleg, fastleg, impactS, expData, gaitEvents );
 % else
-outCOP.Data=[];
-outCOP.labels=[];
-outCOP.description=[];
+outCOP.Data = [];
+outCOP.labels = [];
+outCOP.description = [];
 % end
 
 %% Compile
@@ -941,8 +941,8 @@ end
 
 if isempty(markerData.getLabelsThatMatch('Hat'))
     data_all = [data_all outCOM.Data outCOP.Data];
-    labels_all=[labels_all outCOM.labels outCOP.labels];
-    description_all=[description_all outCOM.description outCOP.description];
+    labels_all = [labels_all outCOM.labels outCOP.labels];
+    description_all = [description_all outCOM.description outCOP.description];
 end
 
 %out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);
