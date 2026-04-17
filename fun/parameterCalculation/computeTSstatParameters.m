@@ -9,19 +9,19 @@ function out = computeTSstatParameters(someTS, arrayedEvents)
 %% Parameter list and description (per muscle!)
 labelSuff={'max', 'min', 'avg', 'var', 'med', 'snr', 'bad'}; %Some stats on channel data, excluded 'skw','kur','iqr' because they are never used and take long to compute
 %%
-slicedTS=someTS.sliceTS(arrayedEvents(:, 1), 0); %Slicing by first event ONLY
-N=length(slicedTS);
-Nl=length(labelSuff);
-labs=someTS.labels;
-paramData=nan(N,length(labs),Nl);
-paramLabels=cell(length(labs),Nl);
-description=cell(length(labs),Nl);
+slicedTS = someTS.sliceTS(arrayedEvents(:, 1), 0); %Slicing by first event ONLY
+N = length(slicedTS);
+Nl = length(labelSuff);
+labs = someTS.labels;
+paramData = nan(N, length(labs), Nl);
+paramLabels = cell(length(labs), Nl);
+description = cell(length(labs), Nl);
 %Define parameter names and descriptions:
-for j=1:length(labs) %Muscles
-    for k=1:Nl
-        if strcmp(labelSuff{k},'bad')
-            paramLabels{j,k}=[labs{j} labelSuff{k}];
-            description{j,k}=['Signals if quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
+for j = 1:length(labs) %Muscles
+    for k = 1:Nl
+        if strcmp(labelSuff{k}, 'bad')
+            paramLabels{j, k} = [labs{j} labelSuff{k}];
+            description{j, k} = ['Signals if quality was anything other than good (no missing, no spikes, no out-of-range) for muscle ' labs{j}];
         else
             paramLabels{j, k} = [labs{j} labelSuff{k}];
             description{j, k} = [labelSuff{k} ' in timeseries ' labs{j}];
