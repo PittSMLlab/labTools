@@ -39,14 +39,6 @@ function out = computeTSdiscreteParameters(tsData, gaitEvents, ...
 
 % TODO: this should be a method of labTS
 
-
-if nargin<4 || isempty(alignmentVector)
-
-    if ~isa(eventTypes,'cell') %Allow to change the type of event post-processing
-
-        if ~isa(eventTypes,'char')
-            error('Bad argument for eventTypes')
-        end
 arguments
     tsData          (1,1)
     gaitEvents      (1,1)
@@ -55,11 +47,18 @@ arguments
     summaryFun      = []
 end
 
-        s = eventTypes;    f = getOtherLeg(s);
-        eventTypes={[s 'HS'], [f 'TO'], [f 'HS'], [s 'TO']};
 %% Configure Event Types and Phase Labels
+if ~isa(eventTypes, 'cell')  % allow char slow-leg input as a shorthand
+    if ~isa(eventTypes, 'char')
+        error('Bad argument for eventTypes')
     end
+    slowLeg    = eventTypes;
+    fastLeg    = getOtherLeg(slowLeg);
+    eventTypes = {[slowLeg 'HS'], [fastLeg 'TO'], ...
+        [fastLeg 'HS'], [slowLeg 'TO']};
+end
 
+if isempty(alignmentVector)
     alignmentVector   = [2, 4, 2, 4];
     phaseDescriptions = {'SHS to mid DS1', 'mid DS1 to FTO', ...
         'FTO to 1/4 fast swing', '1/4 to mid fast swing', ...
@@ -75,8 +74,7 @@ else
     end
     phaseDescriptions = cell(sum(alignmentVector), 1);
 end
-if nargin<5
-    summaryFun = [];
+
 %% Discretize Time Series
 % TODO: use quality info to mark parameters as BAD if necessary
 tsData.Quality = []; % needed to avoid error in discretize()
