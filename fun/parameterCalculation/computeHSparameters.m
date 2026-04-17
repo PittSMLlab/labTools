@@ -37,15 +37,16 @@ arguments
 end
 
 %% Get Heel Strike Times
-% T_HS=labTimeSeries.getArrayedEvents(gaitEvents,{[slowleg 'HS'],[getOtherLeg(slowleg) 'HS']});
+% tHS = labTimeSeries.getArrayedEvents(gaitEvents, ...
+%     {[slowleg 'HS'], [getOtherLeg(slowleg) 'HS']});
 tHS = labTimeSeries.getArrayedEvents(gaitEvents, eventTypes);
-numStrides = size(tHS, 1); %#ok<NASGU>
-%keyboard
-% iSHS=find(ismember(someTS.Time,T_HS(2:end,1)));
-% iFHS=find(ismember(someTS.Time,T_HS(1:end-1,2)));
+numStrides = size(tHS, 1);
+% keyboard
+% iSHS = find(ismember(tsData.Time, tHS(2:end, 1)));
+% iFHS = find(ismember(tsData.Time, tHS(1:end-1, 2)));
 
-% iSHS=find(ismember(someTS.Time,round(strideEvents.tSHS2,6)));
-% iFHS=find(ismember(someTS.Time,round(strideEvents.tFHS,6)));
+% iSHS = find(ismember(tsData.Time, round(strideEvents.tSHS2, 6)));
+% iFHS = find(ismember(tsData.Time, round(strideEvents.tFHS, 6)));
 
 %% Extract Parameters at Heel Strike
 angSHS = squeeze(tsData.getSample(tHS(2:end, 1)));
@@ -53,15 +54,17 @@ angSHS = squeeze(tsData.getSample(tHS(2:end, 1)));
 try
     angFHS = squeeze(tsData.getSample(tHS(1:end-1, 2)));
 catch
-    angFHS = NaN(size(angSHS)); %NEEDS FIX
-    disp('no gait events for fast leg!')
+    angFHS = NaN(size(angSHS)); % NEEDS FIX
+    disp('no gait events for fast leg!');
 end
 
 %% Assign Labels and Build Output
 slowHSLabels = strcat(tsData.labels, {'AtSHS'});
 fastHSLabels = strcat(tsData.labels, {'AtFHS'});
-%Ang_SHS=Ang_SHS.renameLabels(Ang_SHS.labels,strcat(Ang_SHS.labels,{'@SHS'}));
-%Ang_FHS=Ang_FHS.renameLabels(Ang_FHS.labels,strcat(Ang_FHS.labels,{'@FHS'}));
+% angSHS = angSHS.renameLabels(angSHS.labels, ...
+%     strcat(angSHS.labels, {'@SHS'}));
+% angFHS = angFHS.renameLabels(angFHS.labels, ...
+%     strcat(angFHS.labels, {'@FHS'}));
 paramSHS = parameterSeries(angSHS(:, :), slowHSLabels, [], slowHSLabels);
 paramFHS = parameterSeries(angFHS(:, :), fastHSLabels, [], fastHSLabels);
 out = cat(paramSHS, paramFHS);
