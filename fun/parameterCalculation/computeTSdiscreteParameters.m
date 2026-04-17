@@ -50,7 +50,7 @@ end
 %% Configure Event Types and Phase Labels
 if ~isa(eventTypes, 'cell')  % allow char slow-leg input as a shorthand
     if ~isa(eventTypes, 'char')
-        error('Bad argument for eventTypes')
+        error('Bad argument for eventTypes');
     end
     slowLeg    = eventTypes;
     fastLeg    = getOtherLeg(slowLeg);
@@ -69,7 +69,7 @@ if isempty(alignmentVector)
 else
     if length(eventTypes) ~= length(alignmentVector)
         if ~isempty(alignmentVector)
-            error('Inconsistent sizes of eventTypes and alignmentVector')
+            error('Inconsistent sizes of eventTypes and alignmentVector');
         end
     end
     phaseDescriptions = cell(sum(alignmentVector), 1);
@@ -97,3 +97,4 @@ out = parameterSeries( ...
     labelsGrid(:), 1:numStrides, description(:));
 
 end
+
