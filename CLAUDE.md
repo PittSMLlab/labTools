@@ -259,6 +259,16 @@ introduced after R2021a without an explicit compatibility note.
 
 ## Code Style Requirements
 - Wrap lines at 76 characters (the MATLAB editor default)
+- Use spaces around `=` and binary comparison operators (`~=`, `==`,
+  `<`, `>`, `<=`, `>=`)
+- Do not use brackets around a single output argument: write
+  `out = func()` not `[out] = func()`
+- Suffix no-argument method calls with `()` to distinguish them from
+  property access: write `obj.method()` not `obj.method`
+- Include a MATLAB `arguments` block immediately after the
+  documentation comment for all functions that accept inputs; declare
+  input sizes, types, and default values there rather than using
+  `nargin` checks
 - Use camelCase or PascalCase for all variable, function, and script
   file names (not underscore-separated)
 - Do not use `i` or `j` as loop index variables (reserved for the
@@ -287,3 +297,7 @@ block with the following sections as appropriate:
 - Use section headers, code block comments, and inline comments to
   organize code clearly
 - Maintain consistent whitespace and indentation throughout
+- In the 'Labels and Descriptions' `aux` block found in parameter
+  computation functions, keep each parameter name and its description
+  on a single line regardless of length — this block is exempt from
+  the 76-character line-wrap rule
