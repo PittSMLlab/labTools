@@ -202,13 +202,21 @@ Similarly, do not use functions removed before R2021a.
   `out = func()` not `[out] = func()`
 - Suffix no-argument method calls with `()` to distinguish them from
   property access: write `obj.method()` not `obj.method`
-- Include a MATLAB `arguments` block immediately after the documentation
-  comment for all functions that accept inputs; declare input sizes,
-  types, and default values there rather than using `nargin` checks.
-  When adding an `arguments` block to an existing function, verify all
-  callers supply the now-required arguments. Place multiline validators
-  on the line(s) following the argument name, indented to align with
-  the argument name:
+- A MATLAB `arguments` block is optional but often beneficial for input
+  argument validation and default value setting. Use one when it
+  meaningfully constrains input size or type, or replaces a `nargin`
+  check with a declared default. Omit it when the overhead outweighs
+  the benefit (e.g., simple one-liner helpers). When an `arguments`
+  block is used, place it immediately after the documentation comment;
+  declare input sizes, types, and default values there rather than
+  using `nargin` checks. When adding an `arguments` block to an
+  existing function, verify all callers supply the now-required
+  arguments. Note that default values must be compile-time constants
+  or literals — they cannot reference other input arguments; when a
+  default must be computed from another input, declare the default as
+  `NaN` (for numeric arguments) and compute the actual value in the
+  function body. Place multiline validators on the line(s) following
+  the argument name, indented to align with the argument name:
   ```matlab
   options.Colors (:,3) double ...
       {mustBeInRange(options.Colors, 0, 1)} = []
