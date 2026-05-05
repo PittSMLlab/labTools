@@ -1,4 +1,5 @@
-function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondarySignal)
+function [timeDiff, corrCoef, lagInSamples] = findTimeLag( ...
+        referenceSignal, secondarySignal)
 %FINDTIMELAG Estimate the sample lag between two signals via correlation.
 %
 %   Zero-pads both signals to the same length, computes their cross-
@@ -21,30 +22,33 @@ function [timeDiff,corrCoef,lagInSamples] = findTimeLag(referenceSignal,secondar
 %
 % See also MATCHSIGNALS, ESTIMATEDOPPLERSHIFT.
 
-%First: truncate:
-M=max([length(referenceSignal) length(secondarySignal)]);
-referenceSignal(end+1:M)=0;
-secondarySignal(end+1:M)=0;
 
-%Second: correlate
-F1=fft(referenceSignal);
-F2=fft(fftshift(secondarySignal));
-F=F1.*conj(F2);
-P=ifft(F);
+minCorrWarningThresh = 0.3; % below this, synchronization is unreliable
 
-%Third: sub-sample:
-aux=0:.01:length(P)-1;
-P2=interp1(0:length(P)-1,P,aux,'spline')/sqrt(sum(referenceSignal.^2)*sum(secondarySignal.^2)); %For sub-sample resolution
+%% Zero-Pad to Equal Length
+M = max([length(referenceSignal) length(secondarySignal)]);
+referenceSignal(end+1:M)  = 0;
+secondarySignal(end+1:M)  = 0;
 
-%Fourth: find max correlation
-[~,t]=max(abs(P2));
-lagInSamples=aux(t)-floor(M/2); %The -floor(M/2) term accounts for the fftshift
-corrCoef=P2(t);
+%% Compute Cross-Correlation
+F1 = fft(referenceSignal);
+F2 = fft(fftshift(secondarySignal));
+F  = F1 .* conj(F2);
+P  = ifft(F);
 
-if abs(corrCoef)<.3
+%% Interpolate for Sub-Sample Resolution
+aux = 0:0.01:length(P) - 1;
+P2  = interp1(0:length(P) - 1, P, aux, 'spline') ...
+    / sqrt(sum(referenceSignal.^2) * sum(secondarySignal.^2));
+
+%% Find Peak Correlation
+[~, t]      = max(abs(P2));
+lagInSamples = aux(t) - floor(M / 2); % fftshift offset correction
+corrCoef     = P2(t);
+
+if abs(corrCoef) < minCorrWarningThresh
     warning(['Could not synch signals: r^2= ' num2str(abs(corrCoef))])
 end
 timeDiff = NaN;
 
 end
-

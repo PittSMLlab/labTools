@@ -1,4 +1,4 @@
-function [filteredData] = idealHPF(data,fcut)
+function filteredData = idealHPF(data, fcut)
 %IDEALHPF Apply an ideal zero-lag high-pass filter in the frequency domain.
 %
 %   Computes the DTFT of data, zeroes all frequency components with
@@ -19,11 +19,12 @@ function [filteredData] = idealHPF(data,fcut)
 %
 % See also DISCRETETIMEFOURIERTRANSFORM.
 
-[Fdata,fvector] = DiscreteTimeFourierTransform(data,1);
-Fdata=Fdata.*repmat((abs(fvector)>fcut),1,size(Fdata,2));
 
-filteredData=ifft(ifftshift(Fdata,1));
+%% Apply Ideal High-Pass Filter
+[Fdata, fvector] = DiscreteTimeFourierTransform(data, 1);
+Fdata = Fdata .* repmat((abs(fvector) > fcut), 1, size(Fdata, 2));
 
+%% Invert to Time Domain
+filteredData = ifft(ifftshift(Fdata, 1));
 
 end
-

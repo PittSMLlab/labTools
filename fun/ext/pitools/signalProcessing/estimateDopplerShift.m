@@ -1,4 +1,5 @@
-function [relativeShift,initTimeDelay] = estimateDopplerShift(signal1,signal2,M)
+function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
+    signal1, signal2, M)
 %ESTIMATEDOPPLERSHIFT Estimate relative sampling-rate mismatch via STFT.
 %
 %   Divides both signals into windows of length M, estimates the time
@@ -34,66 +35,71 @@ if nargin<3
     M=ceil(length(signal2)/k);
 end
 
-N=ceil(max([length(signal2) length(signal1)])/M);
-signal1=signal1-mean(signal1);
-signal2=signal2-mean(signal2);
-signal1(end+1:N*M)=0;
-signal2(end+1:N*M)=0; %Padding zeros to have a number of samples that is multiple of the window size (M)
-signal1=signal1-mean(signal1);
+%% Prepare Signals
+N       = ceil(max([length(signal2) length(signal1)]) / M);
+signal1 = signal1 - mean(signal1);
+signal2 = signal2 - mean(signal2);
+% Pad to a multiple of M so every window is the same length
+signal1(end+1:N*M) = 0;
+signal2(end+1:N*M) = 0;
+signal1 = signal1 - mean(signal1);
 
-E1=sum(signal1.^2);
-E2=sum(signal2.^2);
+E1 = sum(signal1.^2); %#ok<NASGU>
+E2 = sum(signal2.^2); %#ok<NASGU>
 
-%% Two step approach: identify outliers, and fit a line. Repeat identifying outliers through the residuals to the line fit, until convergence.
-firstStep=true;
-differences=true;
+%% Fit Line to Per-Window Lags (Iterative Outlier Rejection)
+% Identify outlier windows, fit a line, repeat until convergence.
+firstStep   = true;
+differences = true;
+iiOld       = [];
 while differences
-    
-    clear s x t lineFit
-    t=nan(1,N);
-    for i=1:N
-        aux2=signal2((i-1)*M+1:i*M); %Getting a portion of signal2
-        aux1=signal1((i-1)*M+1:i*M);
-        [~,~,t(i)]=findTimeLag(aux1,aux2);
-%         F1=fft(aux1);
-%         F2=fft(aux2);
-%         F=F1.*conj(F2);
-%         P=ifft(F);
-%         [s(i),t(i)]=max(abs(P));
-%     %     [acor,lag]=xcorr(aux1,aux2,'unbiased');
-%     %     [~,ii]=max(abs(acor));
-%     %     t(i)=lag(ii);
-        x(i)=M/2 + (i-1)*M;
-        
-%         if 5*N*sqrt(sum(aux1.^2)*sum(aux2.^2))<sqrt(E1*E2) %Reject intervals of the signal with too little activity compared to overall
-%             t(i)=NaN;
-%         end
+
+    clear x t lineFit
+    t = nan(1, N);
+    for win = 1:N
+        aux2     = signal2((win-1)*M + 1:win*M);
+        aux1     = signal1((win-1)*M + 1:win*M);
+        [~, ~, t(win)] = findTimeLag(aux1, aux2);
+        %         F1=fft(aux1);
+        %         F2=fft(aux2);
+        %         F=F1.*conj(F2);
+        %         P=ifft(F);
+        %         [s(win),t(win)]=max(abs(P));
+        %     %     [acor,lag]=xcorr(aux1,aux2,'unbiased');
+        %     %     [~,ii]=max(abs(acor));
+        %     %     t(win)=lag(ii);
+        x(win) = M/2 + (win - 1)*M;
+
+        %         if 5*N*sqrt(sum(aux1.^2)*sum(aux2.^2))<sqrt(E1*E2)
+        %             t(win)=NaN;
+        %         end
     end
-    auxI=~isnan(t);
-    properX=x(auxI);
-    properT=t(auxI);
+    auxI   = ~isnan(t);
+    properX = x(auxI);
+    properT = t(auxI);
     if firstStep
-        lineFit=polyfit(properX,properT,1);
-        firstStep=false;
-        iiOld=[];
+        lineFit   = polyfit(properX, properT, 1);
+        firstStep = false;
+        iiOld     = [];
     else
-        auxX=x(ii);
-        auxT=t(ii);
-        lineFit=polyfit(auxX(auxI(ii)),auxT(auxI(ii)),1);
-        iiOld=ii;
+        auxX    = x(ii);
+        auxT    = t(ii);
+        lineFit = polyfit(auxX(auxI(ii)), auxT(auxI(ii)), 1);
+        iiOld   = ii;
     end
-    residuals=abs(t-x*lineFit(1) - lineFit(2));
-    pp=prctile(residuals,[50]);
-    if pp(1)<.5
-        pp(1)=.5; %Because of quantization, we would expect to see at least .5 samples errors even on the best of fits
+    residuals = abs(t - x*lineFit(1) - lineFit(2));
+    pp = prctile(residuals, 50);
+    if pp < 0.5
+        pp = 0.5; % quantization floor: expect at least 0.5-sample error
     end
-    ii=find(residuals<pp(1) & auxI); %Rejecting outliers
-    
-        if length(ii)>0 && (length(iiOld)~=length(ii) || any(ii~=iiOld))
-            differences=true;
-        else
-            differences=false;
-        end
+    ii = find(residuals < pp & auxI); % reject outlier windows
+
+    if ~isempty(ii) && ...
+            (length(iiOld) ~= length(ii) || any(ii ~= iiOld))
+        differences = true;
+    else
+        differences = false;
+    end
 
 end
 % figure(1)
@@ -103,7 +109,8 @@ end
 % plot(x,x*lineFit(1)+lineFit(2),'r')
 % hold off
 % legend('Rejected samples','Used samples','Line fit')
-relativeShift=lineFit(1);
-initTimeDelay=lineFit(2); %In samples
-end
 
+relativeShift  = lineFit(1);
+initTimeDelay  = lineFit(2); % in samples
+
+end

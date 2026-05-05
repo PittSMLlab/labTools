@@ -1,4 +1,5 @@
-function newSignals = resampleShiftAndScale(signals,timeScaleFactor,lagInSamples,scaleGain)
+function newSignals = resampleShiftAndScale( ...
+        signals, timeScaleFactor, lagInSamples, scaleGain)
 %RESAMPLESHIFTANDSCALE Apply resampling, time shift, and gain scaling.
 %
 %   Transforms signals by resampling at timeScaleFactor, shifting by
@@ -25,39 +26,42 @@ function newSignals = resampleShiftAndScale(signals,timeScaleFactor,lagInSamples
 % See also MATCHSIGNALS, TRUNCATETOSAMELENGTH.
 
 
-[M,N]=size(signals);
+[M, N] = size(signals);
 
-%% Resample: (not using 'resample' function because i'm interested in very
-%small resampling rates, on the order of 1+-1e-6
-if abs(timeScaleFactor-1)>.5/M %Only resampling if there is at least a half a sample shift during the full timecourse
-    for i=1:N
-        newSignals(:,i)=interp1(1:M,signals(:,i),timeScaleFactor*[1:floor(M/timeScaleFactor)],'linear')';
-        newSignals(1,i)=signals(1,i); %For same reason interp1 returns NaN when evaluating at same position
+%% Resample Signal
+% NOTE: Not using 'resample' because this targets very small resampling
+% rates on the order of 1 +/- 1e-6. Only resamples when the cumulative
+% drift exceeds half a sample over the full signal length.
+if abs(timeScaleFactor - 1) > 0.5 / M
+    for ch = 1:N
+        newSignals(:, ch) = interp1( ...
+            1:M, signals(:, ch), ...
+            timeScaleFactor * (1:floor(M / timeScaleFactor)), ...
+            'linear')';
+        % interp1 returns NaN when evaluating at the first boundary point
+        newSignals(1, ch) = signals(1, ch);
     end
 else
-    newSignals=signals;
+    newSignals = signals;
 end
 
-%% Time-shift
-aux=round(lagInSamples); 
-d=lagInSamples-aux;
-%First shift an integer number of samples:
-if lagInSamples<0
-    newSignals=newSignals(abs(aux)+1:end,:); %Throw first samples
-else
-    newSignals=[zeros(abs(aux),N); newSignals]; %Pad zeros to add samples
-end
-
-%Then, correct for sub-sample interpolation.
+%% Apply Integer Time Shift
+aux = round(lagInSamples);
+d = lagInSamples - aux;
+% Sub-sample correction (frequency-domain phase shift) is stubbed out
+% below; only integer-sample shifting is applied for now.
 % k=1000;
 % F=fft([newSignals;zeros(k,size(newSignals,2))]);
 % Fd=exp(1i*2*pi*[0:size(F,1)-1]/size(F,1)).^d;
 % newSignals=ifft(bsxfun(@times,F,Fd'),'symmetric');
 % newSignals=newSignals(1:end-k,:);
-
-
-%% Scale:
-newSignals=newSignals/scaleGain;
-
+if lagInSamples < 0
+    newSignals = newSignals(abs(aux) + 1:end, :); % trim leading samples
+else
+    newSignals = [zeros(abs(aux), N); newSignals]; % pad leading zeros
 end
 
+%% Apply Gain Scaling
+newSignals = newSignals / scaleGain;
+
+end

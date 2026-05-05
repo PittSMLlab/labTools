@@ -1,4 +1,4 @@
-function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)
+function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)
 %DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.
 %
 %   Computes the discrete-time Fourier transform of data using MATLAB's
@@ -19,17 +19,21 @@ function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)
 %
 % See also IDEALHPF.
 
-Fdata=fft(data);
-N=size(data,1);
-if mod(N,2)==0 %Even case:
-    fvector=fs/N * [-N/2:N/2-1]';
-else %Odd case: we don't get the sample that would correspond to +-fs/2. We can inferr it?
-    fvector=fs/N * [(-N+1)/2:(N-1)/2]';
 end
 
-Fdata=fftshift(Fdata,1);
-%fvector=ifftshift(fvector);
+%% Compute FFT
+Fdata = fft(data);
+N     = size(data, 1);
 
-
+%% Build Frequency Vector
+if mod(N, 2) == 0 % even length: symmetric around 0
+    fvector = fs / N * (-N/2:N/2 - 1)';
+else % odd length: no sample at exactly +-fs/2
+    fvector = fs / N * ((-N + 1)/2:(N - 1)/2)';
 end
 
+%% Shift to Centered Spectrum
+Fdata = fftshift(Fdata, 1);
+% fvector = ifftshift(fvector);
+
+end
