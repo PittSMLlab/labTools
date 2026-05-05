@@ -19,6 +19,10 @@ function filteredData = idealHPF(data, fcut)
 %
 % See also DISCRETETIMEFOURIERTRANSFORM.
 
+arguments
+    data (:,:) double
+    fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
+end
 
 %% Apply Ideal High-Pass Filter
 [Fdata, fvector] = DiscreteTimeFourierTransform(data, 1);

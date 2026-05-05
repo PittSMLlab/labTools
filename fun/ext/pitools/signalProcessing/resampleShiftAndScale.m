@@ -25,6 +25,12 @@ function newSignals = resampleShiftAndScale( ...
 %
 % See also MATCHSIGNALS, TRUNCATETOSAMELENGTH.
 
+arguments
+    signals         (:,:) double
+    timeScaleFactor (1,1) double
+    lagInSamples    (1,1) double
+    scaleGain       (1,1) double
+end
 
 [M, N] = size(signals);
 

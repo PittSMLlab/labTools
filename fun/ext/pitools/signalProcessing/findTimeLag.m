@@ -22,6 +22,10 @@ function [timeDiff, corrCoef, lagInSamples] = findTimeLag( ...
 %
 % See also MATCHSIGNALS, ESTIMATEDOPPLERSHIFT.
 
+arguments
+    referenceSignal  (1,:) double
+    secondarySignal  (1,:) double
+end
 
 minCorrWarningThresh = 0.3; % below this, synchronization is unreliable
 

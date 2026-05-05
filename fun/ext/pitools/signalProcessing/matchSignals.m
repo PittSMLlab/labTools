@@ -29,6 +29,9 @@ function [alignedSignal2, timeScaleFactor, lagInSamples, gain] = ...
 %
 % See also FINDTIMELAG, ESTIMATEDOPPLERSHIFT, RESAMPLESHIFTANDSCALE.
 
+arguments
+    signal1 (:,1) double
+    signal2 (:,1) double
 end
 
 %% Align Start Times and Correct Sampling-Rate Mismatch

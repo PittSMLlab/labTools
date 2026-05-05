@@ -19,6 +19,9 @@ function [Fdata, fvector] = DiscreteTimeFourierTransform(data, fs)
 %
 % See also IDEALHPF.
 
+arguments
+    data (:,:) double
+    fs   (1,1) double
 end
 
 %% Compute FFT

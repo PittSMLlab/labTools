@@ -31,6 +31,12 @@ if nargin<3
     k=sqrt(length(signal2))/4; %Approx number of windows that is optimal for the estimation
     if k>128
         k=128;
+arguments
+    signal1 (1,:) double
+    signal2 (1,:) double
+    M       (1,1) double = NaN
+end
+
     end
     M=ceil(length(signal2)/k);
 end

@@ -17,6 +17,9 @@ function [newMatrix1, newMatrix2] = truncateToSameLength(matrix1, matrix2)
 %
 % See also MATCHSIGNALS, RESAMPLESHIFTANDSCALE.
 
+arguments
+    matrix1 (:,:) double
+    matrix2 (:,:) double
 end
 
 %% Truncate Longer Matrix
