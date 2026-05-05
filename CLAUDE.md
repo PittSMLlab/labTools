@@ -16,8 +16,8 @@ No build system. All workflows are MATLAB-based:
 - **Example workflows**: `example/` scripts
 - **Docs**: `m2html('mfiles','labTools','htmldir','doc/html','recursive','on','globalHypertextLinks','on')`
 
-No automated tests. Scripts in `example/` (e.g.,
-`testMarkerHealthCheck.m`) serve as manual integration tests.
+No automated tests. Scripts in `example/` serve as manual integration
+tests.
 
 ## Architecture
 
@@ -41,29 +41,23 @@ see Full Call Chain), then calls `experimentData.makeDataObj()` to
 create and save an `adaptationData` object (`*params.mat`).
 
 ### Post-Processing (Recompute Workflows)
-After the initial `c3d2mat` run, users can load the saved
-`experimentData` MAT file and recompute without re-parsing C3D files
-using the following `experimentData` methods:
+After the initial `c3d2mat` run, load the saved `experimentData` MAT
+file and recompute without re-parsing C3D files:
 
 - `recomputeEvents` — redetects gait events only
-- `recomputeParameters` — recomputes adaptation parameters from
-  existing processed trial data, optionally for a subset of parameter
-  classes or a specific event detection method
+- `recomputeParameters` — recomputes parameters from existing processed
+  data, optionally for a subset of parameter classes
 - `flushAndRecomputeParameters` — fully reprocesses all parameters
-  from scratch (equivalent to re-running the processing pipeline on
-  already-loaded data)
 
-**Important:** `experimentData` is a value class. All three methods
-return a modified copy; you must capture the return value or the
-recomputed parameters are silently discarded:
+**Important:** `experimentData` is a value class — recompute methods
+return a modified copy. Capture the return value:
 `expData = expData.recomputeParameters()`
 
 ### Class Hierarchy
 
 **Data containers** (`classes/dataStructs/`):
 - `experimentData` — session container; `metaData`, `subData`, `data`
-  (cell array of labData). Value class — recompute methods return a
-  copy: `expData = expData.recomputeParameters()`
+  (cell array of labData). Value class.
 - `adaptationData` — stride-indexed params; key methods: `removeBias`,
   `getParamInCond`, `getEarlyLateData_v2`, `getEpochData`,
   `addNewParameter`, `removeBadStrides`, `plotAvgTimeCourse`
@@ -106,9 +100,8 @@ recomputed parameters are silently discarded:
 | `biomechAnalysis/` | COM/COP, joint torques |
 | `EMGanalysis/` | EMG filtering and envelope extraction |
 | `plotting/` | Visualization utilities |
-| `eventReview/` | Event validation helpers |
 | `+dataMotion/`, `+Hreflex/`, `+utils/` | Namespace packages |
-| `ext/` | External libraries: BTK (unmodified), pitools and markerDataCleaning (maintained as part of labTools) |
+| `ext/` | BTK (unmodified); pitools and markerDataCleaning (first-party) |
 
 **Code in `fun/ext/pitools/` and `fun/ext/markerDataCleaning/`:** These
 are signal processing and marker analysis functions originally from the
@@ -144,55 +137,46 @@ audio cue times from the synchronized datlog to RTO events.
 
 ```
 c3d2mat
- ├── GetInfoGUI                    % Collect user session inputs
+ ├── GetInfoGUI
  └── loadSubject
-      ├── determineRefLeg          % Resolve fast/slow leg from info
-      ├── getTrialMetaData         % Build per-trial metadata & file lists
-      ├── loadTrials               % Load C3D data into rawTrialData
-      │    ├── btkReadAcquisition  % Read C3D via BTK (external)
-      │    ├── [GRF processing]    % Parse & label force/moment channels
-      │    ├── [EMG processing]    % Sync channels across two PCs
-      │    ├── [ACC processing]    % Extract & downsample accel. data
-      │    └── rawTrialData(...)   % Construct per-trial data object
-      ├── SyncDatalog              % Sync data logs (if present)
-      ├── experimentData(...)      % Instantiate session-level object
-      │    └── [save *RAW.mat]
-      ├── experimentData.process   % Process all raw trial data
-      │    └── labData.process     % Called per trial
+      ├── determineRefLeg
+      ├── getTrialMetaData
+      ├── loadTrials               % Load C3D into rawTrialData
+      │    ├── btkReadAcquisition  % BTK (external)
+      │    └── rawTrialData(...)
+      ├── SyncDatalog
+      ├── experimentData(...)      % [save *RAW.mat]
+      ├── experimentData.process
+      │    └── labData.process     % per trial
       │         ├── processEMG
       │         ├── calcLimbAngles
       │         ├── getEvents
       │         ├── getBeltSpeedsFromFootMarkers
       │         ├── computeTorques / computeCOPAlt
       │         ├── processedTrialData(...)
-      │         └── calcParameters % Stride-by-stride params
+      │         └── calcParameters
       │              ├── computeTemporalParameters
       │              ├── computeSpatialParameters
       │              ├── computeEMGParameters
       │              ├── computeForceParameters
       │              ├── computeHreflexParameters
       │              └── computePercParameters
-      ├── appendEMGNormParameters  % Append EMG norms (if present)
+      ├── appendEMGNormParameters
       ├── populateNewParamBackToExpData
       ├── [save *expData.mat]
-      └── experimentData.makeDataObj
-           └── [save *params.mat (adaptationData)]
+      └── experimentData.makeDataObj  % [save *params.mat]
 
-% --- Post-processing (after loading saved experimentData) ---
+% Post-processing:
 experimentData.recomputeEvents
-experimentData.recomputeParameters
-     └── calcParameters
-experimentData.flushAndRecomputeParameters
-     └── labData.process
+experimentData.recomputeParameters     → calcParameters
+experimentData.flushAndRecomputeParameters → labData.process
 ```
 
 ---
 
 ## MATLAB Version Compatibility
 All code must be compatible with MATLAB R2021a through the current
-release. Do not use language features, functions, or syntaxes
-introduced after R2021a without an explicit compatibility note.
-Similarly, do not use functions removed before R2021a.
+release.
 
 ## Code Style Requirements
 - Wrap lines at 76 characters (the MATLAB editor default)
@@ -270,7 +254,7 @@ Similarly, do not use functions removed before R2021a.
   ```matlab
   shoeWeightKg  = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
   gravityAcc    = 9.81;  % gravitational acceleration (m/s^2)
-  impactWinFrac = 0.15;  % impact-peak search window: first 15% of stance
+  impactWinFrac = 0.15;  % first 15% of stance (protocol spec)
   ```
   The label/description `aux` block (and dynamically constructed
   description strings that populate it) are exempt from this rule.
@@ -304,20 +288,19 @@ one space after `%`:
 `% Outputs:`), with each argument indented three spaces:
 ```matlab
 % Inputs:
-%   argName - description of the argument
+%   argName - description
 %
 % Outputs:
-%   out - description of the output
+%   out - description
 ```
 
 **Examples** (optional) — include after Outputs when it would
 clarify how the function is used within the labTools pipeline.
 
-**Toolbox Dependencies** — list any required MATLAB toolboxes;
-state `None` if only core MATLAB is required.
+**Toolbox Dependencies** — list required toolboxes; `None` if only
+core MATLAB.
 
-**See Also** — function names must be ALL CAPS so that MATLAB
-renders them as clickable hyperlinks in the Command Window:
+**See Also** — ALL CAPS for clickable hyperlinks:
 ```matlab
 % See also RELATEDFUNCTION, ANOTHERFUNCTION.
 ```
