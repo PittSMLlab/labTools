@@ -27,18 +27,22 @@ function [relativeShift, initTimeDelay] = estimateDopplerShift( ...
 %
 % See also MATCHSIGNALS, FINDTIMELAG.
 
-if nargin<3
-    k=sqrt(length(signal2))/4; %Approx number of windows that is optimal for the estimation
-    if k>128
-        k=128;
 arguments
     signal1 (1,:) double
     signal2 (1,:) double
     M       (1,1) double = NaN
 end
 
+maxWindowCount = 128; % cap on number of windows for stability
+
+%% Compute Default Window Length
+if isnan(M)
+    % Approx number of windows that is optimal for the estimation
+    windowCount = sqrt(length(signal2)) / 4;
+    if windowCount > maxWindowCount
+        windowCount = maxWindowCount;
     end
-    M=ceil(length(signal2)/k);
+    M = ceil(length(signal2) / windowCount);
 end
 
 %% Prepare Signals
