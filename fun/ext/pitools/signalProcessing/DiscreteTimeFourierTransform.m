@@ -1,7 +1,23 @@
 function [Fdata,fvector] = DiscreteTimeFourierTransform(data,fs)
-%DiscreteTimeFourierTransform Implements the DTFT through the fft. Returns
-%both the spectral content (fft) and the points at which the spectrum is
-%sampled.
+%DISCRETETIMEFOURIERTRANSFORM Compute DTFT via FFT with frequency vector.
+%
+%   Computes the discrete-time Fourier transform of data using MATLAB's
+% fft, then constructs the corresponding centered frequency vector in
+% units of fs. The output spectrum is shifted so that zero frequency
+% is at the center (fftshift convention).
+%
+% Inputs:
+%   data - (N x C) double array; transform is applied along rows (dim 1)
+%   fs   - sampling frequency used to scale the frequency vector
+%
+% Outputs:
+%   Fdata   - centered complex spectrum, same size as data
+%   fvector - (N x 1) frequency vector in the same units as fs,
+%             ranging from -fs/2 to just below fs/2
+%
+% Toolbox Dependencies: None
+%
+% See also IDEALHPF.
 
 Fdata=fft(data);
 N=size(data,1);
