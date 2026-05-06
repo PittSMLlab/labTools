@@ -182,58 +182,35 @@ release.
   optimizeFor = upper(options.OptimizeFor);
   maxEvals    = round(options.MaxEvals);
   ```
-  Apply this within a logical group; do not force alignment across
-  unrelated statements separated by blank lines.
-- Write decimal numbers with an explicit leading zero: use `0.5`
-  not `.5`.
-- Use modern NaN-omitting aggregation functions rather than the
-  deprecated `nan*` family: write `mean(x, 'omitnan')` instead of
-  `nanmean(x)`, and equivalently for `median`, `std`, and `sum`.
-  For `min` and `max`, the `'omitnan'` flag requires an explicit
-  empty placeholder for the second argument:
-  `min(x, [], 'omitnan')` / `max(x, [], 'omitnan')`. Writing
-  `min(x, 'omitnan')` invokes the element-wise two-array form and
-  returns an array, not a scalar.
-- Define unexplained numeric literals as named constants at the top of
-  the function (or at the top of the `%%` section where they are first
-  used). Give each a descriptive name and add an end-of-line comment
-  documenting the value's source or rationale (e.g., anthropometric
-  table, protocol specification, or empirical threshold):
+- Write `0.5` not `.5`
+- Use `mean(x, 'omitnan')` not `nanmean(x)` (similarly for `median`,
+  `std`, `sum`). For `min`/`max`: `min(x, [], 'omitnan')`.
+- Define unexplained numeric literals as named constants with an
+  end-of-line comment giving their source or rationale:
   ```matlab
-  shoeWeightKg  = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
   gravityAcc    = 9.81;  % gravitational acceleration (m/s^2)
   impactWinFrac = 0.15;  % first 15% of stance (protocol spec)
   ```
-  The label/description `aux` block (and dynamically constructed
-  description strings that populate it) are exempt from this rule.
+  The `aux` label/description block is exempt from this rule.
 
 ## Documentation Comments
 Every function requires a standard doc block after the definition line.
 
-**H1 line** — the first comment line, on the line immediately after
-`function`. No space between `%` and the function name; the name is
-in ALL CAPS, followed by a brief one-line description. This is the
-only place in a comment block where there is no space after `%`:
+**H1 line** — immediately after `function`, no space between `%` and
+the function name; name in ALL CAPS:
 ```matlab
 %MYFUNCTION Compute stride-by-stride parameters from GRF data.
 ```
 
-**Description** — follows the H1 line with exactly one blank comment
-line (`%`) between them. No section header. Use paragraph
-indentation: the first line of each paragraph is indented three
-spaces after `%`; all continuation lines in the same paragraph use
-one space after `%`:
+**Description** — one blank comment line after H1, then paragraphs
+with first line indented three spaces, continuation lines one space:
 ```matlab
 %
-%   First sentence of description, indented.
-% Continuation lines use one space after %.
-%
-%   A second paragraph, again indented on its first line.
-% Continuation lines use one space here too.
+%   First sentence of description.
+% Continuation line uses one space after %.
 ```
 
-**Inputs / Outputs** — labeled section headers (`% Inputs:`,
-`% Outputs:`), with each argument indented three spaces:
+**Inputs / Outputs**:
 ```matlab
 % Inputs:
 %   argName - description
@@ -242,9 +219,6 @@ one space after `%`:
 %   out - description
 ```
 
-**Examples** (optional) — include after Outputs when it would
-clarify how the function is used within the labTools pipeline.
-
 **Toolbox Dependencies** — list required toolboxes; `None` if only
 core MATLAB.
 
@@ -252,9 +226,6 @@ core MATLAB.
 ```matlab
 % See also RELATEDFUNCTION, ANOTHERFUNCTION.
 ```
-
-Do not include a `Syntax` section — it redundantly restates the
-function definition and adds no information.
 
 ## Code Organization
 - Use `%%` section headers to divide every script and function into
