@@ -90,6 +90,9 @@ samplingRate = 1 / markerData.sampPeriod;
 % a (T x 3) array where the columns correspond to x, y, z
 pelvisPos = computePelvisPosition(markerData, options.useMarkers);
 
+% Interpolate NaN gaps so filtfilt receives finite input
+pelvisPos = interpolateNaNGaps(pelvisPos);
+
 % Low-pass filter pelvis position data before differentiation
 pelvisPosFilt = filterMarkerData( ...
     pelvisPos, samplingRate, options.filterCutoff);
@@ -234,6 +237,41 @@ end
 
 fprintf(['Applied coordinate transformation: ' ...
     'columns [%d,%d,%d] → [ML,AP,VT]\n'], colOrder);
+end
+
+function dataOut = interpolateNaNGaps(dataIn)
+%INTERPOLATENANGAPS Linearly interpolate NaN gaps in each column.
+%
+%   Fills NaN values using linear interpolation on the sample index.
+% Leading or trailing NaN runs are filled with the nearest valid
+% value (constant extrapolation). Columns that are entirely NaN are
+% left unchanged.
+%
+% Inputs:
+%   dataIn  - (T x N) data array, may contain NaN values
+%
+% Outputs:
+%   dataOut - (T x N) array with NaN gaps filled by interpolation
+%
+% Toolbox Dependencies:
+%   None
+
+dataOut = dataIn;
+t = (1:size(dataIn, 1))';
+for ii = 1:size(dataIn, 2)
+    x       = dataIn(:, ii);
+    nanMask = isnan(x);
+    if ~any(nanMask) || all(nanMask)
+        continue;
+    end
+    validT  = t(~nanMask);
+    validX  = x(~nanMask);
+    xInterp = interp1(validT, validX, t, 'linear');
+    % Fill leading/trailing NaN with nearest valid value
+    xInterp(t < validT(1))   = validX(1);
+    xInterp(t > validT(end)) = validX(end);
+    dataOut(:, ii) = xInterp;
+end
 end
 
 function dataFilt = filterMarkerData(data, fs, fc)
