@@ -32,14 +32,6 @@ Raw files (C3D / datalog)
   → studyData            (multi-group comparisons)
 ```
 
-### Processing Pipeline
-`c3d2mat` calls `GetInfoGUI` to collect session parameters, then
-`loadSubject`. `loadSubject` instantiates a `rawExpData`
-(`experimentData`) object, saves it as `*RAW.mat`, calls
-`rawExpData.process()` (which calls `labData.process()` per trial —
-see Full Call Chain), then calls `experimentData.makeDataObj()` to
-create and save an `adaptationData` object (`*params.mat`).
-
 ### Post-Processing (Recompute Workflows)
 After the initial `c3d2mat` run, load the saved `experimentData` MAT
 file and recompute without re-parsing C3D files:
@@ -75,21 +67,12 @@ return a modified copy. Capture the return value:
 
 ### Key Patterns
 
-- **Label-based access**: Time series channels are identified by
-  string labels (e.g., `'LANKx'`, `'LANKy'`, `'LANKz'`), not
-  numeric indices. Marker labels follow `BODYPART` convention; 3D
-  components use `x/y/z` suffixes.
-- **Stride as the unit of analysis**: The framework is built around
-  stride-indexed data. `strideData` objects split continuous trials;
-  `parameterSeries` stores one scalar per stride.
-- **Classes vs. functions**: Classes (in `classes/`) handle data
-  container logic. Domain algorithms live as plain functions in
-  `fun/`. GUIs handle I/O.
-- **Composition**: Data containers hold time series objects; e.g.,
-  `rawTrialData` composes `orientedLabTimeSeries` for markers and
-  forces.
-- **Backward compatibility**: Classes use `loadobj` to handle
-  deprecated or renamed fields when loading older `.mat` files.
+- **Label-based access**: Time series channels are identified by string
+  labels (e.g., `'LANKx'`, `'LANKy'`, `'LANKz'`), not numeric indices.
+- **Stride as the unit of analysis**: `strideData` splits continuous
+  trials; `parameterSeries` stores one scalar per stride.
+- **Classes vs. functions**: Classes handle data containers; domain
+  algorithms live as plain functions in `fun/`; GUIs handle I/O.
 
 ### `fun/` Subdirectory Guide
 
@@ -103,35 +86,26 @@ return a modified copy. Capture the return value:
 | `+dataMotion/`, `+Hreflex/`, `+utils/` | Namespace packages |
 | `ext/` | BTK (unmodified); pitools and markerDataCleaning (first-party) |
 
-**Code in `fun/ext/pitools/` and `fun/ext/markerDataCleaning/`:** These
-are signal processing and marker analysis functions originally from the
-pi-tools and markerDataCleaning repositories, both authored by members
-of the SML Laboratory. They are maintained as part of labTools and
-should be updated and reformatted to conform to labTools code style as
-needed. The ATTRIBUTION files record the original upstream commit hashes
-for provenance. Unlike `fun/ext/BTK/`, these files are not expected to
-track an external upstream — treat them as first-party labTools code.
+Code in `fun/ext/pitools/` and `fun/ext/markerDataCleaning/` is
+maintained as first-party labTools code — update and reformat to
+conform to labTools code style as needed. Unlike `fun/ext/BTK/`, these
+files do not track an external upstream.
 
 ### Key Functions
 
 #### `getEvents` (called from `labData.process`)
-Detects heel-strike (HS) and toe-off (TO) gait events for both legs
-and packages them into a sparse `labTimeSeries` with 12–15 labeled
-columns. Event detection strategy depends on trial type:
-- **OG / NIM trials** — defaults to limb angles
-  (`getEventsFromAngles`)
-- **TM trials with GRF data** — defaults to vertical forces
-  (`getEventsFromForces`); kinematic events are also computed and
-  resampled to the GRF frame rate for storage alongside force events
-- **TM trials without GRF data** — falls back to toe/heel marker
-  kinematics (`getEventsFromToeAndHeel`)
+Detects heel-strike (HS) and toe-off (TO) gait events; packages them
+into a sparse `labTimeSeries` with 12–15 labeled columns. Strategy
+depends on trial type:
+- **OG / NIM trials** — limb angles (`getEventsFromAngles`)
+- **TM trials with GRF data** — vertical forces (`getEventsFromForces`);
+  kinematic events also computed and stored for diagnostics
+- **TM trials without GRF data** — toe/heel markers
+  (`getEventsFromToeAndHeel`)
 
-The output always contains `LHS`, `RHS`, `LTO`, `RTO` (primary events
-used by `calcParameters`), plus `forceLHS/RHS/LTO/RTO` and
-`kinLHS/RHS/LTO/RTO` (labeled copies for diagnostics). When
-`perceptualFlag == 1`, three additional columns are appended:
-`percStartCue`, `percEndCue`, and `percEndRamp`, derived by aligning
-audio cue times from the synchronized datlog to RTO events.
+Output always contains `LHS`, `RHS`, `LTO`, `RTO` (primary events for
+`calcParameters`), plus `forceLHS/RHS/LTO/RTO` and
+`kinLHS/RHS/LTO/RTO` (diagnostic copies).
 
 ### Full Call Chain
 
