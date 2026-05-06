@@ -27,6 +27,18 @@ arguments
     secondarySignal  (1,:) double
 end
 
+%% Early Exit for Degenerate Inputs
+if ~any(isfinite(referenceSignal) & (referenceSignal ~= 0)) || ...
+        ~any(isfinite(secondarySignal) & (secondarySignal ~= 0))
+    warning('findTimeLag:degenerateInput', ...
+        ['At least one input signal is all-zero, NaN, or Inf; ' ...
+        'returning lagInSamples=0, corrCoef=0.']);
+    timeDiff     = NaN;
+    corrCoef     = 0;
+    lagInSamples = 0;
+    return
+end
+
 minCorrWarningThresh = 0.3; % below this, synchronization is unreliable
 
 %% Zero-Pad to Equal Length

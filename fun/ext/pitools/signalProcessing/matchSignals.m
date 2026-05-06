@@ -61,7 +61,16 @@ end
 lagInSamples = lagInSamples + lagInSamples2;
 
 %% Compute Best-Fit Gain
-gain           = newSignal2' / signal1';
+gain = newSignal2' / signal1';
+if ~isfinite(gain) || gain == 0
+    warning('matchSignals:degenerateGain', ...
+        'Gain is %g (non-finite or zero); returning identity.', gain);
+    alignedSignal2  = signal2;
+    timeScaleFactor = 1;
+    lagInSamples    = 0;
+    gain            = 1;
+    return
+end
 alignedSignal2 = newSignal2 / gain;
 
 %% Verify Alignment Quality
