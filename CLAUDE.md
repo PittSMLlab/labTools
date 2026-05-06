@@ -153,56 +153,30 @@ All code must be compatible with MATLAB R2021a through the current
 release.
 
 ## Code Style Requirements
-- Wrap lines at 76 characters (the MATLAB editor default)
-- Use spaces around `=` and binary comparison operators (`~=`, `==`,
-  `<`, `>`, `<=`, `>=`)
-- Do not use brackets around a single output argument: write
-  `out = func()` not `[out] = func()`
-- Suffix no-argument method calls with `()` to distinguish them from
-  property access: write `obj.method()` not `obj.method`
-- A MATLAB `arguments` block is optional but often beneficial for input
-  argument validation and default value setting. Use one when it
-  meaningfully constrains input size or type, or replaces a `nargin`
-  check with a declared default. Omit it when the overhead outweighs
-  the benefit (e.g., simple one-liner helpers). When an `arguments`
-  block is used, place it immediately after the documentation comment;
-  declare input sizes, types, and default values there rather than
-  using `nargin` checks. When adding an `arguments` block to an
-  existing function, verify all callers supply the now-required
-  arguments. Note that default values must be compile-time constants
-  or literals — they cannot reference other input arguments; when a
-  default must be computed from another input, declare the default as
-  `NaN` (for numeric arguments) and compute the actual value in the
-  function body. Place multiline validators on the line(s) following
-  the argument name, indented to align with the argument name:
+- Wrap lines at 76 characters
+- Use spaces around `=` and binary comparison operators
+- No brackets around a single output: `out = func()` not `[out] = func()`
+- Suffix no-argument method calls with `()`: `obj.method()` not
+  `obj.method`
+- Use an `arguments` block when it meaningfully constrains input type/
+  size or replaces a `nargin` check with a declared default. Place it
+  immediately after the documentation comment. Default values must be
+  compile-time constants — compute argument-dependent defaults in the
+  function body. Multiline validators indent to align with the argument:
   ```matlab
   options.Colors (:,3) double ...
       {mustBeInRange(options.Colors, 0, 1)} = []
   ```
-- Use camelCase for function file names and PascalCase for script
-  file names (not underscore-separated). Do not rename existing files
-  unless explicitly instructed — file renaming can complicate git
-  version history. Use camelCase or PascalCase for variable names.
-  Choose names that make their purpose clear without a comment —
-  prefer `participantCount` over `n`, `knotLocations` over `kl`.
-  Abbreviations are acceptable when they are unambiguous in context
-  (e.g., `tbl`, `fig`, `lme`, `pval`).
-- Do not use `i` or `j` as loop index variables (reserved for the
-  imaginary unit in MATLAB). For stride loops use `st`; for generic
-  enumeration use `ii`, `jj`, or `kk`. When iterating over a named
-  collection and a terse abbreviation adds unambiguous clarity, prefer
-  it over `ii`: `mscl` (muscles), `mrkr` (markers), `lbl` (labels),
-  `fld` (fields), `tr` (trials), `con` (conditions), `fp` (force
-  plates), `fi` (files), `stp` (steps), `lg` (legs), `sd` (sides),
-  `ord` (order), `ch` (channels), `stat` (statistics), `hrm`
-  (harmonics). Use `ii` when no short name adds clarity or when a
-  terse name would introduce ambiguity. Never use verbose `i`-prefix
-  names (e.g., `iMuscle`, `iMarker`) — these conflict with the
-  imaginary-unit prohibition.
-- Do not indent the base level of code inside functions, as the MATLAB
-  IDE autoformatter removes this indentation
-- Align `=` signs within a group of closely related assignments to make
-  differences between variable names visually apparent:
+- camelCase for function files, PascalCase for scripts. Do not rename
+  existing files. Choose descriptive variable names; abbreviations are
+  acceptable when unambiguous (`tbl`, `fig`, `lme`, `pval`).
+- Do not use `i` or `j` as loop indices (reserved for imaginary unit).
+  For stride loops use `st`; for generic enumeration use `ii`, `jj`,
+  `kk`. Preferred short names: `mscl` (muscles), `mrkr` (markers),
+  `lbl` (labels), `tr` (trials), `con` (conditions), `fp` (force
+  plates), `ch` (channels). Never use `iMuscle`-style names.
+- Do not indent the base level of code inside functions
+- Align `=` within a group of closely related assignments:
   ```matlab
   minSpacing  = max(1, round(options.MinSpacing));
   optimizeFor = upper(options.OptimizeFor);
