@@ -228,53 +228,24 @@ core MATLAB.
 ```
 
 ## Code Organization
-- Use `%%` section headers to divide every script and function into
-  named logical phases. The header text should name the phase, not
-  describe the code:
-  ```matlab
-  %% Validate Input Arguments
-  %% Fit Zero-Knot Linear Mixed-Effects Model (ML)
-  %% Prepare Output Data Structure
-  ```
-- Separate sections with a single blank line before the `%%` header.
-  Separate logically distinct groups of statements within a section
-  with a single blank line.
-- Maintain consistent whitespace and indentation throughout.
-- In the 'Labels and Descriptions' `aux` block found in parameter
-  computation functions, keep each parameter name and its description
-  on a single line regardless of length — this block is exempt from
-  the 76-character line-wrap rule
+- Use `%%` section headers for all named logical phases; header text
+  names the phase, not the code.
+- Separate sections with a single blank line before `%%`. Separate
+  logically distinct statement groups within a section with a blank
+  line.
+- In `aux` label/description blocks, keep each entry on one line
+  regardless of length (exempt from the 76-character rule).
 
 ### Writing Comments
-Write comments to help a future reader understand purposes and
-decisions not obvious from the code itself.
+**Write a comment when:** starting a new `%%` section; a non-obvious
+algorithm needs a block summary; a line encodes a domain rule or
+formula; a magic number needs a source; a decision could have gone
+another way. **Omit** when identifiers already make the purpose clear.
 
-**Write a comment when:**
-- Starting a new `%%` section — make the header descriptive.
-- A group of statements implements a non-obvious algorithm — add a
-  short block comment summarizing what it does and why.
-- A single line encodes a domain-specific rule or formula — add an
-  end-of-line comment explaining its meaning.
-- A value is a magic number whose meaning would not be obvious to
-  a reader unfamiliar with the study protocol.
-- A decision could reasonably have been made differently — explain
-  why this choice was made.
+Special prefixes: `% TODO:` for known incomplete work; `% NOTE:` for
+important caveats or non-obvious constraints.
 
-**Omit a comment when** the identifier names already make the purpose
-completely clear, or the comment would merely restate the code in
-English.
-
-**Special prefixes:**
-- `% TODO:` — known incomplete work or a known limitation to
-  revisit later.
-- `% NOTE:` — an important caveat, subtle invariant, or
-  non-obvious constraint that future editors must not accidentally
-  remove.
-
-### Comment Preservation
-When editing existing files, preserve: step-labeling comments (navigation
-aids for multi-step algorithms), WHY comments (non-obvious decisions or
-constraints), commented-out code (alternative implementations or
-work-in-progress), and end-of-line clarifications (units, roles, or
-non-obvious behavior). Remove only comments that redundantly restate what
-the adjacent code already makes obvious from its identifier names alone.
+When editing existing files, preserve: step-labeling comments,
+WHY comments, commented-out alternative code, and end-of-line
+clarifications (units, roles). Remove only comments that restate what
+identifiers already make obvious.
