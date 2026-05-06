@@ -1055,3 +1055,37 @@ end
 
 end
 
+function flat = isFlatSync(sig, refSig, threshold)
+%ISFLATSYNC True when sig appears to be a dead/disconnected sync pin.
+%
+%   A sync channel is considered flat when the maximum absolute
+% amplitude of its processed derivative falls below threshold times
+% the maximum amplitude of refSig. refSig should be a channel with
+% known-good signal quality (e.g., refAux from the force-plate PC).
+%
+% Inputs:
+%   sig       - processed sync column (column vector)
+%   refSig    - reference sync column for amplitude normalisation
+%   threshold - fractional amplitude threshold (scalar, > 0)
+%
+% Outputs:
+%   flat - logical scalar; true when sig appears dead or disconnected
+%
+% Toolbox Dependencies: None
+%
+% See also LOADTRIALS, MATCHSIGNALS.
+
+arguments
+    sig       (:,1) double
+    refSig    (:,1) double
+    threshold (1,1) double {mustBePositive}
+end
+
+refAmp = max(abs(refSig));
+if refAmp == 0
+    flat = true;    % reference is also flat; cannot normalise
+else
+    flat = max(abs(sig)) < threshold * refAmp;
+end
+end
+
