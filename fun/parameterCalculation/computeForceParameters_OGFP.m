@@ -47,36 +47,38 @@ end
 
 %% Initialize Trial Metadata
 trial = trialData.metaData.description;
-%If I want all the forces to be unitless then set this to 9.81*BW, else set it
-%to 1*BW
 
-if strcmpi(trialData.metaData.type,'NIM')
-    Normalizer = 9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
+gravityAcc   = 9.81;  % gravitational acceleration (m/s^2)
+shoeWeightKg = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
+inTMAngle    = 8.5;   % incline angle (deg) assumed for 'IN' trial type
+
+% Normalize forces to body weight (add shoe mass for Nimbus trials)
+if strcmpi(trialData.metaData.type, 'NIM')
+    normalizer = gravityAcc * (BW + shoeWeightKg);
 else
-    Normalizer = 9.81*BW;
+    normalizer = gravityAcc * BW;
 end
 
-% Normalizer=9.81*BW;
-bw_th_min = 0.8;
-early_th = 0.2;
-end_th = 0.2;
-divideri = 8;
+bwThMin  = 0.8;  % min vertical GRF threshold as fraction of BW
+earlyFrac = 0.2;  % early-stance phase fraction
+endFrac   = 0.2;  % end-of-stance phase fraction
+strideDiv = 8;    % divisor for stride sub-window indexing
 trialNum = str2double(trialData.metaData.rawDataFilename(end-1:end));
-FlipB = 1; %7/21/2016, nevermind, making 1 8/1/2016
+flipB = 1;
 
 if iscell(trial)
     trial = trial{1};
 end
 
 
-[ ang ] = determineTMAngle( trialData.metaData );
+ang = determineTMAngle(trialData.metaData);
 if strcmp(trialData.metaData.type, 'IN')
-    ang = 8.5;
+    ang = inTMAngle;
 end
 flipIT = 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
-Filtered = GRFData.lowPassFilter(20);
-FilteredF = Filtered;
-FilteredS = Filtered;
+filtered = GRFData.lowPassFilter(20);
+filteredF = filtered;
+filteredS = filtered;
 
 
 %% Remove AP Force Offsets
@@ -86,16 +88,16 @@ FilteredS = Filtered;
 % been properly been shifted during the c3d2mat process, otherwise the
 % events are wrong and these lines of code will not save you. rats
 
-%figure; plot(Filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(Filtered.getDataAsTS([f 'Fy']).Data, 'r');
-fFy = Filtered.getDataAsTS([fastleg 'Fy']);
-sFy = Filtered.getDataAsTS([slowleg 'Fy']);
+%figure; plot(filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(filtered.getDataAsTS([f 'Fy']).Data, 'r');
+fFy = filtered.getDataAsTS([fastleg 'Fy']);
+sFy = filtered.getDataAsTS([slowleg 'Fy']);
 
-FastLegOffSetData = nan(length(strideEvents.tSHS)-1, 1);
-SlowLegOffSetData = nan(length(strideEvents.tSHS)-1, 1);
-if Filtered.isaLabel('HFx')
-    handrailData = Filtered.getDataAsTS({'HFy', 'HFz'});
-elseif Filtered.isaLabel('XFx')
-    handrailData = Filtered.getDataAsTS({'XFy', 'XFz'});
+fastLegOffsetData = nan(length(strideEvents.tSHS)-1, 1);
+slowLegOffsetData = nan(length(strideEvents.tSHS)-1, 1);
+if filtered.isaLabel('HFx')
+    handrailData = filtered.getDataAsTS({'HFy', 'HFz'});
+elseif filtered.isaLabel('XFx')
+    handrailData = filtered.getDataAsTS({'XFy', 'XFz'});
     warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).');
 else
     handrailData = [];
@@ -119,8 +121,8 @@ end
 
 Allz = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz', 'LFz', 'RFz'};
 Ally = {'FP4Fy', 'FP5Fy', 'FP6Fy', 'FP7Fy', 'LFy', 'RFy'};
-OGFPy_names = {'FP4Fy', 'FP5Fy', 'FP6Fy', 'FP7Fy'};
-OGFPz_names = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
+ogfpyNames = {'FP4Fy', 'FP5Fy', 'FP6Fy', 'FP7Fy'};
+ogfpzNames = {'FP4Fz', 'FP5Fz', 'FP6Fz', 'FP7Fz'};
 
 
 for fp = 1:length(Ally)
