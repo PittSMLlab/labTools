@@ -1,4 +1,4 @@
-function stance = getStanceFromForces(Fz,threshold,fsample)
+function stance = getStanceFromForces(Fz, threshold, fsample)
 %GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.
 %
 %   Applies median filtering to remove quantization noise, corrects for
@@ -28,33 +28,33 @@ function stance = getStanceFromForces(Fz,threshold,fsample)
 %  end
 
 %% Get stance from forces
-N=round(.01*fsample); %Median filter with 10ms window, to get rid of some quantization noise
-if mod(N,2)==0
-    N=N+1;
+N = round(0.01 * fsample); % median filter window: 10 ms
+if mod(N, 2) == 0
+    N = N + 1;
 end
-N1=round(.005*fsample); %Median filter with 5ms window, to get rid of some quantization noise
-if mod(N1,2)==0
-    N1=N1+1;
+N1 = round(0.005 * fsample); % median filter window: 5 ms
+if mod(N1, 2) == 0
+    N1 = N1 + 1;
 end
-forces=medfilt1(Fz,N1);
-forces=medfilt1(forces,N);
+forces = medfilt1(Fz, N1);
+forces = medfilt1(forces, N);
 % forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 
-
-%Sanity check: correct non-zeroed force-plates:
-if mode(forces)~=0
-    disp(['Warning: Left z-axis forces have non-zero mode. Subtracting mode from force data before event detection']);
-    forces=forces-mode(forces);
+% sanity check: correct non-zeroed force plates
+if mode(forces) ~= 0
+    disp(['Warning: Left z-axis forces have non-zero mode. ' ...
+        'Subtracting mode from force data before event detection']);
+    forces = forces - mode(forces);
 end
 
 % forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
-forceSign=sign(nanmean(forces)); % Before it had Fz, however sometimes Fz is shifted if the platforms were not zeroed correctly
-forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
+forceSign = sign(mean(forces, 'omitnan')); % use filtered forces in case plates were not zeroed
+forces    = forces * forceSign; % ensure forces are positive on average
 
-stance=forces>threshold;
+stance = forces > threshold;
 
-%% STEP N: Eliminate stance & swing phases shorter than 100 ms
-stance = deleteShortPhases(stance,fsample,0.1); %Used to be 200 ms, but that is too long for stroke subjects, who spend relatively short single stance times on their paretic leg.
+%% Eliminate stance and swing phases shorter than 100 ms
+stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but that is too long for stroke subjects
 
 % plot raw and filtered forces, threshold, and detected stance to verify
 % figure;
@@ -68,4 +68,3 @@ stance = deleteShortPhases(stance,fsample,0.1); %Used to be 200 ms, but that is 
 % hold off;
 
 end
-
