@@ -1,5 +1,27 @@
 function [LHS,RHS,LTO,RTO] = ...
     getEventsFromToeAndHeel(Ltoe,Lheel,Rtoe,Rheel,fsample)
+%GETEVENTSFROMTOENANDHEEL Detect gait events from toe and heel marker data.
+%
+%   Estimates stance phases from heel and toe marker kinematics, derives
+% gait events from those phases, and masks out events that occur before
+% meaningful limb activity begins (onset detection via cumulative energy).
+%
+% Inputs:
+%   Ltoe    - N×3 double, left toe marker position (mm)
+%   Lheel   - N×3 double, left heel marker position (mm)
+%   Rtoe    - N×3 double, right toe marker position (mm)
+%   Rheel   - N×3 double, right heel marker position (mm)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   LHS - N×1 logical, left heel-strike events
+%   RHS - N×1 logical, right heel-strike events
+%   LTO - N×1 logical, left toe-off events
+%   RTO - N×1 logical, right toe-off events
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMTOENANDHEEL, GETEVENTSFROMSTANCE.
 
 % retrieve stance gait phases from toe and heel
 stanceL = getStanceFromToeAndHeel(Lheel,Ltoe,fsample);

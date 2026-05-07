@@ -1,10 +1,28 @@
  function [stance] = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
-%Get stance from acceleration
 forces1=medfilt1(Fz,round(.0025*fsample)); %Median filter with 2.5ms window, to get rid of some quantization noise
 fcut=25;
 forces=lowpassfiltering2(forces1,fcut,2,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 forceSign=sign(mean(Fz));
 forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
+%GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.
+%
+%   Alternative to GETSTANCEFROMFORCES. Detects stance by identifying
+% loading and unloading regions in the force derivative, then expands
+% those regions inward/outward until they meet. A morphological shortening
+% compensates for low-pass filter broadening, and short phases are removed.
+%
+% Inputs:
+%   Fz           - N×1 double, vertical GRF signal (N, sign arbitrary)
+%   lowThreshold - scalar double, ignored (overwritten internally; retained
+%                  for API compatibility)
+%   fsample      - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMFORCES.
 
 bodyWeight=2 * mean(abs(forces-mean(forces))); %Estimate of bodyWeight to do thresholding
 

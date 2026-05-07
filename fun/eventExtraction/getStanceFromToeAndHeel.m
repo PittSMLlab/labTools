@@ -1,4 +1,22 @@
 function stance = getStanceFromToeAndHeel(ankKin,toeKin,fsample)
+%GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.
+%
+%   Combines two stance detection methods — velocity thresholding
+% (getStance) and acceleration thresholding (getStance3) — and removes
+% short phases. getStance2 (Hough-transform based) is available as an
+% alternative but is currently disabled.
+%
+% Inputs:
+%   ankKin  - N×3 double, ankle marker position (mm)
+%   toeKin  - N×3 double, toe marker position (mm)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.
 
 stance3 = getStance3(ankKin,toeKin,fsample);    % threshold accelerations
 % stance2 = getStance2(ankKin,toeKin,fsample); % Hough + thresholding

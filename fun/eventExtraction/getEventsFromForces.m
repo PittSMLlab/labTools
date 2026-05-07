@@ -1,4 +1,24 @@
 function [LHS,RHS,LTO,RTO]= getEventsFromForces(FzL,FzR,fsample)
+%GETEVENTSFROMFORCES Detect gait events from vertical ground reaction forces.
+%
+%   Determines heel-strike (HS) and toe-off (TO) events for left and right
+% legs by thresholding vertical GRF signals. Delegates stance detection to
+% GETSTANCEFROMFORCES and event extraction to GETEVENTSFROMSTANCE.
+%
+% Inputs:
+%   FzL     - N×1 double, left vertical GRF signal (N, positive upward)
+%   FzR     - N×1 double, right vertical GRF signal (N, positive upward)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   LHS - N×1 logical, left heel-strike events
+%   RHS - N×1 logical, right heel-strike events
+%   LTO - N×1 logical, left toe-off events
+%   RTO - N×1 logical, right toe-off events
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMFORCES, GETEVENTSFROMSTANCE.
 
 %% Get stance phases
 th=10; %Detection threshold in Newtons

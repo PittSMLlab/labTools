@@ -1,4 +1,22 @@
 function stance = getStanceFromForces(Fz,threshold,fsample)
+%GETSTANCEFROMFORCES Estimate stance phase from vertical ground reaction force.
+%
+%   Applies median filtering to remove quantization noise, corrects for
+% non-zeroed force plates, and thresholds the result to produce a binary
+% stance signal. Short stance and swing phases below 100 ms are removed.
+%
+% Inputs:
+%   Fz        - N×1 double, vertical GRF signal (N, sign arbitrary)
+%   threshold - scalar double, stance detection threshold (N)
+%   fsample   - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.
+
 %  %% If Fz is sampled >2000Hz, downsample to somewhere in the [1000-2000)Hz
 %  %range (for computational cost reduction, no other reason).
 %
@@ -8,7 +26,6 @@ function stance = getStanceFromForces(Fz,threshold,fsample)
 %      Fz=Fz(1:M:end);
 %      fsample=fsample/M;
 %  end
-
 
 %% Get stance from forces
 N=round(.01*fsample); %Median filter with 10ms window, to get rid of some quantization noise

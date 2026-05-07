@@ -1,4 +1,22 @@
 function stance = deleteShortPhases(stance,fsample,minDuration)
+%DELETESHORTPHASES Remove stance or swing phases shorter than a minimum
+%duration.
+%
+%   Iteratively applies a morphological open/close operation (convolution-
+% based dilation then erosion) to eliminate phases whose duration is less
+% than minDuration seconds. Operates on a logical stance vector.
+%
+% Inputs:
+%   stance      - N×1 logical, stance phase signal (true = stance)
+%   fsample     - scalar double, sampling frequency (Hz)
+%   minDuration - scalar double, minimum phase duration to retain (s)
+%
+% Outputs:
+%   stance - N×1 logical, stance signal with short phases removed
+%
+% Toolbox Dependencies: None
+%
+% See also GETSTANCEFROMFORCES, GETSTANCEFROMTOENANDHEEL.
 
 N = ceil(minDuration * fsample);
 % stance1 = stance;
