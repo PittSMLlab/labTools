@@ -1,4 +1,4 @@
-function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)
+function [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR)
 %GETEVENTSFROMSTANCE Retrieve gait events from stance phase logical vectors.
 %
 %   Detects heel-strike (HS) and toe-off (TO) events for left and right
@@ -18,11 +18,9 @@ function [LHS,RHS,LTO,RTO] = getEventsFromStance(stanceL,stanceR)
 %
 % See also GETEVENTSFROMFORCES, GETEVENTSFROMTOENANDHEEL.
 
-% first step:
-LTO = ([false; diff(double(stanceL)) == -1]);   % & stanceR;
-LHS = ([false; diff(double(stanceL)) == 1]);    % & stanceR;
-RTO = ([false; diff(double(stanceR)) == -1]);   % & stanceL;
-RHS = ([false; diff(double(stanceR)) == 1]);    % & stanceL;
+LTO = [false; diff(double(stanceL)) == -1];  % & stanceR;
+LHS = [false; diff(double(stanceL)) == 1];   % & stanceR;
+RTO = [false; diff(double(stanceR)) == -1];  % & stanceL;
+RHS = [false; diff(double(stanceR)) == 1];   % & stanceL;
 
 end
-
