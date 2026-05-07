@@ -1,4 +1,4 @@
-function stance = deleteShortPhases(stance,fsample,minDuration)
+function stance = deleteShortPhases(stance, fsample, minDuration)
 %DELETESHORTPHASES Remove stance or swing phases shorter than a minimum
 %duration.
 %
@@ -20,7 +20,8 @@ function stance = deleteShortPhases(stance,fsample,minDuration)
 
 N = ceil(minDuration * fsample);
 % stance1 = stance;
-%%Dilate stance, and erode
+
+%% Dilate stance, and erode
 %dilStance=conv(double(stance),ones(N,1),'same')>0;
 %eroStance=conv(double(dilStance),ones(N,1),'same')>=N;
 
@@ -31,27 +32,27 @@ N = ceil(minDuration * fsample);
 %stance=~eroSwing;
 
 %Idea: first get rid of isolated stance/swing samples, then get rid of
-%groups of two, so on and so forth until we got rid of all groups of N-1 or
-%smaller size
+%groups of two, so on and so forth until we got rid of all groups of
+%N-1 or smaller size
 
 %Simple implementation:
 % Commented out by Pablo on 25/II/2015 because of more efficient
 % implementation
 %tic
 if ~isempty(stance)                     % if there is data in 'stance', ...
-    for ii = 1:N                         % for each sample, ...
+    for ii = 1:N                        % for each sample, ...
         % NOTE (NWB): previous comments say "slowly dilating/eroding stance
         % phases, until there is no possiblity for" and "at least half + 1
         % of the samples in the window are stance", although it is unclear
         % how this code is working or its broader purpose.
-        stance = conv(double(stance),ones(2*ii+1,1),'same') > ii;
+        stance = conv(double(stance), ones(2*ii+1, 1), 'same') > ii;
     end
 end
 % toc
 % tic
 % stance2=gpuArray(stance);
 % if ~isempty(stance)
-%    for i=1:N %Slowly dilating/eroding stance phases, until there is no possiblity for
+%    for i=1:N %Slowly dilating/eroding stance phases, until no possibility for
 %        aux=gpuArray(ones(2*i+1,1));
 %        stance2=conv(double(stance2),aux,'same')>i; %At least half+1 of the samples in the window are stance
 %    end
@@ -83,4 +84,3 @@ end
 % end
 
 end
-
