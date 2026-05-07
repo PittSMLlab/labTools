@@ -1,4 +1,4 @@
-function stance = getStanceFromToeAndHeel(ankKin,toeKin,fsample)
+function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
 %GETSTANCEFROMTOENANDHEEL Estimate stance phase from ankle and toe kinematics.
 %
 %   Combines two stance detection methods — velocity thresholding
@@ -18,19 +18,19 @@ function stance = getStanceFromToeAndHeel(ankKin,toeKin,fsample)
 %
 % See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.
 
-stance3 = getStance3(ankKin,toeKin,fsample);    % threshold accelerations
-% stance2 = getStance2(ankKin,toeKin,fsample); % Hough + thresholding
-stance1 = getStance(ankKin,toeKin,fsample);     % threshold velocities
+stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations
+% stance2 = getStance2(ankKin, toeKin, fsample); % Hough + thresholding
+stance1 = getStance(ankKin, toeKin, fsample);   % threshold velocities
 % stance1 = stance2;
 % stance3 = stance2;
 
 % stance = (stance1 & stance2) | (stance1 & stance3) | (stance3 & stance2);
 stance = stance1;
 % remove stance phases of less than 200 ms
-stance = deleteShortPhases(stance,fsample,0.2);
+stance = deleteShortPhases(stance, fsample, 0.2);
 
 %IDEA: instead of using pure (classical) logic, use fuzzy logic, with a
-%smoothing kernel, so that all samples in a neighboorhood get a say on the
+%smoothing kernel, so that all samples in a neighbourhood get a say on the
 %value of a particular sample.
 %This might be particularly helpful to get rid of quantization noise
 %(kernel with support of 3 samples: the central one, and one to each side),
@@ -125,17 +125,17 @@ for j=1:2
     clear raux aux aux2  RHO THETA H A th r m n
     switch j
         case 1
-            relevantKin=medfilt1(Rheel); %Non-strict Filtering to kill far outliers
-            tol=4; %Threshold to surely catalogue a point as 'on floor'
-            tol2=8; %Minimum distance to catalogue as 'toe-off' or 'heel-strike'
-            N=3;
-            N2=1;
+            relevantKin = medfilt1(Rheel); % non-strict filtering to kill far outliers
+            tol  = 4;  % threshold to surely catalogue a point as 'on floor'
+            tol2 = 8;  % min distance to catalogue as 'toe-off' or 'heel-strike'
+            N    = 3;
+            N2   = 1;
         case 2
-            relevantKin=medfilt1(Rtoe);
-            tol=4;
-            tol2=10;
-            N=15;
-            N2=1;
+            relevantKin = medfilt1(Rtoe);
+            tol  = 4;
+            tol2 = 10;
+            N    = 15;
+            N2   = 1;
     end
 
     relevantKin(abs(relevantKin(:,1)-median(relevantKin(:,1)))>5*std(relevantKin(:,1)),1)=0;
@@ -145,7 +145,6 @@ for j=1:2
     %In y: limit values to a 500mm range
     %In x: limit values to a 2000mm range
     %Throw everything outside those limits
-
 
     %A=zeros(max(raux(:,1)-min(raux(:,1))+1),(max(raux(:,2)-min(raux(:,2))+1)));
     %for i=1:length(raux(:,1))
@@ -173,8 +172,8 @@ for j=1:2
     if sum(stance)<3
         %Probable backwards trial
         disp('Warning: probable backwards trial')
-        flag=true;
-        stance=(abs(dist2Floor)<tol)&([0;diff(aux1)]>0); %Points on the floor for sure
+        flag   = true;
+        stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] > 0);
     end
     CoM_x=mean(relevantKin(stance,1));
     CoM_y=mean(relevantKin(stance,2));
@@ -185,17 +184,17 @@ for j=1:2
         disp('Caught exception when computing distance to floor.');
     end
 
-    if (~backwards)&&(~flag)
-        swing=([0;diff(aux1)]>0); %Elments surely off the floor
+    if (~backwards) && (~flag)
+        swing = ([0; diff(aux1)] > 0); % elements surely off the floor
     else
-        swing=([0;diff(aux1)]<0);
+        swing = ([0; diff(aux1)] < 0);
     end
-    %Eliminate spurious
-    swing=conv(double(swing),ones(2*N+1,1),'same')==2*N+1; %Erode aux2 %Elements that have at least one off the floor element on the 'off the floor' side
-    swing=conv(double(swing),ones(2*N+1,1),'same')>=1; %Dilate aux2 %Elements that have at least one off the floor elements N elements to each side
+    % eliminate spurious swing samples
+    swing = conv(double(swing), ones(2*N+1, 1), 'same') == 2*N+1; % erode
+    swing = conv(double(swing), ones(2*N+1, 1), 'same') >= 1;     % dilate
 
     %%
-    change=true;
+    change = true;
     while change
         stance3=conv(double(stance),ones(3,1),'same')>=1; %Dilate aux
         stance4=stance3&~swing; %Make sure it doesn't reach the 'off the floor' threshold
@@ -208,44 +207,44 @@ for j=1:2
             CoM_y=mean(relevantKin(stance,2));
             M=pca(relevantKin(stance,1:2));
             try
-                dist2Floor=(relevantKin(:,1)-CoM_x)*M(1,2)+(relevantKin(:,2)-CoM_y)*M(2,2); %Corrected guess at floor
+                dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
+                    + (relevantKin(:, 2) - CoM_y) * M(2, 2);
             catch
                 disp('Caught exception when computing distance to floor.');
             end
         else
-            change=false;
-            stance=conv(double(stance4),ones(2*N2+1,1),'same')==2*N2+1; %Erode aux, leaves a N2 element distance
+            change = false;
+            stance = conv(double(stance4), ones(2*N2+1, 1), 'same') == 2*N2+1; % erode by N2
         end
     end
 
-    %Assign corresponding stance
-    switch j
+    % assign corresponding stance
+    switch jj
         case 1
-            stanceAnk=stance;
+            stanceAnk = stance;
         case 2
-            stanceToe=stance;
+            stanceToe = stance;
     end
-
 end
 
-% Stance is when either toe or ank is in the floor
+% stance is when either toe or ankle is on the floor
 stance = stanceAnk | stanceToe;
 
-%Delete short stance phases
-stance = deleteShortPhases(stance,fsample,0.25);
+% delete short stance phases
+stance = deleteShortPhases(stance, fsample, 0.25);
 end
 
 %% Method 3: get stance from marker acceleration (during stance, acc=0)
 function stance = getStance3(ankKin,toeKin,fsample)
 %Get stance from acceleration
 
-%% STEP 1: low pass filter & calculate speed
-%Get vels:
+%% Step 1: low pass filter and calculate acceleration
+% Get velocities:
 % va(:,1)=derive(ankKin(:,1),fsample); %fore-aft axis
 % va(:,2)=derive(ankKin(:,2),fsample); %up-down axis
 % vt(:,1)=derive(toeKin(:,1),fsample);
 % vt(:,2)=derive(toeKin(:,2),fsample);
-% %Get acc:
+% Get accelerations:
 % aa(:,1)=derive(va(:,1),fsample);
 % aa(:,2)=derive(va(:,2),fsample);
 % at(:,1)=derive(vt(:,1),fsample);
@@ -271,19 +270,18 @@ modToeA=sqrt(sum(atf.^2,2));
 %modToeAf=conv(modToeA,filter,'same')/sum(filter);
 %toeThresh=.1*mean(modToeA(10:end-10));
 %ankThresh=.1*mean(modAnkA(10:end-10));
-toeThresh=5000;%m/s^2
-ankThresh=5000;%m/s^2
+accThresh = 5000; % acceleration threshold (mm/s²); empirical
 
-%% STEP 4: Get stance from the ank stance OR toe stance
-ankStance=modAnkA<ankThresh;
-toeStance=modToeA<toeThresh;
+%% Step 4: classify stance from ankle OR toe stance
+ankStance = modAnkA < accThresh;
+toeStance = modToeA < accThresh;
 
 %ankStance = deleteShortPhases(ankStance,fsample,0.25);
 %toeStance = deleteShortPhases(toeStance,fsample,0.25);
-stance  = ankStance | toeStance;
+stance = ankStance | toeStance;
 
-%% STEP N: Eliminate stance & swing phases shorter than 200 ms
-stance = deleteShortPhases(stance,fsample,0.2);
+%% Eliminate stance and swing phases shorter than 200 ms
+stance = deleteShortPhases(stance, fsample, 0.2);
 
 % figure
 % hold on
@@ -297,4 +295,3 @@ stance = deleteShortPhases(stance,fsample,0.2);
 % hold off
 
 end
-
