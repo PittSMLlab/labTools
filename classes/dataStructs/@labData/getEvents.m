@@ -1,35 +1,3 @@
-        LHSeventForce=false(length(LHSevent),1); %No force events, fill with logical 0's
-        RHSeventForce=false(length(RHSevent),1);
-        LTOeventForce=false(length(LTOevent),1);
-        RTOeventForce=false(length(RTOevent),1);
-
-        LHSeventKin=kinLHS;
-        RHSeventKin=kinRHS;
-        LTOeventKin=kinLTO;
-        RTOeventKin=kinRTO;
-
-        t0=trialData.markerData.Time(1);
-        Ts=trialData.markerData.sampPeriod;
-
-    else
-        upAxis=trialData.GRFData.orientation.updownAxis;
-        upSign=trialData.GRFData.orientation.updownSign;
-        FzL=upSign*trialData.GRFData.getDataAsVector(['LF',upAxis]);
-        FzR=upSign*trialData.GRFData.getDataAsVector(['RF',upAxis]);
-
-        % %Sanity check: correct non-zeroed force-plates: % Now we will be
-        % doing this inside the even detection
-        % if mode(FzL)~=0
-        %     disp(['Warning: Left z-axis forces in ' file ' have non-zero mode. Subtracting mode from force data before event detection'])
-        %     FzL=FzL-mode(FzL);
-        % end
-        % if mode(FzR)~=0
-        %     disp(['Warning: Right z-axis forces in ' file ' have non-zero mode. Subtracting mode from force data before event detection'])
-        %     FzR=FzR-mode(FzR);
-        % end
-
-        [LHSevent,RHSevent,LTOevent,RTOevent] = getEventsFromForces(FzL,FzR,trialData.GRFData.sampFreq);
-
         LHSeventForce=LHSevent; %Make a redundant copy to label as force events
         RHSeventForce=RHSevent;
         LTOeventForce=LTOevent;
@@ -212,4 +180,37 @@ else % treadmill trial
         fs_kin = trialData.markerData.sampFreq;
         [LHSevent, RHSevent, LTOevent, RTOevent] = ...
             getEventsFromToeAndHeel(LtoePos, LheelPos, RtoePos, RheelPos, fs_kin);
+
+        LHSeventForce = false(length(LHSevent), 1); % no force events; fill with logical 0s
+        RHSeventForce = false(length(RHSevent), 1);
+        LTOeventForce = false(length(LTOevent), 1);
+        RTOeventForce = false(length(RTOevent), 1);
+
+        LHSeventKin = kinLHS;
+        RHSeventKin = kinRHS;
+        LTOeventKin = kinLTO;
+        RTOeventKin = kinRTO;
+
+        t0 = trialData.markerData.Time(1);
+        Ts = trialData.markerData.sampPeriod;
+
+    else % TM trial with GRF data: use forces as primary events
+        upAxis = trialData.GRFData.orientation.updownAxis;
+        upSign = trialData.GRFData.orientation.updownSign;
+        FzL    = upSign * trialData.GRFData.getDataAsVector(['LF', upAxis]);
+        FzR    = upSign * trialData.GRFData.getDataAsVector(['RF', upAxis]);
+
+        % %Sanity check: correct non-zeroed force-plates: % Now we will be
+        % doing this inside the even detection
+        % if mode(FzL)~=0
+        %     disp(['Warning: Left z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])
+        %     FzL=FzL-mode(FzL);
+        % end
+        % if mode(FzR)~=0
+        %     disp(['Warning: Right z-axis forces in ' trialFileName ' have non-zero mode. Subtracting mode from force data before event detection'])
+        %     FzR=FzR-mode(FzR);
+        % end
+
+        [LHSevent, RHSevent, LTOevent, RTOevent] = ...
+            getEventsFromForces(FzL, FzR, trialData.GRFData.sampFreq);
 
