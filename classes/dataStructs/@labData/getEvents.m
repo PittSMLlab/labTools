@@ -1,38 +1,3 @@
-                if ~isempty(startCue)
-                    idxStrideScue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), startCue); % the controller for the experiments increases stride cound starting form RTO.
-                    ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
-                        idxStrideEcue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), endCue);
-
-                    % Add logical value where there is an event related to the cues
-                    framesRTO = find(RTOeventForce==1);
-                    idxFrameStart = framesRTO(idxStrideScue); percStartCue(idxFrameStart) = true;
-                    idxFrameEnd = framesRTO(idxStrideEcue); percEndCue(idxFrameEnd) = true;
-
-                    idxFrameEndRamp = framesRTO(idxStrideEcue); percEndRamp(idxFrameEndRamp) = true;
-                    % Currently for Weber Perception I have a ramp down of 3
-                    % strides which might change in the future. TODO: make it
-                    % more robust such that this is only computed for Weber
-                    % Study
-                    % idxFrameEndRamp = framesRTO(idxStrideEcue+3);
-                    % percEndRamp(idxFrameEndRamp) = true; 
-
-                end
-            else %proceed with caution because the relative times in matlab is not synchronized with nexus
-                warning("Datalogs can't be synchronized with Nexus data");
-            end
-        end
-
-    end
-end
-
-
-if perceptualFlag == 1
-    events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin,percStartCue',percEndCue',percEndRamp'])...
-        ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO','percStartCue','percEndCue','percEndRamp'});
-else
-    events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])...
-        ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO'});
-end
 function events = getEvents(trialData, angleData, perceptualFlag)
 %GETEVENTS Extract gait events from a raw trial, selecting the appropriate
 %detection strategy based on trial type and available data.
@@ -212,3 +177,52 @@ else % treadmill trial
                 endCue = trialData.metaData.datlog.audioCues.stop ...
                     + trialData.metaData.datlog.dataLogTimeOffsetBest;
 
+                if ~isempty(startCue)
+                    % find last RTO before each cue; the controller
+                    % increments stride count starting from RTO
+                    idxStrideScue = arrayfun( ...
+                        @(x) find((x - timeRTO) >= 0, 1, 'last'), startCue);
+                    ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
+                        idxStrideEcue = arrayfun( ...
+                        @(x) find((x - timeRTO) >= 0, 1, 'last'), endCue);
+
+                    framesRTO = find(RTOeventForce == 1);
+                    idxFrameStart = framesRTO(idxStrideScue);
+                    percStartCue(idxFrameStart) = true;
+                    idxFrameEnd = framesRTO(idxStrideEcue);
+                    percEndCue(idxFrameEnd)  = true;
+                    idxFrameEndRamp = framesRTO(idxStrideEcue);
+                    percEndRamp(idxFrameEndRamp) = true;
+                    % Currently for Weber Perception I have a ramp down of 3
+                    % strides which might change in the future. TODO: make it
+                    % more robust such that this is only computed for Weber
+                    % Study
+                    % idxFrameEndRamp = framesRTO(idxStrideEcue+3);
+                    % percEndRamp(idxFrameEndRamp) = true;
+                end
+            else % proceed with caution; relative times in MATLAB are not synchronized with Nexus
+                warning("Datalogs can't be synchronized with Nexus data");
+            end
+        end
+
+    end
+end
+
+%% Assemble output event time series
+eventLabels = {'LHS', 'RHS', 'LTO', 'RTO', ...
+    'forceLHS', 'forceRHS', 'forceLTO', 'forceRTO', ...
+    'kinLHS', 'kinRHS', 'kinLTO', 'kinRTO'};
+eventData   = [LHSevent, RHSevent, LTOevent, RTOevent, ...
+    LHSeventForce, RHSeventForce, LTOeventForce, RTOeventForce, ...
+    LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin];
+
+if perceptualFlag == 1
+    eventLabels = [eventLabels, ...
+        {'percStartCue', 'percEndCue', 'percEndRamp'}];
+    eventData   = [eventData, ...
+        percStartCue', percEndCue', percEndRamp'];
+end
+
+events = labTimeSeries(sparse(eventData), t0, Ts, eventLabels);
+
+end
