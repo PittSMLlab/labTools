@@ -1,33 +1,3 @@
-    %Clean up velocities to remove artifacts of marker drop-outs
-    HipVel(abs(HipVel)>50) = 0;
-
-    %Use hip velocity to determine when subject is walking
-    midHipVel = nanmedian(abs(HipVel));
-    walking = abs(HipVel)>0.5*midHipVel;
-
-    % Eliminate walking or turn around phases shorter than 0.25 seconds
-    [walking] = deleteShortPhases(walking,trialData.markerData.sampFreq,0.25);
-
-    % split walking into individual bouts
-    walkingSamples = find(walking);
-
-    if ~isempty(walkingSamples)
-        StartStop = [walkingSamples(1) walkingSamples(diff(walkingSamples)~=1)'...
-            walkingSamples(find(diff(walkingSamples)~=1)+1)' walkingSamples(end)];
-        StartStop = sort(StartStop);
-    else
-        warning('Subject was not walking during one of the overground trials');
-        return
-    end
-else
-    StartStop= [1 length(rdata)];
-end
-
-RightTO = [];
-RightHS = [];
-LeftHS = [];
-LeftTO = [];
-
 for i = 1:2:(length(StartStop))
     %find HS/TO for right leg
     %Finds local minimums and maximums.
@@ -193,7 +163,6 @@ for i = start:stop
     end
 end
 TO = i;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
 function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
     getEventsFromAngles(trialData, angleData, orientation)
 
@@ -218,4 +187,38 @@ if strcmpi(trialData.metaData.type, 'OG') ...
 
     % get hip velocity
     HipVel = diff(avghip);
+
+    % clean up velocities to remove artifacts of marker drop-outs
+    velArtifactThresh           = 50; % threshold above which velocity is a dropout artifact (mm/frame)
+    HipVel(abs(HipVel) > velArtifactThresh) = 0;
+
+    % use hip velocity to determine when subject is walking
+    walkVelFrac = 0.5; % fraction of median absolute hip velocity to threshold walking
+    midHipVel   = median(abs(HipVel), 'omitnan');
+    walking     = abs(HipVel) > walkVelFrac * midHipVel;
+
+    % eliminate walking or turn-around phases shorter than 0.25 seconds
+    [walking] = deleteShortPhases(walking, trialData.markerData.sampFreq, 0.25); % min bout duration (s)
+
+    % split walking into individual bouts
+    walkingSamples = find(walking);
+
+    if ~isempty(walkingSamples)
+        StartStop = [walkingSamples(1) ...
+            walkingSamples(diff(walkingSamples) ~= 1)' ...
+            walkingSamples(find(diff(walkingSamples) ~= 1) + 1)' ...
+            walkingSamples(end)];
+        StartStop = sort(StartStop);
+    else
+        warning('Subject was not walking during one of the overground trials');
+        return
+    end
+else
+    StartStop = [1 length(rdata)];
+end
+
+RightTO = [];
+RightHS = [];
+LeftHS  = [];
+LeftTO  = [];
 
