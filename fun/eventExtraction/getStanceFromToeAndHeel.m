@@ -38,8 +38,6 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 %sensible to big errors in only one of the estimations)
 end
 
-%% Method 1: try to find full stance points and threshold relative speed to that
-function stance = getStance(ankKin,toeKin,fsample)
 %This function returns an estimation of which samples of a given kinematic
 %trajectory for ankle and toe markers correspond to the stance phase
 %In order to do so, it estimates the phase in which the ankle and toe
@@ -48,49 +46,51 @@ function stance = getStance(ankKin,toeKin,fsample)
 %it is possible to assert whether the ankle or toe are in contact with the
 %ground
 
-%% STEP 1: calculate speed
-
-%va(:,1)=derive(ankKin(:,1),fsample);
+%% Method 1: try to find full stance points and threshold relative speed
+function stance = getStance(ankKin, toeKin, fsample)
+%% Step 1: calculate speed
+% va(:,1)=derive(ankKin(:,1),fsample);
 % va(:,2)=derive(ankKin(:,2),fsample);
 % vt(:,1)=derive(toeKin(:,1),fsample);
 % vt(:,2)=derive(toeKin(:,2),fsample);
-va=fsample*diff(ankKin);
-va(end+1,:)=va(end,:);
-vt=fsample*diff(toeKin);
-vt(end+1,:)=vt(end,:);
-fcut=.5*10/fsample;
-va(isnan(va))=10000;
-vt(isnan(vt))=10000;
-vaf=idealLPF(va,fcut);
-vtf=idealLPF(vt,fcut);
+va = fsample * diff(ankKin);
+va(end+1, :) = va(end, :);
+vt = fsample * diff(toeKin);
+vt(end+1, :) = vt(end, :);
+fcut = 0.5 * 10 / fsample; % half-Nyquist for 10 Hz cutoff
+va(isnan(va)) = 10000;
+vt(isnan(vt)) = 10000;
+vaf = idealLPF(va, fcut);
+vtf = idealLPF(vt, fcut);
 
-%% STEP 2: get core stance (full feet on ground) speed
-relV=vaf-vtf; %Relative speed in m/s
-modRelV=sqrt(sum(relV.^2,2)); %Module of relative speed
-coreStance=(modRelV<150); %Find time indexes that are candidates for core stance
-coreStance = deleteShortPhases(coreStance,fsample,0.05);
+%% Step 2: get core stance (full feet on ground) speed
+relV    = vaf - vtf;                           % relative speed (mm/s)
+modRelV = sqrt(sum(relV .^ 2, 2));             % magnitude of relative speed
+coreStanceSpeedThresh = 150;                   % max relative speed for core stance (mm/s)
+coreStance = (modRelV < coreStanceSpeedThresh);
+coreStance = deleteShortPhases(coreStance, fsample, 0.05); % min core stance duration (s)
 
-stanceSpeed=mode(10*round(va(coreStance,:)/10)); %Most common stance speed, rounded to closest cm/s
+stanceSpeed = mode(10 * round(va(coreStance, :) / 10)); % most common stance speed, rounded to nearest cm/s
 
-%% STEP 3: By thresholding difference with ground speed, get toe and ank stance candidates (sine qua non condition)
-ankV=va-ones(size(va,1),1)*stanceSpeed; %Relative speed to stance
-toeV=vt-ones(size(vt,1),1)*stanceSpeed; %Relative speed to stance
+%% Step 3: threshold speed relative to ground for stance candidates
+ankV = va - ones(size(va, 1), 1) * stanceSpeed; % ankle speed relative to ground
+toeV = vt - ones(size(vt, 1), 1) * stanceSpeed; % toe speed relative to ground
 
-modAnkV=sqrt(sum(ankV.^2,2));
-modToeV=sqrt(sum(toeV.^2,2));
+modAnkV = sqrt(sum(ankV .^ 2, 2));
+modToeV = sqrt(sum(toeV .^ 2, 2));
 
-%% STEP 4: Get stance from the ank stance OR toe stance
-velThreshA=.8*median(modAnkV); %500 is a good value
-velThreshA=500;
-velThreshT=.8*median(modToeV); %250 is a good value
-velThreshT=250;
-ankStance=modAnkV<velThreshA;
-toeStance=modToeV<velThreshT;
+%% Step 4: classify stance from ankle OR toe stance
+velThreshA = 0.8 * median(modAnkV); % empirical threshold, see commented line below
+velThreshA = 500;                    % ankle velocity threshold (mm/s)
+velThreshT = 0.8 * median(modToeV); % empirical threshold, see commented line below
+velThreshT = 250;                    % toe velocity threshold (mm/s)
+ankStance  = modAnkV < velThreshA;
+toeStance  = modToeV < velThreshT;
 
-stance  = ankStance | toeStance;
+stance = ankStance | toeStance;
 
-%% STEP N: Eliminate stance & swing phases shorter than 200 ms
-stance = deleteShortPhases(stance,fsample,0.2);
+%% Eliminate stance and swing phases shorter than 200 ms
+stance = deleteShortPhases(stance, fsample, 0.2);
 %
 % figure
 % hold on
