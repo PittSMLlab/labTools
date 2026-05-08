@@ -167,6 +167,33 @@ else
 end
 
 endfunction events = getEvents(trialData, angleData, perceptualFlag)
+%GETEVENTS Extract gait events from a raw trial, selecting the appropriate
+%detection strategy based on trial type and available data.
+%
+%   For OG and NIM trials, events are derived from limb angles
+% (GETEVENTSFROMANGLES). For treadmill (TM) trials with GRF data, events
+% are derived from vertical forces (GETEVENTSFROMFORCES); kinematic events
+% are also computed and stored as diagnostics. For TM trials without GRF
+% data, events are derived from toe and heel markers
+% (GETEVENTSFROMTOENANDHEEL). In all cases, the output labTimeSeries
+% contains LHS, RHS, LTO, RTO plus diagnostic force and kinematic copies.
+%
+% Inputs:
+%   trialData      - rawTrialData, contains markerData, GRFData, metaData
+%   angleData      - labTimeSeries with 'RLimb' and 'LLimb' labels, or []
+%   perceptualFlag - scalar logical/numeric (1 = include perceptual cue
+%                   columns in the output)
+%
+% Outputs:
+%   events - labTimeSeries, sparse logical event matrix with labels:
+%            LHS, RHS, LTO, RTO, forceLHS/RHS/LTO/RTO,
+%            kinLHS/RHS/LTO/RTO, [percStartCue, percEndCue, percEndRamp]
+%
+% Toolbox Dependencies: None
+%
+% See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,
+%          GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.
+
 
 trialFileName = getSimpleFileName(trialData.metaData.rawDataFilename);
 
