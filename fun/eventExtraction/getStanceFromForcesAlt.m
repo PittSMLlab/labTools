@@ -1,9 +1,9 @@
- function [stance] = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
 forces1=medfilt1(Fz,round(.0025*fsample)); %Median filter with 2.5ms window, to get rid of some quantization noise
 fcut=25;
 forces=lowpassfiltering2(forces1,fcut,2,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 forceSign=sign(mean(Fz));
 forces=forces*forceSign; %Forcing forces to be positive on average (if not, it depends on how the z-axis is defined)
+function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
 %GETSTANCEFROMFORCESALT Estimate stance phase using force derivative thresholding.
 %
 %   Alternative to GETSTANCEFROMFORCES. Detects stance by identifying
@@ -48,18 +48,15 @@ while any(diff(loading)==1 & ~unstance(1:end-1)) ||  any(diff(unloading)==-1 & ~
     loading(1:end-1) = loading(1:end-1) | (loading(2:end) & ~unstance(1:end-1));
     unloading(2:end) = unloading(2:end) | (unloading(1:end-1) & ~unstance(2:end));
 end
-stance=loading | unloading;
+stance = loading | unloading;
 
-%% Step n-1: shorten the stance phases to compensate for the low resolution discrimination introduced by the lowpassfiltering
-N=round(.5*fsample/fcut);
-stance = conv(double(stance), ones(N,1),'same')>N-1;
+%% Shorten stance phases to compensate for low-pass filter broadening
+N      = round(0.5 * fsample / fcut);
+stance = conv(double(stance), ones(N, 1), 'same') > N - 1;
 
-%% STEP N: Eliminate stance & swing phases shorter than 100 ms
-stance = deleteShortPhases(stance,fsample,0.1); %Used to be 200ms, but that is too long for stroke subjects
+%% Eliminate stance and swing phases shorter than 100 ms
+stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but too long for stroke subjects
 
-
-
-%% Plot some stuff to check
 % figure
 % hold on
 % plot([1:length(forces)]/fsample,forces)
@@ -72,4 +69,3 @@ stance = deleteShortPhases(stance,fsample,0.1); %Used to be 200ms, but that is t
 % hold off
 
 end
-

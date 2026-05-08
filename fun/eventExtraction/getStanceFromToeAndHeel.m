@@ -138,9 +138,11 @@ for j=1:2
             N2   = 1;
     end
 
-    relevantKin(abs(relevantKin(:,1)-median(relevantKin(:,1)))>5*std(relevantKin(:,1)),1)=0;
-    relevantKin(abs(relevantKin(:,2)-median(relevantKin(:,2)))>5*std(relevantKin(:,2)),2)=0;
-    raux=round(relevantKin);
+    relevantKin(abs(relevantKin(:, 1) - median(relevantKin(:, 1))) ...
+        > 5 * std(relevantKin(:, 1)), 1) = 0;
+    relevantKin(abs(relevantKin(:, 2) - median(relevantKin(:, 2))) ...
+        > 5 * std(relevantKin(:, 2)), 2) = 0;
+    raux = round(relevantKin);
 
     %In y: limit values to a 500mm range
     %In x: limit values to a 2000mm range
@@ -150,10 +152,11 @@ for j=1:2
     %for i=1:length(raux(:,1))
     %A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)=A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)+1;
     %end
-    A=sparse(raux(:,1)-min(raux(:,1))+1,raux(:,2)-min(raux(:,2))+1,1);
-    %size(A)
+    A = sparse(raux(:, 1) - min(raux(:, 1)) + 1, ...
+               raux(:, 2) - min(raux(:, 2)) + 1, 1);
     try
-        [H, THETA, RHO] = hough(full(A)','RhoResolution',rho_res,'Theta',thetas);
+        [H, THETA, RHO] = hough(full(A)', 'RhoResolution', rho_res, ...
+            'Theta', thetas);
     catch
         disp('Caught exception when computing Hough transform');
     end
@@ -175,11 +178,12 @@ for j=1:2
         flag   = true;
         stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] > 0);
     end
-    CoM_x=mean(relevantKin(stance,1));
-    CoM_y=mean(relevantKin(stance,2));
-    M=pca(relevantKin(stance,1:2));
+    CoM_x = mean(relevantKin(stance, 1));
+    CoM_y = mean(relevantKin(stance, 2));
+    M = pca(relevantKin(stance, 1:2));
     try
-        dist2Floor=(relevantKin(:,1)-CoM_x)*M(1,2)+(relevantKin(:,2)-CoM_y)*M(2,2); %Corrected guess at floor
+        dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
+            + (relevantKin(:, 2) - CoM_y) * M(2, 2); % corrected floor distance
     catch
         disp('Caught exception when computing distance to floor.');
     end
