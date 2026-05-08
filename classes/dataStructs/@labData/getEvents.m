@@ -1,28 +1,3 @@
-        if perceptualFlag == 1 % If your code is breaking, I am iterating so just comment this out
-
-
-            % timeLHS = find(LHSeventForce==1)./trialData.GRFData.sampFreq; timeRHS = find(RHSeventForce==1)./trialData.GRFData.sampFreq;
-            % timeLTO = find(LTOeventForce==1)./trialData.GRFData.sampFreq;
-            timeRTO = find(RTOeventForce==1)./trialData.GRFData.sampFreq; %This has information on the time of each event so its possible to compare to datalog information
-
-
-            % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
-
-            % Actual frame number for the stride whose time is closer to
-            % the perceptual trial start and end cues
-            percStartCue = zeros(1, length(RTOeventForce));
-            percEndCue = zeros(1, length(RTOeventForce));
-            percEndRamp = zeros(1, length(RTOeventForce));
-
-            % Grab auditory cues time from the datlog. This information has to be
-            % offset following the synchronization process between datlogs and Nexus
-            if sum(contains(fields(trialData.metaData.datlog), 'dataLogTimeOffsetBest'))>0
-                startCue = trialData.metaData.datlog.audioCues.start + trialData.metaData.datlog.dataLogTimeOffsetBest;
-                endCue = trialData.metaData.datlog.audioCues.stop + trialData.metaData.datlog.dataLogTimeOffsetBest;
-
-                % Compare the start and stop cue times to the events data to
-                % match the start and stop of perceptual trial (this will have the frame number)
-
                 if ~isempty(startCue)
                     idxStrideScue = arrayfun(@(x) find((x-timeRTO) >= 0,1,'last'), startCue); % the controller for the experiments increases stride cound starting form RTO.
                     ... start cue should happen after updating both legs, so the RTO after the left leg speed was updated in the task
@@ -213,4 +188,27 @@ else % treadmill trial
         RTOeventKin(round((find(kinRTO) - 1) * CF + 1)) = true;
 
         %%
+
+        if perceptualFlag == 1 % If your code is breaking, I am iterating so just comment this out
+
+            % timeLHS = find(LHSeventForce==1)./trialData.GRFData.sampFreq; timeRHS = find(RHSeventForce==1)./trialData.GRFData.sampFreq;
+            % timeLTO = find(LTOeventForce==1)./trialData.GRFData.sampFreq;
+            timeRTO = find(RTOeventForce == 1) ./ trialData.GRFData.sampFreq; % time of each RTO event, used to align with datalog
+
+            % [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = getPerceptualEventsFromCues(trialData.metaData.datlog, infoLHSevent, infoRHSevent);
+
+            % actual frame number for the stride whose time is closest to
+            % the perceptual trial start and end cues
+            percStartCue = zeros(1, length(RTOeventForce));
+            percEndCue   = zeros(1, length(RTOeventForce));
+            percEndRamp  = zeros(1, length(RTOeventForce));
+
+            % grab auditory cue times from the datlog; offset by
+            % synchronization with Nexus
+            if sum(contains(fields(trialData.metaData.datlog), ...
+                    'dataLogTimeOffsetBest')) > 0
+                startCue = trialData.metaData.datlog.audioCues.start ...
+                    + trialData.metaData.datlog.dataLogTimeOffsetBest;
+                endCue = trialData.metaData.datlog.audioCues.stop ...
+                    + trialData.metaData.datlog.dataLogTimeOffsetBest;
 
