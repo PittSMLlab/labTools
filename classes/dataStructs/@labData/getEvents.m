@@ -26,6 +26,11 @@ function events = getEvents(trialData, angleData, perceptualFlag)
 % See also GETEVENTSFROMFORCES, GETEVENTSFROMANGLES,
 %          GETEVENTSFROMTOENANDHEEL, LABTIMESERIES.
 
+arguments
+    trialData
+    angleData
+    perceptualFlag (1,1) {mustBeNumeric}
+end
 
 trialFileName = getSimpleFileName(trialData.metaData.rawDataFilename);
 
