@@ -1,25 +1,3 @@
-function [LHSevent,RHSevent,LTOevent,RTOevent] = ...
-    getEventsFromAngles(trialData,angleData,orientation)
-
-pad = 25; %this is the minimum number of samples two events can be apart
-nsamples = trialData.markerData.Length;
-[LHSevent,RHSevent,LTOevent,RTOevent] = deal(false(nsamples,1));
-
-%Get angle traces
-rdata = angleData.getDataAsVector({'RLimb'});
-ldata = angleData.getDataAsVector({'LLimb'});
-
-if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM')
-    %Get fore-aft hip positions
-    newMarkerData = trialData.markerData.getDataAsVector({['RHIP' orientation.foreaftAxis],['LHIP' orientation.foreaftAxis]});
-    rhip=newMarkerData(:,1);
-    lhip=newMarkerData(:,2);
-
-    avghip = (rhip+lhip)./2;
-
-    %Get hip velocity
-    HipVel = diff(avghip);
-
     %Clean up velocities to remove artifacts of marker drop-outs
     HipVel(abs(HipVel)>50) = 0;
 
@@ -215,4 +193,29 @@ for i = start:stop
     end
 end
 TO = i;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
+function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
+    getEventsFromAngles(trialData, angleData, orientation)
+
+minInterEventSpacing = 25; % min inter-event spacing (samples)
+nsamples             = trialData.markerData.Length;
+[LHSevent, RHSevent, LTOevent, RTOevent] = deal(false(nsamples, 1));
+
+%% Get angle traces
+rdata = angleData.getDataAsVector({'RLimb'});
+ldata = angleData.getDataAsVector({'LLimb'});
+
+if strcmpi(trialData.metaData.type, 'OG') ...
+        || strcmpi(trialData.metaData.type, 'NIM')
+    % get fore-aft hip positions
+    newMarkerData = trialData.markerData.getDataAsVector( ...
+        {['RHIP' orientation.foreaftAxis], ...
+         ['LHIP' orientation.foreaftAxis]});
+    rhip = newMarkerData(:, 1);
+    lhip = newMarkerData(:, 2);
+
+    avghip = (rhip + lhip) ./ 2;
+
+    % get hip velocity
+    HipVel = diff(avghip);
+
