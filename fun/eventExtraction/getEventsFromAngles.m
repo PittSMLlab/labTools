@@ -1,42 +1,3 @@
-    %Find all maximum (HS)
-    while (startHS<stop)
-        RHS = FindKinHS(startHS,stop,rdata,pad);
-        RightHS = [RightHS RHS];
-        startHS = RHS+1;
-    end
-
-    %Find all minimum (TO)
-    while (startTO<stop)
-        RTO = FindKinTO(startTO,stop,rdata,pad);
-        RightTO = [RightTO RTO];
-        startTO = RTO+1;
-    end
-
-    RightTO(RightTO == start | RightTO == stop) = [];
-    RightHS(RightHS == start | RightHS == stop) = [];
-
-    %% find HS/TO for left leg
-    startHS = start;
-    startTO  = start;
-
-    %find all maximum (HS)
-    while (startHS<stop)
-        LHS = FindKinHS(startHS,stop,ldata,pad);
-        LeftHS = [LeftHS LHS];
-        startHS = LHS+pad;
-    end
-
-    %find all minimum (TO)
-    while (startTO<stop)
-        LTO = FindKinTO(startTO,stop,ldata,pad);
-        LeftTO = [LeftTO LTO];
-        startTO = LTO+pad;
-    end
-
-    LeftTO(LeftTO == start | LeftTO == stop)=[];
-    LeftHS(LeftHS == start | LeftHS == stop)=[];
-end
-
 % Remove any events due to marker dropouts
 RightTO(rdata(RightTO)==0)=[];
 RightHS(rdata(RightHS)==0)=[];
@@ -219,4 +180,40 @@ for ii = 1:2:(length(StartStop))
 
     startHS = segStart;
     startTO = segStart;
+
+    %% Find HS and TO for right leg
+    while (startHS < segStop)
+        RHS     = FindKinHS(startHS, segStop, rdata, minInterEventSpacing);
+        RightHS = [RightHS RHS]; %#ok<AGROW>
+        startHS = RHS + 1;
+    end
+
+    while (startTO < segStop)
+        RTO     = FindKinTO(startTO, segStop, rdata, minInterEventSpacing);
+        RightTO = [RightTO RTO]; %#ok<AGROW>
+        startTO = RTO + 1;
+    end
+
+    RightTO(RightTO == segStart | RightTO == segStop) = [];
+    RightHS(RightHS == segStart | RightHS == segStop) = [];
+
+    %% Find HS and TO for left leg
+    startHS = segStart;
+    startTO = segStart;
+
+    while (startHS < segStop)
+        LHS    = FindKinHS(startHS, segStop, ldata, minInterEventSpacing);
+        LeftHS = [LeftHS LHS]; %#ok<AGROW>
+        startHS = LHS + minInterEventSpacing;
+    end
+
+    while (startTO < segStop)
+        LTO    = FindKinTO(startTO, segStop, ldata, minInterEventSpacing);
+        LeftTO = [LeftTO LTO]; %#ok<AGROW>
+        startTO = LTO + minInterEventSpacing;
+    end
+
+    LeftTO(LeftTO == segStart | LeftTO == segStop) = [];
+    LeftHS(LeftHS == segStart | LeftHS == segStop) = [];
+end
 
