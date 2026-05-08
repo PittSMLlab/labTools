@@ -1,21 +1,3 @@
-function events = getEvents(trialData,angleData,perceptualFlag)
-
-file=getSimpleFileName(trialData.metaData.rawDataFilename);
-
-if isempty(trialData.markerData.orientation)
-    warning('Assuming default orientation of axes for marker data.');
-    orientation=orientationInfo([0,0,0],'x','y','z',1,1,1);
-else
-    orientation=trialData.markerData.orientation;
-end
-
-if ~isempty(angleData)
-    [kinLHS,kinRHS,kinLTO,kinRTO] = getEventsFromAngles(trialData,angleData,orientation);
-else
-    [kinLHS,kinRHS,kinLTO,kinRTO] = deal(false(10,1)); %length 10 to prevent errors downstream
-end
-
-
 if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM') %Overground Trial, default is to use limb angles to calculate events
 
     [LHSevent,LHSeventKin]=deal(kinLHS); %Make a redundant compy to make kinematic events deafault
@@ -184,4 +166,21 @@ else
         ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO'});
 end
 
+endfunction events = getEvents(trialData, angleData, perceptualFlag)
+
+trialFileName = getSimpleFileName(trialData.metaData.rawDataFilename);
+
+if isempty(trialData.markerData.orientation)
+    warning('Assuming default orientation of axes for marker data.');
+    orientation = orientationInfo([0, 0, 0], 'x', 'y', 'z', 1, 1, 1);
+else
+    orientation = trialData.markerData.orientation;
 end
+
+if ~isempty(angleData)
+    [kinLHS, kinRHS, kinLTO, kinRTO] = ...
+        getEventsFromAngles(trialData, angleData, orientation);
+else
+    [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1)); % length 10 to prevent errors downstream
+end
+
