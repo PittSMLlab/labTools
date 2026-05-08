@@ -113,15 +113,22 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 end
 
 %% Method 2: find full stance points and threshold relative distance
-%Get stance from plane floor + thresholding
-%getEvents Extracts heel-strike/toe-off events from the relative position
-%of the heel marker to the hip marker
-
-%INPUTS:
-%Lheel,Rheel,Lhip,Rhip: 3xN matrices with 3D marker location
-%fsample: sampling frequency
-
 function stance = getStance2(Rheel, Rtoe, fsample)
+%GETSTANCE2 Estimate stance via Hough transform floor-plane detection.
+%
+%   Finds the floor plane using the Hough transform on 2D projections of
+% heel and toe positions, then iteratively grows a set of "on-floor"
+% points until they cover the full stance interval. This method is
+% currently disabled in the calling function.
+%
+% Inputs:
+%   Rheel   - N×3 double, heel marker position (mm)
+%   Rtoe    - N×3 double, toe marker position (mm)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
+
 backwards = false; % direction flag; stance detection should not be direction-dependent
 thetas    = [-90:0.2:-70, 70:0.2:89.8]; % Hough transform angle search range (deg)
 rho_res   = 0.5;
@@ -241,9 +248,21 @@ stance = stanceAnk | stanceToe;
 stance = deleteShortPhases(stance, fsample, 0.25);
 end
 
-%Get stance from acceleration
 %% Method 3: get stance from marker acceleration (during stance, acc ≈ 0)
 function stance = getStance3(ankKin, toeKin, fsample)
+%GETSTANCE3 Estimate stance by thresholding marker acceleration.
+%
+%   Computes the second finite difference of ankle and toe positions to
+% approximate acceleration. Classifies a sample as stance when the
+% acceleration magnitude is below an empirical threshold.
+%
+% Inputs:
+%   ankKin  - N×3 double, ankle marker position (mm)
+%   toeKin  - N×3 double, toe marker position (mm)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
 
 %% Step 1: low pass filter and calculate acceleration
 % Get velocities:
