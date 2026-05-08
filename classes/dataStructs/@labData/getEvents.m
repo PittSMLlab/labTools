@@ -1,23 +1,3 @@
-        LHSeventForce=LHSevent; %Make a redundant copy to label as force events
-        RHSeventForce=RHSevent;
-        LTOeventForce=LTOevent;
-        RTOeventForce=RTOevent;
-
-        t0=trialData.GRFData.Time(1);
-        Ts=trialData.GRFData.sampPeriod;
-        [LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin] = deal(false(trialData.GRFData.Length,1));
-
-
-        % TO DO: use a method to re-sample kinematic events to be consistent
-        % with forces.
-        CF=trialData.GRFData.sampFreq/trialData.markerData.sampFreq; %correction factor
-        LHSeventKin(round((find(kinLHS)-1)*CF+1))=true;
-        RHSeventKin(round((find(kinRHS)-1)*CF+1))=true;
-        LTOeventKin(round((find(kinLTO)-1)*CF+1))=true;
-        RTOeventKin(round((find(kinRTO)-1)*CF+1))=true;
-
-        %%
-
         if perceptualFlag == 1 % If your code is breaking, I am iterating so just comment this out
 
 
@@ -213,4 +193,24 @@ else % treadmill trial
 
         [LHSevent, RHSevent, LTOevent, RTOevent] = ...
             getEventsFromForces(FzL, FzR, trialData.GRFData.sampFreq);
+
+        LHSeventForce = LHSevent; % make a redundant copy to label as force events
+        RHSeventForce = RHSevent;
+        LTOeventForce = LTOevent;
+        RTOeventForce = RTOevent;
+
+        t0 = trialData.GRFData.Time(1);
+        Ts = trialData.GRFData.sampPeriod;
+        [LHSeventKin, RHSeventKin, LTOeventKin, RTOeventKin] = ...
+            deal(false(trialData.GRFData.Length, 1));
+
+        % TODO: use a method to re-sample kinematic events to be consistent
+        % with forces.
+        CF = trialData.GRFData.sampFreq / trialData.markerData.sampFreq; % correction factor
+        LHSeventKin(round((find(kinLHS) - 1) * CF + 1)) = true;
+        RHSeventKin(round((find(kinRHS) - 1) * CF + 1)) = true;
+        LTOeventKin(round((find(kinLTO) - 1) * CF + 1)) = true;
+        RTOeventKin(round((find(kinRTO) - 1) * CF + 1)) = true;
+
+        %%
 
