@@ -38,16 +38,23 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 %sensible to big errors in only one of the estimations)
 end
 
-%This function returns an estimation of which samples of a given kinematic
-%trajectory for ankle and toe markers correspond to the stance phase
-%In order to do so, it estimates the phase in which the ankle and toe
-%markers are not moving with respect to each other (full stance) and
-%calculates foot speed. By comparing this speed with toe and ankle speed,
-%it is possible to assert whether the ankle or toe are in contact with the
-%ground
-
 %% Method 1: try to find full stance points and threshold relative speed
 function stance = getStance(ankKin, toeKin, fsample)
+%GETSTANCE Estimate stance from ankle and toe marker velocity.
+%
+%   Identifies core stance (full foot contact) as periods of low relative
+% speed between ankle and toe markers, determines ground reference speed,
+% then classifies stance when ankle or toe speed relative to ground falls
+% below empirical thresholds.
+%
+% Inputs:
+%   ankKin  - N×3 double, ankle marker position (mm)
+%   toeKin  - N×3 double, toe marker position (mm)
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   stance - N×1 logical, stance phase (true = stance)
+
 %% Step 1: calculate speed
 % va(:,1)=derive(ankKin(:,1),fsample);
 % va(:,2)=derive(ankKin(:,2),fsample);
