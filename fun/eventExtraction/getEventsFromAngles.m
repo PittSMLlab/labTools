@@ -1,26 +1,3 @@
-for i = 1:2:(length(StartStop))
-    %find HS/TO for right leg
-    %Finds local minimums and maximums.
-    start = StartStop(i);
-    stop = StartStop(i+1);
-
-    if strcmpi(trialData.metaData.type,'OG') && median(HipVel(start:stop))>0 % in our lab, walking towards door
-        % Reverse angles for walking towards lab door (this is to make angle
-        % maximums HS and minimums TO, as they are when on treadmill)
-        rdata(start:stop) = -rdata(start:stop);
-        ldata(start:stop) = -ldata(start:stop);
-    end
-
-    if strcmpi(trialData.metaData.type,'NIM') && median(HipVel(start:stop))>0 % in our lab, walking towards door
-        % Reverse angles for walking towards lab door (this is to make angle
-        % maximums HS and minimums TO, as they are when on treadmill)
-        rdata(start:stop) = -rdata(start:stop);
-        ldata(start:stop) = -ldata(start:stop);
-    end
-
-    startHS = start;
-    startTO  = start;
-
     %Find all maximum (HS)
     while (startHS<stop)
         RHS = FindKinHS(startHS,stop,rdata,pad);
@@ -221,4 +198,25 @@ RightTO = [];
 RightHS = [];
 LeftHS  = [];
 LeftTO  = [];
+
+for ii = 1:2:(length(StartStop))
+    segStart = StartStop(ii);
+    segStop  = StartStop(ii + 1);
+
+    if strcmpi(trialData.metaData.type, 'OG') ...
+            && median(HipVel(segStart:segStop)) > 0 % walking towards lab door
+        % reverse angles so maxima = HS and minima = TO (as on treadmill)
+        rdata(segStart:segStop) = -rdata(segStart:segStop);
+        ldata(segStart:segStop) = -ldata(segStart:segStop);
+    end
+
+    if strcmpi(trialData.metaData.type, 'NIM') ...
+            && median(HipVel(segStart:segStop)) > 0 % walking towards lab door
+        % reverse angles so maxima = HS and minima = TO (as on treadmill)
+        rdata(segStart:segStop) = -rdata(segStart:segStop);
+        ldata(segStart:segStop) = -ldata(segStart:segStop);
+    end
+
+    startHS = segStart;
+    startTO = segStart;
 
