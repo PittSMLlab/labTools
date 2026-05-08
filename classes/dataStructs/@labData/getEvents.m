@@ -1,22 +1,3 @@
-if strcmpi(trialData.metaData.type,'OG') || strcmpi(trialData.metaData.type,'NIM') %Overground Trial, default is to use limb angles to calculate events
-
-    [LHSevent,LHSeventKin]=deal(kinLHS); %Make a redundant compy to make kinematic events deafault
-    [RHSevent,RHSeventKin]=deal(kinRHS);
-    [LTOevent,LTOeventKin]=deal(kinLTO);
-    [RTOevent,RTOeventKin]=deal(kinRTO);
-
-    LHSeventForce=false(length(LHSevent),1); %No force events, fill with logical 0's
-    RHSeventForce=false(length(RHSevent),1);
-    LTOeventForce=false(length(LTOevent),1);
-    RTOeventForce=false(length(RTOevent),1);
-
-    t0=trialData.markerData.Time(1);
-    Ts=trialData.markerData.sampPeriod;
-
-    %     t0=trialData.GRFData.Time(1);
-    %     Ts=trialData.GRFData.sampPeriod;
-else %Treadmill trial
-
     if isempty(trialData.GRFData) || isempty(trialData.GRFData.Data) %No force data, default events calculatd from marker data (not labeled as kin events though!!)
         disp(['No ground reaction forces data in ' file '. Using marker data to compute events.'])
 
@@ -165,8 +146,7 @@ else
     events=labTimeSeries(sparse([LHSevent,RHSevent,LTOevent,RTOevent,LHSeventForce,RHSeventForce,LTOeventForce,RTOeventForce,LHSeventKin,RHSeventKin,LTOeventKin,RTOeventKin])...
         ,t0,Ts,{'LHS','RHS','LTO','RTO','forceLHS','forceRHS','forceLTO','forceRTO','kinLHS','kinRHS','kinLTO','kinRTO'});
 end
-
-endfunction events = getEvents(trialData, angleData, perceptualFlag)
+function events = getEvents(trialData, angleData, perceptualFlag)
 %GETEVENTS Extract gait events from a raw trial, selecting the appropriate
 %detection strategy based on trial type and available data.
 %
@@ -210,4 +190,23 @@ if ~isempty(angleData)
 else
     [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1)); % length 10 to prevent errors downstream
 end
+
+if strcmpi(trialData.metaData.type, 'OG') ...
+        || strcmpi(trialData.metaData.type, 'NIM') % overground trial: use limb angles
+    [LHSevent, LHSeventKin] = deal(kinLHS); % make a redundant copy; kinematic events are default
+    [RHSevent, RHSeventKin] = deal(kinRHS);
+    [LTOevent, LTOeventKin] = deal(kinLTO);
+    [RTOevent, RTOeventKin] = deal(kinRTO);
+
+    LHSeventForce = false(length(LHSevent), 1); % no force events; fill with logical 0s
+    RHSeventForce = false(length(RHSevent), 1);
+    LTOeventForce = false(length(LTOevent), 1);
+    RTOeventForce = false(length(RTOevent), 1);
+
+    t0 = trialData.markerData.Time(1);
+    Ts = trialData.markerData.sampPeriod;
+
+    %     t0=trialData.GRFData.Time(1);
+    %     Ts=trialData.GRFData.sampPeriod;
+else % treadmill trial
 
