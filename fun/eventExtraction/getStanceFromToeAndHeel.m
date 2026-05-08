@@ -241,9 +241,9 @@ stance = stanceAnk | stanceToe;
 stance = deleteShortPhases(stance, fsample, 0.25);
 end
 
-%% Method 3: get stance from marker acceleration (during stance, acc=0)
-function stance = getStance3(ankKin,toeKin,fsample)
 %Get stance from acceleration
+%% Method 3: get stance from marker acceleration (during stance, acc ≈ 0)
+function stance = getStance3(ankKin, toeKin, fsample)
 
 %% Step 1: low pass filter and calculate acceleration
 % Get velocities:
@@ -256,21 +256,21 @@ function stance = getStance3(ankKin,toeKin,fsample)
 % aa(:,2)=derive(va(:,2),fsample);
 % at(:,1)=derive(vt(:,1),fsample);
 % at(:,2)=derive(vt(:,2),fsample);
-aa=fsample^2*diff(diff(ankKin));
-aa=[aa(1,:);aa;aa(end,:)];
-at=fsample^2*diff(diff(toeKin));
-at=[at(1,:);at;at(end,:)];
-aa(isnan(aa))=100000;
-at(isnan(at))=100000;
+aa = fsample ^ 2 * diff(diff(ankKin));
+aa = [aa(1, :); aa; aa(end, :)];
+at = fsample ^ 2 * diff(diff(toeKin));
+at = [at(1, :); at; at(end, :)];
+aa(isnan(aa)) = 100000;
+at(isnan(at)) = 100000;
 
-%% STEP 3: By thresholding difference with ground speed, get toe and ank stance candidates (sine qua non condition)
-fcut=.5*30/fsample;
-aaf(:,1)=idealLPF(aa(:,1),fcut);
-aaf(:,2)=idealLPF(aa(:,2),fcut);
-atf(:,1)=idealLPF(at(:,1),fcut);
-atf(:,2)=idealLPF(at(:,2),fcut);
-modAnkA=sqrt(sum(aaf.^2,2));
-modToeA=sqrt(sum(atf.^2,2));
+%% Step 3: low-pass filter accelerations then threshold for stance candidates
+fcut = 0.5 * 30 / fsample; % half-Nyquist for 30 Hz cutoff
+aaf(:, 1) = idealLPF(aa(:, 1), fcut);
+aaf(:, 2) = idealLPF(aa(:, 2), fcut);
+atf(:, 1) = idealLPF(at(:, 1), fcut);
+atf(:, 2) = idealLPF(at(:, 2), fcut);
+modAnkA = sqrt(sum(aaf .^ 2, 2));
+modToeA = sqrt(sum(atf .^ 2, 2));
 
 %filter=hann(50);
 %modAnkAf=conv(modAnkA,filter,'same')/sum(filter);
