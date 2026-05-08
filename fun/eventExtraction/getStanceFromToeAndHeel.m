@@ -113,7 +113,6 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 end
 
 %% Method 2: find full stance points and threshold relative distance
-function stance = getStance2(Rheel,Rtoe,fsample)
 %Get stance from plane floor + thresholding
 %getEvents Extracts heel-strike/toe-off events from the relative position
 %of the heel marker to the hip marker
@@ -122,15 +121,14 @@ function stance = getStance2(Rheel,Rtoe,fsample)
 %Lheel,Rheel,Lhip,Rhip: 3xN matrices with 3D marker location
 %fsample: sampling frequency
 
-% Find floor plane
-backwards=false; %This should go, stance detection should not be direction-dependent
-thetas=[-90:.2:-70,70:.2:89.8];
-rho_res=.5;
-for j=1:2
-    flag=false;
-    %Contact start & end detection
-    clear raux aux aux2  RHO THETA H A th r m n
-    switch j
+function stance = getStance2(Rheel, Rtoe, fsample)
+backwards = false; % direction flag; stance detection should not be direction-dependent
+thetas    = [-90:0.2:-70, 70:0.2:89.8]; % Hough transform angle search range (deg)
+rho_res   = 0.5;
+for jj = 1:2
+    flag = false;
+    clear raux aux1 dist2Floor RHO THETA H A th r m n
+    switch jj
         case 1
             relevantKin = medfilt1(Rheel); % non-strict filtering to kill far outliers
             tol  = 4;  % threshold to surely catalogue a point as 'on floor'
@@ -167,20 +165,18 @@ for j=1:2
     catch
         disp('Caught exception when computing Hough transform');
     end
-    [~,ind] = max(H(:));
-    [m,n] = ind2sub(size(H),ind);
-    th=-THETA(n)/90 *pi/2;
-    r=RHO(m);
-    dist2Floor=(relevantKin(:,1)-min(relevantKin(:,1))+1)*cos(th)-(relevantKin(:,2)-min(relevantKin(:,2))+1)*sin(th)-r+1; %First guess at floor
+    [~, ind] = max(H(:));
+    [m, n]   = ind2sub(size(H), ind);
+    th = -THETA(n) / 90 * pi / 2;
+    r  = RHO(m);
+    dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) * cos(th) ...
+        - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) * sin(th) - r + 1;
 
-    %Find all points on a distance less than 1mm to the line (there ought to be
-    %some on every step, on normal walk)
+    aux1   = relevantKin(:, 1) * sin(th) + relevantKin(:, 2) * cos(th); % projection over the floor
+    stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] < 0); % points on the floor for sure
 
-    aux1=relevantKin(:,1)*sin(th)+relevantKin(:,2)*cos(th);%projection over the floor
-    stance=(abs(dist2Floor)<tol)&([0;diff(aux1)]<0); %Points on the floor for sure
-
-    if sum(stance)<3
-        %Probable backwards trial
+    if sum(stance) < 3
+        % probable backwards trial
         disp('Warning: probable backwards trial')
         flag   = true;
         stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] > 0);
@@ -207,16 +203,16 @@ for j=1:2
     %%
     change = true;
     while change
-        stance3=conv(double(stance),ones(3,1),'same')>=1; %Dilate aux
-        stance4=stance3&~swing; %Make sure it doesn't reach the 'off the floor' threshold
-        thresh=max([3*median(abs(dist2Floor(stance))),tol2]); %I think the median is too big for any consecutive steps
-        stance5=(abs(dist2Floor)<thresh);
-        stance4=stance4&stance5; %Erase new element if its twice above the median (or at least 5mm)
-        if any(stance4~=stance)
-            stance=stance4;
-            CoM_x=mean(relevantKin(stance,1));
-            CoM_y=mean(relevantKin(stance,2));
-            M=pca(relevantKin(stance,1:2));
+        stance3 = conv(double(stance), ones(3, 1), 'same') >= 1;  % dilate
+        stance4 = stance3 & ~swing;
+        thresh  = max([3 * median(abs(dist2Floor(stance))), tol2]);
+        stance5 = (abs(dist2Floor) < thresh);
+        stance4 = stance4 & stance5;
+        if any(stance4 ~= stance)
+            stance = stance4;
+            CoM_x  = mean(relevantKin(stance, 1));
+            CoM_y  = mean(relevantKin(stance, 2));
+            M      = pca(relevantKin(stance, 1:2));
             try
                 dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
                     + (relevantKin(:, 2) - CoM_y) * M(2, 2);
