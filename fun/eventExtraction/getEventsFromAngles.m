@@ -1,34 +1,3 @@
-% Remove any events due to marker dropouts
-RightTO(rdata(RightTO)==0)=[];
-RightHS(rdata(RightHS)==0)=[];
-LeftTO(rdata(LeftTO)==0)=[];
-LeftHS(rdata(LeftHS)==0)=[];
-
-%% added by Yashar on 10/8/2019 to remove the end of OG walking based on
-% global postion in the right Hip y direction
-RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
-LeftHip = trialData.markerData.getDataAsVector({'LHIPy'});
-body_yPos = (RightHip+LeftHip)/2;
-
-if trialData.metaData.schenleyLab == 1
-    y_max = 4500;
-    y_min = -2500;
-else
-    y_max = 7000;
-    y_min = 0;
-end
-y_up_ind = find(body_yPos >= y_max);
-y_low_ind = find(body_yPos <= y_min);
-
-RightTO_up = ismember(RightTO,intersect(RightTO,y_up_ind));
-RightTO(RightTO_up)=[];
-RightHS_up = ismember(RightHS,intersect(RightHS,y_up_ind));
-RightHS(RightHS_up)=[];
-LeftTO_up = ismember(LeftTO,intersect(LeftTO,y_up_ind));
-LeftTO(LeftTO_up)=[];
-LeftHS_up = ismember(LeftHS,intersect(LeftHS,y_up_ind));
-LeftHS(LeftHS_up)=[];
-
 RightTO_low = ismember(RightTO,intersect(RightTO,y_low_ind));
 RightTO(RightTO_low)=[];
 RightHS_low = ismember(RightHS,intersect(RightHS,y_low_ind));
@@ -216,4 +185,41 @@ for ii = 1:2:(length(StartStop))
     LeftTO(LeftTO == segStart | LeftTO == segStop) = [];
     LeftHS(LeftHS == segStart | LeftHS == segStop) = [];
 end
+
+%% Remove events at marker dropout frames
+RightTO(rdata(RightTO) == 0) = [];
+RightHS(rdata(RightHS) == 0) = [];
+LeftTO(rdata(LeftTO) == 0)   = [];
+LeftHS(rdata(LeftHS) == 0)   = [];
+
+%% Remove events outside valid y-position range
+% added by Yashar on 10/8/2019 to remove end-of-OG-walking events based
+% on global position in the right hip y direction
+RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
+LeftHip  = trialData.markerData.getDataAsVector({'LHIPy'});
+body_yPos = (RightHip + LeftHip) / 2;
+
+% y-position limits (mm) depend on lab; Schenley lab has different range
+if trialData.metaData.schenleyLab == 1
+    SCHENLEY_Y_MAX =  4500; % Schenley lab walkway upper limit (mm)
+    SCHENLEY_Y_MIN = -2500; % Schenley lab walkway lower limit (mm)
+    y_max = SCHENLEY_Y_MAX;
+    y_min = SCHENLEY_Y_MIN;
+else
+    OTHER_Y_MAX = 7000; % other lab walkway upper limit (mm)
+    OTHER_Y_MIN =    0; % other lab walkway lower limit (mm)
+    y_max = OTHER_Y_MAX;
+    y_min = OTHER_Y_MIN;
+end
+y_up_ind  = find(body_yPos >= y_max);
+y_low_ind = find(body_yPos <= y_min);
+
+RightTO_up = ismember(RightTO, intersect(RightTO, y_up_ind));
+RightTO(RightTO_up) = [];
+RightHS_up = ismember(RightHS, intersect(RightHS, y_up_ind));
+RightHS(RightHS_up) = [];
+LeftTO_up  = ismember(LeftTO, intersect(LeftTO, y_up_ind));
+LeftTO(LeftTO_up) = [];
+LeftHS_up  = ismember(LeftHS, intersect(LeftHS, y_up_ind));
+LeftHS(LeftHS_up) = [];
 
