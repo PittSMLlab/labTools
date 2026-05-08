@@ -1,26 +1,3 @@
-RightTO_low = ismember(RightTO,intersect(RightTO,y_low_ind));
-RightTO(RightTO_low)=[];
-RightHS_low = ismember(RightHS,intersect(RightHS,y_low_ind));
-RightHS(RightHS_low)=[];
-LeftTO_low = ismember(LeftTO,intersect(LeftTO,y_low_ind));
-LeftTO(LeftTO_low)=[];
-LeftHS_low = ismember(LeftHS,intersect(LeftHS,y_low_ind));
-LeftHS(LeftHS_low)=[];
-%%
-% Remove any events that don't make sense
-RightTO(rdata(RightTO)>5 | abs(rdata(RightTO))>40)=[];
-RightHS(rdata(RightHS)<0 | abs(rdata(RightHS))>40)=[];
-LeftTO(ldata(LeftTO)>5 | abs(ldata(LeftTO))>40)=[];
-LeftHS(ldata(LeftHS)<0 | abs(ldata(LeftHS))>40)=[];
-
-LHSevent(LeftHS)=true;
-RTOevent(RightTO)=true;
-RHSevent(RightHS)=true;
-LTOevent(LeftTO)=true;
-
-%[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);
-%These functions are similar to the built-in 'findpeaks' matlab function.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function HS = FindKinHS(start,stop,ankdata,n)
 % find max of limb angle trace
@@ -222,4 +199,33 @@ LeftTO_up  = ismember(LeftTO, intersect(LeftTO, y_up_ind));
 LeftTO(LeftTO_up) = [];
 LeftHS_up  = ismember(LeftHS, intersect(LeftHS, y_up_ind));
 LeftHS(LeftHS_up) = [];
+
+RightTO_low = ismember(RightTO, intersect(RightTO, y_low_ind));
+RightTO(RightTO_low) = [];
+RightHS_low = ismember(RightHS, intersect(RightHS, y_low_ind));
+RightHS(RightHS_low) = [];
+LeftTO_low  = ismember(LeftTO, intersect(LeftTO, y_low_ind));
+LeftTO(LeftTO_low) = [];
+LeftHS_low  = ismember(LeftHS, intersect(LeftHS, y_low_ind));
+LeftHS(LeftHS_low) = [];
+
+%% Remove events with implausible angle values
+angleToThresh    =  5; % max angle at TO (deg); above this indicates swing
+angleRangeThresh = 40; % max absolute angle for any valid event (deg)
+RightTO(rdata(RightTO) > angleToThresh ...
+    | abs(rdata(RightTO)) > angleRangeThresh) = [];
+RightHS(rdata(RightHS) < 0 ...
+    | abs(rdata(RightHS)) > angleRangeThresh) = [];
+LeftTO(ldata(LeftTO) > angleToThresh ...
+    | abs(ldata(LeftTO)) > angleRangeThresh) = [];
+LeftHS(ldata(LeftHS) < 0 ...
+    | abs(ldata(LeftHS)) > angleRangeThresh) = [];
+
+LHSevent(LeftHS)  = true;
+RTOevent(RightTO) = true;
+RHSevent(RightHS) = true;
+LTOevent(LeftTO)  = true;
+
+%[consistent] = checkEventConsistency(LHSevent,RHSevent,LTOevent,RTOevent);
+%These functions are similar to the built-in 'findpeaks' matlab function.
 
