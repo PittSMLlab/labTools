@@ -23,6 +23,7 @@ through stride-indexed adaptation metrics and group statistics.
 8. [Example Scripts](#example-scripts)
 9. [Generating Documentation](#generating-documentation)
 10. [Reporting Bugs](#reporting-bugs)
+11. [Development](#development)
 
 ---
 
@@ -275,3 +276,10 @@ a [GitHub issue][issues] and include all of the following:
 > **Tip:** The more precisely you can isolate the problem — ideally to
 > a short script that triggers the error with minimal data — the faster
 > it can be resolved.
+
+---
+
+## Development
+
+For coding conventions, documentation standards, and architectural
+guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
