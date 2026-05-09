@@ -1,9 +1,28 @@
-% find max of limb angle trace
-
-% find mmin of limb angle trace
-
 function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
     getEventsFromAngles(trialData, angleData, orientation)
+%GETEVENTSFROMANGLES Detect gait events from limb angle data.
+%
+%   Estimates heel-strike (HS) and toe-off (TO) events for left and right
+% legs from limb angle trajectories. For overground (OG) and NIM trials,
+% the walking direction is determined from hip velocity and angles are
+% reversed when the subject walks toward the lab door. Events are then
+% found as local angle maxima (HS) and minima (TO). Outlier events based
+% on global hip position and angle range are removed.
+%
+% Inputs:
+%   trialData   - rawTrialData, contains markerData and metaData
+%   angleData   - labTimeSeries with labels 'RLimb' and 'LLimb'
+%   orientation - orientationInfo, axis sign and label conventions
+%
+% Outputs:
+%   LHSevent - N×1 logical, left heel-strike events
+%   RHSevent - N×1 logical, right heel-strike events
+%   LTOevent - N×1 logical, left toe-off events
+%   RTOevent - N×1 logical, right toe-off events
+%
+% Toolbox Dependencies: None
+%
+% See also GETEVENTS, DELETESHORTPHASES.
 
 minInterEventSpacing = 25; % min inter-event spacing (samples)
 nsamples             = trialData.markerData.Length;
@@ -186,6 +205,21 @@ LTOevent(LeftTO)  = true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function HS = FindKinHS(start, stop, ankdata, n)
+%FINDKINHS Find the first local maximum of a limb angle trace.
+%
+%   Scans forward from start to stop and returns the index of the first
+% sample that is a local maximum within a window of n samples on each
+% side.
+%
+% Inputs:
+%   start   - scalar integer, search start index
+%   stop    - scalar integer, search end index
+%   ankdata - N×1 double, limb angle trace
+%   n       - scalar integer, neighborhood half-width (samples)
+%
+% Outputs:
+%   HS - scalar integer, index of the detected heel-strike
+
 for ii = start:stop
     if ii == 1
         a = 1;
@@ -210,6 +244,21 @@ HS = ii;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function TO = FindKinTO(start, stop, ankdata, n)
+%FINDKINTO Find the first local minimum of a limb angle trace.
+%
+%   Scans forward from start to stop and returns the index of the first
+% sample that is a local minimum within a window of n samples on each
+% side.
+%
+% Inputs:
+%   start   - scalar integer, search start index
+%   stop    - scalar integer, search end index
+%   ankdata - N×1 double, limb angle trace
+%   n       - scalar integer, neighborhood half-width (samples)
+%
+% Outputs:
+%   TO - scalar integer, index of the detected toe-off
+
 for ii = start:stop
     if ii == 1
         a = 1;
