@@ -1,29 +1,7 @@
 % find max of limb angle trace
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function TO = FindKinTO(start,stop,ankdata,n)
 % find mmin of limb angle trace
 
-for i = start:stop
-    if i == 1
-        a = 1;
-    elseif (i-n) < 1
-        a = 1:i-1;
-    else
-        a = i-n:i-1;
-    end
-    if i == stop
-        b = stop;
-    elseif (i+n) > stop
-        b = i+1:stop;
-    else
-        b = i+1:i+n;
-    end
-    if all(ankdata(i)<= ankdata(a)) && all(ankdata(i)<=ankdata(b))
-        break;
-    end
-end
-TO = i;
 function [LHSevent, RHSevent, LTOevent, RTOevent] = ...
     getEventsFromAngles(trialData, angleData, orientation)
 
@@ -230,3 +208,26 @@ for ii = start:stop
 end
 HS = ii;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function TO = FindKinTO(start, stop, ankdata, n)
+for ii = start:stop
+    if ii == 1
+        a = 1;
+    elseif (ii - n) < 1
+        a = 1:ii-1;
+    else
+        a = ii-n:ii-1;
+    end
+    if ii == stop
+        b = stop;
+    elseif (ii + n) > stop
+        b = ii+1:stop;
+    else
+        b = ii+1:ii+n;
+    end
+    if all(ankdata(ii) <= ankdata(a)) && all(ankdata(ii) <= ankdata(b))
+        break;
+    end
+end
+TO = ii;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
