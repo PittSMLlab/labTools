@@ -26,11 +26,18 @@ forceSign = sign(mean(Fz));
 forces    = forces * forceSign; % ensure forces are positive on average
 
 % highThreshold=prctile(abs(forceDiff),80); % Choosing threshold such that only 20% of samples are above it
-bodyWeight   = 2 * mean(abs(forces - mean(forces))); % estimated body weight for thresholding
+
+% Factor of 2 scales the mean absolute deviation to a full-range estimate
+% (half-range × 2 ≈ peak-to-peak ≈ body weight for a typical GRF signal)
+bodyWeight = 2 * mean(abs(forces - mean(forces)));
+
+LOADING_MULT   = 3; % loading  rate threshold (× body weight per second)
+UNLOADING_MULT = 4; % unloading rate threshold (× body weight per second)
+
 forceDiff    = diff(forces) * fsample;
 lowThreshold = bodyWeight;
-loading      = forceDiff > 3 * bodyWeight;
-unloading    = forceDiff < -4 * bodyWeight;
+loading      = forceDiff >  LOADING_MULT   * bodyWeight;
+unloading    = forceDiff < -UNLOADING_MULT * bodyWeight;
 unstance     = abs(forceDiff) < lowThreshold; % threshold in N/s
 
 % expand loading zone rightwards and unloading leftwards until they meet
@@ -49,6 +56,8 @@ end
 stance = loading | unloading;
 
 %% Shorten stance phases to compensate for low-pass filter broadening
+% Erode by N samples on each side to undo the broadening introduced by
+% low-pass filtering (filter half-width ≈ fsample / (2 * fcut))
 N      = round(0.5 * fsample / fcut);
 stance = conv(double(stance), ones(N, 1), 'same') > N - 1;
 
