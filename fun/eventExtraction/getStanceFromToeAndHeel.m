@@ -92,8 +92,8 @@ modAnkV = sqrt(sum(ankV .^ 2, 2));
 modToeV = sqrt(sum(toeV .^ 2, 2));
 
 %% Step 4: classify stance from ankle OR toe stance
-velThreshA = 0.8 * median(modAnkV); % empirical threshold, see commented line below
-velThreshT = 0.8 * median(modToeV); % empirical threshold, see commented line below
+% velThreshA = 0.8 * median(modAnkV); % empirical threshold, see commented line below
+% velThreshT = 0.8 * median(modToeV); % empirical threshold, see commented line below
 ankStance = modAnkV < VEL_THRESH_ANK;
 toeStance = modToeV < VEL_THRESH_TOE;
 

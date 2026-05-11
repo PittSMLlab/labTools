@@ -37,12 +37,6 @@ if any((eventDiffs ~= 1) & (eventDiffs ~= 2) ...
         & (eventDiffs ~= 4) & (eventDiffs ~= -7))
     disp('Warning: Inconsistent event detection.');
     isConsistent = false;
-    % NOTE: this inner condition is the logical complement of the outer
-    % check above, so it can never be true when isConsistent is false.
-    if ~any((eventDiffs ~= 1) & (eventDiffs ~= 2) ...
-            & (eventDiffs ~= 4) & (eventDiffs ~= -7))
-        disp('It is probable that the trial is backwards.');
-    end
 end
 
 end
