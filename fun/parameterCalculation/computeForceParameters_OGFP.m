@@ -484,17 +484,17 @@ for st = 1:length(strideEvents.tSHS)-1
             %             end
 
         end
-        SZ_all(st) = -1*mean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']), 'omitnan')/Normalizer;
-        SX_all(st) = mean(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']), 'omitnan')/Normalizer;
-        SZmax_all(st) = -1*min(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'z']), [], 'omitnan')/Normalizer;
-        SXmax_all(st) = min(filteredSlowStance.getDataAsVector([OGFPy_slow(1:end-1) 'x']), [], 'omitnan')/Normalizer;
+        SZ_all(st) = -1*mean(filteredSlowStance.getDataAsVector([ogfpySlow(1:end-1) 'z']), 'omitnan')/normalizer;
+        SX_all(st) = mean(filteredSlowStance.getDataAsVector([ogfpySlow(1:end-1) 'x']), 'omitnan')/normalizer;
+        SZmax_all(st) = -1*min(filteredSlowStance.getDataAsVector([ogfpySlow(1:end-1) 'z']), [], 'omitnan')/normalizer;
+        SXmax_all(st) = min(filteredSlowStance.getDataAsVector([ogfpySlow(1:end-1) 'x']), [], 'omitnan')/normalizer;
     end
 
     %%Now for the fast leg...
-    if isempty(striderFy_all) || all(striderFy_all==striderFy_all(1)) || isempty(FTO) || isempty(STO)
+    if isempty(striderFyAll) || all(striderFyAll==striderFyAll(1)) || isempty(FTO) || isempty(STO)
 
     else
-        if std(striderFy_all, 'omitnan')<0.01 && mean(striderFy_all, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+        if std(striderFyAll, 'omitnan')<0.01 && mean(striderFyAll, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
         else
             nf_all = find((striderFyAll-levelOfInterest)<0.1);%1:65
@@ -560,21 +560,21 @@ for st = 1:length(strideEvents.tSHS)-1
             %             hold on
             %             plot(striderFyAll-levelOfInterest,'r')
             %             if isempty(FBmax_all(st)) == 0 && isempty(FPmax_all(st)) == 0
-            %                 if  isempty(find(striderFy_all-LevelofInterest == FBmax_all(st))) || isempty(find(striderFy_all-LevelofInterest == FPmax_all(st)))
+            %                 if  isempty(find(striderFyAll-levelOfInterest == FBmax_all(st))) || isempty(find(striderFyAll-levelOfInterest == FPmax_all(st)))
             %                 else
-            %                     FBmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FBmax_all(st));
-            %                     plot(FBmax_ind(i_fast),FBmax_all(st),'k*')
-            %                     FPmax_ind(i_fast) = find(striderFy_all-LevelofInterest == FPmax_all(st));
-            %                     plot(FPmax_ind(i_fast),FPmax_all(st),'k*')
+            %                     FBmax_ind(fastCount) = find(striderFyAll-levelOfInterest == FBmax_all(st));
+            %                     plot(FBmax_ind(fastCount),FBmax_all(st),'k*')
+            %                     FPmax_ind(fastCount) = find(striderFyAll-levelOfInterest == FPmax_all(st));
+            %                     plot(FPmax_ind(fastCount),FPmax_all(st),'k*')
             %                 end
             %             end
             %             title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
             %             hold on
-            %             plot(striderFy_all,'b')
-            %             if  isempty(find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1)))
+            %             plot(striderFyAll,'b')
+            %             if  isempty(find(striderFyAll == striderFyOgfpSS.(ogfpyFast)(1)))
             %             else
-            %                 fast_SS_ind(i_fast) = find(striderFy_all == striderFy_OGFP_SS.(OGFPy_fast)(1));
-            %                 plot(fast_SS_ind(i_fast):fast_SS_ind(i_fast)+length(striderFy_OGFP_SS.(OGFPy_fast))-1,striderFy_OGFP_SS.(OGFPy_fast),'r*')
+            %                 fast_SS_ind(fastCount) = find(striderFyAll == striderFyOgfpSS.(ogfpyFast)(1));
+            %                 plot(fast_SS_ind(fastCount):fast_SS_ind(fastCount)+length(striderFyOgfpSS.(ogfpyFast))-1,striderFyOgfpSS.(ogfpyFast),'r*')
             %                 hold off
             %                 title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])
             %                 saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')
@@ -599,12 +599,12 @@ for st = 1:length(strideEvents.tSHS)-1
             ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) < 0);%1:65
             ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) > 0);
 
-            %             ImpactMagS_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)==max(striderSy_OGFP_sum(1:75)-LevelofInterest, [], 'omitnan'));%no longer percent of stride
-            %             if isempty(ImpactMagS_OGFP_sum)~=1
-            %                 postImpactS_OGFP_sum = ns_OGFP_sum(find(ns_OGFP_sum>ImpactMagS_OGFP_sum(end), 1, 'first'));
-            %                 if isempty(postImpactS_OGFP_sum)~=1
-            %                     ps_OGFP_sum(find(ps_OGFP_sum<postImpactS_OGFP_sum))=[];
-            %                     ns_OGFP_sum(find(ns_OGFP_sum<postImpactS_OGFP_sum))=[];
+            %             impactMagSOgfpSum = find((striderSyOgfpSum-levelOfInterest)==max(striderSyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%no longer percent of stride
+            %             if isempty(impactMagSOgfpSum)~=1
+            %                 postImpactSOgfpSum = nsOgfpSum(find(nsOgfpSum>impactMagSOgfpSum(end), 1, 'first'));
+            %                 if isempty(postImpactSOgfpSum)~=1
+            %                     psOgfpSum(find(psOgfpSum<postImpactSOgfpSum))=[];
+            %                     nsOgfpSum(find(nsOgfpSum<postImpactSOgfpSum))=[];
             %                 end
             %             end
 
@@ -654,12 +654,12 @@ for st = 1:length(strideEvents.tSHS)-1
         else
             nf_OGFP_sum = find((striderFy_OGFP_sum-LevelofInterest) < 0);%1:65
             pf_OGFP_sum = find((striderFy_OGFP_sum-LevelofInterest) > 0);
-            %             ImpactMagF_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)==max(striderFy_OGFP_sum(1:75)-LevelofInterest, [], 'omitnan'));%1:15
-            %             if isempty(ImpactMagF_OGFP_sum)~=1
-            %                 postImpactF_OGFP_sum=nf_OGFP_sum(find(nf_OGFP_sum>ImpactMagF_OGFP_sum(end), 1, 'first'));
-            %                 if isempty(postImpactF_OGFP_sum)~=1
-            %                     pf_OGFP_sum(find(pf_OGFP_sum<postImpactF_OGFP_sum))=[];
-            %                     nf_OGFP_sum(find(nf_OGFP_sum<postImpactF_OGFP_sum))=[];
+            %             impactMagFOgfpSum=find((striderFyOgfpSum-levelOfInterest)==max(striderFyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%1:15
+            %             if isempty(impactMagFOgfpSum)~=1
+            %                 postImpactFOgfpSum=nfOgfpSum(find(nfOgfpSum>impactMagFOgfpSum(end), 1, 'first'));
+            %                 if isempty(postImpactFOgfpSum)~=1
+            %                     pfOgfpSum(find(pfOgfpSum<postImpactFOgfpSum))=[];
+            %                     nfOgfpSum(find(nfOgfpSum<postImpactFOgfpSum))=[];
             %                 end
             %             end
 
@@ -794,61 +794,61 @@ for st = 1:length(strideEvents.tSHS)-1
 end
 % title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])
 % saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')
-% SlowCount_force
-% SlowCount_no_force
-% SlowCount_force/(SlowCount_force+SlowCount_no_force)
-% FastCount_force
-% FastCount_no_force
-% FastCount_force/(FastCount_force+FastCount_no_force)
+% slowCountForce
+% slowCountNoForce
+% slowCountForce/(slowCountForce+slowCountNoForce)
+% fastCountForce
+% fastCountNoForce
+% fastCountForce/(fastCountForce+fastCountNoForce)
 
 % figure (trialData.metaData.condition*10-3)
 % hold on
-% for i = 1:i_slow
-%     %     if i<= i_slow/2
-%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',(255-i)/255*[i/255,i/255,1])
-%     %     elseif i > i_slow/2 && i_slow < 2*255
-%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',(255-i_slow+i)/255*[1,i/255,i/255])
+% for i = 1:slowCount
+%     %     if i<= slowCount/2
+%     %         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',(255-i)/255*[i/255,i/255,1])
+%     %     elseif i > slowCount/2 && slowCount < 2*255
+%     %         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',(255-slowCount+i)/255*[1,i/255,i/255])
 %     %     else
-%     %         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',[0,0,0])
+%     %         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',[0,0,0])
 %     %     end
-%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i<= i_slow/2
-%         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',[0,0,1])
+%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i<= slowCount/2
+%         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',[0,0,1])
 %     elseif trialNum == 3 || trialNum == 6 || trialNum == 10 || trialNum == 13
-%         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',[1,0,0])
+%         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',[1,0,0])
 %     else
-%         plot(str_striderSy.([OGFPy_slowi{i} num2str(st)]),'Color',[0,0,0])
+%         plot(str_striderSy.([ogfpySlowi{i} num2str(st)]),'Color',[0,0,0])
 %     end
 %
 % end
 % hold off
-% %legend(OGFPy_slowi)
+% %legend(ogfpySlowi)
 % title(['Slow AP' '     ' trialData.metaData.name])
 % saveas(gcf,['Slow AP_' trialData.metaData.name],'png')
 %
 %
 % figure (trialData.metaData.condition*10-2)
 % hold on
-% for i = 1:i_slow
-%     if i<= i_slow/2
-%         plot(str_striderSz.([OGFPz_slowi{i} num2str(st)]),'k')
+% for i = 1:slowCount
+%     if i<= slowCount/2
+%         plot(str_striderSz.([ogfpzSlowi{i} num2str(st)]),'k')
 %     else
-%         plot(str_striderSz.([OGFPz_slowi{i} num2str(st)]),'k')
+%         plot(str_striderSz.([ogfpzSlowi{i} num2str(st)]),'k')
 %     end
 % end
 % hold off
-% %legend(OGFPy_slowi)
+% %legend(ogfpySlowi)
 % title(['Slow Z' '     ' trialData.metaData.name])
 % saveas(gcf,['Slow Z_' trialData.metaData.name],'png')
 %
 % figure (trialData.metaData.condition*10-1)
 % hold on
-% for i = 1:i_fast
-%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i<= i_fast/2
-%         plot(str_striderFy.([OGFPy_fasti{i} num2str(st)]),'b')
+% for i = 1:fastCount
+%     if trialNum == 1 || trialNum == 4 || trialNum == 8 || trialNum == 11 %i<= fastCount/2
+%         plot(str_striderFy.([ogfpyFasti{i} num2str(st)]),'b')
 %     elseif trialNum == 3 || trialNum == 6 || trialNum == 10 || trialNum == 13
-%         plot(str_striderFy.([OGFPy_fasti{i} num2str(st)]),'r')
+%         plot(str_striderFy.([ogfpyFasti{i} num2str(st)]),'r')
 %     else
-%         plot(str_striderFy.([OGFPy_fasti{i} num2str(st)]),'k')
+%         plot(str_striderFy.([ogfpyFasti{i} num2str(st)]),'k')
 %     end
 % end
 % hold off
@@ -858,22 +858,22 @@ end
 %
 % figure (trialData.metaData.condition*10)
 % hold on
-% for i = 1:i_fast
-%     if i<= i_fast/2
-%         plot(str_striderFz.([OGFPz_fasti{i} num2str(st)]),'b')
+% for i = 1:fastCount
+%     if i<= fastCount/2
+%         plot(str_striderFz.([ogfpzFasti{i} num2str(st)]),'b')
 %     else
-%         plot(str_striderFz.([OGFPz_fasti{i} num2str(st)]),'r')
+%         plot(str_striderFz.([ogfpzFasti{i} num2str(st)]),'r')
 %     end
 % end
 % hold off
-% %legend(OGFPy_fasti)
+% %legend(ogfpyFasti)
 % title(['Fast Z' '     ' trialData.metaData.name])
 % saveas(gcf,['Fast Z_' trialData.metaData.name],'png')
 
 
 % figure (trialData.metaData.condition*4-3)
 % hold on
-% plot(striderSy_all)
+% plot(striderSyAll)
 % hold off
 % title('Slow AP')
 % saveas(gcf,['Slow AP' num2str(trialData.metaData.condition)],'png')
@@ -887,7 +887,7 @@ end
 %
 % figure (trialData.metaData.condition*4-1)
 % hold on
-% plot(striderFy_all)
+% plot(striderFyAll)
 % hold off
 % title('Fast AP')
 % saveas(gcf,['Fast AP' num2str(trialData.metaData.condition)],'png')
@@ -919,25 +919,25 @@ outCOP.description = [];
 % end
 
 %% Assemble and Return Output
-% data_OGFP_sum = [[impactS_OGFP_sum NaN]' [SB_OGFP_sum NaN]' [SP_OGFP_sum NaN]' [impactF_OGFP_sum NaN]' [FB_OGFP_sum NaN]' [FP_OGFP_sum NaN]' [FB_OGFP_sum-SB_OGFP_sum NaN]' [FP_OGFP_sum-SP_OGFP_sum NaN]'...
-%     [impactSmax_OGFP_sum NaN]' [SBmax_OGFP_sum NaN]' [SPmax_OGFP_sum NaN]' [impactFmax_OGFP_sum NaN]' [FBmax_OGFP_sum NaN]' [FPmax_OGFP_sum NaN]'];
+% dataOgfp_sum = [[impactSOgfpSum NaN]' [SBogfpSum NaN]' [SPogfpSum NaN]' [impactFOgfpSum NaN]' [FBogfpSum NaN]' [FPogfpSum NaN]' [FBogfpSum-SBogfpSum NaN]' [FPogfpSum-SPogfpSum NaN]'...
+%     [impactSmaxOgfpSum NaN]' [SBmaxOgfpSum NaN]' [SPmaxOgfpSum NaN]' [impactFmaxOgfpSum NaN]' [FBmaxOgfpSum NaN]' [FPmaxOgfpSum NaN]'];
 %
-% labels_OGFP_sum = {'FyImpactS_OGFP_sum', 'FyBS_OGFP_sum', 'FyPS_OGFP_sum', 'FyImpactF_OGFP_sum', 'FyBF_OGFP_sum', 'FyPF_OGFP_sum','FyBSym_OGFP_sum', 'FyPSym_OGFP_sum', 'FyImpactSmax_OGFP_sum', 'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyImpactFmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};
+% labelsOgfp_sum = {'FyImpactS_OGFP_sum', 'FyBS_OGFP_sum', 'FyPS_OGFP_sum', 'FyImpactF_OGFP_sum', 'FyBF_OGFP_sum', 'FyPF_OGFP_sum','FyBSym_OGFP_sum', 'FyPSym_OGFP_sum', 'FyImpactSmax_OGFP_sum', 'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyImpactFmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};
 % % Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'
 %
-% description_OGFP_sum = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
+% descriptionOgfp_sum = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
 %     'GRF-FYf average signed impact force', 'GRF-FYf average signed braking', 'GRF-FYf average signed propulsion', ...
 %     'GRF-FYs average signed Symmetry braking', 'GRF-FYs average signed Symmetry propulsion',...
 %     'GRF-FYs max signed impact force', 'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion',...
 %     'GRF-FYf max signed impact force', 'GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};
 
 
-%data_OGFP_sum = [[SBmax_OGFP_sum NaN]' [SPmax_OGFP_sum NaN]' [FBmax_OGFP_sum NaN]' [FPmax_OGFP_sum NaN]'];
+%dataOgfp_sum = [[SBmaxOgfpSum NaN]' [SPmaxOgfpSum NaN]' [FBmaxOgfpSum NaN]' [FPmaxOgfpSum NaN]'];
 
-%labels_OGFP_sum = {'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};
+%labelsOgfp_sum = {'FyBSmax_OGFP_sum', 'FyPSmax_OGFP_sum', 'FyBFmax_OGFP_sum', 'FyPFmax_OGFP_sum'};
 % Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'
 
-%description_OGFP_sum = {'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion','GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};
+%descriptionOgfp_sum = {'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion','GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};
 
 data_all = [[impactS_all NaN]' [SB_all NaN]' [SP_all NaN]' [impactF_all NaN]' [FB_all NaN]' [FP_all NaN]' [FB_all-SB_all NaN]' [FP_all-SP_all NaN]' [SX_all NaN]' [SZ_all NaN]' [FX_all NaN]' [FZ_all NaN]' ...
     [impactSmax_all NaN]' [SBmax_all NaN]' [SPmax_all NaN]' [impactFmax_all NaN]' [FBmax_all NaN]' [FPmax_all NaN]' [SXmax_all NaN]' [SZmax_all NaN]' [FXmax_all NaN]' [FZmax_all NaN]' [exist_SlowF NaN]' [exist_FastF NaN]'];
@@ -954,9 +954,9 @@ description_all = {'GRF-FYs average signed impact force', 'GRF-FYs average signe
     'GRF-Fxs max force', 'GRF-Fzs max force', 'GRF-Fxf max force', 'GRF-Fzf max force', 'Slow stance force more than 10% of the bw exists on one of the FP', 'Fast stance force more than 10% of the bw exist on one of the FP'};
 
 
-% data_all = [data_all data_OGFP_sum];
-% labels_all = [labels_all labels_OGFP_sum];
-% description_all = [description_all description_OGFP_sum];
+% data_all = [data_all dataOgfp_sum];
+% labels_all = [labels_all labelsOgfp_sum];
+% description_all = [description_all descriptionOgfp_sum];
 
 
 data_OGFP = [];
@@ -969,9 +969,9 @@ for fp = 1:length(Ally)
     labels_OGFP_temp = {['FyBSmax_' Ally{fp}], ['FyPSmax_' Ally{fp}], ['FyBFmax_' Ally{fp}], ['FyPFmax_' Ally{fp}]};
     description_OGFP_temp = {[Ally{fp} 'GRF-FYs max signed braking'], [Ally{fp} 'GRF-FYs max signed propulsion'], [Ally{fp} 'GRF-FYf max signed braking'], [Ally{fp} 'GRF-FYf max signed propulsion']};
 
-    %     data_OGFP = [data_OGFP data_OGFP_temp];
-    %     labels_OGFP = [labels_OGFP labels_OGFP_temp];
-    %     description_OGFP = [description_OGFP description_OGFP_temp];
+    %     dataOgfp = [dataOgfp dataOgfpTemp];
+    %     labelsOgfp = [labelsOgfp labelsOgfpTemp];
+    %     descriptionOgfp = [descriptionOgfp descriptionOgfpTemp];
 
     wannaAddOGFP = 1;
     if wannaAddOGFP == 1
@@ -988,7 +988,7 @@ if isempty(markerData.getLabelsThatMatch('Hat'))
     description_all = [description_all outCOM.description outCOP.description];
 end
 
-%out = parameterSeries(data_OGFP,labels_OGFP,[],description_OGFP);
+%out = parameterSeries(dataOgfp,labelsOgfp,[],descriptionOgfp);
 out = parameterSeries(data_all, labels_all, [], description_all);
 
 %% Labels and descriptions:
