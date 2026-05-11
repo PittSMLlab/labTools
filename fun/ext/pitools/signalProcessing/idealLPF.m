@@ -21,6 +21,10 @@ function [filteredData] = idealLPF(data,fcut)
 
 [Fdata,fvector] = DiscreteTimeFourierTransform(data,1);
 Fdata=Fdata.*repmat((abs(fvector)<=fcut),1,size(Fdata,2));
+arguments
+    data (:,:) double
+    fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
+end
 
 filteredData=ifft(ifftshift(Fdata,1));
 

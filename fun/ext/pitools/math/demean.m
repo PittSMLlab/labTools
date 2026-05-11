@@ -18,5 +18,8 @@ Y=reshape(Y,size(X));
 %
 % See also COLUMNNORM.
 
+arguments
+    X (:,:) double
 end
 
+end

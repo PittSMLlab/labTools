@@ -18,6 +18,12 @@ function data = lowpassfiltering(datafile, cutoff, complexity, samp);
 %
 % See also LOWPASSFILTERING2, FILTFILTHD_SHORT.
 
+arguments
+    data        (:,:) double
+    fcut        (1,1) double {mustBePositive}
+    filterOrder (1,1) double {mustBePositive, mustBeInteger}
+    fsample     (1,1) double {mustBePositive}
+end
 
 %pass the 'lowpassfilter' function:  1) a data array for filtering,
                                     %2) the freqency you want removed, and

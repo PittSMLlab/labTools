@@ -48,3 +48,10 @@ data1=data(1:size(datafile,1),:);
 %
 % See also LOWPASSFILTERING, FILTFILTHD_SHORT.
 
+arguments
+    data        (:,:) double
+    fcut        (1,1) double {mustBePositive}
+    filterOrder (1,1) double {mustBePositive, mustBeInteger}
+    fsample     (1,1) double {mustBePositive}
+end
+

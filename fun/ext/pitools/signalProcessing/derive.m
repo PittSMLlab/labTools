@@ -25,5 +25,9 @@ y=y2(length(x)+1:2*length(x));
 %
 % See also IDEALLPF, LOWPASSFILTERING2.
 
+arguments
+    x       (:,1) double
+    fsample (1,1) double {mustBePositive}
 end
 
+end

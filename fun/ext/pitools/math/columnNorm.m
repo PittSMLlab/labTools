@@ -16,13 +16,12 @@ function [w] = columnNorm(X,p,dim)
 %
 % See also DEMEAN.
 
-if nargin<3
-    dim=1;
-end
-if nargin<2
-    p=2;
+arguments
+    X   (:,:) double
+    p   (1,1) double = 2
+    dim (1,1) double {mustBePositive, mustBeInteger} = 1
 end
 w = sum(abs(X).^p,dim).^(1/p);
 
-end
 
+end
