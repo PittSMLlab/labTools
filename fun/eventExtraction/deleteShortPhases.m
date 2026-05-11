@@ -39,12 +39,12 @@ N = ceil(minDuration * fsample);
 % Commented out by Pablo on 25/II/2015 because of more efficient
 % implementation
 %tic
-if ~isempty(stance)                     % if there is data in 'stance', ...
-    for ii = 1:N                        % for each sample, ...
-        % NOTE (NWB): previous comments say "slowly dilating/eroding stance
-        % phases, until there is no possiblity for" and "at least half + 1
-        % of the samples in the window are stance", although it is unclear
-        % how this code is working or its broader purpose.
+if ~isempty(stance)     % if there is data in 'stance', ...
+    for ii = 1:N        % for each sample, ...
+        % NOTE: iteratively applies a morphological opening. Each iteration
+        % applies a window of radius ii: a sample survives only if at least
+        % half+1 of its neighbours are stance. After N iterations, any run
+        % shorter than N samples has been eroded to zero and removed.
         stance = conv(double(stance), ones(2*ii+1, 1), 'same') > ii;
     end
 end
