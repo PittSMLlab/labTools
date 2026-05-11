@@ -1,4 +1,4 @@
-function [out] = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
+function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowleg, fastleg, BW, trialData, markerData)
 %COMPUTEFORCEPARAMETERS_OGFP_ALIGNED Compute AP GRF parameters using stride-aligned force traces.
 %
 %   Variant of COMPUTEFORCEPARAMETERS_OGFP that time-normalizes each
@@ -59,8 +59,10 @@ ang = determineTMAngle(trialData.metaData);
 if strcmpi(trialData.metaData.type, 'IN')
     ang = 8.5;
 end
-flipIT= 2.*(ang >= 0)-1; %This will be -1 when it was a decline study, 1 otherwise
-Filtered = GRFData.substituteNaNs.lowPassFilter(20);
+flipIT = 2.*(ang >= 0) - 1;  % -1 for decline trials, 1 otherwise
+
+%% Low-Pass Filter and Detect Force Plates
+filtered = GRFData.substituteNaNs.lowPassFilter(20);
 gaitEvents = trialData.gaitEvents;
 filteredF = filtered;
 filteredS = filtered;
@@ -101,15 +103,6 @@ h_slow = [];
 % alignmentVector=[2,4,2,4];
 % labTimeSeries.discretize(gaitEvents,eventTypes,alignmentVector,[]);
 
-fFy = Filtered.getDataAsTS([fastleg 'Fy']);
-sFy = Filtered.getDataAsTS([slowleg 'Fy']);
-
-FastLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
-SlowLegOffSetData=nan(length(strideEvents.tSHS)-1, 1);
-if Filtered.isaLabel('HFx')
-    handrailData=Filtered.getDataAsTS({'HFy', 'HFz'});
-elseif Filtered.isaLabel('XFx')
-    handrailData=Filtered.getDataAsTS({'XFy', 'XFz'});
 %% Remove Anterior-Posterior Force Offsets
 % NOTE: computes median AP force during single-stance as a per-stride
 % baseline, then subtracts the grand median; added after LD30 decline data
@@ -117,6 +110,15 @@ elseif Filtered.isaLabel('XFx')
 % vertical forces were correctly zeroed during c3d2mat import.
 
 %figure; plot(filtered.getDataAsTS([s 'Fy']).Data, 'b'); hold on; plot(filtered.getDataAsTS([f 'Fy']).Data, 'r');
+fFy = filtered.getDataAsTS([fastleg 'Fy']);
+sFy = filtered.getDataAsTS([slowleg 'Fy']);
+
+fastLegOffsetData=nan(length(strideEvents.tSHS)-1, 1);
+slowLegOffsetData=nan(length(strideEvents.tSHS)-1, 1);
+if filtered.isaLabel('HFx')
+    handrailData=filtered.getDataAsTS({'HFy', 'HFz'});
+elseif filtered.isaLabel('XFx')
+    handrailData=filtered.getDataAsTS({'XFy', 'XFz'});
     warning('Handrail data was not found labeled as ''HFx'', using ''XFx'' instead (not sure if that IS the handrail!). This is probably an issue with force channel numbering mismatch while loading (c3d2mat).')
 else
     handrailData=[];
@@ -124,10 +126,10 @@ else
 end
 
 for fp = 1:length(Ally)
-    if Filtered.isaLabel(Ally{fp})
-        OGFP.(Ally{fp}) = Filtered.getDataAsTS(Ally{fp});
-        FastLegOffSetData_OGFP.(Ally{fp}) = nan(length(strideEvents.tSHS)-1, 1);
-        SlowLegOffSetData_OGFP.(Ally{fp}) = nan(length(strideEvents.tSHS)-1, 1);
+    if filtered.isaLabel(Ally{fp})
+        ogfp.(Ally{fp}) = filtered.getDataAsTS(Ally{fp});
+        fastLegOffsetDataogfp.(Ally{fp}) = nan(length(strideEvents.tSHS)-1, 1);
+        slowLegOffsetDataogfp.(Ally{fp}) = nan(length(strideEvents.tSHS)-1, 1);
     else
         ogfp.(Ally{fp}) = [];
         fastLegOffsetDataogfp.(Ally{fp}) = nan(length(strideEvents.tSHS)-1, 1);
@@ -151,9 +153,9 @@ for st = 1:length(strideEvents.tSHS)-1
     end
 
     for fp = 1:length(Ally)
-        if Filtered.isaLabel(Ally{fp})
-            FastLegOffSetData_OGFP.(Ally{fp})(st) = median(OGFP.(Ally{fp}).split(FTO, FHS).Data, 'omitnan');
-            SlowLegOffSetData_OGFP.(Ally{fp})(st) = median(OGFP.(Ally{fp}).split(STO, SHS2).Data, 'omitnan');
+        if filtered.isaLabel(Ally{fp})
+            fastLegOffsetDataogfp.(Ally{fp})(st) = median(ogfp.(Ally{fp}).split(FTO, FHS).Data, 'omitnan');
+            slowLegOffsetDataogfp.(Ally{fp})(st) = median(ogfp.(Ally{fp}).split(STO, SHS2).Data, 'omitnan');
         end
     end
 end
@@ -161,17 +163,17 @@ display(['Fast Leg Offset: ' num2str(FastLegOffSet) ', Slow Leg Offset: ' num2st
 fastLegOffset=round(median(fastLegOffsetData, 'omitnan'), 3);
 slowLegOffset=round(median(slowLegOffsetData, 'omitnan'), 3);
 
-Filtered.Data(:, find(strcmp(Filtered.getLabels, [fastleg 'Fy']))) = Filtered.getDataAsVector([fastleg 'Fy']) - FastLegOffSet;
-Filtered.Data(:, find(strcmp(Filtered.getLabels, [slowleg 'Fy']))) = Filtered.getDataAsVector([slowleg 'Fy']) - SlowLegOffSet;
+filtered.Data(:, find(strcmp(filtered.getLabels(), [fastleg 'Fy']))) = filtered.getDataAsVector([fastleg 'Fy']) - fastLegOffset;
+filtered.Data(:, find(strcmp(filtered.getLabels(), [slowleg 'Fy']))) = filtered.getDataAsVector([slowleg 'Fy']) - slowLegOffset;
 
 
 for fp = 1:length(Ally)
 
-    FastLegOffSet_OGFP.(Ally{fp}) = round(median(FastLegOffSetData_OGFP.(Ally{fp}), 'omitnan'), 3);
-    FilteredF.Data(:, find(strcmp(FilteredF.getLabels,Ally{fp}))) = FilteredF.getDataAsVector(Ally{fp}) - FastLegOffSet_OGFP.(Ally{fp});
+    fastLegOffsetogfp.(Ally{fp}) = round(median(fastLegOffsetDataogfp.(Ally{fp}), 'omitnan'), 3);
+    filteredF.Data(:, find(strcmp(filteredF.getLabels(),Ally{fp}))) = filteredF.getDataAsVector(Ally{fp}) - fastLegOffsetogfp.(Ally{fp});
 
-    SlowLegOffSet_OGFP.(Ally{fp}) = round(median(SlowLegOffSetData_OGFP.(Ally{fp}), 'omitnan'), 3);
-    FilteredS.Data(:, find(strcmp(FilteredS.getLabels,Ally{fp}))) = FilteredS.getDataAsVector(Ally{fp}) - SlowLegOffSet_OGFP.(Ally{fp});
+    slowLegOffsetogfp.(Ally{fp}) = round(median(slowLegOffsetDataogfp.(Ally{fp}), 'omitnan'), 3);
+    filteredS.Data(:, find(strcmp(filteredS.getLabels(),Ally{fp}))) = filteredS.getDataAsVector(Ally{fp}) - slowLegOffsetogfp.(Ally{fp});
 
 end
 
@@ -182,7 +184,6 @@ LevelofInterest = 0.5.*flipIT.*cosd(90-abs(ang)); %The actual angle of the incli
 %% Align Stance-Phase Data
 %levelOfInterest = flipIT.*cosd(90-abs(ang));
 
-% pre-defining variables
 lenny=length(strideEvents.tSHS)-1;
 impactS_align=NaN(1, lenny); impactF_align=NaN(1, lenny);
 SB_align=NaN(1, lenny); SP_align=NaN(1, lenny); SZ_align=NaN(1, lenny); SX_align=NaN(1, lenny);
@@ -277,15 +278,15 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
 
         for fp = 1:length(Ally)
             % getting each force-plate value during stance
-            striderSy_OGFP.(Ally{fp}) = flipIT.*filteredSlowStance.getDataAsVector(Ally{fp})/Normalizer;
-            striderSz_OGFP.(Allz{fp}) = flipIT.*filteredSlowStance.getDataAsVector(Allz{fp})/Normalizer;
+            striderSyOgfp.(Ally{fp}) = flipIT.*filteredSlowStance.getDataAsVector(Ally{fp})/normalizer;
+            striderSzOgfp.(Allz{fp}) = flipIT.*filteredSlowStance.getDataAsVector(Allz{fp})/normalizer;
 
-            striderSy_OGFP_align.(Ally{fp}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Ally{fp}).Data(:, 1, st)/Normalizer;
-            striderSz_OGFP_align.(Allz{fp}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Allz{fp}).Data(:, 1, st)/Normalizer;
+            striderSyOgfpAlign.(Ally{fp}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Ally{fp}).Data(:, 1, st)/normalizer;
+            striderSzOgfpAlign.(Allz{fp}) = flipIT.*filteredSlow_align.getPartialDataAsATS(Allz{fp}).Data(:, 1, st)/normalizer;
 
             % getting each force-plate value during single stance
-            striderSy_OGFP_SS.(Ally{fp}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Ally{fp})/Normalizer;
-            striderSz_OGFP_SS.(Allz{fp}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Allz{fp})/Normalizer;
+            striderSyOgfpSS.(Ally{fp}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Ally{fp})/normalizer;
+            striderSzOgfpSS.(Allz{fp}) = flipIT.*filteredSlowSingleStance.getDataAsVector(Allz{fp})/normalizer;
             % adding all forces together
             striderSyOgfpSum = striderSyOgfpSum + striderSyOgfpSS.(Ally{fp});
             striderSzOgfpSum = striderSzOgfpSum + striderSzOgfpSS.(Allz{fp});
@@ -301,9 +302,9 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             striderSyOgfpSum = []; striderSzOgfpSum = [];
         end
 
-        if abs(min(striderSz_OGFP_sum)) > 0.1 % checking if the force is avaliable
-            SlowCount_force = SlowCount_force + 1;
-            exist_SlowF(st) = 1;
+        if abs(min(striderSzOgfpSum)) > 0.1 % checking if the force is avaliable
+            slowCountForce = slowCountForce + 1;
+            existSlowF(st) = 1;
         else
             slowCountNoForce = slowCountNoForce + 1;
             existSlowF(st) = 0;
@@ -314,18 +315,18 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
         for fp = 1:length(Allz)
             if isempty(striderSzOgfpAlign.(Allz{fp})) == 0
 
-                mini_1st.(Allz{fp}) = abs(min(striderSz_OGFP_align.(Allz{fp})(slow_divider:slow_divider*3)));
-                mini_2nd.(Allz{fp}) = abs(min(striderSz_OGFP_align.(Allz{fp})(slow_divider*5:slow_divider*7)));
+                mini1st.(Allz{fp}) = abs(min(striderSzOgfpAlign.(Allz{fp})(slowDivider:slowDivider*3)));
+                mini2nd.(Allz{fp}) = abs(min(striderSzOgfpAlign.(Allz{fp})(slowDivider*5:slowDivider*7)));
 
-                if mini_1st.(Allz{fp}) >= bw_th_min && mini_2nd.(Allz{fp}) >= bw_th_min && abs(striderSz_OGFP_align.(Allz{fp})(1)) <= early_th && abs(striderSz_OGFP_align.(Allz{fp})(end)) <= end_th
-                    OGFPy_slow = Ally{fp}; OGFPz_slow = Allz{fp}; good_counter = good_counter + 1;
+                if mini1st.(Allz{fp}) >= bwThMin && mini2nd.(Allz{fp}) >= bwThMin && abs(striderSzOgfpAlign.(Allz{fp})(1)) <= earlyFrac && abs(striderSzOgfpAlign.(Allz{fp})(end)) <= endFrac
+                    ogfpySlow = Ally{fp}; ogfpzSlow = Allz{fp}; goodCounter = goodCounter + 1;
                 end
             end
         end
 
 
 
-        if good_counter == 1 && isempty(OGFPy_slow) == 0 % check if a stride has a good for at least on one of the force-plates
+        if goodCounter == 1 && isempty(ogfpySlow) == 0 % check if a stride has a good for at least on one of the force-plates
 
             %striderSyAlign = flipIT.*filteredSlowStance.getDataAsVector(ogfpySlow)/normalizer;
             %striderSzAlign = flipIT.*filteredSlowStance.getDataAsVector(ogfpzSlow)/normalizer;
@@ -379,8 +380,8 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
 
         for fp = 1:length(Ally)
 
-            striderFy_OGFP.(Ally{fp}) = flipIT.*filteredFastStance.getDataAsVector(Ally{fp})/Normalizer;
-            striderFz_OGFP.(Allz{fp}) = flipIT.*filteredFastStance.getDataAsVector(Allz{fp})/Normalizer;
+            striderFyOgfp.(Ally{fp}) = flipIT.*filteredFastStance.getDataAsVector(Ally{fp})/normalizer;
+            striderFzOgfp.(Allz{fp}) = flipIT.*filteredFastStance.getDataAsVector(Allz{fp})/normalizer;
 
             striderFy_OGFP_align.(Ally{fp}) = flipIT.*filteredFast_align.getPartialDataAsATS(Ally{fp}).Data(:, 1, st)/Normalizer;
             striderFz_OGFP_align.(Allz{fp}) = flipIT.*filteredFast_align.getPartialDataAsATS(Allz{fp}).Data(:, 1, st)/Normalizer;
@@ -412,11 +413,11 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
         for fp = 1:length(Allz)
             if isempty(striderFzOgfpAlign.(Allz{fp})) == 0
 
-                mini_1st.(Allz{fp}) = abs(min(striderFz_OGFP_align.(Allz{fp})(midway_fast:midway_fast*3)));
-                mini_2nd.(Allz{fp}) = abs(min(striderFz_OGFP_align.(Allz{fp})(midway_fast*5:midway_fast*7)));
+                mini1st.(Allz{fp}) = abs(min(striderFzOgfpAlign.(Allz{fp})(midwayFast:midwayFast*3)));
+                mini2nd.(Allz{fp}) = abs(min(striderFzOgfpAlign.(Allz{fp})(midwayFast*5:midwayFast*7)));
 
-                if mini_1st.(Allz{fp}) >= bw_th_min && mini_2nd.(Allz{fp}) >= bw_th_min && abs(striderFz_OGFP_align.(Allz{fp})(1)) <= early_th && abs(striderFz_OGFP_align.(Allz{fp})(end)) <= end_th
-                    OGFPy_fast = Ally{fp}; OGFPz_fast = Allz{fp}; good_counter = good_counter + 1;
+                if mini1st.(Allz{fp}) >= bwThMin && mini2nd.(Allz{fp}) >= bwThMin && abs(striderFzOgfpAlign.(Allz{fp})(1)) <= earlyFrac && abs(striderFzOgfpAlign.(Allz{fp})(end)) <= endFrac
+                    ogfpyFast = Ally{fp}; ogfpzFast = Allz{fp}; goodCounter = goodCounter + 1;
                 end
             end
         end
@@ -458,10 +459,10 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for the force plate that a good stance occures %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    if isempty(striderSy_align) || all(striderSy_align==striderSy_align(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
+    if isempty(striderSyAlign) || all(striderSyAlign==striderSyAlign(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
         %This does nothing, as vars are initialized as nan:
     else
-        if std(striderSy_align, 'omitnan')<0.01 && mean(striderSy_align, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+        if std(striderSyAlign, 'omitnan')<0.01 && mean(striderSyAlign, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
         else
             ns_align = find((striderSyAlign-levelOfInterest)<0.1);%1:65
@@ -484,7 +485,7 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             ps_align(find(ps_align>=0.95*length(striderSy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
             %             end
 
-            ImpactMagS_align = find((striderSy_align-LevelofInterest)==max(striderSy_align(1:75)-LevelofInterest, [], 'omitnan'));%no longer percent of stride
+            ImpactMagS_align = find((striderSyAlign-levelOfInterest)==max(striderSyAlign(1:75)-levelOfInterest, [], 'omitnan'));%no longer percent of stride
             if isempty(ImpactMagS_align)%~=1
                 postImpactS_align = ns_align(find(ns_align>ImpactMagS_align(end), 1, 'first'));
                 if isempty(postImpactS_align)%~=1
@@ -511,11 +512,11 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
                 %                     impactS(st)=NaN;
                 %                     impactSmax(st)=NaN;
             else
-                impactS_align(st)=mean(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                if isempty(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)))
+                impactS_align(st)=mean(striderSyAlign(find((striderSyAlign(SHS-SHS+1: postImpactS_align)-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                if isempty(striderSyAlign(find((striderSyAlign(SHS-SHS+1: postImpactS_align)-levelOfInterest)>0)))
                     %impactSmax(st)=NaN;
                 else
-                    impactSmax_align(st)=max(striderSy_align(find((striderSy_align(SHS-SHS+1: postImpactS_align)-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                    impactSmax_align(st)=max(striderSyAlign(find((striderSyAlign(SHS-SHS+1: postImpactS_align)-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                 end
             end
 
@@ -575,14 +576,14 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
     end
 
     %%Now for the fast leg...
-    if isempty(striderFy_align) || all(striderFy_align==striderFy_align(1)) || isempty(FTO) || isempty(STO)
+    if isempty(striderFyAlign) || all(striderFyAlign==striderFyAlign(1)) || isempty(FTO) || isempty(STO)
 
     else
-        if std(striderFy_align, 'omitnan')<0.01 && mean(striderFy_align, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+        if std(striderFyAlign, 'omitnan')<0.01 && mean(striderFyAlign, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
         else
-            nf_align=find((striderFy_align-LevelofInterest)<0.1);%1:65
-            pf_align=find((striderFy_align-LevelofInterest)>0);
+            nf_align=find((striderFyAlign-levelOfInterest)<0.1);%1:65
+            pf_align=find((striderFyAlign-levelOfInterest)>0);
 
             %             if strcmp(trialData.metaData.name,'adaptation')
             %                 nf_align(find(nf_align>=0.5*length(striderFyAlign)))=[]; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
@@ -601,7 +602,7 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             pf_align(find(pf_align>=0.95*length(striderFy_align)))=[]; % 2/14/2018 -- This is to prevent the impulse from being identified.
             %             end
 
-            ImpactMagF_align=find((striderFy_align-LevelofInterest)==max(striderFy_align(1:75)-LevelofInterest, [], 'omitnan'));%1:15
+            ImpactMagF_align=find((striderFyAlign-levelOfInterest)==max(striderFyAlign(1:75)-levelOfInterest, [], 'omitnan'));%1:15
             if isempty(ImpactMagF_align)%~=1
                 postImpactF_align=nf_align(find(nf_align>ImpactMagF_align(end), 1, 'first'));
                 if isempty(postImpactF_align)%~=1
@@ -613,14 +614,14 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             if isempty(pf_align)
 
             else
-                FP_align(st)=mean(striderFy_align(pf_align)-LevelofInterest, 'omitnan');
-                FPmax_align(st)=max(striderFy_align(pf_align)-LevelofInterest, [], 'omitnan');
+                FP_align(st)=mean(striderFyAlign(pf_align)-levelOfInterest, 'omitnan');
+                FPmax_align(st)=max(striderFyAlign(pf_align)-levelOfInterest, [], 'omitnan');
             end
             if isempty(nf_align)
 
             else
-                FB_align(st)=FlipB.*(mean(striderFy_align(nf_align)-LevelofInterest, 'omitnan'));
-                FBmax_align(st)=FlipB.*(min(striderFy_align(nf_align)-LevelofInterest, [], 'omitnan'));
+                FB_align(st)=flipB.*(mean(striderFyAlign(nf_align)-levelOfInterest, 'omitnan'));
+                FBmax_align(st)=flipB.*(min(striderFyAlign(nf_align)-levelOfInterest, [], 'omitnan'));
             end
 
             if exist('postImpactF_align')==0 || isempty(postImpactF_align)==1
@@ -630,7 +631,7 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
                 if isempty(striderFy_align(find((striderFy_align(FHS-FHS+1: postImpactF_align)-LevelofInterest)>0)))
 
                 else
-                    impactFmax_align(st)=max(striderFy_align(find((striderFy_align(FHS-FHS+1: postImpactF_align)-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                    impactFmax_align(st)=max(striderFyAlign(find((striderFyAlign(FHS-FHS+1: postImpactF_align)-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                 end
             end
 
@@ -642,32 +643,32 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
 
             %             h_fast = figure (trialData.metaData.condition*10-7)
             %             hold on
-            %             plot(striderFy_align-LevelofInterest,'r')
+            %             plot(striderFyAlign-levelOfInterest,'r')
             %             if isempty(FBmax_align(st)) == 0 && isempty(FPmax_align(st)) == 0
-            %                 if  isempty(find(striderFy_align-LevelofInterest == FBmax_align(st))) || isempty(find(striderFy_align-LevelofInterest == FPmax_align(st)))
+            %                 if  isempty(find(striderFyAlign-levelOfInterest == FBmax_align(st))) || isempty(find(striderFyAlign-levelOfInterest == FPmax_align(st)))
             %                 else
-            %                     FBmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FBmax_align(st));
-            %                     plot(FBmax_ind(i_fast),FBmax_align(st),'k*')
-            %                     FPmax_ind(i_fast) = find(striderFy_align-LevelofInterest == FPmax_align(st));
-            %                     plot(FPmax_ind(i_fast),FPmax_align(st),'k*')
+            %                     FBmax_ind(fastCount) = find(striderFyAlign-levelOfInterest == FBmax_align(st));
+            %                     plot(FBmax_ind(fastCount),FBmax_align(st),'k*')
+            %                     FPmax_ind(fastCount) = find(striderFyAlign-levelOfInterest == FPmax_align(st));
+            %                     plot(FPmax_ind(fastCount),FPmax_align(st),'k*')
             %                 end
             %             end
             %             title(['Fast Ground reaction Forces with Peaks' '     ' trialData.metaData.name])
             %             hold on
-            %             plot(striderFy_align,'b')
-            %             if  isempty(find(striderFy_align == striderFy_OGFP_SS.(OGFPy_fast)(1)))
+            %             plot(striderFyAlign,'b')
+            %             if  isempty(find(striderFyAlign == striderFyOgfpSS.(ogfpyFast)(1)))
             %             else
-            %                 fast_SS_ind(i_fast) = find(striderFy_align == striderFy_OGFP_SS.(OGFPy_fast)(1));
-            %                 plot(fast_SS_ind(i_fast):fast_SS_ind(i_fast)+length(striderFy_OGFP_SS.(OGFPy_fast))-1,striderFy_OGFP_SS.(OGFPy_fast),'r*')
+            %                 fast_SS_ind(fastCount) = find(striderFyAlign == striderFyOgfpSS.(ogfpyFast)(1));
+            %                 plot(fast_SS_ind(fastCount):fast_SS_ind(fastCount)+length(striderFyOgfpSS.(ogfpyFast))-1,striderFyOgfpSS.(ogfpyFast),'r*')
             %                 hold off
             %                 title(['Fast Single Stance Overlapped' '     ' trialData.metaData.name])
             %                 saveas(gcf,['FastOverlapped_' trialData.metaData.name],'png')
             %             end
         end
-        %         FZ_align(st)=-1*mean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']), 'omitnan')/Normalizer; %%[OGFPy_fast(1:end-1) 'z']
-        %         FX_align(st)=mean(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']), 'omitnan')/Normalizer;
-        %         FZmax_align(st)=-1*min(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'z']), [], 'omitnan')/Normalizer;
-        %         FXmax_align(st)=max(filteredFastStance.getDataAsVector([OGFPy_fast(1:end-1) 'x']), [], 'omitnan')/Normalizer;
+        %         FZ_align(st)=-1*mean(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'z']), 'omitnan')/normalizer; %%[ogfpyFast(1:end-1) 'z']
+        %         FX_align(st)=mean(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'x']), 'omitnan')/normalizer;
+        %         FZmax_align(st)=-1*min(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'z']), [], 'omitnan')/normalizer;
+        %         FXmax_align(st)=max(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'x']), [], 'omitnan')/normalizer;
 
         FZ_align(st)=-1*mean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:, 1, st), 'omitnan')/Normalizer;
         FX_align(st)=mean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:, 1, st), 'omitnan')/Normalizer;
@@ -689,12 +690,12 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)<0);%1:65
             ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)>0);
 
-            %             ImpactMagS_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest)==max(striderSy_OGFP_sum(1:75)-LevelofInterest, [], 'omitnan'));%no longer percent of stride
-            %             if isempty(ImpactMagS_OGFP_sum)~=1
-            %                 postImpactS_OGFP_sum = ns_OGFP_sum(find(ns_OGFP_sum>ImpactMagS_OGFP_sum(end), 1, 'first'));
-            %                 if isempty(postImpactS_OGFP_sum)~=1
-            %                     ps_OGFP_sum(find(ps_OGFP_sum<postImpactS_OGFP_sum))=[];
-            %                     ns_OGFP_sum(find(ns_OGFP_sum<postImpactS_OGFP_sum))=[];
+            %             impactMagSOgfpSum = find((striderSyOgfpSum-levelOfInterest)==max(striderSyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%no longer percent of stride
+            %             if isempty(impactMagSOgfpSum)~=1
+            %                 postImpactSOgfpSum = nsOgfpSum(find(nsOgfpSum>impactMagSOgfpSum(end), 1, 'first'));
+            %                 if isempty(postImpactSOgfpSum)~=1
+            %                     psOgfpSum(find(psOgfpSum<postImpactSOgfpSum))=[];
+            %                     nsOgfpSum(find(nsOgfpSum<postImpactSOgfpSum))=[];
             %                 end
             %             end
 
@@ -726,10 +727,10 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
 
             %             figure(trialData.metaData.condition*10-5)
             %             hold on
-            %             plot(striderSz_OGFP_sum)
+            %             plot(striderSzOgfpSum)
             %             figure (trialData.metaData.condition*10-4)
             %             hold on
-            %             plot(striderSy_OGFP_sum)
+            %             plot(striderSyOgfpSum)
 
         end
     end
@@ -744,12 +745,12 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
         else
             nf_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)<0);%1:65
             pf_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)>0);
-            %             ImpactMagF_OGFP_sum=find((striderFy_OGFP_sum-LevelofInterest)==max(striderFy_OGFP_sum(1:75)-LevelofInterest, [], 'omitnan'));%1:15
-            %             if isempty(ImpactMagF_OGFP_sum)~=1
-            %                 postImpactF_OGFP_sum=nf_OGFP_sum(find(nf_OGFP_sum>ImpactMagF_OGFP_sum(end), 1, 'first'));
-            %                 if isempty(postImpactF_OGFP_sum)~=1
-            %                     pf_OGFP_sum(find(pf_OGFP_sum<postImpactF_OGFP_sum))=[];
-            %                     nf_OGFP_sum(find(nf_OGFP_sum<postImpactF_OGFP_sum))=[];
+            %             impactMagFOgfpSum=find((striderFyOgfpSum-levelOfInterest)==max(striderFyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%1:15
+            %             if isempty(impactMagFOgfpSum)~=1
+            %                 postImpactFOgfpSum=nfOgfpSum(find(nfOgfpSum>impactMagFOgfpSum(end), 1, 'first'));
+            %                 if isempty(postImpactFOgfpSum)~=1
+            %                     pfOgfpSum(find(pfOgfpSum<postImpactFOgfpSum))=[];
+            %                     nfOgfpSum(find(nfOgfpSum<postImpactFOgfpSum))=[];
             %                 end
             %             end
 
