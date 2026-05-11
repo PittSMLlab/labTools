@@ -45,7 +45,8 @@ if ~isempty(angleData)
     [kinLHS, kinRHS, kinLTO, kinRTO] = ...
         getEventsFromAngles(trialData, angleData, orientation);
 else
-    [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1)); % length 10 to prevent errors downstream
+    % length 10 is arbitrary; prevents length-mismatch errors downstream
+    [kinLHS, kinRHS, kinLTO, kinRTO] = deal(false(10, 1));
 end
 
 if strcmpi(trialData.metaData.type, 'OG') ...
@@ -151,11 +152,12 @@ else % treadmill trial
 
         % TODO: use a method to re-sample kinematic events to be consistent
         % with forces.
-        CF = trialData.GRFData.sampFreq / trialData.markerData.sampFreq; % correction factor
-        LHSeventKin(round((find(kinLHS) - 1) * CF + 1)) = true;
-        RHSeventKin(round((find(kinRHS) - 1) * CF + 1)) = true;
-        LTOeventKin(round((find(kinLTO) - 1) * CF + 1)) = true;
-        RTOeventKin(round((find(kinRTO) - 1) * CF + 1)) = true;
+        kinToGrfRatio = trialData.GRFData.sampFreq ...
+            / trialData.markerData.sampFreq; % GRF samples per kinematic sample
+        LHSeventKin(round((find(kinLHS) - 1) * kinToGrfRatio + 1)) = true;
+        RHSeventKin(round((find(kinRHS) - 1) * kinToGrfRatio + 1)) = true;
+        LTOeventKin(round((find(kinLTO) - 1) * kinToGrfRatio + 1)) = true;
+        RTOeventKin(round((find(kinRTO) - 1) * kinToGrfRatio + 1)) = true;
 
         %%
 
