@@ -29,8 +29,8 @@ stanceR = getStanceFromToeAndHeel(Rheel, Rtoe, fsample);
 
 % retrieve gait events from stance phase
 [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR);
-badInds = any(isnan(Lheel')) | any(isnan(Ltoe')) ...
-    | any(isnan(Rheel')) | any(isnan(Rtoe'));
+badInds = any(isnan(Lheel), 2) | any(isnan(Ltoe), 2) ...
+    | any(isnan(Rheel), 2) | any(isnan(Rtoe), 2);
 LHS(badInds) = false;
 RHS(badInds) = false;
 LTO(badInds) = false;
@@ -54,7 +54,7 @@ RHS(1:begin_index) = false;
 LTO(1:begin_index) = false;
 RTO(1:begin_index) = false;
 
-% verify that all gait events are consistent
-% consistent = checkEventConsistency(LHS,RHS,LTO,RTO);
+% NOTE: checkEventConsistency can be called here for debugging, but is
+% omitted by default to avoid noise from imperfect kinematics-based events.
 
 end

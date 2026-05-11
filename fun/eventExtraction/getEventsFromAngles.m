@@ -56,7 +56,7 @@ if strcmpi(trialData.metaData.type, 'OG') ...
     walking     = abs(hipVel) > walkVelFrac * midhipVel;
 
     % eliminate walking or turn-around phases shorter than 0.25 seconds
-    [walking] = deleteShortPhases(walking, trialData.markerData.sampFreq, 0.25); % min bout duration (s)
+    walking = deleteShortPhases(walking, trialData.markerData.sampFreq, 0.25); % min bout duration (s)
 
     % split walking into individual bouts
     walkingSamples = find(walking);
@@ -84,16 +84,11 @@ for ii = 1:2:(length(StartStop))
     segStart = StartStop(ii);
     segStop  = StartStop(ii + 1);
 
-    if strcmpi(trialData.metaData.type, 'OG') ...
-            && median(hipVel(segStart:segStop)) > 0 % walking towards lab door
-        % reverse angles so maxima = HS and minima = TO (as on treadmill)
-        rdata(segStart:segStop) = -rdata(segStart:segStop);
-        ldata(segStart:segStop) = -ldata(segStart:segStop);
-    end
-
-    if strcmpi(trialData.metaData.type, 'NIM') ...
-            && median(hipVel(segStart:segStop)) > 0 % walking towards lab door
-        % reverse angles so maxima = HS and minima = TO (as on treadmill)
+    if (strcmpi(trialData.metaData.type, 'OG') ...
+            || strcmpi(trialData.metaData.type, 'NIM')) ...
+            && median(hipVel(segStart:segStop), 'omitnan') > 0
+        % walking towards lab door — reverse angles so maxima = HS,
+        % minima = TO (consistent with treadmill convention)
         rdata(segStart:segStop) = -rdata(segStart:segStop);
         ldata(segStart:segStop) = -ldata(segStart:segStop);
     end
