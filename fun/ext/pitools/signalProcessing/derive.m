@@ -7,6 +7,23 @@ order=9;
 %Get vels:
 y2=conv([x(end:-1:1);x;x(end:-1:1)],derivativeFilter,'same');
 y=y2(length(x)+1:2*length(x));
+%DERIVE Compute the numerical derivative of a discrete signal.
+%
+%   Applies a 9-tap smoothing-derivative filter to estimate the first
+% derivative of x. The signal is mirrored at both ends before filtering
+% to reduce boundary artifacts, and the relevant central portion is
+% returned.
+%
+% Inputs:
+%   x       - (N×1) double, input signal
+%   fsample - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   y - (N×1) double, estimated derivative (same units as x per second)
+%
+% Toolbox Dependencies: None
+%
+% See also IDEALLPF, LOWPASSFILTERING2.
 
 end
 

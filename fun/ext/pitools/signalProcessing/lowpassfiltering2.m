@@ -25,3 +25,26 @@ data1=data(1:size(datafile,1),:);
 % figure
 % plot(abs(fft(h)))
 
+%LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with
+%mirrored-boundary padding.
+%
+%   Applies a Butterworth lowpass filter with mirrored boundary padding to
+% avoid edge transients. The filter is applied using an FFT-based zero-phase
+% method: the impulse response is computed, its magnitude squared is applied
+% to the data spectrum, and the result is inverse-transformed. Mirrors the
+% input signal end-to-end before filtering so that boundary conditions are
+% smooth, then returns only the first half of the filtered result.
+%
+% Inputs:
+%   data        - (N×C) double, data to filter (columns are channels)
+%   fcut        - scalar double, lowpass cutoff frequency (Hz)
+%   filterOrder - scalar integer, Butterworth filter order
+%   fsample     - scalar double, sampling frequency (Hz)
+%
+% Outputs:
+%   data - (N×C) double, filtered data (same size as input)
+%
+% Toolbox Dependencies: None (butter, filter, fft, ifft are core MATLAB)
+%
+% See also LOWPASSFILTERING, FILTFILTHD_SHORT.
+

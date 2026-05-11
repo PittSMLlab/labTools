@@ -1,11 +1,25 @@
 function [filteredData] = filtfilthd_short(filterObj,data,method,M1)
-%This is a copy of filtfilthd, but limiting the extent of the 'reflect'
-%method for efficiency
-%Filters data along dim=1 with filterObj first forwards, and then
-%backwards.
-%It is an implementation of filtfilt that works with filter objects from
-%the DSP toolbox.
-%By default uses 'reflect' method for dealing with borders.
+%FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.
+%
+%   Implements zero-phase filtering using a DSP toolbox filter object by
+% applying the filter forward and then backward. Reflective boundary
+% padding reduces edge transients; the padding length is capped at M1
+% samples (default 1000) for efficiency on long signals.
+%
+% Inputs:
+%   filterObj - DSP toolbox filter object
+%   data      - (N×C) double, data to filter (columns are channels)
+%   method    - char, boundary method: 'reflect' (default) pads with a
+%               mirrored copy; any other value uses no padding
+%   M1        - scalar integer, reflection pad length (samples); [] uses
+%               default
+%
+% Outputs:
+%   filteredData - (N×C) double, zero-phase filtered data
+%
+% Toolbox Dependencies: DSP System Toolbox (for filter objects)
+%
+% See also FILTFILTHD.
 
 if size(data,1)==1 
     warning('filtfiltHD expects input data to be entered as columns, transposing')
