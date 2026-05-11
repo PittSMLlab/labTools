@@ -1,4 +1,4 @@
-function data = lowpassfiltering(datafile, cutoff, complexity, samp);
+function data = lowpassfiltering(data, fcut, filterOrder, fsample)
 %LOWPASSFILTERING Apply a zero-phase Butterworth lowpass filter.
 %
 %   Filters data using MATLAB's filtfilt to achieve zero phase shift.
@@ -25,13 +25,8 @@ arguments
     fsample     (1,1) double {mustBePositive}
 end
 
-%pass the 'lowpassfilter' function:  1) a data array for filtering,
-                                    %2) the freqency you want removed, and
-                                    %3) the sampling frequency
-%'lowpassfilter' function returns the data array that has been filtered with a
-%lowpass Butterworth filter, with the specified complexity and cutoff frequency
+nyquist    = 0.5 * fsample;  % Nyquist frequency (Hz)
+[b, a]     = butter(filterOrder, fcut / nyquist);
+data       = filtfilt(b, a, data);  % zero-phase filtering
 
-
-
-[b,a]=butter(complexity, (cutoff/(.5*samp)));   %get lowpass filter vectors
-data = filtfilt(b,a,datafile);  %filter using filtfilt funtion to avoid phase shifts
+end

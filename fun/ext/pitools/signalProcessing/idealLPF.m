@@ -1,4 +1,4 @@
-function [filteredData] = idealLPF(data,fcut)
+function filteredData = idealLPF(data, fcut)
 %IDEALLPF Apply an ideal (brick-wall) lowpass filter with zero phase lag.
 %
 %   Filters data in the frequency domain by zeroing all frequency
@@ -19,15 +19,20 @@ function [filteredData] = idealLPF(data,fcut)
 %
 % See also DISCRETETIMEFOURIERTRANSFORM, LOWPASSFILTERING2.
 
-[Fdata,fvector] = DiscreteTimeFourierTransform(data,1);
-Fdata=Fdata.*repmat((abs(fvector)<=fcut),1,size(Fdata,2));
 arguments
     data (:,:) double
     fcut (1,1) double {mustBeInRange(fcut, 0, 0.5)}
 end
 
-filteredData=ifft(ifftshift(Fdata,1));
+%% Transform to frequency domain (centered spectrum)
+[Fdata, fvector] = DiscreteTimeFourierTransform(data, 1);
 
+%% Apply brick-wall lowpass mask
+% Broadcasting: (abs(fvector) <= fcut) is Nx1; Fdata is NxC.
+% MATLAB automatically replicates the mask across columns.
+Fdata = Fdata .* (abs(fvector) <= fcut);
+
+%% Inverse transform; ifftshift undoes the centering before ifft
+filteredData = ifft(ifftshift(Fdata, 1));
 
 end
-
