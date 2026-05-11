@@ -56,15 +56,4 @@ stance = forces > threshold;
 %% Eliminate stance and swing phases shorter than 100 ms
 stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but that is too long for stroke subjects
 
-% plot raw and filtered forces, threshold, and detected stance to verify
-% figure;
-% hold on;
-% plot(1:length(forces)/fsample,forces);
-% plot(1:length(forces)/fsample,stance*max(forces));
-% plot([1 length(forces)]/fsample,threshold*[1 1],'k--');
-% plot(1:length(forces)/fsample,Fz*forceSign);
-% xlabel('Time (ms)');
-% legend('Filtered forces','Detected Stance','threshold','Raw forces');
-% hold off;
-
 end

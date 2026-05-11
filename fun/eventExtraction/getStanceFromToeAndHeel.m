@@ -101,17 +101,6 @@ stance = ankStance | toeStance;
 
 %% Eliminate stance and swing phases shorter than 200 ms
 stance = deleteShortPhases(stance, fsample, 0.2);
-%
-% figure
-% hold on
-% %plot(ankleAcc)
-% %plot(toeAcc)
-% plot(modAnkV,'m')
-% %plot(ankleAccFilt,'b')
-% plot(modToeV,'r')
-% %plot(toeAccFilt,'k')
-% plot(mean(modAnkV)*double(stance),'g')
-% hold off
 
 end
 
@@ -325,16 +314,5 @@ stance = ankStance | toeStance;
 
 %% Eliminate stance and swing phases shorter than 200 ms
 stance = deleteShortPhases(stance, fsample, 0.2);
-
-% figure
-% hold on
-% %plot(ankleAcc)
-% %plot(toeAcc)
-% plot(modAnkA,'m')
-% %plot(ankleAccFilt,'b')
-% plot(modToeA,'r')
-% %plot(toeAccFilt,'k')
-% plot(.5*max(modAnkA)*double(stance),'g')
-% hold off
 
 end

@@ -64,15 +64,4 @@ stance = conv(double(stance), ones(N, 1), 'same') > N - 1;
 %% Eliminate stance and swing phases shorter than 100 ms
 stance = deleteShortPhases(stance, fsample, 0.1); % used to be 200 ms, but too long for stroke subjects
 
-% figure
-% hold on
-% plot([1:length(forces)]/fsample,forces)
-% plot((.5+[1:length(forces)-1])/fsample,forceDiff)
-% plot((.5+[1:length(forces)-1])/fsample,stance*max(forces))
-% plot([1,length(forces)]/fsample,lowThreshold*[1,1],'k--')
-% plot([1:length(forces)]/fsample,Fz*forceSign)
-% xlabel('Time (ms)')
-% legend('Filtered forces','Force derivative','Detected Stance','Low threshold','Raw forces')
-% hold off
-
 end
