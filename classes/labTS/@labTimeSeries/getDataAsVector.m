@@ -1,25 +1,25 @@
 function [data, time, auxLabel] = getDataAsVector(this, label)
-%getDataAsVector  Gets data vector for given label(s)
+%GETDATASVECTOR Extract data vectors for the specified label(s).
 %
-%   [data, time, auxLabel] = getDataAsVector(this) returns all data
-%   and time vectors
+%   Returns the data matrix and time vector for the requested channel
+% labels. If a label is not found by exact match, the function falls back
+% to treating the label as a regular expression and returning all matching
+% channels.
 %
-%   [data, time, auxLabel] = getDataAsVector(this, label) returns data
-%   for specified label(s)
+% Inputs:
+%   this  - labTimeSeries object
+%   label - char or cell array of chars, label(s) to extract (optional;
+%           default: all labels)
 %
-%   Inputs:
-%       this - labTimeSeries object
-%       label - string or cell array of label(s) to extract (optional,
-%               default: all labels)
+% Outputs:
+%   data     - (N×K) double, data for the K matched channels
+%   time     - (N×1) double, time vector
+%   auxLabel - (1×K) cell of chars, labels for the returned channels
 %
-%   Outputs:
-%       data - matrix of data values for requested label(s)
-%       time - time vector
-%       auxLabel - cell array of labels for returned data
+% Toolbox Dependencies: None
 %
-%   Note: If label not found, attempts to match as regular expression
-%
-%   See also: getDataAsTS, getLabelsThatMatch, isaLabel
+% See also GETDATAASTS, GETLABELSTHATMATCH, ISALABEL.
+
 
 if nargin < 2 || isempty(label)
     label = this.labels;
