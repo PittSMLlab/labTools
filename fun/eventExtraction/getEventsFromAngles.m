@@ -44,16 +44,16 @@ if strcmpi(trialData.metaData.type, 'OG') ...
     avghip = (rhip + lhip) ./ 2;
 
     % get hip velocity
-    HipVel = diff(avghip);
+    hipVel = diff(avghip);
 
     % clean up velocities to remove artifacts of marker drop-outs
     velArtifactThresh           = 50; % threshold above which velocity is a dropout artifact (mm/frame)
-    HipVel(abs(HipVel) > velArtifactThresh) = 0;
+    hipVel(abs(hipVel) > velArtifactThresh) = 0;
 
     % use hip velocity to determine when subject is walking
     walkVelFrac = 0.5; % fraction of median absolute hip velocity to threshold walking
-    midHipVel   = median(abs(HipVel), 'omitnan');
-    walking     = abs(HipVel) > walkVelFrac * midHipVel;
+    midhipVel   = median(abs(hipVel), 'omitnan');
+    walking     = abs(hipVel) > walkVelFrac * midhipVel;
 
     % eliminate walking or turn-around phases shorter than 0.25 seconds
     [walking] = deleteShortPhases(walking, trialData.markerData.sampFreq, 0.25); % min bout duration (s)
@@ -85,14 +85,14 @@ for ii = 1:2:(length(StartStop))
     segStop  = StartStop(ii + 1);
 
     if strcmpi(trialData.metaData.type, 'OG') ...
-            && median(HipVel(segStart:segStop)) > 0 % walking towards lab door
+            && median(hipVel(segStart:segStop)) > 0 % walking towards lab door
         % reverse angles so maxima = HS and minima = TO (as on treadmill)
         rdata(segStart:segStop) = -rdata(segStart:segStop);
         ldata(segStart:segStop) = -ldata(segStart:segStop);
     end
 
     if strcmpi(trialData.metaData.type, 'NIM') ...
-            && median(HipVel(segStart:segStop)) > 0 % walking towards lab door
+            && median(hipVel(segStart:segStop)) > 0 % walking towards lab door
         % reverse angles so maxima = HS and minima = TO (as on treadmill)
         rdata(segStart:segStop) = -rdata(segStart:segStop);
         ldata(segStart:segStop) = -ldata(segStart:segStop);
@@ -148,7 +148,7 @@ LeftHS(rdata(LeftHS) == 0)   = [];
 % on global position in the right hip y direction
 RightHip = trialData.markerData.getDataAsVector({'RHIPy'});
 LeftHip  = trialData.markerData.getDataAsVector({'LHIPy'});
-body_yPos = (RightHip + LeftHip) / 2;
+bodyYPos = (RightHip + LeftHip) / 2;
 
 % y-position limits (mm) depend on lab; Schenley lab has different range
 if trialData.metaData.schenleyLab == 1
@@ -162,8 +162,8 @@ else
     y_max = OTHER_Y_MAX;
     y_min = OTHER_Y_MIN;
 end
-y_up_ind  = find(body_yPos >= y_max);
-y_low_ind = find(body_yPos <= y_min);
+y_up_ind  = find(bodyYPos >= y_max);
+y_low_ind = find(bodyYPos <= y_min);
 
 RightTO_up = ismember(RightTO, intersect(RightTO, y_up_ind));
 RightTO(RightTO_up) = [];
@@ -222,21 +222,22 @@ function HS = FindKinHS(start, stop, ankdata, n)
 
 for ii = start:stop
     if ii == 1
-        a = 1;
+        prevWin = 1;
     elseif (ii - n) < 1
-        a = 1:ii-1;
+        prevWin = 1:ii-1;
     else
-        a = ii-n:ii-1;
+        prevWin = ii-n:ii-1;
     end
     if ii == stop
-        b = stop;
+        nextWin = stop;
     elseif (ii + n) > stop
-        b = ii+1:stop;
+        nextWin = ii+1:stop;
     else
-        b = ii+1:ii+n;
+        nextWin = ii+1:ii+n;
     end
     % "=" included for the rare case where two adjacent samples share the max
-    if all(ankdata(ii) >= ankdata(a)) && all(ankdata(ii) >= ankdata(b))
+    if all(ankdata(ii) >= ankdata(prevWin)) ...
+            && all(ankdata(ii) >= ankdata(nextWin))
         break;
     end
 end
@@ -261,20 +262,21 @@ function TO = FindKinTO(start, stop, ankdata, n)
 
 for ii = start:stop
     if ii == 1
-        a = 1;
+        prevWin = 1;
     elseif (ii - n) < 1
-        a = 1:ii-1;
+        prevWin = 1:ii-1;
     else
-        a = ii-n:ii-1;
+        prevWin = ii-n:ii-1;
     end
     if ii == stop
-        b = stop;
+        nextWin = stop;
     elseif (ii + n) > stop
-        b = ii+1:stop;
+        nextWin = ii+1:stop;
     else
-        b = ii+1:ii+n;
+        nextWin = ii+1:ii+n;
     end
-    if all(ankdata(ii) <= ankdata(a)) && all(ankdata(ii) <= ankdata(b))
+    if all(ankdata(ii) <= ankdata(prevWin)) ...
+            && all(ankdata(ii) <= ankdata(nextWin))
         break;
     end
 end
