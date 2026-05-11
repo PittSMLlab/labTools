@@ -1,8 +1,7 @@
-function [Y] = demean(X)
-
 aux=mean(X,1);
 Y=X(:,:)-repmat(aux(:,:),[size(X,1),1]);
 Y=reshape(Y,size(X));
+function Y = demean(X)
 %DEMEAN Remove the column-wise mean from a matrix.
 %
 %   Subtracts the mean of each column from the corresponding column of X.
@@ -21,5 +20,6 @@ Y=reshape(Y,size(X));
 arguments
     X (:,:) double
 end
+
 
 end

@@ -1,4 +1,4 @@
-function [w] = columnNorm(X,p,dim)
+function w = columnNorm(X, p, dim)
 %COLUMNNORM Compute the p-norm of matrix elements along a given dimension.
 %
 %   Returns the p-norm of each slice of X along dimension dim. By default
@@ -21,7 +21,7 @@ arguments
     p   (1,1) double = 2
     dim (1,1) double {mustBePositive, mustBeInteger} = 1
 end
-w = sum(abs(X).^p,dim).^(1/p);
 
+w = sum(abs(X) .^ p, dim) .^ (1 / p);
 
 end

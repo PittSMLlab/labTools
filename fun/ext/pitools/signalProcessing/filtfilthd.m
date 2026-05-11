@@ -38,8 +38,8 @@ end
 
 M=size(data,1);
 
-if nargin<3
-    method='reflect'; %Default
+if nargin < 3
+    method = 'reflect';
 end
     switch method
         case 'reflect'
@@ -55,4 +55,3 @@ filteredData=filteredData(end:-1:1,:);
 filteredData=filteredData([size(pre,1)+1:size(pre,1)+M],:);
 
 end
-

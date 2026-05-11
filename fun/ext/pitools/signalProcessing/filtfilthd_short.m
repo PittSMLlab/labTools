@@ -1,4 +1,4 @@
-function [filteredData] = filtfilthd_short(filterObj,data,method,M1)
+function filteredData = filtfilthd_short(filterObj, data, method, M1)
 %FILTFILTHD_SHORT Zero-phase filter with length-limited reflective padding.
 %
 %   Implements zero-phase filtering using a DSP toolbox filter object by
@@ -29,16 +29,16 @@ if size(data,1)<size(data,2)
     warning('Input data seems to be organized as rows, and filtfilthd filters along columns.')
 end
 
-M=size(data,1);
+M = size(data, 1);
 
-if nargin<3 || isempty(method)
-    method='reflect'; %Default
+if nargin < 3 || isempty(method)
+    method = 'reflect';
 end
 if nargin<4 || isempty(M1)
     M1=min(1000,size(data,1));
     warning(['Unspecified size for reflective boundaries, setting to ' num2str(M1) ' samples'])
 else
-    M1=min(round(M1),size(data,1));
+    M1 = min(round(M1), M);
 end
     switch method
         case 'reflect'
