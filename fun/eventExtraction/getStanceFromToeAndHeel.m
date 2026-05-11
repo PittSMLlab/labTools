@@ -55,44 +55,47 @@ function stance = getStance(ankKin, toeKin, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 
+NAN_FILL_VEL          = 10000; % large sentinel to suppress NaN in idealLPF (mm/s)
+VEL_THRESH_ANK        = 500;   % ankle speed threshold for stance (mm/s); empirical
+VEL_THRESH_TOE        = 250;   % toe speed threshold for stance (mm/s); empirical
+coreStanceSpeedThresh = 150;   % max relative ankle–toe speed for core stance (mm/s)
+
 %% Step 1: calculate speed
 % va(:,1)=derive(ankKin(:,1),fsample);
 % va(:,2)=derive(ankKin(:,2),fsample);
 % vt(:,1)=derive(toeKin(:,1),fsample);
 % vt(:,2)=derive(toeKin(:,2),fsample);
-va = fsample * diff(ankKin);
-va(end+1, :) = va(end, :);
-vt = fsample * diff(toeKin);
-vt(end+1, :) = vt(end, :);
-fcut = 0.5 * 10 / fsample; % half-Nyquist for 10 Hz cutoff
-va(isnan(va)) = 10000;
-vt(isnan(vt)) = 10000;
-vaf = idealLPF(va, fcut);
-vtf = idealLPF(vt, fcut);
+ankleVel = fsample * diff(ankKin);
+ankleVel(end+1, :) = ankleVel(end, :);
+toeVel = fsample * diff(toeKin);
+toeVel(end+1, :) = toeVel(end, :);
+fcut = 10 / (2 * fsample); % ideal lowpass cutoff, normalized (10 Hz)
+ankleVel(isnan(ankleVel)) = NAN_FILL_VEL;
+toeVel(isnan(toeVel))     = NAN_FILL_VEL;
+ankleVelFilt = idealLPF(ankleVel, fcut);
+toeVelFilt   = idealLPF(toeVel, fcut);
 
 %% Step 2: get core stance (full feet on ground) speed
-relV    = vaf - vtf;                           % relative speed (mm/s)
+relV    = ankleVelFilt - toeVelFilt;           % relative speed (mm/s)
 modRelV = sqrt(sum(relV .^ 2, 2));             % magnitude of relative speed
-coreStanceSpeedThresh = 150;                   % max relative speed for core stance (mm/s)
 coreStance = (modRelV < coreStanceSpeedThresh);
 coreStance = deleteShortPhases(coreStance, fsample, 0.05); % min core stance duration (s)
 
-stanceSpeed = mode(10 * round(va(coreStance, :) / 10)); % most common stance speed, rounded to nearest cm/s
+% most common stance speed, rounded to nearest cm/s
+stanceSpeed = mode(10 * round(ankleVel(coreStance, :) / 10));
 
 %% Step 3: threshold speed relative to ground for stance candidates
-ankV = va - ones(size(va, 1), 1) * stanceSpeed; % ankle speed relative to ground
-toeV = vt - ones(size(vt, 1), 1) * stanceSpeed; % toe speed relative to ground
+ankV = ankleVel - ones(size(ankleVel, 1), 1) * stanceSpeed; % ankle speed relative to ground
+toeV = toeVel   - ones(size(toeVel,   1), 1) * stanceSpeed; % toe   speed relative to ground
 
 modAnkV = sqrt(sum(ankV .^ 2, 2));
 modToeV = sqrt(sum(toeV .^ 2, 2));
 
 %% Step 4: classify stance from ankle OR toe stance
 velThreshA = 0.8 * median(modAnkV); % empirical threshold, see commented line below
-velThreshA = 500;                    % ankle velocity threshold (mm/s)
 velThreshT = 0.8 * median(modToeV); % empirical threshold, see commented line below
-velThreshT = 250;                    % toe velocity threshold (mm/s)
-ankStance  = modAnkV < velThreshA;
-toeStance  = modToeV < velThreshT;
+ankStance = modAnkV < VEL_THRESH_ANK;
+toeStance = modToeV < VEL_THRESH_TOE;
 
 stance = ankStance | toeStance;
 
@@ -101,12 +104,12 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 %
 % figure
 % hold on
-% %plot(aa)
-% %plot(at)
+% %plot(ankleAcc)
+% %plot(toeAcc)
 % plot(modAnkV,'m')
-% %plot(modAnkAf,'b')
+% %plot(ankleAccFilt,'b')
 % plot(modToeV,'r')
-% %plot(modToeAf,'k')
+% %plot(toeAccFilt,'k')
 % plot(mean(modAnkV)*double(stance),'g')
 % hold off
 
@@ -311,12 +314,12 @@ stance = deleteShortPhases(stance, fsample, 0.2);
 
 % figure
 % hold on
-% %plot(aa)
-% %plot(at)
+% %plot(ankleAcc)
+% %plot(toeAcc)
 % plot(modAnkA,'m')
-% %plot(modAnkAf,'b')
+% %plot(ankleAccFilt,'b')
 % plot(modToeA,'r')
-% %plot(modToeAf,'k')
+% %plot(toeAccFilt,'k')
 % plot(.5*max(modAnkA)*double(stance),'g')
 % hold off
 
