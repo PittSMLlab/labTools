@@ -132,46 +132,58 @@ function stance = getStance2(Rheel, Rtoe, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 
+% Named constants for Hough-based floor-plane detection
+HOUGH_ANGLES    = [-90:0.2:-70, 70:0.2:89.8]; % angle search range (deg)
+HOUGH_RHO_RES   = 0.5;  % Hough ρ resolution (mm)
+OUTLIER_SD_MULT = 5;     % std-dev multiplier for outlier rejection
+
+% Per-marker tolerance constants (mm)
+HEEL_FLOOR_TOL      = 4;  % certain floor contact threshold, heel (mm)
+HEEL_EVENT_TOL      = 8;  % heel-strike/toe-off boundary, heel (mm)
+HEEL_ERODE_RADIUS   = 3;  % morphological erosion half-width, heel (samples)
+TOE_FLOOR_TOL       = 4;  % certain floor contact threshold, toe (mm)
+TOE_EVENT_TOL       = 10; % heel-strike/toe-off boundary, toe (mm)
+TOE_ERODE_RADIUS    = 15; % morphological erosion half-width, toe (samples)
+EVENT_DILATE_RADIUS = 1;  % final dilation half-width after convergence (samples)
+
 backwards = false; % direction flag; stance detection should not be direction-dependent
-thetas    = [-90:0.2:-70, 70:0.2:89.8]; % Hough transform angle search range (deg)
-rho_res   = 0.5;
 for jj = 1:2
     flag = false;
-    clear raux aux1 dist2Floor RHO THETA H A th r m n
+    clear roundedKin projOnFloor dist2Floor RHO THETA H A th r m n
     switch jj
         case 1
             relevantKin = medfilt1(Rheel); % non-strict filtering to kill far outliers
-            tol  = 4;  % threshold to surely catalogue a point as 'on floor'
-            tol2 = 8;  % min distance to catalogue as 'toe-off' or 'heel-strike'
-            N    = 3;
-            N2   = 1;
+            tol  = HEEL_FLOOR_TOL;
+            tol2 = HEEL_EVENT_TOL;
+            N    = HEEL_ERODE_RADIUS;
+            N2   = EVENT_DILATE_RADIUS;
         case 2
             relevantKin = medfilt1(Rtoe);
-            tol  = 4;
-            tol2 = 10;
-            N    = 15;
-            N2   = 1;
+            tol  = TOE_FLOOR_TOL;
+            tol2 = TOE_EVENT_TOL;
+            N    = TOE_ERODE_RADIUS;
+            N2   = EVENT_DILATE_RADIUS;
     end
 
     relevantKin(abs(relevantKin(:, 1) - median(relevantKin(:, 1))) ...
-        > 5 * std(relevantKin(:, 1)), 1) = 0;
+        > OUTLIER_SD_MULT * std(relevantKin(:, 1)), 1) = 0;
     relevantKin(abs(relevantKin(:, 2) - median(relevantKin(:, 2))) ...
-        > 5 * std(relevantKin(:, 2)), 2) = 0;
-    raux = round(relevantKin);
+        > OUTLIER_SD_MULT * std(relevantKin(:, 2)), 2) = 0;
+    roundedKin = round(relevantKin);
 
     %In y: limit values to a 500mm range
     %In x: limit values to a 2000mm range
     %Throw everything outside those limits
 
-    %A=zeros(max(raux(:,1)-min(raux(:,1))+1),(max(raux(:,2)-min(raux(:,2))+1)));
-    %for i=1:length(raux(:,1))
-    %A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)=A(raux(i,1)-min(raux(:,1))+1,raux(i,2)-min(raux(:,2))+1)+1;
+    %A=zeros(max(roundedKin(:,1)-min(roundedKin(:,1))+1),(max(roundedKin(:,2)-min(roundedKin(:,2))+1)));
+    %for i=1:length(roundedKin(:,1))
+    %A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)=A(roundedKin(i,1)-min(roundedKin(:,1))+1,roundedKin(i,2)-min(roundedKin(:,2))+1)+1;
     %end
-    A = sparse(raux(:, 1) - min(raux(:, 1)) + 1, ...
-               raux(:, 2) - min(raux(:, 2)) + 1, 1);
+    A = sparse(roundedKin(:, 1) - min(roundedKin(:, 1)) + 1, ...
+               roundedKin(:, 2) - min(roundedKin(:, 2)) + 1, 1);
     try
-        [H, THETA, RHO] = hough(full(A)', 'RhoResolution', rho_res, ...
-            'Theta', thetas);
+        [H, THETA, RHO] = hough(full(A)', 'RhoResolution', HOUGH_RHO_RES, ...
+            'Theta', HOUGH_ANGLES);
     catch
         disp('Caught exception when computing Hough transform');
     end
@@ -182,14 +194,14 @@ for jj = 1:2
     dist2Floor = (relevantKin(:, 1) - min(relevantKin(:, 1)) + 1) * cos(th) ...
         - (relevantKin(:, 2) - min(relevantKin(:, 2)) + 1) * sin(th) - r + 1;
 
-    aux1   = relevantKin(:, 1) * sin(th) + relevantKin(:, 2) * cos(th); % projection over the floor
-    stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] < 0); % points on the floor for sure
+    projOnFloor = relevantKin(:, 1) * sin(th) + relevantKin(:, 2) * cos(th); % projection over the floor
+    stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] < 0); % points on the floor for sure
 
     if sum(stance) < 3
         % probable backwards trial
         disp('Warning: probable backwards trial')
         flag   = true;
-        stance = (abs(dist2Floor) < tol) & ([0; diff(aux1)] > 0);
+        stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] > 0);
     end
     CoM_x = mean(relevantKin(stance, 1));
     CoM_y = mean(relevantKin(stance, 2));
@@ -202,9 +214,9 @@ for jj = 1:2
     end
 
     if (~backwards) && (~flag)
-        swing = ([0; diff(aux1)] > 0); % elements surely off the floor
+        swing = ([0; diff(projOnFloor)] > 0); % elements surely off the floor
     else
-        swing = ([0; diff(aux1)] < 0);
+        swing = ([0; diff(projOnFloor)] < 0);
     end
     % eliminate spurious swing samples
     swing = conv(double(swing), ones(2*N+1, 1), 'same') == 2*N+1; % erode
