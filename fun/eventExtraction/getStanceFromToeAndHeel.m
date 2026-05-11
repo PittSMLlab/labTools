@@ -279,6 +279,9 @@ function stance = getStance3(ankKin, toeKin, fsample)
 % Outputs:
 %   stance - N×1 logical, stance phase (true = stance)
 
+NAN_FILL_ACC = 100000; % large sentinel to suppress NaN in idealLPF (mm/s²)
+accThresh    = 5000;   % acceleration threshold (mm/s²); empirical
+
 %% Step 1: low pass filter and calculate acceleration
 % Get velocities:
 % va(:,1)=derive(ankKin(:,1),fsample); %fore-aft axis
@@ -290,28 +293,27 @@ function stance = getStance3(ankKin, toeKin, fsample)
 % aa(:,2)=derive(va(:,2),fsample);
 % at(:,1)=derive(vt(:,1),fsample);
 % at(:,2)=derive(vt(:,2),fsample);
-aa = fsample ^ 2 * diff(diff(ankKin));
-aa = [aa(1, :); aa; aa(end, :)];
-at = fsample ^ 2 * diff(diff(toeKin));
-at = [at(1, :); at; at(end, :)];
-aa(isnan(aa)) = 100000;
-at(isnan(at)) = 100000;
+ankleAcc = fsample ^ 2 * diff(diff(ankKin));
+ankleAcc = [ankleAcc(1, :); ankleAcc; ankleAcc(end, :)];
+toeAcc   = fsample ^ 2 * diff(diff(toeKin));
+toeAcc   = [toeAcc(1, :); toeAcc; toeAcc(end, :)];
+ankleAcc(isnan(ankleAcc)) = NAN_FILL_ACC;
+toeAcc(isnan(toeAcc))     = NAN_FILL_ACC;
 
 %% Step 3: low-pass filter accelerations then threshold for stance candidates
-fcut = 0.5 * 30 / fsample; % half-Nyquist for 30 Hz cutoff
-aaf(:, 1) = idealLPF(aa(:, 1), fcut);
-aaf(:, 2) = idealLPF(aa(:, 2), fcut);
-atf(:, 1) = idealLPF(at(:, 1), fcut);
-atf(:, 2) = idealLPF(at(:, 2), fcut);
-modAnkA = sqrt(sum(aaf .^ 2, 2));
-modToeA = sqrt(sum(atf .^ 2, 2));
+fcut = 30 / (2 * fsample); % ideal lowpass cutoff, normalized (30 Hz)
+ankleAccFilt(:, 1) = idealLPF(ankleAcc(:, 1), fcut);
+ankleAccFilt(:, 2) = idealLPF(ankleAcc(:, 2), fcut);
+toeAccFilt(:, 1)   = idealLPF(toeAcc(:, 1),   fcut);
+toeAccFilt(:, 2)   = idealLPF(toeAcc(:, 2),   fcut);
+modAnkA = sqrt(sum(ankleAccFilt .^ 2, 2));
+modToeA = sqrt(sum(toeAccFilt   .^ 2, 2));
 
 %filter=hann(50);
 %modAnkAf=conv(modAnkA,filter,'same')/sum(filter);
 %modToeAf=conv(modToeA,filter,'same')/sum(filter);
 %toeThresh=.1*mean(modToeA(10:end-10));
 %ankThresh=.1*mean(modAnkA(10:end-10));
-accThresh = 5000; % acceleration threshold (mm/s²); empirical
 
 %% Step 4: classify stance from ankle OR toe stance
 ankStance = modAnkA < accThresh;
