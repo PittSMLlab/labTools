@@ -215,12 +215,12 @@ impactSmax_align=NaN(1, lenny); impactFmax_align=NaN(1, lenny);
 FBmax_align=NaN(1, lenny); FPmax_align=NaN(1, lenny); FZmax_align=NaN(1, lenny); FXmax_align=NaN(1, lenny);
 
 for fp = 1:length(Ally)
-    impactS_OGFP.(Ally{fp}) = NaN(1, lenny); impactF_OGFP.(Ally{fp}) = NaN(1, lenny);
-    SB_OGFP.(Ally{fp}) = NaN(1, lenny); SP_OGFP.(Ally{fp}) = NaN(1, lenny); SZ_OGFP.(Ally{fp}) = NaN(1, lenny); SX_OGFP.(Ally{fp}) = NaN(1, lenny);
-    FB_OGFP.(Ally{fp}) = NaN(1, lenny); FP_OGFP.(Ally{fp}) = NaN(1, lenny); FZ_OGFP.(Ally{fp}) = NaN(1, lenny); FX_OGFP.(Ally{fp}) = NaN(1, lenny);
-    SBmax_OGFP.(Ally{fp}) = NaN(1, lenny); SPmax_OGFP.(Ally{fp}) = NaN(1, lenny); SZmax_OGFP.(Ally{fp}) = NaN(1, lenny); SXmax_OGFP.(Ally{fp}) = NaN(1, lenny);
-    impactSmax_OGFP.(Ally{fp}) = NaN(1, lenny); impactFmax_OGFP.(Ally{fp}) = NaN(1, lenny);
-    FBmax_OGFP.(Ally{fp}) = NaN(1, lenny); FPmax_OGFP.(Ally{fp}) = NaN(1, lenny); FZmax_OGFP.(Ally{fp}) = NaN(1, lenny);FXmax_OGFP.(Ally{fp}) = NaN(1, lenny);
+    impactS_ogfp.(Ally{fp}) = NaN(1, lenny); impactF_ogfp.(Ally{fp}) = NaN(1, lenny);
+    SB_ogfp.(Ally{fp}) = NaN(1, lenny); SP_ogfp.(Ally{fp}) = NaN(1, lenny); SZ_ogfp.(Ally{fp}) = NaN(1, lenny); SX_ogfp.(Ally{fp}) = NaN(1, lenny);
+    FB_ogfp.(Ally{fp}) = NaN(1, lenny); FP_ogfp.(Ally{fp}) = NaN(1, lenny); FZ_ogfp.(Ally{fp}) = NaN(1, lenny); FX_ogfp.(Ally{fp}) = NaN(1, lenny);
+    SBmax_ogfp.(Ally{fp}) = NaN(1, lenny); SPmax_ogfp.(Ally{fp}) = NaN(1, lenny); SZmax_ogfp.(Ally{fp}) = NaN(1, lenny); SXmax_ogfp.(Ally{fp}) = NaN(1, lenny);
+    impactSmax_ogfp.(Ally{fp}) = NaN(1, lenny); impactFmax_ogfp.(Ally{fp}) = NaN(1, lenny);
+    FBmax_ogfp.(Ally{fp}) = NaN(1, lenny); FPmax_ogfp.(Ally{fp}) = NaN(1, lenny); FZmax_ogfp.(Ally{fp}) = NaN(1, lenny);FXmax_ogfp.(Ally{fp}) = NaN(1, lenny);
 end
 
 if strcmp(trialData.metaData.name, 'TM slow')
@@ -239,10 +239,10 @@ end
 
 
 if strcmp(trialData.metaData.type,'OG') || strcmp(trialData.metaData.type,'NIM')
-    filteredSlow_align = FilteredS.align(gaitEvents, {[slowleg 'HS'], [fastleg 'TO'], [fastleg 'HS']}, [floor(0.2*slow_frames), floor(0.4*slow_frames), floor(0.4*slow_frames)]);
-    filteredSlow_align.Data = filteredSlow_align.Data(1:slow_frames-endcutting, :, :);
-    filteredFast_align = FilteredF.align(gaitEvents, {[fastleg 'HS'], [slowleg 'TO'], [slowleg 'HS']}, [floor(0.2*fast_frames), floor(0.5*fast_frames), floor(0.3*fast_frames)]);
-    filteredFast_align.Data = filteredFast_align.Data(1:fast_frames-endcutting, :, :);
+    filteredSlow_align = filteredS.align(gaitEvents, {[slowleg 'HS'], [fastleg 'TO'], [fastleg 'HS']}, [floor(0.2*slowFrames), floor(0.4*slowFrames), floor(0.4*slowFrames)]);
+    filteredSlow_align.Data = filteredSlow_align.Data(1:slowFrames-endCutFrames, :, :);
+    filteredFast_align = filteredF.align(gaitEvents, {[fastleg 'HS'], [slowleg 'TO'], [slowleg 'HS']}, [floor(0.2*fastFrames), floor(0.5*fastFrames), floor(0.3*fastFrames)]);
+    filteredFast_align.Data = filteredFast_align.Data(1:fastFrames-endCutFrames, :, :);
 else
     filteredSlow_align = filteredS.align(gaitEvents, {[slowleg 'HS'], [fastleg 'TO'], [fastleg 'HS']}, [floor(0.2*slowFrames), floor(0.4*slowFrames), floor(0.4*slowFrames)]);
     filteredSlow_align.Data = [filteredSlow_align.Data(slowFrames-19:end, :, :); filteredSlow_align.Data(1:slowFrames-40-endCutFrames, :, :)];
@@ -257,13 +257,13 @@ slowCountForce = 0; slowCountNoForce = 0;
 fastCountForce = 0; fastCountNoForce = 0;
 
 for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1, :)), length(filteredFast_align.Data(1, 1, :))])
-    % get the filtered data for the slow and fast stance phases
-    filteredSlowStance = FilteredS.split(SHS, STO);
-    filteredFastStance = FilteredF.split(FHS, FTO2);
-
-    % get the filtered data for the slow and fast single stance phases
-    filteredSlowSingleStance = FilteredS.split(FTO, FHS);
-    filteredFastSingleStance = FilteredF.split(STO, SHS2);
+    % NOTE: stance splits use event variables from the PREVIOUS iteration;
+    % the current-stride events are assigned after these lines. Do not
+    % reorder without understanding the downstream effect on each stride.
+    filteredSlowStance = filteredS.split(SHS, STO);
+    filteredFastStance = filteredF.split(FHS, FTO2);
+    filteredSlowSingleStance = filteredS.split(FTO, FHS);
+    filteredFastSingleStance = filteredF.split(STO, SHS2);
 
     % Getting the events
     SHS=strideEvents.tSHS(st); FTO=strideEvents.tFTO(st); FHS=strideEvents.tFHS(st); STO=strideEvents.tSTO(st); SHS2=strideEvents.tSHS2(st); FTO2=strideEvents.tFTO2(st);
@@ -348,22 +348,22 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             %striderSyAlign = flipIT.*filteredSlowStance.getDataAsVector(ogfpySlow)/normalizer;
             %striderSzAlign = flipIT.*filteredSlowStance.getDataAsVector(ogfpzSlow)/normalizer;
 
-            striderSy_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPy_slow).Data(:, 1, st)/Normalizer;
-            striderSz_align = flipIT.*filteredSlow_align.getPartialDataAsATS(OGFPz_slow).Data(:, 1, st)/Normalizer;
+            striderSyAlign = flipIT.*filteredSlow_align.getPartialDataAsATS(ogfpySlow).Data(:, 1, st)/normalizer;
+            striderSzAlign = flipIT.*filteredSlow_align.getPartialDataAsATS(ogfpzSlow).Data(:, 1, st)/normalizer;
 
-            slow_divider = floor(length(striderSy_align)/divideri);
-            if isempty(striderSy_align)
-                striderSz_align = [];
-            elseif max(striderSy_align(slow_divider:slow_divider*3)) > max(striderSy_align(slow_divider*5:slow_divider*7))
-                striderSy_align = -striderSy_align;
-                striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
+            slowDivider = floor(length(striderSyAlign)/strideDiv);
+            if isempty(striderSyAlign)
+                striderSzAlign = [];
+            elseif max(striderSyAlign(slowDivider:slowDivider*3)) > max(striderSyAlign(slowDivider*5:slowDivider*7))
+                striderSyAlign = -striderSyAlign;
+                striderSyOgfpSS.(ogfpySlow) = -striderSyOgfpSS.(ogfpySlow);
 
-                if strcmpi(trialData.metaData.type,'IN') && strcmpi(trialData.metaData.name,'adaptation') && mean(striderSy_align, 'omitnan') < 0
-                    striderSy_align = -striderSy_align;
-                    striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
-                elseif max(striderSy_align(1:slow_divider*4)) > max(striderSy_align(slow_divider*4:end))
-                    striderSy_align = -striderSy_align;
-                    striderSy_OGFP_SS.(OGFPy_slow) = -striderSy_OGFP_SS.(OGFPy_slow);
+                if strcmpi(trialData.metaData.type,'IN') && strcmpi(trialData.metaData.name,'adaptation') && mean(striderSyAlign, 'omitnan') < 0
+                    striderSyAlign = -striderSyAlign;
+                    striderSyOgfpSS.(ogfpySlow) = -striderSyOgfpSS.(ogfpySlow);
+                elseif max(striderSyAlign(1:slowDivider*4)) > max(striderSyAlign(slowDivider*4:end))
+                    striderSyAlign = -striderSyAlign;
+                    striderSyOgfpSS.(ogfpySlow) = -striderSyOgfpSS.(ogfpySlow);
                 end
             end
         else
