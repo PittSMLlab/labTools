@@ -1,11 +1,5 @@
-function saveFig(h,dir,fileName,sizeFlag)
 set(h,'PaperPositionMode','manual')
-if nargin<4 || isempty(sizeFlag)
-    set(h,'Units','Normalized','OuterPosition',[0 0 1 1])
-end
-if ~exist(dir,'dir')
-    mkdir(dir)
-end
+function saveFig(h, dir, fileName, sizeFlag)
 %SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.
 %
 %   Creates fig/, eps/, and png/ subdirectories under dir and writes one
@@ -30,9 +24,6 @@ end
 %
 % See also PRINT, SAVEFIG.
 
-%Save fig:
-if ~exist([dir 'fig/'],'dir')
-    mkdir([dir 'fig/'])
 arguments
     h
     dir      {mustBeTextScalar}
@@ -42,9 +33,6 @@ end
 savefig(h,[dir 'fig/' fileName '.fig'],'compact') ;
 
 %Save eps:
-if ~exist([dir 'eps/'],'dir')
-    mkdir([dir 'eps/'])
-end
 %hgexport(h,[dir 'eps/' fileName '.eps'], hgexport('factorystyle'), 'Format', 'eps');
 %saveas(h,[dir 'eps/' fileName '.eps'], 'epsc');
 
@@ -57,13 +45,26 @@ print(h,[dir 'eps/' fileName '.eps'],'-depsc','-r600','-opengl') %Opengl forces 
 %The image is rendered EXACTLY as it is seen. Vector export does some ugly math that can't guarantee this.
 %Cons: Matlab saves the eps in an ugly way that will cause white lines to appear because of antialiasing preferences in most viewers.
 %The workaround is to import in gimp and export back again (lines go away).
+%% Create Output Directories
+if ~exist(dir, 'dir')
+    mkdir(dir);
+end
+figDir = fullfile(dir, 'fig');
+epsDir = fullfile(dir, 'eps');
+pngDir = fullfile(dir, 'png');
+if ~exist(figDir, 'dir')
+    mkdir(figDir);
+end
+if ~exist(epsDir, 'dir')
+    mkdir(epsDir);
+end
+if ~exist(pngDir, 'dir')
+    mkdir(pngDir);
+end
 
 %print(h,[dir 'eps/' fileName '.tif'],'-dtiff','-r600','-opengl') %Compressed tif
 
 %Save png:
-if ~exist([dir 'png/'],'dir')
-    mkdir([dir 'png/'])
-end
 fullName=[dir 'png/' fileName];
 %Workaround for transparent background (on png):
 % save the original background color for later use
