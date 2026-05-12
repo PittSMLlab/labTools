@@ -22,10 +22,8 @@ function stance = getStanceFromForcesAlt(Fz, lowThreshold, fsample)
 fcut = 25; % lowpass cutoff frequency (Hz)
 coarseFilteredFz = medfilt1(Fz, round(0.0025 * fsample)); % median filter: 2.5 ms window
 forces    = lowpassfiltering2(coarseFilteredFz, fcut, 2, fsample);
-forceSign = sign(mean(Fz));
+forceSign = sign(mean(Fz, 'omitnan'));
 forces    = forces * forceSign; % ensure forces are positive on average
-
-% highThreshold=prctile(abs(forceDiff),80); % Choosing threshold such that only 20% of samples are above it
 
 % Factor of 2 scales the mean absolute deviation to a full-range estimate
 % (half-range × 2 ≈ peak-to-peak ≈ body weight for a typical GRF signal)

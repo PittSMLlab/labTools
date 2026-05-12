@@ -37,7 +37,6 @@ if mod(N1, 2) == 0
 end
 forces = medfilt1(Fz, N1);
 forces = medfilt1(forces, N);
-% forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 
 % sanity check: correct non-zeroed force plates
 if mode(forces) ~= 0
@@ -47,7 +46,6 @@ if mode(forces) ~= 0
     forces = forces - mode(forces);
 end
 
-% forces=lowpassfiltering2(forces,25,5,fsample); %Lowpass filter, to get rid of high-freq noise and smooth the signal. 25Hz seems like a reasonable bandwidth that preserves the transitions properly
 forceSign = sign(mean(forces, 'omitnan')); % use filtered forces in case plates were not zeroed
 forces    = forces * forceSign; % ensure forces are positive on average
 
