@@ -28,7 +28,7 @@ end
 if isempty(label)
     label = this.labels;
 end
-if isa(label, 'char')
+if ischar(label)
     auxLabel = {label};
 else
     auxLabel = label;
@@ -37,20 +37,19 @@ time = this.Time;
 
 [boolFlag, labelIdx] = this.isaLabel(auxLabel);
 if ~any(boolFlag)
-    auxLabel2 = [];
-    for i = 1:length(auxLabel)
-        auxLabel2 = [auxLabel2 this.getLabelsThatMatch(auxLabel{i})];
+    matchedLabels = [];
+    for ii = 1:length(auxLabel)
+        matchedLabels = [matchedLabels this.getLabelsThatMatch(auxLabel{ii})]; %#ok<AGROW>
     end
-    [boolFlag, labelIdx] = this.isaLabel(auxLabel2);
-    NN = numel(auxLabel2);
-    warning(['None of the provided labels are a parameter in this ' ...
-        'timeSeries. Trying to return labels that match the provided ' ...
-        'label as a regular expression: found ' num2str(NN) ' matches.']);
+    [boolFlag, labelIdx] = this.isaLabel(matchedLabels);
+    warning('labTimeSeries:labelNotFound', sprintf( ...
+        ['None of the provided labels are in this timeSeries. ' ...
+         'Trying regex match: found %d match(es).'], numel(matchedLabels)));
 else
-    for i = 1:length(boolFlag)
-        if ~boolFlag(i)
-            warning(['Label ' auxLabel{i} ...
-                ' is not a labeled dataset in this timeSeries.']);
+    for ii = 1:length(boolFlag)
+        if ~boolFlag(ii)
+            warning('labTimeSeries:labelNotFound', ...
+                'Label ''%s'' is not in this timeSeries.', auxLabel{ii});
         end
     end
 end
