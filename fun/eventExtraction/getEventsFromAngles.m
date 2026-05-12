@@ -160,23 +160,15 @@ end
 y_up_ind  = find(bodyYPos >= y_max);
 y_low_ind = find(bodyYPos <= y_min);
 
-RightTO_up = ismember(RightTO, intersect(RightTO, y_up_ind));
-RightTO(RightTO_up) = [];
-RightHS_up = ismember(RightHS, intersect(RightHS, y_up_ind));
-RightHS(RightHS_up) = [];
-LeftTO_up  = ismember(LeftTO, intersect(LeftTO, y_up_ind));
-LeftTO(LeftTO_up) = [];
-LeftHS_up  = ismember(LeftHS, intersect(LeftHS, y_up_ind));
-LeftHS(LeftHS_up) = [];
+RightTO(ismember(RightTO, y_up_ind))  = [];
+RightHS(ismember(RightHS, y_up_ind))  = [];
+LeftTO(ismember(LeftTO,   y_up_ind))  = [];
+LeftHS(ismember(LeftHS,   y_up_ind))  = [];
 
-RightTO_low = ismember(RightTO, intersect(RightTO, y_low_ind));
-RightTO(RightTO_low) = [];
-RightHS_low = ismember(RightHS, intersect(RightHS, y_low_ind));
-RightHS(RightHS_low) = [];
-LeftTO_low  = ismember(LeftTO, intersect(LeftTO, y_low_ind));
-LeftTO(LeftTO_low) = [];
-LeftHS_low  = ismember(LeftHS, intersect(LeftHS, y_low_ind));
-LeftHS(LeftHS_low) = [];
+RightTO(ismember(RightTO, y_low_ind)) = [];
+RightHS(ismember(RightHS, y_low_ind)) = [];
+LeftTO(ismember(LeftTO,   y_low_ind)) = [];
+LeftHS(ismember(LeftHS,   y_low_ind)) = [];
 
 %% Remove events with implausible angle values
 angleToThresh    =  5; % max angle at TO (deg); above this indicates swing
