@@ -510,14 +510,14 @@ for st = 1:length(strideEvents.tSHS)-1
             %             else
 
 
-            nf_all(find(nf_all >= 0.5*length(striderFy_all))) = []; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-            pf_all(find(pf_all <= 0.5*length(striderFy_all))) = []; % 2/14/2018 -- This is to prevent the impulse from being identified.
+            nf_all(find(nf_all >= 0.5*length(striderFyAll))) = []; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+            pf_all(find(pf_all <= 0.5*length(striderFyAll))) = []; % 2/14/2018 -- This is to prevent the impulse from being identified.
 
-            nf_all(find(nf_all <= 0.12*length(striderFy_all))) = []; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
-            pf_all(find(pf_all >= 0.95*length(striderFy_all))) = []; % 2/14/2018 -- This is to prevent the impulse from being identified.
+            nf_all(find(nf_all <= 0.12*length(striderFyAll))) = []; % 2/14/2018 -- This is to prevent us from identifiying the tail end of the trace as teh braking force 4/11/2017 CJS
+            pf_all(find(pf_all >= 0.95*length(striderFyAll))) = []; % 2/14/2018 -- This is to prevent the impulse from being identified.
             %             end
 
-            ImpactMagF_all = find((striderFy_all-LevelofInterest)==max(striderFy_all(1:75)-LevelofInterest, [], 'omitnan'));%1:15
+            ImpactMagF_all = find((striderFyAll-levelOfInterest)==max(striderFyAll(1:75)-levelOfInterest, [], 'omitnan'));%1:15
             if isempty(ImpactMagF_all)%~=1
                 postImpactF_all = nf_all(find(nf_all>ImpactMagF_all(end), 1, 'first'));
                 if isempty(postImpactF_all)%~=1
@@ -529,24 +529,24 @@ for st = 1:length(strideEvents.tSHS)-1
             if isempty(pf_all)
 
             else
-                FP_all(st) = mean(striderFy_all(pf_all)-LevelofInterest, 'omitnan');
-                FPmax_all(st) = max(striderFy_all(pf_all)-LevelofInterest, [], 'omitnan');
+                FP_all(st) = mean(striderFyAll(pf_all)-levelOfInterest, 'omitnan');
+                FPmax_all(st) = max(striderFyAll(pf_all)-levelOfInterest, [], 'omitnan');
             end
             if isempty(nf_all)
 
             else
-                FB_all(st) = FlipB.*(mean(striderFy_all(nf_all)-LevelofInterest, 'omitnan'));
-                FBmax_all(st) = FlipB.*(min(striderFy_all(nf_all)-LevelofInterest, [], 'omitnan'));
+                FB_all(st) = flipB.*(mean(striderFyAll(nf_all)-levelOfInterest, 'omitnan'));
+                FBmax_all(st) = flipB.*(min(striderFyAll(nf_all)-levelOfInterest, [], 'omitnan'));
             end
 
             if exist('postImpactF_all')==0 || isempty(postImpactF_all)==1
 
             else
-                impactF_all(st) = mean(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                if isempty(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)))
+                impactF_all(st) = mean(striderFyAll(find((striderFyAll(FHS-FHS+1: postImpactF_all)-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                if isempty(striderFyAll(find((striderFyAll(FHS-FHS+1: postImpactF_all)-levelOfInterest)>0)))
 
                 else
-                    impactFmax_all(st) = max(striderFy_all(find((striderFy_all(FHS-FHS+1: postImpactF_all)-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                    impactFmax_all(st) = max(striderFyAll(find((striderFyAll(FHS-FHS+1: postImpactF_all)-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                 end
             end
 
@@ -588,16 +588,16 @@ for st = 1:length(strideEvents.tSHS)-1
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for adding all forces toghether %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    if isempty(striderSy_OGFP_sum) || all(striderSy_OGFP_sum==striderSy_OGFP_sum(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
+    if isempty(striderSyOgfpSum) || all(striderSyOgfpSum==striderSyOgfpSum(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
         %This does nothing, as vars are initialized as nan:
         SBmaxOgfpSum(st) = NaN;
         SPmaxOgfpSum(st) = NaN;
     else
-        if std(striderSy_OGFP_sum, 'omitnan')<0.01 && mean(striderSy_OGFP_sum, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+        if std(striderSyOgfpSum, 'omitnan')<0.01 && mean(striderSyOgfpSum, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
         else
-            ns_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) < 0);%1:65
-            ps_OGFP_sum = find((striderSy_OGFP_sum-LevelofInterest) > 0);
+            nsOgfpSum = find((striderSyOgfpSum-levelOfInterest) < 0);%1:65
+            psOgfpSum = find((striderSyOgfpSum-levelOfInterest) > 0);
 
             %             impactMagSOgfpSum = find((striderSyOgfpSum-levelOfInterest)==max(striderSyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%no longer percent of stride
             %             if isempty(impactMagSOgfpSum)~=1
@@ -611,26 +611,26 @@ for st = 1:length(strideEvents.tSHS)-1
             if isempty(nsOgfpSum)
                 SBmaxOgfpSum(st) = NaN;
             else
-                SB_OGFP_sum(st) = FlipB.*(mean(striderSy_OGFP_sum(ns_OGFP_sum)-LevelofInterest, 'omitnan'));
-                SBmax_OGFP_sum(st) = FlipB.*(min(striderSy_OGFP_sum(ns_OGFP_sum)-LevelofInterest, [], 'omitnan'));
+                SBogfpSum(st) = flipB.*(mean(striderSyOgfpSum(nsOgfpSum)-levelOfInterest, 'omitnan'));
+                SBmaxOgfpSum(st) = flipB.*(min(striderSyOgfpSum(nsOgfpSum)-levelOfInterest, [], 'omitnan'));
             end
             if isempty(psOgfpSum)
                 SPmaxOgfpSum(st) = NaN;
             else
-                SP_OGFP_sum(st) = mean(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest, 'omitnan');
-                SPmax_OGFP_sum(st) = max(striderSy_OGFP_sum(ps_OGFP_sum)-LevelofInterest, [], 'omitnan');
+                SPogfpSum(st) = mean(striderSyOgfpSum(psOgfpSum)-levelOfInterest, 'omitnan');
+                SPmaxOgfpSum(st) = max(striderSyOgfpSum(psOgfpSum)-levelOfInterest, [], 'omitnan');
             end
 
-            if exist('postImpactS_OGFP_sum')==0 || isempty(postImpactS_OGFP_sum)==1 || isnan(SHS)
+            if exist('postImpactSOgfpSum')==0 || isempty(postImpactSOgfpSum)==1 || isnan(SHS)
                 %                     impactS(st)=NaN;
                 %                     impactSmax(st)=NaN;
                 impactSmaxOgfpSum(st) = NaN;
             else
-                impactS_OGFP_sum(st) = mean(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                if isempty(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)>0)))
+                impactSOgfpSum(st) = mean(striderSyOgfpSum(find((striderSyOgfpSum(SHS-SHS+1: postImpactSOgfpSum)-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                if isempty(striderSyOgfpSum(find((striderSyOgfpSum(SHS-SHS+1: postImpactSOgfpSum)-levelOfInterest)>0)))
                     %impactSmax(st)=NaN;
                 else
-                    impactSmax_OGFP_sum(st) = max(striderSy_OGFP_sum(find((striderSy_OGFP_sum(SHS-SHS+1: postImpactS_OGFP_sum)-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                    impactSmaxOgfpSum(st) = max(striderSyOgfpSum(find((striderSyOgfpSum(SHS-SHS+1: postImpactSOgfpSum)-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                 end
             end
 
@@ -645,15 +645,15 @@ for st = 1:length(strideEvents.tSHS)-1
     end
 
     %%Now for the fast leg...
-    if isempty(striderFy_OGFP_sum) || all(striderFy_OGFP_sum==striderFy_OGFP_sum(1)) || isempty(FTO) || isempty(STO)
-        FBmax_OGFP_sum(st) = NaN;
-        FPmax_OGFP_sum(st) = NaN;
+    if isempty(striderFyOgfpSum) || all(striderFyOgfpSum==striderFyOgfpSum(1)) || isempty(FTO) || isempty(STO)
+        FBmaxOgfpSum(st) = NaN;
+        FPmaxOgfpSum(st) = NaN;
     else
-        if std(striderFy_OGFP_sum, 'omitnan')<0.01 && mean(striderFy_OGFP_sum, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+        if std(striderFyOgfpSum, 'omitnan')<0.01 && mean(striderFyOgfpSum, 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
         else
-            nf_OGFP_sum = find((striderFy_OGFP_sum-LevelofInterest) < 0);%1:65
-            pf_OGFP_sum = find((striderFy_OGFP_sum-LevelofInterest) > 0);
+            nfOgfpSum = find((striderFyOgfpSum-levelOfInterest) < 0);%1:65
+            pfOgfpSum = find((striderFyOgfpSum-levelOfInterest) > 0);
             %             impactMagFOgfpSum=find((striderFyOgfpSum-levelOfInterest)==max(striderFyOgfpSum(1:75)-levelOfInterest, [], 'omitnan'));%1:15
             %             if isempty(impactMagFOgfpSum)~=1
             %                 postImpactFOgfpSum=nfOgfpSum(find(nfOgfpSum>impactMagFOgfpSum(end), 1, 'first'));
@@ -666,24 +666,24 @@ for st = 1:length(strideEvents.tSHS)-1
             if isempty(pfOgfpSum)
                 FPmaxOgfpSum(st) = NaN;
             else
-                FP_OGFP_sum(st) = mean(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest, 'omitnan');
-                FPmax_OGFP_sum(st) = max(striderFy_OGFP_sum(pf_OGFP_sum)-LevelofInterest, [], 'omitnan');
+                FPogfpSum(st) = mean(striderFyOgfpSum(pfOgfpSum)-levelOfInterest, 'omitnan');
+                FPmaxOgfpSum(st) = max(striderFyOgfpSum(pfOgfpSum)-levelOfInterest, [], 'omitnan');
             end
             if isempty(nfOgfpSum)
                 FBmaxOgfpSum(st) = NaN;
             else
-                FB_OGFP_sum(st) = FlipB.*(mean(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest, 'omitnan'));
-                FBmax_OGFP_sum(st) = FlipB.*(min(striderFy_OGFP_sum(nf_OGFP_sum)-LevelofInterest, [], 'omitnan'));
+                FBogfpSum(st) = flipB.*(mean(striderFyOgfpSum(nfOgfpSum)-levelOfInterest, 'omitnan'));
+                FBmaxOgfpSum(st) = flipB.*(min(striderFyOgfpSum(nfOgfpSum)-levelOfInterest, [], 'omitnan'));
             end
 
-            if exist('postImpactF_OGFP_sum')==0 || isempty(postImpactF_OGFP_sum)==1 || isnan(FHS)==1
-                impactFmax_OGFP_sum(st) = NaN;
+            if exist('postImpactFOgfpSum')==0 || isempty(postImpactFOgfpSum)==1 || isnan(FHS)==1
+                impactFmaxOgfpSum(st) = NaN;
             else
-                impactF_OGFP_sum(st) = mean(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                if isempty(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)))
+                impactFOgfpSum(st) = mean(striderFyOgfpSum(find((striderFyOgfpSum(FHS-FHS+1: postImpactFOgfpSum)-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                if isempty(striderFyOgfpSum(find((striderFyOgfpSum(FHS-FHS+1: postImpactFOgfpSum)-levelOfInterest)>0)))
 
                 else
-                    impactFmax_OGFP_sum(st) = max(striderFy_OGFP_sum(find((striderFy_OGFP_sum(FHS-FHS+1: postImpactF_OGFP_sum)-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                    impactFmaxOgfpSum(st) = max(striderFyOgfpSum(find((striderFyOgfpSum(FHS-FHS+1: postImpactFOgfpSum)-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                 end
             end
 
@@ -694,10 +694,10 @@ for st = 1:length(strideEvents.tSHS)-1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% computing the parameters for each of the overground force-plates %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     for fp = 1:length(Ally)
-        if isempty(striderSy_OGFP.(Ally{fp})) || all(striderSy_OGFP.(Ally{fp})==striderSy_OGFP.(Ally{fp})(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
+        if isempty(striderSyOgfp.(Ally{fp})) || all(striderSyOgfp.(Ally{fp})==striderSyOgfp.(Ally{fp})(1)) || isempty(FTO) || isempty(STO)% So if there is some sort of problem with the GRF, set everything to NaN
             %This does nothing, as vars are initialized as nan:
         else
-            if std(striderSy_OGFP.(Ally{fp}), 'omitnan')<0.01 && mean(striderSy_OGFP.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+            if std(striderSyOgfp.(Ally{fp}), 'omitnan')<0.01 && mean(striderSyOgfp.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
             else
                 ns_OGFP.(Ally{fp}) = find((striderSy_OGFP.(Ally{fp})-LevelofInterest) < 0);%1:65
@@ -712,28 +712,28 @@ for st = 1:length(strideEvents.tSHS)-1
                     end
                 end
 
-                if isempty(ns_OGFP.(Ally{fp}))
+                if isempty(ns_ogfp.(Ally{fp}))
 
                 else
-                    SB_OGFP.(Ally{fp})(st) = FlipB.*(mean(striderSy_OGFP.(Ally{fp})(ns_OGFP.(Ally{fp}))-LevelofInterest, 'omitnan'));
-                    SBmax_OGFP.(Ally{fp})(st) = FlipB.*(min(striderSy_OGFP.(Ally{fp})(ns_OGFP.(Ally{fp}))-LevelofInterest, [], 'omitnan'));
+                    SB_ogfp.(Ally{fp})(st) = flipB.*(mean(striderSyOgfp.(Ally{fp})(ns_ogfp.(Ally{fp}))-levelOfInterest, 'omitnan'));
+                    SBmax_ogfp.(Ally{fp})(st) = flipB.*(min(striderSyOgfp.(Ally{fp})(ns_ogfp.(Ally{fp}))-levelOfInterest, [], 'omitnan'));
                 end
-                if isempty(ps_OGFP.(Ally{fp}))
+                if isempty(ps_ogfp.(Ally{fp}))
 
                 else
-                    SP_OGFP.(Ally{fp})(st) = mean(striderSy_OGFP.(Ally{fp})(ps_OGFP.(Ally{fp}))-LevelofInterest, 'omitnan');
-                    SPmax_OGFP.(Ally{fp})(st) = max(striderSy_OGFP.(Ally{fp})(ps_OGFP.(Ally{fp}))-LevelofInterest, [], 'omitnan');
+                    SP_ogfp.(Ally{fp})(st) = mean(striderSyOgfp.(Ally{fp})(ps_ogfp.(Ally{fp}))-levelOfInterest, 'omitnan');
+                    SPmax_ogfp.(Ally{fp})(st) = max(striderSyOgfp.(Ally{fp})(ps_ogfp.(Ally{fp}))-levelOfInterest, [], 'omitnan');
                 end
 
-                if exist(['postImpactS_OGFP.' Ally{fp}])==0 || isempty(postImpactS_OGFP.(Ally{fp}))==1
+                if exist(['postImpactS_ogfp.' Ally{fp}])==0 || isempty(postImpactS_ogfp.(Ally{fp}))==1
                     %                     impactS(st)=NaN;
                     %                     impactSmax(st)=NaN;
                 else
-                    impactS_OGFP.(Ally{fp})(st) = mean(striderSy_OGFP.(Ally{fp})(find((striderSy_OGFP.(Ally{fp})(SHS-SHS+1: postImpactS_OGFP.(Ally{fp}))-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                    if isempty(striderSy_OGFP.(Ally{fp})(find((striderSy_OGFP.(Ally{fp})(SHS-SHS+1: postImpactS_OGFP.(Ally{fp}))-LevelofInterest)>0)))
+                    impactS_ogfp.(Ally{fp})(st) = mean(striderSyOgfp.(Ally{fp})(find((striderSyOgfp.(Ally{fp})(SHS-SHS+1: postImpactS_ogfp.(Ally{fp}))-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                    if isempty(striderSyOgfp.(Ally{fp})(find((striderSyOgfp.(Ally{fp})(SHS-SHS+1: postImpactS_ogfp.(Ally{fp}))-levelOfInterest)>0)))
                         %impactSmax(st)=NaN;
                     else
-                        impactSmax_OGFP.(Ally{fp})(st) = max(striderSy_OGFP.(Ally{fp})(find((striderSy_OGFP.(Ally{fp})(SHS-SHS+1: postImpactS_OGFP.(Ally{fp}))-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                        impactSmax_ogfp.(Ally{fp})(st) = max(striderSyOgfp.(Ally{fp})(find((striderSyOgfp.(Ally{fp})(SHS-SHS+1: postImpactS_ogfp.(Ally{fp}))-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                     end
                 end
             end
@@ -744,10 +744,10 @@ for st = 1:length(strideEvents.tSHS)-1
         end
 
         %%Now for the fast leg...
-        if isempty(striderFy_OGFP.(Ally{fp})) || all(striderFy_OGFP.(Ally{fp})==striderFy_OGFP.(Ally{fp})(1)) || isempty(FTO) || isempty(STO)
+        if isempty(striderFyOgfp.(Ally{fp})) || all(striderFyOgfp.(Ally{fp})==striderFyOgfp.(Ally{fp})(1)) || isempty(FTO) || isempty(STO)
 
         else
-            if std(striderFy_OGFP.(Ally{fp}), 'omitnan')<0.01 && mean(striderFy_OGFP.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
+            if std(striderFyOgfp.(Ally{fp}), 'omitnan')<0.01 && mean(striderFyOgfp.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
             else
                 nf_OGFP.(Ally{fp}) = find((striderFy_OGFP.(Ally{fp})-LevelofInterest) < 0);%1:65
@@ -761,27 +761,27 @@ for st = 1:length(strideEvents.tSHS)-1
                     end
                 end
 
-                if isempty(pf_OGFP.(Ally{fp}))
+                if isempty(pf_ogfp.(Ally{fp}))
 
                 else
-                    FP_OGFP.(Ally{fp})(st) = mean(striderFy_OGFP.(Ally{fp})(pf_OGFP.(Ally{fp}))-LevelofInterest, 'omitnan');
-                    FPmax_OGFP.(Ally{fp})(st) = max(striderFy_OGFP.(Ally{fp})(pf_OGFP.(Ally{fp}))-LevelofInterest, [], 'omitnan');
+                    FP_ogfp.(Ally{fp})(st) = mean(striderFyOgfp.(Ally{fp})(pf_ogfp.(Ally{fp}))-levelOfInterest, 'omitnan');
+                    FPmax_ogfp.(Ally{fp})(st) = max(striderFyOgfp.(Ally{fp})(pf_ogfp.(Ally{fp}))-levelOfInterest, [], 'omitnan');
                 end
-                if isempty(nf_OGFP.(Ally{fp}))
+                if isempty(nf_ogfp.(Ally{fp}))
 
                 else
-                    FB_OGFP.(Ally{fp})(st) = FlipB.*(mean(striderFy_OGFP.(Ally{fp})(nf_OGFP.(Ally{fp}))-LevelofInterest, 'omitnan'));
-                    FBmax_OGFP.(Ally{fp})(st) = FlipB.*(min(striderFy_OGFP.(Ally{fp})(nf_OGFP.(Ally{fp}))-LevelofInterest, [], 'omitnan'));
+                    FB_ogfp.(Ally{fp})(st) = flipB.*(mean(striderFyOgfp.(Ally{fp})(nf_ogfp.(Ally{fp}))-levelOfInterest, 'omitnan'));
+                    FBmax_ogfp.(Ally{fp})(st) = flipB.*(min(striderFyOgfp.(Ally{fp})(nf_ogfp.(Ally{fp}))-levelOfInterest, [], 'omitnan'));
                 end
 
-                if exist(['postImpactF_OGFP.' Ally{fp}])==0 || isempty(postImpactF_OGFP.(Ally{fp}))==1
+                if exist(['postImpactF_ogfp.' Ally{fp}])==0 || isempty(postImpactF_ogfp.(Ally{fp}))==1
 
                 else
-                    impactF_OGFP.(Ally{fp})(st) = mean(striderFy_OGFP.(Ally{fp})(find((striderFy_OGFP.(Ally{fp})(FHS-FHS+1: postImpactF_OGFP.(Ally{fp}))-LevelofInterest)>0)), 'omitnan')-LevelofInterest;
-                    if isempty(striderFy_OGFP.(Ally{fp})(find((striderFy_OGFP.(Ally{fp})(FHS-FHS+1: postImpactF_OGFP.(Ally{fp}))-LevelofInterest)>0)))
+                    impactF_ogfp.(Ally{fp})(st) = mean(striderFyOgfp.(Ally{fp})(find((striderFyOgfp.(Ally{fp})(FHS-FHS+1: postImpactF_ogfp.(Ally{fp}))-levelOfInterest)>0)), 'omitnan')-levelOfInterest;
+                    if isempty(striderFyOgfp.(Ally{fp})(find((striderFyOgfp.(Ally{fp})(FHS-FHS+1: postImpactF_ogfp.(Ally{fp}))-levelOfInterest)>0)))
 
                     else
-                        impactFmax_OGFP.(Ally{fp})(st) = max(striderFy_OGFP.(Ally{fp})(find((striderFy_OGFP.(Ally{fp})(FHS-FHS+1: postImpactF_OGFP.(Ally{fp}))-LevelofInterest)>0)), [], 'omitnan')-LevelofInterest;
+                        impactFmax_ogfp.(Ally{fp})(st) = max(striderFyOgfp.(Ally{fp})(find((striderFyOgfp.(Ally{fp})(FHS-FHS+1: postImpactF_ogfp.(Ally{fp}))-levelOfInterest)>0)), [], 'omitnan')-levelOfInterest;
                     end
                 end
             end
@@ -940,9 +940,9 @@ outCOP.description = [];
 %descriptionOgfp_sum = {'GRF-FYs max signed braking', 'GRF-FYs max signed propulsion','GRF-FYf max signed braking', 'GRF-FYf max signed propulsion'};
 
 data_all = [[impactS_all NaN]' [SB_all NaN]' [SP_all NaN]' [impactF_all NaN]' [FB_all NaN]' [FP_all NaN]' [FB_all-SB_all NaN]' [FP_all-SP_all NaN]' [SX_all NaN]' [SZ_all NaN]' [FX_all NaN]' [FZ_all NaN]' ...
-    [impactSmax_all NaN]' [SBmax_all NaN]' [SPmax_all NaN]' [impactFmax_all NaN]' [FBmax_all NaN]' [FPmax_all NaN]' [SXmax_all NaN]' [SZmax_all NaN]' [FXmax_all NaN]' [FZmax_all NaN]' [exist_SlowF NaN]' [exist_FastF NaN]'];
+    [impactSmax_all NaN]' [SBmax_all NaN]' [SPmax_all NaN]' [impactFmax_all NaN]' [FBmax_all NaN]' [FPmax_all NaN]' [SXmax_all NaN]' [SZmax_all NaN]' [FXmax_all NaN]' [FZmax_all NaN]' [existSlowF NaN]' [existFastF NaN]'];
 
-labels_all = {'FyImpactS_all', 'FyBS_all', 'FyPS_all', 'FyImpactF_all', 'FyBF_all', 'FyPF_all','FyBSym_all', 'FyPSym_all', 'FxS_all', 'FzS_all', 'FxF_all', 'FzF_all', 'FyImpactSmax_all', 'FyBSmax_all', 'FyPSmax_all', 'FyImpactFmax_all', 'FyBFmax_all', 'FyPFmax_all', 'FxSmax_all', 'FzSmax_all', 'FxFmax_all', 'FzFmax_all','exist_SlowF','exist_FastF'};
+labels_all = {'FyImpactS_all', 'FyBS_all', 'FyPS_all', 'FyImpactF_all', 'FyBF_all', 'FyPF_all','FyBSym_all', 'FyPSym_all', 'FxS_all', 'FzS_all', 'FxF_all', 'FzF_all', 'FyImpactSmax_all', 'FyBSmax_all', 'FyPSmax_all', 'FyImpactFmax_all', 'FyBFmax_all', 'FyPFmax_all', 'FxSmax_all', 'FzSmax_all', 'FxFmax_all', 'FzFmax_all','existSlowF','existFastF'};
 % Carly's paper looks at the maximum breaking and propulsion forces for the fast and the slow side which will be  'FyBSmax', 'FyPSmax', 'FyBFmax', 'FyPFmax'
 
 description_all = {'GRF-FYs average signed impact force', 'GRF-FYs average signed braking', 'GRF-FYs average signed propulsion',...
@@ -959,9 +959,9 @@ description_all = {'GRF-FYs average signed impact force', 'GRF-FYs average signe
 % description_all = [description_all descriptionOgfp_sum];
 
 
-data_OGFP = [];
-labels_OGFP = [];
-description_OGFP = [];
+dataOgfp = [];
+labelsOgfp = [];
+descriptionOgfp = [];
 
 for fp = 1:length(Ally)
 
@@ -975,9 +975,9 @@ for fp = 1:length(Ally)
 
     wannaAddOGFP = 1;
     if wannaAddOGFP == 1
-        data_all = [data_all data_OGFP_temp];
-        labels_all = [labels_all labels_OGFP_temp];
-        description_all = [description_all description_OGFP_temp];
+        data_all = [data_all dataOgfpTemp];
+        labels_all = [labels_all labelsOgfpTemp];
+        description_all = [description_all descriptionOgfpTemp];
     end
 
 end
