@@ -1,6 +1,3 @@
-aux=mean(X,1);
-Y=X(:,:)-repmat(aux(:,:),[size(X,1),1]);
-Y=reshape(Y,size(X));
 function Y = demean(X)
 %DEMEAN Remove the column-wise mean from a matrix.
 %
@@ -21,5 +18,7 @@ arguments
     X (:,:) double
 end
 
+colMeans = mean(X, 1, 'omitnan');  % (1×C) column means
+Y        = X - colMeans;           % broadcast subtraction
 
 end
