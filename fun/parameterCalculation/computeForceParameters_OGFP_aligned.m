@@ -223,22 +223,18 @@ for fp = 1:length(Ally)
     FBmax_OGFP.(Ally{fp}) = NaN(1, lenny); FPmax_OGFP.(Ally{fp}) = NaN(1, lenny); FZmax_OGFP.(Ally{fp}) = NaN(1, lenny);FXmax_OGFP.(Ally{fp}) = NaN(1, lenny);
 end
 
-endcutting = 150;
-    slow_frames = 600+endcutting;
-    fast_frames = 600+endcutting;
-elseif strcmp(trialData.metaData.name,'adaptation')
-    slow_frames = 800+endcutting;
-    fast_frames = 600+endcutting;
-elseif strcmp(trialData.metaData.name,'TM base') || strcmp(trialData.metaData.name,'TM post')
-    slow_frames = 700+endcutting;
-    fast_frames = 700+endcutting;
 if strcmp(trialData.metaData.name, 'TM slow')
     slowFrames = slowFramesSlow + endCutFrames;
     fastFrames = fastFramesSlow + endCutFrames;
 elseif strcmp(trialData.metaData.name, 'TM fast')
+    slowFrames = slowFramesFast + endCutFrames;
+    fastFrames = fastFramesFast + endCutFrames;
+elseif strcmp(trialData.metaData.name, 'adaptation')
+    slowFrames = slowFramesSlow + endCutFrames;
+    fastFrames = fastFramesFast + endCutFrames;
 else
-    slow_frames = 700+endcutting;
-    fast_frames = 700+endcutting;
+    slowFrames = defaultFrames + endCutFrames;
+    fastFrames = defaultFrames + endCutFrames;
 end
 
 
