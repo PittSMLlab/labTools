@@ -20,8 +20,12 @@ function [data, time, auxLabel] = getDataAsVector(this, label)
 %
 % See also GETDATAASTS, GETLABELSTHATMATCH, ISALABEL.
 
+arguments
+    this
+    label = []
+end
 
-if nargin < 2 || isempty(label)
+if isempty(label)
     label = this.labels;
 end
 if isa(label, 'char')
@@ -30,6 +34,7 @@ else
     auxLabel = label;
 end
 time = this.Time;
+
 [boolFlag, labelIdx] = this.isaLabel(auxLabel);
 if ~any(boolFlag)
     auxLabel2 = [];
@@ -55,4 +60,3 @@ if nargout > 2
     auxLabel = this.labels(labelIdx(boolFlag));
 end
 end
-
