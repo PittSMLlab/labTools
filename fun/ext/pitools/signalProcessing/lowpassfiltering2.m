@@ -1,13 +1,3 @@
-data2 = fft(dataAux) .* abs(fft(h*ones(1,size(datafile,2)))).^2;
-
-data=ifft(data2);
-data1=data(1:size(datafile,1),:);
-
-
-%Filter characteristics
-% figure
-% plot(abs(fft(h)))
-
 function data = lowpassfiltering2(data, fcut, filterOrder, fsample)
 %LOWPASSFILTERING2 Apply a zero-phase Butterworth lowpass filter with
 %mirrored-boundary padding.
@@ -48,3 +38,13 @@ nyquist      = 0.5 * fsample;             % Nyquist frequency (Hz)
 impulse      = [1; zeros(size(dataMirrored, 1) - 1, 1)];
 filterImpulse = filter(b, a, impulse);
 
+%% Apply zero-phase filter via FFT: convolve spectra, take magnitude squared
+% Squaring the magnitude of the impulse spectrum implements zero-phase
+% (forward + backward) filtering without running the filter twice.
+filteredMirrored = ifft( ...
+    fft(dataMirrored) .* abs(fft(filterImpulse * ones(1, size(data, 2)))) .^ 2);
+
+%% Return only the original (un-mirrored) portion
+data = filteredMirrored(1:size(data, 1), :);
+
+end
