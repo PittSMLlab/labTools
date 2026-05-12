@@ -174,7 +174,7 @@ for jj = 1:2
         [H, THETA, RHO] = hough(full(A)', 'RhoResolution', HOUGH_RHO_RES, ...
             'Theta', HOUGH_ANGLES);
     catch
-        disp('Caught exception when computing Hough transform');
+        warning('getStance2:houghFailed', 'Exception during Hough transform.');
     end
     [~, ind] = max(H(:));
     [m, n]   = ind2sub(size(H), ind);
@@ -188,7 +188,7 @@ for jj = 1:2
 
     if sum(stance) < 3
         % probable backwards trial
-        disp('Warning: probable backwards trial')
+        warning('getStance2:backwardsTrial', 'Probable backwards trial detected.')
         flag   = true;
         stance = (abs(dist2Floor) < tol) & ([0; diff(projOnFloor)] > 0);
     end
@@ -199,7 +199,7 @@ for jj = 1:2
         dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
             + (relevantKin(:, 2) - CoM_y) * M(2, 2); % corrected floor distance
     catch
-        disp('Caught exception when computing distance to floor.');
+        warning('getStance2:pcaFailed', 'Exception during floor-distance PCA.');
     end
 
     if (~backwards) && (~flag)
@@ -228,7 +228,7 @@ for jj = 1:2
                 dist2Floor = (relevantKin(:, 1) - CoM_x) * M(1, 2) ...
                     + (relevantKin(:, 2) - CoM_y) * M(2, 2);
             catch
-                disp('Caught exception when computing distance to floor.');
+                warning('getStance2:pcaFailed', 'Exception during floor-distance PCA.');
             end
         else
             change = false;

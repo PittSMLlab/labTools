@@ -42,8 +42,9 @@ forces = medfilt1(forces, N);
 
 % sanity check: correct non-zeroed force plates
 if mode(forces) ~= 0
-    disp(['Warning: Left z-axis forces have non-zero mode. ' ...
-        'Subtracting mode from force data before event detection']);
+    warning('getStanceFromForces:nonZeroMode', ...
+        ['Vertical GRF has non-zero mode. ' ...
+         'Subtracting mode from force data before event detection.']);
     forces = forces - mode(forces);
 end
 
