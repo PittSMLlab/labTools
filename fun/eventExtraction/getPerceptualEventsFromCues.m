@@ -13,10 +13,14 @@ function [LHSstartCue, LHSstopCue, RHSstartCue, RHSstopCue] = ...
 %   infoRHSevent  - K×1 double, times of right heel-strike events (s)
 %
 % Outputs:
-%   LHSstartCue - M×1 double, LHS event times at perceptual trial start
-%   LHSstopCue  - M×1 double, LHS event times at perceptual trial stop
-%   RHSstartCue - K×1 double, RHS event times at perceptual trial start
-%   RHSstopCue  - K×1 double, RHS event times at perceptual trial stop
+%   LHSstartCue - M×1 double, sparse: event time at matched LHS index,
+%                 zero elsewhere; length matches infoLHSevent
+%   LHSstopCue  - M×1 double, sparse: event time at matched LHS index,
+%                 zero elsewhere
+%   RHSstartCue - K×1 double, sparse: event time at matched RHS index,
+%                 zero elsewhere; length matches infoRHSevent
+%   RHSstopCue  - K×1 double, sparse: event time at matched RHS index,
+%                 zero elsewhere
 %
 % Toolbox Dependencies: None
 %
