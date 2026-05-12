@@ -33,10 +33,6 @@ function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowle
 % See also COMPUTEFORCEPARAMETERS_OGFP, COMPUTELEGFORCEPARAMETERS,
 %   DETERMINETMANGLE, PARAMETERSERIES.
 
-%~~~~~~~ Here is where I am putting real stuffs ~~~~~~~~
-trial=trialData.metaData.description;
-%If I want all the forces to be unitless then set this to 9.81*BW, else set it
-%to 1*BW
 arguments
     strideEvents (1,1) struct
     GRFData
@@ -49,14 +45,29 @@ end
 
 if strcmpi(trialData.metaData.type,'NIM')
     Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
+%% Initialize Trial Metadata and Constants
+trial = trialData.metaData.description;
+
+gravityAcc      = 9.81;  % gravitational acceleration (m/s^2)
+shoeWeightKg    = 3.4;   % Nimbus shoe pair mass (two shoes; update if shoes change)
+inTMAngle       = 8.5;   % incline angle (deg) assumed for 'IN' trial type
+bwThMin         = 0.8;   % min vertical GRF threshold as fraction of BW
+earlyFrac       = 0.2;   % early-stance phase fraction
+endFrac         = 0.2;   % end-of-stance phase fraction
+strideDiv       = 8;     % divisor for stride sub-window indexing
+inclineAPFactor = 0.5;   % AP gravity component for inclined treadmill trials
+endCutFrames    = 150;   % frames trimmed from end of aligned data
+% Frame budgets approximate full stride cycle at typical TM speeds
+slowFramesSlow  = 800;   % frame budget for slow-speed trials (slow leg)
+slowFramesFast  = 600;   % frame budget for fast-speed trials (slow leg)
+fastFramesSlow  = 800;   % frame budget for slow-speed trials (fast leg)
+fastFramesFast  = 600;   % frame budget for fast-speed trials (fast leg)
+defaultFrames   = 700;   % frame budget for base/post/default trial types
+
 else
     normalizer = gravityAcc * BW;
 end
 
-bw_th_min = 0.8;
-early_th = 0.2;
-end_th = 0.2;
-divideri = 8;
 flipB = 1;
 trialNum = str2double(trialData.metaData.rawDataFilename(end-1:end));
 
