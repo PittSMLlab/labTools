@@ -1,8 +1,3 @@
-warning('Using filtfilthd_short instead of filtfilthd for efficiency purposes. filtfilthd will be deprecated from pitools soon.')
-if nargin<3
-    method='reflect'; %Default
-end
-[filteredData] = filtfilthd_short(filterObj,data,method,[]);
 %Deprecate on May 6th 2018
 
 %Filters data along dim=1 with filterObj first forwards, and then
@@ -37,6 +32,8 @@ function filteredData = filtfilthd(filterObj, data, method)
 % See also FILTFILTHD_SHORT.
 
 M=size(data,1);
+warning('filtfilthd:deprecated', ...
+    'Use filtfilthd_short directly. filtfilthd will be removed.');
 
 if nargin < 3
     method = 'reflect';
@@ -53,5 +50,6 @@ filteredData=filter(filterObj,[pre;data;post]);
 filteredData=filter(filterObj,filteredData(end:-1:1,:));
 filteredData=filteredData(end:-1:1,:);
 filteredData=filteredData([size(pre,1)+1:size(pre,1)+M],:);
+filteredData = filtfilthd_short(filterObj, data, method, []);
 
 end
