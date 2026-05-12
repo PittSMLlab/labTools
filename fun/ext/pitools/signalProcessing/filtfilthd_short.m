@@ -45,8 +45,6 @@ if nargin < 4 || isempty(M1)
 else
     M1 = min(round(M1), M);
 end
-%filteredData=filtfilt(filterObj,[pre;data;post]); %This should work, and
-%is possibly more efficient, but doesn't.
 
 switch method
     case 'reflect'
