@@ -19,7 +19,8 @@ function stance = getStanceFromToeAndHeel(ankKin, toeKin, fsample)
 % See also GETSTANCEFROMFORCES, DELETESHORTPHASES, GETEVENTSFROMTOENANDHEEL.
 
 stance3 = getStance3(ankKin, toeKin, fsample); % threshold accelerations
-% stance2 = getStance2(ankKin, toeKin, fsample); % Hough + thresholding
+% NOTE: getStance2 (Hough-transform floor detection) is an alternative
+% that may be more robust for non-standard gait; see that nested function.
 stance1 = getStance(ankKin, toeKin, fsample);   % threshold velocities
 % stance1 = stance2;
 % stance3 = stance2;
@@ -272,7 +273,6 @@ function stance = getStance3(ankKin, toeKin, fsample)
 NAN_FILL_ACC = 100000; % large sentinel to suppress NaN in idealLPF (mm/s²)
 accThresh    = 5000;   % acceleration threshold (mm/s²); empirical
 
-%% Step 1: low pass filter and calculate acceleration
 % Get velocities:
 % va(:,1)=derive(ankKin(:,1),fsample); %fore-aft axis
 % va(:,2)=derive(ankKin(:,2),fsample); %up-down axis
@@ -283,6 +283,7 @@ accThresh    = 5000;   % acceleration threshold (mm/s²); empirical
 % aa(:,2)=derive(va(:,2),fsample);
 % at(:,1)=derive(vt(:,1),fsample);
 % at(:,2)=derive(vt(:,2),fsample);
+%% Step 1: calculate acceleration via second finite difference
 ankleAcc = fsample ^ 2 * diff(diff(ankKin));
 ankleAcc = [ankleAcc(1, :); ankleAcc; ankleAcc(end, :)];
 toeAcc   = fsample ^ 2 * diff(diff(toeKin));

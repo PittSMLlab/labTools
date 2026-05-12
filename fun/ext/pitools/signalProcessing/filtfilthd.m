@@ -1,4 +1,3 @@
-function [filteredData] = filtfilthd(filterObj,data,method)
 warning('Using filtfilthd_short instead of filtfilthd for efficiency purposes. filtfilthd will be deprecated from pitools soon.')
 if nargin<3
     method='reflect'; %Default
@@ -19,6 +18,7 @@ end
 if size(data,1)<size(data,2)
     warning('Input data seems to be organized as rows, and filtfilthd filters along columns.')
 end
+function filteredData = filtfilthd(filterObj, data, method)
 %FILTFILTHD Zero-phase filter with reflective boundary handling.
 %
 %   Deprecated wrapper — delegates entirely to FILTFILTHD_SHORT.
