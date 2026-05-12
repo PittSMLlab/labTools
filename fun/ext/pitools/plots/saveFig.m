@@ -33,6 +33,11 @@ end
 %Save fig:
 if ~exist([dir 'fig/'],'dir')
     mkdir([dir 'fig/'])
+arguments
+    h
+    dir      {mustBeTextScalar}
+    fileName {mustBeTextScalar}
+    sizeFlag = []
 end
 savefig(h,[dir 'fig/' fileName '.fig'],'compact') ;
 
