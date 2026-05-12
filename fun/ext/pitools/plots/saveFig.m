@@ -1,5 +1,4 @@
 function saveFig(h,dir,fileName,sizeFlag)
-%saveFig saves figure h as .fig and .png for further reference
 set(h,'PaperPositionMode','manual')
 if nargin<4 || isempty(sizeFlag)
     set(h,'Units','Normalized','OuterPosition',[0 0 1 1])
@@ -7,6 +6,29 @@ end
 if ~exist(dir,'dir')
     mkdir(dir)
 end
+%SAVEFIG Save figure as .fig, .eps, and .png in organised subdirectories.
+%
+%   Creates fig/, eps/, and png/ subdirectories under dir and writes one
+% file per format. EPS export uses OpenGL rendering (rasterised at 600
+% DPI), which handles transparency correctly but is not true vector
+% output. PNG export renders at 600 DPI with a white background.
+%
+%   When sizeFlag is provided and non-empty, the caller is responsible
+% for setting the figure size before calling saveFig. Otherwise the
+% figure is maximised to fill the screen.
+%
+% Inputs:
+%   h        - handle to the figure to save
+%   dir      - output directory path (trailing separator optional)
+%   fileName - base file name, without extension
+%   sizeFlag - (optional) when non-empty, skips auto-maximise
+%
+% Outputs:
+%   None
+%
+% Toolbox Dependencies: None
+%
+% See also PRINT, SAVEFIG.
 
 %Save fig:
 if ~exist([dir 'fig/'],'dir')
