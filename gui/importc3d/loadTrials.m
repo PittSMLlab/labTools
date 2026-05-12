@@ -604,11 +604,11 @@ for tr = trialNums                      % for each trial, ...
             % Find gains via least-squares on high-pass filtered sync
             % signals (why use HPF for gains and not for sync?)
             refSync = clipSignals(refSync(:), clipPercentile);
-            refSync = idealHPF(refSync, 0);    % remove DC only
+            refSync = refSync - mean(refSync, 'omitnan');  % remove DC
             [allData, refSync] = truncateToSameLength(allData, refSync);
             sync = allData(:, syncIdx);
             sync = clipSignals(sync, clipPercentile);
-            sync = idealHPF(sync, 0);
+            sync = sync - mean(sync, 'omitnan');
             gain1    = refSync' / sync(:, 1)';
             indStart = round(max([lagInSamplesA+1, 1]));
             reducedRefSync = refSync(indStart:end);
