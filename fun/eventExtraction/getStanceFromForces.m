@@ -17,15 +17,6 @@ function stance = getStanceFromForces(Fz, threshold, fsample)
 %
 % See also GETSTANCEFROMFORCESALT, DELETESHORTPHASES, GETEVENTSFROMFORCES.
 
-%  %% If Fz is sampled >2000Hz, downsample to somewhere in the [1000-2000)Hz
-%  %range (for computational cost reduction, no other reason).
-%
-%  M=1;
-%  if fsample>2000
-%      M=floor(fsample/1000);
-%      Fz=Fz(1:M:end);
-%      fsample=fsample/M;
-%  end
 %% Get stance from forces
 N = round(0.01 * fsample); % median filter window: 10 ms
 if mod(N, 2) == 0
