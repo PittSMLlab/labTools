@@ -37,6 +37,15 @@ function out = computeForceParameters_OGFP_aligned(strideEvents, GRFData, slowle
 trial=trialData.metaData.description;
 %If I want all the forces to be unitless then set this to 9.81*BW, else set it
 %to 1*BW
+arguments
+    strideEvents (1,1) struct
+    GRFData
+    slowleg      (1,:) char
+    fastleg      (1,:) char
+    BW           (1,1) double
+    trialData
+    markerData
+end
 
 if strcmpi(trialData.metaData.type,'NIM')
     Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
