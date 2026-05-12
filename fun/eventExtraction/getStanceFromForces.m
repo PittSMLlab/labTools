@@ -26,7 +26,6 @@ function stance = getStanceFromForces(Fz, threshold, fsample)
 %      Fz=Fz(1:M:end);
 %      fsample=fsample/M;
 %  end
-
 %% Get stance from forces
 N = round(0.01 * fsample); % median filter window: 10 ms
 if mod(N, 2) == 0

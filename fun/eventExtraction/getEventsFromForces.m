@@ -30,11 +30,10 @@ forceThresh = 10; % detection threshold (N)
 % lowPassFilter=design(filterList,'butter'); %Changed on Oct 21, 2014 to have less ripple in impulse response. This is a 4th order filter.
 % FzL=filtfilthd(lowPassFilter,FzL);  %Ext function
 % FzR=filtfilthd(lowPassFilter,FzR);  %Ext function
-
-[stanceL] = getStanceFromForces(FzL, forceThresh, fsample);
-[stanceR] = getStanceFromForces(FzR, forceThresh, fsample);
-%[stanceL] = getStanceFromForcesAlt(FzL, [], fsample); %New method
-%[stanceR] = getStanceFromForcesAlt(FzR, [], fsample); %New method
+% NOTE: getStanceFromForcesAlt is a derivative-based alternative to
+% getStanceFromForces; see that function for details.
+stanceL = getStanceFromForces(FzL, forceThresh, fsample);
+stanceR = getStanceFromForces(FzR, forceThresh, fsample);
 
 %% Get events from stance
 [LHS, RHS, LTO, RTO] = getEventsFromStance(stanceL, stanceR);

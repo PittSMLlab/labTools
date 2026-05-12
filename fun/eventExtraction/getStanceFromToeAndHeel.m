@@ -122,7 +122,8 @@ function stance = getStance2(Rheel, Rtoe, fsample)
 %   stance - N×1 logical, stance phase (true = stance)
 
 % Named constants for Hough-based floor-plane detection
-HOUGH_ANGLES    = [-90:0.2:-70, 70:0.2:89.8]; % angle search range (deg)
+% Two-segment angle range: near-vertical lines in both directions (deg)
+HOUGH_ANGLES    = [(-90:0.2:-70), (70:0.2:89.8)]; % angle search range (deg)
 HOUGH_RHO_RES   = 0.5;  % Hough ρ resolution (mm)
 OUTLIER_SD_MULT = 5;     % std-dev multiplier for outlier rejection
 
@@ -310,7 +311,7 @@ toeStance = modToeA < accThresh;
 
 %ankStance = deleteShortPhases(ankStance,fsample,0.25);
 %toeStance = deleteShortPhases(toeStance,fsample,0.25);
-stance = ankStance | toeStance;
+stance    = ankStance | toeStance;
 
 %% Eliminate stance and swing phases shorter than 200 ms
 stance = deleteShortPhases(stance, fsample, 0.2);

@@ -56,8 +56,9 @@ end
 stance = loading | unloading;
 
 %% Shorten stance phases to compensate for low-pass filter broadening
-% Erode by N samples on each side to undo the broadening introduced by
-% low-pass filtering (filter half-width ≈ fsample / (2 * fcut))
+% Erode by applying a length-N kernel and requiring all N values to be
+% stance. This removes up to N-1 samples from each phase boundary to undo
+% broadening introduced by low-pass filtering (half-width ≈ fsample / (2*fcut)).
 N      = round(0.5 * fsample / fcut);
 stance = conv(double(stance), ones(N, 1), 'same') > N - 1;
 
