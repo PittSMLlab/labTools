@@ -43,8 +43,6 @@ arguments
     markerData
 end
 
-if strcmpi(trialData.metaData.type,'NIM')
-    Normalizer=9.81*(BW+3.4); %3.4 kg is the weight of the two Nimbus shoes, if we ever change the shoes this needs to be modified
 %% Initialize Trial Metadata and Constants
 trial = trialData.metaData.description;
 
@@ -64,6 +62,9 @@ fastFramesSlow  = 800;   % frame budget for slow-speed trials (fast leg)
 fastFramesFast  = 600;   % frame budget for fast-speed trials (fast leg)
 defaultFrames   = 700;   % frame budget for base/post/default trial types
 
+% Normalize forces to body weight (add shoe mass for Nimbus trials)
+if strcmpi(trialData.metaData.type, 'NIM')
+    normalizer = gravityAcc * (BW + shoeWeightKg);
 else
     normalizer = gravityAcc * BW;
 end
@@ -77,7 +78,7 @@ end
 
 ang = determineTMAngle(trialData.metaData);
 if strcmpi(trialData.metaData.type, 'IN')
-    ang = 8.5;
+    ang = inTMAngle;
 end
 flipIT = 2.*(ang >= 0) - 1;  % -1 for decline trials, 1 otherwise
 
@@ -198,10 +199,10 @@ for fp = 1:length(Ally)
 end
 
 
-LevelofInterest = 0.5.*flipIT.*cosd(90-abs(ang)); %The actual angle of the incline
 %figure; plot(filtered.getDataAsTS([slowleg 'Fy']).Data, 'b'); hold on; plot(filtered.getDataAsTS([fastleg 'Fy']).Data, 'r');line([0 5*10^5], [0, 0])
 
 %% Align Stance-Phase Data
+levelOfInterest = inclineAPFactor .* flipIT .* cosd(90 - abs(ang));
 %levelOfInterest = flipIT.*cosd(90-abs(ang));
 
 lenny=length(strideEvents.tSHS)-1;
