@@ -19,7 +19,6 @@ function stance = deleteShortPhases(stance, fsample, minDuration)
 % See also GETSTANCEFROMFORCES, GETSTANCEFROMTOENANDHEEL.
 
 N = ceil(minDuration * fsample);
-% stance1 = stance;
 
 %% Dilate stance, and erode
 %dilStance=conv(double(stance),ones(N,1),'same')>0;
@@ -38,9 +37,8 @@ N = ceil(minDuration * fsample);
 %Simple implementation:
 % Commented out by Pablo on 25/II/2015 because of more efficient
 % implementation
-%tic
-if ~isempty(stance)     % if there is data in 'stance', ...
-    for ii = 1:N        % for each sample, ...
+if ~isempty(stance)
+    for ii = 1:N
         % NOTE: iteratively applies a morphological opening. Each iteration
         % applies a window of radius ii: a sample survives only if at least
         % half+1 of its neighbours are stance. After N iterations, any run
@@ -48,8 +46,6 @@ if ~isempty(stance)     % if there is data in 'stance', ...
         stance = conv(double(stance), ones(2*ii+1, 1), 'same') > ii;
     end
 end
-% toc
-% tic
 % stance2=gpuArray(stance);
 % if ~isempty(stance)
 %    for i=1:N %Slowly dilating/eroding stance phases, until no possibility for
@@ -58,7 +54,6 @@ end
 %    end
 % end
 % stance2=gather(stance);
-% toc
 
 %Equivalent efficient implementation: (it is actually NOT efficient, for
 %some reason the conv is much faster, I guess it has to do with the fact
