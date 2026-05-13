@@ -687,10 +687,10 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
         %         FZmax_align(st)=-1*min(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'z']), [], 'omitnan')/normalizer;
         %         FXmax_align(st)=max(filteredFastStance.getDataAsVector([ogfpyFast(1:end-1) 'x']), [], 'omitnan')/normalizer;
 
-        FZ_align(st)=-1*mean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:, 1, st), 'omitnan')/Normalizer;
-        FX_align(st)=mean(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:, 1, st), 'omitnan')/Normalizer;
-        FZmax_align(st)=-1*min(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'z']).Data(:, 1, st), [], 'omitnan')/Normalizer;
-        FXmax_align(st)=min(filteredFast_align.getPartialDataAsATS([OGFPy_fast(1:end-1) 'x']).Data(:, 1, st), [], 'omitnan')/Normalizer;
+        FZ_align(st)=-1*mean(filteredFast_align.getPartialDataAsATS([ogfpyFast(1:end-1) 'z']).Data(:, 1, st), 'omitnan')/normalizer;
+        FX_align(st)=mean(filteredFast_align.getPartialDataAsATS([ogfpyFast(1:end-1) 'x']).Data(:, 1, st), 'omitnan')/normalizer;
+        FZmax_align(st)=-1*min(filteredFast_align.getPartialDataAsATS([ogfpyFast(1:end-1) 'z']).Data(:, 1, st), [], 'omitnan')/normalizer;
+        FXmax_align(st)=min(filteredFast_align.getPartialDataAsATS([ogfpyFast(1:end-1) 'x']).Data(:, 1, st), [], 'omitnan')/normalizer;
 
     end
 
@@ -808,15 +808,15 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             if std(striderSyOgfp.(Ally{fp}), 'omitnan')<0.01 && mean(striderSyOgfp.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
             else
-                ns_OGFP.(Ally{fp}) = find((striderSy_OGFP.(Ally{fp})-LevelofInterest)<0);%1:65
-                ps_OGFP.(Ally{fp}) = find((striderSy_OGFP.(Ally{fp})-LevelofInterest)>0);
+                ns_ogfp.(Ally{fp}) = find((striderSyOgfp.(Ally{fp})-levelOfInterest)<0);%1:65
+                ps_ogfp.(Ally{fp}) = find((striderSyOgfp.(Ally{fp})-levelOfInterest)>0);
 
-                ImpactMagS_OGFP.(Ally{fp}) = find((striderSy_OGFP.(Ally{fp})-LevelofInterest)==max(striderSy_OGFP.(Ally{fp})(1:75)-LevelofInterest, [], 'omitnan'));%no longer percent of stride
-                if isempty(ImpactMagS_OGFP.(Ally{fp})) ~= 1
-                    postImpactS_OGFP.(Ally{fp})=ns_OGFP.(Ally{fp})(find(ns_OGFP.(Ally{fp}) > ImpactMagS_OGFP.(Ally{fp})(end), 1, 'first'));
-                    if isempty(postImpactS_OGFP.(Ally{fp}))~=1
-                        ps_OGFP.(Ally{fp})(find(ps_OGFP.(Ally{fp})<postImpactS_OGFP.(Ally{fp})))=[];
-                        ns_OGFP.(Ally{fp})(find(ns_OGFP.(Ally{fp})<postImpactS_OGFP.(Ally{fp})))=[];
+                ImpactMagS_ogfp.(Ally{fp}) = find((striderSyOgfp.(Ally{fp})-levelOfInterest)==max(striderSyOgfp.(Ally{fp})(1:75)-levelOfInterest, [], 'omitnan'));%no longer percent of stride
+                if isempty(ImpactMagS_ogfp.(Ally{fp})) ~= 1
+                    postImpactS_ogfp.(Ally{fp})=ns_ogfp.(Ally{fp})(find(ns_ogfp.(Ally{fp}) > ImpactMagS_ogfp.(Ally{fp})(end), 1, 'first'));
+                    if isempty(postImpactS_ogfp.(Ally{fp}))~=1
+                        ps_ogfp.(Ally{fp})(find(ps_ogfp.(Ally{fp})<postImpactS_ogfp.(Ally{fp})))=[];
+                        ns_ogfp.(Ally{fp})(find(ns_ogfp.(Ally{fp})<postImpactS_ogfp.(Ally{fp})))=[];
                     end
                 end
 
@@ -845,10 +845,10 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
                     end
                 end
             end
-            SZ_OGFP.(Ally{fp})(st)=-1*mean(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), 'omitnan')/Normalizer;
-            SX_OGFP.(Ally{fp})(st)=mean(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), 'omitnan')/Normalizer;
-            SZmax_OGFP.(Ally{fp})(st)=-1*min(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), [], 'omitnan')/Normalizer;
-            SXmax_OGFP.(Ally{fp})(st)=min(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), [], 'omitnan')/Normalizer;
+            SZ_ogfp.(Ally{fp})(st)=-1*mean(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), 'omitnan')/normalizer;
+            SX_ogfp.(Ally{fp})(st)=mean(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), 'omitnan')/normalizer;
+            SZmax_ogfp.(Ally{fp})(st)=-1*min(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), [], 'omitnan')/normalizer;
+            SXmax_ogfp.(Ally{fp})(st)=min(filteredSlowStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), [], 'omitnan')/normalizer;
         end
 
         %%Now for the fast leg...
@@ -858,14 +858,14 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
             if std(striderFyOgfp.(Ally{fp}), 'omitnan')<0.01 && mean(striderFyOgfp.(Ally{fp}), 'omitnan')<0.01 %This is to get rid of places where there is only noise and no data
 
             else
-                nf_OGFP.(Ally{fp}) = find((striderFy_OGFP.(Ally{fp})-LevelofInterest)<0);%1:65
-                pf_OGFP.(Ally{fp}) = find((striderFy_OGFP.(Ally{fp})-LevelofInterest)>0);
-                ImpactMagF_OGFP.(Ally{fp}) = find((striderFy_OGFP.(Ally{fp})-LevelofInterest)==max(striderFy_OGFP.(Ally{fp})(1:75)-LevelofInterest, [], 'omitnan'));%1:15
-                if isempty(ImpactMagF_OGFP.(Ally{fp}))~=1
-                    postImpactF_OGFP.(Ally{fp}) = nf_OGFP.(Ally{fp})(find(nf_OGFP.(Ally{fp})>ImpactMagF_OGFP.(Ally{fp})(end), 1, 'first'));
-                    if isempty(postImpactF_OGFP.(Ally{fp}))~=1
-                        pf_OGFP.(Ally{fp})(find(pf_OGFP.(Ally{fp}) < postImpactF_OGFP.(Ally{fp})))=[];
-                        nf_OGFP.(Ally{fp})(find(nf_OGFP.(Ally{fp}) < postImpactF_OGFP.(Ally{fp})))=[];
+                nf_ogfp.(Ally{fp}) = find((striderFyOgfp.(Ally{fp})-levelOfInterest)<0);%1:65
+                pf_ogfp.(Ally{fp}) = find((striderFyOgfp.(Ally{fp})-levelOfInterest)>0);
+                ImpactMagF_ogfp.(Ally{fp}) = find((striderFyOgfp.(Ally{fp})-levelOfInterest)==max(striderFyOgfp.(Ally{fp})(1:75)-levelOfInterest, [], 'omitnan'));%1:15
+                if isempty(ImpactMagF_ogfp.(Ally{fp}))~=1
+                    postImpactF_ogfp.(Ally{fp}) = nf_ogfp.(Ally{fp})(find(nf_ogfp.(Ally{fp})>ImpactMagF_ogfp.(Ally{fp})(end), 1, 'first'));
+                    if isempty(postImpactF_ogfp.(Ally{fp}))~=1
+                        pf_ogfp.(Ally{fp})(find(pf_ogfp.(Ally{fp}) < postImpactF_ogfp.(Ally{fp})))=[];
+                        nf_ogfp.(Ally{fp})(find(nf_ogfp.(Ally{fp}) < postImpactF_ogfp.(Ally{fp})))=[];
                     end
                 end
 
@@ -893,10 +893,10 @@ for st = 1:min([length(strideEvents.tSHS)-1, length(filteredSlow_align.Data(1, 1
                     end
                 end
             end
-            FZ_OGFP.(Ally{fp})(st)=-1*mean(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), 'omitnan')/Normalizer;
-            FX_OGFP.(Ally{fp})(st)=mean(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), 'omitnan')/Normalizer;
-            FZmax_OGFP.(Ally{fp})(st)=-1*min(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), [], 'omitnan')/Normalizer;
-            FXmax_OGFP.(Ally{fp})(st)=max(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), [], 'omitnan')/Normalizer;
+            FZ_ogfp.(Ally{fp})(st)=-1*mean(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), 'omitnan')/normalizer;
+            FX_ogfp.(Ally{fp})(st)=mean(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), 'omitnan')/normalizer;
+            FZmax_ogfp.(Ally{fp})(st)=-1*min(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'z']), [], 'omitnan')/normalizer;
+            FXmax_ogfp.(Ally{fp})(st)=max(filteredFastStance.getDataAsVector([Ally{fp}(1:end-1) 'x']), [], 'omitnan')/normalizer;
         end
     end
 end
@@ -1080,9 +1080,9 @@ descriptionOgfp = [];
 
 for fp = 1:length(Ally)
 
-    data_OGFP_temp = [[SBmax_OGFP.(Ally{fp}) NaN]' [SPmax_OGFP.(Ally{fp}) NaN]' [FBmax_OGFP.(Ally{fp}) NaN]' [FPmax_OGFP.(Ally{fp}) NaN]'];
-    labels_OGFP_temp = {['FyBSmax_align_' Ally{fp}], ['FyPSmax_align_' Ally{fp}], ['FyBFmax_align_' Ally{fp}], ['FyPFmax_align_' Ally{fp}]};
-    description_OGFP_temp = {[Ally{fp} 'GRF-FYs max signed braking'], [Ally{fp} 'GRF-FYs max signed propulsion'], [Ally{fp} 'GRF-FYf max signed braking'], [Ally{fp} 'GRF-FYf max signed propulsion']};
+    dataOgfpTemp = [[SBmax_ogfp.(Ally{fp}) NaN]' [SPmax_ogfp.(Ally{fp}) NaN]' [FBmax_ogfp.(Ally{fp}) NaN]' [FPmax_ogfp.(Ally{fp}) NaN]'];
+    labelsOgfpTemp = {['FyBSmax_align_' Ally{fp}], ['FyPSmax_align_' Ally{fp}], ['FyBFmax_align_' Ally{fp}], ['FyPFmax_align_' Ally{fp}]};
+    descriptionOgfpTemp = {[Ally{fp} 'GRF-FYs max signed braking'], [Ally{fp} 'GRF-FYs max signed propulsion'], [Ally{fp} 'GRF-FYf max signed braking'], [Ally{fp} 'GRF-FYf max signed propulsion']};
 
     %     dataOgfp = [dataOgfp dataOgfpTemp];
     %     labelsOgfp = [labelsOgfp labelsOgfpTemp];
