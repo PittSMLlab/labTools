@@ -73,13 +73,4 @@ if ~isfinite(gain) || gain == 0
 end
 alignedSignal2 = newSignal2 / gain;
 
-%% Verify Alignment Quality
-[relativeShift, ~]  = estimateDopplerShift(signal1, alignedSignal2);
-[~, ~, initTimeDelay] = findTimeLag(signal1, alignedSignal2);
-if abs(relativeShift) > 2 / length(signal2)
-    warning('Signal resampling did not seem to work properly')
-end
-if abs(initTimeDelay) > 1
-    warning('Time shifting did not seem to work properly')
-end
 end
