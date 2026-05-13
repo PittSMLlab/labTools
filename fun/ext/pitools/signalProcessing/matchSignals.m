@@ -82,18 +82,4 @@ end
 if abs(initTimeDelay) > 1
     warning('Time shifting did not seem to work properly')
 end
-
-% gain=newSignal2'/signal1';
-%
-% figure
-% hold on
-% plot(signal1)
-% plot(alignedSignal2,'r')
-% hold off
-%
-% E=sum((signal1-alignedSignal2).^2);
-% figure
-% plot(signal1-alignedSignal2)
-%
-
 end
