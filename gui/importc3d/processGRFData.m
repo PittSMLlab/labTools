@@ -41,6 +41,23 @@ end
 % check signs! this is used in biomechanics calculations
 orientation = orientationInfo([0 0 0], 'y', 'x', 'z', 1, 1, 1);
 
+% -----------------------------------------------------------------------
+%  Named constants
+% -----------------------------------------------------------------------
+% Tolerance for the offset check: forces in N, scaled to N.mm for moments
+grfOffsetTol             = 10;    % N or N.m
+% Multiplier on the 1st-percentile of nonzero samples used as a rough
+% activity threshold in the offset calibration (empirical)
+prctileThreshMultiplier  = 4;
+% Zero-threshold = offsetThreshMultiplier × tolerance; must not be < 2×
+% (comment preserved from original)
+offsetThreshMultiplier   = 4;
+% Raw pin histogram parameters for mode-based offset estimation
+pinHistBinWidth          = 0.001; % histogram bin width (V)
+pinHistMin               = -1;    % ADC lower bound (V)
+pinHistMax               =  1;    % ADC upper bound (V)
+% -----------------------------------------------------------------------
+
 %% Process Ground Reaction Force (GRF) Data
 if info.forces          % if there is force data in the trial, ...
     % Must be defined to prevent errors when 'otherwise' skipped

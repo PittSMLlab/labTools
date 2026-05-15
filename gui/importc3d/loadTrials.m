@@ -50,6 +50,10 @@ end
 % reduces the native EMG-system rate to approximately 150 Hz
 accDownsampleFactor = 13;
 
+% Maximum fractional deviation from an integer ratio when checking
+% that two PC sampling rates are exact multiples of one another
+rateRatioTolerance = 1e-7;
+
 % -----------------------------------------------------------------------
 
 % orientationInfo(offset, foreaftAx, sideAx, updownAx, foreaftSign, ...
@@ -89,7 +93,7 @@ for tr = trialNums                      % for each trial, ...
     clc();
     clearvars -except trialMD fileList secFileList info tr ...
         orderedEMGList orientation trials sessionHasPC2 trialNums ...
-        accDownsampleFactor;
+        accDownsampleFactor rateRatioTolerance;
 
     % Import C3D data using BTK (Biomechanics Toolkit)
     H = btkReadAcquisition([fileList{tr} '.c3d']);
