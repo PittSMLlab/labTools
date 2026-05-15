@@ -52,19 +52,19 @@ else
 end
 
 %% Apply Integer Time Shift
-aux = round(lagInSamples);
-d = lagInSamples - aux;
+lagInt  = round(lagInSamples);
+lagFrac = lagInSamples - lagInt;
 % Sub-sample correction (frequency-domain phase shift) is stubbed out
 % below; only integer-sample shifting is applied for now.
 % k=1000;
 % F=fft([newSignals;zeros(k,size(newSignals,2))]);
-% Fd=exp(1i*2*pi*[0:size(F,1)-1]/size(F,1)).^d;
+% Fd=exp(1i*2*pi*[0:size(F,1)-1]/size(F,1)).^lagFrac;
 % newSignals=ifft(bsxfun(@times,F,Fd'),'symmetric');
 % newSignals=newSignals(1:end-k,:);
 if lagInSamples < 0
-    newSignals = newSignals(abs(aux) + 1:end, :); % trim leading samples
+    newSignals = newSignals(abs(lagInt) + 1:end, :); % trim leading samples
 else
-    newSignals = [zeros(abs(aux), N); newSignals]; % pad leading zeros
+    newSignals = [zeros(abs(lagInt), N); newSignals]; % pad leading zeros
 end
 
 %% Apply Gain Scaling
