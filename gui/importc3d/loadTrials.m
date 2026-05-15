@@ -46,35 +46,9 @@ end
 %  Named constants — centralised here for easy tuning
 % -----------------------------------------------------------------------
 
-% Kernel length (samples) for the median filter applied to raw sync
-% signals before differentiation
-medFiltKernel     = 20;
-
-% Kernel length (samples) for the median filter applied to the
-% differentiated sync signal used in matchSignals
-medFiltDiffKernel = 10;
-
-% Percentile (%) used to symmetrically clip the top and bottom of
-% sync signals, removing isolated large-amplitude outliers
-clipPercentile    = 0.1;
-
-% Fractional signal-energy threshold above which the sync mismatch
-% warning and user confirmation prompt are triggered (5%). When
-% mismatch exceeds this threshold the pipeline halts and prompts
-% the user to confirm whether to proceed with the available alignment.
-syncMismatchThreshold = 0.05;
-
-% Amplitude ratio below which a processed sync derivative is treated as
-% flat/dead. Good pins are typically 100–1000x louder than dead ones.
-flatSyncThreshold = 1e-4;
-
 % Integer downsampling factor applied to accelerometer data;
 % reduces the native EMG-system rate to approximately 150 Hz
 accDownsampleFactor = 13;
-
-% Duration (seconds) of the start and end segments shown in the
-% sync diagnostic figure subplots
-syncPlotDuration  = 3;
 
 % -----------------------------------------------------------------------
 
@@ -115,9 +89,7 @@ for tr = trialNums                      % for each trial, ...
     clc();
     clearvars -except trialMD fileList secFileList info tr ...
         orderedEMGList orientation trials sessionHasPC2 trialNums ...
-        medFiltKernel medFiltDiffKernel clipPercentile ...
-        syncMismatchThreshold accDownsampleFactor syncPlotDuration ...
-        flatSyncThreshold;
+        accDownsampleFactor;
 
     % Import C3D data using BTK (Biomechanics Toolkit)
     H = btkReadAcquisition([fileList{tr} '.c3d']);
