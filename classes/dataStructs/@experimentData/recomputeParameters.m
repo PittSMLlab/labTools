@@ -1,49 +1,45 @@
 function this = recomputeParameters(this, eventClass, initEventSide, ...
-    parameterClasses, shouldComputeEMGNorm,muscleLabels, ...
+    parameterClasses, shouldComputeEMGNorm, muscleLabels, ...
     normalizationRefCond, biasRemovalCond)
-%recomputeParameters  Recalculates adaptation parameters
+%RECOMPUTEPARAMETERS Recalculate stride-by-stride adaptation parameters.
 %
-%   this = recomputeParameters(this) recomputes adaptParams for all
-%   trials using default options
+%   Recalculates adaptation parameters for all trials in the
+% experimental session from existing processed trial data. Unlike
+% FLUSHANDRECOMPUTEPARAMETERS, this merges newly computed parameters
+% into the existing set, replacing name collisions but preserving
+% parameters with different names — enabling partial recomputation
+% (e.g., one class only) without discarding other parameters.
 %
-%   this = recomputeParameters(this, eventClass, initEventSide,
-%   parameterClasses) recomputes parameters with specified options
+%   The eventClass must match the one used in the original processing
+% run. A different eventClass may produce a different stride count,
+% which is incompatible with the merge-in-place behavior of this
+% function. Use FLUSHANDRECOMPUTEPARAMETERS when changing eventClass.
 %
-%   Inputs:
-%       this - experimentData object
-%       eventClass - event classification parameter (optional)
-%       initEventSide - initial event side specification (optional)
-%       parameterClasses - specific parameter classes to compute (optional)
-%       shouldComputeEMGNorm - boolean, indicating if EMG norm parameters
-%           should be computed (optional), default false.
-%       muscleLabels: cell array of strings that represent the
-%           muscleLabels, contains unique muscle names only. e.g., 
-%           {'BF'	'GLU'	'LG'	'MG'	'PER'	'SEMT'	'SOL'	'TA'	'VL'
-%          'VM'}. If shouldComputeEMGNorm, this arg needs to be provided.
-%           If not provided. will throw a warning and make no norm calculations.
-%           note only the muscles provided in the list will have norm per
-%           muscle calculated and the whole leg norm assumes these are all
-%         the muscles available
-%       normalizationRefCond: string representing the conditon name that will
-%           be used to normalize the EMG data, i.e., all EMG data will be stretched
-%           in reference to the last 40 stirdes (excluding the last 5) of this refcondition such that 100%
-%           = max of the ref condition, 0 = min of the ref condition.
-%       biasRemovalCond: OPTIONAL. string representing the condition name to
-%           use to compute bias removed EMG norm. if provided, will remove bias using the providec condition and
-%           ignore the trial type (e.g., if provided 'OGBase' will remove
-%           OGBase for all types of trials including TM, etc.)
-%           If not provided, will use default bias removal behavior which looks
-%           for trial type specific baseline (see
-%           labTools\classes\dataStructs\@adaptationData\removeBiasV4.m)
+% Inputs:
+%   this                 - experimentData object
+%   eventClass           - (optional) gait event source: '' (default,
+%                          auto-select), 'kin', or 'force'
+%   initEventSide        - (optional) 'L' or 'R'; defaults to trial
+%                          metadata when empty
+%   parameterClasses     - (optional) string or cell array of parameter
+%                          class names to compute; defaults to all
+%   shouldComputeEMGNorm - (optional) logical; compute EMG norm
+%                          parameters (default false)
+%   muscleLabels         - (optional) cell array of unique muscle label
+%                          strings; required when shouldComputeEMGNorm
+%                          is true
+%   normalizationRefCond - (optional) condition name used to normalize
+%                          EMG; uses type-specific search if empty
+%   biasRemovalCond      - (optional) condition name for bias removal;
+%                          uses type-specific default if empty
 %
-%   Outputs:
-%       this - experimentData object with updated parameters
+% Outputs:
+%   this - experimentData object with updated parameters
 %
-%   Example:
-%       expData = expData.recomputeParameters();
+% Toolbox Dependencies: None
 %
-%   See also: flushAndRecomputeParameters, recomputeEvents, calcParameters
-%   labTools\fun\parameterCalculation\appendEMGNormParameters.m
+% See also FLUSHANDRECOMPUTEPARAMETERS, RECOMPUTEEVENTS,
+%   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.
 
 if nargin < 2 || isempty(eventClass)
     eventClass = [];
