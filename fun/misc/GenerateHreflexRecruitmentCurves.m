@@ -142,10 +142,10 @@ disp('Data extraction completed successfully.');
 % NOTE: thigh and hip muscles have been removed since not currently
 % relevant for the Spinal Adaptation project
 orderedMuscleList = {'PER','TA','TAP','TAD','SOL','MG','LG'};
-orderedEMGList={};
-for j = 1:length(orderedMuscleList)
-    orderedEMGList{end+1}=['R' orderedMuscleList{j}];
-    orderedEMGList{end+1}=['L' orderedMuscleList{j}];
+orderedEMGList = {};
+for ii = 1:length(orderedMuscleList)
+    orderedEMGList{end+1} = ['R' orderedMuscleList{ii}];
+    orderedEMGList{end+1} = ['L' orderedMuscleList{ii}];
 end
 
 EMG = [];
@@ -153,80 +153,93 @@ relData = [];
 relDataTemp = [];
 fieldList = fields(analogs);
 idxList = [];
-for j=1:length(fieldList)
-    if  ~isempty(strfind(fieldList{j},'EMG'))  %Getting fields that start with 'EMG' only
-        relDataTemp=[relDataTemp,analogs.(fieldList{j})];
-        idxList(end+1)=str2num(fieldList{j}(strfind(fieldList{j},'EMG')+3:end));
-        analogs=rmfield(analogs,fieldList{j}); %Just to save memory space
+for ii = 1:length(fieldList)
+    if ~isempty(strfind(fieldList{ii}, 'EMG'))  %Getting fields that start with 'EMG' only
+        relDataTemp = [relDataTemp, analogs.(fieldList{ii})];
+        idxList(end+1) = str2num(fieldList{ii}( ...
+            strfind(fieldList{ii}, 'EMG') + 3:end)); %#ok<ST2NM>
+        analogs = rmfield(analogs, fieldList{ii}); %Just to save memory space
     end
 end
-emptyChannels1=cellfun(@(x) contains(x,'NA') || contains(x,'sync'),EMGList1);
+emptyChannels1 = cellfun( ...
+    @(x) contains(x, 'NA') || contains(x, 'sync'), EMGList1);
 EMGList1 = EMGList1(~emptyChannels1);
-relData(:,idxList)=relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
-relData=relData(:,~emptyChannels1);
-EMGList=EMGList1;
+relData(:, idxList) = relDataTemp; %Re-sorting to fix the 1,10,11,...,2,3 count that Matlab does
+relData = relData(:, ~emptyChannels1);
+EMGList = EMGList1;
 
 %Check if names match with expectation, otherwise query user
-for k=1:length(EMGList)
-    while sum(strcmpi(orderedEMGList,EMGList{k}))==0 && ~strcmpi(EMGList{k}(1:4),'sync')
-        aux= inputdlg(['Did not recognize muscle name, please re-enter name for channel ' num2str(k) ' (was ' EMGList{k} '). Acceptable values are ' cell2mat(strcat(orderedEMGList,', ')) ' or ''sync''.'],'s');
-        if k<=length(EMGList1)
-            EMGList1{idxList(k)}=aux{1}; %This is to keep the same message from being prompeted for each trial processed.
+for kk = 1:length(EMGList)
+    while sum(strcmpi(orderedEMGList, EMGList{kk})) == 0 && ...
+            ~strcmpi(EMGList{kk}(1:4), 'sync')
+        aux = inputdlg(['Did not recognize muscle name, please ' ...
+            're-enter name for channel ' num2str(kk) ' (was ' ...
+            EMGList{kk} '). Acceptable values are ' ...
+            cell2mat(strcat(orderedEMGList, ', ')) ' or ''sync''.'], 's');
+        if kk <= length(EMGList1)
+            EMGList1{idxList(kk)} = aux{1}; %This is to keep the same message from being prompted for each trial processed.
         end
-        EMGList{k}=aux{1};
+        EMGList{kk} = aux{1};
     end
 end
 
 %For some reasing the naming convention for analog pins is not kept
 %across Nexus versions:
-fieldNames=fields(analogs);
+fieldNames = fields(analogs);
 
-refSync=analogs.(fieldNames{cellfun(@(x) ~isempty(strfind(x,'Pin3')) | ~isempty(strfind(x,'Pin_3')) | ~isempty(strfind(x,'Raw_3')),fieldNames)});
+refSync = analogs.(fieldNames{cellfun( ...
+    @(x) ~isempty(strfind(x, 'Pin3')) | ...
+    ~isempty(strfind(x, 'Pin_3')) | ...
+    ~isempty(strfind(x, 'Raw_3')), fieldNames)});
 
-EMGfrequency=analogsInfo.frequency;
-allData=relData;
+EMGfrequency = analogsInfo.frequency;
+allData      = relData;
+
+filtWinPre  = 20;   % median filter window: ~10 ms at 2 kHz
+filtWinPost = 10;   % median filter window: ~5 ms at 2 kHz
 
 %Pre-process:
-[refSync] = clipSignals(refSync(:),.1); %Clipping top & bottom samples (1 out of 1e3!)
-refAux=medfilt1(refSync,20);
+refSync = clipSignals(refSync(:), 0.1); %Clipping top & bottom samples (1 out of 1e3!)
+refAux  = medfilt1(refSync, filtWinPre);
 %refAux(refAux<(median(refAux)-5*iqr(refAux)) | refAux>(median(refAux)+5*iqr(refAux)))=median(refAux);
-refAux=medfilt1(diff(refAux),10);
+refAux  = medfilt1(diff(refAux), filtWinPost);
 clear auxData*
 
 %Sorting muscles (orderedEMGList was created previously) so that they are always stored in the same order
-orderedIndexes=zeros(length(orderedEMGList),1);
-for j=1:length(orderedEMGList)
-    for k=1:length(EMGList)
-        if strcmpi(orderedEMGList{j},EMGList{k})
-            orderedIndexes(j)=k;
+orderedIndexes = zeros(length(orderedEMGList), 1);
+for ii = 1:length(orderedEMGList)
+    for kk = 1:length(EMGList)
+        if strcmpi(orderedEMGList{ii}, EMGList{kk})
+            orderedIndexes(ii) = kk;
             break;
         end
     end
 end
-orderedIndexes=orderedIndexes(orderedIndexes~=0); %Avoiding missing muscles
-aux=zeros(length(EMGList),1);
-aux(orderedIndexes)=1;
-if any(aux==0) && ~all(strcmpi(EMGList(aux==0),'sync'))
-    warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux==0}])
+orderedIndexes = orderedIndexes(orderedIndexes ~= 0); %Avoiding missing muscles
+aux = zeros(length(EMGList), 1);
+aux(orderedIndexes) = 1;
+if any(aux == 0) && ~all(strcmpi(EMGList(aux == 0), 'sync'))
+    warning(['loadTrials: Not all of the provided muscles are in the ordered list, ignoring ' EMGList{aux == 0}])
 end
-allData(allData==0)=NaN; %Eliminating samples that are exactly 0: these are unavailable samples
-EMG=labTimeSeries(allData(:,orderedIndexes),0,1/EMGfrequency,EMGList(orderedIndexes)); %Throw away the synch signal
+allData(allData == 0) = NaN; %Eliminating samples that are exactly 0: these are unavailable samples
+EMG = labTimeSeries(allData(:, orderedIndexes), 0, ...
+    1 / EMGfrequency, EMGList(orderedIndexes)); %Throw away the synch signal
 clear allData* relData* auxData*
 
 %% 5. Retrieve Ground Reaction Force (GRF) Data If It Exists
-relData=[];
-forceLabels ={};
-units={};
-fieldList=fields(analogs);
+relData    = [];
+forceLabels = {};
+units       = {};
+fieldList   = fields(analogs);
 forceLabelIdx = contains(fieldList,'Force_Fz'); % only care about Fz
 forceLabelIdx = find(forceLabelIdx,2,'first');  % FP 1 (Left) & 2 (Right)
 hasForces = ~isempty(forceLabelIdx);
 if hasForces     % if force data found, ...
-    for j=1:length(forceLabelIdx)   % for each relevant force label, ...
-        forceLabels{end+1} = fieldList{forceLabelIdx(j)};    % add label
+    for ii = 1:length(forceLabelIdx)   % for each relevant force label, ...
+        forceLabels{end+1} = fieldList{forceLabelIdx(ii)};    % add label
         units{end+1} = eval(['analogsInfo.units.', ...
-            fieldList{forceLabelIdx(j)}]);
-        relData = [relData analogs.(fieldList{forceLabelIdx(j)})];
+            fieldList{forceLabelIdx(ii)}]);
+        relData = [relData analogs.(fieldList{forceLabelIdx(ii)})];
     end
     GRF = labTimeSeries(relData,0, ...
         1/analogsInfo.frequency,forceLabels);
@@ -348,7 +361,7 @@ if shouldUseStimTrig && hasStimTrig
         'Stimulator_Trigger_Sync_Left__Stimulator');
 
     indsStimArtifact = Hreflex.extractStimArtifactIndsFromTrigger( ...
-        times,{EMG_RTAP,EMG_LTAP},{stimTrigR,stimTrigL});
+        times, {EMG_RTAP, EMG_LTAP}, {stimTrigR, stimTrigL});
     locsR = indsStimArtifact{1};
     locsL = indsStimArtifact{2};
 

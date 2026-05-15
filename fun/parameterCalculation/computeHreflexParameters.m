@@ -279,6 +279,7 @@ else                % otherwise, right leg is fast, ...
     indsStimArtValid{1}(duplicateMaskfast) = [];
     indsStimArtValid{2}(duplicateMaskslow) = [];
 end
+
 %% Create Logical Arrays for Stimulated Strides
 % create logical arrays for indexing for (valid) strides with stimulation
 isStimStrideSlow = false(size(timeSHS));
@@ -337,7 +338,7 @@ indsMidSingleStanceFast(isValidFast) = arrayfun(@(x) ...
     find((x - times) > 0, 1, 'last'), ...
     timesMidSingleStanceFast(isValidFast));
 
-%% Compute Backgound EMG Parameters
+%% Compute Background EMG Parameters
 f = EMGData.sampFreq;                       % sampling frequency (2 kHz)
 % percent of single stance phase before stimulation artifact background EMG
 percentBefore = 0.05;
