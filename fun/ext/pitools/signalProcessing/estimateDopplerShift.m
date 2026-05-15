@@ -67,34 +67,36 @@ while differences
     clear x t lineFit
     t = nan(1, N);
     for win = 1:N
-        aux2     = signal2((win-1)*M + 1:win*M);
-        aux1     = signal1((win-1)*M + 1:win*M);
-        [~, ~, t(win)] = findTimeLag(aux1, aux2);
-        %         F1=fft(aux1);
-        %         F2=fft(aux2);
+        winSlice2      = signal2((win-1)*M + 1:win*M);
+        winSlice1      = signal1((win-1)*M + 1:win*M);
+        [~, ~, t(win)] = findTimeLag(winSlice1, winSlice2);
+        %         F1=fft(winSlice1);
+        %         F2=fft(winSlice2);
         %         F=F1.*conj(F2);
         %         P=ifft(F);
         %         [s(win),t(win)]=max(abs(P));
-        %     %     [acor,lag]=xcorr(aux1,aux2,'unbiased');
+        %     %     [acor,lag]=xcorr(winSlice1,winSlice2,'unbiased');
         %     %     [~,ii]=max(abs(acor));
         %     %     t(win)=lag(ii);
         x(win) = M/2 + (win - 1)*M;
 
-        %         if 5*N*sqrt(sum(aux1.^2)*sum(aux2.^2))<sqrt(E1*E2)
+        %         if 5*N*sqrt(sum(winSlice1.^2)*sum(winSlice2.^2))<...
+        %                 sqrt(E1*E2)
         %             t(win)=NaN;
         %         end
     end
-    auxI   = ~isnan(t);
-    properX = x(auxI);
-    properT = t(auxI);
+    validMask = ~isnan(t);
+    properX   = x(validMask);
+    properT   = t(validMask);
     if firstStep
         lineFit   = polyfit(properX, properT, 1);
         firstStep = false;
         iiOld     = [];
     else
-        auxX    = x(ii);
-        auxT    = t(ii);
-        lineFit = polyfit(auxX(auxI(ii)), auxT(auxI(ii)), 1);
+        inlierX = x(ii);
+        inlierT = t(ii);
+        lineFit = polyfit(inlierX(validMask(ii)), ...
+            inlierT(validMask(ii)), 1);
         iiOld   = ii;
     end
     residuals = abs(t - x*lineFit(1) - lineFit(2));
@@ -102,7 +104,7 @@ while differences
     if pp < 0.5
         pp = 0.5; % quantization floor: expect at least 0.5-sample error
     end
-    ii = find(residuals < pp & auxI); % reject outlier windows
+    ii = find(residuals < pp & validMask); % reject outlier windows
 
     if ~isempty(ii) && ...
             (length(iiOld) ~= length(ii) || any(ii ~= iiOld))
