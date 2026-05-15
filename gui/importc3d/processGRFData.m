@@ -68,9 +68,9 @@ if info.forces          % if there is force data in the trial, ...
     fieldList   = fieldnames(analogs);
 
     % Collect all raw analog channels for offset calibration
-    rawMask  = startsWith(fieldList, 'Raw');
-    ttt      = fieldList(rawMask);
-    rawCells = cellfun(@(f) analogs.(f), ttt, 'UniformOutput', false);
+    rawMask       = startsWith(fieldList, 'Raw');
+    rawFieldNames = fieldList(rawMask);
+    rawCells = cellfun(@(f) analogs.(f), rawFieldNames, 'UniformOutput', false);
     raws = [rawCells{:}];
     raws = zscore(raws);
 
@@ -98,10 +98,10 @@ if info.forces          % if there is force data in the trial, ...
             strcmpi('y', fieldList{jj}(end-1)) || ...
             strcmpi('z', fieldList{jj}(end-1));
         if ~hasValidAxis
-            warning(['processGRFData:GRFs' ...
-                'Found force/moment data that does not correspond ' ...
-                'to any of the expected directions (x, y, or z). ' ...
-                'Discarding channel ' fieldList{jj}]);
+            warning('processGRFData:GRFs', ...
+                ['Found force/moment data that does not correspond ' ...
+                'to any expected direction (x, y, or z). ' ...
+                'Discarding channel %s.'], fieldList{jj});
             continue;
         end
 
@@ -143,10 +143,10 @@ if info.forces          % if there is force data in the trial, ...
         analogs            = rmfield(analogs, fieldList{jj});
     end
     if showWarning
-        warning(['processGRFData:GRFs' ...
-            'Found force/moment data in trial ' num2str(tr) ...
-            ' that does not correspond to any of the expected ' ...
-            'channels (L=1, R=2, H=4). Data discarded.']);
+        warning('processGRFData:GRFs', ...
+            ['Found force/moment data in trial %d that does not ' ...
+            'correspond to any expected channel ' ...
+            '(L=1, R=2, H=4). Data discarded.'], tr);
     end
 
     % Sanity check: offset calibration — verify that force values
@@ -162,25 +162,26 @@ if info.forces          % if there is force data in the trial, ...
         trueOffset             = nan(size(list));
         differenceInForceUnits = nan(size(list));
         m                      = nan(size(list));
-        tol = 10;   % N or N.m
         for jj = 1:length(list)
             k = find(strcmp(forceLabels, list{jj}));
             if ~isempty(k)
-                aux = fieldnames(analogs);
+                analogFieldNames = fieldnames(analogs);
                 % idx=num2str(map(k)); % Hardcoded map of input
                 % pins to forces/moments. Outdated.
-                [~, idx] = max(abs(relData(:, k)' * raws));
-                idx          = ttt{idx}(end);
+                [~, rawPinColIdx] = max(abs(relData(:, k)' * raws));
+                pinSuffix    = rawFieldNames{rawPinColIdx}(end);
                 pinFieldMask = ~cellfun(@isempty, ...
-                    regexp(aux, ['Pin_' idx '$']));
-                raw  = analogs.(aux{pinFieldMask});
+                    regexp(analogFieldNames, ['Pin_' pinSuffix '$']));
+                raw  = analogs.(analogFieldNames{pinFieldMask});
                 proc = relData(:, k);
                 % figure; plot(raw,proc,'.') % Finally found
                 % where c3d2mat plots were coming from
                 rel = find(proc ~= 0);
                 if ~isempty(rel)
-                    % Can be used for thresholding
-                    m(jj)  = 4 * prctile(abs(proc(rel)), 1);
+                    % prctileThreshMultiplier × 1st-percentile of
+                    % nonzero samples; used as an activity threshold
+                    m(jj)  = prctileThreshMultiplier * ...
+                        prctile(abs(proc(rel)), 1);
                     coef   = polyfit(raw(rel), proc(rel), 1);
                     % Could be rounded to 2 sig. figs.
                     gain(jj)   = coef(1);
@@ -190,26 +191,27 @@ if info.forces          % if there is force data in the trial, ...
                     % form edges for equivalent binning behavior.
                     % find(..., 1) picks the lowest-valued bin
                     % center deterministically when counts are tied.
-                    C        = -1:0.001:1;
-                    binWidth = C(2) - C(1);
-                    edges    = (C(1) - binWidth/2) : ...
-                        binWidth : (C(end) + binWidth/2);
+                    binCenters = pinHistMin:pinHistBinWidth:pinHistMax;
+                    binWidth   = binCenters(2) - binCenters(1);
+                    edges      = (binCenters(1) - binWidth/2) : ...
+                        binWidth : (binCenters(end) + binWidth/2);
                     Hh              = histcounts(raw, edges);
-                    trueOffset(jj)  = C(find(Hh == max(Hh), 1));
+                    trueOffset(jj)  = ...
+                        binCenters(find(Hh == max(Hh), 1));
                     differenceInForceUnits(jj) = ...
                         gain(jj) * (trueOffset(jj) - offset(jj));
                 end
                 switch list{jj}(2)
                     case 'F'    % forces
-                        ttol  = tol;
                         units = 'N';
+                        toleranceScaled = grfOffsetTol;
                     case 'M'    % moments (in N.mm)
-                        ttol  = tol * 1000;
                         units = 'N.mm';
+                        toleranceScaled = grfOffsetTol * 1000;
                     otherwise
                         error('');
                 end
-                if differenceInForceUnits(jj) > ttol
+                if differenceInForceUnits(jj) > toleranceScaled
                     % figure % Commented out by MGR 01/24/24
                     % hold on
                     % plot(raw(rel),proc(rel),'.')
@@ -227,10 +229,11 @@ if info.forces          % if there is force data in the trial, ...
                         case 'Yes'
                             relData(:, k) = ...
                                 gain(jj) * (raw - trueOffset(jj));
-                            % Threshold using tolerance; should
-                            % never be less than 2*ttol
+                            % Threshold at offsetThreshMultiplier ×
+                            % tolerance; should never be less than 2×
                             relData(abs(relData(:, k)) < ...
-                                4*ttol, k) = 0;
+                                offsetThreshMultiplier * ...
+                                toleranceScaled, k) = 0;
                         case 'No'
                             % nop
                         otherwise
