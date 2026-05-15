@@ -37,7 +37,7 @@ maxWindowCount = 128; % cap on number of windows for stability
 
 %% Compute Default Window Length
 if isnan(M)
-    % Approx number of windows that is optimal for the estimation
+    % Approx. number of windows that is optimal for the estimation
     windowCount = sqrt(length(signal2)) / 4;
     if windowCount > maxWindowCount
         windowCount = maxWindowCount;
@@ -54,36 +54,34 @@ signal1(end+1:N*M) = 0;
 signal2(end+1:N*M) = 0;
 signal1 = signal1 - mean(signal1);
 
-E1 = sum(signal1.^2); %#ok<NASGU>
-E2 = sum(signal2.^2); %#ok<NASGU>
+% E1 = sum(signal1.^2);
+% E2 = sum(signal2.^2);
 
 %% Fit Line to Per-Window Lags (Iterative Outlier Rejection)
 % Identify outlier windows, fit a line, repeat until convergence.
 firstStep   = true;
 differences = true;
-iiOld       = [];
 while differences
-
-    clear x t lineFit
+    clear x t lineFit;
     t = nan(1, N);
     for win = 1:N
         winSlice2      = signal2((win-1)*M + 1:win*M);
         winSlice1      = signal1((win-1)*M + 1:win*M);
         [~, ~, t(win)] = findTimeLag(winSlice1, winSlice2);
-        %         F1=fft(winSlice1);
-        %         F2=fft(winSlice2);
-        %         F=F1.*conj(F2);
-        %         P=ifft(F);
-        %         [s(win),t(win)]=max(abs(P));
-        %     %     [acor,lag]=xcorr(winSlice1,winSlice2,'unbiased');
-        %     %     [~,ii]=max(abs(acor));
-        %     %     t(win)=lag(ii);
+        % F1 = fft(winSlice1);
+        % F2 = fft(winSlice2);
+        % F = F1 .* conj(F2);
+        % P = ifft(F);
+        % [s(win), t(win)] = max(abs(P));
+        % [acor, lag] = xcorr(winSlice1, winSlice2, 'unbiased');
+        % [~, ii] = max(abs(acor));
+        % t(win) = lag(ii);
         x(win) = M/2 + (win - 1)*M;
 
-        %         if 5*N*sqrt(sum(winSlice1.^2)*sum(winSlice2.^2))<...
-        %                 sqrt(E1*E2)
-        %             t(win)=NaN;
-        %         end
+        % if 5*N*sqrt(sum(winSlice1.^2)*sum(winSlice2.^2)) < ...
+        %         sqrt(E1*E2)
+        %     t(win) = NaN;
+        % end
     end
     validMask = ~isnan(t);
     properX   = x(validMask);
@@ -112,15 +110,7 @@ while differences
     else
         differences = false;
     end
-
 end
-% figure(1)
-% plot(x,t,'.')
-% hold on
-% plot(x(ii),t(ii),'g.')
-% plot(x,x*lineFit(1)+lineFit(2),'r')
-% hold off
-% legend('Rejected samples','Used samples','Line fit')
 
 relativeShift  = lineFit(1);
 initTimeDelay  = lineFit(2); % in samples
