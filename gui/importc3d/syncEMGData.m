@@ -85,7 +85,6 @@ syncPlotDuration  = 3;
 lagInSamplesA   = 0;
 lagInSamples    = NaN;
 timeScaleFactor = NaN;
-sync            = [];
 
 %% Assemble Combined Data Matrix
 % Keep only matrices of the same size.
@@ -113,13 +112,14 @@ sync    = allData(:, syncIdx);
 
 if ~isempty(sync)           % if sync signals present, proceed
     % Clip outliers, then median-filter signal and derivative
-    sync = clipSignals(sync, clipPercentile);
-    aux  = medfilt1(sync, medFiltKernel, [], 1);
-    % aux(aux>(median(aux)+5*iqr(aux)) | ...
-    %     aux<(median(aux)-5*iqr(aux)))=median(aux(:));
-    aux = medfilt1(diff(aux), medFiltDiffKernel, [], 1);
+    sync      = clipSignals(sync, clipPercentile);
+    syncDeriv = medfilt1(sync, medFiltKernel, [], 1);
+    % syncDeriv(syncDeriv>(median(syncDeriv)+5*iqr(syncDeriv)) | ...
+    %     syncDeriv<(median(syncDeriv)-5*iqr(syncDeriv)))= ...
+    %     median(syncDeriv(:));
+    syncDeriv = medfilt1(diff(syncDeriv), medFiltDiffKernel, [], 1);
     if secondFile
-        if size(aux, 2) < 2
+        if size(syncDeriv, 2) < 2
             warning('syncEMGData:missingPC2SyncChannel', ...
                 ['[Trial %d] PC2 has no Sync channel in ' ...
                 'allData; using default PC1-to-PC2 ' ...
@@ -127,8 +127,8 @@ if ~isempty(sync)           % if sync signals present, proceed
             timeScaleFactor = 1;
             lagInSamples    = 0;
             newRelData2     = relData2;
-        elseif isFlatSync(aux(:, 1), refAux, flatSyncThreshold) ...
-                || isFlatSync(aux(:, 2), refAux, flatSyncThreshold)
+        elseif isFlatSync(syncDeriv(:, 1), refAux, flatSyncThreshold) ...
+                || isFlatSync(syncDeriv(:, 2), refAux, flatSyncThreshold)
             warning('syncEMGData:flatSyncPin', ...
                 ['[Trial %d] Sync pin appears dead or ' ...
                 'disconnected; using default PC1-to-PC2 ' ...
@@ -140,9 +140,9 @@ if ~isempty(sync)           % if sync signals present, proceed
         else
             try
                 [~, timeScaleFactor, lagInSamples, ~] = ...
-                    matchSignals(aux(:, 1), aux(:, 2));
+                    matchSignals(syncDeriv(:, 1), syncDeriv(:, 2));
                 % [~,timeScaleFactor,lagInSamples,~] = ...
-                %     matchSignals(refAux,aux(:,2));
+                %     matchSignals(refAux,syncDeriv(:,2));
                 % Align relData2 to relData1; overall delay of
                 % EMG system re. force plate data still to be
                 % determined
@@ -160,7 +160,7 @@ if ~isempty(sync)           % if sync signals present, proceed
         end
     end
     if max(abs(refAux)) < eps || ...
-            isFlatSync(aux(:, 1), refAux, flatSyncThreshold)
+            isFlatSync(syncDeriv(:, 1), refAux, flatSyncThreshold)
         warning('syncEMGData:flatSyncPin', ...
             ['[Trial %d] refAux or PC1 sync is flat; ' ...
             'using lagInSamplesA=0.'], trialNum);
@@ -173,14 +173,14 @@ if ~isempty(sync)           % if sync signals present, proceed
     else
         try
             [~, ~, lagInSamplesA, ~] = ...
-                matchSignals(refAux, aux(:, 1));
+                matchSignals(refAux, syncDeriv(:, 1));
             newRelData = resampleShiftAndScale( ...
                 relData, 1, lagInSamplesA, 1);
             if secondFile
                 newRelData2 = resampleShiftAndScale( ...
                     newRelData2, 1, lagInSamplesA, 1);
                 % [~,timeScaleFactor,lagInSamples,~] = ...
-                %     matchSignals(refAux,aux(:,2)); % DMMO/ARL
+                %     matchSignals(refAux,syncDeriv(:,2)); % DMMO/ARL
                 % newRelData2 = resampleShiftAndScale( ...
                 %     newRelData2,1,lagInSamples,1); % DMMO/ARL
             end
