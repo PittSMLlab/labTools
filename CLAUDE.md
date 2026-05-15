@@ -117,6 +117,8 @@ c3d2mat
       ├── getTrialMetaData
       ├── loadTrials               % Load C3D into rawTrialData
       │    ├── btkReadAcquisition  % BTK (external)
+      │    ├── processGRFData      % GRF loading and offset calibration
+      │    ├── syncEMGData         % EMG inter-PC synchronization
       │    └── rawTrialData(...)
       ├── SyncDatalog
       ├── experimentData(...)      % [save *RAW.mat]
