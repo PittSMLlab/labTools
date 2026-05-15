@@ -162,6 +162,7 @@ if info.forces          % if there is force data in the trial, ...
         trueOffset             = nan(size(list));
         differenceInForceUnits = nan(size(list));
         m                      = nan(size(list));
+        unitsLabel             = '';  % default if no channel passes check
         for jj = 1:length(list)
             k = find(strcmp(forceLabels, list{jj}));
             if ~isempty(k)
@@ -203,11 +204,11 @@ if info.forces          % if there is force data in the trial, ...
                 end
                 switch list{jj}(2)
                     case 'F'    % forces
-                        units = 'N';
                         toleranceScaled = grfOffsetTol;
+                        unitsLabel      = 'N';
                     case 'M'    % moments (in N.mm)
-                        units = 'N.mm';
                         toleranceScaled = grfOffsetTol * 1000;
+                        unitsLabel      = 'N.mm';
                     otherwise
                         error('');
                 end
@@ -222,7 +223,7 @@ if info.forces          % if there is force data in the trial, ...
                     %   ' there appears to be a non-zero mode ' ...
                     %   '(offset). Calculated offset is ' ...
                     %   num2str(differenceInForceUnits(jj)) ' ' ...
-                    %   units '. Please confirm that you want ' ...
+                    %   unitsLabel '. Please confirm that you want ' ...
                     %   'to subtract this offset.']);
                     a = 'No';
                     switch a
@@ -259,7 +260,7 @@ if info.forces          % if there is force data in the trial, ...
     end
     GRFData = orientedLabTimeSeries(relData, 0, ...
         1/analogsInfo.frequency, forceLabels, orientation);
-    GRFData.DataInfo.Units = units;
+    GRFData.DataInfo.Units = unitsLabel;
 else
     GRFData = [];
 end
