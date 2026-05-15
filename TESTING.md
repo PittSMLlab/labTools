@@ -45,10 +45,10 @@ Choose the test based on what code was changed:
 
 | What changed | Command to run | Notes |
 |---|---|---|
-| Parameter calculation (`fun/parameterCalculation/`) | `expData.recomputeParameters()` | Fastest; recalculates from existing processed data |
+| Parameter calculation (`fun/parameterCalculation/`) | `expData.recomputeParameters()` | Fastest; recalculates from existing processed data. **eventClass must match the original run.** |
 | One parameter class only (e.g., force) | `expData.recomputeParameters('force')` | Scope-limited recompute |
 | Gait event detection (`fun/eventExtraction/`) | `expData.recomputeEvents()` then `expData.recomputeParameters()` | Events change → parameters change downstream |
-| Raw processing (filters, torques, EMG) | `expData.flushAndRecomputeParameters(eventClass)` | Full reprocessing; `eventClass`: `''` default, `'kin'`, or `'force'` |
+| Raw processing, or changing eventClass | `expData.flushAndRecomputeParameters(eventClass)` | Full reprocessing; `eventClass`: `''` default, `'kin'`, or `'force'` |
 | Class definitions or full pipeline logic | Re-run `loadSubject` (or `c3d2mat` if `*info.mat` is absent) | Most complete test |
 | Multiple areas | Run the most comprehensive command for the deepest change | When in doubt, use `flushAndRecomputeParameters` |
 | Raw data loading / channel layout | `compareExperimentData` on saved `*expData.mat` or `*RAW.mat` | Checks field presence, sizes, and label ordering without re-running the pipeline |
@@ -63,6 +63,14 @@ load('path/to/Sub01expData.mat', 'expData')
 ```
 
 ### Step 2: Run the appropriate recompute command
+
+> **Important:** `recomputeParameters` requires that `eventClass`
+> matches the original processing run. If the original run used `'kin'`
+> and you call `recomputeParameters()` (default `''`), the stride count
+> may differ and the function will error. Use
+> `flushAndRecomputeParameters` whenever you want to change the gait
+> event detection method.
+
 ```matlab
 % NOTE: experimentData is a value class — you must capture the return
 % value, or the recomputed parameters are silently discarded.

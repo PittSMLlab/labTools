@@ -38,8 +38,11 @@ file and recompute without re-parsing C3D files:
 
 - `recomputeEvents` — redetects gait events only
 - `recomputeParameters` — recomputes parameters from existing processed
-  data, optionally for a subset of parameter classes
-- `flushAndRecomputeParameters` — fully reprocesses all parameters
+  data, optionally for a subset of parameter classes; `eventClass` must
+  match the original processing run (different eventClass → different
+  stride count → error; use `flushAndRecomputeParameters` instead)
+- `flushAndRecomputeParameters` — discards existing parameters and
+  recomputes all from scratch; use when changing `eventClass`
 
 **Important:** `experimentData` is a value class — recompute methods
 return a modified copy. Capture the return value:
