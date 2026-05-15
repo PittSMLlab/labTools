@@ -53,17 +53,21 @@ F  = F1 .* conj(F2);
 P  = ifft(F);
 
 %% Interpolate for Sub-Sample Resolution
-aux = 0:0.01:length(P) - 1;
-P2  = interp1(0:length(P) - 1, P, aux, 'spline') ...
+% 100× resolution spline interpolation; load-bearing for accuracy —
+% do not reduce without re-validating sync parameter outputs.
+interpResolution = 0.01; % sub-sample lag resolution (fraction of a sample)
+fineLags = 0:interpResolution:length(P) - 1;
+P2       = interp1(0:length(P) - 1, P, fineLags, 'spline') ...
     / sqrt(sum(referenceSignal.^2) * sum(secondarySignal.^2));
 
 %% Find Peak Correlation
-[~, t]      = max(abs(P2));
-lagInSamples = aux(t) - floor(M / 2); % fftshift offset correction
+[~, t]       = max(abs(P2));
+lagInSamples = fineLags(t) - floor(M / 2); % fftshift offset correction
 corrCoef     = P2(t);
 
 if abs(corrCoef) < minCorrWarningThresh
-    warning(['Could not synch signals: r^2= ' num2str(abs(corrCoef))])
+    warning('findTimeLag:lowCorrelation', ...
+        'Could not synch signals: r^2= %.3f', abs(corrCoef));
 end
 timeDiff = NaN;
 
