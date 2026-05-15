@@ -61,6 +61,12 @@ arguments
     parameterClasses            = []
 end
 
+% Callers that pre-date the arguments block may pass [] (empty double),
+% which MATLAB coerces to 0×0 char rather than '' (1×0 char), causing
+% strcmp comparisons below to fail. Normalize here so both forms work.
+if isempty(eventClass);    eventClass    = ''; end
+if isempty(initEventSide); initEventSide = ''; end
+
 file = getSimpleFileName(trialData.metaData.rawDataFilename);
 
 % Resolve the reference leg from initEventSide or trial metadata
