@@ -66,9 +66,9 @@ orderedMuscleList = {'PER', 'TA', 'TAP', 'TAD', 'SOL', 'MG', 'LG', ...
     'RF', 'VM', 'VL', 'BF', 'SEMB', 'SEMT', 'ADM', 'GLU', 'TFL', ...
     'ILP', 'SAR', 'HIP'};
 orderedEMGList = {};
-for j = 1:length(orderedMuscleList)
-    orderedEMGList{end+1} = ['R' orderedMuscleList{j}];
-    orderedEMGList{end+1} = ['L' orderedMuscleList{j}];
+for jj = 1:length(orderedMuscleList)
+    orderedEMGList{end+1} = ['R' orderedMuscleList{jj}];
+    orderedEMGList{end+1} = ['L' orderedMuscleList{jj}];
 end
 
 % Determine whether the session expects data from a second PC at all;
@@ -309,15 +309,15 @@ for tr = trialNums                      % for each trial, ...
             % rmfield is called once on all ACC fields after the loop.
             accMask   = contains(fieldList, 'ACC');
             accFields = fieldList(accMask);
-            for j = 1:length(accFields)
-                accPos = strfind(accFields{j}, 'ACC');
-                chIdx  = str2double(accFields{j}(accPos+4:end));
-                switch accFields{j}(accPos+3)
+            for jj = 1:length(accFields)
+                accPos = strfind(accFields{jj}, 'ACC');
+                chIdx  = str2double(accFields{jj}(accPos+4:end));
+                switch accFields{jj}(accPos+3)
                     case 'X',  axIdx = 1;
                     case 'Y',  axIdx = 2;
                     case 'Z',  axIdx = 3;
                 end
-                relData(:, chIdx, axIdx) = analogs.(accFields{j});
+                relData(:, chIdx, axIdx) = analogs.(accFields{jj});
             end
             analogs = rmfield(analogs, accFields);
 
@@ -344,15 +344,15 @@ for tr = trialNums                      % for each trial, ...
                 % rmfield is called once after the loop
                 accMask2   = contains(fieldList, 'ACC');
                 accFields2 = fieldList(accMask2);
-                for j = 1:length(accFields2)
-                    accPos = strfind(accFields2{j}, 'ACC');
-                    chIdx  = str2double(accFields2{j}(accPos+4:end));
-                    switch accFields2{j}(accPos+3)
+                for jj = 1:length(accFields2)
+                    accPos = strfind(accFields2{jj}, 'ACC');
+                    chIdx  = str2double(accFields2{jj}(accPos+4:end));
+                    switch accFields2{jj}(accPos+3)
                         case 'X',  axIdx = 1;
                         case 'Y',  axIdx = 2;
                         case 'Z',  axIdx = 3;
                     end
-                    relData2(:, chIdx, axIdx) = analogs2.(accFields2{j});
+                    relData2(:, chIdx, axIdx) = analogs2.(accFields2{jj});
                 end
                 analogs2 = rmfield(analogs2, accFields2);
 
@@ -395,10 +395,10 @@ for tr = trialNums                      % for each trial, ...
             % At this point EMGList includes both PC1 and (when
             % applicable) PC2 names, so ACCList covers all channels.
             ACCList = {};
-            for j = 1:length(EMGList)
-                ACCList{end+1} = [EMGList{j} 'x'];
-                ACCList{end+1} = [EMGList{j} 'y'];
-                ACCList{end+1} = [EMGList{j} 'z'];
+            for jj = 1:length(EMGList)
+                ACCList{end+1} = [EMGList{jj} 'x'];
+                ACCList{end+1} = [EMGList{jj} 'y'];
+                ACCList{end+1} = [EMGList{jj} 'z'];
             end
 
             % Downsample by accDownsampleFactor to approximately
@@ -468,18 +468,18 @@ for tr = trialNums                      % for each trial, ...
         mustHaveLabels = {'LHIP', 'RHIP', 'LANK', 'RANK', 'RHEE', ...
             'LHEE', 'LTOE', 'RTOE', 'RKNE', 'LKNE'};
         labelPresent = false(1, length(mustHaveLabels));
-        for i = 1:length(fieldList)
-            newFieldList{i} = findLabel(fieldList{i});
-            labelPresent    = labelPresent + ...
-                ismember(mustHaveLabels, newFieldList{i});
+        for ii = 1:length(fieldList)
+            newFieldList{ii} = findLabel(fieldList{ii});
+            labelPresent     = labelPresent + ...
+                ismember(mustHaveLabels, newFieldList{ii});
         end
 
         % If any required labels are missing, terminate with error
         % if any(~labelPresent)
         %     missingLabels = find(~labelPresent);
         %     str = ' ';
-        %     for j = missingLabels
-        %         str = [str ', ' mustHaveLabels{j}];
+        %     for jj = missingLabels
+        %         str = [str ', ' mustHaveLabels{jj}];
         %     end
         %     ME = MException('loadTrials:markerDataError', ...
         %         ['Marker data does not contain:' str ...
@@ -492,13 +492,13 @@ for tr = trialNums                      % for each trial, ...
             missingLabels    = find(~labelPresent);
             potentialMatches = ...
                 newFieldList(~ismember(newFieldList, mustHaveLabels));
-            for j = missingLabels
+            for jj = missingLabels
                 choice = menu( ...
-                    [{['WARNING: the marker label ' mustHaveLabels{j}]},...
+                    [{['WARNING: the marker label ' mustHaveLabels{jj}]},...
                     {' was not found, but is necessary for'}, ...
                     {'future calculations. Please indicate which'}, ...
                     {[' marker corresponds to the ' ...
-                    mustHaveLabels{j} ' label:']}], ...
+                    mustHaveLabels{jj} ' label:']}], ...
                     [potentialMatches {'NaN'}]);
                 if choice == 0
                     ME = MException( ...
@@ -509,30 +509,31 @@ for tr = trialNums                      % for each trial, ...
                 elseif choice > length(potentialMatches)
                     % nop
                     warning('loadTrials:missingRequiredMarker', ...
-                        ['A required marker (' mustHaveLabels{j} ...
-                        ') was missing from the marker list. This will '...
-                        'be problematic when computing parameters.']);
+                        ['A required marker (' mustHaveLabels{jj} ...
+                        ') was missing from the marker list. This ' ...
+                        'will be problematic when computing ' ...
+                        'parameters.']);
                 else
                     % Map the chosen label to the required label
                     addMarkerPair( ...
-                        mustHaveLabels{j}, potentialMatches{choice});
+                        mustHaveLabels{jj}, potentialMatches{choice});
                 end
             end
         end
 
-        for j = 1:length(fieldList)
+        for jj = 1:length(fieldList)
             % Skip unlabeled markers (Vicon 'C_' prefix)
-            if length(fieldList{j}) > 2 && ...
-                    ~strcmp(fieldList{j}(1:2), 'C_')
-                relData = [relData, markers.(fieldList{j})];
+            if length(fieldList{jj}) > 2 && ...
+                    ~strcmp(fieldList{jj}(1:2), 'C_')
+                relData = [relData, markers.(fieldList{jj})];
                 % Standardize marker name via findLabel
-                markerLabel       = findLabel(fieldList{j});
+                markerLabel       = findLabel(fieldList{jj});
                 markerList{end+1} = [markerLabel 'x'];
                 markerList{end+1} = [markerLabel 'y'];
                 markerList{end+1} = [markerLabel 'z'];
             end
             % Remove processed marker to save memory
-            markers = rmfield(markers, fieldList{j});
+            markers = rmfield(markers, fieldList{jj});
         end
         % Force missing marker data to NaN
         relData(relData == 0) = NaN;
