@@ -480,9 +480,12 @@ for tr = trialNums                      % for each trial, ...
         % Identify EMGList channels not present in orderedEMGList;
         % warn if any are found that are not sync signals
         inOrdered = ismember(lower(EMGList(:)), lower(orderedEMGList(:)));
-        if any(~inOrdered) && ~all(strcmpi(EMGList(~inOrdered), 'sync'))
-            warning(['loadTrials: Not all of the provided muscles ' ...
-                'are in the ordered list, ignoring ' EMGList{~inOrdered}]);
+        isSync    = cellfun( ...
+            @(x) ~isempty(regexpi(x, '^sync', 'once')), EMGList(~inOrdered));
+        if any(~inOrdered) && ~all(isSync)
+            ignoredLabels = strjoin(EMGList(~inOrdered & ~isSync), ', ');
+            warning(['loadTrials: Some provided EMG channels are not ' ...
+                'in the ordered list and will be ignored: ' ignoredLabels]);
         end
 
         % Set exactly-zero samples to NaN (unavailable samples)
