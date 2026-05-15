@@ -450,8 +450,9 @@ They may diverge from the upstream repositories over time.
 
 ## Testing
 
-labTools has no automated test suite. The `example/` scripts serve
-as manual integration tests. When making a change:
+labTools has no automated test suite. For detailed guidance on testing
+any code modifications, see [TESTING.md](TESTING.md). The `example/`
+scripts serve as manual integration tests. When making a change:
 
 1. Run the relevant script(s) in `example/` to confirm the pipeline
    still produces expected output.
@@ -461,6 +462,10 @@ as manual integration tests. When making a change:
 3. If your change affects parameter calculation, call
    `recomputeParameters` and compare the output `adaptationData`
    object against a known-good baseline.
+4. Save a copy of the output MAT data files before implementing the
+   code changes, and use the `compareAdaptationData` and
+   `compareExperimentData` to verify that there are no detrimental
+   effects on the output data.
 4. Note that `experimentData` is a **value class** — recompute
    methods return a modified copy. Always capture the return value:
 
