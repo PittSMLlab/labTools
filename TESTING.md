@@ -51,6 +51,7 @@ Choose the test based on what code was changed:
 | Raw processing (filters, torques, EMG) | `expData.flushAndRecomputeParameters(eventClass)` | Full reprocessing; `eventClass`: `''` default, `'kin'`, or `'force'` |
 | Class definitions or full pipeline logic | Re-run `loadSubject` (or `c3d2mat` if `*info.mat` is absent) | Most complete test |
 | Multiple areas | Run the most comprehensive command for the deepest change | When in doubt, use `flushAndRecomputeParameters` |
+| Raw data loading / channel layout | `compareExperimentData` on saved `*expData.mat` or `*RAW.mat` | Checks field presence, sizes, and label ordering without re-running the pipeline |
 
 ---
 
@@ -162,6 +163,77 @@ compareAdaptationData(ref, new, RelTol=1e-12, AbsTol=1e-15)
 
 ---
 
+## Structural Comparison with `compareExperimentData`
+
+Use `compareExperimentData` when a code change may have altered the
+channel layout, field presence, or data dimensions of `rawTrialData`
+or `processedTrialData` objects — for example after refactoring raw
+data loading (`loadTrials`, `processGRFData`, `syncEMGData`) or EMG
+processing (`processEMG`).
+
+Unlike `compareAdaptationData`, this function does **not** compare
+numerical values. It checks structural properties only:
+- Which data fields are present (e.g., `EMGData`, `GRFData`, `accData`)
+- The size of each field's data matrix
+- The channel label list (order-sensitive — reordered labels are flagged)
+- Whether the trial data type changed (e.g., `rawLabData` →
+  `processedLabData`)
+
+### Reference file
+
+The reference is a saved `*expData.mat` or `*RAW.mat` produced from
+a known-good run. Load either directly from a file path or pass an
+object already in the workspace.
+
+### Step-by-Step
+
+```matlab
+% Step 1 — produce a new expData without saving it:
+loadSubject('path/to/session/Sub01info.mat')
+% OR: run c3d2mat, then intercept the expData object before it is saved
+
+% Step 2 — compare against the reference file:
+report = compareExperimentData( ...
+    'path/to/reference/Sub01expData.mat', ...
+    newExpData, ...
+    RefName='reference', NewName='after change')
+```
+
+### Interpreting the output
+
+```
+TRIALS
+  Reference : 5 trials
+  New       : 5 trials
+  Common: 5  |  Ref-only: 0  |  New-only: 0
+
+FIELD STRUCTURE  (5 common trials)
+  All trials: no structural differences.
+
+SUMMARY: 0 of 5 common trials have structural differences.
+```
+
+If structural differences are found, the report lists them per trial:
+
+```
+FIELD STRUCTURE  (5 common trials)
+  Trial 3:
+    EMGData                labels differ  ref-only: LMGA  new-only: RMGA
+    accData                absent in new
+```
+
+- **absent in reference / absent in new** — field was added or removed.
+- **size:** — data matrix dimensions changed (e.g., different number of
+  samples or channels).
+- **labels differ** — channel names changed. `ref-only` and `new-only`
+  show which labels are unique to each object; `(same set, different
+  order)` means the channels are identical but reordered.
+
+The `report` struct mirrors the printed output and can be inspected
+programmatically (e.g., `report.trials(3).fields`).
+
+---
+
 ## Skipping the GUI When `*info.mat` Exists
 
 If the `GetInfoGUI` dialog has already been completed for the
@@ -193,6 +265,7 @@ This saves substantial time during iterative testing.
 
 ## See Also
 
-- `fun/misc/compareAdaptationData.m` — comparison function
+- `fun/misc/compareAdaptationData.m` — parameter value comparison
+- `fun/misc/compareExperimentData.m` — structural comparison
 - `example/testPipelineRecompute.m` — template script
 - `CLAUDE.md` — repository architecture overview
