@@ -3,9 +3,10 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %
 %   Reads kinematic, force, and EMG data from C3D files for each trial
 % in the experimental session. For each trial, the function imports
-% analog and marker data via the Biomechanics Toolkit (BTK), processes
-% ground reaction forces, synchronizes and sorts EMG channels, processes
-% accelerometer data, and packages everything into a rawTrialData object.
+% analog and marker data via the Biomechanics Toolkit (BTK), delegates
+% ground reaction force processing to processGRFData, synchronizes and
+% sorts EMG channels via syncEMGData, processes accelerometer data, and
+% packages everything into a rawTrialData object.
 %
 %   When secondary C3D files (PC2 EMG) are expected for the session but
 % missing for individual trials, those trials are processed with NaN-
@@ -28,12 +29,11 @@ function trials = loadTrials(trialMD, fileList, secFileList, info)
 %              corresponds to trial number
 %
 %   Toolbox Dependencies:
-%     Signal Processing Toolbox      (medfilt1)
-%     Statistics and Machine Learning Toolbox (zscore)
 %     BTK - Biomechanics Toolkit     (btkReadAcquisition, btkGetAnalogs,
 %                                     btkGetMarkers; external dependency)
 %
-%   See also: rawTrialData, loadSubject, getTrialMetaData
+%   See also: rawTrialData, loadSubject, getTrialMetaData,
+%   syncEMGData, processGRFData
 
 arguments
     trialMD     cell
