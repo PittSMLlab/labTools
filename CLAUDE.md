@@ -245,8 +245,9 @@ All other style rules apply, including:
 - Loop variables: no `i`/`j`; use `ii`, `jj`, or named vars
   (`con`, `tr`, `gg` for groups).
 - Property strings: PascalCase (`'Enable'`, `'String'`, `'Value'`,
-  `'BackgroundColor'`, `'ForegroundColor'`); values like `'on'` and
-  `'off'` stay lowercase.
+  `'BackgroundColor'`, `'ForegroundColor'`); value strings also
+  PascalCase (`'On'`, `'Off'`, `'White'`, etc.). MATLAB is
+  case-insensitive for property values — this is a style convention.
 - Spaces around `=` and after `,`.
 - Full doc blocks on all meaningful callbacks (`OpeningFcn`,
   `OutputFcn`, and any callback containing substantive logic).
