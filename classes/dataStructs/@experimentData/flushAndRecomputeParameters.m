@@ -29,17 +29,17 @@ function this = flushAndRecomputeParameters(this, eventClass, ...
 %
 % Toolbox Dependencies: None
 %
-if nargin < 2 || isempty(eventClass)
-    eventClass = [];
-end
 % See also RECOMPUTEPARAMETERS, RECOMPUTEEVENTS,
 %   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.
 
-if nargin < 3 || isempty(initEventSide)
-    initEventSide = [];
-end
-if nargin < 4 || isempty(shouldComputeEMGNorm)
-    shouldComputeEMGNorm = false;
+arguments
+    this
+    eventClass           (1,:) char    = ''
+    initEventSide        (1,:) char    = ''
+    shouldComputeEMGNorm (1,1) logical = false
+    muscleLabels                       = {}
+    normalizationRefCond               = []
+    biasRemovalCond                    = []
 end
 
 trials = cell2mat(this.metaData.trialsInCondition);

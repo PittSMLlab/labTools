@@ -41,18 +41,17 @@ function this = recomputeParameters(this, eventClass, initEventSide, ...
 % See also FLUSHANDRECOMPUTEPARAMETERS, RECOMPUTEEVENTS,
 %   CALCPARAMETERS, APPENDEMGNORMPARAMETERS.
 
-if nargin < 2 || isempty(eventClass)
-    eventClass = [];
+arguments
+    this
+    eventClass           (1,:) char    = ''
+    initEventSide        (1,:) char    = ''
+    parameterClasses                   = []
+    shouldComputeEMGNorm (1,1) logical = false
+    muscleLabels                       = {}
+    normalizationRefCond               = []
+    biasRemovalCond                    = []
 end
-if nargin < 3 || isempty(initEventSide)
-    initEventSide = [];
-end
-if nargin < 4 || isempty(parameterClasses)
-    parameterClasses = [];
-end
-if nargin < 5 || isempty(shouldComputeEMGNorm)
-    shouldComputeEMGNorm = false;
-end
+
 trials = cell2mat(this.metaData.trialsInCondition);
 for t = trials
     newParams = calcParameters(this.data{t}, this.subData, ...
