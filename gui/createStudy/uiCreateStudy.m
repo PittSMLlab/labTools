@@ -34,21 +34,6 @@ end
 % ============================================================
 % --- Executes just before uiCreateStudy is made visible.
 function uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)
-
-% Choose default command line output for uiCreateStudy
-handles.output = hObject;
-handles.studyData=struct;
-
-%find all files in pwd
-files=what('./');
-fileList=files.mat;
-paramFiles={};
-
-for i=1:length(fileList)
-    %find files in pwd that are (Subject)param.mat files
-    aux1=strfind(lower(fileList{i}),'params');
-    if ~isempty(aux1)
-        paramFiles{end+1}=fileList{i};
 % uiCreateStudy_OpeningFcn  Initializes GUI state before it is shown.
 %
 %   Inputs:
@@ -56,11 +41,23 @@ for i=1:length(fileList)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 %     varargin  - command line arguments to uiCreateStudy (see VARARGIN)
+
+handles.output    = hObject;
+handles.studyData = struct;
+
+% Scan the current directory for subject params files
+files    = what('./');
+fileList = files.mat;
+paramFiles = {};
+
+for ii = 1:length(fileList)
+    if ~isempty(strfind(lower(fileList{ii}), 'params'))
+        paramFiles{end + 1} = fileList{ii};
     end
 end
 
-set(handles.allSubList,'string',paramFiles')
-set(handles.allSubList,'max',length(paramFiles))
+set(handles.allSubList, 'String', paramFiles');
+set(handles.allSubList, 'Max',    length(paramFiles));
 
 guidata(hObject, handles);
 
@@ -132,20 +129,18 @@ function addButton_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-%get current state of selected sub list
-selectSubContents = get(handles.selectSubList,'string');
+selectSubContents = get(handles.selectSubList, 'String');
 
-%get new subjects to add to list
-contents=get(handles.allSubList,'String');
-inds=get(handles.allSubList,'value');
-newSelectSubs=contents(inds);
-contents(inds)=[]; %remove subjects from all sub list
+contents = get(handles.allSubList, 'String');
+inds     = get(handles.allSubList, 'Value');
+newSelectSubs = contents(inds);
+contents(inds) = [];
 
-newSelectSubList=sort([selectSubContents; newSelectSubs]);
+newSelectSubList = sort([selectSubContents; newSelectSubs]);
 
-set(handles.selectSubList,'String',newSelectSubList)
-set(handles.allSubList,'String',contents)
-set(handles.allSubList,'Value',[])
+set(handles.selectSubList, 'String', newSelectSubList);
+set(handles.allSubList,    'String', contents);
+set(handles.allSubList,    'Value',  []);
 
 guidata(hObject, handles);
 
@@ -159,20 +154,18 @@ function removeButton_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-%get current state of all sub list
-allSubContents = get(handles.allSubList,'string');
+allSubContents = get(handles.allSubList, 'String');
 
-%get subjects to remove from selected list
-contents=get(handles.selectSubList,'String');
-inds=get(handles.selectSubList,'Value');
-removeSubs=contents(inds);
-contents(inds)=[]; %remove subjects from select sub list
+contents   = get(handles.selectSubList, 'String');
+inds       = get(handles.selectSubList, 'Value');
+removeSubs = contents(inds);
+contents(inds) = [];
 
-newAllSubList=sort([allSubContents; removeSubs]);
+newAllSubList = sort([allSubContents; removeSubs]);
 
-set(handles.allSubList,'String',newAllSubList)
-set(handles.selectSubList,'String',contents)
-set(handles.selectSubList,'Value',[])
+set(handles.allSubList,    'String', newAllSubList);
+set(handles.selectSubList, 'String', contents);
+set(handles.selectSubList, 'Value',  []);
 
 guidata(hObject, handles);
 
@@ -186,33 +179,34 @@ function addGroupButton_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-fileList=get(handles.selectSubList,'String');
-nSubs=length(fileList);
-sub=struct;
-%get group
-group=get(handles.groupNameEdit,'string');
-abbrevGroup=group(ismember(group,['A':'Z' 'a':'z' '1':'9'])); %remove non-alphanumeric characters
+fileList = get(handles.selectSubList, 'String');
+nSubs    = length(fileList);
+sub      = struct;
+
+group       = get(handles.groupNameEdit, 'String');
+abbrevGroup = group(ismember(group, ['A':'Z' 'a':'z' '1':'9']));
 if isempty(abbrevGroup)
-    abbrevGroup='NoDescription';
+    abbrevGroup = 'NoDescription';
 end
 
-for i=1:nSubs
     %     aux1=strfind(lower(fileList{i}),'params');
     %     subID=fileList{i}(1:(aux1-1));
-    load(fileList{i});
-    subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo
+for ii = 1:nSubs
+    load(fileList{ii});
+    subID = adaptData.subData.ID;
 
-    sub.IDs(i)= {subID};
-    sub.adaptData(i)={adaptData};
+    sub.IDs(ii)       = {subID};
+    sub.adaptData(ii) = {adaptData};
 end
 
-handles.studyData.(abbrevGroup)=groupAdaptationData(sub.IDs,sub.adaptData);
+handles.studyData.(abbrevGroup) = ...
+    groupAdaptationData(sub.IDs, sub.adaptData);
 
-set(handles.selectSubList,'String',[])
+set(handles.selectSubList, 'String', []);
 
-groupContents=get(handles.groupList,'String');
-newGroupContents=[groupContents; {group}];
-set(handles.groupList,'String',newGroupContents)
+groupContents    = get(handles.groupList, 'String');
+newGroupContents = [groupContents; {group}];
+set(handles.groupList, 'String', newGroupContents);
 
 guidata(hObject, handles);
 
@@ -227,9 +221,9 @@ function saveButton_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-[file,path] = uiputfile('*.mat','Save Study As');
-studyData=handles.studyData;
-save([path file],'studyData','-v7.3')
+[file, path] = uiputfile('*.mat', 'Save Study As');
+studyData    = handles.studyData;
+save([path file], 'studyData', '-v7.3');
 
 close(handles.figure1);
 
