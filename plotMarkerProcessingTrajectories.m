@@ -18,43 +18,46 @@ function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)
 %
 % See also PROCESSANDFILLMARKERGAPSTRIAL, PART1RL.
 
-mrkrData = struct(); % Initialize structure
+mrkrData = struct();
 
-for i = 1:numel(trialPaths)
-    trialPath = trialPaths{i};
+%% Process trials
+for tr = 1:numel(trialPaths)
+    trialPath = trialPaths{tr};
     [parentDir, trialID] = fileparts(trialPath);
-    [~, subjectID] = fileparts(parentDir);
+    [~, subjectID]       = fileparts(parentDir);
 
     fprintf('\n--- Processing %s/%s ---\n', subjectID, trialID);
 
     if startsWith(trialID, 'Old_')
-        % ----------------- OLD PIPELINE -----------------
         try
             fprintf('Running OLD Pipeline on: %s\n', trialID);
             trajsOld = processAndFillMarkerGapsTrial(trialPath);
             mrkrData.(subjectID).(trialID).Old.trajectories = trajsOld;
         catch ME
-            warning('OLD pipeline failed for %s/%s: %s', subjectID, trialID, ME.message);
+            warning(ME.identifier, ...
+                'OLD pipeline failed for %s/%s: %s', ...
+                subjectID, trialID, ME.message);
         end
     else
-        % ----------------- NEW PIPELINE -----------------
         try
             fprintf('Running NEW Pipeline on: %s\n', trialID);
             trajsNew = Part1RL(trialPath);
             mrkrData.(subjectID).(trialID).New.trajectories = trajsNew;
         catch ME
-            warning('NEW pipeline failed for %s/%s: %s', subjectID, trialID, ME.message);
+            warning(ME.identifier, ...
+                'NEW pipeline failed for %s/%s: %s', ...
+                subjectID, trialID, ME.message);
         end
     end
 end
 
-% Save result
+%% Save
 fprintf('\nSaving all trajectory data to: %s\n', savePath);
 try
     save(savePath, 'mrkrData', '-v7.3');
     fprintf('Saved successfully.\n');
 catch ME
-    warning('Failed to save results: %s', ME.message);
+    warning(ME.identifier, 'Failed to save results: %s', ME.message);
 end
 
 end
