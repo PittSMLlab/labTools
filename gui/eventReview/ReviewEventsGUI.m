@@ -154,20 +154,20 @@ end
 function condMenu_Callback(hObject, eventdata, handles)
 
 % check back button ability
-if get(hObject,'value')>1
-    set(handles.back_button,'enable','on')
+if get(hObject,'Value')>1
+    set(handles.back_button,'Enable','on')
 else
-    set(handles.back_button,'enable','off')
+    set(handles.back_button,'Enable','off')
 end
 
 global expData
-condOptions=get(hObject,'string');
+condOptions=get(hObject,'String');
 condStr=condOptions(get(hObject,'Value'));
 handles.Condition=find(strcmp(expData.metaData.conditionName,condStr));
 
 s={};
-for i=1:length(expData.metaData.trialsInCondition{handles.Condition})
-    s{i}=num2str(expData.metaData.trialsInCondition{handles.Condition}(i));
+for ii = 1:length(expData.metaData.trialsInCondition{handles.Condition})
+    s{ii}=num2str(expData.metaData.trialsInCondition{handles.Condition}(ii));
 end
 if isempty(s)
     cla(handles.axes1)
@@ -186,15 +186,15 @@ else
         'TPdataType','TPfield','trialMenu','timeSlider','maxCheck','trialMenu',...
         'defaultRadio','showBadCheck','labelBadButton','labelGoodButton');   
     if length(expData.data{end}.gaitEvents.labels)==12
-        set(handles.kinematicRadio,'Enable','on');
-        set(handles.forceRadio,'Enable','on');
+        set(handles.kinematicRadio, 'Enable', 'on');
+        set(handles.forceRadio,     'Enable', 'on');
     end
     %set other values
-    set(handles.trialMenu, 'String',s);
+    set(handles.trialMenu, 'String', s);
     if handles.backButtonFlag
-        set(handles.trialMenu, 'Value',length(s));
+        set(handles.trialMenu, 'Value', length(s));
     else
-        set(handles.trialMenu, 'Value',1);
+        set(handles.trialMenu, 'Value', 1);
     end
     handles.backButtonFlag=false;
     
@@ -211,10 +211,10 @@ end
 function trialMenu_Callback(hObject, eventdata, handles)
 
 % check back button ability
-if get(handles.condMenu,'value')==1 && get(hObject,'value')==1
-    set(handles.back_button,'enable','off')
+if get(handles.condMenu,'Value')==1 && get(hObject,'Value')==1
+    set(handles.back_button,'Enable','off')
 else
-    set(handles.back_button,'enable','on')
+    set(handles.back_button,'Enable','on')
 end
 
 global expData
@@ -230,14 +230,14 @@ else
     handles.fast = 'R';
 end
 % get condition description and any observations
-set(handles.condDescripText,'string',expData.data{handles.idx}.metaData.description)
-set(handles.observationText,'string',['Observations: ' expData.data{handles.idx}.metaData.observations])
+set(handles.condDescripText,'String',expData.data{handles.idx}.metaData.description)
+set(handles.observationText,'String',['Observations: ' expData.data{handles.idx}.metaData.observations])
 set(handles.write,'Enable','off')
 fieldList=fields(expData.data{handles.idx});
-for i=1:length(fieldList)
-    eval(['curField=expData.data{handles.idx}.' fieldList{i} ';']);
+for ii = 1:length(fieldList)
+    eval(['curField=expData.data{handles.idx}.' fieldList{ii} ';']);
     if isa(curField,'labTimeSeries')
-        handles.TSlist{end+1}=fieldList{i};
+        handles.TSlist{end+1}=fieldList{ii};
     end
 end
 clear curField fieldList
@@ -250,10 +250,10 @@ if get(handles.TPdataType,'Value')>length(get(handles.TPdataType,'String'))
     set(handles.TPdataType,'Value',1);
 end
 %initialize start/stop times to plot
-set(handles.minText,'string','1')
+set(handles.minText,'String','1')
 maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
 TW=round(get(handles.timeSlider,'Value'));
-if TW>maxTime || get(handles.maxCheck,'value')
+if TW>maxTime || get(handles.maxCheck,'Value')
     handles.timeWindow=maxTime;
     handles.tstop=maxTime;
     set(handles.timeSlider,'Value',maxTime);
@@ -261,8 +261,8 @@ else
     handles.timeWindow=TW;
     handles.tstop=TW;
 end
-set(handles.maxText,'string',num2str(maxTime));
-set(handles.timeSlider,'max',maxTime);
+set(handles.maxText,'String',num2str(maxTime));
+set(handles.timeSlider,'Max',maxTime);
 set(handles.timeSlider,'SliderStep',[1/(maxTime-1) 1/(maxTime-1)]) %1 is the lower limit
 handles.tstart=0;
 set(handles.timeWindowText,'String',handles.timeWindow);
@@ -299,7 +299,7 @@ global expData
 curTS=expData.data{handles.idx}.(handles.TSlist{get(hObject,'Value')});
 fields={};
 plotFields={};
-set(fieldListHandle,'enable','on')
+set(fieldListHandle,'Enable','on')
 
 %The following code removes redundant options in the feild list by
 %combinging 'R' and 'L' data as well as 'Fast' and 'Slow' adaptation
@@ -308,42 +308,42 @@ set(fieldListHandle,'enable','on')
 %the drop-down list(feilds) and another that matches each option with the data to
 %plot (plotFields)
 
-for i=1:length(curTS.labels)
-    if strcmp(curTS.labels{i}(1),handles.fast) %'L' or 'R'
-        if any(strcmp(curTS.labels,[handles.slow,curTS.labels{i}(2:end)])) %check there is a corresponding slow label
+for ii = 1:length(curTS.labels)
+    if strcmp(curTS.labels{ii}(1),handles.fast) %'L' or 'R'
+        if any(strcmp(curTS.labels,[handles.slow,curTS.labels{ii}(2:end)])) %check there is a corresponding slow label
             if length(curTS.labels)==2 %case where there is only two labels (matlab doesn't like dropdown menus with only one option)
-                set(fieldListHandle,'enable','off')
+                set(fieldListHandle,'Enable','off')
                 set(fieldListHandle,'Value',1)
                 fields = {'',''};
-                plotFields{end+1} = {curTS.labels{i},[handles.slow,curTS.labels{i}(2:end)]};
-            elseif length(curTS.labels{i}) == 1 % just 'R' or 'L' (beltspeedreadData for ex)
+                plotFields{end+1} = {curTS.labels{ii},[handles.slow,curTS.labels{ii}(2:end)]};
+            elseif length(curTS.labels{ii}) == 1 % just 'R' or 'L' (beltspeedreadData for ex)
                 fields=handles.TSlist{get(hObject,'Value')};
                 plotFields{end+1} = {handles.fast,handles.slow};
             else
-                fields{end+1}=curTS.labels{i}(2:end);
-                plotFields{end+1} = {curTS.labels{i},[handles.slow,curTS.labels{i}(2:end)]};
+                fields{end+1}=curTS.labels{ii}(2:end);
+                plotFields{end+1} = {curTS.labels{ii},[handles.slow,curTS.labels{ii}(2:end)]};
             end
         else
-            %slow label is missing 
-            fields{end+1}=strrep(curTS.labels{i},handles.fast,'F');
-            plotFields{end+1} = curTS.labels{i};
+            %slow label is missing
+            fields{end+1}=strrep(curTS.labels{ii},handles.fast,'F');
+            plotFields{end+1} = curTS.labels{ii};
         end
-    elseif strcmp(curTS.labels{i}(1),handles.slow)
-        if ~any(strcmp(curTS.labels,[handles.fast,curTS.labels{i}(2:end)]))
-            %fast label is missing 
-            fields{end+1}=strrep(curTS.labels{i},handles.slow,'S');
-            plotFields{end+1}=curTS.labels{i};
+    elseif strcmp(curTS.labels{ii}(1),handles.slow)
+        if ~any(strcmp(curTS.labels,[handles.fast,curTS.labels{ii}(2:end)]))
+            %fast label is missing
+            fields{end+1}=strrep(curTS.labels{ii},handles.slow,'S');
+            plotFields{end+1}=curTS.labels{ii};
         else
             % already have a slow label so do nothing
-        end            
-    elseif strcmpi(curTS.labels{i}(max([end-3 1]):end),'Fast')
-        fields{end+1}=curTS.labels{i}(1:end-4);
-        plotFields{end+1} = {curTS.labels{i},[curTS.labels{i}(1:end-4),'Slow']};
-    elseif strcmpi(curTS.labels{i}(max([end-3 1]):end),'Slow')
+        end
+    elseif strcmpi(curTS.labels{ii}(max([end-3 1]):end),'Fast')
+        fields{end+1}=curTS.labels{ii}(1:end-4);
+        plotFields{end+1} = {curTS.labels{ii},[curTS.labels{ii}(1:end-4),'Slow']};
+    elseif strcmpi(curTS.labels{ii}(max([end-3 1]):end),'Slow')
         %assume we also have a fast label and do nothing
     else
-        fields{end+1}=curTS.labels{i};
-        plotFields{end+1} = curTS.labels{i};
+        fields{end+1}=curTS.labels{ii};
+        plotFields{end+1} = curTS.labels{ii};
     end
 end
 
@@ -378,7 +378,7 @@ handles.timeWindow=round(get(hObject,'Value'));
 % % % %to make zoomed-in time window start at beginning of previous time window: % % % %
 handles.tstop=handles.tstart+handles.timeWindow;
 
-set(handles.timeWindowText,'string',handles.timeWindow);
+set(handles.timeWindowText,'String',handles.timeWindow);
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button,eventdata,handles)
 end
@@ -388,13 +388,13 @@ function maxCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of maxCheck
 global expData
 maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
-set(handles.timeSlider,'enable','on');
-if get(handles.maxCheck,'value')
+set(handles.timeSlider,'Enable','on');
+if get(handles.maxCheck,'Value')
     handles.timeWindow=maxTime;
     handles.tstop=maxTime;
     set(handles.timeSlider,'Value',maxTime);
     set(handles.timeWindowText,'String',handles.timeWindow);
-    set(handles.timeSlider,'enable','off');
+    set(handles.timeSlider,'Enable','off');
 end
 plot_button_Callback(handles.plot_button,eventdata,handles)
 end
@@ -428,7 +428,7 @@ else
     times=TSdata.Time;
 end
 
-if times(end)<handles.tstop || get(handles.maxCheck,'value')
+if times(end)<handles.tstop || get(handles.maxCheck,'Value')
 %     disp(['Max Time scale selected!'])'
     endSamp=length(times);
     startSamp=max([1 endSamp-find(times<=handles.timeWindow,1,'last')]);
@@ -478,9 +478,9 @@ if length(fieldList{value})==2
         %event correction factor:
         % TO DO: use a method to make sampling frequencies equivalent instead of using ECF.
         ECF = events.sampFreq/TSdata.sampFreq; 
-        for i=1:length(events.labels)
-            data=events.getDataAsVector(events.labels{i});
-            eval([events.labels{i} 'times=times(startSamp)+events.Time(data(ceil((startSamp-1).*ECF+1):floor((endSamp-1).*ECF+1))==1);'])
+        for ii = 1:length(events.labels)
+            data=events.getDataAsVector(events.labels{ii});
+            eval([events.labels{ii} 'times=times(startSamp)+events.Time(data(ceil((startSamp-1).*ECF+1):floor((endSamp-1).*ECF+1))==1);'])
         end
         %Overlay events (only those in the time window...otherwise there
         %will be warnings for the extra legend entries
@@ -524,7 +524,7 @@ else
         set(axesHandle,'nextplot','add')
     end   
 end
-set(axesHandle,'Xlim',[handles.tstart handles.tstop]);
+set(axesHandle,'XLim',[handles.tstart handles.tstop]);
 h_legend = legend(axesHandle,legendEntries);
 set(h_legend,'FontSize',6)
 
@@ -613,12 +613,12 @@ axes(handles.axes1)
 
 %Find closest event(s)
 allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
-for i=1:length(x);
-    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(i);  
+for ii = 1:length(x)
+    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(ii);
     minDeltaT=min(abs(deltaT));
     if minDeltaT<1 %s
         %pad min value to delete events in same region from alt calcualtion
-        selectedEventTimeIndex=find(abs(deltaT)<minDeltaT+0.05);    
+        selectedEventTimeIndex=find(abs(deltaT)<minDeltaT+0.05);
         selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
 
         %Eliminate it from handles.trialEvents
@@ -719,8 +719,8 @@ axes(handles.axes1)
 [x,~]=ginput;
 [boolFlag,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
 
-for i=1:length(x);
-    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(i);
+for ii = 1:length(x)
+    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(ii);
     [~,loc]=min(abs(deltaT));
     %update 'bad' and 'good'  
     if all(boolFlag)
@@ -744,8 +744,8 @@ axes(handles.axes1)
 [x,~]=ginput;
 [~,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
 
-for i=1:length(x);
-    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(i);
+for ii = 1:length(x)
+    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(ii);
     [~,loc]=min(abs(deltaT));
     %update 'bad' and 'good'     
     expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[false, true];   
