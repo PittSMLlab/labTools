@@ -249,11 +249,11 @@ if isfile(fullfile(detailsPath, [expFile '.mat']))
     % First, clear all condition fields
     set(handles.numofconds, 'String', '0');
     for conds = 1:handles.lines
-        set(handles.(['condition',   num2str(conds)]), 'string', '');
-        set(handles.(['condName',    num2str(conds)]), 'string', '');
-        set(handles.(['description', num2str(conds)]), 'string', '');
-        set(handles.(['trialnum',    num2str(conds)]), 'string', '');
-        set(handles.(['type',        num2str(conds)]), 'string', '');
+        set(handles.(['condition',   num2str(conds)]), 'String', '');
+        set(handles.(['condName',    num2str(conds)]), 'String', '');
+        set(handles.(['description', num2str(conds)]), 'String', '');
+        set(handles.(['trialnum',    num2str(conds)]), 'String', '');
+        set(handles.(['type',        num2str(conds)]), 'String', '');
     end
 
     % Second, populate fields from the selected experiment description
@@ -277,9 +277,9 @@ detailsPath = strrep(detailsPath, 'GetInfoGUI.m', 'ExpDetails');
 W = what(detailsPath);
 % experiments=cellstr(W.m);   % HH 6/16
 experiments = cellstr(W.mat);
-for i = 1:length(experiments)
-    fileExt         = find(experiments{i} == '.');
-    experiments{i}  = experiments{i}(1:fileExt - 1);
+for ii = 1:length(experiments)
+    fileExt          = find(experiments{ii} == '.');
+    experiments{ii}  = experiments{ii}(1:fileExt - 1);
 end
 set(hObject, 'String', [' '; experiments]);
 
@@ -308,8 +308,8 @@ end
 % If Enable == 'on', executes on mouse press in 5-pixel border.
 % Otherwise, executes on mouse press in border or over the control.
 function name_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.name_edit);
 
@@ -340,8 +340,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function day_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.day_edit);
 
@@ -354,8 +354,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function year_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.year_edit);
 
@@ -368,15 +368,15 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function note_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.note_edit);
 
 % --- Executes on button press in schenleyLab.
 function schenleyLab_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of schenleyLab
-% set(handles.schenleyLab,'enable','on')
+% set(handles.schenleyLab,'Enable','on')
 % guidata(hObject,handles);
 
 function schenleyLab_CreateFcn(hObject, eventdata, handles)
@@ -397,7 +397,7 @@ function schenleyLab_KeyPressFcn(hObject, eventdata, handles)
 % --- Executes on button press in perceptualTasks.
 function perceptualTasks_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of perceptualTasks
-% set(handles.schenleyLab,'enable','on')
+% set(handles.schenleyLab,'Enable','on')
 % guidata(hObject,handles);
 
 function perceptualTasks_CreateFcn(hObject, eventdata, handles)
@@ -417,7 +417,7 @@ function perceptalTasks_KeyPressFcn(hObject, eventdata, handles)
 
 function backwardCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of backwardCheck
-% set(handles.schenleyLab,'enable','on')
+% set(handles.schenleyLab,'Enable','on')
 % guidata(hObject,handles);
 
 function backwardCheck_CreateFcn(hObject, eventdata, handles)
@@ -449,7 +449,7 @@ end
 
 function subID_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Ensure the field is enabled and transfer focus to it
-set(hObject, 'Enable', 'On');
+set(hObject, 'Enable', 'on');
 uicontrol(handles.subID_edit);
 
 % --- Executes on selection change in DOBmonth_list.
@@ -479,8 +479,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function DOBday_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.DOBday_edit);
 
@@ -493,8 +493,8 @@ if ispc && isequal(get(hObject, 'BackgroundColor'), ...
 end
 
 function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)
-% Toggle the 'Enable' state to On and clear the field
-set(hObject, 'Enable', 'On');
+% Toggle the 'Enable' state to on and clear the field
+set(hObject, 'Enable', 'on');
 set(hObject, 'String', []);
 uicontrol(handles.DOByear_edit);
 
@@ -510,7 +510,7 @@ end
 % --- Executes on selection change in fastLeg.
 function fastLeg_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of force_check
-% set(handles.schenleyLab,'enable','on')
+% set(handles.schenleyLab,'Enable','on')
 % guidata(hObject,handles);
 
 function fastLeg_CreateFcn(hObject, eventdata, handles)
@@ -549,11 +549,11 @@ function strokeCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of strokeCheck
 
 if get(hObject, 'Value')
-    set(handles.popupAffected, 'Enable', 'On');
-    set(handles.text63,        'Enable', 'On');
+    set(handles.popupAffected, 'Enable', 'on');
+    set(handles.text63,        'Enable', 'on');
 else
-    set(handles.popupAffected, 'Enable', 'Off');
-    set(handles.text63,        'Enable', 'Off');
+    set(handles.popupAffected, 'Enable', 'off');
+    set(handles.text63,        'Enable', 'off');
 end
 guidata(hObject, handles);
 
@@ -606,7 +606,7 @@ function browse_Callback(hObject, eventdata, handles)
 
 handles.folder_location = uigetdir();
 if ischar(handles.folder_location)
-    set(handles.c3dlocation, 'string', handles.folder_location);
+    set(handles.c3dlocation, 'String', handles.folder_location);
 end
 guidata(hObject, handles);
 
@@ -618,7 +618,7 @@ function c3dlocation_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-handles.folder_location = get(hObject, 'string');
+handles.folder_location = get(hObject, 'String');
 guidata(hObject, handles);
 
 function c3dlocation_CreateFcn(hObject, eventdata, handles)
@@ -676,11 +676,11 @@ numofconds = str2double(get(hObject, 'String'));
 
 % First, disable all condition rows
 for conds = 1:handles.lines
-    set(handles.(['condition',   num2str(conds)]), 'enable', 'off');
-    set(handles.(['condName',    num2str(conds)]), 'enable', 'off');
-    set(handles.(['description', num2str(conds)]), 'enable', 'off');
-    set(handles.(['trialnum',    num2str(conds)]), 'enable', 'off');
-    set(handles.(['type',        num2str(conds)]), 'enable', 'off');
+    set(handles.(['condition',   num2str(conds)]), 'Enable', 'off');
+    set(handles.(['condName',    num2str(conds)]), 'Enable', 'off');
+    set(handles.(['description', num2str(conds)]), 'Enable', 'off');
+    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'off');
+    set(handles.(['type',        num2str(conds)]), 'Enable', 'off');
 end
 
 % Second, validate the entered number
@@ -695,11 +695,11 @@ end
 
 % Third, enable rows up to the number of conditions entered
 for conds = 1:numofconds
-    set(handles.(['condition',   num2str(conds)]), 'enable', 'on');
-    set(handles.(['condName',    num2str(conds)]), 'enable', 'on');
-    set(handles.(['description', num2str(conds)]), 'enable', 'on');
-    set(handles.(['trialnum',    num2str(conds)]), 'enable', 'on');
-    set(handles.(['type',        num2str(conds)]), 'enable', 'on');
+    set(handles.(['condition',   num2str(conds)]), 'Enable', 'on');
+    set(handles.(['condName',    num2str(conds)]), 'Enable', 'on');
+    set(handles.(['description', num2str(conds)]), 'Enable', 'on');
+    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'on');
+    set(handles.(['type',        num2str(conds)]), 'Enable', 'on');
 end
 
 function numofconds_CreateFcn(hObject, eventdata, handles)
@@ -743,23 +743,23 @@ function emg_check_Callback(hObject, eventdata, handles)
 state = get(hObject, 'Value');
 
 if state
-    set(handles.Nexus,    'enable', 'on');
-    set(handles.EMGworks, 'enable', 'on');
+    set(handles.Nexus,    'Enable', 'on');
+    set(handles.EMGworks, 'Enable', 'on');
     % The off-then-on sequence forces a GUI control state refresh
-    for i = 1:16
-        set(handles.(['emg1_' num2str(i)]), 'enable', 'off');
-        set(handles.(['emg2_' num2str(i)]), 'enable', 'off');
-        set(handles.(['emg1_' num2str(i)]), 'enable', 'on');
-        set(handles.(['emg2_' num2str(i)]), 'enable', 'on');
+    for ii = 1:16
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'off');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'off');
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'on');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'on');
     end
 else
-    set(handles.Nexus,          'enable', 'off');
-    set(handles.EMGworks,       'enable', 'off');
-    set(handles.secfile_browse, 'enable', 'off');
-    set(handles.secfileloc,     'enable', 'off');
-    for i = 1:16
-        set(handles.(['emg1_' num2str(i)]), 'enable', 'off');
-        set(handles.(['emg2_' num2str(i)]), 'enable', 'off');
+    set(handles.Nexus,          'Enable', 'off');
+    set(handles.EMGworks,       'Enable', 'off');
+    set(handles.secfile_browse, 'Enable', 'off');
+    set(handles.secfileloc,     'Enable', 'off');
+    for ii = 1:16
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'off');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'off');
     end
 end
 guidata(hObject, handles);
@@ -776,11 +776,11 @@ function Nexus_Callback(hObject, eventdata, handles)
 
 state = get(hObject, 'Value');
 if state
-    set(handles.secfile_browse, 'enable', 'on');
-    set(handles.secfileloc,     'enable', 'on');
+    set(handles.secfile_browse, 'Enable', 'on');
+    set(handles.secfileloc,     'Enable', 'on');
 else
-    set(handles.secfile_browse, 'enable', 'off');
-    set(handles.secfileloc,     'enable', 'off');
+    set(handles.secfile_browse, 'Enable', 'off');
+    set(handles.secfileloc,     'Enable', 'off');
 end
 guidata(hObject, handles);
 
@@ -795,15 +795,15 @@ function EMGworks_Callback(hObject, eventdata, handles)
 
 state = get(hObject, 'Value');
 if state
-    set(handles.EMGworksFile1_search,  'enable', 'on');
-    set(handles.EMGworksLocation,      'enable', 'on');
-    set(handles.SecFileSearchEMGworks, 'enable', 'on');
-    set(handles.SecondEMGworksLocation,'enable', 'on');
+    set(handles.EMGworksFile1_search,  'Enable', 'on');
+    set(handles.EMGworksLocation,      'Enable', 'on');
+    set(handles.SecFileSearchEMGworks, 'Enable', 'on');
+    set(handles.SecondEMGworksLocation,'Enable', 'on');
 else
-    set(handles.EMGworksFile1_search,  'enable', 'off');
-    set(handles.EMGworksLocation,      'enable', 'off');
-    set(handles.SecFileSearchEMGworks, 'enable', 'on');
-    set(handles.SecondEMGworksLocation,'enable', 'on');
+    set(handles.EMGworksFile1_search,  'Enable', 'off');
+    set(handles.EMGworksLocation,      'Enable', 'off');
+    set(handles.SecFileSearchEMGworks, 'Enable', 'on');
+    set(handles.SecondEMGworksLocation,'Enable', 'on');
 end
 guidata(hObject, handles);
 
@@ -818,7 +818,7 @@ function secfile_browse_Callback(hObject, eventdata, handles)
 
 handles.secfolder_location = uigetdir();
 if ischar(handles.secfolder_location)
-    set(handles.secfileloc, 'string', handles.secfolder_location);
+    set(handles.secfileloc, 'String', handles.secfolder_location);
 end
 guidata(hObject, handles);
 
@@ -830,7 +830,7 @@ function secfileloc_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-handles.secfolder_location = get(hObject, 'string');
+handles.secfolder_location = get(hObject, 'String');
 guidata(hObject, handles);
 
 function secfileloc_CreateFcn(hObject, eventdata, handles)
@@ -844,12 +844,12 @@ end
 function EMGworksFile1_search_Callback(hObject, eventdata, handles)
 handles.EMGworksFile_Loc = uigetdir();
 if ischar(handles.EMGworksFile_Loc)
-    set(handles.EMGworksLocation, 'string', handles.EMGworksFile_Loc);
+    set(handles.EMGworksLocation, 'String', handles.EMGworksFile_Loc);
 end
 guidata(hObject, handles);
 
 function EMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile_Loc = get(hObject, 'string');
+handles.EMGworksFile_Loc = get(hObject, 'String');
 guidata(hObject, handles);
 
 function EMGworksLocation_CreateFcn(hObject, eventdata, handles)
@@ -861,13 +861,13 @@ end
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
 handles.EMGworksFile2Loc = uigetdir();
 if ischar(handles.EMGworksFile2Loc)
-    set(handles.SecondEMGworksLocation, 'string', ...
+    set(handles.SecondEMGworksLocation, 'String', ...
         handles.EMGworksFile2Loc);
 end
 guidata(hObject, handles);
 
 function SecondEMGworksLocation_Callback(hObject, eventdata, handles)
-handles.EMGworksFile2Loc = get(hObject, 'string');
+handles.EMGworksFile2Loc = get(hObject, 'String');
 guidata(hObject, handles);
 
 function SecondEMGworksLocation_CreateFcn(hObject, eventdata, handles)
@@ -1464,36 +1464,36 @@ function saveExpButton_Callback(hObject, eventdata, handles)
 %     handles   - struct with handles and user data (see GUIDATA)
 
 % Build the expDes structure from current GUI field values
-c = 0;
-for i = 1:handles.lines
+nConds = 0;
+for ii = 1:handles.lines
     % Condition numbers
-    condNum = get(handles.(['condition' num2str(i)]), 'string');
+    condNum = get(handles.(['condition' num2str(ii)]), 'String');
     if ~isempty(condNum)
-        expDes.(['condition' num2str(i)]) = condNum;
-        c = c + 1;
+        expDes.(['condition' num2str(ii)]) = condNum;
+        nConds = nConds + 1;
     end
     % Condition names
-    condName = get(handles.(['condName' num2str(i)]), 'string');
+    condName = get(handles.(['condName' num2str(ii)]), 'String');
     if ~isempty(condName)
-        expDes.(['condName' num2str(i)]) = condName;
+        expDes.(['condName' num2str(ii)]) = condName;
     end
     % Condition descriptions
-    condDesc = get(handles.(['description' num2str(i)]), 'string');
+    condDesc = get(handles.(['description' num2str(ii)]), 'String');
     if ~isempty(condDesc)
-        expDes.(['description' num2str(i)]) = condDesc;
+        expDes.(['description' num2str(ii)]) = condDesc;
     end
     % Trial numbers for each condition
-    trialNum = get(handles.(['trialnum' num2str(i)]), 'string');
+    trialNum = get(handles.(['trialnum' num2str(ii)]), 'String');
     if ~isempty(trialNum)
-        expDes.(['trialnum' num2str(i)]) = trialNum;
+        expDes.(['trialnum' num2str(ii)]) = trialNum;
     end
     % Trial types
-    type = get(handles.(['type' num2str(i)]), 'string');
+    type = get(handles.(['type' num2str(ii)]), 'String');
     if ~isempty(type)
-        expDes.(['type' num2str(i)]) = type;
+        expDes.(['type' num2str(ii)]) = type;
     end
 end
-expDes.numofconds = c;
+expDes.numofconds = nConds;
 
 answer = inputdlg( ...
     'Enter name of new experiment description: ', ...
@@ -1518,7 +1518,7 @@ if ~isempty(answer)
     save(fullfile(detailsPath, answer), 'expDes');
     description_edit_CreateFcn(handles.description_edit, ...
         eventdata, handles);
-    newContents = get(handles.description_edit, 'string');
+    newContents = get(handles.description_edit, 'String');
     ind = find(ismember(newContents, answer));
     set(handles.description_edit, 'Value', ind);
 end
@@ -1531,7 +1531,7 @@ function saveloc_edit_Callback(hObject, eventdata, handles)
 %     eventdata - reserved for future MATLAB versions
 %     handles   - struct with handles and user data (see GUIDATA)
 
-handles.save_folder = get(hObject, 'string');
+handles.save_folder = get(hObject, 'String');
 guidata(hObject, handles);
 
 function saveloc_edit_CreateFcn(hObject, eventdata, handles)
@@ -1552,7 +1552,7 @@ function save_browse_Callback(hObject, eventdata, handles)
 savePath = uigetdir();
 if ischar(savePath)
     handles.save_folder = savePath;
-    set(handles.saveloc_edit, 'string', handles.save_folder);
+    set(handles.saveloc_edit, 'String', handles.save_folder);
 end
 guidata(hObject, handles);
 
@@ -1600,13 +1600,13 @@ if ischar(file)
     else
         % -- Experiment Info
         descriptionContents = ...
-            cellstr(get(handles.description_edit, 'string'));
+            cellstr(get(handles.description_edit, 'String'));
         if isfield(subInfo, 'ExpFile')   % processed after 4/2015
             if ~any(strcmp(descriptionContents, subInfo.ExpFile) == 1)
                 set(handles.description_edit, 'String', ...
                     [descriptionContents; subInfo.ExpFile]);
                 descriptionContents = cellstr( ...
-                    get(handles.description_edit, 'string'));
+                    get(handles.description_edit, 'String'));
             end
             set(handles.description_edit, 'Value', ...
                 find(strcmp(descriptionContents, subInfo.ExpFile)));
@@ -1616,28 +1616,28 @@ if ischar(file)
                 set(handles.description_edit, 'String', ...
                     [descriptionContents; subInfo.ExpDescription]);
                 descriptionContents = cellstr( ...
-                    get(handles.description_edit, 'string'));
+                    get(handles.description_edit, 'String'));
             end
             set(handles.description_edit, 'Value', ...
                 find(strcmp(descriptionContents, subInfo.ExpDescription)));
         end
         handles.group = subInfo.ExpDescription;
 
-        set(handles.name_edit, 'string', subInfo.experimenter);
+        set(handles.name_edit, 'String', subInfo.experimenter);
         monthContents = cellstr(get(handles.month_list, 'String'));
         set(handles.month_list, 'Value', ...
             find(strcmp(monthContents, subInfo.month)));
-        set(handles.day_edit,  'string', subInfo.day);
-        set(handles.year_edit, 'string', subInfo.year);
-        set(handles.note_edit, 'string', subInfo.exp_obs);
+        set(handles.day_edit,  'String', subInfo.day);
+        set(handles.year_edit, 'String', subInfo.year);
+        set(handles.note_edit, 'String', subInfo.exp_obs);
 
         % -- Subject Info
-        set(handles.subID_edit, 'string', subInfo.ID);
+        set(handles.subID_edit, 'String', subInfo.ID);
         DOBmonthContents = cellstr(get(handles.DOBmonth_list, 'String'));
         set(handles.DOBmonth_list, 'Value', ...
             find(strcmp(DOBmonthContents, subInfo.DOBmonth)));
-        set(handles.DOBday_edit,  'string', subInfo.DOBday);
-        set(handles.DOByear_edit, 'string', subInfo.DOByear);
+        set(handles.DOBday_edit,  'String', subInfo.DOBday);
+        set(handles.DOByear_edit, 'String', subInfo.DOByear);
         genderContents = cellstr(get(handles.gender_list, 'String'));
         set(handles.gender_list, 'Value', ...
             find(strcmp(genderContents, subInfo.gender)));
@@ -1647,8 +1647,8 @@ if ischar(file)
         domhandContents = cellstr(get(handles.domhand_list, 'String'));
         set(handles.domhand_list, 'Value', ...
             find(strcmp(domhandContents, subInfo.domhand)));
-        set(handles.height_edit, 'string', subInfo.height);
-        set(handles.weight_edit, 'string', subInfo.weight);
+        set(handles.height_edit, 'String', subInfo.height);
+        set(handles.weight_edit, 'String', subInfo.weight);
 
         if isfield(subInfo, 'isStroke')   % for files before 11/2014
             set(handles.strokeCheck, 'Value', subInfo.isStroke);
@@ -1689,9 +1689,9 @@ if ischar(file)
 
         % -- Data Info
         handles.folder_location = subInfo.dir_location;
-        set(handles.c3dlocation,     'string', handles.folder_location);
-        set(handles.basefile,        'string', subInfo.basename);
-        set(handles.numofconds,      'string', subInfo.numofconds);
+        set(handles.c3dlocation,     'String', handles.folder_location);
+        set(handles.basefile,        'String', subInfo.basename);
+        set(handles.numofconds,      'String', subInfo.numofconds);
 
         numofconds_Callback(handles.numofconds, eventdata, handles);
         set(handles.kinematic_check, 'Value', subInfo.kinematics);
@@ -1731,7 +1731,7 @@ if ischar(file)
             set(handles.Nexus, 'Value', subInfo.Nexus);
             Nexus_Callback(handles.Nexus, eventdata, handles);
             handles.secfolder_location = subInfo.secdir_location;
-            set(handles.secfileloc, 'string', handles.secfolder_location);
+            set(handles.secfileloc, 'String', handles.secfolder_location);
         end
 
         % Populate EMGworks checkbox state and fire callback to
@@ -1742,62 +1742,62 @@ if ischar(file)
             EMGworks_Callback(handles.EMGworks, eventdata, handles);
             if subInfo.EMGworks
                 handles.EMGworksFile_Loc = subInfo.EMGworksdir_location;
-                set(handles.EMGworksLocation, 'string', ...
+                set(handles.EMGworksLocation, 'String', ...
                     handles.EMGworksFile_Loc);
                 handles.EMGworksFile2Loc = subInfo.secEMGworksdir_location;
-                set(handles.SecondEMGworksLocation, 'string', ...
+                set(handles.SecondEMGworksLocation, 'String', ...
                     handles.EMGworksFile2Loc);
             end
         end
 
         % -- Trial/Condition Info
-        for c = 1:subInfo.numofconds
-            condNum   = subInfo.cond(c);
+        for con = 1:subInfo.numofconds
+            condNum   = subInfo.cond(con);
             trialnums = subInfo.trialnums{condNum};
-            set(handles.(['condition',   num2str(c)]), ...
-                'string', num2str(condNum));
-            set(handles.(['condName',    num2str(c)]), ...
-                'string', subInfo.conditionNames{condNum});
-            set(handles.(['description', num2str(c)]), ...
-                'string', subInfo.conditionDescriptions{condNum});
+            set(handles.(['condition',   num2str(con)]), ...
+                'String', num2str(condNum));
+            set(handles.(['condName',    num2str(con)]), ...
+                'String', subInfo.conditionNames{condNum});
+            set(handles.(['description', num2str(con)]), ...
+                'String', subInfo.conditionDescriptions{condNum});
             if length(trialnums) > 2 && ~any(diff(trialnums) > 1)
-                set(handles.(['trialnum', num2str(c)]), 'string', ...
+                set(handles.(['trialnum', num2str(con)]), 'String', ...
                     [num2str(trialnums(1)) ':' num2str(trialnums(end))]);
             else
-                set(handles.(['trialnum', num2str(c)]), ...
-                    'string', num2str(trialnums));
+                set(handles.(['trialnum', num2str(con)]), ...
+                    'String', num2str(trialnums));
             end
             if isfield(subInfo, 'isOverGround')  % before 7/16/2014
                 if subInfo.isOverGround(condNum)
-                    set(handles.(['type', num2str(c)]), 'string', 'OG');
+                    set(handles.(['type', num2str(con)]), 'String', 'OG');
                 else
-                    set(handles.(['type', num2str(c)]), 'string', 'TM');
+                    set(handles.(['type', num2str(con)]), 'String', 'TM');
                 end
             else
-                set(handles.(['type', num2str(c)]), ...
-                    'string', subInfo.type{condNum});
+                set(handles.(['type', num2str(con)]), ...
+                    'String', subInfo.type{condNum});
             end
         end
 
         % -- EMG channel labels (for subjects processed after 7/29/2014)
         if isfield(subInfo, 'EMGList1') && isfield(subInfo, 'EMGList2')
-            for i = 1:16
-                aux1 = ['emg1_' num2str(i)];
-                set(handles.(aux1), 'string', subInfo.EMGList1{i});
-                if ~isempty(subInfo.EMGList1{i})
-                    set(handles.(aux1), 'enable', 'on');
+            for ii = 1:16
+                aux1 = ['emg1_' num2str(ii)];
+                set(handles.(aux1), 'String', subInfo.EMGList1{ii});
+                if ~isempty(subInfo.EMGList1{ii})
+                    set(handles.(aux1), 'Enable', 'on');
                 end
-                aux2 = ['emg2_' num2str(i)];
-                set(handles.(aux2), 'string', subInfo.EMGList2{i});
-                if ~isempty(subInfo.EMGList2{i})
-                    set(handles.(aux2), 'enable', 'on');
+                aux2 = ['emg2_' num2str(ii)];
+                set(handles.(aux2), 'String', subInfo.EMGList2{ii});
+                if ~isempty(subInfo.EMGList2{ii})
+                    set(handles.(aux2), 'Enable', 'on');
                 end
             end
         end
 
         % -- Save location
         handles.save_folder = subInfo.save_folder;
-        set(handles.saveloc_edit, 'string', handles.save_folder);
+        set(handles.saveloc_edit, 'String', handles.save_folder);
 
         % -- Trial observations
         if isfield(subInfo, 'trialObs')
