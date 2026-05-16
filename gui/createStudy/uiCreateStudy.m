@@ -1,7 +1,14 @@
 function varargout = uiCreateStudy(varargin)
-% UICREATESTUDY comments go here
+%UICREATESTUDY GUI for assembling groups of subjects into a study.
 %
-% See also:
+%   Launches a graphical interface that scans the current working directory
+% for subject parameter (.mat) files, lets the user assign them to named
+% groups, and saves the resulting studyData object to disk.
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also: groupAdaptationData
 
 % Last Modified by GUIDE v2.5 22-Jun-2015 10:26:29
 

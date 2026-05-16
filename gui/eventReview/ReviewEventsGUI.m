@@ -1,14 +1,15 @@
 function varargout = ReviewEventsGUI(varargin)
-% ReviewEventsGUI  Plots data in experimentData object and allows you to
-%                  add or remove events (HS, TO), and label strides as good
-%                  or bad.%      
+%REVIEWEVENTSGUI Plot and edit gait events in an experimentData object.
 %
-% See also: experimentData
-
-%In all functions:
-% hObject    handle to object calling function (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+%   Loads a saved experimentData MAT file and provides an interactive
+% interface to review force-plate and kinematic gait events (HS, TO),
+% add or delete individual events, label strides as good or bad, and
+% save the updated experimentData back to disk.
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also: experimentData, calcParameters, labTimeSeries
 
 
 % Last Modified by GUIDE v2.5 15-May-2015 15:52:21

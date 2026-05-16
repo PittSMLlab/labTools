@@ -1,7 +1,15 @@
 function varargout = PlotParamsGUI(varargin)
-% PLOTPARAMSGUI comments go here
+%PLOTPARAMSGUI GUI for configuring and launching adaptation parameter plots.
 %
-% See also:
+%   Loads a studyData object and provides controls to select groups,
+% subjects, parameters, conditions, and plot type (time course, early/late
+% bars, scatter, epoch bars, correlation), then calls the corresponding
+% adaptationData plotting function.
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also: adaptationData, groupAdaptationData, studyData
 
 % Last Modified by GUIDE v2.5 04-May-2016 12:48:39
 
