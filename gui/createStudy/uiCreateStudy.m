@@ -1,18 +1,18 @@
 function varargout = uiCreateStudy(varargin)
 % UICREATESTUDY comments go here
 %
-% See also: 
+% See also:
 
 % Last Modified by GUIDE v2.5 22-Jun-2015 10:26:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @uiCreateStudy_OpeningFcn, ...
-                   'gui_OutputFcn',  @uiCreateStudy_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @uiCreateStudy_OpeningFcn, ...
+    'gui_OutputFcn',  @uiCreateStudy_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -38,7 +38,7 @@ handles.output = hObject;
 handles.studyData=struct;
 
 %find all files in pwd
-files=what('./'); 
+files=what('./');
 fileList=files.mat;
 paramFiles={};
 
@@ -47,7 +47,7 @@ for i=1:length(fileList)
     aux1=strfind(lower(fileList{i}),'params');
     if ~isempty(aux1)
         paramFiles{end+1}=fileList{i};
-    end    
+    end
 end
 
 set(handles.allSubList,'string',paramFiles')
@@ -61,7 +61,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles) 
+function varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -130,7 +130,6 @@ set(handles.allSubList,'String',contents)
 set(handles.allSubList,'Value',[])
 
 guidata(hObject, handles);
-end
 
 % --- Executes on button press in removeButton.
 function removeButton_Callback(hObject, eventdata, handles)
@@ -151,7 +150,6 @@ set(handles.selectSubList,'String',contents)
 set(handles.selectSubList,'Value',[])
 
 guidata(hObject, handles);
-end
 
 % --- Executes on button press in addGroupButton.
 function addGroupButton_Callback(hObject, eventdata, handles)
@@ -166,14 +164,14 @@ if isempty(abbrevGroup)
     abbrevGroup='NoDescription';
 end
 
-for i=1:nSubs   
-%     aux1=strfind(lower(fileList{i}),'params');
-%     subID=fileList{i}(1:(aux1-1));
-    load(fileList{i}); 
+for i=1:nSubs
+    %     aux1=strfind(lower(fileList{i}),'params');
+    %     subID=fileList{i}(1:(aux1-1));
+    load(fileList{i});
     subID=adaptData.subData.ID; %I think this is more appropriate.-Pablo
 
     sub.IDs(i)= {subID};
-    sub.adaptData(i)={adaptData};    
+    sub.adaptData(i)={adaptData};
 end
 
 handles.studyData.(abbrevGroup)=groupAdaptationData(sub.IDs,sub.adaptData);
@@ -185,7 +183,6 @@ newGroupContents=[groupContents; {group}];
 set(handles.groupList,'String',newGroupContents)
 
 guidata(hObject, handles);
-end
 
 function saveButton_Callback(hObject, eventdata, handles)
 
@@ -194,29 +191,24 @@ studyData=handles.studyData;
 save([path file],'studyData','-v7.3')
 
 close(handles.figure1);
-end
 
 function allSubList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
 end
 
 function groupNameEdit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-end
 
 function groupList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-end
 
 function selectSubList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
 end
 
