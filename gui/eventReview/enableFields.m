@@ -19,7 +19,7 @@ function handles = enableFields(handles, varargin)
 % See also DISABLEFIELDS.
 
 for ii = 1:length(varargin)
-    set(handles.(varargin{ii}), 'Enable', 'on');
+    set(handles.(varargin{ii}), 'Enable', 'On');
 end
 
 end
