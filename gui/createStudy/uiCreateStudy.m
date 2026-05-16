@@ -189,10 +189,10 @@ if isempty(abbrevGroup)
     abbrevGroup = 'NoDescription';
 end
 
-    %     aux1=strfind(lower(fileList{i}),'params');
-    %     subID=fileList{i}(1:(aux1-1));
 for ii = 1:nSubs
     load(fileList{ii});
+    % aux1 = strfind(lower(fileList{i}), 'params');
+    % subID = fileList{i}(1:(aux1-1));
     subID = adaptData.subData.ID;
 
     sub.IDs(ii)       = {subID};
