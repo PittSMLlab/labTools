@@ -244,10 +244,9 @@ GUIDE-generated GUI files (e.g., `GetInfoGUI.m`, `ReviewEventsGUI.m`,
 All other style rules apply, including:
 - Loop variables: no `i`/`j`; use `ii`, `jj`, or named vars
   (`con`, `tr`, `gg` for groups).
-- Property strings: lowercase (`'enable'`, `'on'`, `'off'`,
-  `'string'`, `'value'`, `'backgroundcolor'`, `'foregroundcolor'`).
-  Exception: leave GUIDE-generated `CreateFcn` `'BackgroundColor'`
-  boilerplate unchanged.
+- Property strings: PascalCase (`'Enable'`, `'String'`, `'Value'`,
+  `'BackgroundColor'`, `'ForegroundColor'`); values like `'on'` and
+  `'off'` stay lowercase.
 - Spaces around `=` and after `,`.
 - Full doc blocks on all meaningful callbacks (`OpeningFcn`,
   `OutputFcn`, and any callback containing substantive logic).
