@@ -142,10 +142,10 @@ out.numoftrials = max(trials);
 % -- EMG Data
 if isfield(handles, 'emg1_1')
     for ii = 1:16
-        aux1 = ['emg1_' num2str(ii)];
-        out.EMGList1(ii) = {get(handles.(aux1), 'string')};
-        aux2 = ['emg2_' num2str(ii)];
-        out.EMGList2(ii) = {get(handles.(aux2), 'string')};
+        emg1FieldName = ['emg1_' num2str(ii)];
+        out.EMGList1(ii) = {get(handles.(emg1FieldName), 'string')};
+        emg2FieldName = ['emg2_' num2str(ii)];
+        out.EMGList2(ii) = {get(handles.(emg2FieldName), 'string')};
     end
 end
 
@@ -270,9 +270,9 @@ if ~ignoreErrors
         return;
     end
     if out.isStroke == 1
-        aux               = get(handles.popupAffected, 'String');
+        affectedOptions   = get(handles.popupAffected, 'String');
         out.affectedValue = get(handles.popupAffected, 'Value');
-        out.affectedSide  = aux{out.affectedValue};
+        out.affectedSide  = affectedOptions{out.affectedValue};
     end
 
     % -- Data Info
