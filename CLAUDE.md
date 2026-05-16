@@ -232,6 +232,26 @@ core MATLAB.
 % See also RELATEDFUNCTION, ANOTHERFUNCTION.
 ```
 
+### GUI Code (GUIDE-Generated Files)
+GUIDE-generated GUI files (e.g., `GetInfoGUI.m`, `ReviewEventsGUI.m`,
+`PlotParamsGUI.m`, `uiCreateStudy.m`) are exempt from:
+- The `end` keyword after each function definition (GUIDE omits it).
+- H1 comment format for auto-generated stub callbacks (empty
+  `_Callback` / `_CreateFcn` bodies with no logic).
+- The 76-character line limit inside `% Begin/End initialization
+  code - DO NOT EDIT` blocks.
+
+All other style rules apply, including:
+- Loop variables: no `i`/`j`; use `ii`, `jj`, or named vars
+  (`con`, `tr`, `gg` for groups).
+- Property strings: lowercase (`'enable'`, `'on'`, `'off'`,
+  `'string'`, `'value'`, `'backgroundcolor'`, `'foregroundcolor'`).
+  Exception: leave GUIDE-generated `CreateFcn` `'BackgroundColor'`
+  boilerplate unchanged.
+- Spaces around `=` and after `,`.
+- Full doc blocks on all meaningful callbacks (`OpeningFcn`,
+  `OutputFcn`, and any callback containing substantive logic).
+
 ## Code Organization
 - Use `%%` section headers for all named logical phases; header text
   names the phase, not the code.
