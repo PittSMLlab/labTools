@@ -31,14 +31,9 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
+% ============================================================
 % --- Executes just before uiCreateStudy is made visible.
 function uiCreateStudy_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to uiCreateStudy (see VARARGIN)
 
 % Choose default command line output for uiCreateStudy
 handles.output = hObject;
@@ -54,72 +49,88 @@ for i=1:length(fileList)
     aux1=strfind(lower(fileList{i}),'params');
     if ~isempty(aux1)
         paramFiles{end+1}=fileList{i};
+% uiCreateStudy_OpeningFcn  Initializes GUI state before it is shown.
+%
+%   Inputs:
+%     hObject   - handle to figure
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%     varargin  - command line arguments to uiCreateStudy (see VARARGIN)
     end
 end
 
 set(handles.allSubList,'string',paramFiles')
 set(handles.allSubList,'max',length(paramFiles))
 
-% Update handles structure
 guidata(hObject, handles);
 
 % UIWAIT makes uiCreateStudy wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-
+% ============================================================
 % --- Outputs from this function are returned to the command line.
 function varargout = uiCreateStudy_OutputFcn(hObject, eventdata, handles)
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% uiCreateStudy_OutputFcn  Returns GUI output to the calling workspace.
+%
+%   Inputs:
+%     hObject   - handle to figure
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+%   Outputs:
+%     varargout{1} - handle to the figure
 
-% Get default command line output from handles structure
 varargout{1} = handles.output;
 
+% ============================================================
+%% Listbox Callbacks
 
 % --- Executes on selection change in allSubList.
 function allSubList_Callback(hObject, eventdata, handles)
-% hObject    handle to allSubList (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns allSubList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from allSubList
-
+% allSubList_Callback  Executes on selection change in allSubList.
+%
+%   Inputs:
+%     hObject   - handle to allSubList (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 % --- Executes on selection change in selectSubList.
 function selectSubList_Callback(hObject, eventdata, handles)
-% hObject    handle to selectSubList (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns selectSubList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from selectSubList
+% selectSubList_Callback  Executes on selection change in selectSubList.
+%
+%   Inputs:
+%     hObject   - handle to selectSubList (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 % --- Executes on selection change in groupList.
 function groupList_Callback(hObject, eventdata, handles)
-% hObject    handle to groupList (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns groupList contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from groupList
-
+% groupList_Callback  Executes on selection change in groupList.
+%
+%   Inputs:
+%     hObject   - handle to groupList (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 function groupNameEdit_Callback(hObject, eventdata, handles)
-% hObject    handle to groupNameEdit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% groupNameEdit_Callback  Executes on content change in groupNameEdit.
+%
+%   Inputs:
+%     hObject   - handle to groupNameEdit (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of groupNameEdit as text
-%        str2double(get(hObject,'String')) returns contents of groupNameEdit as a double
+% ============================================================
+%% Add / Remove Subject Buttons
 
-% -------------------- Add/Remove Subject Buttons ----------------------- %
 function addButton_Callback(hObject, eventdata, handles)
-% hObject    handle to addButton (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% addButton_Callback  Moves selected subjects from the all-subjects list
+%   to the selected-subjects list.
+%
+%   Inputs:
+%     hObject   - handle to addButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 %get current state of selected sub list
 selectSubContents = get(handles.selectSubList,'string');
@@ -140,6 +151,13 @@ guidata(hObject, handles);
 
 % --- Executes on button press in removeButton.
 function removeButton_Callback(hObject, eventdata, handles)
+% removeButton_Callback  Moves selected subjects from the selected list
+%   back to the all-subjects list.
+%
+%   Inputs:
+%     hObject   - handle to removeButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 %get current state of all sub list
 allSubContents = get(handles.allSubList,'string');
@@ -160,6 +178,13 @@ guidata(hObject, handles);
 
 % --- Executes on button press in addGroupButton.
 function addGroupButton_Callback(hObject, eventdata, handles)
+% addGroupButton_Callback  Creates a group from the selected subjects and
+%   adds it to the study.
+%
+%   Inputs:
+%     hObject   - handle to addGroupButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 fileList=get(handles.selectSubList,'String');
 nSubs=length(fileList);
@@ -191,7 +216,16 @@ set(handles.groupList,'String',newGroupContents)
 
 guidata(hObject, handles);
 
+% ============================================================
+%% Save and CreateFcn Callbacks
+
 function saveButton_Callback(hObject, eventdata, handles)
+% saveButton_Callback  Saves the assembled study to a MAT file.
+%
+%   Inputs:
+%     hObject   - handle to saveButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
 
 [file,path] = uiputfile('*.mat','Save Study As');
 studyData=handles.studyData;
@@ -218,4 +252,3 @@ function selectSubList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
