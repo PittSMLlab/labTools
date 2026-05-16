@@ -43,27 +43,21 @@ arguments
 end
 
 trials = cell2mat(this.metaData.trialsInCondition);
-for t = trials
-    this.data{t}.adaptParams = calcParameters(this.data{t}, ...
+for tr = trials
+    this.data{tr}.adaptParams = calcParameters(this.data{tr}, ...
         this.subData, eventClass, initEventSide);
 end
 
-%now add back the norm parameters
 if shouldComputeEMGNorm
-    if nargin < 5 || isempty(muscleLabels)
-        warning('muscleLabels was not provided. Here won not have it in the adaptData freshly created. EMGNorm calculation was not possible. Returning with no change made in params.')
+    if isempty(muscleLabels)
+        warning('flushAndRecomputeParameters:noMuscleLabels', ...
+            ['muscleLabels not provided — EMG norm parameters ' ...
+            'were not computed.']);
         return
     end
-    
-    adaptData = this.makeDataObj([]); %make one without saving it.
-    if nargin < 6 || isempty(normalizationRefCond) %not provided use default search in order of OG, TM etc
-        normalizationRefCond = [];
-    end
-    if nargin < 7 || isempty(biasRemovalCond) %not provided use default (type specific removal)
-        biasRemovalCond = [];
-    end
-    adaptData = appendEMGNormParameters(adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
-    this = populateNewParamBackToExpData(this,adaptData);
+    adaptData = this.makeDataObj([]);
+    adaptData = appendEMGNormParameters( ...
+        adaptData, muscleLabels, normalizationRefCond, biasRemovalCond);
+    this = populateNewParamBackToExpData(this, adaptData);
 end
 end
-
