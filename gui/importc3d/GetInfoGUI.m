@@ -285,7 +285,7 @@ set(hObject, 'String', [' '; experiments]);
 
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function name_edit_Callback(hObject, eventdata, handles)
@@ -302,14 +302,14 @@ function name_edit_Callback(hObject, eventdata, handles)
 function name_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % If Enable == 'on', executes on mouse press in 5-pixel border.
 % Otherwise, executes on mouse press in border or over the control.
 function name_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.name_edit);
 
@@ -328,7 +328,7 @@ function month_list_Callback(hObject, eventdata, handles)
 function month_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function day_edit_Callback(hObject, eventdata, handles)
@@ -336,12 +336,12 @@ function day_edit_Callback(hObject, eventdata, handles)
 function day_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function day_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.day_edit);
 
@@ -350,12 +350,12 @@ function year_edit_Callback(hObject, eventdata, handles)
 function year_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function year_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.year_edit);
 
@@ -364,12 +364,12 @@ function note_edit_Callback(hObject, eventdata, handles)
 function note_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function note_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.note_edit);
 
@@ -444,12 +444,12 @@ function subID_edit_Callback(hObject, eventdata, handles)
 function subID_edit_CreateFcn(hObject, ~, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function subID_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Ensure the field is enabled and transfer focus to it
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 uicontrol(handles.subID_edit);
 
 % --- Executes on selection change in DOBmonth_list.
@@ -467,7 +467,7 @@ function DOBmonth_list_Callback(hObject, eventdata, handles)
 function DOBmonth_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function DOBday_edit_Callback(hObject, eventdata, handles)
@@ -475,12 +475,12 @@ function DOBday_edit_Callback(hObject, eventdata, handles)
 function DOBday_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function DOBday_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.DOBday_edit);
 
@@ -489,12 +489,12 @@ function DOByear_edit_Callback(hObject, eventdata, handles)
 function DOByear_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function DOByear_edit_ButtonDownFcn(hObject, eventdata, handles)
 % Toggle the 'Enable' state to on and clear the field
-set(hObject, 'Enable', 'on');
+set(hObject, 'Enable', 'On');
 set(hObject, 'String', []);
 uicontrol(handles.DOByear_edit);
 
@@ -504,7 +504,7 @@ function gender_list_Callback(hObject, eventdata, handles)
 function gender_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % --- Executes on selection change in fastLeg.
@@ -525,7 +525,7 @@ function domleg_list_Callback(hObject, eventdata, handles)
 function domleg_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % --- Executes on selection change in domhand_list.
@@ -534,7 +534,7 @@ function domhand_list_Callback(hObject, eventdata, handles)
 function domhand_list_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % --- Executes on button press in strokeCheck.
@@ -549,11 +549,11 @@ function strokeCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of strokeCheck
 
 if get(hObject, 'Value')
-    set(handles.popupAffected, 'Enable', 'on');
-    set(handles.text63,        'Enable', 'on');
+    set(handles.popupAffected, 'Enable', 'On');
+    set(handles.text63,        'Enable', 'On');
 else
-    set(handles.popupAffected, 'Enable', 'off');
-    set(handles.text63,        'Enable', 'off');
+    set(handles.popupAffected, 'Enable', 'Off');
+    set(handles.text63,        'Enable', 'Off');
 end
 guidata(hObject, handles);
 
@@ -572,7 +572,7 @@ function popupAffected_Callback(hObject, eventdata, handles)
 function popupAffected_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function height_edit_Callback(hObject, eventdata, handles)
@@ -580,7 +580,7 @@ function height_edit_Callback(hObject, eventdata, handles)
 function height_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function weight_edit_Callback(hObject, eventdata, handles)
@@ -588,7 +588,7 @@ function weight_edit_Callback(hObject, eventdata, handles)
 function weight_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % ============================================================
@@ -624,7 +624,7 @@ guidata(hObject, handles);
 function c3dlocation_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function basefile_Callback(hObject, eventdata, handles)
@@ -641,7 +641,7 @@ function basefile_Callback(hObject, eventdata, handles)
 function basefile_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function numoftrials_Callback(hObject, eventdata, handles)
@@ -660,7 +660,7 @@ numoftrials = str2double(get(hObject, 'String')); %#ok<NASGU>
 function numoftrials_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function numofconds_Callback(hObject, eventdata, handles)
@@ -676,11 +676,11 @@ numofconds = str2double(get(hObject, 'String'));
 
 % First, disable all condition rows
 for conds = 1:handles.lines
-    set(handles.(['condition',   num2str(conds)]), 'Enable', 'off');
-    set(handles.(['condName',    num2str(conds)]), 'Enable', 'off');
-    set(handles.(['description', num2str(conds)]), 'Enable', 'off');
-    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'off');
-    set(handles.(['type',        num2str(conds)]), 'Enable', 'off');
+    set(handles.(['condition',   num2str(conds)]), 'Enable', 'Off');
+    set(handles.(['condName',    num2str(conds)]), 'Enable', 'Off');
+    set(handles.(['description', num2str(conds)]), 'Enable', 'Off');
+    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'Off');
+    set(handles.(['type',        num2str(conds)]), 'Enable', 'Off');
 end
 
 % Second, validate the entered number
@@ -695,17 +695,17 @@ end
 
 % Third, enable rows up to the number of conditions entered
 for conds = 1:numofconds
-    set(handles.(['condition',   num2str(conds)]), 'Enable', 'on');
-    set(handles.(['condName',    num2str(conds)]), 'Enable', 'on');
-    set(handles.(['description', num2str(conds)]), 'Enable', 'on');
-    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'on');
-    set(handles.(['type',        num2str(conds)]), 'Enable', 'on');
+    set(handles.(['condition',   num2str(conds)]), 'Enable', 'On');
+    set(handles.(['condName',    num2str(conds)]), 'Enable', 'On');
+    set(handles.(['description', num2str(conds)]), 'Enable', 'On');
+    set(handles.(['trialnum',    num2str(conds)]), 'Enable', 'On');
+    set(handles.(['type',        num2str(conds)]), 'Enable', 'On');
 end
 
 function numofconds_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % --- Executes on button press in kinematic_check.
@@ -743,23 +743,23 @@ function emg_check_Callback(hObject, eventdata, handles)
 state = get(hObject, 'Value');
 
 if state
-    set(handles.Nexus,    'Enable', 'on');
-    set(handles.EMGworks, 'Enable', 'on');
+    set(handles.Nexus,    'Enable', 'On');
+    set(handles.EMGworks, 'Enable', 'On');
     % The off-then-on sequence forces a GUI control state refresh
     for ii = 1:16
-        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'off');
-        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'off');
-        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'on');
-        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'on');
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'Off');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'Off');
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'On');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'On');
     end
 else
-    set(handles.Nexus,          'Enable', 'off');
-    set(handles.EMGworks,       'Enable', 'off');
-    set(handles.secfile_browse, 'Enable', 'off');
-    set(handles.secfileloc,     'Enable', 'off');
+    set(handles.Nexus,          'Enable', 'Off');
+    set(handles.EMGworks,       'Enable', 'Off');
+    set(handles.secfile_browse, 'Enable', 'Off');
+    set(handles.secfileloc,     'Enable', 'Off');
     for ii = 1:16
-        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'off');
-        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'off');
+        set(handles.(['emg1_' num2str(ii)]), 'Enable', 'Off');
+        set(handles.(['emg2_' num2str(ii)]), 'Enable', 'Off');
     end
 end
 guidata(hObject, handles);
@@ -776,11 +776,11 @@ function Nexus_Callback(hObject, eventdata, handles)
 
 state = get(hObject, 'Value');
 if state
-    set(handles.secfile_browse, 'Enable', 'on');
-    set(handles.secfileloc,     'Enable', 'on');
+    set(handles.secfile_browse, 'Enable', 'On');
+    set(handles.secfileloc,     'Enable', 'On');
 else
-    set(handles.secfile_browse, 'Enable', 'off');
-    set(handles.secfileloc,     'Enable', 'off');
+    set(handles.secfile_browse, 'Enable', 'Off');
+    set(handles.secfileloc,     'Enable', 'Off');
 end
 guidata(hObject, handles);
 
@@ -836,7 +836,7 @@ guidata(hObject, handles);
 function secfileloc_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % ---- EMGworks file location callbacks --------------------------
@@ -855,7 +855,7 @@ guidata(hObject, handles);
 function EMGworksLocation_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function SecFileSearchEMGworks_Callback(hObject, eventdata, handles)
@@ -873,7 +873,7 @@ guidata(hObject, handles);
 function SecondEMGworksLocation_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 % Hint: get(hObject, 'Value') returns toggle state of EMGworks
@@ -890,22 +890,22 @@ function type1_Callback(hObject, eventdata, handles)
 function condition1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum1_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition2_Callback(hObject, eventdata, handles)
@@ -916,22 +916,22 @@ function type2_Callback(hObject, eventdata, handles)
 function condition2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition3_Callback(hObject, eventdata, handles)
@@ -942,22 +942,22 @@ function type3_Callback(hObject, eventdata, handles)
 function condition3_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName3_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description3_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum3_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition4_Callback(hObject, eventdata, handles)
@@ -968,22 +968,22 @@ function type4_Callback(hObject, eventdata, handles)
 function condition4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum4_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition5_Callback(hObject, eventdata, handles)
@@ -994,22 +994,22 @@ function type5_Callback(hObject, eventdata, handles)
 function condition5_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName5_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description5_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum5_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition6_Callback(hObject, eventdata, handles)
@@ -1020,22 +1020,22 @@ function type6_Callback(hObject, eventdata, handles)
 function condition6_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName6_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description6_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum6_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition7_Callback(hObject, eventdata, handles)
@@ -1046,22 +1046,22 @@ function type7_Callback(hObject, eventdata, handles)
 function condition7_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName7_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description7_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum7_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition8_Callback(hObject, eventdata, handles)
@@ -1072,22 +1072,22 @@ function type8_Callback(hObject, eventdata, handles)
 function condition8_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function condName8_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function description8_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 function trialnum8_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject, 'BackgroundColor'), ...
         get(0, 'defaultUicontrolBackgroundColor'))
-    set(hObject, 'BackgroundColor', 'white');
+    set(hObject, 'BackgroundColor', 'White');
 end
 
 function condition9_Callback(hObject, eventdata, handles)
