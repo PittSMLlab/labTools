@@ -49,22 +49,22 @@ height=min([guiPos(4) scrsz(4)]);
 set(hObject, 'Position', [(scrsz(3)-width)/2 45 width height]);
 
 %set color strings
-for i=1:17
-    clr=get(handles.(['color' num2str(i)]),'BackgroundColor');
-    set(handles.(['color' num2str(i)]),'ForeGroundColor',contrastColor(clr));
-    set(handles.(['color' num2str(i)]),'string',['[' num2str(clr.*255) ']']);
+for ii = 1:17
+    clr = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
+    set(handles.(['color' num2str(ii)]), 'ForegroundColor', contrastColor(clr));
+    set(handles.(['color' num2str(ii)]), 'String', ['[' num2str(clr .* 255) ']']);
 end
 
 %initialize drop down list with different color orders
-path=which('PlotParamsGUI');
-path=strrep(path,'PlotParamsGUI.m','Plotting Colors');
-W=what(path);
-colorOrders=cellstr(W.mat);
-for i=1:length(colorOrders)
-    fileExt=find(colorOrders{i}=='.');
-    colorOrders{i}=colorOrders{i}(1:fileExt-1);
+path = which('PlotParamsGUI');
+path = strrep(path, 'PlotParamsGUI.m', 'Plotting Colors');
+W    = what(path);
+colorOrders = cellstr(W.mat);
+for ii = 1:length(colorOrders)
+    fileExt        = find(colorOrders{ii} == '.');
+    colorOrders{ii} = colorOrders{ii}(1:fileExt - 1);
 end
-set(handles.colorMenu,'String',[' ';colorOrders])
+set(handles.colorMenu, 'String', [' '; colorOrders]);
 
 % Update handles structure
 guidata(hObject, handles);
@@ -107,23 +107,23 @@ switch get(eventdata.NewValue,'Tag')
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','samePlotCheck','conditionList','conditionSubList',...
             'indivSubs','binEdit','printCodeCheck','colorMenu','saveColorsButton','biofeedback','removeBiasCheck','AlignEnd2','InitiAlig');
-        for i=1:17
-            set(handles.(['color' num2str(i)]),'Enable','on');
+        for ii = 1:17
+            set(handles.(['color' num2str(ii)]), 'Enable', 'on');
         end
-        set(handles.parameterList,'max',10)
-        set(handles.conditionText,'String','Conditions')
+        set(handles.parameterList, 'Max', 10);
+        set(handles.conditionText, 'String', 'Conditions');
     case 'earlyLateBarButton'
         handles.plotType=2;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','conditionList','indivSubs','earlyNumPts','lateNumPts',...
             'exptLastNumPts','removeBiasCheck','printCodeCheck');
-        set(handles.parameterList,'max',10)
-        set(handles.conditionText,'String','Conditions')
+        set(handles.parameterList, 'Max', 10);
+        set(handles.conditionText, 'String', 'Conditions');
     case 'scatterButton'
         handles.plotType=3;
         handles = enableFields(handles,'groupList','subjectList','parameterList',...
             'regExpBox','conditionList','binEdit');
-        set(handles.parameterList,'max',3)
+        set(handles.parameterList, 'Max', 3);
     case 'epochBarButton'
         results=getResults(handles.Study,{'good'},handles.groups(1));
         handles.plotType=4;
@@ -141,20 +141,20 @@ switch get(eventdata.NewValue,'Tag')
         handles.plotType=5;
         handles = enableFields(handles,'groupList','parameterList','regExpBox',...
             'conditionList');
-        set(handles.parameterList,'max',5)      
-        set(handles.conditionText,'String','Epochs')
-        set(handles.conditionList,'String',fields(results),'max',2)
+        set(handles.parameterList, 'Max', 5);
+        set(handles.conditionText, 'String', 'Epochs');
+        set(handles.conditionList, 'String', fields(results), 'Max', 2);
     case 'CorrelationParams'
         results=getResults(handles.Study,{'good'},handles.groups(1));
         handles.plotType=6;
         handles = enableFields(handles,'groupList','parameterList','regExpBox',...
             'conditionList');
-        set(handles.parameterList,'max',2)
-        set(handles.conditionText,'String','Epochs')
-        set(handles.conditionList,'String',fields(results),'max',5)
-        
+        set(handles.parameterList, 'Max', 2);
+        set(handles.conditionText, 'String', 'Epochs');
+        set(handles.conditionList, 'String', fields(results), 'Max', 5);
+
 end
-set(handles.plotButton,'enable','on')
+set(handles.plotButton,'Enable','on')
 guidata(hObject, handles);
 end
 
@@ -167,15 +167,15 @@ function groupList_Callback(hObject, eventdata, handles)
 
 
 if ~isempty(get(hObject,'Value')) %if at least one group is selected
-        
+
     % contents=cellstr(get(hObject,'String')); <-- this returns groups with html formatting. Not good!
     contents=fields(handles.Study);
     groups=contents(get(hObject,'Value'));
-    
+
     %create groupAdaptationData with all subjects
     allGroups=handles.Study.(groups{1});
-    for i=2:length(groups)
-        allGroups=cat(allGroups,handles.Study.(groups{i}));
+    for gg = 2:length(groups)
+        allGroups=cat(allGroups,handles.Study.(groups{gg}));
     end
 
     % %populate condition listbox (All possible conditions)
@@ -184,7 +184,8 @@ if ~isempty(get(hObject,'Value')) %if at least one group is selected
     %     conditions=[conditions handles.Study.(groups{g}).getCommonConditions];
     %     end
     %     conds=unique(conditions,'stable');
-    %     set(handles.conditionList,'string',conds')
+    %     set(handles.conditionList,'String',conds')
+
 
     
     if strcmpi(get(handles.conditionText,'string'),'conditions') %only if conditionList is filled with conditions (and not epochs)
@@ -195,15 +196,15 @@ if ~isempty(get(hObject,'Value')) %if at least one group is selected
         selectedSubConds=conditionSubContents(get(handles.conditionSubList,'Value'));
         
         conditions=allGroups.getCommonConditions;
-        set(handles.conditionList,'string',conditions')
-        
+        set(handles.conditionList, 'String', conditions');
+
         %re-select conditions/parameters previously selected
         condInds=find(ismember(conditions,selectedConds));
-        set(handles.conditionList,'Value',condInds)
+        set(handles.conditionList,    'Value',  condInds);
         subConds=conditions(condInds);
-        set(handles.conditionSubList,'String',subConds)
+        set(handles.conditionSubList, 'String', subConds);
         subInds=find(ismember(subConds,selectedSubConds));
-        set(handles.conditionSubList,'Value',subInds);
+        set(handles.conditionSubList, 'Value',  subInds);
     end
     
     parameterContents=get(handles.parameterList,'String');
@@ -213,11 +214,11 @@ if ~isempty(get(hObject,'Value')) %if at least one group is selected
     set(handles.parameterList,'string',parameters)
     
     paramInds=find(ismember(parameters,selectedParams));
-    set(handles.parameterList,'Value',paramInds);
-    
+    set(handles.parameterList, 'Value', paramInds);
+
     guidata(hObject, handles);
-else        
-    if strcmp(get(handles.subjectList,'enable'),'on')
+else
+    if strcmp(get(handles.subjectList,'Enable'),'on')
         subjectList_Callback(handles.subjectList,eventdata,handles)
     end
 end
@@ -253,23 +254,23 @@ if isempty(get(handles.groupList,'Value'))
         groups=groups(boolFlag);
 
         allGroups=handles.Study.(groups{1});
-        for i=2:length(groups)
-            allGroups=cat(allGroups,handles.Study.(groups{i}));
+        for gg = 2:length(groups)
+            allGroups=cat(allGroups,handles.Study.(groups{gg}));
         end
         conditions=allGroups.getCommonConditions(selectedSubs);
         [parameters,handles.descriptions]=allGroups.getCommonParameters(selectedSubs);
-        set(handles.conditionList,'string',conditions')
-        set(handles.parameterList,'string',parameters)
-        
+        set(handles.conditionList, 'String', conditions');
+        set(handles.parameterList, 'String', parameters);
+
         %re-select conditions previously selected
         condInds=find(ismember(conditions,selectedConds));
-        set(handles.conditionList,'Value',condInds)
+        set(handles.conditionList,    'Value',  condInds);
         subConds=conditions(condInds);
-        set(handles.conditionSubList,'String',subConds)
+        set(handles.conditionSubList, 'String', subConds);
         subInds=find(ismember(subConds,selectedSubConds));
-        set(handles.conditionSubList,'Value',subInds);
+        set(handles.conditionSubList, 'Value',  subInds);
         paramInds=find(ismember(parameters,selectedParams));
-        set(handles.parameterList,'Value',paramInds);
+        set(handles.parameterList,    'Value',  paramInds);
     else
         %reset condition/parameter values
         set(handles.conditionList,'Value',[])
@@ -298,18 +299,18 @@ if strcmp(get(handles.figure1,'SelectionType'),'open')
 end
 
 %restrict the number of selected parameters to be less than or equal to
-%'max' property of the list
+%'Max' property of the list
 values=get(hObject,'Value');
 newVals=values(~ismember(values,handles.paramVals));
 handles.paramVals=values(ismember(values,handles.paramVals));
-maxNum=get(hObject,'max');
+maxNum=get(hObject,'Max');
 if length(values)>maxNum
     allVals=[handles.paramVals newVals];
     handles.paramVals=allVals(end-(maxNum-1):end);
 else
     handles.paramVals=[handles.paramVals newVals];
 end
-set(hObject,'Value',handles.paramVals)
+set(hObject,'Value',handles.paramVals);
 
 guidata(hObject, handles);
 end
@@ -319,14 +320,14 @@ function conditionList_Callback(hObject, eventdata, handles)
 values=get(hObject,'Value');
 newVals=values(~ismember(values,handles.paramVals));
 handles.paramVals=values(ismember(values,handles.paramVals));
-maxNum=get(hObject,'max');
+maxNum=get(hObject,'Max');
 if length(values)>maxNum
     allVals=[handles.paramVals newVals];
     handles.paramVals=allVals(end-(maxNum-1):end);
 else
     handles.paramVals=[handles.paramVals newVals];
 end
-set(hObject,'Value',handles.paramVals)
+set(hObject,'Value',handles.paramVals);
 
 %add selected conditions to list for plotting individual trials (only for time course)
 if handles.plotType==1 
@@ -339,7 +340,7 @@ if handles.plotType==1
 
     %re-select conditions previously selected
     inds=find(ismember(contents(get(hObject,'Value')),selectedSubConds));
-    set(handles.conditionSubList,'Value',inds)
+    set(handles.conditionSubList,'Value',inds);
 end
 end
 
@@ -376,7 +377,7 @@ paramList=cellstr(get(handles.parameterList,'String'));
 aux=regexp(paramList,expression);
 bool=cellfun(@(x) ~isempty(x),aux);
 inds=find(bool);
-set(handles.parameterList,'Value',inds(1:min([end get(handles.parameterList,'max')])));
+set(handles.parameterList,'Value',inds(1:min([end get(handles.parameterList,'Max')])));
 end
 
 
@@ -438,42 +439,41 @@ function openTool_ClickedCallback(hObject, eventdata, handles)
 [handles.filename,handles.dir]=uigetfile('*.mat','Choose study file'); %opens browse window
 
 if handles.filename~=0
-    
+
     h=msgbox('Opening...','');
     child = get(h,'children');
     delete(child(1)); %delete OK button
     drawnow
     aux=load([handles.dir handles.filename]); %.mat file can only contain 1 variable: structure with groupAdaptationData objects
-    
+
     close(h)
-    
+
     fieldNames=fields(aux);
     handles.varName=fieldNames{1};
-    handles.Study=aux.(fieldNames{1});     
+    handles.Study=aux.(fieldNames{1});
     %Inititalize handle fields
     handles.paramVals=[];
-    handles.groups=fields(handles.Study);   
+    handles.groups=fields(handles.Study);
 
     %Populate subject list
     g=handles.groups;
     subs={};
     handles.subjects={};
-    for i=1:length(g)
-        auxSubs=handles.Study.(g{i}).ID;
+    for ii = 1:length(g)
+        auxSubs=handles.Study.(g{ii}).ID;
         handles.subjects=[handles.subjects auxSubs];
-        if mod(i,2)==1
+        if mod(ii,2)==1
             for s=1:length(auxSubs)
                 auxSubs{s}= ['<html><b>' auxSubs{s} '</b></html>']; %html tags allow for formating font
             end
         end
         subs=[subs; auxSubs'];
     end
-    set(handles.subjectList,'String',subs)
-
+    set(handles.subjectList,'String',subs);
 
     %populate group list
-    for i=1:2:length(g)
-        g{i}=['<html><b>' g{i} '</b></html>'];
+    for ii = 1:2:length(g)
+        g{ii}=['<html><b>' g{ii} '</b></html>'];
     end
     set(handles.groupList,'String',g);
 end
@@ -487,8 +487,8 @@ function plotButton_Callback(hObject, eventdata, handles)
 
 %get color order
 colorOrder=zeros(17,3);
-for i=1:17
-    colorOrder(i,:)=get(handles.(['color' num2str(i)]),'BackgroundColor');
+for ii = 1:17
+    colorOrder(ii,:)=get(handles.(['color' num2str(ii)]),'BackgroundColor');
 end
 
 groupContents=fields(handles.Study);
@@ -570,7 +570,7 @@ switch handles.plotType
         initiAligFlat=str2double(get(handles.InitiAlig,'string'));
         adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binwidth,trialMarkerFlag',indivSubFlag,indivSubList,colorOrder,biofeedbackFlag,removeBias,groups,[],[],alignEndFlag,initiAligFlat);
         %to print code previous line to command window:
-        if get(handles.printCodeCheck,'value')
+        if get(handles.printCodeCheck,'Value')
             disp(['load(''' handles.dir handles.filename ''')'])
             disp(['adaptDataList = ' adaptDataStr ';'])
             disp(['params = ' paramStr ';'])
@@ -578,28 +578,28 @@ switch handles.plotType
             disp(['binWidth = ' num2str(binwidth) ';'])
             disp(['trialMarkerFlag = [' num2str(trialMarkerFlag') '];'])
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])
-            disp(['IndivSubList = ' indivSubStr ';'])   
+            disp(['IndivSubList = ' indivSubStr ';'])
             disp(['removeBias = ' removeBias ';'])
             disp(['groups = ' groups ';'])
             disp(['adaptationData.plotAvgTimeCourse(adaptDataList,params,conds,binWidth,trialMarkerFlag,indivSubFlag,IndivSubList,' num2str(biofeedbackFlag) ')','removeBias','groups'])
         end
     case 2 % early/late bars
         removeBiasFlag=get(handles.removeBiasCheck,'Value');
-        earlyNumber=[str2double(get(handles.earlyNumPts,'string')) str2double(get(handles.lateNumPts,'string'))];
+        earlyNumber=[str2double(get(handles.earlyNumPts,'String')) str2double(get(handles.lateNumPts,'String'))];
         lateNumber=[];
-        exemptLast=str2double(get(handles.exptLastNumPts,'string'));
+        exemptLast=str2double(get(handles.exptLastNumPts,'String'));
         legendNames=[];
         significanceThreshold=0.01;
         adaptationData.plotGroupedSubjectsBarsv2(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
     case 3 % scatter plot
-        binSize=str2double(get(handles.binEdit,'string'));
-%         removeBias=1;
+        binSize=str2double(get(handles.binEdit,'String'));
+        %         removeBias=1;
         adaptationData.scatterPlotLab(adaptDataList,params,conds,[],[],binSize,[],removeBias)
-        
+
     case 4 %epoch bars
-        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
+        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'Value'));
         barGroups(handles.Study,results,groups,params,conds,indivSubFlag,colorOrder);
-        if get(handles.printCodeCheck,'value')
+        if get(handles.printCodeCheck,'Value')
             disp(['load(''' handles.dir handles.filename ''')'])
             disp(['groups = {' strjoin(strcat('''',groups,'''')',',') '};'])
             disp(['params = ' paramStr ';'])
@@ -608,15 +608,15 @@ switch handles.plotType
             disp(['indivSubFlag = ' num2str(indivSubFlag) ';'])                 
             disp(['barGroups(' handles.varName ',results,groups,params,epochs,indivSubFlag)'])
         end
-        
+
     case 5 %correlation
         results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
         adaptationData.Correlations(adaptDataList,results,params,conds,groups,colorOrder,1)
     case 6 %correlation by params 
         results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'value'));
         adaptationData.Correlations(adaptDataList,results,params,conds,groups,colorOrder,2)
-       
-        
+
+
 end
 end
 
@@ -642,7 +642,7 @@ if exist([path filesep colorFile '.mat'],'file')>0
     a=load([path filesep colorFile]);
     aux=fields(a);
     colorOrder=a.(aux{1});
-    
+
     if size(colorOrder,2)==3 && max(max(colorOrder))<=1 && min(min(colorOrder))>=0
         for i=1:min([17 size(colorOrder,1)])
             clr=colorOrder(i,:);
@@ -661,8 +661,8 @@ function saveColorsButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 colorOrder=nan(17,3);
-for i=1:17
-    colorOrder(i,:)=get(handles.(['color' num2str(i)]),'backgroundColor');
+for ii = 1:17
+    colorOrder(ii,:) = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
 end
 answer = inputdlg('Eneter name of new color order: ','File Name Input');
 path=which('PlotParamsGUI');
@@ -675,7 +675,7 @@ for i=1:length(colorOrders)
     fileExt=find(colorOrders{i}=='.');
     colorOrders{i}=colorOrders{i}(1:fileExt-1);
 end
-set(handles.colorMenu,'String',[' ';colorOrders])
+set(handles.colorMenu, 'String', [' '; colorOrders]);
 end
 
 %% --------------------- Color Buttons --------------------------------%%
@@ -767,8 +767,8 @@ end
 
 function handles = colorButtonCallback(hObject,handles)
 %open up color selection tool
-clr=uisetcolor(get(hObject,'BackgroundColor'),'Set Color');
-rgb=round(clr.*255);
+clr = uisetcolor(get(hObject, 'BackgroundColor'), 'Set Color');
+rgb = round(clr .* 255);
 %change background,foreground, and string of button
 set(hObject,'BackgroundColor',clr)
 set(hObject,'ForegroundColor',contrastColor(clr))
