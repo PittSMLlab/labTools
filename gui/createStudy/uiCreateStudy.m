@@ -184,7 +184,7 @@ nSubs    = length(fileList);
 subGroup = struct;
 
 group       = get(handles.groupNameEdit, 'String');
-abbrevGroup = group(ismember(group, ['A':'Z' 'a':'z' '1':'9']));
+abbrevGroup = group(ismember(group, ['A':'Z' 'a':'z' '0':'9']));
 if isempty(abbrevGroup)
     abbrevGroup = 'NoDescription';
 end
