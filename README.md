@@ -20,10 +20,11 @@ through stride-indexed adaptation metrics and group statistics.
 5. [Data Pipeline Overview](#data-pipeline-overview)
 6. [Key Classes](#key-classes)
 7. [Working with Your Data](#working-with-your-data)
-8. [Example Scripts](#example-scripts)
-9. [Generating Documentation](#generating-documentation)
-10. [Reporting Bugs](#reporting-bugs)
-11. [Development](#development)
+8. [GUI Tools](#gui-tools)
+9. [Example Scripts](#example-scripts)
+10. [Generating Documentation](#generating-documentation)
+11. [Reporting Bugs](#reporting-bugs)
+12. [Development](#development)
 
 ---
 
@@ -58,9 +59,12 @@ through stride-indexed adaptation metrics and group statistics.
    demographics, experiment metadata, C3D file locations,
    trial/condition assignments, and EMG channel labels.
 
-4. After the import completes you will find two `.mat` files in your
+4. After the import completes you will find three `.mat` files in your
    output directory:
-   - `*RAW.mat` — raw trial data (`experimentData` object)
+   - `*RAW.mat` — raw trial data (`experimentData` object,
+     pre-processing)
+   - `*.mat` — processed trial data (`experimentData` object,
+     with gait events and stride parameters)
    - `*params.mat` — stride-indexed adaptation metrics
      (`adaptationData` object)
 
@@ -120,7 +124,7 @@ labTools/
 ├── gui/
 │   ├── importc3d/             % c3d2mat and GetInfoGUI (primary entry point)
 │   ├── createStudy/           % uiCreateStudy — experiment setup
-│   └── eventReview/           % ReviewEventsGUI — event validation
+│   └── eventReview/           % ReviewEventsGUI — event validation; PlotParamsGUI — parameter plotting
 ├── ExpDetails/                % Experiment description files (auto-populate GUI)
 ├── example/                   % Example and validation scripts
 └── doc/                       % Generated HTML documentation (via m2html)
@@ -142,7 +146,7 @@ Raw files (C3D / datalog)
 
 The pipeline is orchestrated by `c3d2mat` → `loadSubject` →
 `experimentData.process()`. After the initial run, you can reload the
-saved `*expData.mat` and recompute without re-parsing C3D files:
+saved `*.mat` and recompute without re-parsing C3D files:
 
 | Method | What it does |
 |---|---|
@@ -217,6 +221,105 @@ the classes in `classes/synergies/`.
 Use `adaptationData.createGroupAdaptData` to aggregate across
 participants, then `groupAdaptationData` and `studyData` for
 group-level statistics and plotting.
+
+---
+
+## GUI Tools
+
+labTools provides four graphical tools that cover the full workflow
+from data import through group-level plotting. All are GUIDE-based
+MATLAB GUIs and require no additional toolboxes.
+
+### `GetInfoGUI` / `c3d2mat` — Session Import
+
+Covered in [Getting Started](#getting-started) step 3. Prompts for
+participant demographics, data file locations, trial/condition
+assignments, and EMG channel labels. `ExpDetails/` files can be placed
+in the working directory to auto-populate condition information.
+
+### `ReviewEventsGUI` — Gait Event Review and Stride Labeling
+
+**Purpose:** Visually inspect detected gait events, correct errors,
+and mark individual strides as bad or good before computing final
+stride-level parameters.
+
+**Launch:**
+```matlab
+ReviewEventsGUI
+```
+
+**Workflow:**
+1. Click the **Open** toolbar icon and select a `*.mat` file.
+2. Choose a condition from the **Condition** drop-down, then choose a
+   trial from the **Trial** drop-down.
+3. Select a data channel for the **top** and **bottom** plot panels
+   from the respective drop-down menus.
+4. Use the radio buttons to switch between default, force, and
+   kinematic event classes (enabled only when both force and kinematic
+   events are present in the file).
+5. Correct events:
+   - **Delete** — click a point in the plot, then press **Delete** to
+     remove the nearest event.
+   - **Delete Range** — press **Delete Range**, click two points to
+     define a window, and all events within it are removed.
+   - **Add** — press **Add**, then click a point to insert a new event
+     of the type selected in the event-type panel.
+6. Label strides:
+   - Click on a stride in the plot to select it, then press **Label
+     Bad** or **Label Good**.
+7. Press **Mark Save** when finished reviewing a trial, then **Write
+   to Disk** to save the corrected `*.mat` and regenerate
+   `*params.mat`.
+
+### `uiCreateStudy` — Study Assembly
+
+**Purpose:** Scan a directory for `*params.mat` files, assign
+participants to named groups, and save the resulting `studyData`
+object for group-level analysis.
+
+**Launch:**
+```matlab
+cd('/path/to/params/files')
+uiCreateStudy
+```
+
+**Workflow:**
+1. The **All Subjects** list is populated automatically from every
+   `*params.mat` file in the current directory.
+2. Select one or more files in **All Subjects** and click **Add** to
+   move them to the **Selected Subjects** list.
+3. Type a group name in the **Group Name** field, then click **Add
+   Group**. Repeat for each group.
+4. Click **Save** and choose an output filename. The saved `.mat` file
+   contains a `studyData` struct with one field per group.
+
+### `PlotParamsGUI` — Parameter Plotting
+
+**Purpose:** Load a `studyData` file and generate publication-quality
+plots (time course, early/late bars, scatter, epoch bars, correlation)
+interactively without writing MATLAB scripts.
+
+**Launch:**
+```matlab
+PlotParamsGUI
+```
+
+**Workflow:**
+1. Click the **Open** toolbar icon and select a `studyData` `.mat`
+   file.
+2. Choose a **plot type** using the radio buttons (Time Course, Early
+   Late Bars, Scatter, Epoch Bars, Correlation).
+3. Select one or more **groups** from the Group list, and optionally
+   select individual subjects from the Subject list.
+4. Select one or more **parameters** from the Parameter list
+   (double-click a parameter for a description).
+5. Select the **conditions** and/or **epochs** to include.
+6. Adjust optional settings: bin width, bias-removal baseline,
+   color order.
+7. Click **Plot**.
+
+The **Print Code** checkbox echoes the equivalent programmatic call
+to the Command Window for reproducibility and scripting.
 
 ---
 

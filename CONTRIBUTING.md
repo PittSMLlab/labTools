@@ -456,17 +456,20 @@ scripts serve as manual integration tests. When making a change:
 
 1. Run the relevant script(s) in `example/` to confirm the pipeline
    still produces expected output.
-2. If your change affects gait event detection, load a saved
-   `*expData.mat` file and call `recomputeEvents` to verify events
-   look correct in `ReviewEventsGUI`.
-3. If your change affects parameter calculation, call
+2. Save a copy of the output MAT data files before implementing code
+   changes, and use `compareAdaptationData` and
+   `compareExperimentData` to verify there are no detrimental effects
+   on the output data.
+3. If your change affects gait event detection, load a saved
+   `*.mat` file and call `recomputeEvents`, then open
+   `ReviewEventsGUI` to visually confirm that detected events and
+   bad-stride labels look correct across at least one trial per
+   condition type (TM, OG, NIM).
+4. If your change affects parameter calculation, call
    `recomputeParameters` and compare the output `adaptationData`
-   object against a known-good baseline.
-4. Save a copy of the output MAT data files before implementing the
-   code changes, and use the `compareAdaptationData` and
-   `compareExperimentData` to verify that there are no detrimental
-   effects on the output data.
-4. Note that `experimentData` is a **value class** — recompute
+   object against a known-good baseline (see [TESTING.md](TESTING.md)
+   for the full comparison workflow).
+5. Note that `experimentData` is a **value class** — recompute
    methods return a modified copy. Always capture the return value:
 
    ```matlab
