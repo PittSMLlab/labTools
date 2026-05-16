@@ -620,7 +620,7 @@ for i=1:length(x);
         %pad min value to delete events in same region from alt calcualtion
         selectedEventTimeIndex=find(abs(deltaT)<minDeltaT+0.05);    
         selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
-        
+
         %Eliminate it from handles.trialEvents
         handles.trialEvents.Data(selectedEventIndex,:)=false;
     end

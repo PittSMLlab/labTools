@@ -229,7 +229,7 @@ function subjectList_Callback(hObject, eventdata, handles)
 
 if isempty(get(handles.groupList,'Value'))
     if ~isempty(get(hObject,'Value')) %only enter if no groups are selected but at least one subjects is
-        
+
         %get current state of condition lists
         conditionContents=get(handles.conditionList,'String');
         selectedConds=conditionContents(get(handles.conditionList,'Value'));
@@ -240,7 +240,7 @@ if isempty(get(handles.groupList,'Value'))
         
         selectedSubs=handles.subjects(get(hObject,'Value'));
         groups=fields(handles.Study);
-        
+
         %determine which groups subjects belong to
         boolFlag=false(1,length(groups));
         for g=1:length(groups)
@@ -251,7 +251,7 @@ if isempty(get(handles.groupList,'Value'))
             end
         end
         groups=groups(boolFlag);
-        
+
         allGroups=handles.Study.(groups{1});
         for i=2:length(groups)
             allGroups=cat(allGroups,handles.Study.(groups{i}));
