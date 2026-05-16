@@ -1782,15 +1782,15 @@ if ischar(file)
         % -- EMG channel labels (for subjects processed after 7/29/2014)
         if isfield(subInfo, 'EMGList1') && isfield(subInfo, 'EMGList2')
             for ii = 1:16
-                aux1 = ['emg1_' num2str(ii)];
-                set(handles.(aux1), 'String', subInfo.EMGList1{ii});
+                emg1FieldName = ['emg1_' num2str(ii)];
+                set(handles.(emg1FieldName), 'String', subInfo.EMGList1{ii});
                 if ~isempty(subInfo.EMGList1{ii})
-                    set(handles.(aux1), 'Enable', 'on');
+                    set(handles.(emg1FieldName), 'Enable', 'On');
                 end
-                aux2 = ['emg2_' num2str(ii)];
-                set(handles.(aux2), 'String', subInfo.EMGList2{ii});
+                emg2FieldName = ['emg2_' num2str(ii)];
+                set(handles.(emg2FieldName), 'String', subInfo.EMGList2{ii});
                 if ~isempty(subInfo.EMGList2{ii})
-                    set(handles.(aux2), 'Enable', 'on');
+                    set(handles.(emg2FieldName), 'Enable', 'On');
                 end
             end
         end
