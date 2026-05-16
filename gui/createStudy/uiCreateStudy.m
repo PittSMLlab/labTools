@@ -181,7 +181,7 @@ function addGroupButton_Callback(hObject, eventdata, handles)
 
 fileList = get(handles.selectSubList, 'String');
 nSubs    = length(fileList);
-sub      = struct;
+subGroup = struct;
 
 group       = get(handles.groupNameEdit, 'String');
 abbrevGroup = group(ismember(group, ['A':'Z' 'a':'z' '1':'9']));
@@ -195,12 +195,12 @@ for ii = 1:nSubs
     % subID = fileList{i}(1:(aux1-1));
     subID = adaptData.subData.ID;
 
-    sub.IDs(ii)       = {subID};
-    sub.adaptData(ii) = {adaptData};
+    subGroup.IDs(ii)       = {subID};
+    subGroup.adaptData(ii) = {adaptData};
 end
 
 handles.studyData.(abbrevGroup) = ...
-    groupAdaptationData(sub.IDs, sub.adaptData);
+    groupAdaptationData(subGroup.IDs, subGroup.adaptData);
 
 set(handles.selectSubList, 'String', []);
 
