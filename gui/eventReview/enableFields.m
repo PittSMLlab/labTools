@@ -1,7 +1,7 @@
 function handles = enableFields(handles, varargin)
 %ENABLEFIELDS Enable a list of named GUI controls in a handles struct.
 %
-%   Sets the 'enable' property to 'on' for each named field in the
+%   Sets the 'Enable' property to 'on' for each named field in the
 % handles structure.
 %
 % Inputs:
@@ -19,7 +19,7 @@ function handles = enableFields(handles, varargin)
 % See also DISABLEFIELDS.
 
 for ii = 1:length(varargin)
-    set(handles.(varargin{ii}), 'enable', 'on');
+    set(handles.(varargin{ii}), 'Enable', 'on');
 end
 
 end

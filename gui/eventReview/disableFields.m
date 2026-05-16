@@ -1,7 +1,7 @@
 function handles = disableFields(handles, varargin)
 %DISABLEFIELDS Disable a list of named GUI controls in a handles struct.
 %
-%   Sets the 'enable' property to 'off' for each named field in the
+%   Sets the 'Enable' property to 'off' for each named field in the
 % handles structure.
 %
 % Inputs:
@@ -19,7 +19,7 @@ function handles = disableFields(handles, varargin)
 % See also ENABLEFIELDS.
 
 for ii = 1:length(varargin)
-    set(handles.(varargin{ii}), 'enable', 'off');
+    set(handles.(varargin{ii}), 'Enable', 'off');
 end
 
 end
