@@ -1,9 +1,22 @@
 function mrkrData = plotMarkerProcessingTrajectories(trialPaths, savePath)
-% plotMarkerProcessingTrajectories - runs OLD and NEW pipelines on all trial paths and saves result
+%PLOTMARKERPROCESSINGTRAJECTORIES Run marker pipelines on trials and save.
+%
+%   Iterates over trial paths and runs the OLD or NEW marker processing
+% pipeline on each trial (selected by trial ID prefix), then saves all
+% trajectory results to a .mat file.
 %
 % Inputs:
 %   trialPaths - cell array of full trial folder paths
 %   savePath   - full .mat file path to save the result
+%
+% Outputs:
+%   mrkrData - struct with per-subject/trial trajectory data from the
+% OLD or NEW pipeline
+%
+% Toolbox Dependencies:
+%   None
+%
+% See also PROCESSANDFILLMARKERGAPSTRIAL, PART1RL.
 
 mrkrData = struct(); % Initialize structure
 
