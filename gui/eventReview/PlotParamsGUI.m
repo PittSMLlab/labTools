@@ -165,9 +165,8 @@ end
 %% ---------------- Selecting Groups/Subjects to Plot ----------------- %%
 
 function groupList_Callback(hObject, eventdata, handles)
-%when a group is selected, the parameter list and condition lists are
-%populated with options based on common conditions/parameters that all subs
-%in all groups selected contain
+% When groups are selected, populate condition and parameter lists with
+% options common to all subjects in those groups.
 
 
 if ~isempty(get(hObject,'Value')) %if at least one group is selected
@@ -371,8 +370,6 @@ function conditionSubList_Callback(hObject, eventdata, handles)
 end
 
 function regExpBox_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'String') returns contents of regExpBox as text
-%        str2double(get(hObject,'String')) returns contents of regExpBox as a double
 %Get labels that match:
 
 expression = get(hObject, 'String');
@@ -439,6 +436,15 @@ function saveTool_ClickedCallback(hObject, eventdata, handles)
 end
 
 function openTool_ClickedCallback(hObject, eventdata, handles)
+%OPENTOOL_CLICKEDCALLBACK  Opens a study file and populates group/subject lists.
+%
+%   Inputs:
+%     hObject   - handle to openTool (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies:
+%   None
 
 [handles.filename, handles.dir] = uigetfile('*.mat', 'Choose study file');
 
@@ -489,6 +495,15 @@ end
 
 function plotButton_Callback(hObject, eventdata, handles)
 % groupContents=cellstr(get(handles.groupList,'String'));
+%PLOTBUTTON_CALLBACK  Executes the selected plot type with current settings.
+%
+%   Inputs:
+%     hObject   - handle to plotButton (see GCBO)
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%
+% Toolbox Dependencies:
+%   None
 
 colorOrder = zeros(17, 3);
 for ii = 1:17
@@ -639,12 +654,7 @@ end
 
 % --- Executes on selection change in colorMenu.
 function colorMenu_Callback(hObject, eventdata, handles)
-% hObject    handle to colorMenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hints: contents = cellstr(get(hObject,'String')) returns colorMenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from colorMenu
 colorPath  = which('PlotParamsGUI');
 colorPath  = strrep(colorPath, 'PlotParamsGUI.m', 'Plotting Colors');
 contents   = cellstr(get(hObject, 'String'));
@@ -781,8 +791,8 @@ handles = colorButtonCallback(hObject, handles);
 guidata(hObject, handles);
 end
 
-%open up color selection tool
 function handles = colorButtonCallback(hObject, handles)
+%COLORBUTTONCALLBACK  Open color picker and update button appearance.
 clr = uisetcolor(get(hObject, 'BackgroundColor'), 'Set Color');
 rgb = round(clr .* 255);
 %change background,foreground, and string of button

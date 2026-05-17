@@ -11,7 +11,6 @@ function varargout = ReviewEventsGUI(varargin)
 %
 % See also: experimentData, calcParameters, labTimeSeries
 
-
 % Last Modified by GUIDE v2.5 15-May-2015 15:52:21
 
 % Begin initialization code - DO NOT EDIT
@@ -37,8 +36,16 @@ end
 
 %% --- Executes just before ReviewEventsGUI is made visible.
 function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% varargin   command line arguments to ReviewEventsGUI (see VARARGIN)
+%REVIEWEVENTSGUI_OPENINGFCN  Initializes GUI state before it is shown.
+%
+%   Inputs:
+%     hObject   - handle to figure
+%     eventdata - reserved for future MATLAB versions
+%     handles   - struct with handles and user data (see GUIDATA)
+%     varargin  - command line arguments to ReviewEventsGUI (see VARARGIN)
+%
+% Toolbox Dependencies:
+%   None
 
 %initialize values
 handles.output=hObject;
@@ -64,8 +71,7 @@ end
 % --- Outputs from this function are returned to the command line.
 function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
 
-%Set GUI position to middle of screen (not sure why this code only works
-%within this function...)
+% Center GUI on screen (must run here, not in OpeningFcn)
 % left, bottom, width, height
 scrsz = get(0,'ScreenSize');
 set(gcf,'Units','pixels');
@@ -145,7 +151,6 @@ if handles.filename~=0
     end
 end
 end
-
 
 
 %% ---------------------------Select condition----------------------------
@@ -281,7 +286,6 @@ handles.last=plotData(handles,handles.TPfield,handles.TPdataType,handles.TPfield
 BPdataType_Callback(handles.BPdataType,eventdata,handles);
 end
 
-
 function BPdataType_Callback(hObject, eventdata, handles)
 handles.BPfieldlist = makeFieldList(hObject,handles,handles.BPfield);
 BPfield_Callback(handles.BPfield, eventdata, handles)
@@ -301,13 +305,10 @@ fields={};
 plotFields={};
 set(fieldListHandle,'Enable','on')
 
-%The following code removes redundant options in the feild list by
-%combinging 'R' and 'L' data as well as 'Fast' and 'Slow' adaptation
-%parameters.
-%note that two cells need to be created: one with the list of options for
-%the drop-down list(feilds) and another that matches each option with the data to
-%plot (plotFields)
 
+% Remove redundant entries by combining 'R'/'L' pairs and 'Fast'/'Slow'
+% pairs into single drop-down options. Two parallel cells are built:
+% fieldOptions (display labels) and plotFields (data labels to plot).
 for ii = 1:length(curTS.labels)
     if strcmp(curTS.labels{ii}(1),handles.fast) %'L' or 'R'
         if any(strcmp(curTS.labels,[handles.slow,curTS.labels{ii}(2:end)])) %check there is a corresponding slow label
@@ -356,13 +357,10 @@ guidata(hObject, handles)
 end
 
 
-
 %% -----------------------------PLOTTING:----------------------------------
 
 % --- Executes on slider movement.
 function timeSlider_Callback(hObject, eventdata, handles)
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 handles.timeWindow=round(get(hObject,'Value'));
 
 % % % %to make zoomed-in time window start in middle of previous time window: % % % %
