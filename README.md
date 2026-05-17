@@ -222,6 +222,31 @@ Use `adaptationData.createGroupAdaptData` to aggregate across
 participants, then `groupAdaptationData` and `studyData` for
 group-level statistics and plotting.
 
+### Recompute Workflows
+
+After the initial import, reload the saved `*.mat` and recompute
+without re-parsing C3D files. The three recompute methods are
+summarized in [Data Pipeline Overview](#data-pipeline-overview).
+
+`recomputeParameters` accepts optional arguments to narrow scope:
+
+- **Single parameter class** — pass a class name string as the first
+  argument: `expData.recomputeParameters('force')`
+- **Multiple parameter classes** — pass a cell array as the third
+  argument with `[]` placeholders for the first two:
+  `expData.recomputeParameters([], [], {'force', 'spatial'})`
+- **Initial-step leg** — pass `'L'` or `'R'` as the second argument
+  to control which leg's step is counted first. By default the fast
+  leg's step falls after the slow leg's step. Passing `'L'` treats the
+  left leg as the initial step: `expData.recomputeParameters([], 'L')`.
+  Note this is not the reverse of the default — if left steps are
+  odd-numbered and right even-numbered, the default computes
+  R(2)−L(1) and R(4)−L(3), while `'L'` computes L(3)−R(2) and
+  L(5)−R(4).
+
+See `example/TestPipelineRecompute.m` for a regression-testing
+template and [TESTING.md](TESTING.md) for a full test matrix.
+
 ---
 
 ## GUI Tools
@@ -330,9 +355,15 @@ usage examples and manual integration tests:
 
 | Script | Purpose |
 |---|---|
-| `exRecomputeParams.m` | Recompute parameters from a saved session |
+| `TestPipelineRecompute.m` | Regression-test recompute pipelines |
+| `EMGnormalization.m` | Normalize EMG parameters to baseline |
 | `labTSmanipulation.m` | Demonstrate `labTimeSeries` operations |
+| `TSdiscretizationAndCheckerboards.m` | Discretize/align time series; plot checkerboards |
+| `plotIndividualsInGroup.m` | Plot individual behavior within a group |
+| `plotParameterTimeCourse_wFilters.m` | Parameter time courses with monotonic LS filter |
 | `testMarkerHealthCheck.m` | Validate marker data integrity |
+| `testMarkerOutlierDetectAndCorrect.m` | Detect and correct marker outliers |
+| `HowToUsePlottingFunc.mlx` | Interactive live script for plotting functions |
 
 ---
 
