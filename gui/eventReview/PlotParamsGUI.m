@@ -141,19 +141,19 @@ switch get(eventdata.NewValue,'Tag')
         set(handles.conditionText, 'String', 'Epochs');
         set(handles.conditionList, 'String', fieldnames(results));
     case 'correlationButton'
-        results=getResults(handles.Study,{'good'},handles.groups(1));
-        handles.plotType=5;
-        handles = enableFields(handles,'groupList','parameterList','regExpBox',...
-            'conditionList');
-        set(handles.parameterList, 'Max', 5);
+        results          = getResults(handles.Study, {'good'}, handles.groups(1));
+        handles.plotType = 5;
+        handles = enableFields(handles, 'groupList', 'parameterList', ...
+            'regExpBox', 'conditionList');
+        set(handles.parameterList, 'Max',    5);
         set(handles.conditionText, 'String', 'Epochs');
         set(handles.conditionList, 'String', fieldnames(results), 'Max', 2);
     case 'CorrelationParams'
-        results=getResults(handles.Study,{'good'},handles.groups(1));
-        handles.plotType=6;
-        handles = enableFields(handles,'groupList','parameterList','regExpBox',...
-            'conditionList');
-        set(handles.parameterList, 'Max', 2);
+        results          = getResults(handles.Study, {'good'}, handles.groups(1));
+        handles.plotType = 6;
+        handles = enableFields(handles, 'groupList', 'parameterList', ...
+            'regExpBox', 'conditionList');
+        set(handles.parameterList, 'Max',    2);
         set(handles.conditionText, 'String', 'Epochs');
         set(handles.conditionList, 'String', fieldnames(results), 'Max', 5);
 
@@ -246,11 +246,11 @@ if isempty(get(handles.groupList, 'Value'))
         groups       = fieldnames(handles.Study);
 
         %determine which groups subjects belong to
-        boolFlag=false(1,length(groups));
-        for g=1:length(groups)
-            for s=1:length(selectedSubs)
-                if ismember(selectedSubs{s},handles.Study.(groups{g}).ID)
-                    boolFlag(g)=true;
+        boolFlag = false(1, length(groups));
+        for gg = 1:length(groups)
+            for jj = 1:length(selectedSubs)
+                if ismember(selectedSubs{jj}, handles.Study.(groups{gg}).ID)
+                    boolFlag(gg) = true;
                 end
             end
         end
@@ -373,14 +373,15 @@ end
 function regExpBox_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of regExpBox as text
 %        str2double(get(hObject,'String')) returns contents of regExpBox as a double
-
-expression=get(hObject,'String');
 %Get labels that match:
-paramList=cellstr(get(handles.parameterList,'String'));
-aux=regexp(paramList,expression);
-bool=cellfun(@(x) ~isempty(x),aux);
-inds=find(bool);
-set(handles.parameterList,'Value',inds(1:min([end get(handles.parameterList,'Max')])));
+
+expression = get(hObject, 'String');
+paramList  = cellstr(get(handles.parameterList, 'String'));
+matchCells = regexp(paramList, expression);
+matched    = cellfun(@(x) ~isempty(x), matchCells);
+inds       = find(matched);
+set(handles.parameterList, 'Value', ...
+    inds(1:min([end, get(handles.parameterList, 'Max')])));
 end
 
 
@@ -443,42 +444,43 @@ function openTool_ClickedCallback(hObject, eventdata, handles)
 
 if handles.filename ~= 0
 
-    h=msgbox('Opening...','');
-    child = get(h,'children');
-    delete(child(1)); %delete OK button
+    msgHandle = msgbox('Opening...', '');
+    child     = get(msgHandle, 'Children');
+    delete(child(1));   % remove the OK button so the dialog is non-interactive
     drawnow
     aux=load([handles.dir handles.filename]); %.mat file can only contain 1 variable: structure with groupAdaptationData objects
-
-    close(h)
-
-    fieldNames=fields(aux);
-    handles.varName=fieldNames{1};
-    handles.Study=aux.(fieldNames{1});
     %Inititalize handle fields
-    handles.paramVals=[];
-    handles.groups=fields(handles.Study);
-
     %Populate subject list
-    g=handles.groups;
-    subs={};
-    handles.subjects={};
-    for ii = 1:length(g)
-        auxSubs=handles.Study.(g{ii}).ID;
-        handles.subjects=[handles.subjects auxSubs];
-        if mod(ii,2)==1
-            for s=1:length(auxSubs)
                 auxSubs{s}= ['<html><b>' auxSubs{s} '</b></html>']; %html tags allow for formating font
+
+    close(msgHandle)
+
+    fieldNames      = fieldnames(loaded);
+    handles.varName = fieldNames{1};
+    handles.Study   = loaded.(fieldNames{1});
+
+    handles.paramVals = [];
+    handles.groups    = fieldnames(handles.Study);
+
+    groupNames       = handles.groups;
+    subEntries       = {};
+    handles.subjects = {};
+    for ii = 1:length(groupNames)
+        groupSubs        = handles.Study.(groupNames{ii}).ID;
+        handles.subjects = [handles.subjects groupSubs];
+        if mod(ii, 2) == 1   % bold odd-numbered groups for visual grouping
+            for jj = 1:length(groupSubs)
             end
         end
-        subs=[subs; auxSubs'];
+        subEntries = [subEntries; groupSubs']; %#ok<AGROW>
     end
-    set(handles.subjectList,'String',subs);
+    set(handles.subjectList, 'String', subEntries);
 
     %populate group list
-    for ii = 1:2:length(g)
-        g{ii}=['<html><b>' g{ii} '</b></html>'];
+    for ii = 1:2:length(groupNames)
+        groupNames{ii} = ['<html><b>' groupNames{ii} '</b></html>'];
     end
-    set(handles.groupList,'String',g);
+    set(handles.groupList, 'String', groupNames);
 end
 guidata(hObject, handles);
 end
@@ -490,27 +492,28 @@ function plotButton_Callback(hObject, eventdata, handles)
 
 colorOrder = zeros(17, 3);
 for ii = 1:17
-    colorOrder(ii,:)=get(handles.(['color' num2str(ii)]),'BackgroundColor');
+indivSubList={};%cell(1,length(get(handles.subjectList,'Value')));
+            %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
+    colorOrder(ii, :) = get(handles.(['color' num2str(ii)]), 'BackgroundColor');
 end
 
-groupContents=fields(handles.Study);
-adaptDataList={};
-indivSubList={};%cell(1,length(get(handles.subjectList,'Value')));
-indivSubStr='[]';
-if handles.plotType==2 %%DULCE
-    if ~isempty(get(handles.groupList,'Value'))
-        groups=groupContents(get(handles.groupList,'Value'));
-        for g=1:length(groups)
-            %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
-            adaptDataList{g}= handles.Study.(groups{g});
+groupContents = fieldnames(handles.Study);
+adaptDataList = {};
+indivSubStr   = '[]';
+
+if handles.plotType == 2
+    if ~isempty(get(handles.groupList, 'Value'))
+        groups = groupContents(get(handles.groupList, 'Value'));
+        for gg = 1:length(groups)
+            adaptDataList{gg} = handles.Study.(groups{gg});
         end
     end
 else
-    if ~isempty(get(handles.groupList,'Value'))
-        groups=groupContents(get(handles.groupList,'Value'));
-        for g=1:length(groups)
             %adaptDataList{g}=subFileList(handles.Study.(groups{g})); %%HH 6/17
-            adaptDataList{g}= handles.Study.(groups{g}).adaptData;
+    if ~isempty(get(handles.groupList, 'Value'))
+        groups = groupContents(get(handles.groupList, 'Value'));
+        for gg = 1:length(groups)
+            adaptDataList{gg} = handles.Study.(groups{gg}).adaptData;
         end
         adaptDataStr=['{' strjoin(strcat([handles.varName '.'],groups,'.adaptData')',',') '}'];
         if ~isempty(get(handles.subjectList,'Value'))
@@ -531,13 +534,14 @@ else
             end
         end
     else
-        if ~isempty(get(handles.subjectList,'Value'))
-            indivSubs=handles.subjects(get(handles.subjectList,'Value'));
-            for s=1:length(indivSubs)
                 %adaptDataList{end+1}={[indivSubs{s} 'params.mat']};
-                groups=fields(handles.Study);
-                for g=1:numel(groups)
-                    [isAinB,locAinB]=ismember(indivSubs{s},handles.Study.(groups{g}).ID);
+        if ~isempty(get(handles.subjectList, 'Value'))
+            indivSubs = handles.subjects(get(handles.subjectList, 'Value'));
+            for jj = 1:length(indivSubs)
+                groups = fieldnames(handles.Study);
+                for gg = 1:numel(groups)
+                    [isAinB, locAinB] = ismember( ...
+                        indivSubs{jj}, handles.Study.(groups{gg}).ID);
                     if isAinB
                         adaptDataList{end + 1} = ...
                             handles.Study.(groups{gg}).adaptData(locAinB);
@@ -596,15 +600,17 @@ switch handles.plotType
         legendNames=[];
         significanceThreshold=0.01;
         adaptationData.plotGroupedSubjectsBarsv2(adaptDataList,params,removeBiasFlag,indivSubFlag,conds,earlyNumber,lateNumber,exemptLast,legendNames,significanceThreshold)
-    case 3 % scatter plot
-        binSize=str2double(get(handles.binEdit,'String'));
         %         removeBias=1;
-        adaptationData.scatterPlotLab(adaptDataList,params,conds,[],[],binSize,[],removeBias)
-
-    case 4 %epoch bars
-        results=getResults(handles.Study,params,groups,get(handles.maxPerturbCheck,'Value'));
-        barGroups(handles.Study,results,groups,params,conds,indivSubFlag,colorOrder);
-        if get(handles.printCodeCheck,'Value')
+    case 3  % scatter plot
+        binSize = str2double(get(handles.binEdit, 'String'));
+        adaptationData.scatterPlotLab(adaptDataList, params, conds, ...
+            [], [], binSize, [], removeBias)
+    case 4  % epoch bars
+        results = getResults(handles.Study, params, groups, ...
+            get(handles.maxPerturbCheck, 'Value'));
+        barGroups(handles.Study, results, groups, params, conds, ...
+            indivSubFlag, colorOrder);
+        if get(handles.printCodeCheck, 'Value')
             disp(['load(''' handles.dir handles.filename ''')'])
             disp(['groups = {' strjoin(strcat('''', groups, ''''), ',') '};'])
             disp(['params = ' paramStr ';'])
@@ -639,12 +645,12 @@ function colorMenu_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns colorMenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from colorMenu
+colorPath  = which('PlotParamsGUI');
+colorPath  = strrep(colorPath, 'PlotParamsGUI.m', 'Plotting Colors');
+contents   = cellstr(get(hObject, 'String'));
+colorFile  = contents{get(hObject, 'Value')};
 
 %initialize drop down list with different color orders
-path=which('PlotParamsGUI');
-path=strrep(path,'PlotParamsGUI.m','Plotting Colors');
-contents=cellstr(get(hObject,'String'));
-colorFile=contents{get(hObject,'Value')};
 if exist([colorPath filesep colorFile '.mat'], 'file') > 0
     colorData  = load([colorPath filesep colorFile]);
     fieldNames = fieldnames(colorData);
