@@ -48,7 +48,10 @@ compareAdaptationData(refParamsFile, newAdaptDataB, ...
 
 %% Variant C: recomputeParameters with a single parameter class
 % Use to scope a test to one parameter class (e.g., 'force', 'temporal',
-% 'spatial', 'EMG'). Faster than a full recompute.
+% 'spatial', 'EMG'). Faster than a full recompute. To test multiple
+% classes at once, pass a cell array as the third argument with []
+% placeholders for the first two, e.g.:
+%   expData.recomputeParameters([], [], {'force', 'spatial'})
 load(expDataFile, 'expData');
 expData = expData.recomputeParameters('force');
 newAdaptDataC = expData.makeDataObj();
