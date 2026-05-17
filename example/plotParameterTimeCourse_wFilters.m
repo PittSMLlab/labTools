@@ -1,9 +1,9 @@
-%This is an example on how to plot parameter time-courses using the
-%monoLS() filter to 'clean' the signal
+%PLOTPARAMETERTIMECOURSE_WFILTERS Example: parameter time courses with monotonic LS filter.
+%
+%   Demonstrates adaptationData.plotAvgTimeCourse with and without the
+% monoLS filter to smooth parameter signals. Assumes an adaptationData
+% object named 'adaptData' exists in the workspace.
 
-%PRe-requisite:
-%A variable named 'adaptData' of the adaptationData class needs to exist in
-%the workspace
 
 %Define parameters & conditions to be plotted: can be anything that exists
 %on adaptData!

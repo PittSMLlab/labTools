@@ -1,4 +1,12 @@
-%testSkeleton
+%TESTMARKEROUTLIERDETECTANDCORRECT Example: detect and correct marker outliers using skeleton models.
+%
+%   Demonstrates skeleton model learning (sk3Dlearn, skDistlearn),
+% outlier detection, and MLE-based reconstruction for a missing marker.
+% Uses the sample data in example/data/; LANK is missing for the first
+% ~30 seconds of the trial.
+%
+% See also SK3DLEARN, SKDISTLEARN, SK3DDETECT, SK3DENFORCE.
+
 %% Load data
 load('./data/LI16_Trial9_expData.mat')
 %This marker set is missing LANK during the first ~30secs of trial

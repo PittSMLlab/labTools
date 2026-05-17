@@ -1,10 +1,3 @@
-%This script shows how to plot individual behavior within a group for a
-%given subset of strides (e.g. last 40 of adaptation) or biographical
-%parameters (e.g. age).
-
-%Pre-req: a groupAdaptationData object needs to be loaded. Assuming its
-%name is gAdaptData
-
 fh=figure;
 for i=1:9
     ph(i)=subplot(3,3,i);
@@ -103,4 +96,10 @@ gAdaptData=gAdaptData.removeAltBias({'Adap'},20,5,1,diffFlag); %This removes the
 gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(9),regFlag,diffFlag);
 
 %% save fig
-saveFig(fh,'./','plotIndividualsInGroup')
+saveFig(fh,'./','plotIndividualsInGroup')%PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.
+%
+%   Demonstrates groupAdaptationData.plotIndividuals for comparing
+% parameters across conditions, correlating with biographical data,
+% and visualizing after-effects. Assumes 'gAdaptData' (and optionally
+% 'gAdaptData2' for Example 4) exists in the workspace.
+

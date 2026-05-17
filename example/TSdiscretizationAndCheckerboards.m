@@ -33,4 +33,9 @@ DTS2.plotCheckerboard
 
 %% Checkerboard of difference:
 DTS_=DTS-DTS2.mean;
-DTS_.plotCheckerboard
+DTS_.plotCheckerboard%TSDISCRETIZATIONANDCHECKERBOARDS Example: discretize and align time series; plot EMG checkerboards.
+%
+%   Demonstrates labTimeSeries discretization, stride alignment, and
+% checkerboard plotting for EMG data. Assumes 'expData' exists in the
+% workspace with procEMGData and gaitEvents on trials 4 and 6.
+

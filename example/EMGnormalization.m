@@ -1,4 +1,8 @@
-%Example on how to normalize EMG parameters in an automated fashion:
+%EMGNORMALIZATION Example: normalize EMG parameters to baseline.
+%
+%   Demonstrates automated EMG normalization using
+% adaptationData.normalizeToBaseline. Assumes an adaptationData object
+% named 'adaptData' exists in the workspace with EMG parameter data.
 
 %% Load adaptData object
 

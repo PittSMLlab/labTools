@@ -15,6 +15,18 @@ aux=rawExpData.data{trial}.markerData;
 [~,~,aux]=aux.assessMissing([],-1);
 
 %% Check if a model trained on it is good:
+%TESTMARKERHEALTHCHECK Example: validate marker data integrity.
+%
+%   Demonstrates marker model training, outlier detection, label-switch
+% correction, and gap filling. Assumes 'rawExpData' exists in the
+% workspace as an experimentData object loaded from a *RAW.mat file.
+%
+%   NOTE: Most functionality here is also wrapped in
+% experimentData.checkMarkerHealth.
+%
+% See also EXTRACTMARKERMODELS, BUILDNAIVEDISTANCESMODEL,
+%   VALIDATEMARKERMODEL.
+
 allTrialModels{trial} = buildNaiveDistancesModel(aux);
 %B: analyze fitted models.
 [badFlag,mirrorOutliers,outOfBoundsOutlier]=validateMarkerModel(allTrialModels{trial},true);

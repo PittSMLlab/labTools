@@ -1,5 +1,10 @@
 %% Load a labTS object
 lTS=allMarkers; %Change this line to something that works for you! lTS needs to be a labTimeSeries object
+%LABTSMANIPULATION Example: labTimeSeries operations.
+%
+%   Demonstrates derivative, integration, and label-based data access
+% for labTimeSeries objects. Assumes a labTimeSeries variable is
+% available in the workspace — replace 'allMarkers' with your own.
 
 %% See some properties
 lTS.sampPeriod %Sampling period
