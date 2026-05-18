@@ -14,7 +14,7 @@ No build system. All workflows are MATLAB-based:
 - **Study setup**: `gui/createStudy/uiCreateStudy`
 - **Gait event review**: `gui/eventReview/ReviewEventsGUI`
 - **Example workflows**: `example/` scripts
-- **Docs**: `m2html('mfiles','labTools','htmldir','doc/html','recursive','on','globalHypertextLinks','on')`
+- **Docs**: `m2html('mfiles','labTools','htmldir','labTools/doc','recursive','on','globalHypertextLinks','on')` (run from the labTools parent folder)
 
 No automated tests. Scripts in `example/` serve as manual integration
 tests.
