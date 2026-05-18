@@ -1,23 +1,3 @@
-%% Example 5: compare BASELINE behavior of one variable, to early post- of the same
-param={'netContributionNorm2'};
-medianFlag=1; %MEan used by default
-strideNo=[-40,20];
-conds={'Base','Wash'};
-exemptNo=5;
-regFlag=1;
-diffFlag=0;
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(5),regFlag,diffFlag);
-
-%% Example 6: compare BASELINE behavior of one variable, to CHANGE in early post WRT to baseline
-param={'netContributionNorm2'};
-medianFlag=1; %MEan used by default
-strideNo=[-40,20];
-conds={'Base','Wash'};
-exemptNo=5;
-regFlag=1;
-diffFlag=1;
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(6),regFlag,diffFlag);
-
 %% Example 7: on unbiased data, compare after-effects to bias behavior (same as example 6, but from data in which bias has been removed!)
 param={'netContributionNorm2','biasTMnetContributionNorm2'};
 medianFlag=1; %Mean used by default
@@ -108,4 +88,26 @@ gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
     medianFlag, ph(4), regFlag);
 gAdaptData2.plotIndividuals(param, conds, strideNo, exemptNo, ...
     medianFlag, ph(4), regFlag);
+
+%% Example 5: compare baseline to early post-adaptation
+param      = {'netContributionNorm2'};
+medianFlag = 1;
+strideNo   = [-40, 20];
+conds      = {'Base', 'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+diffFlag   = 0;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(5), regFlag, diffFlag);
+
+%% Example 6: baseline vs. change in early post-adaptation
+param      = {'netContributionNorm2'};
+medianFlag = 1;
+strideNo   = [-40, 20];
+conds      = {'Base', 'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+diffFlag   = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(6), regFlag, diffFlag);
 
