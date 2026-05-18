@@ -128,12 +128,12 @@ if handles.filename ~= 0
 
     aux=load([handles.Dir handles.filename]); %.mat file can only contain 1 variable, of the experimentData type
     if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
-
         %Enable things
     fieldNames = fieldnames(loaded);
     handles.varName = fieldNames{1};
 
     expData = loaded.(fieldNames{1});
+
         handles = enableFields(handles, 'plot_button', 'next_button', ...
             'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
             'BPdataType', 'BPfield', 'TPdataType', 'TPfield', 'timeSlider', ...
@@ -402,7 +402,6 @@ end
 
 % --- Executes on button press in maxCheck.
 function maxCheck_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of maxCheck
 global expData
 maxTime = ceil(expData.data{handles.idx}.gaitEvents.Time(end));
 set(handles.timeSlider, 'Enable', 'On');
@@ -450,50 +449,56 @@ if times(end) < handles.tstop || get(handles.maxCheck, 'Value')
     startSamp = max([1, endSamp - find(times <= handles.timeWindow, 1, 'last')]);
     last      = 1;
 else
-    %     disp(['using custom time scale']);
-    startSamp=max([1 find(times>=handles.tstart,1,'first')]);
-    endSamp=max([startSamp find(times<=handles.tstop,1,'last')]);
-    last=0;
-end
-
 time=times(startSamp:endSamp); %should be same as time=handles.tstart:TSdata.sampPeriod:handles.tstop
-set(axesHandle,'nextplot','replace')
-if length(fieldList{value})==2
     %get data to plot
-    FdataTS=TSdata.getDataAsTS(fieldList{value}{1});
-    SdataTS=TSdata.getDataAsTS(fieldList{value}{2});
-    if strcmp(dataType,'adaptParams')
-        label=fieldList{value}{1}(1:end-4);
         %plot data
-        bad=TSdata.bad(startSamp:endSamp);
-        badStrides=find(bad);
-        goodStrides=find(~bad);
         %found error 3/30/2016 this is plotting the same values regardless
         %of time scale, fixed
         %         plot(axesHandle,time(goodStrides),FdataTS.Data(goodStrides),'r.','MarkerSize',20);
-        plot(axesHandle,time(goodStrides),FdataTS.Data(startSamp+goodStrides),'r.','MarkerSize',20);
-        set(axesHandle,'nextplot','add')
         %         plot(axesHandle,time(goodStrides),SdataTS.Data(goodStrides),'b.','MarkerSize',20);
-        plot(axesHandle,time(goodStrides),SdataTS.Data(startSamp+goodStrides),'b.','MarkerSize',20);
-        legendEntries = {'Fast','Slow'};
-        if get(handles.showBadCheck,'Value')
-            plot(axesHandle,time(badStrides),FdataTS.Data(badStrides),'ro','MarkerSize',6);
-            plot(axesHandle,time(badStrides),SdataTS.Data(badStrides),'bo','MarkerSize',6);
-            legendEntries ={'Fast','Slow','Bad Fast','Bad Slow'};
+    startSamp = max([1, find(times >= handles.tstart, 1, 'first')]);
+    endSamp   = max([startSamp, find(times <= handles.tstop, 1, 'last')]);
+    last      = 0;
+end
+
+set(axesHandle, 'NextPlot', 'Replace')
+
+if length(fieldList{fieldIdx}) == 2
+    FdataTS = TSdata.getDataAsTS(fieldList{fieldIdx}{1});
+    SdataTS = TSdata.getDataAsTS(fieldList{fieldIdx}{2});
+
+    if strcmp(dataType, 'adaptParams')
+        label      = fieldList{fieldIdx}{1}(1:end - 4);
+        bad        = TSdata.bad(startSamp:endSamp);
+        badStrides  = find(bad);
+        goodStrides = find(~bad);
+        plot(axesHandle, time(goodStrides), ...
+            FdataTS.Data(startSamp + goodStrides), 'r.', 'MarkerSize', 20);
+        set(axesHandle, 'NextPlot', 'Add')
+        plot(axesHandle, time(goodStrides), ...
+            SdataTS.Data(startSamp + goodStrides), 'b.', 'MarkerSize', 20);
+        legendEntries = {'Fast', 'Slow'};
+        if get(handles.showBadCheck, 'Value')
+            plot(axesHandle, time(badStrides), ...
+                FdataTS.Data(badStrides), 'ro', 'MarkerSize', 6);
+            plot(axesHandle, time(badStrides), ...
+                SdataTS.Data(badStrides), 'bo', 'MarkerSize', 6);
+            legendEntries = {'Fast', 'Slow', 'Bad Fast', 'Bad Slow'};
         end
         % Events are not overlaid on adaptParams plots
     else
-        label=fieldList{value}{1}(2:end);
-        %plot data
-        plot(axesHandle,time,FdataTS.Data(startSamp:endSamp),'r');
-        set(axesHandle,'nextplot','add')
-        plot(axesHandle,time,SdataTS.Data(startSamp:endSamp),'b');
-        legendEntries = {'Fast','Slow'};
-        %Events to plot:
-        events=handles.trialEvents;
-        %event correction factor:
-        % TO DO: use a method to make sampling frequencies equivalent instead of using ECF.
-        ECF = events.sampFreq/TSdata.sampFreq;
+        label = fieldList{fieldIdx}{1}(2:end);
+        plot(axesHandle, time, FdataTS.Data(startSamp:endSamp), 'r');
+        set(axesHandle, 'NextPlot', 'Add')
+        plot(axesHandle, time, SdataTS.Data(startSamp:endSamp), 'b');
+        legendEntries = {'Fast', 'Slow'};
+
+        % Build a struct of event times for the visible window.
+        % ECF corrects for sampling frequency mismatch between events and data.
+        % TODO: replace ECF with a resampling method on events.
+        events     = handles.trialEvents;
+        ECF        = events.sampFreq / TSdata.sampFreq;
+        eventTimes = struct();
         for ii = 1:length(events.labels)
             evData = events.getDataAsVector(events.labels{ii});
             eventTimes.(events.labels{ii}) = times(startSamp) + ...
@@ -501,46 +506,47 @@ if length(fieldList{value})==2
                     ceil((startSamp - 1) .* ECF + 1) : ...
                     floor((endSamp - 1) .* ECF + 1)) == 1);
         end
-        %Overlay events (only those in the time window...otherwise there
-        %will be warnings for the extra legend entries
         if eval(['~isempty(',handles.fast,'HStimes)'])
             eval(['plot(axesHandle,',type,handles.fast,'HStimes,FdataTS.getSample(',type,handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
-            legendEntries{end+1}='FHS';
+
+        % Overlay events; only events in the time window are plotted to
+        % avoid spurious legend entries from empty marker calls.
         type = handles.type;
         fastHStimes = eventTimes.([type handles.fast 'HS']);
         fastTOtimes = eventTimes.([type handles.fast 'TO']);
         slowHStimes = eventTimes.([type handles.slow 'HS']);
         slowTOtimes = eventTimes.([type handles.slow 'TO']);
+            legendEntries{end + 1} = 'FHS';
         end
             eval(['plot(axesHandle,',type,handles.fast,'TOtimes,FdataTS.getSample(',type,handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
         if ~isempty(fastTOtimes)
             legendEntries{end + 1} = 'FTO';
         end
             eval(['plot(axesHandle,',type,handles.slow,'HStimes,SdataTS.getSample(',type,handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
-            legendEntries{end+1}='SHS';
         if ~isempty(slowHStimes)
+            legendEntries{end + 1} = 'SHS';
         end
         if eval(['~isempty(',handles.slow,'TOtimes)'])
             eval(['plot(axesHandle,',type,handles.slow,'TOtimes,SdataTS.getSample(',type,handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
-            legendEntries{end+1}='STO';
+            legendEntries{end + 1} = 'STO';
         end
     end
 else
-    %get data to plot
     label  = fieldList{fieldIdx};
     dataTS = TSdata.getDataAsTS(fieldList{fieldIdx});
     legendEntries = {'data'};
-    %plot data
-    if strcmp(dataType,'adaptParams')
-        %plot data
-        bad=TSdata.bad(startSamp:endSamp);
-        badStrides=find(bad);
-        goodStrides=find(~bad);
-        plot(axesHandle,time(goodStrides),dataTS.Data(startSamp+goodStrides),'b.','MarkerSize',20);
-        set(axesHandle,'nextplot','add')
-        if get(handles.showBadCheck,'Value')
-            plot(axesHandle,time(badStrides),dataTS.Data(startSamp+badStrides),'bo','MarkerSize',6);
-            legendEntries ={'data','bad data'};
+
+    if strcmp(dataType, 'adaptParams')
+        bad        = TSdata.bad(startSamp:endSamp);
+        badStrides  = find(bad);
+        goodStrides = find(~bad);
+        plot(axesHandle, time(goodStrides), ...
+            dataTS.Data(startSamp + goodStrides), 'b.', 'MarkerSize', 20);
+        set(axesHandle, 'NextPlot', 'Add')
+        if get(handles.showBadCheck, 'Value')
+            plot(axesHandle, time(badStrides), ...
+                dataTS.Data(startSamp + badStrides), 'bo', 'MarkerSize', 6);
+            legendEntries = {'data', 'bad data'};
         end
     else
         plot(axesHandle, time, dataTS.Data(startSamp:endSamp), 'b');
@@ -552,7 +558,6 @@ set(axesHandle, 'XLim', [handles.tstart handles.tstop]);
 legendHandle = legend(axesHandle, legendEntries);
 set(legendHandle, 'FontSize', 6)
 
-%Clear vars:
 clear RHS* LHS* LTO* RTO* events time
 title(axesHandle, [label, ' ', dataType, ' Trial ', num2str(handles.idx)])
 end
@@ -654,7 +659,6 @@ expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
 expData.data{handles.idx}.adaptParams = calcParameters( ...
     expData.data{handles.idx}, expData.subData);
 
-%Re-plot
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 
@@ -685,7 +689,6 @@ expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
 expData.data{handles.idx}.adaptParams = calcParameters( ...
     expData.data{handles.idx}, expData.subData, handles.type);
 
-%Re-plot
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -710,8 +713,6 @@ end
 
 % --- Executes on selection change in eventType.
 function eventType_Callback(hObject, eventdata, handles)
-% Hints: contents = cellstr(get(hObject,'String')) returns eventType contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from eventType
 global expData
 
 %Select location
@@ -729,7 +730,6 @@ expData.data{handles.idx}.adaptParams = calcParameters( ...
 set(hObject, 'Enable', 'Off');
 guidata(hObject, handles)
 
-%Re-plot
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
@@ -746,16 +746,16 @@ axes(handles.axes1)
 [x, ~] = ginput;
 
 for ii = 1:length(x)
-    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(ii);
-    [~,loc]=min(abs(deltaT));
     %update 'bad' and 'good'
     if all(boolFlag)
         expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false];
     else
         expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[true, false];
     end
+    deltaT    = expData.data{handles.idx}.adaptParams.hiddenTime - x(ii);
+    [~, loc]  = min(abs(deltaT));
 end
-%Re-plot
+
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -776,7 +776,7 @@ for ii = 1:length(x)
     [~, loc] = min(abs(deltaT));
     expData.data{handles.idx}.adaptParams.Data(loc, idxs) = [false, true];
 end
-%Re-plot
+
 guidata(hObject, handles)
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -820,33 +820,32 @@ handles = disableFields(handles, 'plot_button', 'next_button', 'back_button', ..
 set(handles.write, 'String', 'Writing...');
 drawnow
 
-%Write to disk
-eval([handles.varName '=expData;']); %Assigning same var name
 %eval(['save(''' handles.Dir handles.filename ''',''' handles.varName
 %''');']); %PI: replaced this with the line below on 28/4/2015
-save([handles.Dir handles.filename],handles.varName,'-v7.3');%Saving with same var name
-handles.changed=false;
-handles.saved=true;
-
-%re-create adaptation parameters object
 %expData=expData.recomputeParameters; %% HH: I don't think this is necessary, should have already been re-computed earlier.
-adaptData=expData.makeDataObj([handles.Dir handles.filename(1:end-4)]);
 % eval(['save(''' handles.Dir handles.filename(1:end-4) 'params' ''',''adaptData'');']); %Saving with same var name --> No longer needed, makeDataObj method automatically saves file.
-
 %Enable everything
-handles=enableFields(handles,'plot_button','next_button','back_button',...
-    'delete_button','deleteNbutton','save_button','add_button','BPdataType',...
-    'BPfield','TPdataType','TPfield','condMenu','timeSlider','maxCheck',...
-    'trialMenu','defaultRadio','labelBadButton','labelGoodButton');
-if length(expData.data{end}.gaitEvents.labels)==12
-    set(handles.kinematicRadio,'Enable','on');
-    set(handles.forceRadio,'Enable','on');
+% Save expData under its original workspace variable name
+saveData.(handles.varName) = expData;
+save([handles.Dir handles.filename], '-struct', 'saveData', '-v7.3');
+handles.changed = false;
+handles.saved   = true;
+
+% Regenerate the *params.mat adaptationData file
+adaptData = expData.makeDataObj([handles.Dir handles.filename(1:end - 4)]); %#ok<NASGU>
+
+handles = enableFields(handles, 'plot_button', 'next_button', 'back_button', ...
+    'delete_button', 'deleteNbutton', 'save_button', 'add_button', 'BPdataType', ...
+    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'timeSlider', 'maxCheck', ...
+    'trialMenu', 'defaultRadio', 'labelBadButton', 'labelGoodButton');
+if length(expData.data{end}.gaitEvents.labels) == 12
+    set(handles.kinematicRadio, 'Enable', 'On');
+    set(handles.forceRadio,     'Enable', 'On');
 end
-set(handles.write,'String', 'Write to disk');
+set(handles.write, 'String', 'Write to disk');
 guidata(hObject, handles);
 
 end
-
 
 %% ---------------------------CLOSING---------------------------------
 
@@ -854,26 +853,25 @@ end
 function GUI_window_CloseRequestFcn(hObject, eventdata, handles)
 
 %See if subject file should be saved before closing
-if ~handles.changed && isfield(handles,'filename') && ~handles.saved
-    choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
-        'ReviewEventsGUI', ...
-        'Save','Don''t Save','Cancel','Save');
+if ~handles.changed && isfield(handles, 'filename') && ~handles.saved
+    choice = questdlg( ...
+        ['Do you want to save changes made to ', handles.filename, '?'], ...
+        'ReviewEventsGUI', 'Save', 'Don''t Save', 'Cancel', 'Save');
     switch choice
         case 'Save'
-            handles.changed=true;
+            handles.changed = true;
         case 'Don''t Save'
-            handles.changed=false;
-        case {'Cancel',''}
+            handles.changed = false;
+        case {'Cancel', ''}
             return
     end
 end
 
 if handles.changed
-    write_Callback(handles.write,eventdata,handles)
+    write_Callback(handles.write, eventdata, handles)
 end
 
 guidata(hObject, handles);
-% Hint: delete(hObject) closes the figure
 delete(handles.output);
 end
 
@@ -888,64 +886,65 @@ end
 %       See ISPC and COMPUTER.
 
 function directory_CreateFcn(hObject, eventdata, handles)
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-    set(hObject,'String','./');
+if ispc && isequal(get(hObject, 'BackgroundColor'), ...
+        get(0, 'defaultUicontrolBackgroundColor'))
+    set(hObject, 'BackgroundColor', 'White');
+    set(hObject, 'String', './');
 end
 end
 
 function subject_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function condMenu_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function trialMenu_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function TPfield_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function TPdataType_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function BPdataType_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function BPfield_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function eventType_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+    set(hObject,'BackgroundColor','White');
 end
 end
 
 function timeSlider_CreateFcn(hObject, eventdata, handles)
 % Hint: slider controls usually have a light gray background.
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor',[.9 .9 .9]);
+    set(hObject, 'BackgroundColor', [0.9 0.9 0.9]);
 end
 end
 
