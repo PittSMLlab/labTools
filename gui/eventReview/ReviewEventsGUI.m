@@ -93,11 +93,11 @@ end
 
 function uiOpenFile_ClickedCallback(hObject, eventdata, handles)
 
-%If a subject's file is currently open, ask to save.
-if isfield(handles,'filename') && ~handles.changed && ~handles.saved
-    choice = questdlg(['Do you want to save changes made to ',handles.filename,'?'], ...
-        'ReviewEventsGUI', ...
-        'Save','Don''t Save','Cancel','Save');
+% If a subject file is already open, ask to save before switching.
+if isfield(handles, 'filename') && ~handles.changed && ~handles.saved
+    choice = questdlg( ...
+        ['Do you want to save changes made to ', handles.filename, '?'], ...
+        'ReviewEventsGUI', 'Save', 'Don''t Save', 'Cancel', 'Save');
     switch choice
         case 'Save'
             handles.changed = true;
@@ -118,40 +118,44 @@ if handles.filename ~= 0
     global expData
 
     %Disable everything
-    handles=disableFields(handles,'plot_button','next_button','back_button',...
-        'delete_button','deleteNbutton','save_button','add_button',...
-        'BPdataType','BPfield','TPdataType','TPfield','condMenu','trialMenu',...
-        'timeSlider','maxCheck','defaultRadio','kinematicRadio','forceRadio',...
-        'labelBadButton','labelGoodButton','showBadCheck');
+    handles = disableFields(handles, 'plot_button', 'next_button', ...
+        'back_button', 'delete_button', 'deleteNbutton', 'save_button', ...
+        'add_button', 'BPdataType', 'BPfield', 'TPdataType', 'TPfield', ...
+        'condMenu', 'trialMenu', 'timeSlider', 'maxCheck', 'defaultRadio', ...
+        'kinematicRadio', 'forceRadio', 'labelBadButton', 'labelGoodButton', ...
+        'showBadCheck');
     drawnow
 
     aux=load([handles.Dir handles.filename]); %.mat file can only contain 1 variable, of the experimentData type
-    fieldNames=fields(aux);
-    handles.varName=fieldNames{1};
-
-    expData=aux.(fieldNames{1});
     if isa(expData,'experimentData') && expData.isProcessed %if not processed, there will be no events to review
 
         %Enable things
-        handles=enableFields(handles,'plot_button','next_button','delete_button',...
-            'deleteNbutton','save_button','add_button','BPdataType','BPfield',...
-            'TPdataType','TPfield','timeSlider','maxCheck','defaultRadio',...
-            'showBadCheck','condMenu','labelBadButton','labelGoodButton');
-        if length(expData.data{end}.gaitEvents.labels)==12
-            set(handles.kinematicRadio,'Enable','on');
-            set(handles.forceRadio,'Enable','on');
+    fieldNames = fieldnames(loaded);
+    handles.varName = fieldNames{1};
+
+    expData = loaded.(fieldNames{1});
+        handles = enableFields(handles, 'plot_button', 'next_button', ...
+            'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
+            'BPdataType', 'BPfield', 'TPdataType', 'TPfield', 'timeSlider', ...
+            'maxCheck', 'defaultRadio', 'showBadCheck', 'condMenu', ...
+            'labelBadButton', 'labelGoodButton');
+        if length(expData.data{end}.gaitEvents.labels) == 12
+            set(handles.kinematicRadio, 'Enable', 'On');
+            set(handles.forceRadio,     'Enable', 'On');
         end
 
         %initialize condition menu:
         condDes = expData.metaData.conditionName;
         set(handles.condMenu, 'String',condDes(~cellfun('isempty',condDes))); %this is for the case when a condition number was skipped
-        set(handles.condMenu, 'Value',1);
-        set(handles.trialMenu,'Value',1);
+        set(handles.condMenu,  'Value', 1);
+        set(handles.trialMenu, 'Value', 1);
         guidata(hObject, handles);
         condMenu_Callback(handles.condMenu, [], handles);
     else
-        h_error=errordlg('Subject file must contain a processed object of the class ''experimentData''','Subject Error');
-        waitfor(h_error)
+        errHandle = errordlg( ...
+            ['Subject file must contain a processed object of the ' ...
+            'class ''experimentData'''], 'Subject Error');
+        waitfor(errHandle)
     end
 end
 end
@@ -174,29 +178,33 @@ condOptions    = get(hObject, 'String');
 condStr        = condOptions(get(hObject, 'Value'));
 handles.Condition = find(strcmp(expData.metaData.conditionName, condStr));
 
-s={};
-for ii = 1:length(expData.metaData.trialsInCondition{handles.Condition})
-    s{ii}=num2str(expData.metaData.trialsInCondition{handles.Condition}(ii));
+trialNums = expData.metaData.trialsInCondition{handles.Condition};
+trialStr  = {};
+for ii = 1:length(trialNums)
+    trialStr{ii} = num2str(trialNums(ii));
 end
-if isempty(s)
+
+if isempty(trialStr)
     cla(handles.axes1)
     cla(handles.axes2)
     %Disable everything (besides condMenu)
-    handles=disableFields(handles,'plot_button','next_button','back_button',...
-        'delete_button','deleteNbutton','save_button','add_button',...
-        'BPdataType','BPfield','TPdataType','TPfield','trialMenu',...
-        'timeSlider','maxCheck','defaultRadio','kinematicRadio','forceRadio',...
-        'labelBadButton','labelGoodButton','showBadCheck');
+    handles = disableFields(handles, 'plot_button', 'next_button', ...
+        'back_button', 'delete_button', 'deleteNbutton', 'save_button', ...
+        'add_button', 'BPdataType', 'BPfield', 'TPdataType', 'TPfield', ...
+        'trialMenu', 'timeSlider', 'maxCheck', 'defaultRadio', ...
+        'kinematicRadio', 'forceRadio', 'labelBadButton', 'labelGoodButton', ...
+        'showBadCheck');
     drawnow
 else
     %enable everything
-    handles=enableFields(handles,'plot_button','next_button','delete_button',...
-        'deleteNbutton','save_button','add_button','BPdataType','BPfield',...
-        'TPdataType','TPfield','trialMenu','timeSlider','maxCheck','trialMenu',...
-        'defaultRadio','showBadCheck','labelBadButton','labelGoodButton');
-    if length(expData.data{end}.gaitEvents.labels)==12
-        set(handles.kinematicRadio, 'Enable', 'on');
-        set(handles.forceRadio,     'Enable', 'on');
+    handles = enableFields(handles, 'plot_button', 'next_button', ...
+        'delete_button', 'deleteNbutton', 'save_button', 'add_button', ...
+        'BPdataType', 'BPfield', 'TPdataType', 'TPfield', 'trialMenu', ...
+        'timeSlider', 'maxCheck', 'defaultRadio', 'showBadCheck', ...
+        'labelBadButton', 'labelGoodButton');
+    if length(expData.data{end}.gaitEvents.labels) == 12
+        set(handles.kinematicRadio, 'Enable', 'On');
+        set(handles.forceRadio,     'Enable', 'On');
     end
     set(handles.trialMenu, 'String', trialStr);
     if handles.backButtonFlag
@@ -226,10 +234,12 @@ else
 end
 
 global expData
-handles.idx=expData.metaData.trialsInCondition{handles.Condition}(get(hObject,'Value'));
-handles.TSlist={};
-handles.trialEvents=expData.data{handles.idx}.gaitEvents;
 %determine reference leg
+handles.idx = expData.metaData.trialsInCondition{handles.Condition}( ...
+    get(hObject, 'Value'));
+handles.TSlist      = {};
+handles.trialEvents = expData.data{handles.idx}.gaitEvents;
+
 if expData.data{handles.idx}.metaData.refLeg == 'R'
     handles.slow = 'R';
     handles.fast = 'L';
@@ -238,43 +248,49 @@ else
     handles.fast = 'R';
 end
 % get condition description and any observations
-set(handles.condDescripText,'String',expData.data{handles.idx}.metaData.description)
-set(handles.observationText,'String',['Observations: ' expData.data{handles.idx}.metaData.observations])
-set(handles.write,'Enable','off')
-fieldList=fields(expData.data{handles.idx});
+
+set(handles.condDescripText, 'String', ...
+    expData.data{handles.idx}.metaData.description)
+set(handles.observationText, 'String', ...
+    ['Observations: ' expData.data{handles.idx}.metaData.observations])
+set(handles.write, 'Enable', 'Off')
+
+fieldList = fieldnames(expData.data{handles.idx});
 for ii = 1:length(fieldList)
-    eval(['curField=expData.data{handles.idx}.' fieldList{ii} ';']);
+    curField = expData.data{handles.idx}.(fieldList{ii});
     if isa(curField, 'labTimeSeries')
         handles.TSlist{end + 1} = fieldList{ii};
     end
 end
 clear curField fieldList
-set(handles.BPdataType,'String',handles.TSlist);
-set(handles.TPdataType,'String',handles.TSlist);
-if get(handles.BPdataType,'Value')>length(get(handles.BPdataType,'String'))
-    set(handles.BPdataType,'Value',1);
-end
-if get(handles.TPdataType,'Value')>length(get(handles.TPdataType,'String'))
-    set(handles.TPdataType,'Value',1);
-end
 %initialize start/stop times to plot
-set(handles.minText,'String','1')
-maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
-TW=round(get(handles.timeSlider,'Value'));
-if TW>maxTime || get(handles.maxCheck,'Value')
-    handles.timeWindow=maxTime;
-    handles.tstop=maxTime;
-    set(handles.timeSlider,'Value',maxTime);
+
+set(handles.BPdataType, 'String', handles.TSlist);
+set(handles.TPdataType, 'String', handles.TSlist);
+if get(handles.BPdataType, 'Value') > length(get(handles.BPdataType, 'String'))
+    set(handles.BPdataType, 'Value', 1);
+end
+if get(handles.TPdataType, 'Value') > length(get(handles.TPdataType, 'String'))
+    set(handles.TPdataType, 'Value', 1);
+end
+
+set(handles.minText, 'String', '1')
+maxTime = ceil(expData.data{handles.idx}.gaitEvents.Time(end));
+TW      = round(get(handles.timeSlider, 'Value'));
+if TW > maxTime || get(handles.maxCheck, 'Value')
+    handles.timeWindow = maxTime;
+    handles.tstop      = maxTime;
+    set(handles.timeSlider, 'Value', maxTime);
 else
     handles.timeWindow = TW;
     handles.tstop      = TW;
 end
-set(handles.maxText,'String',num2str(maxTime));
-set(handles.timeSlider,'Max',maxTime);
 set(handles.timeSlider,'SliderStep',[1/(maxTime-1) 1/(maxTime-1)]) %1 is the lower limit
-handles.tstart=0;
-set(handles.timeWindowText,'String',handles.timeWindow);
-TPdataType_Callback(handles.TPdataType,eventdata,handles);
+set(handles.maxText,        'String', num2str(maxTime));
+set(handles.timeSlider,     'Max',    maxTime);
+handles.tstart = 0;
+set(handles.timeWindowText, 'String', handles.timeWindow);
+TPdataType_Callback(handles.TPdataType, eventdata, handles);
 end
 
 %% -------------------------Data Selection -------------------------------
@@ -303,8 +319,8 @@ function plotFields = makeFieldList(hObject, handles, fieldListHandle)
 
 global expData
 
-fields={};
 curTS        = expData.data{handles.idx}.(handles.TSlist{get(hObject, 'Value')});
+fieldOptions = {};
 plotFields   = {};
 set(fieldListHandle, 'Enable', 'On')
 
@@ -312,47 +328,49 @@ set(fieldListHandle, 'Enable', 'On')
 % pairs into single drop-down options. Two parallel cells are built:
 % fieldOptions (display labels) and plotFields (data labels to plot).
 for ii = 1:length(curTS.labels)
-    if strcmp(curTS.labels{ii}(1),handles.fast) %'L' or 'R'
-        if any(strcmp(curTS.labels,[handles.slow,curTS.labels{ii}(2:end)])) %check there is a corresponding slow label
-            if length(curTS.labels)==2 %case where there is only two labels (matlab doesn't like dropdown menus with only one option)
-                set(fieldListHandle,'Enable','off')
-                set(fieldListHandle,'Value',1)
-                fields = {'',''};
-                plotFields{end+1} = {curTS.labels{ii},[handles.slow,curTS.labels{ii}(2:end)]};
-            elseif length(curTS.labels{ii}) == 1 % just 'R' or 'L' (beltspeedreadData for ex)
-                fields=handles.TSlist{get(hObject,'Value')};
-                plotFields{end+1} = {handles.fast,handles.slow};
+    if strcmp(curTS.labels{ii}(1), handles.fast)   % fast-leg prefix ('L' or 'R')
+        slowLabel = [handles.slow, curTS.labels{ii}(2:end)];
+        if any(strcmp(curTS.labels, slowLabel))     % matching slow label exists
+            if length(curTS.labels) == 2
+                % Only two labels: MATLAB disallows a single-item dropdown
+                set(fieldListHandle, 'Enable', 'Off')
+                set(fieldListHandle, 'Value', 1)
+                fieldOptions         = {'', ''};
+                plotFields{end + 1}  = {curTS.labels{ii}, slowLabel};
+            elseif length(curTS.labels{ii}) == 1   % bare 'R' or 'L' (belt speed)
+                fieldOptions         = handles.TSlist{get(hObject, 'Value')};
+                plotFields{end + 1}  = {handles.fast, handles.slow};
             else
-                fields{end+1}=curTS.labels{ii}(2:end);
-                plotFields{end+1} = {curTS.labels{ii},[handles.slow,curTS.labels{ii}(2:end)]};
+                fieldOptions{end + 1} = curTS.labels{ii}(2:end);
+                plotFields{end + 1}   = {curTS.labels{ii}, slowLabel};
             end
         else
-            %slow label is missing
-            fields{end+1}=strrep(curTS.labels{ii},handles.fast,'F');
-            plotFields{end+1} = curTS.labels{ii};
+            % Slow label is missing — flag with 'F' prefix
+            fieldOptions{end + 1} = strrep(curTS.labels{ii}, handles.fast, 'F');
+            plotFields{end + 1}   = curTS.labels{ii};
         end
-    elseif strcmp(curTS.labels{ii}(1),handles.slow)
-        if ~any(strcmp(curTS.labels,[handles.fast,curTS.labels{ii}(2:end)]))
-            %fast label is missing
-            fields{end+1}=strrep(curTS.labels{ii},handles.slow,'S');
-            plotFields{end+1}=curTS.labels{ii};
-        else
-            % already have a slow label so do nothing
+    elseif strcmp(curTS.labels{ii}(1), handles.slow)
+        if ~any(strcmp(curTS.labels, [handles.fast, curTS.labels{ii}(2:end)]))
+            % Fast label is missing — flag with 'S' prefix
+            fieldOptions{end + 1} = strrep(curTS.labels{ii}, handles.slow, 'S');
+            plotFields{end + 1}   = curTS.labels{ii};
         end
-    elseif strcmpi(curTS.labels{ii}(max([end-3 1]):end),'Fast')
-        fields{end+1}=curTS.labels{ii}(1:end-4);
-        plotFields{end+1} = {curTS.labels{ii},[curTS.labels{ii}(1:end-4),'Slow']};
-    elseif strcmpi(curTS.labels{ii}(max([end-3 1]):end),'Slow')
-        %assume we also have a fast label and do nothing
+        % else: fast counterpart already added — skip
+    elseif strcmpi(curTS.labels{ii}(max([end - 3, 1]):end), 'Fast')
+        fieldOptions{end + 1} = curTS.labels{ii}(1:end - 4);
+        plotFields{end + 1}   = {curTS.labels{ii}, ...
+            [curTS.labels{ii}(1:end - 4), 'Slow']};
+    elseif strcmpi(curTS.labels{ii}(max([end - 3, 1]):end), 'Slow')
+        % Assume a 'Fast' counterpart already handled — skip
     else
-        fields{end+1}=curTS.labels{ii};
+        fieldOptions{end + 1} = curTS.labels{ii};
         plotFields{end + 1}   = curTS.labels{ii};
     end
 end
 
-set(fieldListHandle,'String',fields);
-if get(fieldListHandle,'Value')>length(get(fieldListHandle,'String'))
-    set(fieldListHandle,'Value',1);
+set(fieldListHandle, 'String', fieldOptions);
+if get(fieldListHandle, 'Value') > length(get(fieldListHandle, 'String'))
+    set(fieldListHandle, 'Value', 1);
 end
 clear curTS
 guidata(hObject, handles)
@@ -363,7 +381,7 @@ end
 
 % --- Executes on slider movement.
 function timeSlider_Callback(hObject, eventdata, handles)
-handles.timeWindow=round(get(hObject,'Value'));
+handles.timeWindow = round(get(hObject, 'Value'));
 
 % % % %to make zoomed-in time window start in middle of previous time window: % % % %
 % timeToAdd=handles.timeWindow-(handles.tstop-handles.tstart);
@@ -386,14 +404,14 @@ end
 function maxCheck_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of maxCheck
 global expData
-maxTime=ceil(expData.data{handles.idx}.gaitEvents.Time(end));
-set(handles.timeSlider,'Enable','on');
-if get(handles.maxCheck,'Value')
-    handles.timeWindow=maxTime;
-    handles.tstop=maxTime;
-    set(handles.timeSlider,'Value',maxTime);
-    set(handles.timeWindowText,'String',handles.timeWindow);
-    set(handles.timeSlider,'Enable','off');
+maxTime = ceil(expData.data{handles.idx}.gaitEvents.Time(end));
+set(handles.timeSlider, 'Enable', 'On');
+if get(handles.maxCheck, 'Value')
+    handles.timeWindow = maxTime;
+    handles.tstop      = maxTime;
+    set(handles.timeSlider,     'Value',  maxTime);
+    set(handles.timeWindowText, 'String', handles.timeWindow);
+    set(handles.timeSlider,     'Enable', 'Off');
 end
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -417,7 +435,7 @@ linkaxes([handles.axes1, handles.axes2], 'x')
 
 global expData
 
-value=get(fieldHandle,'Value');
+fieldIdx = get(fieldHandle, 'Value');
 dataType = handles.TSlist{get(dataTypeHandle, 'Value')};
 
 TSdata = expData.data{handles.idx}.(dataType);
@@ -477,23 +495,30 @@ if length(fieldList{value})==2
         % TO DO: use a method to make sampling frequencies equivalent instead of using ECF.
         ECF = events.sampFreq/TSdata.sampFreq;
         for ii = 1:length(events.labels)
-            data=events.getDataAsVector(events.labels{ii});
-            eval([events.labels{ii} 'times=times(startSamp)+events.Time(data(ceil((startSamp-1).*ECF+1):floor((endSamp-1).*ECF+1))==1);'])
+            evData = events.getDataAsVector(events.labels{ii});
+            eventTimes.(events.labels{ii}) = times(startSamp) + ...
+                events.Time(evData( ...
+                    ceil((startSamp - 1) .* ECF + 1) : ...
+                    floor((endSamp - 1) .* ECF + 1)) == 1);
         end
         %Overlay events (only those in the time window...otherwise there
         %will be warnings for the extra legend entries
-        type=handles.type;
         if eval(['~isempty(',handles.fast,'HStimes)'])
             eval(['plot(axesHandle,',type,handles.fast,'HStimes,FdataTS.getSample(',type,handles.fast,'HStimes),''kx'',''LineWidth'',2);'])
             legendEntries{end+1}='FHS';
+        type = handles.type;
+        fastHStimes = eventTimes.([type handles.fast 'HS']);
+        fastTOtimes = eventTimes.([type handles.fast 'TO']);
+        slowHStimes = eventTimes.([type handles.slow 'HS']);
+        slowTOtimes = eventTimes.([type handles.slow 'TO']);
         end
-        if eval(['~isempty(',handles.fast,'TOtimes)'])
             eval(['plot(axesHandle,',type,handles.fast,'TOtimes,FdataTS.getSample(',type,handles.fast,'TOtimes),''ks'',''LineWidth'',2);'])
-            legendEntries{end+1}='FTO';
+        if ~isempty(fastTOtimes)
+            legendEntries{end + 1} = 'FTO';
         end
-        if eval(['~isempty(',handles.slow,'HStimes)'])
             eval(['plot(axesHandle,',type,handles.slow,'HStimes,SdataTS.getSample(',type,handles.slow,'HStimes),''ko'',''LineWidth'',2);'])
             legendEntries{end+1}='SHS';
+        if ~isempty(slowHStimes)
         end
         if eval(['~isempty(',handles.slow,'TOtimes)'])
             eval(['plot(axesHandle,',type,handles.slow,'TOtimes,SdataTS.getSample(',type,handles.slow,'TOtimes),''k*'',''LineWidth'',2);'])
@@ -502,8 +527,8 @@ if length(fieldList{value})==2
     end
 else
     %get data to plot
-    label=fieldList{value};
-    dataTS=TSdata.getDataAsTS(fieldList{value});
+    label  = fieldList{fieldIdx};
+    dataTS = TSdata.getDataAsTS(fieldList{fieldIdx});
     legendEntries = {'data'};
     %plot data
     if strcmp(dataType,'adaptParams')
@@ -518,62 +543,61 @@ else
             legendEntries ={'data','bad data'};
         end
     else
-        plot(axesHandle,time,dataTS.Data(startSamp:endSamp),'b');
-        set(axesHandle,'nextplot','add')
+        plot(axesHandle, time, dataTS.Data(startSamp:endSamp), 'b');
+        set(axesHandle, 'NextPlot', 'Add')
     end
 end
-set(axesHandle,'XLim',[handles.tstart handles.tstop]);
-h_legend = legend(axesHandle,legendEntries);
-set(h_legend,'FontSize',6)
 
-title(axesHandle,[label,' ',dataType,' Trial ',num2str(handles.idx)])
+set(axesHandle, 'XLim', [handles.tstart handles.tstop]);
+legendHandle = legend(axesHandle, legendEntries);
+set(legendHandle, 'FontSize', 6)
 
 %Clear vars:
 clear RHS* LHS* LTO* RTO* events time
+title(axesHandle, [label, ' ', dataType, ' Trial ', num2str(handles.idx)])
 end
 
 % --- Executes on button press in next_button.
 function next_button_Callback(hObject, eventdata, handles)
 
-set(handles.back_button,'Enable','on')
+set(handles.back_button, 'Enable', 'On')
 if handles.last
-    if length(get(handles.trialMenu,'String'))>get(handles.trialMenu,'Value')
         set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')+1); %Add one to current trial, does this update what the GUI shows?
+    if length(get(handles.trialMenu, 'String')) > get(handles.trialMenu, 'Value')
         trialMenu_Callback(handles.trialMenu, eventdata, handles)
-    elseif get(handles.condMenu,'Value')<length(get(handles.condMenu,'String'))
-        set(handles.condMenu,'Value',get(handles.condMenu,'Value')+1);
-        set(handles.trialMenu,'Value',1);
+    elseif get(handles.condMenu, 'Value') < length(get(handles.condMenu, 'String'))
+        set(handles.condMenu,  'Value', get(handles.condMenu, 'Value') + 1);
+        set(handles.trialMenu, 'Value', 1);
         condMenu_Callback(handles.condMenu, eventdata, handles)
     else
-        set(hObject,'Enable','off')
+        set(hObject, 'Enable', 'Off')
         guidata(hObject, handles)
     end
 else
-    handles.tstart=handles.tstart+handles.timeWindow;
-    handles.tstop=handles.tstop+handles.timeWindow;
+    handles.tstart = handles.tstart + handles.timeWindow;
+    handles.tstop  = handles.tstop  + handles.timeWindow;
     plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
 end
-
 
 % --- Executes on button press in back_button.
 function back_button_Callback(hObject, eventdata, handles)
 
-set(handles.next_button,'Enable','on')
-if handles.tstart>0
-    handles.tstart=handles.tstart-handles.timeWindow;
-    handles.tstop=handles.tstop-handles.timeWindow;
+set(handles.next_button, 'Enable', 'On')
+if handles.tstart > 0
+    handles.tstart = handles.tstart - handles.timeWindow;
+    handles.tstop  = handles.tstop  - handles.timeWindow;
     plot_button_Callback(handles.plot_button, eventdata, handles)
-elseif get(handles.trialMenu,'Value')>1
     set(handles.trialMenu,'Value',get(handles.trialMenu,'Value')-1); %Add one to current trial, does this update what the GUI shows?
+elseif get(handles.trialMenu, 'Value') > 1
     trialMenu_Callback(handles.trialMenu, eventdata, handles)
-elseif get(handles.condMenu,'Value')>1
-    set(handles.condMenu,'Value',get(handles.condMenu,'Value')-1);
-    handles.backButtonFlag=true;
+elseif get(handles.condMenu, 'Value') > 1
+    set(handles.condMenu, 'Value', get(handles.condMenu, 'Value') - 1);
+    handles.backButtonFlag = true;
     condMenu_Callback(handles.condMenu, eventdata, handles)
 else
-    set(hObject,'Enable','off')
+    set(hObject, 'Enable', 'Off')
     guidata(hObject, handles)
 end
 
@@ -589,13 +613,13 @@ function eventButton_SelectionChangeFcn(hObject, eventdata, handles)
 %	OldValue: handle of the previously selected object or empty if none was selected
 %	NewValue: handle of the currently selected object
 % handles    structure with handles and user data (see GUIDATA)
-switch get(eventdata.NewValue,'Tag')
+switch get(eventdata.NewValue, 'Tag')
     case 'defaultRadio'
-        handles.type='';
+        handles.type = '';
     case 'kinematicRadio'
-        handles.type='kin';
+        handles.type = 'kin';
     case 'forceRadio'
-        handles.type='force';
+        handles.type = 'force';
 end
 plot_button_Callback(handles.plot_button, eventdata, handles)
 end
@@ -607,27 +631,28 @@ global expData
 
 %Select event
 axes(handles.axes1)
-[x,~]=ginput;
+[x, ~] = ginput;
 
 %Find closest event(s)
-allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
+allEventsIndexes = find(sum(handles.trialEvents.Data, 2) > 0);
+minDeltaTThresh  = 1;     % events within 1 s of click are candidates (s)
+paddingT         = 0.05;  % pad to also catch simultaneous alt-class event (s)
 for ii = 1:length(x)
-    deltaT=handles.trialEvents.Time(allEventsIndexes)-x(ii);
-    minDeltaT=min(abs(deltaT));
-    if minDeltaT<1 %s
         %pad min value to delete events in same region from alt calcualtion
-        selectedEventTimeIndex=find(abs(deltaT)<minDeltaT+0.05);
-        selectedEventIndex=allEventsIndexes(selectedEventTimeIndex);
-
         %Eliminate it from handles.trialEvents
-        handles.trialEvents.Data(selectedEventIndex,:)=false;
+    deltaT    = handles.trialEvents.Time(allEventsIndexes) - x(ii);
+    minDeltaT = min(abs(deltaT));
+    if minDeltaT < minDeltaTThresh
+        selectedEventTimeIndex = find(abs(deltaT) < minDeltaT + paddingT);
+        selectedEventIndex     = allEventsIndexes(selectedEventTimeIndex);
+        handles.trialEvents.Data(selectedEventIndex, :) = false;
     end
 end
 
-%update events
-expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-%update parameters (NOTE: this undoes any stride edits)
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData);
+expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
+% NOTE: recalculating parameters here undoes any manual stride label edits
+expData.data{handles.idx}.adaptParams = calcParameters( ...
+    expData.data{handles.idx}, expData.subData);
 
 %Re-plot
 guidata(hObject, handles)
@@ -640,24 +665,25 @@ function deleteNbutton_Callback(hObject, eventdata, handles)
 
 global expData
 
-[x,~]=ginput(2);
+[x, ~] = ginput(2);
 
 %Find two closest events
-allEventsIndexes=find(sum(handles.trialEvents.Data,2)>0);
+allEventsIndexes = find(sum(handles.trialEvents.Data, 2) > 0);
 
-deltaTstart=handles.trialEvents.Time(allEventsIndexes)-x(1);
-[~,selectedEventTimeIndexStart]=min(deltaTstart.^2);
-selectedEventIndexStart=allEventsIndexes(selectedEventTimeIndexStart);
+deltaTstart = handles.trialEvents.Time(allEventsIndexes) - x(1);
+[~, selectedEventTimeIndexStart] = min(deltaTstart .^ 2);
+selectedEventIndexStart = allEventsIndexes(selectedEventTimeIndexStart);
 
-deltaTend=handles.trialEvents.Time(allEventsIndexes)-x(2);
-[~,selectedEventTimeIndexEnd]=min(deltaTend.^2);
-selectedEventIndexEnd=allEventsIndexes(selectedEventTimeIndexEnd);
+deltaTend = handles.trialEvents.Time(allEventsIndexes) - x(2);
+[~, selectedEventTimeIndexEnd] = min(deltaTend .^ 2);
+selectedEventIndexEnd = allEventsIndexes(selectedEventTimeIndexEnd);
 
 %Eliminate all events between two indexes from handles.trialEvents
-handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd,:)=false;
+handles.trialEvents.Data(selectedEventIndexStart:selectedEventIndexEnd, :) = false;
 
-expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData,handles.type);
+expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
+expData.data{handles.idx}.adaptParams = calcParameters( ...
+    expData.data{handles.idx}, expData.subData, handles.type);
 
 %Re-plot
 guidata(hObject, handles)
@@ -669,11 +695,12 @@ function add_button_Callback(hObject, eventdata, handles)
 %Should this add a TO/HS for all event classes?
 
 %Ask subject to select event type: SHS, FHS, STO, FTO
-events=handles.trialEvents.getLabels;
-events=strrep(events,handles.fast,'F'); %replace 'R' or 'L' with 'F' or 'S'
-events=strrep(events,handles.slow,'S');
-set(handles.eventType,'String',events)
-set(handles.eventType,'Enable','on')
+% Replace leg-specific prefixes ('R'/'L') with 'F'/'S' in event labels
+events = handles.trialEvents.getLabels();
+events = strrep(events, handles.fast, 'F');
+events = strrep(events, handles.slow, 'S');
+set(handles.eventType, 'String', events)
+set(handles.eventType, 'Enable', 'On')
 
 %Now the subject should select an event Type, so the function continues on
 %eventType_callback
@@ -688,17 +715,18 @@ function eventType_Callback(hObject, eventdata, handles)
 global expData
 
 %Select location
-[x,~]=ginput(1);
+[x, ~] = ginput(1);
 
 %create new event in handles.trialEvents
-[~,closestTimeIdx]=min(abs((handles.trialEvents.Time-x)));
-handles.trialEvents.Data(closestTimeIdx,get(handles.eventType,'Value'))=true;
+[~, closestTimeIdx] = min(abs(handles.trialEvents.Time - x));
+handles.trialEvents.Data(closestTimeIdx, get(handles.eventType, 'Value')) = true;
 
-expData.data{handles.idx}.gaitEvents=handles.trialEvents;
-expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx},expData.subData,handles.type);
+expData.data{handles.idx}.gaitEvents  = handles.trialEvents;
+expData.data{handles.idx}.adaptParams = calcParameters( ...
+    expData.data{handles.idx}, expData.subData, handles.type);
 
 %Disable this
-set(hObject,'Enable','off');
+set(hObject, 'Enable', 'Off');
 guidata(hObject, handles)
 
 %Re-plot
@@ -714,8 +742,8 @@ global expData
 
 %Select stride
 axes(handles.axes1)
-[x,~]=ginput;
 [boolFlag,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
+[x, ~] = ginput;
 
 for ii = 1:length(x)
     deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(ii);
@@ -739,14 +767,14 @@ global expData
 
 %Select stride
 axes(handles.axes1)
-[x,~]=ginput;
-[~,idxs]=expData.data{handles.idx}.adaptParams.isaLabel({'bad','good'});
+[x, ~] = ginput;
+[~, idxs] = expData.data{handles.idx}.adaptParams.isaLabel({'bad', 'good'});
 
 for ii = 1:length(x)
-    deltaT=expData.data{handles.idx}.adaptParams.hiddenTime-x(ii);
-    [~,loc]=min(abs(deltaT));
     %update 'bad' and 'good'
-    expData.data{handles.idx}.adaptParams.Data(loc,idxs)=[false, true];
+    deltaT   = expData.data{handles.idx}.adaptParams.hiddenTime - x(ii);
+    [~, loc] = min(abs(deltaT));
+    expData.data{handles.idx}.adaptParams.Data(loc, idxs) = [false, true];
 end
 %Re-plot
 guidata(hObject, handles)
@@ -770,12 +798,12 @@ global expData
 % expData.data{handles.idx}.gaitEvents=handles.trialEvents;
 % expData.data{handles.idx}.adaptParams=calcParameters(expData.data{handles.idx});
 handles.changed=true; %% HH: this forces the changes to be saved, even if GUI is closed.
-set(handles.write,'Enable','on');
+set(handles.write, 'Enable', 'On');
 guidata(hObject, handles)
 end
 
 function uiSaveButton_ClickedCallback(hObject, eventdata, handles)
-write_Callback(handles.write,eventdata,handles)
+write_Callback(handles.write, eventdata, handles)
 end
 
 % --- Executes on button press in write.
@@ -783,14 +811,13 @@ function write_Callback(hObject, eventdata, handles)
 global expData
 
 %Disable everything
-handles=disableFields(handles,'plot_button','next_button','back_button',...
-    'delete_button','deleteNbutton','save_button','add_button','BPdataType',...
-    'BPfield','TPdataType','TPfield','condMenu','trialMenu','timeSlider',...
-    'maxCheck','defaultRadio','kinematicRadio','forceRadio','write',...
-    'labelBadButton','labelGoodButton','showBadCheck');
+handles = disableFields(handles, 'plot_button', 'next_button', 'back_button', ...
+    'delete_button', 'deleteNbutton', 'save_button', 'add_button', 'BPdataType', ...
+    'BPfield', 'TPdataType', 'TPfield', 'condMenu', 'trialMenu', 'timeSlider', ...
+    'maxCheck', 'defaultRadio', 'kinematicRadio', 'forceRadio', 'write', ...
+    'labelBadButton', 'labelGoodButton', 'showBadCheck');
 
-set(handles.write,'String', 'Writing...');
-
+set(handles.write, 'String', 'Writing...');
 drawnow
 
 %Write to disk
