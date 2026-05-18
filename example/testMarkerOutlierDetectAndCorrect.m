@@ -8,90 +8,101 @@
 % See also SK3DLEARN, SKDISTLEARN, SK3DDETECT, SK3DENFORCE.
 
 %% Load data
+% NOTE: This marker set is missing 'LANK' for first ~30 seconds of trial
 load('./data/LI16_Trial9_expData.mat')
-%This marker set is missing LANK during the first ~30secs of trial
-labels={'LHIP' 'RHIP' 'LKNE' 'RKNE' 'LANK' 'RANK' 'LTOE' 'RTOE' 'LHEE' 'RHEE' 'RASIS' 'LASIS' 'RPSIS' 'LPSIS' 'RTHI' 'LTHI' 'RSHK' 'LSHNK'};
-pos=LI16_Trial9_expData.markerData.getOrientedData(labels);
-pos=permute(pos,[2,3,1]);
-%% Gen dummy data
-% pos=10*randn(54,5)*randn(5,1000) + randn(54,1000);
-% pos=reshape(pos,18,3,1000);
+labels = {'LHIP' 'RHIP' 'LKNE' 'RKNE' 'LANK' 'RANK' 'LTOE' 'RTOE' ...
+    'LHEE' 'RHEE' 'RASIS' 'LASIS' 'RPSIS' 'LPSIS' 'RTHI' 'LTHI' ...
+    'RSHK' 'LSHNK'};
+pos = LI16_Trial9_expData.markerData.getOrientedData(labels);
+pos = permute(pos, [2, 3, 1]);
 
-%% Learn skeleton from the data from 200 to 220 secs
-%This should be reliably labeled data
-%Learn skeleton doesn't work well with OG data
-[m,R] = sk3Dlearn(pos(:,:,20000:22000));
-[md,Rd] = skDistlearn(pos(:,:,20000:22000));
+%% Generate dummy data (alternative to loading real data)
+% pos = 10 * randn(54, 5) * randn(5, 1000) + randn(54, 1000);
+% pos = reshape(pos, 18, 3, 1000);
 
-%% Check that the skeleton detects the bad marker:
-[scores] = sk3Ddetect(pos,m,R);
-[scoresD] = skDistdetect(pos,md,Rd);
-figure; plot(scores(5,:)'); legend(labels); hold on; plot(scoresD(5,:)');
+%% Learn skeleton from a reliable segment (200–220 s)
+% NOTE: sk3Dlearn does not work well with OG (overground) data.
+[m, R]    = sk3Dlearn(pos(:, :, 20000:22000));
+[md, Rd]  = skDistlearn(pos(:, :, 20000:22000));
 
-%% Enforce skeleton to fix missing marker: 
-[N,D,M]=size(pos);
-
-%Uncertainty matrix:
-P=.1*eye(N*D);
-
-%To simulate an absolutely missing LANK marker:
-idx=find(strcmp(labels,'LANK'));
-pos2=pos;
-pos2(idx,:,:)=NaN;
-
-%Find new marker positions:
-M1=M;
-xMLE=nan(N*D,M1);
-xMLEd=nan(N*D,M1);
-for i=1:M1
-    [xMLE(:,i)] = sk3Denforce(pos2(:,:,i),P,m(:),R+1e3*abs(max(R(:)))*[eye(N) eye(N) eye(N)]);
-    [xMLEd(:,i)] = skDistenforce(pos2(:,:,i),P,md(:),Rd+1e3*abs(max(Rd(:)))*eye(N));
-end
-xMLE=reshape(xMLE,N,D,M1);
-%xMLEd=reshape(xMLEd,N,D,M1);
-%% Show old & new scores:
-[correctedScores] = sk3Ddetect(xMLE,m,R);
-figure; plot(scores(5,:)); hold on; plot(correctedScores(5,:),'LineWidth',4);
-
-%% Show old & new positions:
-pos(idx,:,1:10000)=NaN; %This are bad samples
+%% Detect bad markers using skeleton
+scores  = sk3Ddetect(pos, m, R);
+scoresD = skDistdetect(pos, md, Rd);
 figure;
-for i=1:3
-    subplot(3,3,3*(i-1)+[1:2])
-    plot(squeeze(xMLE(idx,i,:)))
+plot(scores(5, :)');
+legend(labels);
+hold on;
+plot(scoresD(5, :)');
+
+%% Set up MLE reconstruction for missing LANK marker
+[N, D, M] = size(pos);
+P = 0.1 * eye(N * D);  % isotropic marker position uncertainty
+
+% Simulate LANK completely missing.
+idx  = find(strcmp(labels, 'LANK'));
+pos2 = pos;
+pos2(idx, :, :) = NaN;
+
+%% Reconstruct missing marker via MLE
+% Large covariance inflation models a completely unknown marker.
+M1    = M;
+xMLE  = nan(N * D, M1);
+xMLEd = nan(N * D, M1);
+for ii = 1:M1
+    xMLE(:,ii) = sk3Denforce(pos2(:,:,ii), P, m(:), ...
+        R + 1e3 * abs(max(R(:))) * [eye(N) eye(N) eye(N)]);
+    xMLEd(:,ii) = skDistenforce(pos2(:,:,ii), P, md(:), ...
+        Rd + 1e3 * abs(max(Rd(:))) * eye(N));
+end
+xMLE = reshape(xMLE, N, D, M1);
+% xMLEd = reshape(xMLEd, N, D, M1);
+
+%% Compare detection scores before and after correction
+correctedScores = sk3Ddetect(xMLE, m, R);
+figure;
+plot(scores(5, :));
+hold on;
+plot(correctedScores(5, :), 'LineWidth', 4);
+
+%% Plot reconstructed vs. original positions
+pos(idx, :, 1:10000) = NaN;  % known bad samples
+figure;
+for ii = 1:3
+    subplot(3, 3, 3 * (ii - 1) + (1:2))
+    plot(squeeze(xMLE(idx, ii, :)))
     hold on
-    plot(squeeze(pos(idx,i,:)))
-    if i==1
+    plot(squeeze(pos(idx, ii, :)))
+    if ii == 1
         title('Reconstruction values')
-    elseif i==3
+    elseif ii == 3
         xlabel('Time (s)')
     end
-    ylabel([('x'+i-1) ' (mm)']);
-    
-    subplot(3,3,3*i)
-    dd=squeeze(xMLE(idx,i,:)-pos(idx,i,:));
-    histogram(dd,[-20:1:20])
-    if i==1
+    ylabel([('x' + ii - 1) ' (mm)']);
+
+    subplot(3, 3, 3 * ii)
+    dd = squeeze(xMLE(idx, ii, :) - pos(idx, ii, :));
+    histogram(dd, -20:1:20)
+    if ii == 1
         title('Histogram of errors')
-    elseif i==3
+    elseif ii == 3
         xlabel('Error (mm)')
     end
     hold on
-    text(-19,1500,['\mu=' num2str(nanmean(dd),2)])
-    text(-19,1000,['\sigma=' num2str(nanstd(dd),2)])
-    text(-19,500,['m=' num2str(nanmedian(dd),2)])
+    text(-19, 1500, ['\mu=' num2str(mean(dd, 'omitnan'), 2)])
+    text(-19, 1000, ['\sigma=' num2str(std(dd, 'omitnan'), 2)])
+    text(-19, 500, ['m=' num2str(median(dd, 'omitnan'), 2)])
 end
 
+%% Compare mean positions (notice change in LANK position)
+auxPos    = mean(pos(:,:,1:M1), 3, 'omitnan');
+auxNewPos = mean(xMLE(:,:,1:M1), 3, 'omitnan');
+figure;
+plot3(auxPos(:,1), auxPos(:,2), auxPos(:,3), 'x');
+hold on;
+plot3(auxNewPos(:,1), auxNewPos(:,2), auxNewPos(:,3), 'o');
+axis equal
 
-%% Show old & new mean pos (notice change in LANK position!):
-auxPos=nanmean(pos(:,:,1:M1),3);
-auxNewPos=nanmean(xMLE(:,:,1:M1),3);
-figure; plot3(auxPos(:,1),auxPos(:,2),auxPos(:,3),'x'); hold on; plot3(auxNewPos(:,1),auxNewPos(:,2),auxNewPos(:,3),'o'); axis equal
-
-%% Compare
-
-
-xMLE=reshape(xMLE,N,D,M);
-
-err=xMLE-pos;
-imagesc(mean(err,3))
+%% Compute reconstruction error
+xMLE = reshape(xMLE, N, D, M);
+err  = xMLE - pos;
+imagesc(mean(err, 3))
