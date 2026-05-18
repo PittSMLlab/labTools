@@ -1,31 +1,3 @@
-%% Example 2: compare two parameters in the same set of strides
-param={'netContributionNorm2','spatialContributionNorm2'};
-medianFlag=[]; %MEan used by default
-strideNo=[20];
-conds={'Wash'};
-exemptNo=5;
-regFlag=1; %Regression flag
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(2),regFlag);
-
-%% Example 3: compare parameter to biographical data
-param={'netContributionNorm2','subage'};
-medianFlag=[]; %MEan used by default
-strideNo=[20];
-conds={'Wash'};
-exemptNo=5;
-regFlag=1;
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(3),regFlag);
-
-%% Example 4: overlaying two groups (assuming gAdaptData2 exists)
-param={'netContributionNorm2','spatialContributionNorm2'};
-medianFlag=[]; %MEan used by default
-strideNo=[20];
-conds={'Wash'};
-exemptNo=5;
-regFlag=1; %Regression flag
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
-gAdaptData2.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(4),regFlag);
-
 %% Example 5: compare BASELINE behavior of one variable, to early post- of the same
 param={'netContributionNorm2'};
 medianFlag=1; %MEan used by default
@@ -104,4 +76,36 @@ exemptNo   = 5;
 regFlag    = 1;
 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
     medianFlag, ph(1), regFlag);
+
+%% Example 2: compare two parameters in the same stride window
+param      = {'netContributionNorm2', 'spatialContributionNorm2'};
+medianFlag = [];  % mean used by default
+strideNo   = [20];
+conds      = {'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(2), regFlag);
+
+%% Example 3: compare parameter to biographical data
+param      = {'netContributionNorm2', 'subage'};
+medianFlag = [];  % mean used by default
+strideNo   = [20];
+conds      = {'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(3), regFlag);
+
+%% Example 4: overlay two groups
+param      = {'netContributionNorm2', 'spatialContributionNorm2'};
+medianFlag = [];  % mean used by default
+strideNo   = [20];
+conds      = {'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(4), regFlag);
+gAdaptData2.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(4), regFlag);
 
