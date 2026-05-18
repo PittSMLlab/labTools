@@ -275,5 +275,5 @@ This saves substantial time during iterative testing.
 
 - `fun/misc/compareAdaptationData.m` — parameter value comparison
 - `fun/misc/compareExperimentData.m` — structural comparison
-- `example/testPipelineRecompute.m` — template script
+- `example/TestPipelineRecompute.m` — template script
 - `CLAUDE.md` — repository architecture overview

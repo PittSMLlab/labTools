@@ -356,13 +356,13 @@ usage examples and manual integration tests:
 | Script | Purpose |
 |---|---|
 | `TestPipelineRecompute.m` | Regression-test recompute pipelines |
-| `EMGnormalization.m` | Normalize EMG parameters to baseline |
-| `labTSmanipulation.m` | Demonstrate `labTimeSeries` operations |
-| `TSdiscretizationAndCheckerboards.m` | Discretize/align time series; plot checkerboards |
-| `plotIndividualsInGroup.m` | Plot individual behavior within a group |
-| `plotParameterTimeCourse_wFilters.m` | Parameter time courses with monotonic LS filter |
-| `testMarkerHealthCheck.m` | Validate marker data integrity |
-| `testMarkerOutlierDetectAndCorrect.m` | Detect and correct marker outliers |
+| `EMGNormalization.m` | Normalize EMG parameters to baseline |
+| `LabTSManipulation.m` | Demonstrate `labTimeSeries` operations |
+| `TSDiscretizationAndCheckerboards.m` | Discretize/align time series; plot checkerboards |
+| `PlotIndividualsInGroup.m` | Plot individual behavior within a group |
+| `PlotParameterTimeCourseWithFilters.m` | Parameter time courses with monotonic LS filter |
+| `TestMarkerHealthCheck.m` | Validate marker data integrity |
+| `TestMarkerOutlierDetectAndCorrect.m` | Detect and correct marker outliers |
 | `HowToUsePlottingFunc.mlx` | Interactive live script for plotting functions |
 
 ---
