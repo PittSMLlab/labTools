@@ -1,40 +1,4 @@
-%% Example 7: on unbiased data, compare after-effects to bias behavior (same as example 6, but from data in which bias has been removed!)
-param={'netContributionNorm2','biasTMnetContributionNorm2'};
-medianFlag=1; %Mean used by default
-strideNo=[20];
-conds={'Wash'};
-exemptNo=5;
-regFlag=1;
-diffFlag=0;
-%gAdaptData=gAdaptData.removeBias; %This is one way to remove bias
-gAdaptData=gAdaptData.removeAltBias({'TM base'},-40,5,1,0); %This is an alt way to do it (faster), if we only care about TM trials, it is fine. Uses median of last 40 strides of TM base, exempting very last 5
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(7),regFlag,diffFlag);
-
-%% Example 8: Fancy stuff: compare after-effects to change during adaptation (late minus early)
-param={'netContributionNorm2','netContributionNorm2'};
-medianFlag=1; %Mean used by default
-strideNo=[-40,-40,20];
-conds={'Base','Adap','Adap'};
-exemptNo=5;
-regFlag=1;
-diffFlag=1;
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(8),regFlag,diffFlag);
-
-%% Example 9: Fancier still: compare change during adaptation to other variables change during adaptation, by using removeAltBias in the call
-param={'netContributionNorm2','stepTimeContributionNorm2'};
-medianFlag=1; %Mean used by default
-strideNo=[-40,-40];
-conds={'Adap'};
-exemptNo=5;
-regFlag=1;
-diffFlag=0;
-gAdaptData=gAdaptData.removeAltBias({'Adap'},20,5,1,diffFlag); %This removes the median of the first 20 strides of adaptation, exempting the very first 5: everything will be with respect to early adaptation behavior
-%Note that removeAltBias can be called successively and it acts in such a
-%way that it is the same as only having made the last call
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(9),regFlag,diffFlag);
-
-%% save fig
-saveFig(fh,'./','plotIndividualsInGroup')%PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.
+%PLOTINDIVIDUALSINGROUP Example: plot individual behavior within a group.
 %
 %   Demonstrates groupAdaptationData.plotIndividuals for comparing
 % parameters across conditions, correlating with biographical data,
@@ -111,3 +75,47 @@ diffFlag   = 1;
 gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
     medianFlag, ph(6), regFlag, diffFlag);
 
+%% Example 7: after-effects vs. bias (unbiased data)
+% Same as Example 6 but bias has been removed first.
+param      = {'netContributionNorm2', 'biasTMnetContributionNorm2'};
+medianFlag = 1;
+strideNo   = [20];
+conds      = {'Wash'};
+exemptNo   = 5;
+regFlag    = 1;
+diffFlag   = 0;
+% gAdaptData = gAdaptData.removeBias();  % alternative approach
+% removeAltBias is faster when only TM trials are needed; uses median
+% of last 40 strides of TM base, exempting the very last 5.
+gAdaptData = gAdaptData.removeAltBias({'TM base'}, -40, 5, 1, 0);
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(7), regFlag, diffFlag);
+
+%% Example 8: after-effects vs. adaptation change (late minus early)
+param      = {'netContributionNorm2', 'netContributionNorm2'};
+medianFlag = 1;
+strideNo   = [-40, -40, 20];
+conds      = {'Base', 'Adap', 'Adap'};
+exemptNo   = 5;
+regFlag    = 1;
+diffFlag   = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(8), regFlag, diffFlag);
+
+%% Example 9: compare changes during adaptation across parameters
+% removeAltBias can be called successively; the last call always
+% takes effect (earlier calls are effectively overridden).
+param      = {'netContributionNorm2', 'stepTimeContributionNorm2'};
+medianFlag = 1;
+strideNo   = [-40, -40];
+conds      = {'Adap'};
+exemptNo   = 5;
+regFlag    = 1;
+diffFlag   = 0;
+% Uses median of first 20 strides of adaptation, exempting the first 5.
+gAdaptData = gAdaptData.removeAltBias({'Adap'}, 20, 5, 1, diffFlag);
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(9), regFlag, diffFlag);
+
+%% Save figure
+saveFig(fh, './', 'plotIndividualsInGroup')
