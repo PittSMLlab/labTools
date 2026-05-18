@@ -48,21 +48,24 @@ function ReviewEventsGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 %   None
 
 %initialize values
-handles.output=hObject;
-handles.changed=false;
-handles.saved=false;
-handles.backButtonFlag=false;
-handles.type='';
-
 % Update handles structure
+handles.output          = hObject;
+handles.changed         = false;
+handles.saved           = false;
+handles.backButtonFlag  = false;
+handles.type            = '';
+
 guidata(hObject, handles);
 
-%Set text that pops up when fields of GUI are hovered over. Note: sprintf
-%used to allow line breaks in tool tip string.
-set(handles.delete_button,'TooltipString',sprintf(['Use crosshair to select the event(s) that need deleted. \n'...
-    'Press the return (enter) key after clicking on the event(s) to delete them.']));
-set(handles.deleteNbutton,'TooltipString',sprintf(['Use crosshair to select the start and end of a range of events to be deleted.\n'...
-    'ALL events in this range are removed.']));
+% Set tooltips displayed when hovering over GUI fields.
+% Note: sprintf is used to allow line breaks in tooltip text.
+set(handles.delete_button, 'TooltipString', sprintf([ ...
+    'Use crosshair to select the event(s) that need deleted.\n' ...
+    'Press the return (enter) key after clicking on the event(s) ' ...
+    'to delete them.']));
+set(handles.deleteNbutton, 'TooltipString', sprintf([ ...
+    'Use crosshair to select the start and end of a range of events ' ...
+    'to be deleted.\nALL events in this range are removed.']));
 
 % UIWAIT makes ReviewEventsGUI wait for user response (see UIRESUME)
 % uiwait(handles.GUI_window);
@@ -73,14 +76,15 @@ function varargout = ReviewEventsGUI_OutputFcn(hObject, eventdata, handles)
 
 % Center GUI on screen (must run here, not in OpeningFcn)
 % left, bottom, width, height
-scrsz = get(0,'ScreenSize');
-set(gcf,'Units','pixels');
-guiPos = get(gcf,'Position');
-width=min([guiPos(3) scrsz(3)]);
-height=min([guiPos(4) scrsz(4)]);
-set(gcf, 'Position', [(scrsz(3)-width)/2 (scrsz(4)-height)/2 width height]);
-
 % Get default command line output from handles structure
+scrsz  = get(0, 'ScreenSize');
+set(gcf(), 'Units', 'pixels');
+guiPos = get(gcf(), 'Position');
+width  = min([guiPos(3) scrsz(3)]);
+height = min([guiPos(4) scrsz(4)]);
+set(gcf(), 'Position', [ ...
+    (scrsz(3) - width) / 2, (scrsz(4) - height) / 2, width, height]);
+
 varargout{1} = handles.output;
 end
 
@@ -96,21 +100,21 @@ if isfield(handles,'filename') && ~handles.changed && ~handles.saved
         'Save','Don''t Save','Cancel','Save');
     switch choice
         case 'Save'
-            handles.changed=true;
+            handles.changed = true;
         case 'Don''t Save'
-            handles.changed=false;
-        case {'Cancel',''}
+            handles.changed = false;
+        case {'Cancel', ''}
             return
     end
 end
 
 if handles.changed
-    write_Callback(handles.write,eventdata,handles)
+    write_Callback(handles.write, eventdata, handles)
 end
 
-[handles.filename,handles.Dir]=uigetfile('*.mat','Choose subject file'); %opens browse window
+[handles.filename, handles.Dir] = uigetfile('*.mat', 'Choose subject file');
 
-if handles.filename~=0
+if handles.filename ~= 0
     global expData
 
     %Disable everything
@@ -159,16 +163,16 @@ end
 function condMenu_Callback(hObject, eventdata, handles)
 
 % check back button ability
-if get(hObject,'Value')>1
-    set(handles.back_button,'Enable','on')
+if get(hObject, 'Value') > 1
+    set(handles.back_button, 'Enable', 'On')
 else
-    set(handles.back_button,'Enable','off')
+    set(handles.back_button, 'Enable', 'Off')
 end
 
 global expData
-condOptions=get(hObject,'String');
-condStr=condOptions(get(hObject,'Value'));
-handles.Condition=find(strcmp(expData.metaData.conditionName,condStr));
+condOptions    = get(hObject, 'String');
+condStr        = condOptions(get(hObject, 'Value'));
+handles.Condition = find(strcmp(expData.metaData.conditionName, condStr));
 
 s={};
 for ii = 1:length(expData.metaData.trialsInCondition{handles.Condition})
@@ -194,14 +198,13 @@ else
         set(handles.kinematicRadio, 'Enable', 'on');
         set(handles.forceRadio,     'Enable', 'on');
     end
-    %set other values
-    set(handles.trialMenu, 'String', s);
+    set(handles.trialMenu, 'String', trialStr);
     if handles.backButtonFlag
-        set(handles.trialMenu, 'Value', length(s));
+        set(handles.trialMenu, 'Value', length(trialStr));
     else
         set(handles.trialMenu, 'Value', 1);
     end
-    handles.backButtonFlag=false;
+    handles.backButtonFlag = false;
 
     guidata(hObject, handles)
     trialMenu_Callback(handles.trialMenu, eventdata, handles);
@@ -216,10 +219,10 @@ end
 function trialMenu_Callback(hObject, eventdata, handles)
 
 % check back button ability
-if get(handles.condMenu,'Value')==1 && get(hObject,'Value')==1
-    set(handles.back_button,'Enable','off')
+if get(handles.condMenu, 'Value') == 1 && get(hObject, 'Value') == 1
+    set(handles.back_button, 'Enable', 'Off')
 else
-    set(handles.back_button,'Enable','on')
+    set(handles.back_button, 'Enable', 'On')
 end
 
 global expData
@@ -241,8 +244,8 @@ set(handles.write,'Enable','off')
 fieldList=fields(expData.data{handles.idx});
 for ii = 1:length(fieldList)
     eval(['curField=expData.data{handles.idx}.' fieldList{ii} ';']);
-    if isa(curField,'labTimeSeries')
-        handles.TSlist{end+1}=fieldList{ii};
+    if isa(curField, 'labTimeSeries')
+        handles.TSlist{end + 1} = fieldList{ii};
     end
 end
 clear curField fieldList
@@ -263,8 +266,8 @@ if TW>maxTime || get(handles.maxCheck,'Value')
     handles.tstop=maxTime;
     set(handles.timeSlider,'Value',maxTime);
 else
-    handles.timeWindow=TW;
-    handles.tstop=TW;
+    handles.timeWindow = TW;
+    handles.tstop      = TW;
 end
 set(handles.maxText,'String',num2str(maxTime));
 set(handles.timeSlider,'Max',maxTime);
@@ -296,15 +299,14 @@ handles.last=plotData(handles,handles.BPfield,handles.BPdataType,handles.BPfield
 guidata(hObject, handles)
 end
 
-function [plotFields] = makeFieldList(hObject,handles,fieldListHandle)
+function plotFields = makeFieldList(hObject, handles, fieldListHandle)
 
 global expData
 
-curTS=expData.data{handles.idx}.(handles.TSlist{get(hObject,'Value')});
 fields={};
-plotFields={};
-set(fieldListHandle,'Enable','on')
-
+curTS        = expData.data{handles.idx}.(handles.TSlist{get(hObject, 'Value')});
+plotFields   = {};
+set(fieldListHandle, 'Enable', 'On')
 
 % Remove redundant entries by combining 'R'/'L' pairs and 'Fast'/'Slow'
 % pairs into single drop-down options. Two parallel cells are built:
@@ -344,7 +346,7 @@ for ii = 1:length(curTS.labels)
         %assume we also have a fast label and do nothing
     else
         fields{end+1}=curTS.labels{ii};
-        plotFields{end+1} = curTS.labels{ii};
+        plotFields{end + 1}   = curTS.labels{ii};
     end
 end
 
@@ -372,13 +374,12 @@ handles.timeWindow=round(get(hObject,'Value'));
 % % % to make zoomed-in time window start at the beginning of the trial: % % % % %
 % handles.tstop=handles.timeWindow;
 % handles.tstart=0;
+% Time window starts at the beginning of the previous window
+handles.tstop = handles.tstart + handles.timeWindow;
 
-% % % %to make zoomed-in time window start at beginning of previous time window: % % % %
-handles.tstop=handles.tstart+handles.timeWindow;
-
-set(handles.timeWindowText,'String',handles.timeWindow);
+set(handles.timeWindowText, 'String', handles.timeWindow);
 guidata(hObject, handles)
-plot_button_Callback(handles.plot_button,eventdata,handles)
+plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
 % --- Executes on button press in maxCheck.
@@ -394,7 +395,7 @@ if get(handles.maxCheck,'Value')
     set(handles.timeWindowText,'String',handles.timeWindow);
     set(handles.timeSlider,'Enable','off');
 end
-plot_button_Callback(handles.plot_button,eventdata,handles)
+plot_button_Callback(handles.plot_button, eventdata, handles)
 end
 
 % --- Executes on button press in plot_button.
@@ -410,27 +411,26 @@ drawnow
 guidata(hObject, handles)
 end
 
-function last=plotData(handles,fieldHandle,dataTypeHandle,fieldList,axesHandle)
+function last = plotData(handles, fieldHandle, dataTypeHandle, fieldList, axesHandle)
 
-linkaxes([handles.axes1,handles.axes2],'x')
+linkaxes([handles.axes1, handles.axes2], 'x')
 
 global expData
 
 value=get(fieldHandle,'Value');
-dataType=handles.TSlist{get(dataTypeHandle,'Value')};
+dataType = handles.TSlist{get(dataTypeHandle, 'Value')};
 
-TSdata=expData.data{handles.idx}.(dataType);
-if isa(TSdata,'parameterSeries')
-    times=TSdata.hiddenTime;
+TSdata = expData.data{handles.idx}.(dataType);
+if isa(TSdata, 'parameterSeries')
+    times = TSdata.hiddenTime;
 else
-    times=TSdata.Time;
+    times = TSdata.Time;
 end
 
-if times(end)<handles.tstop || get(handles.maxCheck,'Value')
-    %     disp(['Max Time scale selected!'])'
-    endSamp=length(times);
-    startSamp=max([1 endSamp-find(times<=handles.timeWindow,1,'last')]);
-    last=1;
+if times(end) < handles.tstop || get(handles.maxCheck, 'Value')
+    endSamp   = length(times);
+    startSamp = max([1, endSamp - find(times <= handles.timeWindow, 1, 'last')]);
+    last      = 1;
 else
     %     disp(['using custom time scale']);
     startSamp=max([1 find(times>=handles.tstart,1,'first')]);
@@ -463,7 +463,7 @@ if length(fieldList{value})==2
             plot(axesHandle,time(badStrides),SdataTS.Data(badStrides),'bo','MarkerSize',6);
             legendEntries ={'Fast','Slow','Bad Fast','Bad Slow'};
         end
-        % do not overlay events
+        % Events are not overlaid on adaptParams plots
     else
         label=fieldList{value}{1}(2:end);
         %plot data
