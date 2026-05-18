@@ -1,4 +1,4 @@
-%PLOTPARAMETERTIMECOURSE_WFILTERS Example: parameter time courses with monotonic LS filter.
+%PLOTPARAMETERTIMECOURSEWITHFILTERS Example: parameter time courses with monotonic LS filter.
 %
 %   Demonstrates adaptationData.plotAvgTimeCourse with and without the
 % monoLS filter to smooth parameter signals. Assumes an adaptationData

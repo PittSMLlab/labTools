@@ -94,12 +94,13 @@ for ii = 1:3
 end
 
 %% Compare mean positions (notice change in LANK position)
-auxPos    = mean(pos(:,:,1:M1), 3, 'omitnan');
-auxNewPos = mean(xMLE(:,:,1:M1), 3, 'omitnan');
+meanPos              = mean(pos(:,:,1:M1), 3, 'omitnan');
+reconstructedMeanPos = mean(xMLE(:,:,1:M1), 3, 'omitnan');
 figure;
-plot3(auxPos(:,1), auxPos(:,2), auxPos(:,3), 'x');
+plot3(meanPos(:,1), meanPos(:,2), meanPos(:,3), 'x');
 hold on;
-plot3(auxNewPos(:,1), auxNewPos(:,2), auxNewPos(:,3), 'o');
+plot3(reconstructedMeanPos(:,1), reconstructedMeanPos(:,2), ...
+    reconstructedMeanPos(:,3), 'o');
 axis equal
 
 %% Compute reconstruction error

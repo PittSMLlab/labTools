@@ -24,7 +24,7 @@ gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
 %% Example 2: compare two parameters in the same stride window
 param      = {'netContributionNorm2', 'spatialContributionNorm2'};
 medianFlag = [];  % mean used by default
-strideNo   = [20];
+strideNo   = 20;
 conds      = {'Wash'};
 exemptNo   = 5;
 regFlag    = 1;
@@ -34,7 +34,7 @@ gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
 %% Example 3: compare parameter to biographical data
 param      = {'netContributionNorm2', 'subage'};
 medianFlag = [];  % mean used by default
-strideNo   = [20];
+strideNo   = 20;
 conds      = {'Wash'};
 exemptNo   = 5;
 regFlag    = 1;
@@ -44,7 +44,7 @@ gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
 %% Example 4: overlay two groups
 param      = {'netContributionNorm2', 'spatialContributionNorm2'};
 medianFlag = [];  % mean used by default
-strideNo   = [20];
+strideNo   = 20;
 conds      = {'Wash'};
 exemptNo   = 5;
 regFlag    = 1;
@@ -79,7 +79,7 @@ gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
 % Same as Example 6 but bias has been removed first.
 param      = {'netContributionNorm2', 'biasTMnetContributionNorm2'};
 medianFlag = 1;
-strideNo   = [20];
+strideNo   = 20;
 conds      = {'Wash'};
 exemptNo   = 5;
 regFlag    = 1;

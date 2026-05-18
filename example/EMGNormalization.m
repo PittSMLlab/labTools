@@ -25,4 +25,4 @@ nPhases = 12;  % 12-phase EMG amplitude (see computeEMGparameters)
 figure;
 surf(reshape(mean(aa(idx{1}, :), 'omitnan'), ...
     [nPhases, numel(expandedMList)]), 'EdgeColor', 'None');
-caxis([-1 1]);
+clim([-1 1]);

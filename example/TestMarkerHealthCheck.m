@@ -18,36 +18,36 @@
 referenceModel = allTrialModels{refTrial};
 
 %% Inspect one trial
-trial = 7;
-aux   = rawExpData.data{trial}.markerData;
+trial      = 7;
+markerData = rawExpData.data{trial}.markerData;
 
 %% Assess missing data
 % A: check missing data and fill gaps
-[~, ~, aux] = aux.assessMissing([], -1);
+[~, ~, markerData] = markerData.assessMissing([], -1);
 
 %% Validate trial model
-allTrialModels{trial} = buildNaiveDistancesModel(aux);
+allTrialModels{trial} = buildNaiveDistancesModel(markerData);
 % B: analyze fitted model
 [badFlag, mirrorOutliers, outOfBoundsOutlier] = ...
     validateMarkerModel(allTrialModels{trial}, true);
 
 %% Find outliers using reference model
 % C: find outliers
-aux = aux.findOutliers(referenceModel, true);
+markerData = markerData.findOutliers(referenceModel, true);
 disp('Outlier data added in Quality field');
 
 %% Fix label switching and remove outliers
-aux = aux.fixBadLabels();
-aux.Quality = [];
-aux = aux.removeOutliers(referenceModel);
-[~, ~, aux] = aux.assessMissing([], -1);
+markerData = markerData.fixBadLabels();
+markerData.Quality = [];
+markerData = markerData.removeOutliers(referenceModel);
+[~, ~, markerData] = markerData.assessMissing([], -1);
 
 %% Remove outliers (mark as missing)
-[~, ~, missing] = aux.assessMissing([], -1);
-aux.findOutliers(referenceModel, true);
+[~, ~, missing] = markerData.assessMissing([], -1);
+markerData.findOutliers(referenceModel, true);
 
 %% Fill missing and bad data
-newThis = aux.fillGaps(referenceModel);  % TODO: not fully implemented
+newThis = markerData.fillGaps(referenceModel);  % TODO: not fully implemented
 
 %% Assess reconstruction quality
 [~, ~, missing] = newThis.assessMissing([], -1);
