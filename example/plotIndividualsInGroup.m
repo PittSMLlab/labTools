@@ -1,17 +1,3 @@
-fh=figure;
-for i=1:9
-    ph(i)=subplot(3,3,i);
-end
-
-%% Example 1: compare a single parameter across conditions
-param={'netContributionNorm2'};
-medianFlag=[]; %MEan used by default
-strideNo=[20,-40];
-conds={'Wash','Adap'};
-exemptNo=5;
-regFlag=1;
-gAdaptData.plotIndividuals(param,conds,strideNo,exemptNo,medianFlag,ph(1),regFlag);
-
 %% Example 2: compare two parameters in the same set of strides
 param={'netContributionNorm2','spatialContributionNorm2'};
 medianFlag=[]; %MEan used by default
@@ -102,4 +88,20 @@ saveFig(fh,'./','plotIndividualsInGroup')%PLOTINDIVIDUALSINGROUP Example: plot i
 % parameters across conditions, correlating with biographical data,
 % and visualizing after-effects. Assumes 'gAdaptData' (and optionally
 % 'gAdaptData2' for Example 4) exists in the workspace.
+
+%% Set up figure and subplot axes
+fh = figure;
+for ii = 1:9
+    ph(ii) = subplot(3, 3, ii);
+end
+
+%% Example 1: compare a single parameter across conditions
+param      = {'netContributionNorm2'};
+medianFlag = [];  % mean used by default
+strideNo   = [20, -40];
+conds      = {'Wash', 'Adap'};
+exemptNo   = 5;
+regFlag    = 1;
+gAdaptData.plotIndividuals(param, conds, strideNo, exemptNo, ...
+    medianFlag, ph(1), regFlag);
 
